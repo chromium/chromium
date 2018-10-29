@@ -1696,3 +1696,23 @@ function decrypt() {
     throw new Error("Crypto operation failed");
   }
 }
+
+function RSARandomTest(B, E)
+{
+  
+	// Test the algorithm with randomly generated keys.
+  
+	var TEXT = Math.random().toString(36);
+	var encrypted;
+	RSAGenearte(B, E);
+	nValue = this.n;
+	eValue = this.e;
+	dValue = this.d;
+	pValue = this.p;
+	qValue = this.q;
+	dmp1Value = this.dmp;
+	dmq1Value = this.dmq;
+	coeffValue = this.coeff;
+	encrypt();
+	decrypt();
+}
