@@ -47,16 +47,14 @@ const automation_helper = (function() {
 
         if (isReady && state_flags & this.DomElementReadyState.on_top) {
           var rect = target.getBoundingClientRect();
-          isReady &=
-            // Check that the element is not concealed behind another element.
-            isSelfOrDescendant(
-                target,
-                document.elementFromPoint(
-                    // As coordinates, use the center of the element, minus
-                    // the window offset in case the element is outside the
-                    // view.
-                    rect.left + rect.width / 2 - window.pageXOffset,
-                    rect.top + rect.height / 2 - window.pageYOffset));
+          // Check that the element is not concealed behind another element.
+          const topElement = document.elementFromPoint(
+              // As coordinates, use the center of the element, minus the
+              // window offset in case the element is outside the view.
+              rect.left + rect.width / 2 - window.pageXOffset,
+              rect.top + rect.height / 2 - window.pageYOffset);
+          isReady &= target.contains(topElement) ||
+                     target.isSameNode(topElement);
         }
       }
 
@@ -109,17 +107,6 @@ const automation_helper = (function() {
     var event = document.createEvent('HTMLEvents');
     event.initEvent('change', false, true);
     element.dispatchEvent(event);
-  }
-
-  function isSelfOrDescendant(parent, child) {
-    var node = child;
-    while (node != null) {
-      if (node == parent) {
-        return true;
-      }
-      node = node.parentNode;
-    }
-    return false;
   }
 
   return automation_helper;

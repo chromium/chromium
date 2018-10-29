@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <unordered_map>
 #include <utility>
 
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_storage/storage_info_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/system_display.h"
@@ -32,6 +34,8 @@ namespace extensions {
 using api::system_storage::StorageUnitInfo;
 using content::BrowserThread;
 using storage_monitor::StorageMonitor;
+
+typedef std::set<const content::BrowserContext*> BrowserContextSet;
 
 namespace system_display = api::system_display;
 namespace system_storage = api::system_storage;
@@ -49,8 +53,7 @@ bool IsSystemStorageEvent(const std::string& event_name) {
 
 // Event router for systemInfo API. It is a singleton instance shared by
 // multiple profiles.
-class SystemInfoEventRouter : public display::DisplayObserver,
-                              public storage_monitor::RemovableStorageObserver {
+class SystemInfoEventRouter : public storage_monitor::RemovableStorageObserver {
  public:
   static SystemInfoEventRouter* GetInstance();
 
@@ -58,16 +61,16 @@ class SystemInfoEventRouter : public display::DisplayObserver,
   ~SystemInfoEventRouter() override;
 
   // Add/remove event listener for the |event_name| event.
-  void AddEventListener(const std::string& event_name);
-  void RemoveEventListener(const std::string& event_name);
+  void AddEventListener(const content::BrowserContext* context,
+                        const std::string& event_name);
+  void RemoveEventListener(const content::BrowserContext* context,
+                           const std::string& event_name);
+
+  // |context| is the pointer to BrowserContext of one SystemInfoAPI instance.
+  // Remove event listeners which the SystemInfoAPI instance adds.
+  void ShutdownSystemInfoAPI(const content::BrowserContext* context);
 
  private:
-  // display::DisplayObserver:
-  void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t metrics) override;
-
   // RemovableStorageObserver implementation.
   void OnRemovableStorageAttached(
       const storage_monitor::StorageInfo& info) override;
@@ -80,11 +83,12 @@ class SystemInfoEventRouter : public display::DisplayObserver,
                      const std::string& event_name,
                      std::unique_ptr<base::ListValue> args);
 
-  // Called to dispatch the systemInfo.display.onDisplayChanged event.
-  void OnDisplayChanged();
+  void AddEventListenerInternal(const std::string& event_name);
+  void RemoveEventListenerInternal(const std::string& event_name);
 
-  // Used to record the event names being watched.
-  std::multiset<std::string> watching_event_set_;
+  // Maps event names to the set of BrowserContexts which have SystemInfoAPI
+  // instances that listen to that event.
+  std::unordered_map<std::string, BrowserContextSet> watched_events_;
 
   bool has_storage_monitor_observer_;
 
@@ -111,55 +115,39 @@ SystemInfoEventRouter::~SystemInfoEventRouter() {
   }
 }
 
-void SystemInfoEventRouter::AddEventListener(const std::string& event_name) {
+void SystemInfoEventRouter::AddEventListener(
+    const content::BrowserContext* context,
+    const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  watching_event_set_.insert(event_name);
-  if (watching_event_set_.count(event_name) > 1)
-    return;
+  BrowserContextSet& context_set = watched_events_[event_name];
 
-  if (IsDisplayChangedEvent(event_name)) {
-    display::Screen* screen = display::Screen::GetScreen();
-    if (screen)
-      screen->AddObserver(this);
-  }
+  // Indicate whether there has been any listener listening to the
+  // |event_name| event.
+  const bool not_watched_before = context_set.empty();
 
-  if (IsSystemStorageEvent(event_name)) {
-    if (!has_storage_monitor_observer_) {
-      has_storage_monitor_observer_ = true;
-      DCHECK(StorageMonitor::GetInstance()->IsInitialized());
-      StorageMonitor::GetInstance()->AddObserver(this);
-    }
-  }
+  context_set.insert(context);
+  if (not_watched_before)
+    AddEventListenerInternal(event_name);
 }
 
-void SystemInfoEventRouter::RemoveEventListener(const std::string& event_name) {
+void SystemInfoEventRouter::RemoveEventListener(
+    const content::BrowserContext* context,
+    const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::multiset<std::string>::iterator it =
-      watching_event_set_.find(event_name);
-  if (it != watching_event_set_.end()) {
-    watching_event_set_.erase(it);
-    if (watching_event_set_.count(event_name) > 0)
-      return;
-  }
+  BrowserContextSet& context_set = watched_events_[event_name];
+  if (!context_set.count(context))
+    return;
+  context_set.erase(context);
+  if (context_set.empty())
+    RemoveEventListenerInternal(event_name);
+}
 
-  if (IsDisplayChangedEvent(event_name)) {
-    display::Screen* screen = display::Screen::GetScreen();
-    if (screen)
-      screen->RemoveObserver(this);
-  }
-
-  if (IsSystemStorageEvent(event_name)) {
-    const std::string& other_event_name =
-        (event_name == system_storage::OnDetached::kEventName)
-            ? system_storage::OnAttached::kEventName
-            : system_storage::OnDetached::kEventName;
-    if (watching_event_set_.count(other_event_name) == 0) {
-      StorageMonitor::GetInstance()->RemoveObserver(this);
-      has_storage_monitor_observer_ = false;
-    }
-  }
+void SystemInfoEventRouter::ShutdownSystemInfoAPI(
+    const content::BrowserContext* context) {
+  for (const auto& map_iter : watched_events_)
+    RemoveEventListener(context, map_iter.first);
 }
 
 void SystemInfoEventRouter::OnRemovableStorageAttached(
@@ -184,28 +172,6 @@ void SystemInfoEventRouter::OnRemovableStorageDetached(
                 system_storage::OnDetached::kEventName, std::move(args));
 }
 
-void SystemInfoEventRouter::OnDisplayAdded(
-    const display::Display& new_display) {
-  OnDisplayChanged();
-}
-
-void SystemInfoEventRouter::OnDisplayRemoved(
-    const display::Display& old_display) {
-  OnDisplayChanged();
-}
-
-void SystemInfoEventRouter::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t metrics) {
-  OnDisplayChanged();
-}
-
-void SystemInfoEventRouter::OnDisplayChanged() {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  DispatchEvent(events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
-                system_display::OnDisplayChanged::kEventName, std::move(args));
-}
-
 void SystemInfoEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
@@ -214,12 +180,49 @@ void SystemInfoEventRouter::DispatchEvent(
       histogram_value, event_name, std::move(args));
 }
 
-void AddEventListener(const std::string& event_name) {
-  SystemInfoEventRouter::GetInstance()->AddEventListener(event_name);
+void SystemInfoEventRouter::AddEventListenerInternal(
+    const std::string& event_name) {
+  if (IsDisplayChangedEvent(event_name))
+    DisplayInfoProvider::Get()->StartObserving();
+
+  if (!has_storage_monitor_observer_ && IsSystemStorageEvent(event_name)) {
+    has_storage_monitor_observer_ = true;
+    DCHECK(StorageMonitor::GetInstance()->IsInitialized());
+    StorageMonitor::GetInstance()->AddObserver(this);
+  }
 }
 
-void RemoveEventListener(const std::string& event_name) {
-  SystemInfoEventRouter::GetInstance()->RemoveEventListener(event_name);
+void SystemInfoEventRouter::RemoveEventListenerInternal(
+    const std::string& event_name) {
+  if (IsDisplayChangedEvent(event_name))
+    DisplayInfoProvider::Get()->StopObserving();
+
+  if (IsSystemStorageEvent(event_name)) {
+    const std::string& other_event_name =
+        (event_name == system_storage::OnDetached::kEventName)
+            ? system_storage::OnAttached::kEventName
+            : system_storage::OnDetached::kEventName;
+    auto map_iter = watched_events_.find(other_event_name);
+    if ((map_iter == watched_events_.end()) || (map_iter->second).empty()) {
+      StorageMonitor::GetInstance()->RemoveObserver(this);
+      has_storage_monitor_observer_ = false;
+    }
+  }
+}
+
+void AddEventListener(const content::BrowserContext* context,
+                      const std::string& event_name) {
+  SystemInfoEventRouter::GetInstance()->AddEventListener(context, event_name);
+}
+
+void RemoveEventListener(const content::BrowserContext* context,
+                         const std::string& event_name) {
+  SystemInfoEventRouter::GetInstance()->RemoveEventListener(context,
+                                                            event_name);
+}
+
+void ShutdownSystemInfoAPI(const content::BrowserContext* context) {
+  SystemInfoEventRouter::GetInstance()->ShutdownSystemInfoAPI(context);
 }
 
 }  // namespace
@@ -247,23 +250,24 @@ SystemInfoAPI::~SystemInfoAPI() {
 
 void SystemInfoAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
+  ShutdownSystemInfoAPI(browser_context_);
 }
 
 void SystemInfoAPI::OnListenerAdded(const EventListenerInfo& details) {
   if (IsSystemStorageEvent(details.event_name)) {
-    StorageMonitor::GetInstance()->EnsureInitialized(
-        base::Bind(&AddEventListener, details.event_name));
+    StorageMonitor::GetInstance()->EnsureInitialized(base::BindRepeating(
+        &AddEventListener, browser_context_, details.event_name));
   } else {
-    AddEventListener(details.event_name);
+    AddEventListener(browser_context_, details.event_name);
   }
 }
 
 void SystemInfoAPI::OnListenerRemoved(const EventListenerInfo& details) {
   if (IsSystemStorageEvent(details.event_name)) {
-    StorageMonitor::GetInstance()->EnsureInitialized(
-        base::Bind(&RemoveEventListener, details.event_name));
+    StorageMonitor::GetInstance()->EnsureInitialized(base::BindRepeating(
+        &RemoveEventListener, browser_context_, details.event_name));
   } else {
-    RemoveEventListener(details.event_name);
+    RemoveEventListener(browser_context_, details.event_name);
   }
 }
 

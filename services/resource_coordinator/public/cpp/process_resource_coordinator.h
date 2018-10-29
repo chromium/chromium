@@ -14,10 +14,10 @@
 
 namespace resource_coordinator {
 
-class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT ProcessResourceCoordinator
-    : public ResourceCoordinatorInterface<
-          mojom::ProcessCoordinationUnitPtr,
-          mojom::ProcessCoordinationUnitRequest> {
+class COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP)
+    ProcessResourceCoordinator : public ResourceCoordinatorInterface<
+                                     mojom::ProcessCoordinationUnitPtr,
+                                     mojom::ProcessCoordinationUnitRequest> {
  public:
   ProcessResourceCoordinator(service_manager::Connector* connector);
   ~ProcessResourceCoordinator() override;
@@ -27,14 +27,12 @@ class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT ProcessResourceCoordinator
   void SetPID(base::ProcessId pid);
 
   void AddFrame(const FrameResourceCoordinator& frame);
-  void RemoveFrame(const FrameResourceCoordinator& frame);
 
  private:
   void ConnectToService(mojom::CoordinationUnitProviderPtr& provider,
                         const CoordinationUnitID& cu_id) override;
 
   void AddFrameByID(const CoordinationUnitID& cu_id);
-  void RemoveFrameByID(const CoordinationUnitID& cu_id);
 
   THREAD_CHECKER(thread_checker_);
 

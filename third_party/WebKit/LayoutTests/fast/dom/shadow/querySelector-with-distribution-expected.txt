@@ -3,7 +3,6 @@ crbug.com/337618: querySelector needs ensure distribution.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS barShadowRoot.querySelectorAll(":host-context(.foo)::shadow div")[0].id is "bar"
 PASS barShadowRoot.querySelectorAll(":host-context(.foo)::shadow div")[0] is undefined
 PASS successfullyParsed is true

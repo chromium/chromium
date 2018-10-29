@@ -176,8 +176,6 @@ TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
   // Because we will be forcing a naive GC that assumes there are no Oilpan
   // objects on the stack (e.g. passes BlinkGC::kNoHeapPointersOnStack), we have
   // to keep the ActiveInterpolationsMap in a Persistent.
-  // TODO(crbug.com/876331): We should be able to use a PersistentHeapHashMap
-  // here, but the operator=, copy, and move overloads do not work properly.
   Persistent<ActiveInterpolationsMap> interpolations;
 
   UpdateTimeline(TimeDelta::FromSeconds(11));

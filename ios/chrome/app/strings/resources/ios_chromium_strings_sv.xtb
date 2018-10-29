@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Få Google-teknik i Chromium</translation>
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="2797210818057553964">Du kan när som helst ändra detta i Chromium-inställningarna</translation>
+<translation id="2915596697727466327">Chromium använder Face ID för att se till att endast behöriga har åtkomst till lösenorden.</translation>
 <translation id="3256316712990552818">Kopierat till Chromium</translation>
 <translation id="3413120535237193088">Logga in i Chromium om du vill få tillgång till samma bokmärken på alla enheter.</translation>
 <translation id="3473048256428424907">Aktivera Chromium som QR-skanner</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Här visas flikar som du har öppnat i Chromium på andra enheter.</translation>
 <translation id="495292094137889840">Börja använda Chromium som QR-skanner</translation>
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
-<translation id="5416919929805616771">Gillar du Chromium? <ph name="BEGIN_LINK" />Sätt betyg på appen<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="6068866989048414399">Användarvillkor för Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tips! <ph name="BEGIN_LINK" />Flytta Chromium till Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Ange din plats och få en bättre upplevelse av Google när du använder Chromium.</translation>
-<translation id="8353224596138547809">Vill du att Chromium sparar lösenordet för den här webbplatsen?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Inställningarna<ph name="END_LINK" /> kan anpassas när som helst. Google kan anpassa Chromium och tjänster från Google som Översätt, Sök och annonser utifrån innehållet på webbplatser du besöker, vad du interagerar med i webbläsaren och annan aktivitet.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8809780021347235332">Tryck på Inställningar och ge Chromium behörighet att använda dina foton om du vill spara foton</translation>

@@ -1,21 +1,4 @@
-# About src/base:
-#
-# Chromium is a very mature project, most things that are generally useful are
-# already here, and that things not here aren't generally useful.
-#
-# Base is pulled into many projects. For example, various ChromeOS daemons. So
-# the bar for adding stuff is that it must have demonstrated wide
-# applicability. Prefer to add things closer to where they're used (i.e. "not
-# base"), and pull into base only when needed.  In a project our size,
-# sometimes even duplication is OK and inevitable.
-#
-# Adding a new logging macro DPVELOG_NE is not more clear than just
-# writing the stuff you want to log in a regular logging statement, even
-# if it makes your calling code longer. Just add it to your own code.
-#
-# If the code in question does not need to be used inside base, but will have
-# multiple consumers across the codebase, consider placing it in a new directory
-# under components/ instead.
+# See //base/README.md to find qualification for being an owner.
 
 ajwong@chromium.org
 danakj@chromium.org

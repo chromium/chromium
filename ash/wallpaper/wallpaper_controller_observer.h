@@ -23,6 +23,10 @@ class ASH_EXPORT WallpaperControllerObserver {
   // Invoked when the wallpaper preview mode ends.
   virtual void OnWallpaperPreviewEnded() {}
 
+  // Invoked when the first wallpaper is set. The first wallpaper is the one
+  // shown right after boot splash screen or after a session restart.
+  virtual void OnFirstWallpaperShown() {}
+
  protected:
   virtual ~WallpaperControllerObserver() {}
 };

@@ -1023,21 +1023,18 @@ TEST_F(HistoryBackendTest, AddPagesWithDetails) {
   const URLRows& changed_urls = urls_modified_notifications()[0];
   EXPECT_EQ(3u, changed_urls.size());
 
-  URLRows::const_iterator it_row1 =
-      std::find_if(changed_urls.begin(), changed_urls.end(),
-                   history::URLRow::URLRowHasURL(row1.url()));
+  auto it_row1 = std::find_if(changed_urls.begin(), changed_urls.end(),
+                              history::URLRow::URLRowHasURL(row1.url()));
   ASSERT_NE(changed_urls.end(), it_row1);
   EXPECT_EQ(stored_row1.id(), it_row1->id());
 
-  URLRows::const_iterator it_row2 =
-      std::find_if(changed_urls.begin(), changed_urls.end(),
-                   history::URLRow::URLRowHasURL(row2.url()));
+  auto it_row2 = std::find_if(changed_urls.begin(), changed_urls.end(),
+                              history::URLRow::URLRowHasURL(row2.url()));
   ASSERT_NE(changed_urls.end(), it_row2);
   EXPECT_EQ(stored_row2.id(), it_row2->id());
 
-  URLRows::const_iterator it_row3 =
-      std::find_if(changed_urls.begin(), changed_urls.end(),
-                   history::URLRow::URLRowHasURL(row3.url()));
+  auto it_row3 = std::find_if(changed_urls.begin(), changed_urls.end(),
+                              history::URLRow::URLRowHasURL(row3.url()));
   ASSERT_NE(changed_urls.end(), it_row3);
   EXPECT_EQ(stored_row3.id(), it_row3->id());
 }
@@ -1094,16 +1091,14 @@ TEST_F(HistoryBackendTest, UpdateURLs) {
   const URLRows& changed_urls = urls_modified_notifications()[0];
   EXPECT_EQ(2u, changed_urls.size());
 
-  URLRows::const_iterator it_row1 =
-      std::find_if(changed_urls.begin(), changed_urls.end(),
-                   history::URLRow::URLRowHasURL(row1.url()));
+  auto it_row1 = std::find_if(changed_urls.begin(), changed_urls.end(),
+                              history::URLRow::URLRowHasURL(row1.url()));
   ASSERT_NE(changed_urls.end(), it_row1);
   EXPECT_EQ(altered_row1.id(), it_row1->id());
   EXPECT_EQ(altered_row1.visit_count(), it_row1->visit_count());
 
-  URLRows::const_iterator it_row3 =
-      std::find_if(changed_urls.begin(), changed_urls.end(),
-                   history::URLRow::URLRowHasURL(row3.url()));
+  auto it_row3 = std::find_if(changed_urls.begin(), changed_urls.end(),
+                              history::URLRow::URLRowHasURL(row3.url()));
   ASSERT_NE(changed_urls.end(), it_row3);
   EXPECT_EQ(altered_row3.id(), it_row3->id());
   EXPECT_EQ(altered_row3.visit_count(), it_row3->visit_count());

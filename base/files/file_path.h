@@ -124,13 +124,20 @@
 #define FILE_PATH_USES_WIN_SEPARATORS
 #endif  // OS_WIN
 
-// To print path names portably use PRIsFP (based on PRIuS and friends from
+// To print path names portably use PRFilePath (based on PRIuS and friends from
 // C99 and format_macros.h) like this:
-// base::StringPrintf("Path is %" PRIsFP ".\n", path.value().c_str());
+// base::StringPrintf("Path is %" PRFilePath ".\n", path.value().c_str());
 #if defined(OS_WIN)
-#define PRIsFP "ls"
+#define PRFilePath "ls"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#define PRIsFP "s"
+#define PRFilePath "s"
+#endif  // OS_WIN
+
+// Macros for string literal initialization of FilePath::CharType[].
+#if defined(OS_WIN)
+#define FILE_PATH_LITERAL(x) L##x
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#define FILE_PATH_LITERAL(x) x
 #endif  // OS_WIN
 
 namespace base {
@@ -454,16 +461,6 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const FilePath& file_path);
 
 }  // namespace base
-
-// Macros for string literal initialization of FilePath::CharType[], and for
-// using a FilePath::CharType[] in a printf-style format string.
-#if defined(OS_WIN)
-#define FILE_PATH_LITERAL(x) L ## x
-#define PRFilePath "ls"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#define FILE_PATH_LITERAL(x) x
-#define PRFilePath "s"
-#endif  // OS_WIN
 
 namespace std {
 

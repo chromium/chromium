@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -100,8 +99,8 @@ class CloudExternalDataPolicyObserver
 
   // A map from each logged-in user to the helper that observes |policy_| in the
   // user's PolicyService.
-  typedef std::map<std::string, linked_ptr<PolicyServiceObserver>>
-      LoggedInUserObserverMap;
+  using LoggedInUserObserverMap =
+      std::map<std::string, std::unique_ptr<PolicyServiceObserver>>;
   LoggedInUserObserverMap logged_in_user_observers_;
 
   chromeos::CrosSettings* cros_settings_;
@@ -120,7 +119,8 @@ class CloudExternalDataPolicyObserver
   // currently in progress. This allows fetches to be effectively be canceled by
   // invalidating the pointers.
   using WeakPtrFactory = base::WeakPtrFactory<CloudExternalDataPolicyObserver>;
-  using FetchWeakPtrMap = std::map<std::string, linked_ptr<WeakPtrFactory>>;
+  using FetchWeakPtrMap =
+      std::map<std::string, std::unique_ptr<WeakPtrFactory>>;
   FetchWeakPtrMap fetch_weak_ptrs_;
 
   base::WeakPtrFactory<CloudExternalDataPolicyObserver> weak_factory_;

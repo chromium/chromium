@@ -1,0 +1,104 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+
+if (build_with_chromium) {
+  visibility = [
+    "//third_party/webrtc/*",
+    "//third_party/abseil-cpp/*",
+    "//third_party/googletest:gtest",
+  ]
+} else {
+  visibility = [ "*" ]
+}
+
+source_set("hash") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "internal/hash.cc",
+    "internal/hash.h",
+  ]
+  public = [
+    "hash.h",
+  ]
+  deps = [
+    ":city",
+    "../base:core_headers",
+    "../base:endian",
+    "../container:fixed_array",
+    "../meta:type_traits",
+    "../numeric:int128",
+    "../strings",
+    "../types:optional",
+    "../types:variant",
+    "../utility",
+  ]
+}
+
+source_set("hash_testing") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "hash_testing.h",
+  ]
+  deps = [
+    ":spy_hash_state",
+    "../meta:type_traits",
+    "../strings",
+    "../types:variant",
+    "//testing/gtest",
+  ]
+}
+
+source_set("spy_hash_state") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/spy_hash_state.h",
+  ]
+  deps = [
+    ":hash",
+    "../strings",
+    "../strings:str_format",
+  ]
+  visibility = []
+  visibility += [ "../*" ]
+}
+
+source_set("city") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/city.h",
+    "internal/city_crc.h",
+  ]
+  sources = [
+    "internal/city.cc",
+  ]
+  deps = [
+    "../base:config",
+    "../base:core_headers",
+    "../base:endian",
+  ]
+}

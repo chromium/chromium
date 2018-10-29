@@ -10,7 +10,7 @@
 
 namespace blink {
 
-namespace StyleChangeReason {
+namespace style_change_reason {
 const char kActiveStylesheetsUpdate[] = "ActiveStylesheetsUpdate";
 const char kAnimation[] = "Animation";
 const char kAttribute[] = "Attribute";
@@ -50,7 +50,7 @@ const char kVisitedLink[] = "VisitedLink";
 const char kVisuallyOrdered[] = "VisuallyOrdered";
 const char kWritingModeChange[] = "WritingModeChange";
 const char kZoom[] = "Zoom";
-}  // namespace StyleChangeReason
+}  // namespace style_change_reason
 
 namespace StyleChangeExtraData {
 DEFINE_GLOBAL(AtomicString, g_active);

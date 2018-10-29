@@ -55,10 +55,6 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       chromeos::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
-  // Returns all authority certificates from the currently applied ONC device
-  // policy.
-  net::CertificateList GetAuthorityCertificates();
-
  private:
   DeviceNetworkConfigurationUpdater(
       PolicyService* policy_service,
@@ -67,8 +63,9 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       chromeos::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
+  // NetworkConfigurationUpdater:
   void Init() override;
-  void ImportCertificates(const base::ListValue& certificates_onc) override;
+  void ImportClientCertificates() override;
   void ApplyNetworkPolicy(
       base::ListValue* network_configs_onc,
       base::DictionaryValue* global_network_config) override;

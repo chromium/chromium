@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
@@ -40,10 +41,11 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
     TestingProfile::Builder builder;
     // MediaRouterUIService instantiates MediaRouterActionController, which
     // requires ToolbarActionsModel.
-    builder.AddTestingFactory(ToolbarActionsModelFactory::GetInstance(),
-                              BuildFakeToolBarActionsModel);
+    builder.AddTestingFactory(
+        ToolbarActionsModelFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeToolBarActionsModel));
     builder.AddTestingFactory(MediaRouterFactory::GetInstance(),
-                              MockMediaRouter::Create);
+                              base::BindRepeating(&MockMediaRouter::Create));
     profile_ = builder.Build();
   }
 

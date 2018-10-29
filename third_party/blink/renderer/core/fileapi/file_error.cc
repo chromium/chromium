@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 
-#include "third_party/blink/public/platform/web_file_error.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -149,8 +148,10 @@ DOMExceptionCode FileErrorToExceptionCode(base::File::Error code) {
       return DOMExceptionCode::kNoError;
     case base::File::FILE_ERROR_FAILED:
       return DOMExceptionCode::kInvalidStateError;
+    // TODO(https://crbug.com/883062): base::File::FILE_ERROR_EXISTS should map
+    // to kPathExistsError, but that currently breaks tests. Fix the test
+    // expectations and make the change.
     case base::File::FILE_ERROR_EXISTS:
-      return DOMExceptionCode::kPathExistsError;
     case base::File::FILE_ERROR_NOT_EMPTY:
     case base::File::FILE_ERROR_INVALID_OPERATION:
       return DOMExceptionCode::kInvalidModificationError;
@@ -247,6 +248,26 @@ void ThrowDOMException(ExceptionState& exception_state,
   exception_state.ThrowDOMException(ErrorCodeToExceptionCode(code), message);
 }
 
+void ThrowDOMException(ExceptionState& exception_state,
+                       base::File::Error error,
+                       String message) {
+  if (error == base::File::FILE_OK)
+    return;
+
+  // SecurityError is special-cased, as we want to route those exceptions
+  // through ExceptionState::ThrowSecurityError.
+  if (error == base::File::FILE_ERROR_SECURITY) {
+    exception_state.ThrowSecurityError(kSecurityErrorMessage);
+    return;
+  }
+
+  if (message.IsNull()) {
+    message = FileErrorToMessage(error);
+  }
+
+  exception_state.ThrowDOMException(FileErrorToExceptionCode(error), message);
+}
+
 DOMException* CreateDOMException(ErrorCode code) {
   DCHECK_NE(code, kOK);
   return DOMException::Create(ErrorCodeToExceptionCode(code),
@@ -258,20 +279,6 @@ DOMException* CreateDOMException(base::File::Error code) {
   return DOMException::Create(FileErrorToExceptionCode(code),
                               FileErrorToMessage(code));
 }
-
-STATIC_ASSERT_ENUM(kWebFileErrorNotFound, kNotFoundErr);
-STATIC_ASSERT_ENUM(kWebFileErrorSecurity, kSecurityErr);
-STATIC_ASSERT_ENUM(kWebFileErrorAbort, kAbortErr);
-STATIC_ASSERT_ENUM(kWebFileErrorNotReadable, kNotReadableErr);
-STATIC_ASSERT_ENUM(kWebFileErrorEncoding, kEncodingErr);
-STATIC_ASSERT_ENUM(kWebFileErrorNoModificationAllowed,
-                   kNoModificationAllowedErr);
-STATIC_ASSERT_ENUM(kWebFileErrorInvalidState, kInvalidStateErr);
-STATIC_ASSERT_ENUM(kWebFileErrorSyntax, kSyntaxErr);
-STATIC_ASSERT_ENUM(kWebFileErrorInvalidModification, kInvalidModificationErr);
-STATIC_ASSERT_ENUM(kWebFileErrorQuotaExceeded, kQuotaExceededErr);
-STATIC_ASSERT_ENUM(kWebFileErrorTypeMismatch, kTypeMismatchErr);
-STATIC_ASSERT_ENUM(kWebFileErrorPathExists, kPathExistsErr);
 
 }  // namespace FileError
 

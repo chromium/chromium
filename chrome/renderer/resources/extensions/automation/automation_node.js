@@ -14,74 +14,74 @@ var natives = requireNative('automationInternal');
 var IsInteractPermitted = natives.IsInteractPermitted;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The id of the root node.
  */
 var GetRootID = natives.GetRootID;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?string} The title of the document.
  */
 var GetDocTitle = natives.GetDocTitle;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?string} The url of the document.
  */
 var GetDocURL = natives.GetDocURL;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?boolean} True if the document has finished loading.
  */
 var GetDocLoaded = natives.GetDocLoaded;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The loading progress, from 0.0 to 1.0 (fully loaded).
  */
 var GetDocLoadingProgress =
     natives.GetDocLoadingProgress;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The ID of the selection anchor object.
  */
 var GetAnchorObjectID = natives.GetAnchorObjectID;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The selection anchor offset.
  */
 var GetAnchorOffset = natives.GetAnchorOffset;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?string} The selection anchor affinity.
  */
 var GetAnchorAffinity = natives.GetAnchorAffinity;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The ID of the selection focus object.
  */
 var GetFocusObjectID = natives.GetFocusObjectID;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?number} The selection focus offset.
  */
 var GetFocusOffset = natives.GetFocusOffset;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @return {?string} The selection focus affinity.
  */
 var GetFocusAffinity = natives.GetFocusAffinity;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?number} The id of the node's parent, or undefined if it's the
  *    root of its tree or if the tree or node wasn't found.
@@ -89,7 +89,7 @@ var GetFocusAffinity = natives.GetFocusAffinity;
 var GetParentID = natives.GetParentID;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?number} The number of children of the node, or undefined if
  *     the tree or node wasn't found.
@@ -97,7 +97,7 @@ var GetParentID = natives.GetParentID;
 var GetChildCount = natives.GetChildCount;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {number} childIndex An index of a child of this node.
  * @return {?number} The id of the child at the given index, or undefined
@@ -106,7 +106,7 @@ var GetChildCount = natives.GetChildCount;
 var GetChildIDAtIndex = natives.GetChildIDAtIndex;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?number} The ids of the children of the node, or undefined
  *     if the tree or node wasn't found.
@@ -114,14 +114,14 @@ var GetChildIDAtIndex = natives.GetChildIDAtIndex;
 var GetChildIds = natives.GetChildIDs;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Object} An object mapping html attributes to values.
  */
 var GetHtmlAttributes = natives.GetHtmlAttributes;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?number} The index of this node in its parent, or undefined if
  *     the tree or node or node parent wasn't found.
@@ -129,7 +129,7 @@ var GetHtmlAttributes = natives.GetHtmlAttributes;
 var GetIndexInParent = natives.GetIndexInParent;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Object} An object with a string key for every state flag set,
  *     or undefined if the tree or node or node parent wasn't found.
@@ -137,7 +137,7 @@ var GetIndexInParent = natives.GetIndexInParent;
 var GetState = natives.GetState;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {string} The restriction, one of
  * "disabled", "readOnly" or undefined if enabled or other object not disabled
@@ -145,14 +145,14 @@ var GetState = natives.GetState;
 var GetRestriction = natives.GetRestriction;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {string} The checked state, as undefined, "true", "false" or "mixed".
  */
 var GetChecked = natives.GetChecked;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {string} The role of the node, or undefined if the tree or
  *     node wasn't found.
@@ -160,7 +160,7 @@ var GetChecked = natives.GetChecked;
 var GetRole = natives.GetRole;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?automation.Rect} The location of the node, or undefined if
  *     the tree or node wasn't found.
@@ -168,7 +168,7 @@ var GetRole = natives.GetRole;
 var GetLocation = natives.GetLocation;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {number} startIndex The start index of the range.
  * @param {number} endIndex The end index of the range.
@@ -179,7 +179,7 @@ var GetLocation = natives.GetLocation;
 var GetBoundsForRange = natives.GetBoundsForRange;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?automation.Rect} The unclipped location of the node, or
  * undefined if the tree or node wasn't found.
@@ -187,7 +187,7 @@ var GetBoundsForRange = natives.GetBoundsForRange;
 var GetUnclippedLocation = natives.GetUnclippedLocation;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {!Array<number>} The text offset where each line starts, or an empty
  *     array if this node has no text content, or undefined if the tree or node
@@ -197,7 +197,7 @@ var GetLineStartOffsets = requireNative(
     'automationInternal').GetLineStartOffsets;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of a string attribute.
  * @return {?string} The value of this attribute, or undefined if the tree,
@@ -206,7 +206,7 @@ var GetLineStartOffsets = requireNative(
 var GetStringAttribute = natives.GetStringAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?boolean} The value of this attribute, or undefined if the tree,
@@ -215,7 +215,7 @@ var GetStringAttribute = natives.GetStringAttribute;
 var GetBoolAttribute = natives.GetBoolAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?number} The value of this attribute, or undefined if the tree,
@@ -224,7 +224,7 @@ var GetBoolAttribute = natives.GetBoolAttribute;
 var GetIntAttribute = natives.GetIntAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?Array<number>} The ids of nodes who have a relationship pointing
@@ -234,7 +234,7 @@ var GetIntAttributeReverseRelations =
     natives.GetIntAttributeReverseRelations;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?number} The value of this attribute, or undefined if the tree,
@@ -243,7 +243,7 @@ var GetIntAttributeReverseRelations =
 var GetFloatAttribute = natives.GetFloatAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?Array<number>} The value of this attribute, or undefined
@@ -253,7 +253,7 @@ var GetIntListAttribute =
     natives.GetIntListAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an attribute.
  * @return {?Array<number>} The ids of nodes who have a relationship pointing
@@ -263,7 +263,7 @@ var GetIntListAttributeReverseRelations =
     natives.GetIntListAttributeReverseRelations;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} attr The name of an HTML attribute.
  * @return {?string} The value of this attribute, or undefined if the tree,
@@ -272,42 +272,42 @@ var GetIntListAttributeReverseRelations =
 var GetHtmlAttribute = natives.GetHtmlAttribute;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {automation.NameFromType} The source of the node's name.
  */
 var GetNameFrom = natives.GetNameFrom;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {boolean}
  */
 var GetBold = natives.GetBold;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {boolean}
  */
 var GetItalic = natives.GetItalic;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {boolean}
  */
 var GetUnderline = natives.GetUnderline;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {boolean}
  */
 var GetLineThrough = natives.GetLineThrough;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<automation.CustomAction>} List of custom actions of the
  *     node.
@@ -315,14 +315,14 @@ var GetLineThrough = natives.GetLineThrough;
 var GetCustomActions = natives.GetCustomActions;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<string>} List of standard actions of the node.
  */
 var GetStandardActions = natives.GetStandardActions;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {automation.NameFromType} The source of the node's name.
  */
@@ -330,16 +330,16 @@ var GetDefaultActionVerb = natives.GetDefaultActionVerb;
 
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @param {string} searchStr
  * @param {boolean} backward
- * @return {{treeId: number, nodeId: number}}
+ * @return {{treeId: string, nodeId: number}}
  */
 var GetNextTextMatch = natives.GetNextTextMatch;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<number>} A list of column header ids.
 
@@ -348,7 +348,7 @@ var GetNextTextMatch = natives.GetNextTextMatch;
 var GetTableCellColumnHeaders = natives.GetTableCellColumnHeaders;
 
 /**
- * @param {number} axTreeID The id of the accessibility tree.
+ * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<number>} A list of row header ids.
  */
@@ -369,7 +369,7 @@ function AutomationNodeImpl(root) {
 
 AutomationNodeImpl.prototype = {
   __proto__: null,
-  treeID: -1,
+  treeID: "",
   id: -1,
   isRootNode: false,
 
@@ -433,7 +433,7 @@ AutomationNodeImpl.prototype = {
   },
 
   get childTree() {
-    var childTreeID = GetIntAttribute(this.treeID, this.id, 'childTreeId');
+    var childTreeID = GetStringAttribute(this.treeID, this.id, 'childTreeId');
     if (childTreeID)
       return AutomationRootNodeImpl.get(childTreeID);
   },
@@ -751,7 +751,7 @@ AutomationNodeImpl.prototype = {
   toString: function() {
     var parentID = GetParentID(this.treeID, this.id);
     parentID = parentID ? parentID.nodeId : null;
-    var childTreeID = GetIntAttribute(this.treeID, this.id, 'childTreeId');
+    var childTreeID = GetStringAttribute(this.treeID, this.id, 'childTreeId');
     var count = GetChildCount(this.treeID, this.id);
     var childIDs = [];
     for (var i = 0; i < count; ++i) {
@@ -1247,9 +1247,9 @@ AutomationRootNodeImpl.prototype = {
   isRootNode: true,
 
   /**
-   * @type {number}
+   * @type {string}
    */
-  treeID: -1,
+  treeID: "",
 
   /**
    * A map from id to AutomationNode.
@@ -1267,10 +1267,6 @@ AutomationRootNodeImpl.prototype = {
       return -1;
 
     return result;
-  },
-
-  get chromeChannel() {
-    return GetStringAttribute(this.treeID, this.id, 'chromeChannel');
   },
 
   get docUrl() {
@@ -1491,7 +1487,6 @@ function AutomationRootNode() {
 utils.expose(AutomationRootNode, AutomationRootNodeImpl, {
   superclass: AutomationNode,
   readonly: [
-    'chromeChannel',
     'docTitle',
     'docUrl',
     'docLoaded',

@@ -72,7 +72,6 @@ class TriggerManagerTest : public ::testing::Test {
     safe_browsing::RegisterProfilePrefs(pref_service_.registry());
     SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     SetPref(prefs::kSafeBrowsingScoutReportingEnabled, true);
-    SetPref(prefs::kSafeBrowsingScoutGroupSelected, true);
 
     MockTriggerThrottler* mock_throttler = new MockTriggerThrottler();
     ON_CALL(*mock_throttler, TriggerCanFire(_)).WillByDefault(Return(true));

@@ -132,6 +132,9 @@ struct SecurityInfo {
   // The ID of the (EC)DH group used by the key exchange. The value is zero if
   // unknown (older cache entries may not store the value) or not applicable.
   uint16_t key_exchange_group;
+  // The signature algorithm used by the peer in the TLS handshake, or zero if
+  // unknown (older cache entries may not store the value) or not applicable.
+  uint16_t peer_signature_algorithm;
   // A mask that indicates which of the protocol version,
   // key exchange, or cipher for the connection is considered
   // obsolete. See net::ObsoleteSSLMask for specific mask values.
@@ -159,7 +162,6 @@ struct SecurityInfo {
 struct VisibleSecurityState {
   VisibleSecurityState();
   ~VisibleSecurityState();
-  bool operator==(const VisibleSecurityState& other) const;
   GURL url;
 
   MaliciousContentStatus malicious_content_status;
@@ -175,6 +177,9 @@ struct VisibleSecurityState {
   // The ID of the (EC)DH group used by the key exchange. The value is zero if
   // unknown (older cache entries may not store the value) or not applicable.
   uint16_t key_exchange_group;
+  // The signature algorithm used by the peer in the TLS handshake, or zero if
+  // unknown (older cache entries may not store the value) or not applicable.
+  uint16_t peer_signature_algorithm;
   int security_bits;
   // True if the page displayed passive mixed content.
   bool displayed_mixed_content;

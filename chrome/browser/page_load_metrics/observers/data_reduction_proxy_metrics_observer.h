@@ -98,6 +98,7 @@ class DataReductionProxyMetricsObserver
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_compelte_info) override;
   void OnEventOccurred(const void* const event_key) override;
+  void OnUserInput(const blink::WebInputEvent& event) override;
 
   // Exponentially bucket the number of bytes for privacy-implicated resources.
   // Input below 10KB returns 0.
@@ -177,6 +178,12 @@ class DataReductionProxyMetricsObserver
   // case of a renderer crash.
   // Set at navigation commit time.
   int render_process_host_id_;
+
+  // The number of touch events on the page.
+  uint32_t touch_count_;
+
+  // The number of scroll events on the page.
+  uint32_t scroll_count_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

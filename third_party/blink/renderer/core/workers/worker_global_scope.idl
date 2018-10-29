@@ -63,14 +63,20 @@
     // https://w3c.github.io/webappsec-secure-contexts/#dom-windoworworkerglobalscope-issecurecontext
     [ImplementedAs=isSecureContextForBindings] readonly attribute boolean isSecureContext;
 
+    // WindowOrWorkerGlobalScope mixin
     // https://html.spec.whatwg.org/#windoworworkerglobalscope-mixin
     [Replaceable] readonly attribute DOMString origin;
+    void queueMicrotask(VoidFunction callback);
 
-    // TODO(fserb): temporarly until we can enable the interface below.
-    [RuntimeEnabled=OffscreenCanvasText] readonly attribute FontFaceSet fonts;
-
+    // AnimationFrameProvider mixin
+    // https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#animation-frames
     [RuntimeEnabled=OffscreenCanvas, RaisesException] long requestAnimationFrame(FrameRequestCallback callback);
     [RuntimeEnabled=OffscreenCanvas] void cancelAnimationFrame(long handle);
+
+    // FontFaceSource
+    // https://drafts.csswg.org/css-font-loading-3/#font-face-source
+    // TODO(fserb): temporarly until we can enable the interface below.
+    [RuntimeEnabled=OffscreenCanvasText] readonly attribute FontFaceSet fonts;
 };
 
 WorkerGlobalScope implements WindowBase64;

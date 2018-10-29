@@ -16,19 +16,26 @@ enum EventType {
   UNKNOWN,
   KEY_PRESSED,
   KEY_RELEASED,
-  POINTER_DOWN,
-  POINTER_MOVED,
-  POINTER_UP,
-  POINTER_CANCELLED,
-  POINTER_ENTERED,
-  POINTER_EXITED,
-  POINTER_WHEEL_CHANGED,
-  POINTER_CAPTURE_CHANGED,
   GESTURE_TAP,
   SCROLL,
   SCROLL_FLING_START,
   SCROLL_FLING_CANCEL,
   CANCEL_MODE,
+  // MOUSE_MOVED has a naming conflict in Windows, where there is a
+  // #define MOUSE_MOVED. Therefore we had to add the suffix, _EVENT. for
+  // consistency, all other mouse event types also were given this suffix.
+  MOUSE_PRESSED_EVENT,
+  MOUSE_DRAGGED_EVENT,
+  MOUSE_RELEASED_EVENT,
+  MOUSE_MOVED_EVENT,
+  MOUSE_ENTERED_EVENT,
+  MOUSE_EXITED_EVENT,
+  MOUSE_WHEEL_EVENT,
+  MOUSE_CAPTURE_CHANGED_EVENT,
+  TOUCH_RELEASED,
+  TOUCH_PRESSED,
+  TOUCH_MOVED,
+  TOUCH_CANCELLED,
 };
 
 // This mirrors ui::EventFlags
@@ -56,18 +63,13 @@ const int32 kMouseEventFlagIsNonClient   = 0x20000;
 
 // TODO(erg): Move accessibility flags and maybe synthetic touch events here.
 
+// TODO(sky): rename EventPointerType.
 enum PointerKind {
+  UNKNOWN,
   MOUSE,
   PEN,
   TOUCH,
   ERASER,
-};
-
-enum WheelMode {
-  PIXEL,
-  LINE,
-  PAGE,
-  SCALING,
 };
 
 // Phase information used for a ScrollEvent.

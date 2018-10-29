@@ -91,17 +91,10 @@ class BrowserCommandController : public CommandUpdater,
                            LockedFullscreen);
 
   // Overridden from TabStripModelObserver:
-  void TabInsertedAt(TabStripModel* tab_strip_model,
-                     content::WebContents* contents,
-                     int index,
-                     bool foreground) override;
-  void TabDetachedAt(content::WebContents* contents,
-                     int index,
-                     bool was_active) override;
-  void TabReplacedAt(TabStripModel* tab_strip_model,
-                     content::WebContents* old_contents,
-                     content::WebContents* new_contents,
-                     int index) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
   void TabBlockedStateChanged(content::WebContents* contents,
                               int index) override;
 
@@ -116,6 +109,10 @@ class BrowserCommandController : public CommandUpdater,
   // only. Consider using SupportsWindowFeature if you need the mentioned
   // functionality anywhere else.
   bool IsShowingMainUI();
+
+  // Returns true if the location bar is shown or is currently hidden, but can
+  // be shown. Used for updating window command states only.
+  bool IsShowingLocationBar();
 
   // Initialize state for all browser commands.
   void InitCommandState();

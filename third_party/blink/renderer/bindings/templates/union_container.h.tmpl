@@ -1,8 +1,8 @@
 {% filter format_blink_cpp_source_code %}
 
 {% include 'copyright_block.txt' %}
-#ifndef {{cpp_class}}_h
-#define {{cpp_class}}_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 {% for filename in header_includes %}
 #include "{{filename}}"
@@ -15,7 +15,7 @@ class {{decl}};
 {% endfor %}
 
 class {{exported}}{{cpp_class}} final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   {{cpp_class}}();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -84,6 +84,6 @@ struct V8TypeOf<{{cpp_class}}> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::{{cpp_class}});
 
-#endif  // {{cpp_class}}_h
+#endif  // {{header_guard}}
 
 {% endfilter %}{# format_blink_cpp_source_code #}

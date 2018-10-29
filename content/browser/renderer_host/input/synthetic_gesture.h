@@ -51,6 +51,12 @@ class CONTENT_EXPORT SyntheticGesture {
   virtual Result ForwardInputEvents(
       const base::TimeTicks& timestamp, SyntheticGestureTarget* target) = 0;
 
+  // Returns whether the gesture events can be dispatched at high frequency
+  // (e.g. at 120Hz), instead of the regular frequence (at 60Hz). Some gesture
+  // interact differently depending on how long they take (e.g. the TAP gesture
+  // generates a click only if its duration is longer than a threshold).
+  virtual bool AllowHighFrequencyDispatch() const;
+
  protected:
   DISALLOW_COPY_AND_ASSIGN(SyntheticGesture);
 };

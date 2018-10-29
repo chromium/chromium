@@ -71,8 +71,7 @@ void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
       PopulatePhishingLoadTimeData(load_time_data);
       break;
     case BaseSafeBrowsingErrorUI::SB_REASON_BILLING:
-      // This is not currently handled in WebView.
-      NOTREACHED();
+      PopulateBillingLoadTimeData(load_time_data);
       break;
   }
 
@@ -146,6 +145,16 @@ void SafeBrowsingQuietErrorUI::PopulatePhishingLoadTimeData(
   load_time_data->SetString(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_EXPLANATION_PARAGRAPH));
+}
+
+void SafeBrowsingQuietErrorUI::PopulateBillingLoadTimeData(
+    base::DictionaryValue* load_time_data) {
+  load_time_data->SetBoolean("phishing", false);
+  load_time_data->SetString(
+      "heading", l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_HEADING));
+  load_time_data->SetString(
+      "explanationParagraph",
+      l10n_util::GetStringUTF16(IDS_BILLING_WEBVIEW_EXPLANATION_PARAGRAPH));
 }
 
 int SafeBrowsingQuietErrorUI::GetHTMLTemplateId() const {

@@ -44,10 +44,7 @@ enum class SyncOperationResult {
   TRANSACTION_COMMIT_ERROR,  // Failed when commiting a DB transaction
   DB_OPERATION_ERROR,        // Failed when executing a DB statement
   FILE_OPERATION_ERROR,      // Failed while doing file operations
-  // NOTE: always keep this entry at the end. Add new result types only
-  // immediately above this line. Make sure to update the corresponding
-  // histogram enum accordingly.
-  RESULT_COUNT,
+  kMaxValue = FILE_OPERATION_ERROR,
 };
 
 // List of item action statuses mapped to item ID.
@@ -59,6 +56,13 @@ class StoreUpdateResult {
  public:
   explicit StoreUpdateResult(StoreState state) : store_state(state) {}
   ~StoreUpdateResult() {}
+
+  // Move-only to avoid accidental copies.
+  StoreUpdateResult(const StoreUpdateResult& other) = delete;
+  StoreUpdateResult(StoreUpdateResult&& other) = default;
+
+  StoreUpdateResult& operator=(const StoreUpdateResult&) = delete;
+  StoreUpdateResult& operator=(StoreUpdateResult&&) = default;
 
   // List of Offline ID to item action status mappings.
   // It is meant to be consumed by the original caller of the operation.
@@ -75,14 +79,12 @@ class StoreUpdateResult {
 // This enum is backed by a UMA histogram therefore its entries should not be
 // deleted or re-ordered and new ones should only be appended.
 // See enum definition with the same name in tools/metrics/histograms/enum.xml.
-enum OfflinePagesStoreEvent {
-  STORE_OPENED_FIRST_TIME = 0,
-  STORE_REOPENED = 1,
-  STORE_CLOSED = 2,
-  STORE_CLOSE_SKIPPED = 3,
-
-  // NOTE: always keep this entry at the end.
-  STORE_EVENT_COUNT
+enum class OfflinePagesStoreEvent {
+  kOpenedFirstTime = 0,
+  kReopened = 1,
+  kClosed = 2,
+  kCloseSkipped = 3,
+  kMaxValue = kCloseSkipped,
 };
 
 }  // namespace offline_pages

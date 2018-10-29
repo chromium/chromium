@@ -59,11 +59,8 @@ WindowPortForShutdown::CreateLayerTreeFrameSink() {
 
 void WindowPortForShutdown::AllocateLocalSurfaceId() {}
 void WindowPortForShutdown::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const viz::LocalSurfaceId& embedded_client_local_surface_id) {}
-
-bool WindowPortForShutdown::IsLocalSurfaceIdAllocationSuppressed() const {
-  return false;
-}
+    const viz::LocalSurfaceId& embedded_client_local_surface_id,
+    base::TimeTicks embedded_client_local_surface_id_allocation_time) {}
 
 viz::ScopedSurfaceIdAllocator WindowPortForShutdown::GetSurfaceIdAllocator(
     base::OnceCallback<void()> allocation_task) {
@@ -72,6 +69,10 @@ viz::ScopedSurfaceIdAllocator WindowPortForShutdown::GetSurfaceIdAllocator(
 
 const viz::LocalSurfaceId& WindowPortForShutdown::GetLocalSurfaceId() {
   return local_surface_id_;
+}
+
+base::TimeTicks WindowPortForShutdown::GetLocalSurfaceIdAllocationTime() const {
+  return base::TimeTicks();
 }
 
 void WindowPortForShutdown::OnEventTargetingPolicyChanged() {}

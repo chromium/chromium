@@ -11,13 +11,15 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace printing {
+
 TEST(PageSetupTest, Random) {
   time_t seed = time(NULL);
   int kMax = 10;
   srand(static_cast<unsigned>(seed));
 
   // Margins.
-  printing::PageMargins margins;
+  PageMargins margins;
   margins.header = rand() % kMax;
   margins.footer = rand() % kMax;
   margins.left = rand() % kMax;
@@ -35,12 +37,12 @@ TEST(PageSetupTest, Random) {
                             printable_area.y());
 
   // Make the calculations.
-  printing::PageSetup setup;
+  PageSetup setup;
   setup.SetRequestedMargins(margins);
   setup.Init(page_size, printable_area, kTextHeight);
 
   // Calculate the effective margins.
-  printing::PageMargins effective_margins;
+  PageMargins effective_margins;
   effective_margins.header = std::max(margins.header, printable_area.y());
   effective_margins.left = std::max(margins.left, printable_area.x());
   effective_margins.top = std::max(margins.top,
@@ -101,7 +103,7 @@ TEST(PageSetupTest, Random) {
 
 TEST(PageSetupTest, HardCoded) {
   // Margins.
-  printing::PageMargins margins;
+  PageMargins margins;
   margins.header = 2;
   margins.footer = 2;
   margins.left = 4;
@@ -115,12 +117,12 @@ TEST(PageSetupTest, HardCoded) {
   gfx::Rect printable_area(3, 3, 94, 94);
 
   // Make the calculations.
-  printing::PageSetup setup;
+  PageSetup setup;
   setup.SetRequestedMargins(margins);
   setup.Init(page_size, printable_area, kTextHeight);
 
   // Calculate the effective margins.
-  printing::PageMargins effective_margins;
+  PageMargins effective_margins;
   effective_margins.header = 3;
   effective_margins.left = 4;
   effective_margins.top = 6;
@@ -165,7 +167,7 @@ TEST(PageSetupTest, HardCoded) {
 }
 
 TEST(PageSetupTest, OutOfRangeMargins) {
-  printing::PageMargins margins;
+  PageMargins margins;
   margins.header = 0;
   margins.footer = 0;
   margins.left = -10;
@@ -177,7 +179,7 @@ TEST(PageSetupTest, OutOfRangeMargins) {
   gfx::Rect printable_area(1, 2, 96, 94);
 
   // Make the calculations.
-  printing::PageSetup setup;
+  PageSetup setup;
   setup.SetRequestedMargins(margins);
   setup.Init(page_size, printable_area, 0);
 
@@ -195,7 +197,7 @@ TEST(PageSetupTest, OutOfRangeMargins) {
 
 TEST(PageSetupTest, FlipOrientation) {
   // Margins.
-  printing::PageMargins margins;
+  PageMargins margins;
   margins.header = 2;
   margins.footer = 3;
   margins.left = 4;
@@ -209,7 +211,7 @@ TEST(PageSetupTest, FlipOrientation) {
   gfx::Rect printable_area(8, 9, 92, 50);
 
   // Make the calculations.
-  printing::PageSetup setup;
+  PageSetup setup;
   setup.SetRequestedMargins(margins);
   setup.Init(page_size, printable_area, kTextHeight);
 
@@ -274,3 +276,34 @@ TEST(PageSetupTest, FlipOrientation) {
   EXPECT_EQ(setup.effective_margins().right, 6);
   EXPECT_EQ(setup.effective_margins().bottom, 7);
 }
+
+TEST(PageSetupTest, GetSymmetricalPrintableArea) {
+  gfx::Rect printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(0, 0, 560, 750));
+  EXPECT_EQ(gfx::Rect(52, 42, 508, 708), printable_area);
+
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(50, 60, 550, 700));
+  EXPECT_EQ(gfx::Rect(50, 60, 512, 672), printable_area);
+
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(-1, 60, 520, 700));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(50, -1, 520, 700));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(100, 60, 520, 700));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(50, 100, 520, 700));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(400, 60, 212, 700));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+  printable_area = PageSetup::GetSymmetricalPrintableArea(
+      gfx::Size(612, 792), gfx::Rect(40, 600, 212, 192));
+  EXPECT_EQ(gfx::Rect(), printable_area);
+}
+
+}  // namespace printing

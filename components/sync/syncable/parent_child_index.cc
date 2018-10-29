@@ -63,7 +63,7 @@ bool ParentChildIndex::Insert(EntryKernel* entry) {
   if (ShouldUseParentId(parent_id, model_type)) {
     // Hierarchical type, lookup child set in the map.
     DCHECK(!parent_id.IsNull());
-    ParentChildrenMap::iterator it = parent_children_map_.find(parent_id);
+    auto it = parent_children_map_.find(parent_id);
     if (it != parent_children_map_.end()) {
       siblings = it->second;
     } else {
@@ -122,7 +122,7 @@ void ParentChildIndex::Remove(EntryKernel* e) {
     siblings = type_root_child_sets_[model_type];
   }
 
-  OrderedChildSet::iterator j = siblings->find(e);
+  auto j = siblings->find(e);
   DCHECK(j != siblings->end());
 
   // Erase the entry from the child set.
@@ -142,7 +142,7 @@ bool ParentChildIndex::Contains(EntryKernel* e) const {
 const OrderedChildSet* ParentChildIndex::GetChildren(const Id& id) const {
   DCHECK(!id.IsNull());
 
-  ParentChildrenMap::const_iterator parent = parent_children_map_.find(id);
+  auto parent = parent_children_map_.find(id);
   if (parent == parent_children_map_.end()) {
     return nullptr;
   }
@@ -190,7 +190,7 @@ const OrderedChildSetRef ParentChildIndex::GetChildSet(EntryKernel* e) const {
   const Id& parent_id = e->ref(PARENT_ID);
   if (ShouldUseParentId(parent_id, model_type)) {
     // Hierarchical type, lookup child set in the map.
-    ParentChildrenMap::const_iterator it = parent_children_map_.find(parent_id);
+    auto it = parent_children_map_.find(parent_id);
     if (it == parent_children_map_.end())
       return nullptr;
     return it->second;

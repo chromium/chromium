@@ -10,12 +10,14 @@
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
@@ -31,6 +33,10 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/scoped_account_consistency.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -40,6 +46,10 @@
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/core/browser/profile_oauth2_token_service.h"
+#include "components/signin/core/browser/signin_buildflags.h"
+#include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -48,21 +58,26 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/leveldb_features.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 using content::BrowsingDataFilterBuilder;
@@ -236,6 +251,31 @@ std::string GetCookiesTreeModelInfo(const CookieTreeNode* root) {
   return info.str();
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Sets the APISID Gaia cookie, which is monitored by the AccountReconcilor.
+bool SetGaiaCookieForProfile(Profile* profile) {
+  GURL google_url = GaiaUrls::GetInstance()->google_url();
+  net::CanonicalCookie cookie("APISID", std::string(), "." + google_url.host(),
+                              "/", base::Time(), base::Time(), base::Time(),
+                              false, false, net::CookieSameSite::DEFAULT_MODE,
+                              net::COOKIE_PRIORITY_DEFAULT);
+
+  bool success = false;
+  base::RunLoop loop;
+  base::OnceCallback<void(bool)> callback =
+      base::BindLambdaForTesting([&success, &loop](bool s) {
+        success = s;
+        loop.Quit();
+      });
+  network::mojom::CookieManager* cookie_manager =
+      content::BrowserContext::GetDefaultStoragePartition(profile)
+          ->GetCookieManagerForBrowserProcess();
+  cookie_manager->SetCanonicalCookie(cookie, true, true, std::move(callback));
+  loop.Run();
+  return success;
+}
+#endif
+
 }  // namespace
 
 class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
@@ -243,10 +283,21 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   BrowsingDataRemoverBrowserTest() {
     feature_list_.InitWithFeatures(
         {browsing_data::features::kRemoveNavigationHistory,
-         // Ensure that MojoSessionStorage is enabled because the old
+         leveldb::kLevelDBRewriteFeature,
+         // Ensure that kOnionSoupDOMStorage is enabled because the old
          // SessionStorage implementation causes flaky tests.
-         features::kMojoSessionStorage},
+         blink::features::kOnionSoupDOMStorage},
         {});
+  }
+
+  // Call to use an Incognito browser rather than the default.
+  void UseIncognitoBrowser() {
+    ASSERT_EQ(nullptr, incognito_browser_);
+    incognito_browser_ = CreateIncognitoBrowser();
+  }
+
+  Browser* GetBrowser() const {
+    return incognito_browser_ ? incognito_browser_ : browser();
   }
 
   void SetUpOnMainThread() override {
@@ -261,20 +312,22 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
                                const std::string& result) {
     std::string data;
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
+        GetBrowser()->tab_strip_model()->GetActiveWebContents(), script,
+        &data));
     ASSERT_EQ(data, result);
   }
 
   bool RunScriptAndGetBool(const std::string& script) {
     bool data;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
+        GetBrowser()->tab_strip_model()->GetActiveWebContents(), script,
+        &data));
     return data;
   }
 
   void VerifyDownloadCount(size_t expected) {
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
     std::vector<download::DownloadItem*> downloads;
     download_manager->GetAllDownloads(&downloads);
     EXPECT_EQ(expected, downloads.size());
@@ -283,7 +336,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   void DownloadAnItem() {
     // Start a download.
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
     std::unique_ptr<content::DownloadTestObserver> observer(
         new content::DownloadTestObserverTerminal(
             download_manager, 1,
@@ -292,7 +345,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
     GURL download_url = ui_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("downloads"),
         base::FilePath().AppendASCII("a_zip_file.zip"));
-    ui_test_utils::NavigateToURL(browser(), download_url);
+    ui_test_utils::NavigateToURL(GetBrowser(), download_url);
     observer->WaitForFinished();
 
     VerifyDownloadCount(1u);
@@ -304,7 +357,8 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
 
   void RemoveAndWait(int remove_mask, base::Time delete_begin) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+        content::BrowserContext::GetBrowsingDataRemover(
+            GetBrowser()->profile());
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveAndReply(
         delete_begin, base::Time::Max(), remove_mask,
@@ -317,7 +371,8 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
       int remove_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
     content::BrowsingDataRemover* remover =
-        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+        content::BrowserContext::GetBrowsingDataRemover(
+            GetBrowser()->profile());
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     remover->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), remove_mask,
@@ -332,7 +387,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   void TestSiteData(const std::string& type, base::Time delete_begin) {
     EXPECT_EQ(0, GetSiteDataCount());
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ui_test_utils::NavigateToURL(GetBrowser(), url);
 
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
@@ -356,7 +411,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ui_test_utils::NavigateToURL(GetBrowser(), url);
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
     // Opening a store of this type creates a site data entry.
@@ -382,7 +437,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   int GetSiteDataCount() {
     base::RunLoop run_loop;
     int count = -1;
-    (new SiteDataCountingHelper(browser()->profile(), base::Time(),
+    (new SiteDataCountingHelper(GetBrowser()->profile(), base::Time(),
                                 base::BindLambdaForTesting([&](int c) {
                                   count = c;
                                   run_loop.Quit();
@@ -410,7 +465,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
 
   network::mojom::NetworkContext* network_context() const {
     return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+               GetBrowser()->profile())
         ->GetNetworkContext();
   }
 
@@ -430,7 +485,7 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel() {
-    Profile* profile = browser()->profile();
+    Profile* profile = GetBrowser()->profile();
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(profile);
     content::IndexedDBContext* indexed_db_context =
@@ -467,7 +522,34 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  Browser* incognito_browser_ = nullptr;
 };
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Same as BrowsingDataRemoverBrowserTest, but forces Dice to be enabled.
+class DiceBrowsingDataRemoverBrowserTest
+    : public BrowsingDataRemoverBrowserTest {
+ public:
+  void AddAccountToProfile(const std::string& account_id,
+                           Profile* profile,
+                           bool is_primary) {
+    ProfileOAuth2TokenService* token_service =
+        ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+    token_service->UpdateCredentials(account_id, "token");
+    ASSERT_TRUE(token_service->RefreshTokenIsAvailable(account_id));
+    if (is_primary) {
+      SigninManager* signin_manager =
+          SigninManagerFactory::GetForProfile(profile);
+      DCHECK(!signin_manager->IsAuthenticated());
+      signin_manager->SetAuthenticatedAccountInfo(account_id,
+                                                  account_id + "@gmail.com");
+    }
+  }
+
+ private:
+  ScopedAccountConsistencyDice dice_;
+};
+#endif
 
 // Test BrowsingDataRemover for downloads.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Download) {
@@ -478,11 +560,110 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Download) {
 
 // Test that the salt for media device IDs is reset when cookies are cleared.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MediaDeviceIdSalt) {
-  std::string original_salt = browser()->profile()->GetMediaDeviceIDSalt();
+  std::string original_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
   RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
-  std::string new_salt = browser()->profile()->GetMediaDeviceIDSalt();
+  std::string new_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
   EXPECT_NE(original_salt, new_salt);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Test that Sync is paused when cookies are cleared.
+IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncToken) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a Sync account and a secondary account.
+  const char kPrimaryAccountId[] = "primary_account_id";
+  AddAccountToProfile(kPrimaryAccountId, profile, /*is_primary=*/true);
+  const char kSecondaryAccountId[] = "secondary_account_id";
+  AddAccountToProfile(kSecondaryAccountId, profile, /*is_primary=*/false);
+  // Clear cookies.
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+  // Check that the Sync account was not removed and Sync was paused.
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  EXPECT_TRUE(token_service->RefreshTokenIsAvailable(kPrimaryAccountId));
+  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_CLIENT,
+            token_service->GetAuthError(kPrimaryAccountId)
+                .GetInvalidGaiaCredentialsReason());
+  // Check that the secondary token was revoked.
+  EXPECT_FALSE(token_service->RefreshTokenIsAvailable(kSecondaryAccountId));
+}
+
+// Test that Sync is not paused when cookies are cleared, if synced data is
+// being deleted.
+IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest,
+                       SyncTokenScopedDeletion) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a Sync account and a secondary account.
+  const char kPrimaryAccountId[] = "primary_account_id";
+  AddAccountToProfile(kPrimaryAccountId, profile, /*is_primary=*/true);
+  const char kSecondaryAccountId[] = "secondary_account_id";
+  AddAccountToProfile(kSecondaryAccountId, profile, /*is_primary=*/false);
+  // Sync data is being deleted.
+  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
+      AccountReconcilorFactory::GetForProfile(profile)
+          ->GetScopedSyncDataDeletion();
+  // Clear cookies.
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+  // Check that the Sync token was not revoked.
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  EXPECT_TRUE(token_service->RefreshTokenIsAvailable(kPrimaryAccountId));
+  EXPECT_FALSE(token_service->RefreshTokenHasError(kPrimaryAccountId));
+  // Check that the secondary token was revoked.
+  EXPECT_FALSE(token_service->RefreshTokenIsAvailable(kSecondaryAccountId));
+}
+
+// Test that Sync is paused when cookies are cleared if Sync was in error, even
+// if synced data is being deleted.
+IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, SyncTokenError) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a Sync account with authentication error.
+  const char kAccountId[] = "account_id";
+  AddAccountToProfile(kAccountId, profile, /*is_primary=*/true);
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  token_service->GetDelegate()->UpdateAuthError(
+      kAccountId, GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER));
+  // Sync data is being deleted.
+  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion =
+      AccountReconcilorFactory::GetForProfile(profile)
+          ->GetScopedSyncDataDeletion();
+  // Clear cookies.
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+  // Check that the account was not removed and Sync was paused.
+  EXPECT_TRUE(token_service->RefreshTokenIsAvailable(kAccountId));
+  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_CLIENT,
+            token_service->GetAuthError(kAccountId)
+                .GetInvalidGaiaCredentialsReason());
+}
+
+// Test that the tokens are revoked when cookies are cleared when there is no
+// primary account.
+IN_PROC_BROWSER_TEST_F(DiceBrowsingDataRemoverBrowserTest, NoSync) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a non-Sync account.
+  const char kAccountId[] = "account_id";
+  AddAccountToProfile(kAccountId, profile, /*is_primary=*/false);
+  // Clear cookies.
+  RemoveAndWait(content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+  // Check that the account was removed.
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  EXPECT_FALSE(token_service->RefreshTokenIsAvailable(kAccountId));
+}
+#endif
 
 // The call to Remove() should crash in debug (DCHECK), but the browser-test
 // process model prevents using a death test.
@@ -490,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MediaDeviceIdSalt) {
 // Test BrowsingDataRemover for prohibited downloads. Note that this only
 // really exercises the code in a Release build.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, DownloadProhibited) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = GetBrowser()->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
 
   DownloadAnItem();
@@ -503,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, DownloadProhibited) {
 // beginning of time.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   media::VideoDecodePerfHistory* video_decode_perf_history =
-      browser()->profile()->GetVideoDecodePerfHistory();
+      GetBrowser()->profile()->GetVideoDecodePerfHistory();
 
   // Save a video decode record. Note: we avoid using a web page to generate the
   // stats as this takes at least 5 seconds and even then is not a guarantee
@@ -526,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   media::mojom::PredictionTargets prediction_targets;
   prediction_targets.frames_decoded = kFramesDecoded;
   prediction_targets.frames_dropped = kFramesDropped;
-  prediction_targets.frames_decoded_power_efficient = kFramesPowerEfficient;
+  prediction_targets.frames_power_efficient = kFramesPowerEfficient;
 
   {
     base::RunLoop run_loop;
@@ -575,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
 // Verify can modify database after deleting it.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
   GURL url = embedded_test_server()->GetURL("/simple_database.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
 
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text')", "done");
@@ -583,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
 
   RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text2')", "done");
   RunScriptAndCheckResult("getRecords()", "text2");
@@ -666,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        ExternalProtocolHandlerPrefs) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetBrowser()->profile();
   base::DictionaryValue prefs;
   prefs.SetBoolean("tel", false);
   profile->GetPrefs()->Set(prefs::kExcludedSchemes, prefs);
@@ -683,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   // Create a new tab to avoid confusion from having a NTP navigation entry.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      GetBrowser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
   EXPECT_FALSE(HasDataForType(kType));
   SetDataForType(kType);
@@ -707,6 +888,12 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, CookieDeletion) {
   TestSiteData("Cookie", GetParam());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       CookieIncognitoDeletion) {
+  UseIncognitoBrowser();
+  TestSiteData("Cookie", GetParam());
+}
+
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, SessionCookieDeletion) {
   TestSiteData("SessionCookie", GetParam());
 }
@@ -714,15 +901,24 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, SessionCookieDeletion) {
 // TODO(crbug.com/849238): This test is flaky on Mac (dbg) builds.
 #if defined(OS_MACOSX)
 #define MAYBE_LocalStorageDeletion DISABLED_LocalStorageDeletion
+#define MAYBE_LocalStorageIncognitoDeletion \
+  DISABLED_LocalStorageIncognitoDeletion
 #else
 #define MAYBE_LocalStorageDeletion LocalStorageDeletion
+#define MAYBE_LocalStorageIncognitoDeletion LocalStorageIncognitoDeletion
 #endif
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        MAYBE_LocalStorageDeletion) {
   TestSiteData("LocalStorage", GetParam());
 }
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       MAYBE_LocalStorageIncognitoDeletion) {
+  UseIncognitoBrowser();
+  TestSiteData("LocalStorage", GetParam());
+}
 
 // TODO(crbug.com/772337): DISABLED until session storage is working correctly.
+// Add Incognito variant when this is re-enabled.
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        DISABLED_SessionStorageDeletion) {
   TestSiteData("SessionStorage", GetParam());
@@ -733,7 +929,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        SessionStorageDeletionWebOnly) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
   const std::string type = "SessionStorage";
   EXPECT_FALSE(HasDataForType(type));
   SetDataForType(type);
@@ -748,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, SessionStorageCounting) {
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
   SetDataForType("SessionStorage");
@@ -761,13 +957,27 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, ServiceWorkerDeletion) {
   TestSiteData("ServiceWorker", GetParam());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       ServiceWorkerIncognitoDeletion) {
+  UseIncognitoBrowser();
+  TestSiteData("ServiceWorker", GetParam());
+}
+
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, CacheStorageDeletion) {
+  TestSiteData("CacheStorage", GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       CacheStorageIncognitoDeletion) {
+  UseIncognitoBrowser();
   TestSiteData("CacheStorage", GetParam());
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, FileSystemDeletion) {
   TestSiteData("FileSystem", GetParam());
 }
+
+// TODO(crbug.com/93417): Add FileSystemIncognitoDeletion test.
 
 // Test that empty filesystems are deleted correctly.
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
@@ -779,12 +989,24 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, WebSqlDeletion) {
   TestSiteData("WebSql", GetParam());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       WebSqlIncognitoDeletion) {
+  UseIncognitoBrowser();
+  TestSiteData("WebSql", GetParam());
+}
+
 // Test that empty websql dbs are deleted correctly.
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, EmptyWebSqlDeletion) {
   TestEmptySiteData("WebSql", GetParam());
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, IndexedDbDeletion) {
+  TestSiteData("IndexedDb", GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       IndexedDbIncognitoDeletion) {
+  UseIncognitoBrowser();
   TestSiteData("IndexedDb", GetParam());
 }
 
@@ -815,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL(kLocalHost, "/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
 
   for (const std::string& type : kStorageTypes) {
     SetDataForType(type);
@@ -850,7 +1072,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
   static const std::vector<std::string> whitelist = {
     // TODO(crbug.com/823071): LevelDB logs are not deleted immediately.
     "File System/Origins/[0-9]*.log",
-    "Local Storage/leveldb/[0-9]*.log",
     "Service Worker/Database/[0-9]*.log",
     "Session Storage/[0-9]*.log",
 
@@ -881,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_SessionOnlyStorageRemoved) {
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
 
   for (const std::string& type : kSessionOnlyStorageTestTypes) {
     SetDataForType(type);
@@ -890,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Expect the datatypes from above except SessionStorage. SessionStorage is
   // not supported by the CookieTreeModel yet.
   ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1);
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+  HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
 }
@@ -901,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // All cookies should have been deleted.
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
   for (const std::string& type : kSessionOnlyStorageTestTypes) {
     EXPECT_FALSE(HasDataForType(type));
   }

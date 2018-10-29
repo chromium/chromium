@@ -131,8 +131,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
                                                WebHistoryCommitType,
                                                bool content_initiated) {}
   virtual void DispatchWillCommitProvisionalLoad() = 0;
-  virtual void DispatchDidStartProvisionalLoad(DocumentLoader*,
-                                               ResourceRequest&) = 0;
+  virtual void DispatchDidStartProvisionalLoad(
+      DocumentLoader*,
+      ResourceRequest&,
+      mojo::ScopedMessagePipeHandle navigation_initiator_handle) = 0;
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidChangeIcons(IconType) = 0;
   virtual void DispatchDidCommitLoad(HistoryItem*,
@@ -152,6 +154,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       DocumentLoader*,
       WebNavigationType,
       NavigationPolicy,
+      bool has_transient_activation,
       bool should_replace_current_entry,
       bool is_client_redirect,
       WebTriggeringEventInfo,
@@ -162,9 +165,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::TimeTicks input_start_time) = 0;
 
   virtual void DispatchWillSendSubmitEvent(HTMLFormElement*) = 0;
-  virtual void DispatchWillSubmitForm(HTMLFormElement*) = 0;
 
-  virtual void DidStartLoading(LoadStartType) = 0;
+  virtual void DidStartLoading() = 0;
   virtual void ProgressEstimateChanged(double progress_estimate) = 0;
   virtual void DidStopLoading() = 0;
 
@@ -192,7 +194,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // from an insecure source.  Note that the insecure content can spread to
   // other frames in the same origin.
   virtual void DidRunInsecureContent(const SecurityOrigin*, const KURL&) = 0;
-  virtual void DidDetectXSS(const KURL&, bool did_block_entire_page) = 0;
   virtual void DidDispatchPingLoader(const KURL&) = 0;
 
   // The frame displayed content with certificate errors with given URL.
@@ -222,6 +223,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // process for histograms.
   virtual void DidObserveNewCssPropertyUsage(int /*css_property*/,
                                              bool /*is_animated*/) {}
+
+  // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
+  virtual void DidObserveLayoutJank(double jank_fraction) {}
+
   // Will be called by a Page upon DidCommitLoad, deciding whether to track
   // UseCounter usage or not based on its url.
   virtual bool ShouldTrackUseCounter(const KURL&) { return true; }
@@ -238,6 +243,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const SubstituteData&,
       ClientRedirectPolicy,
       const base::UnguessableToken& devtools_navigation_token,
+      WebFrameLoadType,
+      WebNavigationType,
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
@@ -328,7 +335,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual std::unique_ptr<WebServiceWorkerProvider>
   CreateServiceWorkerProvider() = 0;
 
-  virtual ContentSettingsClient& GetContentSettingsClient() = 0;
+  virtual WebContentSettingsClient* GetContentSettingsClient() = 0;
 
   virtual SharedWorkerRepositoryClient* GetSharedWorkerRepositoryClient() {
     return nullptr;

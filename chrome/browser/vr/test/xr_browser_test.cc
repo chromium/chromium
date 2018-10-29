@@ -30,6 +30,7 @@ namespace vr {
 constexpr base::TimeDelta XrBrowserTestBase::kPollCheckIntervalShort;
 constexpr base::TimeDelta XrBrowserTestBase::kPollCheckIntervalLong;
 constexpr base::TimeDelta XrBrowserTestBase::kPollTimeoutShort;
+constexpr base::TimeDelta XrBrowserTestBase::kPollTimeoutMedium;
 constexpr base::TimeDelta XrBrowserTestBase::kPollTimeoutLong;
 constexpr char XrBrowserTestBase::kVrOverrideEnvVar[];
 constexpr char XrBrowserTestBase::kVrOverrideVal[];
@@ -91,7 +92,7 @@ content::WebContents* XrBrowserTestBase::GetFirstTabWebContents() {
 void XrBrowserTestBase::LoadUrlAndAwaitInitialization(const GURL& url) {
   ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_TRUE(PollJavaScriptBoolean(
-      "isInitializationComplete()", kPollTimeoutShort,
+      "isInitializationComplete()", kPollTimeoutMedium,
       browser()->tab_strip_model()->GetActiveWebContents()))
       << "Timed out waiting for JavaScript test initialization.";
 }
@@ -179,7 +180,7 @@ void XrBrowserTestBase::WaitOnJavaScriptStep(
       "typeof javascriptDone !== 'undefined'", web_contents);
   EXPECT_TRUE(code_available) << "Attempted to wait on a JavaScript test step "
                               << "without the code to do so. You either forgot "
-                              << "to import web[v|x]r_e2e.js or "
+                              << "to import webxr_e2e.js or "
                               << "are incorrectly using a C++ function.";
 
   // Actually wait for the step to finish.

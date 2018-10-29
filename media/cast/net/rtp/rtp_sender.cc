@@ -62,10 +62,8 @@ void RtpSender::ResendPackets(
     const MissingFramesAndPacketsMap& missing_frames_and_packets,
     bool cancel_rtx_if_not_in_list, const DedupInfo& dedup_info) {
   // Iterate over all frames in the list.
-  for (MissingFramesAndPacketsMap::const_iterator it =
-           missing_frames_and_packets.begin();
-       it != missing_frames_and_packets.end();
-       ++it) {
+  for (auto it = missing_frames_and_packets.begin();
+       it != missing_frames_and_packets.end(); ++it) {
     SendPacketVector packets_to_resend;
     FrameId frame_id = it->first;
     // Set of packets that the receiver wants us to re-send.
@@ -81,8 +79,7 @@ void RtpSender::ResendPackets(
     if (!stored_packets)
       continue;
 
-    for (SendPacketVector::const_iterator it = stored_packets->begin();
-         it != stored_packets->end(); ++it) {
+    for (auto it = stored_packets->begin(); it != stored_packets->end(); ++it) {
       const PacketKey& packet_key = it->first;
       const uint16_t packet_id = packet_key.packet_id;
 
@@ -121,8 +118,7 @@ void RtpSender::CancelSendingFrames(const std::vector<FrameId>& frame_ids) {
     const SendPacketVector* stored_packets = storage_.GetFramePackets(i);
     if (!stored_packets)
       continue;
-    for (SendPacketVector::const_iterator j = stored_packets->begin();
-         j != stored_packets->end(); ++j) {
+    for (auto j = stored_packets->begin(); j != stored_packets->end(); ++j) {
       transport_->CancelSendingPacket(j->first);
     }
     storage_.ReleaseFrame(i);

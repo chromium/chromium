@@ -1,0 +1,94 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  public_deps = [
+    "//base",
+  ]
+}
+
+static_library("bookmark_item") {
+  sources = [
+    "bookmark_item.cc",
+    "bookmark_item.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+static_library("bookmark_handler") {
+  sources = [
+    "bookmark_handler.cc",
+    "bookmark_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:resources",
+    "//components/bookmarks/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+}
+
+static_library("email_feature") {
+  sources = [
+    "email_handler.cc",
+    "email_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//net",
+    "//url",
+  ]
+
+  deps = [
+    ":bookmark_item",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//components/favicon/core",
+    "//components/resources",
+    "//components/strings",
+    "//components/variations",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+static_library("google_apps_feature") {
+  sources = [
+    "google_apps_handler.cc",
+    "google_apps_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//net",
+    "//url",
+  ]
+
+  deps = [
+    ":bookmark_item",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//components/favicon/core",
+    "//components/resources",
+    "//components/strings",
+    "//components/variations",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}

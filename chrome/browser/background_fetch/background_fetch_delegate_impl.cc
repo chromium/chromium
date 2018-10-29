@@ -44,6 +44,10 @@ BackgroundFetchDelegateImpl::BackgroundFetchDelegateImpl(
   DCHECK(profile_);
   DCHECK(!provider_namespace_.empty());
   offline_content_aggregator_->RegisterProvider(provider_namespace_, this);
+
+  // Ensure that downloads UI components are initialized to handle the UI
+  // updates.
+  content::BrowserContext::GetDownloadManager(profile_);
 }
 
 BackgroundFetchDelegateImpl::~BackgroundFetchDelegateImpl() {
@@ -73,17 +77,26 @@ BackgroundFetchDelegateImpl::JobDetails::JobDetails(
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description,
     const std::string& provider_namespace,
     bool is_off_the_record)
-    : cancelled(false),
-      offline_item(offline_items_collection::ContentId(
+    : offline_item(offline_items_collection::ContentId(
           provider_namespace,
           fetch_description->job_unique_id)),
+      job_state(fetch_description->start_paused
+                    ? State::kPendingWillStartPaused
+                    : State::kPendingWillStartDownloading),
       fetch_description(std::move(fetch_description)) {
   offline_item.is_off_the_record = is_off_the_record;
-  current_download_guids = std::move(this->fetch_description->current_guids);
+  offline_item.original_url = this->fetch_description->origin.GetURL();
   UpdateOfflineItem();
 }
 
 BackgroundFetchDelegateImpl::JobDetails::~JobDetails() = default;
+
+void BackgroundFetchDelegateImpl::JobDetails::MarkJobAsStarted() {
+  if (job_state == State::kPendingWillStartDownloading)
+    job_state = State::kStartedAndDownloading;
+  else if (job_state == State::kPendingWillStartPaused)
+    job_state = State::kStartedButPaused;
+}
 
 void BackgroundFetchDelegateImpl::JobDetails::UpdateOfflineItem() {
   DCHECK_GT(fetch_description->total_parts, 0);
@@ -105,20 +118,13 @@ void BackgroundFetchDelegateImpl::JobDetails::UpdateOfflineItem() {
   offline_item.progress.unit =
       offline_items_collection::OfflineItemProgressUnit::PERCENTAGE;
 
-  if (fetch_description->title.empty()) {
-    offline_item.title = fetch_description->origin.Serialize();
-  } else {
-    // TODO(crbug.com/774612): Make sure that the origin is displayed completely
-    // in all cases so that long titles cannot obscure it.
-    offline_item.title =
-        base::StringPrintf("%s (%s)", fetch_description->title.c_str(),
-                           fetch_description->origin.Serialize().c_str());
-  }
-  // TODO(delphick): Figure out what to put in offline_item.description.
+  offline_item.title = fetch_description->title;
+  offline_item.promote_origin = true;
   offline_item.is_transient = true;
+  offline_item.is_resumable = true;
 
   using OfflineItemState = offline_items_collection::OfflineItemState;
-  if (cancelled) {
+  if (job_state == State::kCancelled) {
     offline_item.state = OfflineItemState::CANCELLED;
   } else if (fetch_description->completed_parts ==
              fetch_description->total_parts) {
@@ -126,6 +132,8 @@ void BackgroundFetchDelegateImpl::JobDetails::UpdateOfflineItem() {
     // response was an HTTP error, e.g. 404.
     offline_item.state = OfflineItemState::COMPLETE;
     offline_item.is_openable = true;
+  } else if (job_state == State::kStartedButPaused) {
+    offline_item.state = OfflineItemState::PAUSED;
   } else {
     offline_item.state = OfflineItemState::IN_PROGRESS;
   }
@@ -178,8 +186,12 @@ void BackgroundFetchDelegateImpl::GetPermissionForOrigin(
 
     // The fetch should be thought of as one download. So the origin will be
     // used as the URL, and the |request_method| is set to GET.
-    limiter->CanDownload(wc_getter, origin.GetURL(), "GET",
-                         base::AdaptCallbackForRepeating(std::move(callback)));
+    limiter->CanDownload(
+        wc_getter, origin.GetURL(), "GET",
+        base::AdaptCallbackForRepeating(base::BindOnce(
+            &BackgroundFetchDelegateImpl::
+                DidGetPermissionFromDownloadRequestLimiter,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
     return;
   }
 
@@ -187,51 +199,51 @@ void BackgroundFetchDelegateImpl::GetPermissionForOrigin(
       HostContentSettingsMapFactory::GetForProfile(profile_);
   DCHECK(host_content_settings_map);
 
-  // This is running from a worker context, use the Automatic Downloads
-  // permission.
+  // This is running from a non-top level frame, use the Automatic Downloads
+  // content setting.
   ContentSetting content_setting = host_content_settings_map->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
       std::string() /* resource_identifier */);
 
-  if (content_setting != CONTENT_SETTING_ALLOW) {
-    std::move(callback).Run(/* has_permission= */ false);
-    return;
+  // The set of valid settings for automatic downloads is set to
+  // {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK}.
+  switch (content_setting) {
+    case CONTENT_SETTING_ALLOW:
+      std::move(callback).Run(content::BackgroundFetchPermission::ALLOWED);
+      return;
+    case CONTENT_SETTING_ASK:
+      std::move(callback).Run(content::BackgroundFetchPermission::ASK);
+      return;
+    case CONTENT_SETTING_BLOCK:
+      std::move(callback).Run(content::BackgroundFetchPermission::BLOCKED);
+      return;
+    case CONTENT_SETTING_DEFAULT:
+    case CONTENT_SETTING_SESSION_ONLY:
+    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
+    case CONTENT_SETTING_NUM_SETTINGS:
+      NOTREACHED();
   }
+}
 
-  // Also make sure that Background Sync has permission.
-  // TODO(crbug.com/616321): Remove this check after Automatic Downloads
-  // permissions can be modified from Android.
-  content_setting = host_content_settings_map->GetContentSetting(
-      origin.GetURL(), origin.GetURL(), CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC,
-      std::string() /* resource_identifier */);
-
-  std::move(callback).Run(content_setting == CONTENT_SETTING_ALLOW);
+void BackgroundFetchDelegateImpl::DidGetPermissionFromDownloadRequestLimiter(
+    GetPermissionForOriginCallback callback,
+    bool has_permission) {
+  std::move(callback).Run(has_permission
+                              ? content::BackgroundFetchPermission::ALLOWED
+                              : content::BackgroundFetchPermission::BLOCKED);
 }
 
 void BackgroundFetchDelegateImpl::CreateDownloadJob(
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Initialize the download service in case it hasn't been yet.
-  GetDownloadService();
-
   std::string job_unique_id = fetch_description->job_unique_id;
   DCHECK(!job_details_map_.count(job_unique_id));
-  auto emplace_result = job_details_map_.emplace(
+  job_details_map_.emplace(
       job_unique_id,
       JobDetails(std::move(fetch_description), provider_namespace_,
                  profile_->IsOffTheRecord()));
-
-  const JobDetails& details = emplace_result.first->second;
-  for (const auto& download_guid : details.current_download_guids) {
-    DCHECK(!download_job_unique_id_map_.count(download_guid));
-    download_job_unique_id_map_.emplace(download_guid, job_unique_id);
-  }
-
-  for (auto* observer : observers_) {
-    observer->OnItemsAdded({details.offline_item});
-  }
 }
 
 void BackgroundFetchDelegateImpl::DownloadUrl(
@@ -242,12 +254,8 @@ void BackgroundFetchDelegateImpl::DownloadUrl(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   DCHECK(job_details_map_.count(job_unique_id));
   DCHECK(!download_job_unique_id_map_.count(download_guid));
-
-  JobDetails& job_details = job_details_map_.find(job_unique_id)->second;
-  job_details.current_download_guids.insert(download_guid);
 
   download_job_unique_id_map_.emplace(download_guid, job_unique_id);
 
@@ -262,6 +270,34 @@ void BackgroundFetchDelegateImpl::DownloadUrl(
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
 
+  JobDetails& job_details = job_details_map_.find(job_unique_id)->second;
+
+  if (job_details.job_state == JobDetails::State::kPendingWillStartPaused ||
+      job_details.job_state ==
+          JobDetails::State::kPendingWillStartDownloading) {
+    // Create a notification.
+    for (auto* observer : observers_)
+      observer->OnItemsAdded({job_details.offline_item});
+    job_details.MarkJobAsStarted();
+  }
+
+  if (job_details.job_state == JobDetails::State::kStartedButPaused) {
+    job_details.on_resume =
+        base::BindOnce(&BackgroundFetchDelegateImpl::StartDownload,
+                       GetWeakPtr(), job_unique_id, params);
+  } else {
+    StartDownload(job_unique_id, params);
+  }
+
+  UpdateOfflineItemAndUpdateObservers(&job_details);
+}
+
+void BackgroundFetchDelegateImpl::StartDownload(
+    const std::string& job_unique_id,
+    const download::DownloadParams& params) {
+  DCHECK(job_details_map_.count(job_unique_id));
+  JobDetails& job_details = job_details_map_.find(job_unique_id)->second;
+  job_details.current_download_guids.insert(params.guid);
   GetDownloadService()->StartDownload(params);
 }
 
@@ -273,7 +309,7 @@ void BackgroundFetchDelegateImpl::Abort(const std::string& job_unique_id) {
     return;
 
   JobDetails& job_details = job_details_iter->second;
-  job_details.cancelled = true;
+  job_details.job_state = JobDetails::State::kCancelled;
 
   for (const auto& download_guid : job_details.current_download_guids) {
     GetDownloadService()->CancelDownload(download_guid);
@@ -306,6 +342,10 @@ void BackgroundFetchDelegateImpl::UpdateUI(
   }
 
   UpdateOfflineItemAndUpdateObservers(&job_details);
+
+  // UpdateUI() can only be called once, and only when the background fetch
+  // has succeeded or failed, so we can delete |job_details| now.
+  job_details_map_.erase(job_details_iter);
 }
 
 void BackgroundFetchDelegateImpl::OnDownloadStarted(
@@ -363,11 +403,8 @@ void BackgroundFetchDelegateImpl::OnDownloadUpdated(
 
 void BackgroundFetchDelegateImpl::OnDownloadFailed(
     const std::string& download_guid,
-    download::Client::FailureReason reason) {
+    std::unique_ptr<content::BackgroundFetchResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  using FailureReason = content::BackgroundFetchResult::FailureReason;
-  FailureReason failure_reason;
 
   auto download_job_unique_id_iter =
       download_job_unique_id_map_.find(download_guid);
@@ -382,46 +419,24 @@ void BackgroundFetchDelegateImpl::OnDownloadFailed(
   ++job_details.fetch_description->completed_parts;
   UpdateOfflineItemAndUpdateObservers(&job_details);
 
-  switch (reason) {
-    case download::Client::FailureReason::NETWORK:
-      failure_reason = FailureReason::NETWORK;
-      break;
-    case download::Client::FailureReason::TIMEDOUT:
-      failure_reason = FailureReason::TIMEDOUT;
-      break;
-    case download::Client::FailureReason::UNKNOWN:
-      failure_reason = FailureReason::UNKNOWN;
-      break;
-
-    case download::Client::FailureReason::ABORTED:
-    case download::Client::FailureReason::CANCELLED:
-      // The client cancelled or aborted it so no need to notify it.
-      return;
-    default:
-      NOTREACHED();
-      return;
+  // The client cancelled or aborted the download so no need to notify it.
+  if (result->failure_reason ==
+      content::BackgroundFetchResult::FailureReason::CANCELLED) {
+    return;
   }
-
-  // TODO(delphick): consider calling OnItemUpdated here as well if for instance
-  // the download actually happened but 404ed.
 
   if (client()) {
-    client()->OnDownloadComplete(
-        job_unique_id, download_guid,
-        std::make_unique<content::BackgroundFetchResult>(base::Time::Now(),
-                                                         failure_reason));
+    client()->OnDownloadComplete(job_unique_id, download_guid,
+                                 std::move(result));
   }
 
-  job_details.current_download_guids.erase(
-      job_details.current_download_guids.find(download_guid));
+  job_details.current_download_guids.erase(download_guid);
   download_job_unique_id_map_.erase(download_guid);
 }
 
 void BackgroundFetchDelegateImpl::OnDownloadSucceeded(
     const std::string& download_guid,
-    const base::FilePath& path,
-    base::Optional<storage::BlobDataHandle> blob_handle,
-    uint64_t size) {
+    std::unique_ptr<content::BackgroundFetchResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto download_job_unique_id_iter =
@@ -434,14 +449,15 @@ void BackgroundFetchDelegateImpl::OnDownloadSucceeded(
   const std::string& job_unique_id = download_job_unique_id_iter->second;
   JobDetails& job_details = job_details_map_.find(job_unique_id)->second;
   ++job_details.fetch_description->completed_parts;
-  job_details.fetch_description->completed_parts_size = size;
+
+  job_details.fetch_description->completed_parts_size =
+      profile_->IsOffTheRecord() ? result->blob_handle->size()
+                                 : result->file_size;
   UpdateOfflineItemAndUpdateObservers(&job_details);
 
   if (client()) {
-    client()->OnDownloadComplete(
-        job_unique_id, download_guid,
-        std::make_unique<content::BackgroundFetchResult>(
-            base::Time::Now(), path, std::move(blob_handle), size));
+    client()->OnDownloadComplete(job_unique_id, download_guid,
+                                 std::move(result));
   }
 
   job_details.current_download_guids.erase(
@@ -459,6 +475,9 @@ void BackgroundFetchDelegateImpl::OnDownloadReceived(
     case StartResult::ACCEPTED:
       // Nothing to do.
       break;
+    case StartResult::UNEXPECTED_GUID:
+      // The download started in a previous session. Nothing to do.
+      break;
     case StartResult::BACKOFF:
       // TODO(delphick): try again later?
       NOTREACHED();
@@ -466,10 +485,6 @@ void BackgroundFetchDelegateImpl::OnDownloadReceived(
     case StartResult::UNEXPECTED_CLIENT:
       // This really should never happen since we're supplying the
       // DownloadClient.
-      NOTREACHED();
-      break;
-    case StartResult::UNEXPECTED_GUID:
-      // TODO(delphick): try again with a different GUID.
       NOTREACHED();
       break;
     case StartResult::CLIENT_CANCELLED:
@@ -523,11 +538,14 @@ void BackgroundFetchDelegateImpl::FailFetch(const std::string& job_unique_id) {
 
 void BackgroundFetchDelegateImpl::CancelDownload(
     const offline_items_collection::ContentId& id) {
-  Abort(id.id);
+  // Save a copy before Abort() deletes the reference.
+  const std::string unique_id = id.id;
+  Abort(unique_id);
 
   if (client()) {
     client()->OnJobCancelled(
-        id.id, blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
+        unique_id,
+        blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
   }
 }
 
@@ -538,12 +556,9 @@ void BackgroundFetchDelegateImpl::PauseDownload(
     return;
 
   JobDetails& job_details = job_details_iter->second;
+  job_details.job_state = JobDetails::State::kStartedButPaused;
   for (auto& download_guid : job_details.current_download_guids)
     GetDownloadService()->PauseDownload(download_guid);
-
-  // TODO(delphick): Mark overall download job as paused so that future
-  // downloads are not started until resume. (Initially not a worry because only
-  // one download will be scheduled at a time).
 }
 
 void BackgroundFetchDelegateImpl::ResumeDownload(
@@ -554,10 +569,12 @@ void BackgroundFetchDelegateImpl::ResumeDownload(
     return;
 
   JobDetails& job_details = job_details_iter->second;
+  job_details.job_state = JobDetails::State::kStartedAndDownloading;
   for (auto& download_guid : job_details.current_download_guids)
     GetDownloadService()->ResumeDownload(download_guid);
 
-  // TODO(delphick): Start new downloads that weren't started because of pause.
+  if (job_details.on_resume)
+    std::move(job_details.on_resume).Run();
 }
 
 void BackgroundFetchDelegateImpl::GetItemById(
@@ -614,4 +631,54 @@ void BackgroundFetchDelegateImpl::AddObserver(Observer* observer) {
 
 void BackgroundFetchDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.erase(observer);
+}
+
+bool BackgroundFetchDelegateImpl::IsGuidOutstanding(
+    const std::string& guid) const {
+  auto unique_id_it = download_job_unique_id_map_.find(guid);
+  if (unique_id_it == download_job_unique_id_map_.end())
+    return false;
+
+  auto job_details_it = job_details_map_.find(unique_id_it->second);
+  if (job_details_it == job_details_map_.end())
+    return false;
+
+  std::vector<std::string>& outstanding_guids =
+      job_details_it->second.fetch_description->outstanding_guids;
+  return std::find(outstanding_guids.begin(), outstanding_guids.end(), guid) !=
+         outstanding_guids.end();
+}
+
+void BackgroundFetchDelegateImpl::RestartPausedDownload(
+    const std::string& download_guid) {
+  auto job_it = download_job_unique_id_map_.find(download_guid);
+
+  if (job_it == download_job_unique_id_map_.end())
+    return;
+
+  const std::string& unique_id = job_it->second;
+
+  DCHECK(job_details_map_.find(unique_id) != job_details_map_.end());
+  JobDetails& job_details = job_details_map_.find(unique_id)->second;
+  job_details.job_state = JobDetails::State::kStartedButPaused;
+
+  UpdateOfflineItemAndUpdateObservers(&job_details);
+}
+
+std::set<std::string> BackgroundFetchDelegateImpl::TakeOutstandingGuids() {
+  std::set<std::string> outstanding_guids;
+  for (auto& job_id_details : job_details_map_) {
+    auto& job_details = job_id_details.second;
+
+    // If the job is loaded at this point, then it already started
+    // in a previous session.
+    job_details.MarkJobAsStarted();
+
+    std::vector<std::string>& job_outstanding_guids =
+        job_details.fetch_description->outstanding_guids;
+    for (std::string& outstanding_guid : job_outstanding_guids)
+      outstanding_guids.insert(std::move(outstanding_guid));
+    job_outstanding_guids.clear();
+  }
+  return outstanding_guids;
 }

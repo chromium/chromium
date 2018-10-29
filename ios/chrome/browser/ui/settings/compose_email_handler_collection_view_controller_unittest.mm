@@ -6,7 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/web/fake_mailto_handler_helpers.h"
 #import "ios/chrome/browser/web/mailto_handler_manager.h"
@@ -148,8 +148,8 @@ TEST_F(ComposeEmailHandlerCollectionViewControllerTest, TestSwitchChanged) {
       base::mac::ObjCCastStrict<ComposeEmailHandlerCollectionViewController>(
           controller());
   NSIndexPath* switch_index_path = [NSIndexPath indexPathForRow:0 inSection:1];
-  SettingsSwitchCell* switch_cell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>([test_view_controller
+  LegacySettingsSwitchCell* switch_cell =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchCell>([test_view_controller
                   collectionView:[test_view_controller collectionView]
           cellForItemAtIndexPath:switch_index_path]);
   // Default state of the switch is ON so user is always prompted to make

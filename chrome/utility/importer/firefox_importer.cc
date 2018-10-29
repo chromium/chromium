@@ -796,8 +796,7 @@ void FirefoxImporter::LoadFavicons(
   if (!s.is_valid())
     return;
 
-  for (FaviconMap::const_iterator i = favicon_map.begin();
-       i != favicon_map.end(); ++i) {
+  for (auto i = favicon_map.begin(); i != favicon_map.end(); ++i) {
     s.BindInt64(0, i->first);
     if (s.Step()) {
       std::vector<unsigned char> data;

@@ -1,0 +1,14 @@
+Tests that Page.addScriptToEvaluateOnNewDocument is executed in the given world
+Adding scripts
+world#0
+message from 0
+world#1
+message from 1
+world#2
+message from 2
+world#3
+message from 3
+world#4
+message from 4
+Removing scripts
+

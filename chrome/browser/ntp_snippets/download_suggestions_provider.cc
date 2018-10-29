@@ -47,8 +47,8 @@ const char kOfflinePageDownloadsPrefix = 'O';
 
 // NOTE: You must set variation param values for both features (one of them may
 // be disabled in future).
-const char* kMaxSuggestionsCountParamName = "downloads_max_count";
-const char* kMaxDownloadAgeHoursParamName = "downloads_max_age_hours";
+const char kMaxSuggestionsCountParamName[] = "downloads_max_count";
+const char kMaxDownloadAgeHoursParamName[] = "downloads_max_age_hours";
 
 const base::Feature& GetEnabledDownloadsFeature() {
   bool assets_enabled =

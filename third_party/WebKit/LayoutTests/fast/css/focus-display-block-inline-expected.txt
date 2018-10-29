@@ -1,5 +1,5 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS Setting display to none on focus processed OK.
 
+PASS Setting display to none on focus processed OK.

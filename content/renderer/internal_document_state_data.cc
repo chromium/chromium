@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "content/public/renderer/document_state.h"
+#include "content/renderer/navigation_state.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 
 namespace content {
@@ -46,6 +47,20 @@ InternalDocumentStateData* InternalDocumentStateData::FromDocumentState(
 }
 
 InternalDocumentStateData::~InternalDocumentStateData() {
+}
+
+void InternalDocumentStateData::CopyFrom(InternalDocumentStateData* other) {
+  http_status_code_ = other->http_status_code_;
+  is_overriding_user_agent_ = other->is_overriding_user_agent_;
+  must_reset_scroll_and_scale_state_ =
+      other->must_reset_scroll_and_scale_state_;
+  cache_policy_override_set_ = other->cache_policy_override_set_;
+  cache_policy_override_ = other->cache_policy_override_;
+}
+
+void InternalDocumentStateData::set_navigation_state(
+    std::unique_ptr<NavigationState> navigation_state) {
+  navigation_state_ = std::move(navigation_state);
 }
 
 }  // namespace content

@@ -449,14 +449,6 @@ void ManagePasswordsUIController::ChooseCredential(
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::NavigateToSmartLockHelpPage() {
-  NavigateParams params(chrome::FindBrowserWithWebContents(web_contents()),
-                        GURL(chrome::kSmartLockHelpPage),
-                        ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-}
-
 void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage() {
   chrome::ShowSettingsSubPage(
       chrome::FindBrowserWithWebContents(web_contents()),

@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/optional.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results.h"
 #include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
@@ -26,7 +28,8 @@ class ChromePromptImpl : public chrome_cleaner::mojom::ChromePrompt {
       ChromeCleanerScannerResults&&,
       chrome_cleaner::mojom::ChromePrompt::PromptUserCallback)>;
 
-  ChromePromptImpl(chrome_cleaner::mojom::ChromePromptRequest request,
+  ChromePromptImpl(extensions::ExtensionService* extension_service,
+                   chrome_cleaner::mojom::ChromePromptRequest request,
                    base::Closure on_connection_closed,
                    OnPromptUser on_prompt_user);
   ~ChromePromptImpl() override;
@@ -38,9 +41,16 @@ class ChromePromptImpl : public chrome_cleaner::mojom::ChromePrompt {
       chrome_cleaner::mojom::ChromePrompt::PromptUserCallback callback)
       override;
 
+  void DisableExtensions(
+      const std::vector<base::string16>& extension_ids,
+      chrome_cleaner::mojom::ChromePrompt::DisableExtensionsCallback callback)
+      override;
+
  private:
   mojo::Binding<chrome_cleaner::mojom::ChromePrompt> binding_;
+  extensions::ExtensionService* extension_service_;
   OnPromptUser on_prompt_user_;
+  base::Optional<std::vector<base::string16>> extension_ids_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromePromptImpl);
 };

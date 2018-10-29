@@ -25,6 +25,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/footnote_container_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
@@ -33,6 +34,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
+#include "ui/views/view_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -66,21 +68,6 @@ int GetOffScreenLength(const gfx::Rect& available_bounds,
 }
 
 }  // namespace
-
-// A container that changes visibility with its contents.
-class FootnoteContainerView : public View {
- public:
-  FootnoteContainerView() {}
-
-  // View:
-  void ChildVisibilityChanged(View* child) override {
-    DCHECK_EQ(child_count(), 1);
-    SetVisible(child->visible());
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FootnoteContainerView);
-};
 
 // static
 const char BubbleFrameView::kViewClassName[] = "BubbleFrameView";
@@ -131,6 +118,11 @@ Button* BubbleFrameView::CreateCloseButton(ButtonListener* listener) {
   SetImageFromVectorIcon(close_button, vector_icons::kCloseRoundedIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();
+
+  // Let the close button use a circular inkdrop shape.
+  auto highlight_path = std::make_unique<SkPath>();
+  highlight_path->addOval(gfx::RectToSkRect(gfx::Rect(close_button->size())));
+  close_button->SetProperty(kHighlightPathKey, highlight_path.release());
 
   // Remove the close button from tab traversal on all platforms. Note this does
   // not affect screen readers' ability to focus the close button. Keyboard
@@ -443,6 +435,10 @@ void BubbleFrameView::ButtonPressed(Button* sender, const ui::Event& event) {
 
 void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
   bubble_border_ = border.get();
+
+  if (footnote_container_)
+    footnote_container_->SetCornerRadius(border->GetBorderCornerRadius());
+
   SetBorder(std::move(border));
 
   // Update the background, which relies on the border.
@@ -454,15 +450,9 @@ void BubbleFrameView::SetFootnoteView(View* view) {
     return;
 
   DCHECK(!footnote_container_);
-  footnote_container_ = new FootnoteContainerView();
-  footnote_container_->SetLayoutManager(
-      std::make_unique<BoxLayout>(BoxLayout::kVertical, footnote_margins_, 0));
-  footnote_container_->SetBackground(
-      CreateSolidBackground(gfx::kGoogleGrey050));
-  footnote_container_->SetBorder(
-      CreateSolidSidedBorder(1, 0, 0, 0, gfx::kGoogleGrey200));
-  footnote_container_->AddChildView(view);
-  footnote_container_->SetVisible(view->visible());
+  int radius = bubble_border_ ? bubble_border_->GetBorderCornerRadius() : 0;
+  footnote_container_ =
+      new FootnoteContainerView(footnote_margins_, view, radius);
   AddChildView(footnote_container_);
 }
 

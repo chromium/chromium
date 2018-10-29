@@ -9,7 +9,7 @@
 #include "base/ios/ios_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/browser_view_controller_dependency_factory.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -17,7 +17,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
-#include "ios/web/public/features.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #include "ios/web/public/test/http_server/error_page_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -76,54 +75,6 @@ id<GREYMatcher> ShareMenuCollectionView() {
 @end
 
 @implementation ActivityServiceControllerTestCase
-
-// Test that when trying to print a page redirected to an unprintable page, a
-// snackbar explaining that the page cannot be printed is displayed.
-- (void)testActivityServiceControllerPrintAfterRedirectionToUnprintablePage {
-// TODO(crbug.com/694662): This test relies on external URL because of the bug.
-// Re-enable this test on device once the bug is fixed.
-#if !TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Test disabled on device.");
-#endif
-
-  if (base::FeatureList::IsEnabled(web::features::kWebErrorPages)) {
-    EARL_GREY_TEST_SKIPPED(@"Web-based error pages are printable");
-  }
-
-  // TODO(crbug.com/747622): re-enable this test on iOS 11 once earl grey can
-  // interact with the share menu.
-  if (base::ios::IsRunningOnIOS11OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 11.");
-  }
-
-  std::map<GURL, std::string> responses;
-  const GURL regularPageURL = web::test::HttpServer::MakeUrl("http://choux");
-  responses[regularPageURL] = "fleur";
-  web::test::SetUpHttpServer(
-      std::make_unique<ErrorPageResponseProvider>(responses));
-
-  // Open a regular page and verify that you can share.
-  [ChromeEarlGrey loadURL:regularPageURL];
-  [ChromeEarlGreyUI openShareMenu];
-  AssertActivityServiceVisible();
-
-  // Open an error page.
-  [ChromeEarlGrey loadURL:ErrorPageResponseProvider::GetDnsFailureUrl()];
-  [ChromeEarlGrey waitForErrorPage];
-
-  // Execute the Print action.
-  [[[EarlGrey selectElementWithMatcher:PrintButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 100)
-      onElementWithMatcher:ShareMenuCollectionView()] performAction:grey_tap()];
-
-  // Verify that a toast notification appears.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          @"This page cannot be printed.")]
-      assertWithMatcher:grey_interactable()];
-
-  // Dismiss the snackbar (nil dismisses all snackbar messages).
-  [MDCSnackbarManager dismissAndCallCompletionBlocksWithCategory:nil];
-}
 
 - (void)testActivityServiceControllerCantPrintUnprintablePages {
   // TODO(crbug.com/747622): re-enable this test on iOS 11 once earl grey can

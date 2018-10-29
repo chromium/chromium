@@ -12,6 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
@@ -33,8 +34,8 @@ class PeerConnectionTrackerProxyImpl
 
   void SetWebRtcEventLoggingState(const WebRtcEventLogPeerConnectionKey& key,
                                   bool event_logging_enabled) override {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &PeerConnectionTrackerProxyImpl::SetWebRtcEventLoggingStateInternal,
             key, event_logging_enabled));
@@ -82,8 +83,8 @@ inline void MaybeReply(const base::Location& location,
                        base::OnceCallback<void(Args...)> reply,
                        Args... args) {
   if (reply) {
-    BrowserThread::PostTask(BrowserThread::UI, location,
-                            base::BindOnce(std::move(reply), args...));
+    base::PostTaskWithTraits(location, {BrowserThread::UI},
+                             base::BindOnce(std::move(reply), args...));
   }
 }
 
@@ -354,9 +355,9 @@ void WebRtcEventLogManager::StartRemoteLogging(
   }
 
   if (error) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(std::move(reply), false,
-                                           std::string(), std::string(error)));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(std::move(reply), false,
+                                            std::string(), std::string(error)));
     return;
   }
 
@@ -795,8 +796,8 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
   DCHECK_EQ(result, !log_id.empty());
   DCHECK_EQ(!result, !error_message.empty());
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(std::move(reply), result, log_id, error_message));
 }
 
@@ -832,7 +833,7 @@ void WebRtcEventLogManager::SetLocalLogsObserverInternal(
   local_logs_observer_ = observer;
 
   if (reply) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(reply));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(reply));
   }
 }
 
@@ -844,7 +845,7 @@ void WebRtcEventLogManager::SetRemoteLogsObserverInternal(
   remote_logs_observer_ = observer;
 
   if (reply) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(reply));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(reply));
   }
 }
 
@@ -857,7 +858,7 @@ void WebRtcEventLogManager::SetClockForTesting(base::Clock* clock,
                  base::OnceClosure reply) {
     manager->local_logs_manager_.SetClockForTesting(clock);
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(reply));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(reply));
   };
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
@@ -877,7 +878,7 @@ void WebRtcEventLogManager::SetPeerConnectionTrackerProxyForTesting(
                  base::OnceClosure reply) {
     manager->pc_tracker_proxy_ = std::move(pc_tracker_proxy);
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(reply));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(reply));
   };
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)
@@ -901,7 +902,8 @@ void WebRtcEventLogManager::SetWebRtcEventLogUploaderFactoryForTesting(
         remote_logs_manager.SetWebRtcEventLogUploaderFactoryForTesting(
             std::move(uploader_factory));
 
-        BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(reply));
+        base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                                 std::move(reply));
       };
 
   // |this| is destroyed by ~BrowserProcessImpl(), so base::Unretained(this)

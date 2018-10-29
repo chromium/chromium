@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices;
 
-import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsService;
 import android.support.customtabs.CustomTabsSessionToken;
-import android.support.customtabs.PostMessageServiceConnection;
+import android.support.customtabs.PostMessageBackend;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -24,40 +22,29 @@ import org.chromium.content_public.browser.WebContentsObserver;
 /**
  * A class that handles postMessage communications with a designated {@link CustomTabsSessionToken}.
  */
-public class PostMessageHandler
-        extends PostMessageServiceConnection implements OriginVerificationListener {
+public class PostMessageHandler implements OriginVerificationListener {
     private final MessageCallback mMessageCallback;
+    private final PostMessageBackend mPostMessageBackend;
     private WebContents mWebContents;
-    private boolean mMessageChannelCreated;
-    private boolean mBoundToService;
     private MessagePort[] mChannel;
     private Uri mPostMessageUri;
-    private String mPackageName;
 
     /**
      * Basic constructor. Everytime the given {@link CustomTabsSessionToken} is associated with a
      * new {@link WebContents},
      * {@link PostMessageHandler#reset(WebContents)} should be called to
      * reset all internal state.
-     * @param session The {@link CustomTabsSessionToken} to establish the postMessage communication
-     *                with.
+     * @param postMessageBackend The {@link PostMessageBackend} to which updates about the channel
+     *                           and posted messages will be sent.
      */
-    public PostMessageHandler(CustomTabsSessionToken session) {
-        super(session);
+    public PostMessageHandler(PostMessageBackend postMessageBackend) {
+        mPostMessageBackend = postMessageBackend;
         mMessageCallback = new MessageCallback() {
             @Override
             public void onMessage(String message, MessagePort[] sentPorts) {
-                if (mBoundToService) postMessage(message, null);
+                mPostMessageBackend.onPostMessage(message, null);
             }
         };
-    }
-
-    /**
-     * Sets the package name unique to the session.
-     * @param packageName The package name for the client app for the owning session.
-     */
-    public void setPackageName(@NonNull String packageName) {
-        mPackageName = packageName;
     }
 
     /**
@@ -70,7 +57,6 @@ public class PostMessageHandler
     public void reset(final WebContents webContents) {
         if (webContents == null || webContents.isDestroyed()) {
             disconnectChannel();
-            unbindFromContext(ContextUtils.getApplicationContext());
             return;
         }
         // Can't reset with the same web contents twice.
@@ -83,13 +69,12 @@ public class PostMessageHandler
             @Override
             public void didFinishNavigation(String url, boolean isInMainFrame, boolean isErrorPage,
                     boolean hasCommitted, boolean isSameDocument, boolean isFragmentNavigation,
-                    Integer pageTransition, int errorCode, String errorDescription,
-                    int httpStatusCode) {
+                    boolean isRendererInitiated, boolean isDownload, Integer pageTransition,
+                    int errorCode, String errorDescription, int httpStatusCode) {
                 if (mNavigatedOnce && hasCommitted && isInMainFrame && !isSameDocument
                         && mChannel != null) {
                     webContents.removeObserver(this);
                     disconnectChannel();
-                    unbindFromContext(ContextUtils.getApplicationContext());
                     return;
                 }
                 mNavigatedOnce = true;
@@ -98,7 +83,6 @@ public class PostMessageHandler
             @Override
             public void renderProcessGone(boolean wasOomProtected) {
                 disconnectChannel();
-                unbindFromContext(ContextUtils.getApplicationContext());
             }
 
             @Override
@@ -109,16 +93,6 @@ public class PostMessageHandler
         };
     }
 
-    /**
-     * See
-     * {@link PostMessageServiceConnection#bindSessionToPostMessageService(Context, String)}.
-     * Attempts to bind with the package name set during initialization.
-     */
-    public boolean bindSessionToPostMessageService() {
-        return super.bindSessionToPostMessageService(
-                ContextUtils.getApplicationContext(), mPackageName);
-    }
-
     private void initializeWithWebContents(final WebContents webContents) {
         mChannel = webContents.createMessageChannel();
         mChannel[0].setMessageCallback(mMessageCallback, null);
@@ -126,8 +100,7 @@ public class PostMessageHandler
         webContents.postMessageToFrame(
                 null, "", mPostMessageUri.toString(), "", new MessagePort[] {mChannel[1]});
 
-        mMessageChannelCreated = true;
-        if (mBoundToService) notifyMessageChannelReady(null);
+        mPostMessageBackend.onNotifyMessageChannelReady(null);
     }
 
     private void disconnectChannel() {
@@ -135,6 +108,7 @@ public class PostMessageHandler
         mChannel[0].close();
         mChannel = null;
         mWebContents = null;
+        mPostMessageBackend.onDisconnectChannel(ContextUtils.getApplicationContext());
     }
 
     /**
@@ -174,22 +148,6 @@ public class PostMessageHandler
     }
 
     @Override
-    public void unbindFromContext(Context context) {
-        if (mBoundToService) super.unbindFromContext(context);
-    }
-
-    @Override
-    public void onPostMessageServiceConnected() {
-        mBoundToService = true;
-        if (mMessageChannelCreated) notifyMessageChannelReady(null);
-    }
-
-    @Override
-    public void onPostMessageServiceDisconnected() {
-        mBoundToService = false;
-    }
-
-    @Override
     public void onOriginVerified(String packageName, Origin origin, boolean result,
             Boolean online) {
         if (!result) return;
@@ -203,13 +161,5 @@ public class PostMessageHandler
     @VisibleForTesting
     public Uri getPostMessageUriForTesting() {
         return mPostMessageUri;
-    }
-
-    /**
-     * Cleans up any dependencies that this handler might have.
-     * @param context Context to use for unbinding if necessary.
-     */
-    public void cleanup(Context context) {
-        if (mBoundToService) super.unbindFromContext(context);
     }
 }

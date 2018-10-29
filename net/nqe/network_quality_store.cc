@@ -24,13 +24,13 @@ NetworkQualityStore::NetworkQualityStore() : weak_ptr_factory_(this) {
 }
 
 NetworkQualityStore::~NetworkQualityStore() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void NetworkQualityStore::Add(
     const nqe::internal::NetworkID& network_id,
     const nqe::internal::CachedNetworkQuality& cached_network_quality) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(cached_network_qualities_.size(),
             static_cast<size_t>(kMaximumNetworkQualityCacheSize));
 
@@ -44,11 +44,9 @@ void NetworkQualityStore::Add(
 
   if (cached_network_qualities_.size() == kMaximumNetworkQualityCacheSize) {
     // Remove the oldest entry.
-    CachedNetworkQualities::iterator oldest_entry_iterator =
-        cached_network_qualities_.begin();
+    auto oldest_entry_iterator = cached_network_qualities_.begin();
 
-    for (CachedNetworkQualities::iterator it =
-             cached_network_qualities_.begin();
+    for (auto it = cached_network_qualities_.begin();
          it != cached_network_qualities_.end(); ++it) {
       if ((it->second).OlderThan(oldest_entry_iterator->second))
         oldest_entry_iterator = it;
@@ -68,11 +66,10 @@ void NetworkQualityStore::Add(
 bool NetworkQualityStore::GetById(
     const nqe::internal::NetworkID& network_id,
     nqe::internal::CachedNetworkQuality* cached_network_quality) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // First check if an exact match can be found.
-  for (CachedNetworkQualities::const_iterator it =
-           cached_network_qualities_.begin();
+  for (auto it = cached_network_qualities_.begin();
        it != cached_network_qualities_.end(); ++it) {
     if (network_id.type != it->first.type || network_id.id != it->first.id) {
       // The |type| and |id| must match.
@@ -95,11 +92,9 @@ bool NetworkQualityStore::GetById(
   // network quality possible for the current network, and serves as a
   // conservative estimate.
   if (network_id.signal_strength == INT32_MIN) {
-    CachedNetworkQualities::const_iterator matching_it =
-        cached_network_qualities_.end();
+    auto matching_it = cached_network_qualities_.end();
 
-    for (CachedNetworkQualities::const_iterator it =
-             cached_network_qualities_.begin();
+    for (auto it = cached_network_qualities_.begin();
          it != cached_network_qualities_.end(); ++it) {
       if (network_id.type != it->first.type || network_id.id != it->first.id) {
         // The |type| and |id| must match.
@@ -130,13 +125,11 @@ bool NetworkQualityStore::GetById(
   // |matching_it| points to the entry that has the same connection type and
   // id as |network_id|, and has the signal strength closest to the signal
   // stength of |network_id|.
-  CachedNetworkQualities::const_iterator matching_it =
-      cached_network_qualities_.end();
+  auto matching_it = cached_network_qualities_.end();
   int matching_it_diff_signal_strength = INT32_MAX;
 
   // Find the closest estimate.
-  for (CachedNetworkQualities::const_iterator it =
-           cached_network_qualities_.begin();
+  for (auto it = cached_network_qualities_.begin();
        it != cached_network_qualities_.end(); ++it) {
     if (network_id.type != it->first.type || network_id.id != it->first.id) {
       // The |type| and |id| must match.
@@ -175,7 +168,7 @@ bool NetworkQualityStore::GetById(
 
 void NetworkQualityStore::AddNetworkQualitiesCacheObserver(
     NetworkQualitiesCacheObserver* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   network_qualities_cache_observer_list_.AddObserver(observer);
 
   // Notify the |observer| on the next message pump since |observer| may not
@@ -187,13 +180,13 @@ void NetworkQualityStore::AddNetworkQualitiesCacheObserver(
 
 void NetworkQualityStore::RemoveNetworkQualitiesCacheObserver(
     NetworkQualitiesCacheObserver* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   network_qualities_cache_observer_list_.RemoveObserver(observer);
 }
 
 void NetworkQualityStore::NotifyCacheObserverIfPresent(
     NetworkQualitiesCacheObserver* observer) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!network_qualities_cache_observer_list_.HasObserver(observer))
     return;

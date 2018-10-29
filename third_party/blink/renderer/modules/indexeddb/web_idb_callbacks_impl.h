@@ -43,6 +43,7 @@ class WebIDBDatabase;
 class WebIDBDatabaseError;
 class WebIDBKey;
 struct WebIDBMetadata;
+struct WebIDBNameAndVersion;
 class WebIDBValue;
 
 class WebIDBCallbacksImpl final : public WebIDBCallbacks {
@@ -55,6 +56,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
 
   // Pointers transfer ownership.
   void OnError(const WebIDBDatabaseError&) override;
+  void OnSuccess(const WebVector<WebIDBNameAndVersion>&) override;
   void OnSuccess(const WebVector<WebString>&) override;
   void OnSuccess(WebIDBCursor*,
                  WebIDBKey,

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.preferences.privacy;
 
 import android.os.Bundle;
-import android.support.v4.util.ArraySet;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -20,6 +19,10 @@ import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.signin.ChromeSigninController;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.components.sync.ModelType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A simpler version of {@link ClearBrowsingDataPreferences} with fewer dialog options and more
@@ -67,26 +70,19 @@ public class ClearBrowsingDataPreferencesBasic extends ClearBrowsingDataPreferen
     }
 
     @Override
-    protected int[] getDialogOptions() {
-        return new int[] {DialogOption.CLEAR_HISTORY, DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
-                DialogOption.CLEAR_CACHE};
+    protected List<Integer> getDialogOptions() {
+        return Arrays.asList(DialogOption.CLEAR_HISTORY, DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
+                DialogOption.CLEAR_CACHE);
     }
 
     @Override
-    protected int[] getDataTypesFromOptions(ArraySet<Integer> options) {
-        int[] dataTypes;
-        int i = 0;
+    protected Set<Integer> getDataTypesFromOptions(Set<Integer> options) {
+        Set<Integer> dataTypes = super.getDataTypesFromOptions(options);
         if (options.contains(DialogOption.CLEAR_COOKIES_AND_SITE_DATA)) {
             // COOKIES checkbox includes MEDIA_LICENSES, which need to be
             // specified separately. This is only done for the basic tab.
             // On the advanced tab Media Licenses has its own checkbox.
-            dataTypes = new int[options.size() + 1];
-            dataTypes[i++] = BrowsingDataType.MEDIA_LICENSES;
-        } else {
-            dataTypes = new int[options.size()];
-        }
-        for (Integer option : options) {
-            dataTypes[i++] = getDataType(option);
+            dataTypes.add(BrowsingDataType.MEDIA_LICENSES);
         }
         return dataTypes;
     }

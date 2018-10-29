@@ -23,7 +23,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 class DevToolsAndroidBridge;
@@ -40,7 +39,6 @@ class WebContents;
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public net::URLFetcherDelegate,
                            public DevToolsFileHelper::Delegate {
  public:
   class Delegate {
@@ -168,9 +166,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RegisterExtensionsAPI(const std::string& origin,
                              const std::string& script) override;
 
-  // net::URLFetcherDelegate overrides.
-  void OnURLFetchComplete(const net::URLFetcher* source) override;
-
   void EnableRemoteDeviceCounter(bool enable);
 
   void SendMessageAck(int request_id,
@@ -251,9 +246,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::unique_ptr<DevToolsEmbedderMessageDispatcher>
       embedder_message_dispatcher_;
   GURL url_;
-
-  using PendingRequestsMap = std::map<const net::URLFetcher*, DispatchCallback>;
-  PendingRequestsMap pending_requests_;
 
   class NetworkResourceLoader;
   std::set<std::unique_ptr<NetworkResourceLoader>, base::UniquePtrComparator>

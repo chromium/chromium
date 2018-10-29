@@ -7,22 +7,34 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
+
+@class VersionFooter;
+
+// Protocol notified when the footer is tapped.
+@protocol VersionFooterDelegate
+
+// Called when the version footer is tapped.
+- (void)didTapVersionFooter:(VersionFooter*)footer;
+
+@end
 
 // Item to display the version of the current build.
-@interface VersionItem : CollectionViewItem
+@interface VersionItem : TableViewHeaderFooterItem
 
 // The display string representing the version.
 @property(nonatomic, copy) NSString* text;
 
 @end
 
-// Cell class associated to VersionItem.
-@interface VersionCell : MDCCollectionViewCell
+// Footer view class associated to VersionItem.
+@interface VersionFooter : UITableViewHeaderFooterView
 
 // Label for the current build version.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
+
+// Delegate.
+@property(nonatomic, weak) id<VersionFooterDelegate> delegate;
 
 @end
 

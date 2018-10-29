@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/proximity_auth/proximity_auth_error_bubble.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -43,12 +42,6 @@ void ShowProximityAuthErrorBubble(const base::string16& message,
                                   const GURL& link_url,
                                   const gfx::Rect& anchor_rect,
                                   content::WebContents* web_contents) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    NOTIMPLEMENTED();
-    return;
-  }
-#endif
   // Only one error bubble should be visible at a time.
   // Note that it suffices to check just the |message| for equality, because the
   // |link_range| and |link_url| are always the same for a given |message|
@@ -64,12 +57,6 @@ void ShowProximityAuthErrorBubble(const base::string16& message,
 }
 
 void HideProximityAuthErrorBubble() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    NOTIMPLEMENTED();
-    return;
-  }
-#endif
   if (g_bubble.Get())
     g_bubble.Get()->GetWidget()->Close();
 }

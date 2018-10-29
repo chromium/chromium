@@ -63,6 +63,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
         if (!scrolling_touch_action_.has_value())
           SetTouchAction(cc::kTouchActionAuto);
       }
+      gesture_scroll_in_progress_ = true;
       gesture_sequence_.append("B");
       if (!scrolling_touch_action_.has_value()) {
         static auto* crash_key = base::debug::AllocateCrashKeyString(
@@ -114,6 +115,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
 
     case WebInputEvent::kGestureScrollEnd:
       gesture_sequence_.clear();
+      gesture_scroll_in_progress_ = false;
       gesture_sequence_in_progress_ = false;
       ReportGestureEventFiltered(suppress_manipulation_events_);
       return FilterManipulationEventAndResetState()
@@ -121,22 +123,50 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
                  : FilterGestureEventResult::kFilterGestureEventAllowed;
 
     case WebInputEvent::kGesturePinchBegin:
+      if (!gesture_scroll_in_progress_) {
+        suppress_manipulation_events_ =
+            ShouldSuppressManipulation(*gesture_event);
+      }
+      FALLTHROUGH;
     case WebInputEvent::kGesturePinchUpdate:
-    case WebInputEvent::kGesturePinchEnd:
       gesture_sequence_.append("P");
       ReportGestureEventFiltered(suppress_manipulation_events_);
       return suppress_manipulation_events_
                  ? FilterGestureEventResult::kFilterGestureEventFiltered
                  : FilterGestureEventResult::kFilterGestureEventAllowed;
+    case WebInputEvent::kGesturePinchEnd:
+      ReportGestureEventFiltered(suppress_manipulation_events_);
+      // If we're in a double-tap and drag zoom, we won't be bracketed between
+      // a GSB/GSE pair so end the sequence now. Otherwise this will happen
+      // when we get the GSE.
+      if (!gesture_scroll_in_progress_) {
+        gesture_sequence_.clear();
+        gesture_sequence_in_progress_ = false;
+        return FilterManipulationEventAndResetState()
+                   ? FilterGestureEventResult::kFilterGestureEventFiltered
+                   : FilterGestureEventResult::kFilterGestureEventAllowed;
+      }
+      return suppress_manipulation_events_
+                 ? FilterGestureEventResult::kFilterGestureEventFiltered
+                 : FilterGestureEventResult::kFilterGestureEventAllowed;
 
-    // The double tap gesture is a tap ending event. If a double tap gesture is
-    // filtered out, replace it with a tap event.
+    // The double tap gesture is a tap ending event. If a double-tap gesture is
+    // filtered out, replace it with a tap event but preserve the tap-count to
+    // allow firing dblclick event in Blink.
+    //
+    // TODO(mustaq): This replacement of a double-tap gesture with a tap seems
+    // buggy, it produces an inconsistent gesture event stream: GestureTapCancel
+    // followed by GestureTap.  See crbug.com/874474#c47 for a repro.  We don't
+    // know of any bug resulting from it, but it's better to fix the broken
+    // assumption here at least to avoid introducing new bugs in future.
     case WebInputEvent::kGestureDoubleTap:
       gesture_sequence_in_progress_ = false;
       gesture_sequence_.append("D");
       DCHECK_EQ(1, gesture_event->data.tap.tap_count);
-      if (!allow_current_double_tap_event_)
+      if (!allow_current_double_tap_event_) {
         gesture_event->SetType(WebInputEvent::kGestureTap);
+        gesture_event->data.tap.tap_count = 2;
+      }
       allow_current_double_tap_event_ = true;
       break;
 
@@ -220,6 +250,11 @@ bool TouchActionFilter::FilterManipulationEventAndResetState() {
     return true;
   }
   return false;
+}
+
+void TouchActionFilter::ForceResetTouchActionForTest() {
+  allowed_touch_action_.reset();
+  scrolling_touch_action_.reset();
 }
 
 void TouchActionFilter::OnSetTouchAction(cc::TouchAction touch_action) {
@@ -325,7 +360,12 @@ void TouchActionFilter::OnSetWhiteListedTouchAction(
 
 bool TouchActionFilter::ShouldSuppressManipulation(
     const blink::WebGestureEvent& gesture_event) {
-  DCHECK_EQ(gesture_event.GetType(), WebInputEvent::kGestureScrollBegin);
+  DCHECK(gesture_event.GetType() == WebInputEvent::kGestureScrollBegin ||
+         WebInputEvent::IsPinchGestureEventType(gesture_event.GetType()));
+
+  if (WebInputEvent::IsPinchGestureEventType(gesture_event.GetType())) {
+    return (scrolling_touch_action_.value() & cc::kTouchActionPinchZoom) == 0;
+  }
 
   if (gesture_event.data.scroll_begin.pointer_count >= 2) {
     // Any GestureScrollBegin with more than one fingers is like a pinch-zoom

@@ -7,6 +7,7 @@
 namespace printing {
 
 const char kAllowedColorModes[] = "allowedColorModes";
+const char kAllowedDuplexModes[] = "allowedDuplexModes";
 const char kPageWidthUm[] = "WidthUm";
 const char kPageHeightUm[] = "HeightUm";
 
@@ -51,6 +52,9 @@ base::Optional<DuplexModeRestriction> GetAllowedDuplexModesForName(
     const std::string& mode_name) {
   if (mode_name == "any")
     return DuplexModeRestriction::kNone;
+
+  if (mode_name == "simplex")
+    return DuplexModeRestriction::kSimplex;
 
   if (mode_name == "duplex")
     return DuplexModeRestriction::kDuplex;

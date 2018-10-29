@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class DOMRectReadOnly;
 class File;
 class UnpackedSerializedScriptValue;
 
@@ -65,6 +66,7 @@ class CORE_EXPORT V8ScriptValueDeserializer
     return deserializer_.ReadRawBytes(size, data);
   }
   bool ReadUTF8String(String* string_out);
+  DOMRectReadOnly* ReadDOMRectReadOnly();
 
   template <typename E>
   bool ReadUint32Enum(E* value) {

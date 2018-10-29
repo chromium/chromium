@@ -3,6 +3,7 @@ include_rules = [
   "+gin/public",
   "+gin/v8_initializer.h",
   "+printing/nup_parameters.h",
+  "+printing/page_setup.h",
   "+third_party/pdfium/public",
   "+ui/gfx/codec/jpeg_codec.h",
 ]

@@ -23,6 +23,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     web::WebState* web_state,
     id<CWVAutofillClientIOSBridge> bridge,
     identity::IdentityManager* identity_manager,
+    StrikeDatabase* strike_database,
     scoped_refptr<AutofillWebDataService> autofill_web_data_service,
     syncer::SyncService* sync_service)
     : pref_service_(pref_service),
@@ -30,6 +31,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       web_state_(web_state),
       bridge_(bridge),
       identity_manager_(identity_manager),
+      strike_database_(strike_database),
       autofill_web_data_service_(autofill_web_data_service),
       sync_service_(sync_service) {}
 
@@ -51,6 +53,10 @@ syncer::SyncService* WebViewAutofillClientIOS::GetSyncService() {
 
 identity::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
   return identity_manager_;
+}
+
+StrikeDatabase* WebViewAutofillClientIOS::GetStrikeDatabase() {
+  return strike_database_;
 }
 
 ukm::UkmRecorder* WebViewAutofillClientIOS::GetUkmRecorder() {
@@ -113,22 +119,29 @@ void WebViewAutofillClientIOS::ConfirmSaveAutofillProfile(
 
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
-    const base::RepeatingClosure& callback) {
-  [bridge_ confirmSaveCreditCardLocally:card callback:callback];
+    bool show_prompt,
+    base::OnceClosure callback) {
+  DCHECK(show_prompt);
+  [bridge_ confirmSaveCreditCardLocally:card callback:std::move(callback)];
 }
 
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     std::unique_ptr<base::DictionaryValue> legal_message,
     bool should_request_name_from_user,
-    base::OnceCallback<void(const base::string16&)> callback) {}
+    bool show_prompt,
+    base::OnceCallback<void(const base::string16&)> callback) {
+  DCHECK(show_prompt);
+}
 
 void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
     const CreditCard& card,
     const base::Closure& callback) {}
 
 void WebViewAutofillClientIOS::LoadRiskData(
-    const base::Callback<void(const std::string&)>& callback) {}
+    base::OnceCallback<void(const std::string&)> callback) {
+  [bridge_ loadRiskData:std::move(callback)];
+}
 
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
   return false;
@@ -186,10 +199,6 @@ bool WebViewAutofillClientIOS::ShouldShowSigninPromo() {
 
 void WebViewAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
-}
-
-bool WebViewAutofillClientIOS::IsAutofillSupported() {
-  return autofill::prefs::IsAutofillEnabled(GetPrefs());
 }
 
 bool WebViewAutofillClientIOS::AreServerCardsSupported() {

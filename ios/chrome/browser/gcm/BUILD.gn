@@ -12,6 +12,7 @@ source_set("gcm") {
     "//components/gcm_driver",
     "//components/keyed_service/ios",
     "//components/signin/core/browser",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/common",

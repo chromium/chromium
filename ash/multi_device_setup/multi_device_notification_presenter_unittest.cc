@@ -97,10 +97,6 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
       return open_multi_device_setup_ui_count_;
     }
 
-    int open_change_connected_phone_settings_count() const {
-      return open_change_connected_phone_settings_count_;
-    }
-
     int open_connected_devices_settings_count() const {
       return open_connected_devices_settings_count_;
     }
@@ -110,17 +106,12 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
       ++open_multi_device_setup_ui_count_;
     }
 
-    void OpenChangeConnectedPhoneSettings() override {
-      ++open_change_connected_phone_settings_count_;
-    }
-
     void OpenConnectedDevicesSettings() override {
       ++open_connected_devices_settings_count_;
     }
 
    private:
     int open_multi_device_setup_ui_count_ = 0;
-    int open_change_connected_phone_settings_count_ = 0;
     int open_connected_devices_settings_count_ = 0;
   };
 
@@ -184,6 +175,12 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     InvokePendingMojoCalls();
   }
 
+  void TriggerNoLongerNewUserEvent() {
+    EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
+    fake_multidevice_setup_->delegate()->OnNoLongerNewUser();
+    InvokePendingMojoCalls();
+  }
+
   void ShowExistingUserHostSwitchedNotification() {
     EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
     fake_multidevice_setup_->delegate()->OnConnectedHostSwitchedForExistingUser(
@@ -193,7 +190,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
 
   void ShowExistingUserNewChromebookNotification() {
     EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
-    fake_multidevice_setup_->delegate()->OnNewChromebookAddedForExistingUser();
+    fake_multidevice_setup_->delegate()->OnNewChromebookAddedForExistingUser(
+        kTestHostDeviceName);
     InvokePendingMojoCalls();
   }
 
@@ -294,8 +292,9 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
         break;
       case MultiDeviceNotificationPresenter::Status::
           kExistingUserNewChromebookNotificationVisible:
-        title = l10n_util::GetStringUTF16(
-            IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_TITLE);
+        title = l10n_util::GetStringFUTF16(
+            IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_TITLE,
+            base::ASCIIToUTF16(kTestHostDeviceName));
         message = l10n_util::GetStringUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_MESSAGE);
         break;
@@ -360,6 +359,20 @@ TEST_F(MultiDeviceNotificationPresenterTest,
   AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }
 
+TEST_F(MultiDeviceNotificationPresenterTest, TestNoLongerNewUserEvent) {
+  SignIntoAccount();
+
+  ShowNewUserNotification();
+  VerifyNewUserPotentialHostExistsNotificationIsVisible();
+
+  TriggerNoLongerNewUserEvent();
+  VerifyNoNotificationIsVisible();
+
+  EXPECT_EQ(test_open_ui_delegate_->open_multi_device_setup_ui_count(), 0);
+  AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationClicked", 0);
+  AssertPotentialHostBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
 TEST_F(MultiDeviceNotificationPresenterTest,
        TestHostExistingUserHostSwitchedNotification_RemoveProgrammatically) {
   SignIntoAccount();
@@ -370,8 +383,7 @@ TEST_F(MultiDeviceNotificationPresenterTest,
   notification_presenter_->RemoveMultiDeviceSetupNotification();
   VerifyNoNotificationIsVisible();
 
-  EXPECT_EQ(
-      test_open_ui_delegate_->open_change_connected_phone_settings_count(), 0);
+  EXPECT_EQ(test_open_ui_delegate_->open_connected_devices_settings_count(), 0);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationClicked", 0);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }
@@ -386,8 +398,7 @@ TEST_F(MultiDeviceNotificationPresenterTest,
   ClickNotification();
   VerifyNoNotificationIsVisible();
 
-  EXPECT_EQ(
-      test_open_ui_delegate_->open_change_connected_phone_settings_count(), 1);
+  EXPECT_EQ(test_open_ui_delegate_->open_connected_devices_settings_count(), 1);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationClicked", 1);
   AssertHostSwitchedBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }

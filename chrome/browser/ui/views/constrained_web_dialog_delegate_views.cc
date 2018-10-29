@@ -117,7 +117,7 @@ class WebDialogWebContentsDelegateViews
   ~WebDialogWebContentsDelegateViews() override {}
 
   // ui::WebDialogWebContentsDelegate:
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override {
     // Forward shortcut keys in dialog to our initiator's delegate.
@@ -125,12 +125,15 @@ class WebDialogWebContentsDelegateViews
     // Disabled on Mac due to http://crbug.com/112173
 #if !defined(OS_MACOSX)
     if (!initiator_observer_->web_contents())
-      return;
+      return false;
 
     auto* delegate = initiator_observer_->web_contents()->GetDelegate();
     if (!delegate)
-      return;
-    delegate->HandleKeyboardEvent(initiator_observer_->web_contents(), event);
+      return false;
+    return delegate->HandleKeyboardEvent(initiator_observer_->web_contents(),
+                                         event);
+#else
+    return false;
 #endif
   }
 
@@ -191,10 +194,10 @@ class ConstrainedWebDialogDelegateViews
   }
 
   // contents::WebContentsDelegate:
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override {
-    unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, view_->GetFocusManager());
   }
 

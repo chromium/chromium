@@ -13,18 +13,17 @@ var opaqueReferencePxiels, transparentReferencePixels;
 
 function testPixels(actualPixels, refPixels, testScenario)
 {
-    // Plain testing requires a tolerance as high as 26 for 8-8-8-8, which does
-    // not leave that much to test. Instead, we narrow down the source of
-    // expected error.
+    // Narrowing down the source of expected error:
     // - Alpha values should always match.
-    // - Color components should be acceptably close, except for the red
-    //   channel of the green pixel. Green has the largest change in what's
-    //   representable between sRGB and P3/2020.
-    //   Red channel of the green pixel is R channel of the second pixel.
-
-    if (testScenario.canvasColorParam.pixelFormat == '8-8-8-8') {
-        let tolerance_color = 10;
-        let tolerance_r_green = 26;
+    // - Color components should be acceptably close. All tests locally pass
+    //   with a tolerance of 4 (uint8), 0.01 (f16/srgb,p3), and 0.02 (rec2020).
+    // - The red channel of the green pixel has the largest error since green
+    //   has the largest change in what's representable between sRGB and
+    //   P3/Rec2020. Red channel of the green pixel is R channel of the second
+    //   pixel. All tests locally pass with a tolerance of 8 (uint8) and 0.03 (f16).
+    if (testScenario.canvasColorParam.pixelFormat == 'uint8') {
+        let tolerance_color = 4;
+        let tolerance_r_green = 8;
         for (let i = 0; i < actualPixels.length; i++) {
             // Alpha channel
             if (i % 4 == 3)
@@ -36,11 +35,17 @@ function testPixels(actualPixels, refPixels, testScenario)
                 assert_approx_equals(actualPixels[i], refPixels[i], tolerance_color);
         }
     } else {
-        let tolerance_color = 0.02;
+        // For half float backed canvas, we expect the error < 0.01.
+        let tolerance_color = 0.01;
+        if (testScenario.encodeOptions.colorSpace == 'rec2020')
+            tolerance_color = 0.02;
+        let tolerance_r_green = 0.03;
         for (let i = 0; i < actualPixels.length; i++) {
             // Alpha channel
             if (i % 4 == 3)
                 assert_equals(actualPixels[i], refPixels[i]);
+            else if (i == 4)
+                assert_approx_equals(actualPixels[i], refPixels[i], tolerance_r_green);
             else
                 assert_approx_equals(actualPixels[i], refPixels[i], tolerance_color);
         }
@@ -118,8 +123,7 @@ function runAllTests() {
 
     var mimeTypes = ['image/png', 'image/jpeg', 'image/webp'];
     var blobColorSpaces = ['srgb', 'rec2020', 'display-p3'];
-    // uint16 pixel format is not supported yet. crbug.com/840372.
-    var blobPixelFormats = ['8-8-8-8'];
+    var blobPixelFormats = ['uint8', 'uint16'];
 
     var encodeOptionsSet = [];
     for (var i = 0; i < mimeTypes.length; i++)
@@ -136,13 +140,13 @@ function runAllTests() {
             }
 
     var canvasColorParams = [
-        {colorSpace: 'srgb', pixelFormat: '8-8-8-8'},
+        {colorSpace: 'srgb', pixelFormat: 'uint8'},
         {colorSpace: 'srgb', pixelFormat: 'float16'},
+        {colorSpace: 'linear-rgb', pixelFormat: 'float16'},
         {colorSpace: 'rec2020', pixelFormat: 'float16'},
-        {colorSpace: 'p3', pixelFormat: 'float16'}];
-    // crbug.com/859102
-    // var alphaValues = [0.5, 1];
-    var alphaValues = [1];
+        {colorSpace: 'p3', pixelFormat: 'float16'},
+    ];
+    var alphaValues = [0.5, 1];
 
     // The *correct* way to test convertToBlob() is to directly examine the
     // image file for the expected color space and pixels. Since this is not

@@ -108,6 +108,16 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsAutoConfirm) {
 
 // Test that denying the optional permissions confirmation dialog works.
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsDeny) {
+  // Mark the management permission as already granted since we auto reject
+  // user prompts.
+  APIPermissionSet apis;
+  apis.insert(APIPermission::kManagement);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
+  prefs->AddGrantedPermissions("kjmkgkdkpedkejedfhmfcenooemhbpbo",
+                               PermissionSet(apis, ManifestPermissionSet(),
+                                             URLPatternSet(), URLPatternSet()));
+
   PermissionsRequestFunction::SetAutoConfirmForTests(false);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());

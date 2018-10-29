@@ -324,64 +324,21 @@ cr.define('cr.login', function() {
       var headers = details.responseHeaders;
 
       // Check whether GAIA headers indicating the start or end of a SAML
-      // redirect are present. If so, synthesize cookies to mark these points.
+      // redirect are present.
       for (var i = 0; headers && i < headers.length; ++i) {
         var header = headers[i];
         var headerName = header.name.toLowerCase();
 
         if (headerName == SAML_HEADER) {
           var action = header.value.toLowerCase();
-          if (action == 'start') {
+          if (action == 'start')
             this.pendingIsSamlPage_ = true;
-
-            // GAIA is redirecting to a SAML IdP. Any cookies contained in the
-            // current |headers| were set by GAIA. Any cookies set in future
-            // requests will be coming from the IdP. Append a cookie to the
-            // current |headers| that marks the point at which the redirect
-            // occurred.
-            headers.push(
-                {name: 'Set-Cookie', value: 'google-accounts-saml-start=now'});
-            return {responseHeaders: headers};
-          } else if (action == 'end') {
+          else if (action == 'end')
             this.pendingIsSamlPage_ = false;
-
-            // The SAML IdP has redirected back to GAIA. Add a cookie that marks
-            // the point at which the redirect occurred occurred. It is
-            // important that this cookie be prepended to the current |headers|
-            // because any cookies contained in the |headers| were already set
-            // by GAIA, not the IdP. Due to limitations in the webRequest API,
-            // it is not trivial to prepend a cookie:
-            //
-            // The webRequest API only allows for deleting and appending
-            // headers. To prepend a cookie (C), three steps are needed:
-            // 1) Delete any headers that set cookies (e.g., A, B).
-            // 2) Append a header which sets the cookie (C).
-            // 3) Append the original headers (A, B).
-            //
-            // Due to a further limitation of the webRequest API, it is not
-            // possible to delete a header in step 1) and append an identical
-            // header in step 3). To work around this, a trailing semicolon is
-            // added to each header before appending it. Trailing semicolons are
-            // ignored by Chrome in cookie headers, causing the modified headers
-            // to actually set the original cookies.
-            var otherHeaders = [];
-            var cookies =
-                [{name: 'Set-Cookie', value: 'google-accounts-saml-end=now'}];
-            for (var j = 0; j < headers.length; ++j) {
-              if (headers[j].name.toLowerCase().startsWith('set-cookie')) {
-                var header = headers[j];
-                header.value += ';';
-                cookies.push(header);
-              } else {
-                otherHeaders.push(headers[j]);
-              }
-            }
-            return {responseHeaders: otherHeaders.concat(cookies)};
-          }
         }
       }
 
-      return {};
+      return details;
     },
 
     /**

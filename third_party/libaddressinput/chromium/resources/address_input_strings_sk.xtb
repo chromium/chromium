@@ -34,10 +34,10 @@
 <translation id="7139724024395191329">Emirát</translation>
 <translation id="7393381084163773901">Ulica</translation>
 <translation id="7602447984296396718">PSČ zrejme nezodpovedá zvyšnej časti adresy.</translation>
-<translation id="7738983109397305830">Toto PSČ zrejme nezodpovedá zvyšku adresy. Nepoznáte svoje PSČ? Zistite ho <ph name="BEGIN_LINK" />tu<ph name="END_LINK" />.</translation>
+<translation id="7738983109397305830">Poštové smerovacie číslo nezodpovedá zvyšku adresy. Nepoznáte svoje poštové smerovacie číslo? <ph name="BEGIN_LINK" />Zistite ho tu<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">Prefektúra</translation>
 <translation id="7805765407568469194">Dedina/okres</translation>
-<translation id="8184169487503545976">Tento formát PSČ nebol rozpoznaný.</translation>
+<translation id="8184169487503545976">Formát poštového smerovacieho čísla nebol rozpoznaný.</translation>
 <translation id="820600307078153032">Formát tohto PSČ sa nedá rozpoznať. Príklad platného PSČ: <ph name="EXAMPLE" />.</translation>
 <translation id="8446364922515257065">Do/Si</translation>
 <translation id="8449204988444194299">Poštový okres</translation>

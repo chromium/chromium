@@ -7,13 +7,23 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
 #include "services/content/public/cpp/buildflags.h"
+#include "ui/gfx/native_widget_types.h"
+
+#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+#include "ui/views/controls/native/native_view_host.h"  // nogncheck
+#endif
+
+namespace aura {
+class Window;
+}
 
 namespace views {
-class RemoteViewHost;
 class View;
+class NativeViewHost;
 }  // namespace views
 
 namespace content {
@@ -26,9 +36,32 @@ class NavigableContentsImpl;
 // either Views, UIKit, AppKit, or the Android Framework.
 //
 // TODO(https://crbug.com/855092): Actually support UI frameworks other than
-// Views UI.
+// Views UI on Aura.
 class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContentsView {
  public:
+#if BUILDFLAG(ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW)
+  // May be used if the Content Service client is running within a process whose
+  // UI environment requires a different remote View implementation from
+  // the default one. For example, on Chrome OS when Ash and the Window Service
+  // are running in the same process, the default implementation
+  // (views::RemoteViewHost) will not work.
+  class RemoteViewManager {
+   public:
+    virtual ~RemoteViewManager() {}
+
+    // Creates a new NativeViewHost suitable for remote embedding.
+    virtual std::unique_ptr<views::NativeViewHost> CreateRemoteViewHost() = 0;
+
+    // Initiates an embedding of a remote client -- identified by |token| --
+    // within |view_host|. Note that |view_host| is always an object returned by
+    // |CreateRemoteViewHost()| on the same RemoteViewManager.
+    virtual void EmbedUsingToken(views::NativeViewHost* view_host,
+                                 const base::UnguessableToken& token) = 0;
+  };
+
+  static void SetRemoteViewManager(std::unique_ptr<RemoteViewManager> manager);
+#endif
+
   ~NavigableContentsView();
 
   // Used to set/query whether the calling process is the same process in which
@@ -39,9 +72,11 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContentsView {
   static void SetClientRunningInServiceProcess();
   static bool IsClientRunningInServiceProcess();
 
-#if defined(TOOLKIT_VIEWS)
+#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
   views::View* view() const { return view_.get(); }
-#endif
+
+  gfx::NativeView native_view() const { return view_->native_view(); }
+#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
  private:
   friend class NavigableContents;
@@ -59,15 +94,11 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContentsView {
       const base::UnguessableToken& token,
       base::OnceCallback<void(NavigableContentsView*)> callback);
 
-#if defined(TOOLKIT_VIEWS)
-  // This NavigableContents's View. Only initialized if |GetView()| is called,
-  // and only on platforms which support Views UI.
-  std::unique_ptr<views::View> view_;
-
-#if BUILDFLAG(ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW)
-  views::RemoteViewHost* remote_view_host_ = nullptr;
-#endif
-#endif  // BUILDFLAG(TOOLKIT_VIEWS)
+#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+  // This NavigableContents's Window and corresponding View.
+  std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<views::NativeViewHost> view_;
+#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
   DISALLOW_COPY_AND_ASSIGN(NavigableContentsView);
 };

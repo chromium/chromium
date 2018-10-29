@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/memory/ptr_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,12 +51,12 @@ TEST(MRUCacheTest, Basic) {
 
   static const int kItem1Key = 5;
   CachedItem item1(10);
-  Cache::iterator inserted_item = cache.Put(kItem1Key, item1);
+  auto inserted_item = cache.Put(kItem1Key, item1);
   EXPECT_EQ(1U, cache.size());
 
   // Check that item1 was properly inserted.
   {
-    Cache::iterator found = cache.Get(kItem1Key);
+    auto found = cache.Get(kItem1Key);
     EXPECT_TRUE(inserted_item == cache.begin());
     EXPECT_TRUE(found != cache.end());
 
@@ -75,7 +74,7 @@ TEST(MRUCacheTest, Basic) {
 
   // Check that item1 is the oldest since item2 was added afterwards.
   {
-    Cache::reverse_iterator oldest = cache.rbegin();
+    auto oldest = cache.rbegin();
     ASSERT_TRUE(oldest != cache.rend());
     EXPECT_EQ(kItem1Key, oldest->first);
     EXPECT_EQ(item1.value, oldest->second.value);
@@ -83,7 +82,7 @@ TEST(MRUCacheTest, Basic) {
 
   // Check that item1 is still accessible by key.
   {
-    Cache::iterator test_item = cache.Get(kItem1Key);
+    auto test_item = cache.Get(kItem1Key);
     ASSERT_TRUE(test_item != cache.end());
     EXPECT_EQ(kItem1Key, test_item->first);
     EXPECT_EQ(item1.value, test_item->second.value);
@@ -91,7 +90,7 @@ TEST(MRUCacheTest, Basic) {
 
   // Check that retrieving item1 pushed item2 to oldest.
   {
-    Cache::reverse_iterator oldest = cache.rbegin();
+    auto oldest = cache.rbegin();
     ASSERT_TRUE(oldest != cache.rend());
     EXPECT_EQ(kItem2Key, oldest->first);
     EXPECT_EQ(item2.value, oldest->second.value);
@@ -99,7 +98,7 @@ TEST(MRUCacheTest, Basic) {
 
   // Remove the oldest item and check that item1 is now the only member.
   {
-    Cache::reverse_iterator next = cache.Erase(cache.rbegin());
+    auto next = cache.Erase(cache.rbegin());
 
     EXPECT_EQ(1U, cache.size());
 
@@ -136,7 +135,7 @@ TEST(MRUCacheTest, GetVsPeek) {
 
   // Check that item1 starts out as oldest
   {
-    Cache::reverse_iterator iter = cache.rbegin();
+    auto iter = cache.rbegin();
     ASSERT_TRUE(iter != cache.rend());
     EXPECT_EQ(kItem1Key, iter->first);
     EXPECT_EQ(item1.value, iter->second.value);
@@ -144,10 +143,10 @@ TEST(MRUCacheTest, GetVsPeek) {
 
   // Check that Peek doesn't change ordering
   {
-    Cache::iterator peekiter = cache.Peek(kItem1Key);
+    auto peekiter = cache.Peek(kItem1Key);
     ASSERT_TRUE(peekiter != cache.end());
 
-    Cache::reverse_iterator iter = cache.rbegin();
+    auto iter = cache.rbegin();
     ASSERT_TRUE(iter != cache.rend());
     EXPECT_EQ(kItem1Key, iter->first);
     EXPECT_EQ(item1.value, iter->second.value);
@@ -179,14 +178,14 @@ TEST(MRUCacheTest, KeyReplacement) {
 
   EXPECT_EQ(4U, cache.size());
   for (int i = 0; i < 3; ++i) {
-    Cache::reverse_iterator iter = cache.rbegin();
+    auto iter = cache.rbegin();
     ASSERT_TRUE(iter != cache.rend());
   }
 
   // Make it so only the most important element is there.
   cache.ShrinkToSize(1);
 
-  Cache::iterator iter = cache.begin();
+  auto iter = cache.begin();
   EXPECT_EQ(kItem3Key, iter->first);
   EXPECT_EQ(item5.value, iter->second.value);
 }
@@ -200,11 +199,11 @@ TEST(MRUCacheTest, Owning) {
 
   // First insert and item and then overwrite it.
   static const int kItem1Key = 1;
-  cache.Put(kItem1Key, WrapUnique(new CachedItem(20)));
-  cache.Put(kItem1Key, WrapUnique(new CachedItem(22)));
+  cache.Put(kItem1Key, std::make_unique<CachedItem>(20));
+  cache.Put(kItem1Key, std::make_unique<CachedItem>(22));
 
   // There should still be one item, and one extra live item.
-  Cache::iterator iter = cache.Get(kItem1Key);
+  auto iter = cache.Get(kItem1Key);
   EXPECT_EQ(1U, cache.size());
   EXPECT_TRUE(iter != cache.end());
   EXPECT_EQ(initial_count + 1, cached_item_live_count);
@@ -217,8 +216,8 @@ TEST(MRUCacheTest, Owning) {
   // go away.
   {
     Cache cache2(Cache::NO_AUTO_EVICT);
-    cache2.Put(1, WrapUnique(new CachedItem(20)));
-    cache2.Put(2, WrapUnique(new CachedItem(20)));
+    cache2.Put(1, std::make_unique<CachedItem>(20));
+    cache2.Put(2, std::make_unique<CachedItem>(20));
   }
 
   // There should be no objects leaked.
@@ -227,8 +226,8 @@ TEST(MRUCacheTest, Owning) {
   // Check that Clear() also frees things correctly.
   {
     Cache cache2(Cache::NO_AUTO_EVICT);
-    cache2.Put(1, WrapUnique(new CachedItem(20)));
-    cache2.Put(2, WrapUnique(new CachedItem(20)));
+    cache2.Put(1, std::make_unique<CachedItem>(20));
+    cache2.Put(2, std::make_unique<CachedItem>(20));
     EXPECT_EQ(initial_count + 2, cached_item_live_count);
     cache2.Clear();
     EXPECT_EQ(initial_count, cached_item_live_count);
@@ -284,7 +283,7 @@ TEST(MRUCacheTest, Swap) {
   // Insert two items into cache1.
   static const int kItem1Key = 1;
   CachedItem item1(2);
-  Cache::iterator inserted_item = cache1.Put(kItem1Key, item1);
+  auto inserted_item = cache1.Put(kItem1Key, item1);
   EXPECT_EQ(1U, cache1.size());
 
   static const int kItem2Key = 3;
@@ -294,7 +293,7 @@ TEST(MRUCacheTest, Swap) {
 
   // Verify cache1's elements.
   {
-    Cache::iterator iter = cache1.begin();
+    auto iter = cache1.begin();
     ASSERT_TRUE(iter != cache1.end());
     EXPECT_EQ(kItem2Key, iter->first);
     EXPECT_EQ(item2.value, iter->second.value);
@@ -326,7 +325,7 @@ TEST(MRUCacheTest, Swap) {
 
   // Verify cache2's elements.
   {
-    Cache::iterator iter = cache2.begin();
+    auto iter = cache2.begin();
     ASSERT_TRUE(iter != cache2.end());
     EXPECT_EQ(kItem5Key, iter->first);
     EXPECT_EQ(item5.value, iter->second.value);
@@ -351,7 +350,7 @@ TEST(MRUCacheTest, Swap) {
 
   // Verify cache1's elements.
   {
-    Cache::iterator iter = cache1.begin();
+    auto iter = cache1.begin();
     ASSERT_TRUE(iter != cache1.end());
     EXPECT_EQ(kItem5Key, iter->first);
     EXPECT_EQ(item5.value, iter->second.value);
@@ -369,7 +368,7 @@ TEST(MRUCacheTest, Swap) {
 
   // Verify cache2's elements.
   {
-    Cache::iterator iter = cache2.begin();
+    auto iter = cache2.begin();
     ASSERT_TRUE(iter != cache2.end());
     EXPECT_EQ(kItem2Key, iter->first);
     EXPECT_EQ(item2.value, iter->second.value);

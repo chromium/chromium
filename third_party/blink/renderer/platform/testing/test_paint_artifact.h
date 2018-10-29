@@ -127,7 +127,7 @@ class TestPaintArtifact {
   // Create a new display item client which is owned by this TestPaintArtifact.
   FakeDisplayItemClient& NewClient();
 
-  FakeDisplayItemClient& Client(size_t) const;
+  FakeDisplayItemClient& Client(wtf_size_t) const;
 
  private:
   class DummyRectClient;

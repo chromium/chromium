@@ -7,9 +7,11 @@
 #include <windows.h>
 #include <sas.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/win/registry.h"
 
 namespace remoting {
@@ -38,14 +40,12 @@ class ScopedSoftwareSasPolicy {
   base::win::RegKey system_policy_;
 
   // True if the policy needs to be restored.
-  bool restore_policy_;
+  bool restore_policy_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSoftwareSasPolicy);
 };
 
-ScopedSoftwareSasPolicy::ScopedSoftwareSasPolicy()
-    : restore_policy_(false) {
-}
+ScopedSoftwareSasPolicy::ScopedSoftwareSasPolicy() = default;
 
 ScopedSoftwareSasPolicy::~ScopedSoftwareSasPolicy() {
   // Restore the default policy by deleting the value that we have set.
@@ -103,10 +103,9 @@ class SasInjectorWin : public SasInjector {
   DISALLOW_COPY_AND_ASSIGN(SasInjectorWin);
 };
 
-SasInjectorWin::SasInjectorWin() {}
+SasInjectorWin::SasInjectorWin() = default;
 
-SasInjectorWin::~SasInjectorWin() {
-}
+SasInjectorWin::~SasInjectorWin() = default;
 
 bool SasInjectorWin::InjectSas() {
   // Enable software SAS generation by services and send SAS. SAS can still fail
@@ -121,7 +120,7 @@ bool SasInjectorWin::InjectSas() {
 }
 
 std::unique_ptr<SasInjector> SasInjector::Create() {
-  return base::WrapUnique(new SasInjectorWin());
+  return std::make_unique<SasInjectorWin>();
 }
 
 } // namespace remoting

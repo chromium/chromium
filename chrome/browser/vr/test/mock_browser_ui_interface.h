@@ -10,6 +10,7 @@
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/model/toolbar_state.h"
+#include "chrome/browser/vr/ui_test_input.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace vr {
@@ -46,10 +47,17 @@ class MockBrowserUiInterface : public BrowserUiInterface {
   MOCK_METHOD1(SetOverlayTextureEmpty, void(bool));
   MOCK_METHOD1(ShowSoftInput, void(bool));
   MOCK_METHOD4(UpdateWebInputIndices, void(int, int, int, int));
+  MOCK_METHOD1(OnSwapContents, void(int));
+  MOCK_METHOD2(SetDialogLocation, void(float, float));
+  MOCK_METHOD1(SetDialogFloating, void(bool));
+  MOCK_METHOD1(ShowPlatformToast, void(const base::string16&));
+  MOCK_METHOD0(CancelPlatformToast, void());
+  MOCK_METHOD2(OnContentBoundsChanged, void(int, int));
   MOCK_METHOD3(AddOrUpdateTab,
                void(int id, bool incognito, const base::string16& title));
   MOCK_METHOD2(RemoveTab, void(int id, bool incognito));
   MOCK_METHOD0(RemoveAllTabs, void());
+  MOCK_METHOD1(PerformKeyboardInputForTesting, void(KeyboardTestInput));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockBrowserUiInterface);

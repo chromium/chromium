@@ -59,7 +59,7 @@ struct CONTENT_EXPORT CSPSource {
   static bool Allow(const CSPSource& source,
                     const GURL& url,
                     CSPContext* context,
-                    bool is_redirect = false);
+                    bool has_followed_redirect = false);
 };
 
 }  // namespace content

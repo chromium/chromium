@@ -11,7 +11,8 @@
         "id": "InstallStage",
         "type": "string",
         "enum": ["installing", "downloading"],
-        "description": "Enum used to indicate the stage of the installation process. 'downloading' indicates that the necessary files are being downloaded, and 'installing' indicates that the files are downloaded and are being actively installed."
+        "description": "Enum used to indicate the stage of the installation process. 'downloading' indicates that the necessary files are being downloaded, and 'installing' indicates that the files are downloaded and are being actively installed.",
+        "deprecated": "Inline installation is deprecated."
       },
       {
         "id": "ErrorCode",
@@ -89,7 +90,8 @@
             "description": "A launch of the same extension is in progress.",
             "name": "launchInProgress"
           }
-        ]
+        ],
+        "deprecated": "Inline installation is deprecated."
       }
     ],  // types
     "events": [
@@ -103,7 +105,8 @@
             "$ref": "InstallStage",
             "description": "The InstallStage that just began."
           }
-        ]
+        ],
+        "deprecated": "Inline installation is deprecated."
       },  // onInstallStageChanged
       {
         "name": "onDownloadProgress",
@@ -115,7 +118,8 @@
             "type": "number",
             "description": "The progress of the download, between 0 and 1. 0 indicates no progress; 1.0 indicates complete."
           }
-        ]
+        ],
+        "deprecated": "Inline installation is deprecated."
       }  // onDownloadProgress
     ],  // events
     "functions": [
@@ -155,7 +159,8 @@
             ],
             "description": "This function is invoked when inline installation does not successfully complete. Possible reasons for this include the user canceling the dialog, the linked item not being found in the store, or the install being initiated from a non-verified site."
           }
-        ]
+        ],
+        "deprecated": "Inline installation is deprecated."
       }  // install
     ]  // functions
   }  // webstore

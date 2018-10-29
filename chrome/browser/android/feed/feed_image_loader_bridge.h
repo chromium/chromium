@@ -14,9 +14,7 @@ namespace feed {
 class FeedImageManager;
 
 // Native counterpart of FeedImageLoaderBridge.java. Holds non-owning pointers
-// to native implementation, to which operations are delegated. Results are
-// passed back by a single argument callback so
-// base::android::RunObjectCallbackAndroid() can be used. This bridge is
+// to native implementation, to which operations are delegated. This bridge is
 // instantiated, owned, and destroyed from Java.
 class FeedImageLoaderBridge {
  public:
@@ -27,13 +25,15 @@ class FeedImageLoaderBridge {
 
   void FetchImage(JNIEnv* j_env,
                   const base::android::JavaRef<jobject>& j_this,
-                  const base::android::JavaRef<jobjectArray>& j_urls,
+                  const base::android::JavaRef<jstring>& j_url,
+                  const jint width_px,
+                  const jint height_px,
                   const base::android::JavaRef<jobject>& j_callback);
 
  private:
   void OnImageFetched(base::android::ScopedJavaGlobalRef<jobject> callback,
                       const gfx::Image& image,
-                      size_t image_position);
+                      size_t ignored);
 
   FeedImageManager* feed_image_manager_;
 

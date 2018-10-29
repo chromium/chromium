@@ -37,6 +37,10 @@ class WaylandServerController {
 
   ~WaylandServerController();
 
+  ArcInputMethodSurfaceManager* arc_input_method_surface_manager() {
+    return arc_input_method_surface_manager_.get();
+  }
+
  private:
   WaylandServerController(std::unique_ptr<exo::FileHelper> file_helper,
                           aura::Env* env);

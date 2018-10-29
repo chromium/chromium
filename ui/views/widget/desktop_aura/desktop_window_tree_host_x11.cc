@@ -223,7 +223,6 @@ void DesktopWindowTreeHostX11::AfterActivationStateChanged() {
 
   if (!was_active_ && IsActive()) {
     FlashFrame(false);
-    OnHostActivated();
     // TODO(thomasanderson): Remove this window shuffling and use XWindowCache
     // instead.
     open_windows().remove(xwindow_);
@@ -476,8 +475,7 @@ void DesktopWindowTreeHostX11::CloseNow() {
   // If we have children, close them. Use a copy for iteration because they'll
   // remove themselves.
   std::set<DesktopWindowTreeHostX11*> window_children_copy = window_children_;
-  for (std::set<DesktopWindowTreeHostX11*>::iterator it =
-           window_children_copy.begin(); it != window_children_copy.end();
+  for (auto it = window_children_copy.begin(); it != window_children_copy.end();
        ++it) {
     (*it)->CloseNow();
   }
@@ -548,7 +546,7 @@ void DesktopWindowTreeHostX11::Show(ui::WindowShowState show_state,
 }
 
 bool DesktopWindowTreeHostX11::IsVisible() const {
-  return window_mapped_in_client_;
+  return window_mapped_in_client_ && !IsMinimized();
 }
 
 void DesktopWindowTreeHostX11::SetSize(const gfx::Size& requested_size) {
@@ -832,16 +830,18 @@ void DesktopWindowTreeHostX11::Maximize() {
 
 void DesktopWindowTreeHostX11::Minimize() {
   ReleaseCapture();
-  XIconifyWindow(xdisplay_, xwindow_, 0);
-  window_mapped_in_client_ = false;
+  if (window_mapped_in_client_)
+    XIconifyWindow(xdisplay_, xwindow_, 0);
+  else
+    SetWMSpecState(true, gfx::GetAtom("_NET_WM_STATE_HIDDEN"), x11::None);
 }
 
 void DesktopWindowTreeHostX11::Restore() {
   should_maximize_after_map_ = false;
   SetWMSpecState(false, gfx::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
                  gfx::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
-  if (IsMinimized())
-    Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  SetWMSpecState(false, gfx::GetAtom("_NET_WM_STATE_HIDDEN"), x11::None);
 }
 
 bool DesktopWindowTreeHostX11::IsMaximized() const {
@@ -1004,7 +1004,6 @@ void DesktopWindowTreeHostX11::SetFullscreen(bool fullscreen) {
   if (is_fullscreen_ == fullscreen)
     return;
   is_fullscreen_ = fullscreen;
-  OnFullscreenStateChanged();
   if (is_fullscreen_)
     delayed_resize_task_.Cancel();
 
@@ -1196,7 +1195,7 @@ void DesktopWindowTreeHostX11::ShowImpl() {
 }
 
 void DesktopWindowTreeHostX11::HideImpl() {
-  if (IsVisible()) {
+  if (window_mapped_in_client_) {
     XWithdrawWindow(xdisplay_, xwindow_, 0);
     window_mapped_in_client_ = false;
     native_widget_delegate_->OnNativeWidgetVisibilityChanged(false);
@@ -1209,7 +1208,8 @@ gfx::Rect DesktopWindowTreeHostX11::GetBoundsInPixels() const {
 
 void DesktopWindowTreeHostX11::SetBoundsInPixels(
     const gfx::Rect& requested_bounds_in_pixel,
-    const viz::LocalSurfaceId& local_surface_id) {
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks local_surface_id_allocation_time) {
   // On desktop-x11, the callers of SetBoundsInPixels() shouldn't need to (or be
   // able to) allocate LocalSurfaceId for the compositor. Aura itself should
   // allocate the new ids as needed, instead.
@@ -1266,7 +1266,8 @@ void DesktopWindowTreeHostX11::SetBoundsInPixels(
   if (origin_changed)
     native_widget_delegate_->AsWidget()->OnNativeWidgetMove();
   if (size_changed) {
-    OnHostResizedInPixels(bounds_in_pixels.size(), local_surface_id);
+    OnHostResizedInPixels(bounds_in_pixels.size(), local_surface_id,
+                          local_surface_id_allocation_time);
     ResetWindowRegion();
   }
 }
@@ -1369,10 +1370,6 @@ void DesktopWindowTreeHostX11::OnDisplayMetricsChanged(
     RestartDelayedResizeTask();
   }
 }
-
-void DesktopWindowTreeHostX11::OnMaximizedStateChanged() {}
-
-void DesktopWindowTreeHostX11::OnFullscreenStateChanged() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostX11, private:
@@ -1643,39 +1640,42 @@ gfx::Size DesktopWindowTreeHostX11::AdjustSize(
 void DesktopWindowTreeHostX11::SetWMSpecState(bool enabled,
                                               XAtom state1,
                                               XAtom state2) {
-  if (IsVisible()) {
+  if (window_mapped_in_client_) {
     ui::SetWMSpecState(xwindow_, enabled, state1, state2);
   } else {
     // The updated state will be set when the window is (re)mapped.
+    base::flat_set<XAtom> new_window_properties = window_properties_;
     for (XAtom atom : {state1, state2}) {
       if (enabled)
-        window_properties_.insert(atom);
+        new_window_properties.insert(atom);
       else
-        window_properties_.erase(atom);
+        new_window_properties.erase(atom);
     }
+    UpdateWindowProperties(new_window_properties);
   }
 }
 
 void DesktopWindowTreeHostX11::OnWMStateUpdated() {
+  // The EWMH spec requires window managers to remove the _NET_WM_STATE property
+  // when a window is unmapped.  However, Chromium code wants the state to
+  // persist across a Hide() and Show().  So if the window is currently
+  // unmapped, leave the state unchanged so it will be restored when the window
+  // is remapped.
   std::vector<XAtom> atom_list;
-  if (!ui::GetAtomArrayProperty(xwindow_, "_NET_WM_STATE", &atom_list) &&
-      !window_mapped_in_client_) {
-    // The EWMH spec requires window managers to remove the _NET_WM_STATE
-    // property when a window is unmapped.  However, Chromium code wants the
-    // state to persist across a Hide() and Show().  So if the window is
-    // currently unmapped, leave the state unchanged so it will be restored when
-    // the window is remapped.
-    return;
+  if (ui::GetAtomArrayProperty(xwindow_, "_NET_WM_STATE", &atom_list) ||
+      window_mapped_in_client_) {
+    UpdateWindowProperties(
+        base::flat_set<XAtom>(std::begin(atom_list), std::end(atom_list)));
   }
+}
 
+void DesktopWindowTreeHostX11::UpdateWindowProperties(
+    const base::flat_set<XAtom>& new_window_properties) {
   bool was_minimized = IsMinimized();
-  bool was_maximized = IsMaximized();
 
-  window_properties_ =
-      base::flat_set<XAtom>(atom_list.begin(), atom_list.end());
+  window_properties_ = new_window_properties;
 
   bool is_minimized = IsMinimized();
-  bool is_maximized = IsMaximized();
 
   // Propagate the window minimization information to the content window, so
   // the render side can update its visibility properly. OnWMStateUpdated() is
@@ -1700,7 +1700,6 @@ void DesktopWindowTreeHostX11::OnWMStateUpdated() {
   }
 
   if (restored_bounds_in_pixels_.IsEmpty()) {
-    DCHECK(!IsFullscreen());
     if (IsMaximized()) {
       // The request that we become maximized originated from a different
       // process. |bounds_in_pixels_| already contains our maximized bounds. Do
@@ -1722,9 +1721,6 @@ void DesktopWindowTreeHostX11::OnWMStateUpdated() {
 
   is_always_on_top_ = ui::HasWMSpecProperty(
       window_properties_, gfx::GetAtom("_NET_WM_STATE_ABOVE"));
-
-  if (was_maximized != is_maximized)
-    OnMaximizedStateChanged();
 
   // Now that we have different window properties, we may need to relayout the
   // window. (The windows code doesn't need this because their window change is
@@ -1929,7 +1925,7 @@ void DesktopWindowTreeHostX11::SerializeImageRepresentation(
   int height = rep.GetHeight();
   data->push_back(height);
 
-  const SkBitmap& bitmap = rep.sk_bitmap();
+  const SkBitmap& bitmap = rep.GetBitmap();
 
   for (int y = 0; y < height; ++y)
     for (int x = 0; x < width; ++x)

@@ -14,6 +14,7 @@
 #include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_blacklist.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/blacklist/opt_out_blacklist/sql/opt_out_store_sql.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 // Whether an opt out store should be used or not.
@@ -43,8 +44,8 @@ void PageLoadCappingService::Initialize(const base::FilePath& profile_path) {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
     opt_out_store = std::make_unique<blacklist::OptOutStoreSQL>(
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI),
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI}),
         background_task_runner,
         profile_path.Append(chrome::kPageLoadCappingOptOutDBFilename));
   }

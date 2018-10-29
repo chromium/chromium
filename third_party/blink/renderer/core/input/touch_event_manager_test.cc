@@ -69,19 +69,19 @@ TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
 
   GetEventHandler().HandlePointerEvent(
       CreateTouchPointerEvent(WebInputEvent::kPointerDown),
-      Vector<WebPointerEvent>());
+      Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
   GetDocument().getElementById("target")->remove();
 
   GetEventHandler().HandlePointerEvent(
       CreateTouchPointerEvent(WebInputEvent::kPointerUp),
-      Vector<WebPointerEvent>());
+      Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
   GetEventHandler().HandlePointerEvent(
       CreateTouchPointerEvent(WebInputEvent::kPointerDown),
-      Vector<WebPointerEvent>());
+      Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
   GetEventHandler().DispatchBufferedTouchEvents();
 
   ASSERT_TRUE(callback->HasReceivedEvent());

@@ -39,6 +39,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
       false,    // is_redirect, doesn't matter here.
       true,     // is_external_protocol
       false,    // is_main_frame
+      true,     // is_renderer_initiated, doesn't matter here.
       GURL());  // base_url_for_data_url, not applicable.
   delegate->ShouldIgnoreNavigation(navigation_params);
 }

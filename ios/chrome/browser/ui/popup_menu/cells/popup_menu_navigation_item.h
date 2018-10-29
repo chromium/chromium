@@ -28,6 +28,11 @@ class NavigationItem;
 - (void)setTitle:(NSString*)title;
 - (void)setFavicon:(UIImage*)favicon;
 
+// After this is called, the cell is listening for the
+// UIContentSizeCategoryDidChangeNotification notification and updates its font
+// size to the new category.
+- (void)registerForContentSizeUpdates;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_CELLS_POPUP_MENU_NAVIGATION_ITEM_H_

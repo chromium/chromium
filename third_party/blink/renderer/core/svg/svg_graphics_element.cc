@@ -37,7 +37,7 @@ SVGGraphicsElement::SVGGraphicsElement(const QualifiedName& tag_name,
     : SVGElement(tag_name, document, construction_type),
       SVGTests(this),
       transform_(SVGAnimatedTransformList::Create(this,
-                                                  SVGNames::transformAttr,
+                                                  svg_names::kTransformAttr,
                                                   CSSPropertyTransform)) {
   AddToPropertyMap(transform_);
 }
@@ -103,7 +103,7 @@ void SVGGraphicsElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == SVGNames::transformAttr) {
+  if (name == svg_names::kTransformAttr) {
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyTransform, *transform_->CurrentValue()->CssValue());
     return;
@@ -124,7 +124,7 @@ void SVGGraphicsElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  if (attr_name == SVGNames::transformAttr) {
+  if (attr_name == svg_names::kTransformAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateSVGPresentationAttributeStyle();
     // TODO(fs): The InvalidationGuard will make sure all instances are

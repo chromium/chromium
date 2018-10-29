@@ -385,6 +385,7 @@ AudioPlayer.prototype.onKeyDown_ = function(event) {
 
     case ' ': // Space
     case 'k':
+    case 'MediaPlayPause':
       this.player_.dispatchEvent(new Event('toggle-pause-event'));
       break;
     case 'ArrowUp':
@@ -402,6 +403,17 @@ AudioPlayer.prototype.onKeyDown_ = function(event) {
       break;
     case 'j':
       this.player_.dispatchEvent(new Event('big-backword-skip-event'));
+      break;
+    case ']':
+    case 'MediaTrackNext':
+      this.player_.dispatchEvent(new Event('next-track-event'));
+      break;
+    case '[':
+    case 'MediaTrackPrevious':
+      this.player_.dispatchEvent(new Event('previous-track-event'));
+      break;
+    case 'MediaStop':
+      // TODO: Define "Stop" behavior.
       break;
   }
 };

@@ -15,16 +15,31 @@
 
 namespace ui {
 
+class AXTableInfo;
+
 // One node in an AXTree.
 class AX_EXPORT AXNode final {
  public:
+  // Interface to the tree class that owns an AXNode. We use this instead
+  // of letting AXNode have a pointer to its AXTree directly so that we're
+  // forced to think twice before calling an AXTree interface that might not
+  // be necessary.
+  class OwnerTree {
+   public:
+    // See AXTree.
+    virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
+    // See AXTree.
+    virtual AXNode* GetFromId(int32_t id) const = 0;
+  };
+
   // The constructor requires a parent, id, and index in parent, but
   // the data is not required. After initialization, only index_in_parent
   // is allowed to change, the others are guaranteed to never change.
-  AXNode(AXNode* parent, int32_t id, int32_t index_in_parent);
+  AXNode(OwnerTree* tree, AXNode* parent, int32_t id, int32_t index_in_parent);
   virtual ~AXNode();
 
   // Accessors.
+  OwnerTree* tree() const { return tree_; }
   int32_t id() const { return data_.id; }
   AXNode* parent() const { return parent_; }
   int child_count() const { return static_cast<int>(children_.size()); }
@@ -171,12 +186,60 @@ class AX_EXPORT AXNode final {
   base::string16 GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
+  //
+  // Helper functions for tables, table rows, and table cells.
+  // Most of these functions construct and cache an AXTableInfo behind
+  // the scenes to infer many properties of tables.
+  //
+  // TODO(dmazzoni): Make these const - not trivial because AXTableInfo
+  // does need to modify the AXTree.
+  //
+
+  // Table-like nodes (including grids).
+  bool IsTable() const;
+  int32_t GetTableColCount() const;
+  int32_t GetTableRowCount() const;
+  int32_t GetTableCellCount() const;
+  AXNode* GetTableCellFromIndex(int32_t index) const;
+  AXNode* GetTableCellFromCoords(int32_t row_index, int32_t col_index) const;
+  void GetTableColHeaderNodeIds(int32_t col_index,
+                                std::vector<int32_t>* col_header_ids) const;
+  void GetTableRowHeaderNodeIds(int32_t row_index,
+                                std::vector<int32_t>* row_header_ids) const;
+  void GetTableUniqueCellIds(std::vector<int32_t>* row_header_ids) const;
+  // Extra computed nodes for the accessibility tree for macOS:
+  // one column node for each table column, followed by one
+  // table header container node, or nullptr if not applicable.
+  std::vector<AXNode*>* GetExtraMacNodes() const;
+
+  // Table row-like nodes.
+  bool IsTableRow() const;
+  int32_t GetTableRowRowIndex() const;
+
+  // Table cell-like nodes.
+  bool IsTableCellOrHeader() const;
+  int32_t GetTableCellIndex() const;
+  int32_t GetTableCellColIndex() const;
+  int32_t GetTableCellRowIndex() const;
+  int32_t GetTableCellColSpan() const;
+  int32_t GetTableCellRowSpan() const;
+  int32_t GetTableCellAriaColIndex() const;
+  int32_t GetTableCellAriaRowIndex() const;
+  void GetTableCellColHeaderNodeIds(std::vector<int32_t>* col_header_ids) const;
+  void GetTableCellRowHeaderNodeIds(std::vector<int32_t>* row_header_ids) const;
+  void GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const;
+  void GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const;
+
  private:
   // Computes the text offset where each line starts by traversing all child
   // leaf nodes.
   void ComputeLineStartOffsets(std::vector<int>* line_offsets,
                                int* start_offset) const;
+  AXTableInfo* GetAncestorTableInfo() const;
+  void IdVectorToNodeVector(std::vector<int32_t>& ids,
+                            std::vector<AXNode*>* nodes) const;
 
+  OwnerTree* tree_;  // Owns this.
   int index_in_parent_;
   AXNode* parent_;
   std::vector<AXNode*> children_;

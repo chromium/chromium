@@ -13,8 +13,9 @@ namespace ws {
 
 ClientChange::ClientChange(ClientChangeTracker* tracker,
                            aura::Window* window,
-                           ClientChangeType type)
-    : tracker_(tracker), type_(type) {
+                           ClientChangeType type,
+                           const void* property_key)
+    : tracker_(tracker), type_(type), property_key_(property_key) {
   DCHECK(!tracker_->current_change_);
   tracker_->current_change_ = this;
   if (window)

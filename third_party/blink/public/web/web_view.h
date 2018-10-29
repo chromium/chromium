@@ -88,7 +88,7 @@ class WebView : protected WebWidget {
   using WebWidget::HandleInputEvent;
   using WebWidget::DispatchBufferedTouchEvents;
   using WebWidget::SetCursorVisibilityState;
-  using WebWidget::ApplyViewportDeltas;
+  using WebWidget::ApplyViewportChanges;
   using WebWidget::MouseCaptureLost;
   using WebWidget::SetFocus;
   using WebWidget::SelectionBounds;
@@ -101,7 +101,6 @@ class WebView : protected WebWidget {
   using WebWidget::DidLosePointerLock;
   using WebWidget::BackgroundColor;
   using WebWidget::GetPagePopup;
-  using WebWidget::UpdateBrowserControlsState;
 
   // Initialization ------------------------------------------------------
 
@@ -272,9 +271,10 @@ class WebView : protected WebWidget {
 
   // Returns the "preferred" contents size, defined as the preferred minimum
   // width of the main document's contents and the minimum height required to
-  // display the main document without scrollbars.  The returned size has the
-  // page zoom factor applied. The lifecycle must be updated to at least layout
-  // before calling this (see: |UpdateLifecycle|).
+  // display the main document without scrollbars. If the document is in quirks
+  // mode (does not have <!doctype html>), the height will stretch to fill the
+  // viewport. The returned size has the page zoom factor applied. The lifecycle
+  // must be updated to at least layout before calling (see: |UpdateLifecycle|).
   virtual WebSize ContentsPreferredMinimumSize() = 0;
 
   // Sets the display mode of the web app.

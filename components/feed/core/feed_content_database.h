@@ -103,10 +103,12 @@ class FeedContentDatabase {
   // Callback methods given to |storage_database_| for async responses.
   void OnDatabaseInitialized(bool success);
   void OnLoadEntriesForLoadContent(
+      base::TimeTicks start_time,
       ContentLoadCallback callback,
       bool success,
       std::unique_ptr<std::vector<ContentStorageProto>> content);
   void OnLoadKeysForLoadAllContentKeys(
+      base::TimeTicks start_time,
       ContentKeyCallback callback,
       bool success,
       std::unique_ptr<std::vector<std::string>> keys);

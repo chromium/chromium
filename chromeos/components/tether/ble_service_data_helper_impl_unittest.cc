@@ -95,7 +95,7 @@ class BleServiceDataHelperImplTest : public testing::Test {
             cryptauth::DataWithTimestamp("advertisement1", 1000L, 2000L)) {
     std::transform(test_remote_devices_.begin(), test_remote_devices_.end(),
                    std::back_inserter(test_remote_device_ids_),
-                   [this](const auto& device) { return device.GetDeviceId(); });
+                   [](const auto& device) { return device.GetDeviceId(); });
   };
   ~BleServiceDataHelperImplTest() override = default;
 

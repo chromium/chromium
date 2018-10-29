@@ -308,7 +308,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, AbortDuringStartModels) {
                                      base::Unretained(&model_load_callback_)));
   WaitForDTC();
   EXPECT_EQ(DataTypeController::MODEL_STARTING, non_ui_dtc_->state());
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
 }
 
@@ -333,7 +333,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, StartAssociationFailed) {
   Start();
   WaitForDTC();
   EXPECT_EQ(DataTypeController::FAILED, non_ui_dtc_->state());
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
 }
 
@@ -393,7 +393,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, AbortDuringAssociation) {
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
   Start();
   wait_for_db_thread_pause.Wait();
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   WaitForDTC();
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
 }
@@ -409,7 +409,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, StartAfterSyncShutdown) {
   SetStopExpectations();
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
   Start();
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
   Mock::VerifyAndClearExpectations(change_processor_.get());
   Mock::VerifyAndClearExpectations(dtc_mock_.get());
@@ -427,7 +427,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, Stop) {
   Start();
   WaitForDTC();
   EXPECT_EQ(DataTypeController::RUNNING, non_ui_dtc_->state());
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, non_ui_dtc_->state());
 }
 
@@ -446,7 +446,7 @@ TEST_F(SyncAsyncDirectoryTypeControllerTest, StopStart) {
   EXPECT_EQ(DataTypeController::RUNNING, non_ui_dtc_->state());
 
   non_ui_dtc_->BlockBackendTasks();
-  non_ui_dtc_->Stop(KEEP_METADATA);
+  non_ui_dtc_->Stop(STOP_SYNC);
   SetStartExpectations();
   SetAssociateExpectations();
   SetActivateExpectations(DataTypeController::OK);

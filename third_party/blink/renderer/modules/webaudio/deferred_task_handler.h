@@ -74,8 +74,9 @@ class MODULES_EXPORT DeferredTaskHandler final
   // when they are not connected to any downstream nodes.  These two methods are
   // called by the nodes who want to add/remove themselves into/from the
   // automatic pull lists.
-  void AddAutomaticPullNode(AudioHandler*);
-  void RemoveAutomaticPullNode(AudioHandler*);
+  void AddAutomaticPullNode(scoped_refptr<AudioHandler>);
+  void RemoveAutomaticPullNode(scoped_refptr<AudioHandler>);
+
   // Called right before handlePostRenderTasks() to handle nodes which need to
   // be pulled even when they are not connected to anything.
   void ProcessAutomaticPullNodes(size_t frames_to_process);
@@ -197,15 +198,16 @@ class MODULES_EXPORT DeferredTaskHandler final
   // has been processed.
   void UpdateTailProcessingHandlers();
 
-  // For the sake of thread safety, we maintain a seperate Vector of automatic
-  // pull nodes for rendering in m_renderingAutomaticPullNodes.  It will be
-  // copied from m_automaticPullNodes by updateAutomaticPullNodes() at the
-  // very start or end of the rendering quantum.
-  HashSet<AudioHandler*> automatic_pull_nodes_;
-  Vector<AudioHandler*> rendering_automatic_pull_nodes_;
-  // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is
-  // modified.
-  bool automatic_pull_nodes_need_updating_;
+  // For the sake of thread safety, we maintain a seperate Vector of
+  // AudioHandlers for "automatic-pull nodes":
+  // |rendering_automatic_pull_handlers|. This storage will be copied from
+  // |automatic_pull_handlers| by |UpdateAutomaticPullNodes()| at the beginning
+  // or end of the render quantum.
+  HashSet<scoped_refptr<AudioHandler>> automatic_pull_handlers_;
+  Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_;
+
+  // Keeps track if the |automatic_pull_handlers| storage is touched.
+  bool automatic_pull_handlers_need_updating_;
 
   // Collection of nodes where the channel count mode has changed. We want the
   // channel count mode to change in the pre- or post-rendering phase so as

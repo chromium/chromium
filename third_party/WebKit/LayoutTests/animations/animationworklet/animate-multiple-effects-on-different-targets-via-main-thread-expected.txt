@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: line 63: background-color for the first target is: rgb(0, 128, 128)
+CONSOLE MESSAGE: line 65: box-shadow for the second target is: rgb(0, 128, 128) 4px 4px 25px 0px
+

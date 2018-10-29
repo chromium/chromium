@@ -8,7 +8,7 @@
 
 namespace blink {
 
-namespace EventUtil {
+namespace event_util {
 
 bool IsPointerEventType(const AtomicString& event_type) {
   return event_type == EventTypeNames::gotpointercapture ||
@@ -32,6 +32,6 @@ bool IsDOMMutationEventType(const AtomicString& event_type) {
          event_type == EventTypeNames::DOMSubtreeModified;
 }
 
-}  // namespace eventUtil
+}  // namespace event_util
 
 }  // namespace blink

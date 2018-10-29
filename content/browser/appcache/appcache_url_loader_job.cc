@@ -22,8 +22,8 @@ AppCacheURLLoaderJob::~AppCacheURLLoaderJob() {
 }
 
 bool AppCacheURLLoaderJob::IsStarted() const {
-  return delivery_type_ != AWAITING_DELIVERY_ORDERS &&
-         delivery_type_ != NETWORK_DELIVERY;
+  return delivery_type_ != DeliveryType::kAwaitingDeliverCall &&
+         delivery_type_ != DeliveryType::kNetwork;
 }
 
 void AppCacheURLLoaderJob::DeliverAppCachedResponse(const GURL& manifest_url,
@@ -35,7 +35,7 @@ void AppCacheURLLoaderJob::DeliverAppCachedResponse(const GURL& manifest_url,
     return;
   }
 
-  delivery_type_ = APPCACHED_DELIVERY;
+  delivery_type_ = DeliveryType::kAppCached;
 
   // In tests we only care about the delivery_type_ state.
   if (AppCacheRequestHandler::IsRunningInTests())
@@ -57,7 +57,7 @@ void AppCacheURLLoaderJob::DeliverAppCachedResponse(const GURL& manifest_url,
 }
 
 void AppCacheURLLoaderJob::DeliverNetworkResponse() {
-  delivery_type_ = NETWORK_DELIVERY;
+  delivery_type_ = DeliveryType::kNetwork;
 
   // In tests we only care about the delivery_type_ state.
   if (AppCacheRequestHandler::IsRunningInTests())
@@ -67,13 +67,11 @@ void AppCacheURLLoaderJob::DeliverNetworkResponse() {
   // the network load.
   DCHECK(loader_callback_ && !binding_.is_bound());
   std::move(loader_callback_).Run({});
-  weak_factory_.InvalidateWeakPtrs();
-  is_deleting_soon_ = true;
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  DeleteSoon();
 }
 
 void AppCacheURLLoaderJob::DeliverErrorResponse() {
-  delivery_type_ = ERROR_DELIVERY;
+  delivery_type_ = DeliveryType::kError;
 
   // In tests we only care about the delivery_type_ state.
   if (AppCacheRequestHandler::IsRunningInTests())
@@ -81,6 +79,17 @@ void AppCacheURLLoaderJob::DeliverErrorResponse() {
 
   if (loader_callback_)
     CallLoaderCallback();
+
+  if (!client_) {
+    // Although all callsites that lead to construction of AppCacheURLLoaderJob
+    // provide a NavigationLoaderInterceptor::LoaderCallback, some use weak
+    // pointers to bind it. So it's possible that in between the time that
+    // AppCacheURLLoaderJob grabs the response info from storage that the
+    // callback is now empty, which leads to client_ not being initialized.
+    DeleteSoon();
+    return;
+  }
+
   NotifyCompleted(net::ERR_FAILED);
 }
 
@@ -130,8 +139,8 @@ void AppCacheURLLoaderJob::Start(
   DCHECK(!binding_.is_bound());
   binding_.Bind(std::move(request));
   client_ = std::move(client);
-  binding_.set_connection_error_handler(base::BindOnce(
-      &AppCacheURLLoaderJob::OnConnectionError, GetDerivedWeakPtr()));
+  binding_.set_connection_error_handler(
+      base::BindOnce(&AppCacheURLLoaderJob::DeleteSoon, GetDerivedWeakPtr()));
 }
 
 AppCacheURLLoaderJob::AppCacheURLLoaderJob(
@@ -174,9 +183,15 @@ void AppCacheURLLoaderJob::OnResponseInfoLoaded(
     if (loader_callback_)
       CallLoaderCallback();
 
+    if (!client_) {
+      // See comment in DeliverErrorResponse.
+      DeleteSoon();
+      return;
+    }
+
     info_ = response_info;
-    reader_.reset(
-        storage_->CreateResponseReader(manifest_url_, entry_.response_id()));
+    reader_ =
+        storage_->CreateResponseReader(manifest_url_, entry_.response_id());
 
     if (is_range_request())
       SetupRangeResponse();
@@ -190,8 +205,8 @@ void AppCacheURLLoaderJob::OnResponseInfoLoaded(
     // Wait for the data pipe to be ready to accept data.
     writable_handle_watcher_.Watch(
         response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-        base::Bind(&AppCacheURLLoaderJob::OnResponseBodyStreamReady,
-                   GetDerivedWeakPtr()));
+        base::BindRepeating(&AppCacheURLLoaderJob::OnResponseBodyStreamReady,
+                            GetDerivedWeakPtr()));
 
     SendResponseInfo();
     ReadMore();
@@ -244,7 +259,7 @@ void AppCacheURLLoaderJob::OnResponseBodyStreamReady(MojoResult result) {
   ReadMore();
 }
 
-void AppCacheURLLoaderJob::OnConnectionError() {
+void AppCacheURLLoaderJob::DeleteSoon() {
   if (storage_.get())
     storage_->CancelDelegateCallbacks(this);
   weak_factory_.InvalidateWeakPtrs();
@@ -253,7 +268,6 @@ void AppCacheURLLoaderJob::OnConnectionError() {
 }
 
 void AppCacheURLLoaderJob::SendResponseInfo() {
-  DCHECK(client_);
   // If this is null it means the response information was sent to the client.
   if (!data_pipe_.consumer_handle.is_valid())
     return;
@@ -339,7 +353,7 @@ void AppCacheURLLoaderJob::NotifyCompleted(int error_code) {
   }
   client_->OnComplete(status);
 
-  if (delivery_type_ == APPCACHED_DELIVERY) {
+  if (delivery_type_ == DeliveryType::kAppCached) {
     AppCacheHistograms::CountResponseRetrieval(
         error_code == 0, is_main_resource_load_,
         url::Origin::Create(manifest_url_));

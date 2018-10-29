@@ -95,8 +95,7 @@ void ExternalPolicyDataFetcherTest::StartJob(int index) {
 }
 
 void ExternalPolicyDataFetcherTest::CancelJob(int index) {
-  std::map<int, ExternalPolicyDataFetcher::Job*>::iterator it =
-      jobs_.find(index);
+  auto it = jobs_.find(index);
   ASSERT_TRUE(it != jobs_.end());
   ExternalPolicyDataFetcher::Job* job = it->second;
   jobs_.erase(it);

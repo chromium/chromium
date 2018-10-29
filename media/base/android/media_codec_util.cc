@@ -157,7 +157,7 @@ bool MediaCodecUtil::IsMediaCodecAvailableFor(int sdk, const char* model) {
       return model == other.model;
     }
   };
-  static const std::vector<BlacklistEntry> blacklist = {
+  static const BlacklistEntry blacklist[] = {
       // crbug.com/653905
       {"LGMS330", SDK_VERSION_LOLLIPOP_MR1},
 
@@ -192,9 +192,9 @@ bool MediaCodecUtil::IsMediaCodecAvailableFor(int sdk, const char* model) {
       {"GT-I8262B", SDK_VERSION_JELLY_BEAN_MR2},
   };
 
-  const auto iter =
-      std::find(blacklist.begin(), blacklist.end(), BlacklistEntry(model, 0));
-  return iter == blacklist.end() || sdk > iter->last_bad_sdk;
+  const BlacklistEntry* iter = std::find(
+      std::begin(blacklist), std::end(blacklist), BlacklistEntry(model, 0));
+  return iter == std::end(blacklist) || sdk > iter->last_bad_sdk;
 }
 
 // static
@@ -222,9 +222,9 @@ std::set<int> MediaCodecUtil::GetEncoderColorFormats(
   ScopedJavaLocalRef<jintArray> j_color_format_array =
       Java_MediaCodecUtil_getEncoderColorFormatsForMime(env, j_mime);
 
-  if (j_color_format_array.obj()) {
+  if (!j_color_format_array.is_null()) {
     std::vector<int> formats;
-    JavaIntArrayToIntVector(env, j_color_format_array.obj(), &formats);
+    JavaIntArrayToIntVector(env, j_color_format_array, &formats);
     color_formats = std::set<int>(formats.begin(), formats.end());
   }
 

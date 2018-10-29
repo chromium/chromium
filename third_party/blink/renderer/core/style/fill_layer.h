@@ -29,16 +29,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/length.h"
-#include "third_party/blink/renderer/platform/length_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
 namespace blink {
 
 struct FillSize {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   FillSize() : type(EFillSizeType::kSizeLength) {}
 
   FillSize(EFillSizeType t, const LengthSize& l) : type(t), size(l) {}
@@ -217,19 +217,6 @@ class CORE_EXPORT FillLayer {
 
   bool ImagesAreLoaded() const;
 
-  bool HasImage() const {
-    if (image_)
-      return true;
-    return next_ ? next_->HasImage() : false;
-  }
-
-  bool HasFixedImage() const {
-    if (image_ &&
-        static_cast<EFillAttachment>(attachment_) == EFillAttachment::kFixed)
-      return true;
-    return next_ ? next_->HasFixedImage() : false;
-  }
-
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
   bool HasRepeatXY() const;
   bool ClipOccludesNextLayers() const;
@@ -241,19 +228,30 @@ class CORE_EXPORT FillLayer {
 
   static bool ImagesIdentical(const FillLayer*, const FillLayer*);
 
-  EFillBox ThisOrNextLayersClipMax() const {
+  EFillBox LayersClipMax() const {
     ComputeCachedPropertiesIfNeeded();
-    return static_cast<EFillBox>(this_or_next_layers_clip_max_);
+    return static_cast<EFillBox>(layers_clip_max_);
   }
-  bool ThisOrNextLayersUseContentBox() const {
+  bool AnyLayerUsesContentBox() const {
     ComputeCachedPropertiesIfNeeded();
-    return this_or_next_layers_use_content_box_;
+    return any_layer_uses_content_box_;
   }
-  bool ThisOrNextLayersHaveLocalAttachment() const {
+  bool AnyLayerHasImage() const {
     ComputeCachedPropertiesIfNeeded();
-    return this_or_next_layers_have_local_attachment_;
+    return any_layer_has_image_;
   }
-  void ComputeCachedPropertiesIfNeeded() const;
+  bool AnyLayerHasLocalAttachmentImage() const {
+    ComputeCachedPropertiesIfNeeded();
+    return any_layer_has_local_attachment_image_;
+  }
+  bool AnyLayerHasFixedAttachmentImage() const {
+    ComputeCachedPropertiesIfNeeded();
+    return any_layer_has_fixed_attachment_image_;
+  }
+  bool AnyLayerHasDefaultAttachment() const {
+    ComputeCachedPropertiesIfNeeded();
+    return any_layer_has_default_attachment_;
+  }
 
   static EFillAttachment InitialFillAttachment(EFillLayerType) {
     return EFillAttachment::kScroll;
@@ -304,6 +302,12 @@ class CORE_EXPORT FillLayer {
   bool ImageTilesLayer() const;
   bool LayerPropertiesEqual(const FillLayer&) const;
 
+  void ComputeCachedPropertiesIfNeeded() const {
+    if (!cached_properties_computed_)
+      ComputeCachedProperties();
+  }
+  void ComputeCachedProperties() const;
+
   FillLayer* next_;
 
   Persistent<StyleImage> image_;
@@ -341,12 +345,20 @@ class CORE_EXPORT FillLayer {
 
   unsigned type_ : 1;  // EFillLayerType
 
-  // EFillBox, maximum m_clip value from this to bottom layer
-  mutable unsigned this_or_next_layers_clip_max_ : 2;
+  // EFillBox, maximum clip_ value from this to bottom layer
+  mutable unsigned layers_clip_max_ : 2;
   // True if any of this or subsequent layers has content-box clip or origin.
-  mutable unsigned this_or_next_layers_use_content_box_ : 1;
-  // True if any of this or subsequent layers has local attachment.
-  mutable unsigned this_or_next_layers_have_local_attachment_ : 1;
+  mutable unsigned any_layer_uses_content_box_ : 1;
+  // True if any of this or subsequent layers has image.
+  mutable unsigned any_layer_has_image_ : 1;
+  // True if any of this or subsequent layers has local attachment image.
+  mutable unsigned any_layer_has_local_attachment_image_ : 1;
+  // True if any of this or subsequent layers has fixed attachment image.
+  mutable unsigned any_layer_has_fixed_attachment_image_ : 1;
+  // True if any of this or subsequent layers has default attachment (including
+  // non-default attachment without an image thus the default attachment will be
+  // used).
+  mutable unsigned any_layer_has_default_attachment_ : 1;
   // Set once any of the above is accessed. The layers will be frozen
   // thereafter.
   mutable unsigned cached_properties_computed_ : 1;

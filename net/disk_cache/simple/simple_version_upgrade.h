@@ -20,13 +20,31 @@ class FilePath;
 
 namespace disk_cache {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SimpleCacheConsistencyResult {
+  kOK = 0,
+  kCreateDirectoryFailed = 1,
+  kBadFakeIndexFile = 2,
+  kBadInitialMagicNumber = 3,
+  kVersionTooOld = 4,
+  kVersionFromTheFuture = 5,
+  kBadZeroCheck = 6,
+  kUpgradeIndexV5V6Failed = 7,
+  kWriteFakeIndexFileFailed = 8,
+  kReplaceFileFailed = 9,
+  kBadFakeIndexReadSize = 10,
+  kMaxValue = kBadFakeIndexReadSize,
+};
+
 // Performs all necessary disk IO to upgrade the cache structure if it is
 // needed.
 //
 // Returns true iff no errors were found during consistency checks and all
 // necessary transitions succeeded. If this function fails, there is nothing
 // left to do other than dropping the whole cache directory.
-NET_EXPORT_PRIVATE bool UpgradeSimpleCacheOnDisk(const base::FilePath& path);
+NET_EXPORT_PRIVATE SimpleCacheConsistencyResult
+UpgradeSimpleCacheOnDisk(const base::FilePath& path);
 
 struct NET_EXPORT_PRIVATE FakeIndexData {
   FakeIndexData();

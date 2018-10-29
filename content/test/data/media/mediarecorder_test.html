@@ -501,7 +501,7 @@ function testIllegalStartInPausedStateThrowsDOMError() {
 // Tests that MediaRecorder can record a 2 Channel audio stream.
 function testTwoChannelAudio() {
   var audioSize = 0;
-  var context = new OfflineAudioContext(2, NUM_SAMPLES, SAMPLING_RATE);
+  var context = new AudioContext();
   var oscillator = context.createOscillator();
   oscillator.type = 'sine';
   oscillator.frequency.value = FREQUENCY;
@@ -519,7 +519,6 @@ function testTwoChannelAudio() {
         };
         recorder.start(0);
         oscillator.start();
-        context.startRendering();
       })
       .then(function() {
         return waitFor('Make sure the recording has data',

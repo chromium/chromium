@@ -26,6 +26,9 @@ import java.util.List;
  * A container class for a view showing a contact in the Contacts Picker.
  */
 public class ContactView extends SelectableItemView<ContactDetails> {
+    // The length of the fade in animation (in ms).
+    private static final int IMAGE_FADE_IN_DURATION = 150;
+
     // Our context.
     private Context mContext;
 
@@ -116,8 +119,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
      * Completes the initialization of the ContactView. Must be called before the
      * {@link ContactView} can respond to click events.
      * @param contactDetails The details about the contact represented by this ContactView.
+     * @param icon The icon to show for the contact (or null if not loaded yet).
      */
-    public void initialize(ContactDetails contactDetails) {
+    public void initialize(ContactDetails contactDetails, Bitmap icon) {
         resetTile();
 
         mContactDetails = contactDetails;
@@ -126,19 +130,28 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         String displayName = contactDetails.getDisplayName();
         mDisplayName.setText(displayName);
         mDetailsView.setText(contactDetails.getContactDetailsAsString());
-        Bitmap icon = contactDetails.getContactImage();
         if (icon == null) {
             icon = mCategoryView.getIconGenerator().generateIconForText(
                     contactDetails.getDisplayNameAbbreviation(), 2);
             mImage.setImageBitmap(icon);
         } else {
-            Resources resources = mContext.getResources();
-            RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources, icon);
-            drawable.setCircular(true);
-            mImage.setImageDrawable(drawable);
+            setIconBitmap(icon);
         }
 
         updateSelectionState();
+    }
+
+    /**
+     * Sets the icon to display for the contact and fade it into view.
+     * @param icon The icon to display.
+     */
+    public void setIconBitmap(Bitmap icon) {
+        Resources resources = mContext.getResources();
+        RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources, icon);
+        drawable.setCircular(true);
+        mImage.setImageDrawable(drawable);
+        mImage.setAlpha(0.0f);
+        mImage.animate().alpha(1.0f).setDuration(IMAGE_FADE_IN_DURATION).start();
     }
 
     /**

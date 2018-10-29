@@ -1,6 +1,7 @@
 <html>
     <head>
-        <script src="../../resources/js-test.js"></script>
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
         <script>
             
             function resetField()
@@ -10,9 +11,11 @@
 
             function runTest()
             {
-                if (window.testRunner) {
-                    testRunner.dumpAsText();
-                    
+                test(() => {
+                    assert_own_property(
+                        window, 'eventSender',
+                        'This test requires eventSender. To test this manually drag the link into the text field.');
+
                     elementToDrag = document.getElementById("elementToDrag");
                     x1 = elementToDrag.offsetLeft + elementToDrag.offsetWidth / 2;
                     y1 = elementToDrag.offsetTop + elementToDrag.offsetHeight / 2;
@@ -26,14 +29,12 @@
                     eventSender.leapForward(400);
                     eventSender.mouseMoveTo(x2, y2);
                     eventSender.mouseUp();
-                    shouldBe("dragTarget.value", "elementToDrag.href");
-                    testPassed("Didn't crash.");
+                    assert_equals(dragTarget.value, elementToDrag.href);
+
                     //clean up output
                     elementToDrag.parentNode.removeChild(elementToDrag);
                     dragTarget.parentNode.removeChild(dragTarget);
-                } else {
-                    debug('<br>To test this manually drag the link into the text field.')
-                }   
+                }, "This tests that we don't lose data dropped onto an input field that changes its content during a drop event");
             }
         </script>
     </head>
@@ -43,7 +44,6 @@
         <input id="dragTarget" type="text" value="Original Text" onfocus="resetField()" />
         <div id="console"></div>
         <script>
-             description("This tests that we don't lose data dropped onto an input field that changes its content during a drop event");
              runTest();
         </script>
     </body>

@@ -8,6 +8,7 @@
 namespace cc {
 
 enum class BrowserControlsState { kShown = 1, kHidden = 2, kBoth = 3 };
-}
+
+}  // namespace cc
 
 #endif  // CC_INPUT_BROWSER_CONTROLS_STATE_H_

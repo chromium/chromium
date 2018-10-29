@@ -31,7 +31,6 @@ config("internal_config") {
     # TODO(davidben): Fix size_t truncations in BoringSSL.
     # https://crbug.com/boringssl/22
     "//build/config/compiler:no_size_t_to_int_warning",
-    "//build/config/sanitizers:cfi_icall_generalize_pointers",
   ]
   if (is_posix || is_fuchsia) {
     cflags_c = [ "-std=c99" ]
@@ -49,7 +48,8 @@ all_headers = crypto_headers + ssl_headers
 
 # Windows' assembly is built with Yasm. The other platforms use the platform
 # assembler.
-if (is_win && !is_msan) {
+# Exclude Yasm for Windows ARM64 because Yasm targets to x86 and x64 only.
+if (is_win && !is_msan && current_cpu != "arm64") {
   import("//third_party/yasm/yasm_assemble.gni")
   yasm_assemble("boringssl_asm") {
     if (current_cpu == "x64") {
@@ -216,35 +216,43 @@ if (build_with_chromium) {
   }
 
   foreach(fuzzer, fuzzers) {
-    fuzzer_test("boringssl_${fuzzer}_fuzzer") {
-      sources = [
-        "src/fuzz/${fuzzer}.cc",
-        "src/ssl/test/fuzzer.h",
-        "src/ssl/test/fuzzer_tags.h",
-      ]
-      deps = [
-        ":boringssl_fuzzer",
-      ]
-      seed_corpus = "src/fuzz/${fuzzer}_corpus"
+    # The arm_cpuinfo fuzzer depends on some internal symbols that are otherwise
+    # only used on ARM. But fuzzing infrastructure usually uses x86_64, so
+    # BoringSSL compiles them on all platforms and leaves them unexported so the
+    # static linker drops them. This works because fuzzers are usually
+    # statically linked. But Chromium builds fuzzers in all configurations, so
+    # we must exclude that fuzzer in the components build.
+    if (fuzzer != "arm_cpuinfo" || !is_component_build) {
+      fuzzer_test("boringssl_${fuzzer}_fuzzer") {
+        sources = [
+          "src/fuzz/${fuzzer}.cc",
+          "src/ssl/test/fuzzer.h",
+          "src/ssl/test/fuzzer_tags.h",
+        ]
+        deps = [
+          ":boringssl_fuzzer",
+        ]
+        seed_corpus = "src/fuzz/${fuzzer}_corpus"
 
-      if ("cert" == fuzzer) {
-        libfuzzer_options = [ "max_len=3072" ]
-      } else if ("client" == fuzzer) {
-        libfuzzer_options = [ "max_len=20000" ]
-      } else if ("pkcs8" == fuzzer) {
-        libfuzzer_options = [ "max_len=2048" ]
-      } else if ("privkey" == fuzzer) {
-        libfuzzer_options = [ "max_len=2048" ]
-      } else if ("read_pem" == fuzzer) {
-        libfuzzer_options = [ "max_len=512" ]
-      } else if ("session" == fuzzer) {
-        libfuzzer_options = [ "max_len=8192" ]
-      } else if ("server" == fuzzer) {
-        libfuzzer_options = [ "max_len=4096" ]
-      } else if ("spki" == fuzzer) {
-        libfuzzer_options = [ "max_len=1024" ]
-      } else if ("ssl_ctx_api" == fuzzer) {
-        libfuzzer_options = [ "max_len=256" ]
+        if ("cert" == fuzzer) {
+          libfuzzer_options = [ "max_len=3072" ]
+        } else if ("client" == fuzzer) {
+          libfuzzer_options = [ "max_len=20000" ]
+        } else if ("pkcs8" == fuzzer) {
+          libfuzzer_options = [ "max_len=2048" ]
+        } else if ("privkey" == fuzzer) {
+          libfuzzer_options = [ "max_len=2048" ]
+        } else if ("read_pem" == fuzzer) {
+          libfuzzer_options = [ "max_len=512" ]
+        } else if ("session" == fuzzer) {
+          libfuzzer_options = [ "max_len=8192" ]
+        } else if ("server" == fuzzer) {
+          libfuzzer_options = [ "max_len=4096" ]
+        } else if ("spki" == fuzzer) {
+          libfuzzer_options = [ "max_len=1024" ]
+        } else if ("ssl_ctx_api" == fuzzer) {
+          libfuzzer_options = [ "max_len=256" ]
+        }
       }
     }
   }

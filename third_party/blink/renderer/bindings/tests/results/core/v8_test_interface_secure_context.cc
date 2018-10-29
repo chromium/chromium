@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -62,7 +62,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceSecureContextV8Internal {
+namespace test_interface_secure_context_v8_internal {
 
 static void secureContextAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -262,12 +262,12 @@ static void secureContextWorkerExposedRuntimeEnabledMethodMethod(const v8::Funct
   impl->secureContextWorkerExposedRuntimeEnabledMethod();
 }
 
-} // namespace TestInterfaceSecureContextV8Internal
+}  // namespace test_interface_secure_context_v8_internal
 
 void V8TestInterfaceSecureContext::secureContextAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -275,13 +275,13 @@ void V8TestInterfaceSecureContext::secureContextAttributeAttributeSetterCallback
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -289,13 +289,13 @@ void V8TestInterfaceSecureContext::secureContextRuntimeEnabledAttributeAttribute
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWindowExposedAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -303,13 +303,13 @@ void V8TestInterfaceSecureContext::secureContextWindowExposedAttributeAttributeS
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWorkerExposedAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -317,13 +317,13 @@ void V8TestInterfaceSecureContext::secureContextWorkerExposedAttributeAttributeS
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWindowExposedRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -331,13 +331,13 @@ void V8TestInterfaceSecureContext::secureContextWindowExposedRuntimeEnabledAttri
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWorkerExposedRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -345,43 +345,43 @@ void V8TestInterfaceSecureContext::secureContextWorkerExposedRuntimeEnabledAttri
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceSecureContext::secureContextMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextMethodMethod(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextRuntimeEnabledMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextRuntimeEnabledMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextRuntimeEnabledMethodMethod(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWindowExposedMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedMethodMethod(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWorkerExposedMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedMethodMethod(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWindowExposedRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWindowExposedRuntimeEnabledMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledMethodMethod(info);
 }
 
 void V8TestInterfaceSecureContext::secureContextWorkerExposedRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceSecureContext_secureContextWorkerExposedRuntimeEnabledMethod");
 
-  TestInterfaceSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledMethodMethod(info);
+  test_interface_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledMethodMethod(info);
 }
 
 static void installV8TestInterfaceSecureContextTemplate(

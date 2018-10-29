@@ -156,7 +156,7 @@ void SchemaRegistryServiceFactory::BrowserContextShutdown(
     content::BrowserContext* context) {
   if (context->IsOffTheRecord())
     return;
-  RegistryMap::iterator it = registries_.find(context);
+  auto it = registries_.find(context);
   if (it != registries_.end())
     it->second->Shutdown();
   else

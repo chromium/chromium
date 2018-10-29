@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/invalidation/public/object_id_invalidation_map.h"
 
 namespace syncer {
@@ -18,7 +19,13 @@ DeprecatedInvalidatorRegistrar::DeprecatedInvalidatorRegistrar()
 
 DeprecatedInvalidatorRegistrar::~DeprecatedInvalidatorRegistrar() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  CHECK(handler_to_ids_map_.empty());
+  // Substitute CHECK(handler_to_ids_map_.empty()) with histogram,
+  // in order to investigate bug https://crbug.com/880226
+  for (const auto& handler_to_id : handler_to_ids_map_) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "DeprecatedInvalidatorRegistrar.CrashStatus",
+        OwnerNameToHandlerType(handler_to_id.first->GetOwnerName()));
+  }
 }
 
 void DeprecatedInvalidatorRegistrar::RegisterHandler(
@@ -75,15 +82,15 @@ void DeprecatedInvalidatorRegistrar::UnregisterHandler(
 ObjectIdSet DeprecatedInvalidatorRegistrar::GetRegisteredIds(
     InvalidationHandler* handler) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  HandlerIdsMap::const_iterator lookup = handler_to_ids_map_.find(handler);
+  auto lookup = handler_to_ids_map_.find(handler);
   return lookup != handler_to_ids_map_.end() ? lookup->second : ObjectIdSet();
 }
 
 ObjectIdSet DeprecatedInvalidatorRegistrar::GetAllRegisteredIds() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   ObjectIdSet registered_ids;
-  for (HandlerIdsMap::const_iterator it = handler_to_ids_map_.begin();
-       it != handler_to_ids_map_.end(); ++it) {
+  for (auto it = handler_to_ids_map_.begin(); it != handler_to_ids_map_.end();
+       ++it) {
     registered_ids.insert(it->second.begin(), it->second.end());
   }
   return registered_ids;
@@ -97,8 +104,8 @@ void DeprecatedInvalidatorRegistrar::DispatchInvalidationsToHandlers(
     return;
   }
 
-  for (HandlerIdsMap::iterator it = handler_to_ids_map_.begin();
-       it != handler_to_ids_map_.end(); ++it) {
+  for (auto it = handler_to_ids_map_.begin(); it != handler_to_ids_map_.end();
+       ++it) {
     ObjectIdInvalidationMap to_emit =
         invalidation_map.GetSubsetWithObjectIds(it->second);
     if (!to_emit.Empty()) {

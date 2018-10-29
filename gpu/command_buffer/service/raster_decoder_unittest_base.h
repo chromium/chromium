@@ -30,6 +30,7 @@
 #include "gpu/command_buffer/service/raster_decoder_mock.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -266,6 +267,7 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   gles2::ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
+  SharedImageManager shared_image_manager_;
   scoped_refptr<gles2::ContextGroup> group_;
   base::MessageLoop message_loop_;
   gles2::MockCopyTextureResourceManager* copy_texture_manager_;  // not owned

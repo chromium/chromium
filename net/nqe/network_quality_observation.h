@@ -29,12 +29,12 @@ class NET_EXPORT_PRIVATE Observation {
  public:
   Observation(int32_t value,
               base::TimeTicks timestamp,
-              const base::Optional<int32_t>& signal_strength,
+              int32_t signal_strength,
               NetworkQualityObservationSource source);
 
   Observation(int32_t value,
               base::TimeTicks timestamp,
-              const base::Optional<int32_t>& signal_strength,
+              int32_t signal_strength,
               NetworkQualityObservationSource source,
               const base::Optional<IPHash>& host);
 
@@ -49,8 +49,9 @@ class NET_EXPORT_PRIVATE Observation {
   // Time when the observation was taken.
   base::TimeTicks timestamp() const { return timestamp_; }
 
-  // Signal strength when the observation was taken.
-  base::Optional<int32_t> signal_strength() const { return signal_strength_; }
+  // Signal strength when the observation was taken. Set to INT32_MIN when the
+  // value is unavailable. Otherwise, must be between 0 and 4 (both inclusive).
+  int32_t signal_strength() const { return signal_strength_; }
 
   // The source of the observation.
   NetworkQualityObservationSource source() const { return source_; }
@@ -66,7 +67,10 @@ class NET_EXPORT_PRIVATE Observation {
 
   base::TimeTicks timestamp_;
 
-  base::Optional<int32_t> signal_strength_;
+  // Signal strength of the network when the observation was taken. Set to
+  // INT32_MIN when the value is unavailable. Otherwise, must be between 0 and 4
+  // (both inclusive).
+  int32_t signal_strength_;
 
   NetworkQualityObservationSource source_;
 

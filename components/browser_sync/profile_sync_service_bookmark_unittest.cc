@@ -296,7 +296,7 @@ class FakeServerChange {
     // (a) the implementation isn't sensitive to the order and
     // (b) the original meta info isn't blindly overwritten by
     //     BookmarkChangeProcessor unless there is a real change.
-    BookmarkNode::MetaInfoMap::const_iterator it = meta_info_map.end();
+    auto it = meta_info_map.end();
     while (it != meta_info_map.begin()) {
       --it;
       sync_pb::MetaInfo* meta_info = specifics->add_meta_info();
@@ -643,8 +643,7 @@ class ProfileSyncServiceBookmarkTest : public testing::Test {
       EXPECT_EQ(meta_info_map->size(),
                 static_cast<size_t>(specifics.meta_info_size()));
       for (int i = 0; i < specifics.meta_info_size(); i++) {
-        BookmarkNode::MetaInfoMap::const_iterator it =
-            meta_info_map->find(specifics.meta_info(i).key());
+        auto it = meta_info_map->find(specifics.meta_info(i).key());
         EXPECT_TRUE(it != meta_info_map->end());
         EXPECT_EQ(it->second, specifics.meta_info(i).value());
       }
@@ -2441,8 +2440,7 @@ void ProfileSyncServiceBookmarkTestWithData::ExpectTransactionVersionMatch(
     ASSERT_TRUE(
         model_associator()->InitSyncNodeFromChromeId(it->first, &sync_node));
     EXPECT_EQ(sync_node.GetTransactionVersion(), it->second);
-    BookmarkNodeVersionMap::const_iterator expected_ver_it =
-        version_expected.find(it->first);
+    auto expected_ver_it = version_expected.find(it->first);
     if (expected_ver_it != version_expected.end())
       EXPECT_EQ(expected_ver_it->second, it->second);
   }

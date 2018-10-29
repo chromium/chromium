@@ -120,7 +120,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                 name, shortName, displayMode, orientation, mOldInfo.source(), themeColor,
                 backgroundColor, mOldInfo.apkPackageName(), mOldInfo.shellApkVersion(),
                 mOldInfo.manifestUrl(), manifestStartUrl, WebApkInfo.WebApkDistributor.BROWSER,
-                iconUrlToMurmur2HashMap, serializedShareTarget, mOldInfo.shouldForceNavigation());
+                iconUrlToMurmur2HashMap, serializedShareTarget, mOldInfo.shouldForceNavigation(),
+                mOldInfo.useTransparentSplash());
         mObserver.onGotManifestData(info, primaryIconUrl, badgeIconUrl);
     }
 

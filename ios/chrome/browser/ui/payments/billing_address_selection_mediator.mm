@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -112,6 +112,7 @@ using ::payment_request_util::GetPhoneNumberLabelFromAutofillProfile;
         *_paymentRequest, *billingProfile);
     item.complete = _paymentRequest->profile_comparator()->IsShippingComplete(
         billingProfile);
+    item.useScaledFont = YES;
     if (self.selectedBillingProfile == billingProfile)
       _selectedItemIndex = index;
 

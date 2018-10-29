@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_message_event.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -98,10 +99,11 @@ void MIDIInput::DidReceiveMIDIData(unsigned port_index,
   // the current process has an explicit permission to handle sysex message.
   if (data[0] == 0xf0 && !midiAccess()->sysexEnabled())
     return;
-  DOMUint8Array* array = DOMUint8Array::Create(data, length);
+  DOMUint8Array* array =
+      DOMUint8Array::Create(data, SafeCast<unsigned>(length));
   DispatchEvent(*MIDIMessageEvent::Create(time_stamp, array));
 
-  UseCounter::Count(*ToDocument(GetExecutionContext()),
+  UseCounter::Count(*To<Document>(GetExecutionContext()),
                     WebFeature::kMIDIMessageEvent);
 }
 

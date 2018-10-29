@@ -55,8 +55,7 @@ QuickUnlockFactory::~QuickUnlockFactory() {}
 
 KeyedService* QuickUnlockFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new QuickUnlockStorage(
-      Profile::FromBrowserContext(context)->GetPrefs());
+  return new QuickUnlockStorage(Profile::FromBrowserContext(context));
 }
 
 }  // namespace quick_unlock

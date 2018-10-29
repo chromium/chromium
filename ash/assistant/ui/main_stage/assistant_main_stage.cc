@@ -36,7 +36,7 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kGreetingLabelMarginTopDip = 32;
+constexpr int kGreetingLabelMarginTopDip = 28;
 constexpr int kProgressIndicatorMarginLeftDip = 32;
 constexpr int kProgressIndicatorMarginTopDip = 40;
 
@@ -231,10 +231,6 @@ const char* AssistantMainStage::GetClassName() const {
 }
 
 void AssistantMainStage::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
-}
-
-void AssistantMainStage::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
@@ -506,6 +502,12 @@ bool AssistantMainStage::OnActiveQueryExitAnimationEnded(
     const ui::CallbackLayerAnimationObserver& observer) {
   // The exited active query view will always be the first child of its parent.
   delete query_layout_container_->child_at(0);
+
+  // TODO(https://crbug.com/896079): Remove this when view.cc handles the
+  // event notification.
+  query_layout_container_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kChildrenChanged, false);
+
   UpdateTopPadding();
 
   // Return false to prevent the observer from destroying itself.
@@ -562,7 +564,8 @@ void AssistantMainStage::OnPendingQueryCleared() {
     UpdateFooter();
 }
 
-void AssistantMainStage::OnResponseChanged(const AssistantResponse& response) {
+void AssistantMainStage::OnResponseChanged(
+    const std::shared_ptr<AssistantResponse>& response) {
   using assistant::util::CreateLayerAnimationSequence;
   using assistant::util::CreateOpacityElement;
 
@@ -626,6 +629,10 @@ void AssistantMainStage::OnUiVisibilityChanged(
                   ui::LayerAnimationElement::AnimatableProperty::OPACITY,
                   kFooterEntryAnimationFadeInDelay),
               CreateOpacityElement(1.f, kFooterEntryAnimationFadeInDuration)));
+    } else {
+      // A pending query is present so we simulate a change event to synchronize
+      // view state with interaction model state.
+      OnPendingQueryChanged(pending_query);
     }
 
     return;

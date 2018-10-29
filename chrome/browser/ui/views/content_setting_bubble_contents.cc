@@ -466,8 +466,7 @@ void ContentSettingBubbleContents::Init() {
   const ContentSettingBubbleModel::RadioGroup& radio_group =
       bubble_content.radio_group;
   if (!radio_group.radio_items.empty()) {
-    for (ContentSettingBubbleModel::RadioItems::const_iterator i(
-         radio_group.radio_items.begin());
+    for (auto i(radio_group.radio_items.begin());
          i != radio_group.radio_items.end(); ++i) {
       auto radio = std::make_unique<views::RadioButton>(*i, 0);
       radio->SetEnabled(bubble_content.radio_group_enabled);
@@ -488,8 +487,7 @@ void ContentSettingBubbleContents::Init() {
          LayoutRowType::INDENTED});
   }
 
-  for (std::vector<ContentSettingBubbleModel::DomainList>::const_iterator i(
-           bubble_content.domain_lists.begin());
+  for (auto i(bubble_content.domain_lists.begin());
        i != bubble_content.domain_lists.end(); ++i) {
     auto list_view =
         std::make_unique<ContentSettingDomainListView>(i->title, i->hosts);

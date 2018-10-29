@@ -10,8 +10,7 @@ namespace device {
 
 // static
 base::Optional<PublicKeyCredentialParams>
-PublicKeyCredentialParams::CreateFromCBORValue(
-    const cbor::CBORValue& cbor_value) {
+PublicKeyCredentialParams::CreateFromCBORValue(const cbor::Value& cbor_value) {
   if (!cbor_value.is_array())
     return base::nullopt;
 
@@ -22,9 +21,9 @@ PublicKeyCredentialParams::CreateFromCBORValue(
 
     const auto& credential_map = credential.GetMap();
     const auto credential_type_it =
-        credential_map.find(cbor::CBORValue(kCredentialTypeMapKey));
+        credential_map.find(cbor::Value(kCredentialTypeMapKey));
     const auto algorithm_type_it =
-        credential_map.find(cbor::CBORValue(kCredentialAlgorithmMapKey));
+        credential_map.find(cbor::Value(kCredentialAlgorithmMapKey));
 
     if (credential_type_it == credential_map.end() ||
         !credential_type_it->second.is_string() ||
@@ -59,19 +58,19 @@ PublicKeyCredentialParams& PublicKeyCredentialParams::operator=(
 
 PublicKeyCredentialParams::~PublicKeyCredentialParams() = default;
 
-cbor::CBORValue PublicKeyCredentialParams::ConvertToCBOR() const {
-  cbor::CBORValue::ArrayValue credential_param_array;
+cbor::Value PublicKeyCredentialParams::ConvertToCBOR() const {
+  cbor::Value::ArrayValue credential_param_array;
   credential_param_array.reserve(public_key_credential_params_.size());
 
   for (const auto& credential : public_key_credential_params_) {
-    cbor::CBORValue::MapValue cbor_credential_map;
+    cbor::Value::MapValue cbor_credential_map;
     cbor_credential_map.emplace(kCredentialTypeMapKey,
                                 CredentialTypeToString(credential.type));
     cbor_credential_map.emplace(kCredentialAlgorithmMapKey,
                                 credential.algorithm);
     credential_param_array.emplace_back(std::move(cbor_credential_map));
   }
-  return cbor::CBORValue(std::move(credential_param_array));
+  return cbor::Value(std::move(credential_param_array));
 }
 
 }  // namespace device

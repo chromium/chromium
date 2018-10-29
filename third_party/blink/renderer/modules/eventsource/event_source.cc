@@ -79,10 +79,9 @@ EventSource* EventSource::Create(ExecutionContext* context,
                                  const String& url,
                                  const EventSourceInit& event_source_init,
                                  ExceptionState& exception_state) {
-  if (context->IsDocument())
-    UseCounter::Count(ToDocument(context), WebFeature::kEventSourceDocument);
-  else
-    UseCounter::Count(context, WebFeature::kEventSourceWorker);
+  UseCounter::Count(context, IsA<Document>(context)
+                                 ? WebFeature::kEventSourceDocument
+                                 : WebFeature::kEventSourceWorker);
 
   if (url.IsEmpty()) {
     exception_state.ThrowDOMException(
@@ -127,7 +126,7 @@ void EventSource::Connect() {
   request.SetHTTPMethod(HTTPNames::GET);
   request.SetHTTPHeaderField(HTTPNames::Accept, "text/event-stream");
   request.SetHTTPHeaderField(HTTPNames::Cache_Control, "no-cache");
-  request.SetRequestContext(WebURLRequest::kRequestContextEventSource);
+  request.SetRequestContext(mojom::RequestContextType::EVENT_SOURCE);
   request.SetFetchRequestMode(network::mojom::FetchRequestMode::kCORS);
   request.SetFetchCredentialsMode(
       with_credentials_ ? network::mojom::FetchCredentialsMode::kInclude
@@ -149,11 +148,8 @@ void EventSource::Connect() {
                      last_event_id_utf8.length()));
   }
 
-  const SecurityOrigin* origin = execution_context.GetSecurityOrigin();
-
   ResourceLoaderOptions resource_loader_options;
   resource_loader_options.data_buffering_policy = kDoNotBufferData;
-  resource_loader_options.security_origin = origin;
 
   probe::willSendEventSourceRequest(&execution_context, this);
   loader_ =

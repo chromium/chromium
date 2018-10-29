@@ -280,10 +280,10 @@ bool CollectDriverInfoD3D(const std::wstring& device_id, GPUInfo* gpu_info) {
 }
 
 // DirectX 12 are included with Windows 10 and Server 2016.
-void GetGpuSupportedD3D12Version(GPUInfo* gpu_info) {
+void GetGpuSupportedD3D12Version(Dx12VulkanVersionInfo* info) {
   TRACE_EVENT0("gpu", "GetGpuSupportedD3D12Version");
-  gpu_info->supports_dx12 = false;
-  gpu_info->d3d12_feature_level = 0;
+  info->supports_dx12 = false;
+  info->d3d12_feature_level = 0;
 
   base::NativeLibrary d3d12_library =
       base::LoadNativeLibrary(base::FilePath(L"d3d12.dll"), nullptr);
@@ -305,8 +305,8 @@ void GetGpuSupportedD3D12Version(GPUInfo* gpu_info) {
     for (auto level : feature_levels) {
       if (SUCCEEDED(D3D12CreateDevice(nullptr, level, _uuidof(ID3D12Device),
                                       nullptr))) {
-        gpu_info->d3d12_feature_level = level;
-        gpu_info->supports_dx12 = true;
+        info->d3d12_feature_level = level;
+        info->supports_dx12 = true;
         break;
       }
     }
@@ -315,7 +315,7 @@ void GetGpuSupportedD3D12Version(GPUInfo* gpu_info) {
   base::UnloadNativeLibrary(d3d12_library);
 }
 
-bool BadAMDVulkanDriverVersion(GPUInfo* gpu_info) {
+bool BadAMDVulkanDriverVersion() {
   // Both 32-bit and 64-bit dll are broken. If 64-bit doesn't exist,
   // 32-bit dll will be used to detect the AMD Vulkan driver.
   const base::FilePath kAmdDriver64(FILE_PATH_LITERAL("amdvlk64.dll"));
@@ -347,7 +347,7 @@ bool BadAMDVulkanDriverVersion(GPUInfo* gpu_info) {
   return false;
 }
 
-bool BadVulkanDllVersion(GPUInfo* gpu_info) {
+bool BadVulkanDllVersion() {
   std::unique_ptr<FileVersionInfoWin> file_version_info(
       static_cast<FileVersionInfoWin*>(
           FileVersionInfoWin::CreateFileVersionInfo(
@@ -437,7 +437,7 @@ bool InitVulkanInstanceProc(
 }
 
 void GetGpuSupportedVulkanVersionAndExtensions(
-    GPUInfo* gpu_info,
+    Dx12VulkanVersionInfo* info,
     const std::vector<const char*>& requested_vulkan_extensions,
     std::vector<bool>* extension_support) {
   TRACE_EVENT0("gpu", "GetGpuSupportedVulkanVersionAndExtensions");
@@ -450,18 +450,18 @@ void GetGpuSupportedVulkanVersionAndExtensions(
   PFN_vkDestroyInstance vkDestroyInstance;
   VkInstance vk_instance = VK_NULL_HANDLE;
   uint32_t physical_device_count = 0;
-  gpu_info->supports_vulkan = false;
-  gpu_info->vulkan_version = 0;
+  info->supports_vulkan = false;
+  info->vulkan_version = 0;
 
   // Skip if the system has an older AMD Vulkan driver amdvlk64.dll or
   // amdvlk32.dll which crashes when vkCreateInstance() is called. This bug has
   // been fixed in the latest AMD driver.
-  if (BadAMDVulkanDriverVersion(gpu_info)) {
+  if (BadAMDVulkanDriverVersion()) {
     return;
   }
 
   // Some early versions of vulkan-1.dll might crash
-  if (BadVulkanDllVersion(gpu_info)) {
+  if (BadVulkanDllVersion()) {
     return;
   }
 
@@ -487,8 +487,8 @@ void GetGpuSupportedVulkanVersionAndExtensions(
       result = vkEnumeratePhysicalDevices(vk_instance, &physical_device_count,
                                           nullptr);
       if (result == VK_SUCCESS && physical_device_count > 0) {
-        gpu_info->supports_vulkan = true;
-        gpu_info->vulkan_version = app_info.apiVersion;
+        info->supports_vulkan = true;
+        info->vulkan_version = app_info.apiVersion;
         break;
       } else {
         vkDestroyInstance(vk_instance, nullptr);
@@ -498,7 +498,7 @@ void GetGpuSupportedVulkanVersionAndExtensions(
   }
 
   // Check whether the requested_vulkan_extensions are supported
-  if (gpu_info->supports_vulkan) {
+  if (info->supports_vulkan) {
     std::vector<VkPhysicalDevice> physical_devices(physical_device_count);
     vkEnumeratePhysicalDevices(vk_instance, &physical_device_count,
                                physical_devices.data());
@@ -533,26 +533,26 @@ void GetGpuSupportedVulkanVersionAndExtensions(
   base::UnloadNativeLibrary(vulkan_library);
 }
 
-void RecordGpuSupportedRuntimeVersionHistograms(GPUInfo* gpu_info) {
+void RecordGpuSupportedRuntimeVersionHistograms(Dx12VulkanVersionInfo* info) {
   // D3D
-  GetGpuSupportedD3D12Version(gpu_info);
-  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", gpu_info->supports_dx12);
+  GetGpuSupportedD3D12Version(info);
+  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", info->supports_dx12);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.D3D12FeatureLevel",
-      ConvertToHistogramFeatureLevel(gpu_info->d3d12_feature_level));
+      ConvertToHistogramFeatureLevel(info->d3d12_feature_level));
 
   // Vulkan
   const std::vector<const char*> vulkan_extensions = {
       "VK_KHR_external_memory_win32", "VK_KHR_external_semaphore_win32",
       "VK_KHR_win32_keyed_mutex"};
   std::vector<bool> extension_support(vulkan_extensions.size(), false);
-  GetGpuSupportedVulkanVersionAndExtensions(gpu_info, vulkan_extensions,
+  GetGpuSupportedVulkanVersionAndExtensions(info, vulkan_extensions,
                                             &extension_support);
 
-  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsVulkan", gpu_info->supports_vulkan);
+  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsVulkan", info->supports_vulkan);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.VulkanVersion",
-      ConvertToHistogramVulkanVersion(gpu_info->vulkan_version));
+      ConvertToHistogramVulkanVersion(info->vulkan_version));
 
   for (size_t i = 0; i < vulkan_extensions.size(); ++i) {
     std::string name = "GPU.VulkanExtSupport.";

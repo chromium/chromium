@@ -32,9 +32,19 @@ namespace quic {
 QuicPacketCreator::QuicPacketCreator(QuicConnectionId connection_id,
                                      QuicFramer* framer,
                                      DelegateInterface* delegate)
+    : QuicPacketCreator(connection_id,
+                        framer,
+                        QuicRandom::GetInstance(),
+                        delegate) {}
+
+QuicPacketCreator::QuicPacketCreator(QuicConnectionId connection_id,
+                                     QuicFramer* framer,
+                                     QuicRandom* random,
+                                     DelegateInterface* delegate)
     : delegate_(delegate),
       debug_delegate_(nullptr),
       framer_(framer),
+      random_(random),
       send_version_in_packet_(framer->perspective() == Perspective::IS_CLIENT),
       have_diversification_nonce_(false),
       max_packet_length_(0),
@@ -537,6 +547,8 @@ QuicPacketCreator::SerializeVersionNegotiationPacket(
 
 OwningSerializedPacketPointer
 QuicPacketCreator::SerializeConnectivityProbingPacket() {
+  QUIC_BUG_IF(framer_->transport_version() == QUIC_VERSION_99)
+      << "Must not be version 99 to serialize padded ping connectivity probe";
   QuicPacketHeader header;
   // FillPacketHeader increments packet_number_.
   FillPacketHeader(&header);
@@ -544,6 +556,71 @@ QuicPacketCreator::SerializeConnectivityProbingPacket() {
   std::unique_ptr<char[]> buffer(new char[kMaxPacketSize]);
   size_t length = framer_->BuildConnectivityProbingPacket(header, buffer.get(),
                                                           max_plaintext_size_);
+  DCHECK(length);
+
+  const size_t encrypted_length = framer_->EncryptInPlace(
+      packet_.encryption_level, packet_.packet_number,
+      GetStartOfEncryptedData(framer_->transport_version(), header), length,
+      kMaxPacketSize, buffer.get());
+  DCHECK(encrypted_length);
+
+  OwningSerializedPacketPointer serialize_packet(new SerializedPacket(
+      header.packet_number, header.packet_number_length, buffer.release(),
+      encrypted_length, /*has_ack=*/false, /*has_stop_waiting=*/false));
+
+  serialize_packet->encryption_level = packet_.encryption_level;
+  serialize_packet->transmission_type = NOT_RETRANSMISSION;
+
+  return serialize_packet;
+}
+
+OwningSerializedPacketPointer
+QuicPacketCreator::SerializePathChallengeConnectivityProbingPacket(
+    QuicPathFrameBuffer* payload) {
+  QUIC_BUG_IF(framer_->transport_version() != QUIC_VERSION_99)
+      << "Must be version 99 to serialize path challenge connectivity probe, "
+         "is version "
+      << framer_->transport_version();
+  QuicPacketHeader header;
+  // FillPacketHeader increments packet_number_.
+  FillPacketHeader(&header);
+
+  std::unique_ptr<char[]> buffer(new char[kMaxPacketSize]);
+  size_t length = framer_->BuildPaddedPathChallengePacket(
+      header, buffer.get(), max_plaintext_size_, payload, random_);
+  DCHECK(length);
+
+  const size_t encrypted_length = framer_->EncryptInPlace(
+      packet_.encryption_level, packet_.packet_number,
+      GetStartOfEncryptedData(framer_->transport_version(), header), length,
+      kMaxPacketSize, buffer.get());
+  DCHECK(encrypted_length);
+
+  OwningSerializedPacketPointer serialize_packet(new SerializedPacket(
+      header.packet_number, header.packet_number_length, buffer.release(),
+      encrypted_length, /*has_ack=*/false, /*has_stop_waiting=*/false));
+
+  serialize_packet->encryption_level = packet_.encryption_level;
+  serialize_packet->transmission_type = NOT_RETRANSMISSION;
+
+  return serialize_packet;
+}
+
+OwningSerializedPacketPointer
+QuicPacketCreator::SerializePathResponseConnectivityProbingPacket(
+    const QuicDeque<QuicPathFrameBuffer>& payloads,
+    const bool is_padded) {
+  QUIC_BUG_IF(framer_->transport_version() != QUIC_VERSION_99)
+      << "Must be version 99 to serialize path response connectivity probe, is "
+         "version "
+      << framer_->transport_version();
+  QuicPacketHeader header;
+  // FillPacketHeader increments packet_number_.
+  FillPacketHeader(&header);
+
+  std::unique_ptr<char[]> buffer(new char[kMaxPacketSize]);
+  size_t length = framer_->BuildPathResponsePacket(
+      header, buffer.get(), max_plaintext_size_, payloads, is_padded);
   DCHECK(length);
 
   const size_t encrypted_length = framer_->EncryptInPlace(
@@ -632,7 +709,8 @@ bool QuicPacketCreator::AddFrame(const QuicFrame& frame,
                                  bool save_retransmittable_frames) {
   QUIC_DVLOG(1) << ENDPOINT << "Adding frame: " << frame;
   if (frame.type == STREAM_FRAME &&
-      frame.stream_frame.stream_id != kCryptoStreamId &&
+      frame.stream_frame.stream_id !=
+          QuicUtils::GetCryptoStreamId(framer_->transport_version()) &&
       packet_.encryption_level == ENCRYPTION_NONE) {
     const QuicString error_details =
         "Cannot send stream data without encryption.";
@@ -661,7 +739,8 @@ bool QuicPacketCreator::AddFrame(const QuicFrame& frame,
     packet_.retransmittable_frames.push_back(frame);
     queued_frames_.push_back(frame);
     if (frame.type == STREAM_FRAME &&
-        frame.stream_frame.stream_id == kCryptoStreamId) {
+        frame.stream_frame.stream_id ==
+            QuicUtils::GetCryptoStreamId(framer_->transport_version())) {
       packet_.has_crypto_handshake = IS_HANDSHAKE;
     }
   } else {
@@ -733,7 +812,9 @@ void QuicPacketCreator::AddPendingPadding(QuicByteCount size) {
 bool QuicPacketCreator::StreamFrameStartsWithChlo(
     const QuicStreamFrame& frame) const {
   if (framer_->perspective() == Perspective::IS_SERVER ||
-      frame.stream_id != kCryptoStreamId || frame.data_length < sizeof(kCHLO)) {
+      frame.stream_id !=
+          QuicUtils::GetCryptoStreamId(framer_->transport_version()) ||
+      frame.data_length < sizeof(kCHLO)) {
     return false;
   }
   return framer_->StartsWithChlo(frame.stream_id, frame.offset);

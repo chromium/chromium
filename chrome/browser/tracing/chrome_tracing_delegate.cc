@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,12 +25,14 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
@@ -102,25 +105,32 @@ Profile* GetProfile() {
 
 bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
                            PermitMissingProfile profile_permission) {
+  // If the background tracing is specified on the command-line, we allow
+  // any scenario to be traced.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
+      command_line->HasSwitch(switches::kTraceUploadURL)) {
+    return true;
+  }
+
   // If the profile hasn't loaded or been created yet, we allow the scenario
   // to start up, but not be finalized.
   Profile* profile = GetProfile();
-  if (!profile) {
-    if (profile_permission == PROFILE_REQUIRED)
-      return false;
-    else
-      return true;
-  }
+  if (!profile)
+    return profile_permission != PROFILE_REQUIRED;
 
+// Safeguard, in case background tracing is responsible for a crash on
+// startup.
 #if !defined(OS_ANDROID)
-  // Safeguard, in case background tracing is responsible for a crash on
-  // startup.
   if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED)
     return false;
 #else
-  // In case of Android the exit state is always set as EXIT_CRASHED. So,
-  // preemptive mode cannot be used safely.
-  if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE)
+  // If the metrics haven't loaded, we allow the scenario to start up, but not
+  // be finalized.
+  if (!CrashUploadListAndroid::BrowserCrashMetricsInitialized())
+    return profile_permission != PROFILE_REQUIRED;
+
+  if (CrashUploadListAndroid::DidBrowserCrashRecently())
     return false;
 #endif
 

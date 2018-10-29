@@ -1,0 +1,13 @@
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  const task = taskWorklet.postTask(i => i, 2);
+  const task2 = taskWorklet.postTask(i => i, 4);
+  const task3 = taskWorklet.postTask((i,j) => i+j, task, task2);
+  const result = await task3.result;
+  assert_equals(result, 6);
+});
+</script>
+</body>

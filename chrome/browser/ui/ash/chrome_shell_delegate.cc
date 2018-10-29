@@ -4,24 +4,16 @@
 
 #include "chrome/browser/ui/ash/chrome_shell_delegate.h"
 
-#include <stddef.h>
+#include <memory>
 
-#include <limits>
-#include <vector>
-
-#include "ash/accessibility/accessibility_delegate.h"
 #include "ash/screenshot_delegate.h"
-#include "base/macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/session_controller_client.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -30,56 +22,14 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/url_constants.h"
 #include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
-#include "url/url_constants.h"
-
-using chromeos::AccessibilityManager;
+#include "url/gurl.h"
 
 namespace {
 
 const char kKeyboardShortcutHelpPageUrl[] =
     "https://support.google.com/chromebook/answer/183101";
-
-class AccessibilityDelegateImpl : public ash::AccessibilityDelegate {
- public:
-  AccessibilityDelegateImpl() = default;
-  ~AccessibilityDelegateImpl() override = default;
-
-  void SetMagnifierEnabled(bool enabled) override {
-    DCHECK(chromeos::MagnificationManager::Get());
-    return chromeos::MagnificationManager::Get()->SetMagnifierEnabled(enabled);
-  }
-
-  bool IsMagnifierEnabled() const override {
-    DCHECK(chromeos::MagnificationManager::Get());
-    return chromeos::MagnificationManager::Get()->IsMagnifierEnabled();
-  }
-
-  bool ShouldShowAccessibilityMenu() const override {
-    DCHECK(AccessibilityManager::Get());
-    return AccessibilityManager::Get()->ShouldShowAccessibilityMenu();
-  }
-
-  void SaveScreenMagnifierScale(double scale) override {
-    if (chromeos::MagnificationManager::Get())
-      chromeos::MagnificationManager::Get()->SaveScreenMagnifierScale(scale);
-  }
-
-  double GetSavedScreenMagnifierScale() override {
-    if (chromeos::MagnificationManager::Get()) {
-      return chromeos::MagnificationManager::Get()
-          ->GetSavedScreenMagnifierScale();
-    }
-    return std::numeric_limits<double>::min();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityDelegateImpl);
-};
 
 }  // namespace
 
@@ -108,7 +58,7 @@ std::unique_ptr<keyboard::KeyboardUI> ChromeShellDelegate::CreateKeyboardUI() {
 }
 
 ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {
-  return new AccessibilityDelegateImpl;
+  return new ChromeAccessibilityDelegate;
 }
 
 std::unique_ptr<ash::ScreenshotDelegate>

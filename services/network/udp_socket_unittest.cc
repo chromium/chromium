@@ -688,11 +688,13 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   // See https://fuchsia.atlassian.net/browse/NET-195 .
   options->multicast_interface = 1;
 #endif  // defined(OS_FUCHSIA)
+  options->allow_address_sharing_for_multicast = true;
 
   net::IPAddress bind_ip_address;
   EXPECT_TRUE(bind_ip_address.AssignFromIPLiteral("0.0.0.0"));
   net::IPEndPoint socket_address(bind_ip_address, 0);
-  ASSERT_EQ(net::OK, helper.BindSync(socket_address, nullptr, &socket_address));
+  ASSERT_EQ(net::OK, helper.BindSync(socket_address, std::move(options),
+                                     &socket_address));
   int port = socket_address.port();
   EXPECT_NE(0, port);
   EXPECT_EQ(net::OK, helper.JoinGroupSync(group_ip));

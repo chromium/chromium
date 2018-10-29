@@ -39,8 +39,7 @@ class FakeSyncEngine : public SyncEngine {
 
   void StartSyncingWithServer() override;
 
-  void SetEncryptionPassphrase(const std::string& passphrase,
-                               bool is_explicit) override;
+  void SetEncryptionPassphrase(const std::string& passphrase) override;
 
   void SetDecryptionPassphrase(const std::string& passphrase) override;
 

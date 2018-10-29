@@ -3,6 +3,7 @@ Test for bug 113591: https://bugs.webkit.org/show_bug.cgi?id=113591 REGRESSION (
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.elementFromPoint(x + 5, y - 5).id is 'outerBox'
 PASS document.elementFromPoint(x + 5, y + 5).id is 'innerBox'
 PASS document.elementFromPoint(x + 5, y + 95).id is 'innerBox'

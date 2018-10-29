@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "chrome/browser/usb/usb_chooser_context.h"
 #include "device/usb/public/mojom/device.mojom.h"
-#include "device/usb/usb_service.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/gurl.h"
 
@@ -24,16 +24,10 @@ class RenderFrameHost;
 class WebContents;
 }
 
-namespace device {
-class UsbDevice;
-}
-
-class UsbChooserContext;
-
 // UsbChooserController creates a chooser for WebUSB.
 // It is owned by ChooserBubbleDelegate.
 class UsbChooserController : public ChooserController,
-                             public device::UsbService::Observer {
+                             public UsbChooserContext::Observer {
  public:
   UsbChooserController(
       content::RenderFrameHost* render_frame_host,
@@ -52,13 +46,14 @@ class UsbChooserController : public ChooserController,
   void Close() override;
   void OpenHelpCenterUrl() const override;
 
-  // device::UsbService::Observer:
-  void OnDeviceAdded(scoped_refptr<device::UsbDevice> device) override;
-  void OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) override;
+  // UsbChooserContext::Observer implementation:
+  void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override;
+  void OnDeviceRemoved(
+      const device::mojom::UsbDeviceInfo& device_info) override;
+  void OnDeviceManagerConnectionError() override;
 
  private:
-  void GotUsbDeviceList(
-      const std::vector<scoped_refptr<device::UsbDevice>>& devices);
+  void GotUsbDeviceList(std::vector<device::mojom::UsbDeviceInfoPtr> devices);
   bool DisplayDevice(const device::mojom::UsbDeviceInfo& device) const;
 
   std::vector<device::mojom::UsbDeviceFilterPtr> filters_;
@@ -68,8 +63,7 @@ class UsbChooserController : public ChooserController,
 
   content::WebContents* const web_contents_;
   base::WeakPtr<UsbChooserContext> chooser_context_;
-  ScopedObserver<device::UsbService, device::UsbService::Observer>
-      usb_service_observer_;
+  ScopedObserver<UsbChooserContext, UsbChooserContext::Observer> observer_;
 
   // Each pair is a (device, device name).
   std::vector<std::pair<device::mojom::UsbDeviceInfoPtr, base::string16>>

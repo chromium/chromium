@@ -80,14 +80,31 @@ void CompositingInputsUpdater::UpdateRecursive(PaintLayer* layer,
 
   geometry_map_.PushMappingsToAncestor(layer, layer->Parent());
 
-  PaintLayer* enclosing_composited_layer =
-      layer->HasCompositedLayerMapping() ? layer
-                                         : info.enclosing_composited_layer;
+  PaintLayer* enclosing_composited_layer = info.enclosing_composited_layer;
+  PaintLayer* enclosing_squashing_composited_layer =
+      info.enclosing_squashing_composited_layer;
+  switch (layer->GetCompositingState()) {
+    case kNotComposited:
+      break;
+    case kPaintsIntoOwnBacking:
+      enclosing_composited_layer = layer;
+      break;
+    case kPaintsIntoGroupedBacking:
+      enclosing_squashing_composited_layer =
+          &layer->GroupedMapping()->OwningLayer();
+      break;
+  }
+
   if (layer->NeedsCompositingInputsUpdate()) {
     if (enclosing_composited_layer) {
       enclosing_composited_layer->GetCompositedLayerMapping()
           ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
     }
+    if (enclosing_squashing_composited_layer) {
+      enclosing_squashing_composited_layer->GetCompositedLayerMapping()
+          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
+    }
+
     update_type = kForceUpdate;
   }
 
@@ -105,6 +122,8 @@ void CompositingInputsUpdater::UpdateRecursive(PaintLayer* layer,
     UpdateAncestorDependentCompositingInputs(layer, info);
 
   info.enclosing_composited_layer = enclosing_composited_layer;
+  info.enclosing_squashing_composited_layer =
+      enclosing_squashing_composited_layer;
 
   if (layer->IsRootLayer() || layout_object.HasOverflowClip())
     info.last_overflow_clip_layer = layer;

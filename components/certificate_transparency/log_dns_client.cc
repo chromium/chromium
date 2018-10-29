@@ -23,7 +23,7 @@
 #include "net/base/sys_addrinfo.h"
 #include "net/cert/merkle_audit_proof.h"
 #include "net/dns/dns_client.h"
-#include "net/dns/dns_config_service.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"

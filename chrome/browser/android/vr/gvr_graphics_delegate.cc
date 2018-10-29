@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/time/time.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gl_texture_location.h"
@@ -124,7 +124,6 @@ FovRectangle ToUiFovRect(const gvr::Rectf& rect) {
 
 }  // namespace
 
-// TODO(acondor): Rename to GvrGraphicsDelegate.
 GvrGraphicsDelegate::GvrGraphicsDelegate(
     GlBrowserInterface* browser,
     TexturesInitializedCallback textures_initialized_callback,

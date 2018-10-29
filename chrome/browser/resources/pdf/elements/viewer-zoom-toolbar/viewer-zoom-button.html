@@ -21,8 +21,6 @@
       }
 
       paper-fab {
-        @apply --shadow-elevation-4dp;
-        --paper-fab-keyboard-focus-background: var(--viewer-icon-ink-color);
         --paper-fab-mini: {
           height: 36px;
           padding: 8px;
@@ -31,6 +29,10 @@
         background-color: rgb(242, 242, 242);
         color: var(--paper-grey-700);
         overflow: visible;
+      }
+
+      paper-fab.keyboard-focus {
+        background-color: var(--viewer-icon-ink-color);
       }
     </style>
     <div id="wrapper">

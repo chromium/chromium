@@ -46,8 +46,10 @@ static const float kCTargetPrunePercentage = .95f;
 
 MemoryCache* GetMemoryCache() {
   DCHECK(WTF::IsMainThread());
-  if (!g_memory_cache)
-    g_memory_cache = new Persistent<MemoryCache>(MemoryCache::Create());
+  if (!g_memory_cache) {
+    g_memory_cache = new Persistent<MemoryCache>(MemoryCache::Create(
+        Platform::Current()->MainThread()->GetTaskRunner()));
+  }
   return g_memory_cache->Get();
 }
 
@@ -72,7 +74,8 @@ void MemoryCacheEntry::ClearResourceWeak(Visitor* visitor) {
   resource_.Clear();
 }
 
-inline MemoryCache::MemoryCache()
+inline MemoryCache::MemoryCache(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : in_prune_resources_(false),
       prune_pending_(false),
       max_prune_deferral_delay_(kCMaxPruneDeferralDelay),
@@ -81,20 +84,19 @@ inline MemoryCache::MemoryCache()
       last_frame_paint_time_stamp_(0.0),
       capacity_(kCDefaultCacheCapacity),
       delay_before_live_decoded_prune_(kCMinDelayBeforeLiveDecodedPrune),
-      size_(0) {
+      size_(0),
+      task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
   if (MemoryCoordinator::IsLowEndDevice())
     MemoryCoordinator::Instance().RegisterClient(this);
 }
 
-MemoryCache* MemoryCache::Create() {
-  return new MemoryCache;
+MemoryCache* MemoryCache::Create(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return new MemoryCache(std::move(task_runner));
 }
 
-MemoryCache::~MemoryCache() {
-  if (prune_pending_)
-    Platform::Current()->CurrentThread()->RemoveTaskObserver(this);
-}
+MemoryCache::~MemoryCache() = default;
 
 void MemoryCache::Trace(blink::Visitor* visitor) {
   visitor->Trace(resource_maps_);
@@ -367,43 +369,33 @@ void MemoryCache::Prune() {
   double current_time = WTF::CurrentTime();
   if (prune_pending_) {
     if (current_time - prune_time_stamp_ >= max_prune_deferral_delay_) {
-      PruneNow(current_time, kAutomaticPrune);
+      PruneNow(kAutomaticPrune);
     }
   } else {
     if (current_time - prune_time_stamp_ >= max_prune_deferral_delay_) {
-      PruneNow(current_time, kAutomaticPrune);  // Delay exceeded, prune now.
+      PruneNow(kAutomaticPrune);  // Delay exceeded, prune now.
     } else {
       // Defer.
-      Platform::Current()->CurrentThread()->AddTaskObserver(this);
+      task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&MemoryCache::PruneNow,
+                                    base::Unretained(this), kAutomaticPrune));
       prune_pending_ = true;
     }
   }
 }
 
-void MemoryCache::WillProcessTask() {}
-
-void MemoryCache::DidProcessTask() {
-  // Perform deferred pruning
-  DCHECK(prune_pending_);
-  PruneNow(WTF::CurrentTime(), kAutomaticPrune);
-}
-
 void MemoryCache::PruneAll() {
-  double current_time = WTF::CurrentTime();
-  PruneNow(current_time, kMaximalPrune);
+  PruneNow(kMaximalPrune);
 }
 
-void MemoryCache::PruneNow(double current_time, PruneStrategy strategy) {
-  if (prune_pending_) {
-    prune_pending_ = false;
-    Platform::Current()->CurrentThread()->RemoveTaskObserver(this);
-  }
+void MemoryCache::PruneNow(PruneStrategy strategy) {
+  prune_pending_ = false;
 
   base::AutoReset<bool> reentrancy_protector(&in_prune_resources_, true);
 
   PruneResources(strategy);
   prune_frame_time_stamp_ = last_frame_paint_time_stamp_;
-  prune_time_stamp_ = current_time;
+  prune_time_stamp_ = WTF::CurrentTime();
 }
 
 void MemoryCache::UpdateFramePaintTimestamp() {

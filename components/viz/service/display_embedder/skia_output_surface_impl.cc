@@ -17,6 +17,8 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -43,14 +45,14 @@ base::RepeatingCallback<void(Args...)> CreateSafeCallback(
 
 }  // namespace
 
-// A helper class for fullfilling promise image on the GPU thread.
-template <class FullfillContextType>
+// A helper class for fulfilling promise image on the GPU thread.
+template <class FulfillContextType>
 class SkiaOutputSurfaceImpl::PromiseTextureHelper {
  public:
-  using HelperType = PromiseTextureHelper<FullfillContextType>;
+  using HelperType = PromiseTextureHelper<FulfillContextType>;
 
   PromiseTextureHelper(base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
-                       FullfillContextType context)
+                       FulfillContextType context)
       : impl_on_gpu_(impl_on_gpu), context_(std::move(context)) {}
   ~PromiseTextureHelper() = default;
 
@@ -64,37 +66,42 @@ class SkiaOutputSurfaceImpl::PromiseTextureHelper {
       SkColorType color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> color_space,
-      FullfillContextType context) {
+      FulfillContextType context) {
     DCHECK_CALLED_ON_VALID_THREAD(impl->thread_checker_);
-    auto helper = std::make_unique<HelperType>(impl->impl_on_gpu_->weak_ptr(),
-                                               std::move(context));
+    // The ownership of the helper will be passed into makePromisTexture(). The
+    // HelperType::Done will always be called. It will delete the helper.
+    auto* helper =
+        new HelperType(impl->impl_on_gpu_->weak_ptr(), std::move(context));
     auto image = recorder->makePromiseTexture(
         backend_format, size.width(), size.height(), mip_mapped, origin,
-        color_type, alpha_type, color_space, HelperType::Fullfill,
-        HelperType::Release, HelperType::Done, helper.get());
-    if (image) {
-      helper->Init(impl);
-      helper.release();
-    }
+        color_type, alpha_type, color_space, HelperType::Fulfill,
+        HelperType::Release, HelperType::Done, helper);
     return image;
   }
 
  private:
-  void Init(SkiaOutputSurfaceImpl* impl);
+  friend class SkiaOutputSurfaceImpl::YUVAPromiseTextureHelper;
 
-  static void Fullfill(void* texture_context,
-                       GrBackendTexture* backend_texture) {
+  static void Fulfill(void* texture_context,
+                      GrBackendTexture* backend_texture) {
     DCHECK(texture_context);
     auto* helper = static_cast<HelperType*>(texture_context);
-    // The fullfill is always called by SkiaOutputSurfaceImplOnGpu::SwapBuffers
+    // The fulfill is always called by SkiaOutputSurfaceImplOnGpu::SwapBuffers
     // or SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass, so impl_on_gpu_
     // should be always valid.
     DCHECK(helper->impl_on_gpu_);
-    helper->impl_on_gpu_->FullfillPromiseTexture(helper->context_,
-                                                 backend_texture);
+    helper->impl_on_gpu_->FulfillPromiseTexture(
+        helper->context_, &helper->shared_image_, backend_texture);
   }
 
-  static void Release(void* texture_context) { DCHECK(texture_context); }
+  static void Release(void* texture_context) {
+    DCHECK(texture_context);
+    auto* helper = static_cast<HelperType*>(texture_context);
+    if (helper->shared_image_) {
+      helper->shared_image_->EndReadAccess();
+      helper->shared_image_.reset();
+    }
+  }
 
   static void Done(void* texture_context) {
     DCHECK(texture_context);
@@ -104,26 +111,87 @@ class SkiaOutputSurfaceImpl::PromiseTextureHelper {
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
 
-  // The data for calling the fullfill methods in SkiaOutputSurfaceImpl.
-  FullfillContextType context_;
+  // The data for calling the fulfill methods in SkiaOutputSurfaceImpl.
+  FulfillContextType context_;
+
+  // If non-null, an outstanding SharedImageRepresentation that must be freed on
+  // Release. Only written / read from GPU thread.
+  std::unique_ptr<gpu::SharedImageRepresentationSkia> shared_image_;
 
   DISALLOW_COPY_AND_ASSIGN(PromiseTextureHelper);
 };
 
-template <class T>
-void SkiaOutputSurfaceImpl::PromiseTextureHelper<T>::Init(
-    SkiaOutputSurfaceImpl* impl) {}
+// A helper class for fulfilling YUVA promise image on the GPU thread.
+class SkiaOutputSurfaceImpl::YUVAPromiseTextureHelper {
+ public:
+  static sk_sp<SkImage> MakeYUVAPromiseSkImage(
+      SkiaOutputSurfaceImpl* impl,
+      SkDeferredDisplayListRecorder* recorder,
+      SkYUVColorSpace yuv_color_space,
+      std::vector<ResourceMetadata> metadatas,
+      bool has_alpha) {
+    DCHECK_CALLED_ON_VALID_THREAD(impl->thread_checker_);
+    DCHECK_LE(metadatas.size(), 4u);
 
-// For YUVResourceMetadata, we need to record the |context_| pointer in
-// |impl->yuv_resource_metadatas_|, because we have to create SkImage from YUV
-// textures before drawing the ddl to a SKSurface.
-// TODO(penghuang): Remove this hack when Skia supports drawing YUV textures
-// directly.
-template <>
-void SkiaOutputSurfaceImpl::PromiseTextureHelper<YUVResourceMetadata>::Init(
-    SkiaOutputSurfaceImpl* impl) {
-  impl->yuv_resource_metadatas_.push_back(&context_);
-}
+    using PlaneHelper = PromiseTextureHelper<ResourceMetadata>;
+    bool is_i420 = has_alpha ? metadatas.size() == 4 : metadatas.size() == 3;
+    auto size = metadatas[0].size;
+
+    GrBackendFormat formats[4];
+    SkYUVAIndex indices[4] = {
+        {-1, SkColorChannel::kR},
+        {-1, SkColorChannel::kR},
+        {-1, SkColorChannel::kR},
+        {-1, SkColorChannel::kR},
+    };
+    SkDeferredDisplayListRecorder::TextureContext contexts[4] = {
+        nullptr, nullptr, nullptr, nullptr};
+
+    // The ownership of the contexts will be passed into
+    // makeYUVAPromisTexture(). The HelperType::Done will always be called. It
+    // will delete contexts.
+    for (size_t i = 0; i < metadatas.size(); i++) {
+      auto& metadata = metadatas[i];
+      formats[i] = metadata.backend_format;
+      contexts[i] =
+          new PlaneHelper(impl->impl_on_gpu_->weak_ptr(), std::move(metadata));
+    }
+
+    if (is_i420) {
+      indices[SkYUVAIndex::kY_Index].fIndex = 0;
+      indices[SkYUVAIndex::kY_Index].fChannel = SkColorChannel::kR;
+      indices[SkYUVAIndex::kU_Index].fIndex = 1;
+      indices[SkYUVAIndex::kU_Index].fChannel = SkColorChannel::kR;
+      indices[SkYUVAIndex::kV_Index].fIndex = 2;
+      indices[SkYUVAIndex::kV_Index].fChannel = SkColorChannel::kR;
+      if (has_alpha) {
+        indices[SkYUVAIndex::kA_Index].fIndex = 3;
+        indices[SkYUVAIndex::kA_Index].fChannel = SkColorChannel::kA;
+      }
+    } else {
+      indices[SkYUVAIndex::kY_Index].fIndex = 0;
+      indices[SkYUVAIndex::kY_Index].fChannel = SkColorChannel::kR;
+      indices[SkYUVAIndex::kU_Index].fIndex = 1;
+      indices[SkYUVAIndex::kU_Index].fChannel = SkColorChannel::kR;
+      indices[SkYUVAIndex::kV_Index].fIndex = 1;
+      indices[SkYUVAIndex::kV_Index].fChannel = SkColorChannel::kG;
+      if (has_alpha) {
+        indices[SkYUVAIndex::kA_Index].fIndex = 2;
+        indices[SkYUVAIndex::kA_Index].fChannel = SkColorChannel::kA;
+      }
+    }
+
+    auto image = recorder->makeYUVAPromiseTexture(
+        yuv_color_space, formats, indices, size.width(), size.height(),
+        kTopLeft_GrSurfaceOrigin, nullptr /* color_space */,
+        PlaneHelper::Fulfill, PlaneHelper::Release, PlaneHelper::Done,
+        contexts);
+    return image;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(YUVAPromiseTextureHelper);
+};
 
 SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
     GpuServiceImpl* gpu_service,
@@ -287,30 +355,6 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   return recorder_->getCanvas();
 }
 
-gpu::SyncToken SkiaOutputSurfaceImpl::FinishPaintCurrentFrame() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(recorder_);
-
-  gpu::SyncToken sync_token(gpu::CommandBufferNamespace::VIZ_OUTPUT_SURFACE,
-                            impl_on_gpu_->command_buffer_id(),
-                            ++sync_fence_release_);
-  sync_token.SetVerifyFlush();
-
-  auto ddl = recorder_->detach();
-  DCHECK(ddl);
-  recorder_.reset();
-  auto sequence_id = gpu_service_->skia_output_surface_sequence_id();
-  // impl_on_gpu_ is released on the GPU thread by a posted task from
-  // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
-                     base::Unretained(impl_on_gpu_.get()), std::move(ddl),
-                     std::move(yuv_resource_metadatas_), sync_fence_release_);
-  gpu_service_->scheduler()->ScheduleTask(gpu::Scheduler::Task(
-      sequence_id, std::move(callback), std::move(resource_sync_tokens_)));
-  return sync_token;
-}
-
 sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImage(
     ResourceMetadata metadata) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -343,34 +387,15 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
 sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     std::vector<ResourceMetadata> metadatas,
-    SkYUVColorSpace yuv_color_space) {
+    SkYUVColorSpace yuv_color_space,
+    bool has_alpha) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(recorder_);
-
-  DCHECK(metadatas.size() == 2 || metadatas.size() == 3);
-
-  // TODO(penghuang): Create SkImage from YUV textures directly when it is
-  // supported by Skia.
-  YUVResourceMetadata yuv_metadata(std::move(metadatas), yuv_color_space);
-
-  GrBackendFormat backend_format;
-  if (!gpu_service_->is_using_vulkan()) {
-    // Convert internal format from GLES2 to platform GL.
-    const auto* version_info = impl_on_gpu_->gl_version_info();
-    backend_format = GrBackendFormat::MakeGL(
-        gl::GetInternalFormat(version_info, GL_BGRA8_EXT), GL_TEXTURE_2D);
-  } else {
-#if BUILDFLAG(ENABLE_VULKAN)
-    backend_format = GrBackendFormat::MakeVk(VK_FORMAT_B8G8R8A8_UNORM);
-#else
-    NOTREACHED();
-#endif
-  }
-
-  return PromiseTextureHelper<YUVResourceMetadata>::MakePromiseSkImage(
-      this, &recorder_.value(), backend_format, yuv_metadata.size(),
-      GrMipMapped::kNo, kTopLeft_GrSurfaceOrigin, kBGRA_8888_SkColorType,
-      kPremul_SkAlphaType, nullptr /* color_space */, std::move(yuv_metadata));
+  DCHECK((has_alpha && (metadatas.size() == 3 || metadatas.size() == 4)) ||
+         (!has_alpha && (metadatas.size() == 2 || metadatas.size() == 3)));
+  return YUVAPromiseTextureHelper::MakeYUVAPromiseSkImage(
+      this, &recorder_.value(), yuv_color_space, std::move(metadatas),
+      has_alpha);
 }
 
 void SkiaOutputSurfaceImpl::SkiaSwapBuffers(OutputSurfaceFrame frame) {
@@ -436,27 +461,38 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return offscreen_surface_recorder_->getCanvas();
 }
 
-gpu::SyncToken SkiaOutputSurfaceImpl::FinishPaintRenderPass() {
+gpu::SyncToken SkiaOutputSurfaceImpl::SubmitPaint() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(current_render_pass_id_);
-  DCHECK(offscreen_surface_recorder_);
+  // If current_render_pass_id_ is not 0, we are painting a render pass.
+  // Otherwise we are painting a frame.
+  bool painting_render_pass = current_render_pass_id_ != 0;
+  auto& current_recorder =
+      painting_render_pass ? offscreen_surface_recorder_ : recorder_;
 
+  DCHECK(current_recorder);
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::VIZ_OUTPUT_SURFACE,
                             impl_on_gpu_->command_buffer_id(),
                             ++sync_fence_release_);
   sync_token.SetVerifyFlush();
 
-  auto ddl = offscreen_surface_recorder_->detach();
-  offscreen_surface_recorder_.reset();
+  auto ddl = current_recorder->detach();
   DCHECK(ddl);
-
+  current_recorder.reset();
   auto sequence_id = gpu_service_->skia_output_surface_sequence_id();
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto callback = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
-      base::Unretained(impl_on_gpu_.get()), current_render_pass_id_,
-      std::move(ddl), std::move(yuv_resource_metadatas_), sync_fence_release_);
+  base::OnceCallback<void()> callback;
+  if (painting_render_pass) {
+    callback = base::BindOnce(
+        &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
+        base::Unretained(impl_on_gpu_.get()), current_render_pass_id_,
+        std::move(ddl), sync_fence_release_);
+  } else {
+    callback =
+        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
+                       base::Unretained(impl_on_gpu_.get()), std::move(ddl),
+                       sync_fence_release_);
+  }
   gpu_service_->scheduler()->ScheduleTask(gpu::Scheduler::Task(
       sequence_id, std::move(callback), std::move(resource_sync_tokens_)));
   current_render_pass_id_ = 0;

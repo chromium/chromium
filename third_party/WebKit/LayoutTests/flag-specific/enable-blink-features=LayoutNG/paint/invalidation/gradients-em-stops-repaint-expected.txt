@@ -20,32 +20,22 @@
         {
           "object": "LayoutNGBlockFlow DIV id='box4' class='box'",
           "rect": [344, 18, 302, 122],
-          "reason": "subtree"
+          "reason": "style change"
         },
         {
           "object": "LayoutNGBlockFlow DIV id='box3' class='box'",
           "rect": [18, 18, 302, 122],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow DIV class='indicator'",
           "rect": [345, 19, 240, 20],
-          "reason": "subtree"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV class='indicator'",
-          "rect": [19, 19, 80, 20],
-          "reason": "subtree"
+          "reason": "style change"
         },
         {
           "object": "NGPhysicalTextFragment ' '",
           "rect": [330, 135, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [330, 135, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

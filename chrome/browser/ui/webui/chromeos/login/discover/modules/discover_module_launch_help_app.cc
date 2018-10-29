@@ -70,7 +70,7 @@ bool DiscoverModuleLaunchHelpApp::IsCompleted() const {
 }
 
 std::unique_ptr<DiscoverHandler>
-DiscoverModuleLaunchHelpApp::CreateWebUIHandler() const {
+DiscoverModuleLaunchHelpApp::CreateWebUIHandler() {
   return std::make_unique<DiscoverModuleLaunchHelpAppHandler>();
 }
 

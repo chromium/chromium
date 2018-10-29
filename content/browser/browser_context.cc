@@ -14,7 +14,9 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/lazy_instance.h"
@@ -41,6 +43,7 @@
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/blob_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -60,12 +63,12 @@
 #include "services/file/file_service.h"
 #include "services/file/public/mojom/constants.mojom.h"
 #include "services/file/user_id_map.h"
+#include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/fileapi/external_mount_points.h"
-
 
 using base::UserDataAdapter;
 
@@ -102,6 +105,52 @@ class ContentServiceDelegateHolder : public base::SupportsUserData::Data {
   ContentServiceDelegateImpl delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentServiceDelegateHolder);
+};
+
+// A class used to make an asynchronous Mojo call with cloned patterns for each
+// StoragePartition iteration. |this| instance will be destructed when all
+// existing asynchronous Mojo calls made in SetLists() are done, and |closure|
+// will be invoked on destructing |this|.
+class CorsOriginPatternSetter
+    : public base::RefCounted<CorsOriginPatternSetter> {
+ public:
+  CorsOriginPatternSetter(
+      const url::Origin& source_origin,
+      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+      base::OnceClosure closure)
+      : source_origin_(source_origin),
+        allow_patterns_(std::move(allow_patterns)),
+        block_patterns_(std::move(block_patterns)),
+        closure_(std::move(closure)) {}
+
+  void SetLists(StoragePartition* partition) {
+    partition->GetNetworkContext()->SetCorsOriginAccessListsForOrigin(
+        source_origin_, ClonePatterns(allow_patterns_),
+        ClonePatterns(block_patterns_),
+        base::BindOnce([](scoped_refptr<CorsOriginPatternSetter> setter) {},
+                       base::RetainedRef(this)));
+  }
+
+ private:
+  friend class base::RefCounted<CorsOriginPatternSetter>;
+
+  static std::vector<network::mojom::CorsOriginPatternPtr> ClonePatterns(
+      const std::vector<network::mojom::CorsOriginPatternPtr>& patterns) {
+    std::vector<network::mojom::CorsOriginPatternPtr> cloned_patterns;
+    cloned_patterns.reserve(patterns.size());
+    for (const auto& item : patterns)
+      cloned_patterns.push_back(item.Clone());
+    return cloned_patterns;
+  }
+
+  ~CorsOriginPatternSetter() { std::move(closure_).Run(); }
+
+  const url::Origin source_origin_;
+  const std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns_;
+  const std::vector<network::mojom::CorsOriginPatternPtr> block_patterns_;
+
+  base::OnceClosure closure_;
 };
 
 // Key names on BrowserContext.
@@ -198,7 +247,8 @@ class BrowserContextServiceManagerConnectionHolder
       service_manager::mojom::ServiceRequest request)
       : service_manager_connection_(ServiceManagerConnection::Create(
             std::move(request),
-            BrowserThread::GetTaskRunnerForThread(BrowserThread::IO))) {}
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {BrowserThread::IO}))) {}
   ~BrowserContextServiceManagerConnectionHolder() override {}
 
   ServiceManagerConnection* service_manager_connection() {
@@ -367,8 +417,8 @@ void BrowserContext::CreateMemoryBackedBlob(BrowserContext* browser_context,
 
   ChromeBlobStorageContext* blob_context =
       ChromeBlobStorageContext::GetFor(browser_context);
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ChromeBlobStorageContext::CreateMemoryBackedBlob,
                      base::WrapRefCounted(blob_context), data, length,
                      content_type),
@@ -466,8 +516,8 @@ void BrowserContext::SaveSessionState(BrowserContext* browser_context) {
                      base::WrapRefCounted(database_tracker)));
 
   if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &SaveSessionStateOnIOThread,
             base::WrapRefCounted(storage_partition->GetURLRequestContext()),
@@ -630,10 +680,32 @@ ServiceManagerConnection* BrowserContext::GetServiceManagerConnectionFor(
 }
 
 // static
-SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
+const SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
     BrowserContext* browser_context) {
   return UserDataAdapter<SharedCorsOriginAccessList>::Get(
       browser_context, kSharedCorsOriginAccessListKey);
+}
+
+// static
+void BrowserContext::SetCorsOriginAccessListsForOrigin(
+    BrowserContext* browser_context,
+    const url::Origin& source_origin,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+    UserDataAdapter<SharedCorsOriginAccessList>::Get(
+        browser_context, kSharedCorsOriginAccessListKey)
+        ->SetForOrigin(source_origin, std::move(allow_patterns),
+                       std::move(block_patterns), std::move(closure));
+  } else {
+    auto setter = base::MakeRefCounted<CorsOriginPatternSetter>(
+        source_origin, std::move(allow_patterns), std::move(block_patterns),
+        std::move(closure));
+    ForEachStoragePartition(
+        browser_context, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
+                                             base::RetainedRef(setter.get())));
+  }
 }
 
 BrowserContext::BrowserContext()
@@ -686,10 +758,14 @@ media::VideoDecodePerfHistory* BrowserContext::GetVideoDecodePerfHistory() {
   // occurs later upon first VideoDecodePerfHistory API request that requires DB
   // access. DB operations will not block the UI thread.
   if (!decode_history) {
-    auto db_factory = std::make_unique<media::VideoDecodeStatsDBImplFactory>(
-        GetPath().Append(FILE_PATH_LITERAL("VideoDecodeStats")));
-    decode_history = new media::VideoDecodePerfHistory(std::move(db_factory));
-    SetUserData(kVideoDecodePerfHistoryId, base::WrapUnique(decode_history));
+    std::unique_ptr<media::VideoDecodeStatsDBImpl> stats_db =
+        media::VideoDecodeStatsDBImpl::Create(
+            GetPath().Append(FILE_PATH_LITERAL("VideoDecodeStats")));
+    auto new_decode_history =
+        std::make_unique<media::VideoDecodePerfHistory>(std::move(stats_db));
+    decode_history = new_decode_history.get();
+
+    SetUserData(kVideoDecodePerfHistoryId, std::move(new_decode_history));
   }
 
   return decode_history;

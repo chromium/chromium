@@ -47,6 +47,8 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
 
   bool IsSVGSource() const override;
 
+  bool IsImageElement() const override;
+
   bool IsOpaque() const override;
 
   const KURL& SourceURL() const override;

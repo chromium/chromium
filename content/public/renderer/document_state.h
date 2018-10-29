@@ -18,8 +18,6 @@
 
 namespace content {
 
-class NavigationState;
-
 // The RenderView stores an instance of this class in the "extra data" of each
 // WebDocumentLoader (see RenderView::DidCreateDataSource).
 class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
@@ -34,7 +32,7 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
   }
 
   // Returns a copy of the DocumentState. This is a shallow copy,
-  // |navigation_state_| of the new DocumentState is set to nullptr.
+  // user data is not copied.
   std::unique_ptr<DocumentState> Clone();
 
   // Indicator if SPDY was used as part of this page load.
@@ -83,11 +81,6 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
     data_url_ = data_url;
   }
 
-  NavigationState* navigation_state() { return navigation_state_.get(); }
-  // TODO(ahemery): set_navigation_state should take a std::unique_ptr for
-  // |navigation_state|.
-  void set_navigation_state(NavigationState* navigation_state);
-
   bool can_load_local_resources() const { return can_load_local_resources_; }
   void set_can_load_local_resources(bool can_load) {
     can_load_local_resources_ = can_load;
@@ -102,8 +95,6 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
 
   bool was_load_data_with_base_url_request_;
   GURL data_url_;
-
-  std::unique_ptr<NavigationState> navigation_state_;
 
   bool can_load_local_resources_;
 };

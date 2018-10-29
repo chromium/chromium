@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PAGE_LOAD_STATISTICS_H_
 
 #include "base/macros.h"
-#include "components/subresource_filter/core/common/document_load_statistics.h"
 #include "components/subresource_filter/mojom/subresource_filter.mojom.h"
 
 namespace subresource_filter {
@@ -19,7 +18,8 @@ class PageLoadStatistics {
   PageLoadStatistics(const mojom::ActivationState& state);
   ~PageLoadStatistics();
 
-  void OnDocumentLoadStatistics(const DocumentLoadStatistics& statistics);
+  void OnDocumentLoadStatistics(
+      const mojom::DocumentLoadStatistics& statistics);
   void OnDidFinishLoad();
 
  private:
@@ -27,7 +27,7 @@ class PageLoadStatistics {
 
   // Statistics about subresource loads, aggregated across all frames of the
   // current page.
-  DocumentLoadStatistics aggregated_document_statistics_;
+  mojom::DocumentLoadStatistics aggregated_document_statistics_;
 
   DISALLOW_COPY_AND_ASSIGN(PageLoadStatistics);
 };

@@ -94,8 +94,8 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
     if (guest_view_registry_.count(T::Type))
       return;
     auto registry_entry = std::make_pair(
-        T::Type,
-        GuestViewData(base::Bind(&T::Create), base::Bind(&T::CleanUp)));
+        T::Type, GuestViewData(base::BindRepeating(&T::Create),
+                               base::BindRepeating(&T::CleanUp)));
     guest_view_registry_.insert(registry_entry);
   }
 
@@ -104,7 +104,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // Note that multiple callbacks can be registered for one view.
   void RegisterViewDestructionCallback(int embedder_process_id,
                                        int view_instance_id,
-                                       const base::Closure& callback);
+                                       base::OnceClosure callback);
 
   using WebContentsCreatedCallback =
       base::OnceCallback<void(content::WebContents*)>;
@@ -225,9 +225,9 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   GuestInstanceIDReverseMap reverse_instance_id_map_;
 
   using GuestViewCreateFunction =
-      base::Callback<GuestViewBase*(content::WebContents*)>;
+      base::RepeatingCallback<GuestViewBase*(content::WebContents*)>;
   using GuestViewCleanUpFunction =
-      base::Callback<void(content::BrowserContext*, int, int)>;
+      base::RepeatingCallback<void(content::BrowserContext*, int, int)>;
   struct GuestViewData {
     GuestViewData(const GuestViewCreateFunction& create_function,
                   const GuestViewCleanUpFunction& cleanup_function);
@@ -259,7 +259,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // |view_destruction_callback_map_| maps from embedder process ID to view ID
   // to a vector of callback functions to be called when that view is destroyed.
-  using Callbacks = std::vector<base::Closure>;
+  using Callbacks = std::vector<base::OnceClosure>;
   using CallbacksForEachViewID = std::map<int, Callbacks>;
   using CallbacksForEachEmbedderID = std::map<int, CallbacksForEachViewID>;
   CallbacksForEachEmbedderID view_destruction_callback_map_;

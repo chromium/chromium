@@ -30,7 +30,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView.ButtonType;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -43,14 +45,19 @@ import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.website.ContentSetting;
 import org.chromium.chrome.browser.preferences.website.SingleWebsitePreferences;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
+import org.chromium.chrome.browser.previews.PreviewsUma;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ssl.SecurityStateModel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.net.GURLUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -114,9 +121,8 @@ public class PageInfoController
     // URL'.
     private String mFullUrl;
 
-    // A parsed version of mFullUrl. Is null if the URL is invalid/cannot be
-    // parsed.
-    private URI mParsedUrl;
+    // The scheme of the URL of this page.
+    private String mScheme;
 
     // Whether or not this page is an internal chrome page (e.g. the
     // chrome://settings page).
@@ -154,14 +160,13 @@ public class PageInfoController
      * @param offlinePageUrl           URL that the offline page claims to be generated from.
      * @param offlinePageCreationDate  Date when the offline page was created.
      * @param offlinePageState         State of the tab showing offline page.
-     * @param previewOriginalHost      The domain of the original page of the displayed preview.
      * @param previewPageState         State of the tab showing the preview.
      * @param publisher                The name of the content publisher, if any.
      */
     protected PageInfoController(Activity activity, Tab tab, int securityLevel,
             String offlinePageUrl, String offlinePageCreationDate,
-            @OfflinePageState int offlinePageState, String previewOriginalHost,
-            @PreviewPageState int previewPageState, String publisher) {
+            @OfflinePageState int offlinePageState, @PreviewPageState int previewPageState,
+            String publisher) {
         mContext = activity;
         mTab = tab;
         mSecurityLevel = securityLevel;
@@ -194,17 +199,16 @@ public class PageInfoController
         // This can happen if an invalid chrome-distiller:// url was entered.
         if (mFullUrl == null) mFullUrl = "";
 
+        mScheme = GURLUtils.getScheme(mFullUrl);
         try {
-            mParsedUrl = new URI(mFullUrl);
-            mIsInternalPage = UrlUtilities.isInternalScheme(mParsedUrl);
+            mIsInternalPage = UrlUtilities.isInternalScheme(new URI(mFullUrl));
         } catch (URISyntaxException e) {
-            mParsedUrl = null;
-            mIsInternalPage = false;
+            // Ignore exception since this is for displaying some specific content on page info.
         }
 
         String displayUrl = UrlFormatter.formatUrlForCopy(mFullUrl);
         if (isShowingOfflinePage()) {
-            displayUrl = OfflinePageUtils.stripSchemeFromOnlineUrl(mFullUrl);
+            displayUrl = UrlUtilities.stripScheme(mFullUrl);
         }
         SpannableStringBuilder displayUrlBuilder = new SpannableStringBuilder(displayUrl);
         OmniboxUrlEmphasizer.emphasizeUrl(displayUrlBuilder, mContext.getResources(),
@@ -223,7 +227,7 @@ public class PageInfoController
         viewParams.urlOriginLength = OmniboxUrlEmphasizer.getOriginEndIndex(
                 displayUrlBuilder.toString(), mTab.getProfile());
 
-        if (shouldShowSiteSettingsButton(mParsedUrl)) {
+        if (shouldShowSiteSettingsButton()) {
             viewParams.siteSettingsButtonClickCallback = () -> {
                 // Delay while the dialog closes.
                 runAfterDismiss(() -> {
@@ -244,7 +248,7 @@ public class PageInfoController
             viewParams.siteSettingsButtonShown = false;
         }
 
-        initPreviewUiParams(viewParams, previewOriginalHost);
+        initPreviewUiParams(viewParams);
 
         if (isShowingOfflinePage()) {
             boolean isConnected = OfflinePageUtils.isConnected();
@@ -327,9 +331,9 @@ public class PageInfoController
      * Initializes the state in viewParams with respect to showing the previews UI.
      *
      * @param viewParams The PageInfoViewParams to set state on.
-     * @param previewOriginalHost The hostname of the displayed preview page.
      */
-    private void initPreviewUiParams(PageInfoViewParams viewParams, String previewOriginalHost) {
+    private void initPreviewUiParams(PageInfoViewParams viewParams) {
+        final PreviewsAndroidBridge bridge = PreviewsAndroidBridge.getInstance();
         viewParams.separatorShown = mPreviewPageState == PreviewPageState.INSECURE_PAGE_PREVIEW;
         viewParams.previewUIShown = isShowingPreview();
         if (isShowingPreview()) {
@@ -338,9 +342,11 @@ public class PageInfoController
 
             viewParams.previewShowOriginalClickCallback = () -> {
                 runAfterDismiss(() -> {
-                    PreviewsAndroidBridge.getInstance().loadOriginal(mTab.getWebContents());
+                    PreviewsUma.recordOptOut(bridge.getPreviewsType(mTab.getWebContents()));
+                    bridge.loadOriginal(mTab.getWebContents());
                 });
             };
+            final String previewOriginalHost = bridge.getOriginalHost(mTab.getWebContents());
             final String loadOriginalText = mContext.getString(
                     R.string.page_info_preview_load_original, previewOriginalHost);
             final SpannableString loadOriginalSpan = SpanApplier.applySpans(loadOriginalText,
@@ -350,17 +356,17 @@ public class PageInfoController
                             // because the entire TextView will be clickable.
                             new NoUnderlineClickableSpan((view) -> {})));
             viewParams.previewLoadOriginalMessage = loadOriginalSpan;
+
+            viewParams.previewStaleTimestamp =
+                    bridge.getStalePreviewTimestamp(mTab.getWebContents());
         }
     }
 
     /**
-     * Whether to show a 'Details' link to the connection info popup. The link is only shown for
-     * HTTPS connections.
+     * Whether to show a 'Details' link to the connection info popup.
      */
     private boolean isConnectionDetailsLinkVisible() {
-        return mContentPublisher == null && !isShowingOfflinePage() && !isShowingPreview()
-                && mParsedUrl != null && mParsedUrl.getScheme() != null
-                && mParsedUrl.getScheme().equals(UrlConstants.HTTPS_SCHEME);
+        return mContentPublisher == null && !isShowingOfflinePage() && !isShowingPreview();
     }
 
     /**
@@ -479,10 +485,7 @@ public class PageInfoController
     public void onClick(@ButtonType int buttonType) {}
 
     @Override
-    public void onCancel() {}
-
-    @Override
-    public void onDismiss() {
+    public void onDismiss(@DialogDismissalCause int dismissalCause) {
         assert mNativePageInfoController != 0;
         if (mPendingRunAfterDismissTask != null) {
             mPendingRunAfterDismissTask.run();
@@ -514,21 +517,12 @@ public class PageInfoController
     }
 
     /**
-     *  Whether the site settings button should be displayed for the given URI.
-     *
-     * @param uri The URI used to determine if the site settings button should be displayed.
+     * Whether the site settings button should be displayed for the given URL.
      */
-    private boolean shouldShowSiteSettingsButton(URI uri) {
-        if (uri == null || uri.getScheme() == null) {
-            return false;
-        }
-
-        if (isShowingOfflinePage() || isShowingPreview()) {
-            return false;
-        }
-
-        return uri.getScheme().equals(UrlConstants.HTTP_SCHEME)
-                || uri.getScheme().equals(UrlConstants.HTTPS_SCHEME);
+    private boolean shouldShowSiteSettingsButton() {
+        return !isShowingOfflinePage() && !isShowingPreview()
+                && (UrlConstants.HTTP_SCHEME.equals(mScheme)
+                           || UrlConstants.HTTPS_SCHEME.equals(mScheme));
     }
 
     private boolean isSheet() {
@@ -566,15 +560,17 @@ public class PageInfoController
         final int securityLevel =
                 SecurityStateModel.getSecurityLevelForWebContents(tab.getWebContents());
 
-        final PreviewsAndroidBridge previewsBridge = PreviewsAndroidBridge.getInstance();
         @PreviewPageState
         int previewPageState = PreviewPageState.NOT_PREVIEW;
-        String previewOriginalHost = null;
-        if (previewsBridge.shouldShowPreviewUI(tab.getWebContents())) {
+        final PreviewsAndroidBridge bridge = PreviewsAndroidBridge.getInstance();
+        if (bridge.shouldShowPreviewUI(tab.getWebContents())) {
             previewPageState = securityLevel == ConnectionSecurityLevel.SECURE
                     ? PreviewPageState.SECURE_PAGE_PREVIEW
                     : PreviewPageState.INSECURE_PAGE_PREVIEW;
-            previewOriginalHost = previewsBridge.getOriginalHost(tab.getWebContents());
+
+            PreviewsUma.recordPageInfoOpened(bridge.getPreviewsType(tab.getWebContents()));
+            Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedProfile());
+            tracker.notifyEvent(EventConstants.PREVIEWS_VERBOSE_STATUS_OPENED);
         }
 
         String offlinePageUrl = null;
@@ -602,8 +598,7 @@ public class PageInfoController
         }
 
         new PageInfoController(activity, tab, securityLevel, offlinePageUrl,
-                offlinePageCreationDate, offlinePageState, previewOriginalHost, previewPageState,
-                contentPublisher);
+                offlinePageCreationDate, offlinePageState, previewPageState, contentPublisher);
     }
 
     private static native long nativeInit(PageInfoController controller, WebContents webContents);

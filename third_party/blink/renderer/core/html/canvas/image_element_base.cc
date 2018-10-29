@@ -40,6 +40,10 @@ bool ImageElementBase::IsSVGSource() const {
   return CachedImage() && CachedImage()->GetImage()->IsSVGImage();
 }
 
+bool ImageElementBase::IsImageElement() const {
+  return CachedImage() && !CachedImage()->GetImage()->IsSVGImage();
+}
+
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
     AccelerationHint,

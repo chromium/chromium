@@ -4,7 +4,80 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_impl.h"
 
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_packet_transport.h"
+
 namespace blink {
+namespace {
+
+// Implementation of P2PQuicPacketTransport backed by a P2PTransportChannel.
+class QuicPacketTransportAdapter : public P2PQuicPacketTransport,
+                                   public sigslot::has_slots<> {
+ public:
+  QuicPacketTransportAdapter(
+      cricket::P2PTransportChannel* p2p_transport_channel)
+      : p2p_transport_channel_(p2p_transport_channel) {
+    DCHECK(p2p_transport_channel_);
+    p2p_transport_channel_->SignalReadPacket.connect(
+        this, &QuicPacketTransportAdapter::OnReadPacket);
+    p2p_transport_channel_->SignalWritableState.connect(
+        this, &QuicPacketTransportAdapter::OnWritableState);
+  }
+
+  ~QuicPacketTransportAdapter() override {
+    // Caller is responsible for unsetting the write observer and receive
+    // delegate before destroying this.
+    DCHECK(!write_observer_);
+    DCHECK(!receive_delegate_);
+  }
+
+  int WritePacket(const QuicPacket& packet) override {
+    rtc::PacketOptions options;
+    options.packet_id = packet.packet_number;
+    int flags = 0;
+    return p2p_transport_channel_->SendPacket(packet.buffer, packet.buf_len,
+                                              options, flags);
+  }
+
+  void SetReceiveDelegate(ReceiveDelegate* receive_delegate) override {
+    receive_delegate_ = receive_delegate;
+  }
+
+  void SetWriteObserver(WriteObserver* write_observer) override {
+    write_observer_ = write_observer;
+  }
+
+  bool Writable() override { return p2p_transport_channel_->writable(); }
+
+ private:
+  // P2PTransportChannel callbacks.
+  void OnReadPacket(rtc::PacketTransportInternal* packet_transport,
+                    const char* buffer,
+                    size_t buffer_length,
+                    const rtc::PacketTime& packet_time,
+                    int flags) {
+    DCHECK_EQ(packet_transport, p2p_transport_channel_);
+    if (!receive_delegate_) {
+      // TODO(crbug.com/874296): Consider providing a small buffer.
+      return;
+    }
+    receive_delegate_->OnPacketDataReceived(buffer, buffer_length);
+  }
+  void OnWritableState(rtc::PacketTransportInternal* packet_transport) {
+    DCHECK_EQ(packet_transport, p2p_transport_channel_);
+    if (!write_observer_) {
+      return;
+    }
+    if (p2p_transport_channel_->writable()) {
+      write_observer_->OnCanWrite();
+    }
+  }
+
+  cricket::P2PTransportChannel* p2p_transport_channel_;
+  ReceiveDelegate* receive_delegate_ = nullptr;
+  WriteObserver* write_observer_ = nullptr;
+};
+
+}  // namespace
 
 IceTransportAdapterImpl::IceTransportAdapterImpl(
     Delegate* delegate,
@@ -33,11 +106,19 @@ IceTransportAdapterImpl::IceTransportAdapterImpl(
       this, &IceTransportAdapterImpl::OnCandidateGathered);
   p2p_transport_channel_->SignalStateChanged.connect(
       this, &IceTransportAdapterImpl::OnStateChanged);
+  p2p_transport_channel_->SignalNetworkRouteChanged.connect(
+      this, &IceTransportAdapterImpl::OnNetworkRouteChanged);
+  // We need to set the ICE role even before Start is called since the Port
+  // assumes that the role has been set before receiving incoming connectivity
+  // checks. These checks can race with the information signaled for Start.
+  p2p_transport_channel_->SetIceRole(cricket::ICEROLE_CONTROLLING);
   // The ICE tiebreaker is used to determine which side is controlling/
   // controlled when both sides start in the same role. The number is randomly
   // generated so that each peer can calculate a.tiebreaker <= b.tiebreaker
   // consistently.
   p2p_transport_channel_->SetIceTiebreaker(rtc::CreateRandomId64());
+  quic_packet_transport_adapter_ = std::make_unique<QuicPacketTransportAdapter>(
+      p2p_transport_channel_.get());
 }
 
 IceTransportAdapterImpl::~IceTransportAdapterImpl() = default;
@@ -94,6 +175,10 @@ void IceTransportAdapterImpl::AddRemoteCandidate(
   p2p_transport_channel_->AddRemoteCandidate(candidate);
 }
 
+P2PQuicPacketTransport* IceTransportAdapterImpl::packet_transport() const {
+  return quic_packet_transport_adapter_.get();
+}
+
 void IceTransportAdapterImpl::OnGatheringStateChanged(
     cricket::IceTransportInternal* transport) {
   DCHECK_EQ(transport, p2p_transport_channel_.get());
@@ -111,6 +196,23 @@ void IceTransportAdapterImpl::OnStateChanged(
     cricket::IceTransportInternal* transport) {
   DCHECK_EQ(transport, p2p_transport_channel_.get());
   delegate_->OnStateChanged(p2p_transport_channel_->GetState());
+}
+
+void IceTransportAdapterImpl::OnNetworkRouteChanged(
+    absl::optional<rtc::NetworkRoute> new_network_route) {
+  const cricket::CandidatePairInterface* selected_connection =
+      p2p_transport_channel_->selected_connection();
+  if (!selected_connection) {
+    // The selected connection will only be null if the ICE connection has
+    // totally failed, at which point we'll get a StateChanged signal. The
+    // client will implicitly clear the selected candidate pair when it receives
+    // the failed state change, so we don't need to give an explicit callback
+    // here.
+    return;
+  }
+  delegate_->OnSelectedCandidatePairChanged(
+      std::make_pair(selected_connection->local_candidate(),
+                     selected_connection->remote_candidate()));
 }
 
 }  // namespace blink

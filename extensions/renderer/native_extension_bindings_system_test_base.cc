@@ -73,7 +73,7 @@ void NativeExtensionBindingsSystemUnittest::TearDown() {
 
 ScriptContext* NativeExtensionBindingsSystemUnittest::CreateScriptContext(
     v8::Local<v8::Context> v8_context,
-    Extension* extension,
+    const Extension* extension,
     Feature::Context context_type) {
   auto script_context = std::make_unique<ScriptContext>(
       v8_context, nullptr, extension, context_type, extension, context_type);

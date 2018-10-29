@@ -2,7 +2,6 @@ Test setting the pathname attribute of the URL in HTMLAnchorElement.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Set pathname that starts with slash
 PASS a.href is 'https://www.mydomain.com/path%20name?key=value'
 Set pathname that does not start with slash and contains '?'

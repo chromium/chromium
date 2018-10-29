@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -131,6 +132,15 @@ InProcessCommandBuffer* RasterInProcessContext::GetCommandBufferForTest()
 
 int RasterInProcessContext::GetRasterDecoderIdForTest() const {
   return command_buffer_->GetRasterDecoderIdForTest();
+}
+
+// static
+bool RasterInProcessContext::SupportedInTest() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  GpuPreferences gpu_preferences = gles2::ParseGpuPreferences(command_line);
+  return !gpu_preferences.use_passthrough_cmd_decoder ||
+         !gles2::PassthroughCommandDecoderSupported();
 }
 
 }  // namespace gpu

@@ -5,10 +5,12 @@
 #include "chrome/browser/data_use_measurement/chrome_data_use_ascriber_service.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_ascriber.h"
 #include "chrome/browser/io_thread.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -50,8 +52,8 @@ ChromeDataUseAscriberService::ChromeDataUseAscriberService()
     return;
   }
 
-  content::BrowserThread::PostTaskAndReplyWithResult(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&InitOnIOThread, g_browser_process->io_thread()),
       base::Bind(&ChromeDataUseAscriberService::SetDataUseAscriber,
                  base::Unretained(this)));
@@ -81,8 +83,8 @@ void ChromeDataUseAscriberService::RenderFrameCreated(
     main_render_frame_id = main_frame->GetRoutingID();
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::RenderFrameCreated,
                      base::Unretained(ascriber_),
                      render_frame_host->GetProcess()->GetID(),
@@ -113,8 +115,8 @@ void ChromeDataUseAscriberService::RenderFrameDeleted(
     main_render_frame_id = main_frame->GetRoutingID();
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::RenderFrameDeleted,
                      base::Unretained(ascriber_),
                      render_frame_host->GetProcess()->GetID(),
@@ -133,8 +135,8 @@ void ChromeDataUseAscriberService::ReadyToCommitNavigation(
     return;
 
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::ReadyToCommitMainFrameNavigation,
                      base::Unretained(ascriber_),
                      navigation_handle->GetGlobalRequestID(),
@@ -153,8 +155,8 @@ void ChromeDataUseAscriberService::DidFinishNavigation(
     return;
 
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::DidFinishMainFrameNavigation,
                      base::Unretained(ascriber_),
                      web_contents->GetMainFrame()->GetProcess()->GetID(),
@@ -175,8 +177,8 @@ void ChromeDataUseAscriberService::DidFinishLoad(
   if (!ascriber_)
     return;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::DidFinishLoad,
                      base::Unretained(ascriber_),
                      main_render_frame_host->GetProcess()->GetID(),
@@ -215,8 +217,8 @@ void ChromeDataUseAscriberService::WasShownOrHidden(
     return;
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ChromeDataUseAscriber::WasShownOrHidden,
                      base::Unretained(ascriber_),
                      main_render_frame_host->GetProcess()->GetID(),
@@ -230,8 +232,8 @@ void ChromeDataUseAscriberService::RenderFrameHostChanged(
     return;
 
   if (old_host) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &ChromeDataUseAscriber::RenderFrameHostChanged,
             base::Unretained(ascriber_), old_host->GetProcess()->GetID(),

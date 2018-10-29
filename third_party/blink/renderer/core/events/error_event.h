@@ -89,6 +89,7 @@ class ErrorEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
   bool CanBeDispatchedInWorld(const DOMWrapperWorld&) const override;
+  bool IsErrorEvent() const override;
 
   DOMWrapperWorld* World() const { return world_.get(); }
 
@@ -111,6 +112,8 @@ class ErrorEvent final : public Event {
 
   scoped_refptr<DOMWrapperWorld> world_;
 };
+
+DEFINE_EVENT_TYPE_CASTS(ErrorEvent);
 
 }  // namespace blink
 

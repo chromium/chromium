@@ -60,6 +60,7 @@ SolidColorScrollbarLayer::SolidColorScrollbarLayer(
                                           is_left_side_vertical_scrollbar,
                                           scroll_element_id) {
   Layer::SetOpacity(0.f);
+  SetIsScrollbar(true);
 }
 
 SolidColorScrollbarLayer::~SolidColorScrollbarLayer() = default;

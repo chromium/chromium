@@ -33,8 +33,12 @@ class BookmarkRemoteUpdatesHandler {
                                favicon::FaviconService* favicon_service,
                                SyncedBookmarkTracker* bookmark_tracker);
   // Processes the updates received from the sync server in |updates| and
-  // updates the |bookmark_model_| and |bookmark_tracker_| accordingly.
-  void Process(const syncer::UpdateResponseDataList& updates);
+  // updates the |bookmark_model_| and |bookmark_tracker_| accordingly. If
+  // |got_new_encryption_requirements| is true, it recommits all tracked
+  // entities except those in |updates| which should use the latest encryption
+  // key and hence don't need recommitting.
+  void Process(const syncer::UpdateResponseDataList& updates,
+               bool got_new_encryption_requirements);
 
   // Public for testing.
   static std::vector<const syncer::UpdateResponseData*> ReorderUpdatesForTest(

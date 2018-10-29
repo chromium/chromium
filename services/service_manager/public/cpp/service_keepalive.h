@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "services/service_manager/public/cpp/service_context_ref.h"
 
@@ -39,10 +40,12 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT ServiceKeepalive {
   };
 
   // Creates a keepalive which allows the service to be idle for |idle_timeout|
-  // before requesting termination. Both |context| and |timeout_observer| are
-  // not owned and must outlive the ServiceKeepalive instance.
+  // before requesting termination. If |idle_timeout| is not given, the
+  // ServiceKeepalive will never request termination, i.e. the service will
+  // stay alive indefinitely. Both |context| and |timeout_observer| are not
+  // owned and must outlive the ServiceKeepalive instance.
   ServiceKeepalive(ServiceContext* context,
-                   base::TimeDelta idle_timeout,
+                   base::Optional<base::TimeDelta> idle_timeout,
                    TimeoutObserver* timeout_observer = nullptr);
   ~ServiceKeepalive();
 
@@ -55,7 +58,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT ServiceKeepalive {
   void OnTimerExpired();
 
   ServiceContext* const context_;
-  const base::TimeDelta idle_timeout_;
+  const base::Optional<base::TimeDelta> idle_timeout_;
   TimeoutObserver* const timeout_observer_;
   base::OneShotTimer idle_timer_;
   ServiceContextRefFactory ref_factory_;

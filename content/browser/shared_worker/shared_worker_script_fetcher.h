@@ -7,6 +7,8 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "content/common/navigation_subresource_loader_params.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -22,7 +24,6 @@ namespace content {
 class SharedWorkerScriptLoaderFactory;
 class ThrottlingURLLoader;
 class URLLoaderThrottle;
-struct SubresourceLoaderParams;
 
 // NetworkService (PlzWorker):
 // This is an implementation of the URLLoaderClient for shared worker's main
@@ -71,9 +72,21 @@ class SharedWorkerScriptFetcher : public network::mojom::URLLoaderClient {
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   std::unique_ptr<SharedWorkerScriptLoaderFactory> script_loader_factory_;
+
   std::unique_ptr<network::ResourceRequest> resource_request_;
   CreateAndStartCallback callback_;
+
+  // URLLoader instance backed by a request interceptor (e.g.,
+  // AppCacheRequestHandler) or the network service.
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
+
+  // URLLoader instance for handling a response received from the default
+  // network loader. This can be provided by an interceptor. For example,
+  // AppCache's interceptor creates this for AppCache's fallback case.
+  network::mojom::URLLoaderPtr response_url_loader_;
+  mojo::Binding<network::mojom::URLLoaderClient> response_url_loader_binding_;
+
+  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::ResourceResponseHead> redirect_response_heads_;

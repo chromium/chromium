@@ -56,3 +56,10 @@ declare_args() {
   # in the browser process.
   enable_isolated_xr_service = enable_oculus_vr || enable_openvr
 }
+
+declare_args() {
+  # Whether to create a VR/AR module when building bundles. If false, VR/AR code
+  # will become part of the base module.
+  modularize_vr = enable_vr
+  modularize_ar = enable_arcore
+}

@@ -49,7 +49,6 @@ using content::WebContents;
 //     ContentSettingClipboardReadImageModel     - clipboard read
 //     ContentSettingSensorsImageModel           - sensors
 //   ContentSettingMediaImageModel             - media
-//   ContentSettingSubresourceFilterImageModel - deceptive content
 //   ContentSettingFramebustBlockImageModel    - blocked framebust
 
 class ContentSettingBlockedImageModel : public ContentSettingSimpleImageModel {
@@ -172,6 +171,8 @@ const ContentSettingsImageDetails kImageDetails[] = {
     {CONTENT_SETTINGS_TYPE_PPAPI_BROKER, kExtensionIcon,
      IDS_BLOCKED_PPAPI_BROKER_MESSAGE, 0, IDS_ALLOWED_PPAPI_BROKER_MESSAGE},
     {CONTENT_SETTINGS_TYPE_SOUND, kTabAudioIcon, IDS_BLOCKED_SOUND_TITLE, 0, 0},
+    {CONTENT_SETTINGS_TYPE_ADS, kAdsIcon, IDS_BLOCKED_ADS_PROMPT_TOOLTIP,
+     IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
 };
 
 const ContentSettingsImageDetails* GetImageDetails(ContentSettingsType type) {
@@ -258,7 +259,8 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
     case ImageType::MEDIASTREAM:
       return std::make_unique<ContentSettingMediaImageModel>();
     case ImageType::ADS:
-      return std::make_unique<ContentSettingSubresourceFilterImageModel>();
+      return std::make_unique<ContentSettingBlockedImageModel>(
+          ImageType::ADS, CONTENT_SETTINGS_TYPE_ADS);
     case ImageType::AUTOMATIC_DOWNLOADS:
       return std::make_unique<ContentSettingDownloadsImageModel>();
     case ImageType::MIDI_SYSEX:
@@ -347,7 +349,7 @@ void ContentSettingBlockedImageModel::UpdateFromWebContents(
   const gfx::VectorIcon* icon = &image_details->icon;
   // Touch mode uses a different tab audio icon.
   if (image_details->content_type == CONTENT_SETTINGS_TYPE_SOUND &&
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled()) {
+      ui::MaterialDesignController::touch_ui()) {
     icon = &kTabAudioRoundedIcon;
   }
   set_icon(*icon, *badge_id);
@@ -595,61 +597,6 @@ void ContentSettingMediaImageModel::SetAnimationHasRun(
   }
 }
 
-// Subresource Filter ----------------------------------------------------------
-
-ContentSettingSubresourceFilterImageModel::
-    ContentSettingSubresourceFilterImageModel()
-    : ContentSettingImageModel(ImageType::ADS) {}
-
-void ContentSettingSubresourceFilterImageModel::UpdateFromWebContents(
-    WebContents* web_contents) {
-  set_visible(false);
-
-  if (!web_contents)
-    return;
-
-  TabSpecificContentSettings* content_settings =
-      TabSpecificContentSettings::FromWebContents(web_contents);
-  if (!content_settings ||
-      !content_settings->IsContentBlocked(CONTENT_SETTINGS_TYPE_ADS)) {
-    return;
-  }
-
-  set_icon(kAdsIcon, kBlockedBadgeIcon);
-  set_explanatory_string_id(IDS_BLOCKED_ADS_PROMPT_TITLE);
-  set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_ADS_PROMPT_TOOLTIP));
-  set_visible(true);
-}
-
-ContentSettingBubbleModel*
-ContentSettingSubresourceFilterImageModel::CreateBubbleModelImpl(
-    ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents,
-    Profile* profile) {
-  return new ContentSettingSubresourceFilterBubbleModel(delegate, web_contents,
-                                                        profile);
-}
-
-bool ContentSettingSubresourceFilterImageModel::ShouldRunAnimation(
-    WebContents* web_contents) {
-  if (!web_contents)
-    return false;
-  TabSpecificContentSettings* content_settings =
-      TabSpecificContentSettings::FromWebContents(web_contents);
-  return content_settings &&
-         !content_settings->IsBlockageIndicated(CONTENT_SETTINGS_TYPE_ADS);
-}
-
-void ContentSettingSubresourceFilterImageModel::SetAnimationHasRun(
-    WebContents* web_contents) {
-  if (!web_contents)
-    return;
-  TabSpecificContentSettings* content_settings =
-      TabSpecificContentSettings::FromWebContents(web_contents);
-  if (content_settings) {
-    content_settings->SetBlockageHasBeenIndicated(CONTENT_SETTINGS_TYPE_ADS);
-  }
-}
 
 // Blocked Framebust -----------------------------------------------------------
 ContentSettingFramebustBlockImageModel::ContentSettingFramebustBlockImageModel()
@@ -726,9 +673,6 @@ void ContentSettingSensorsImageModel::UpdateFromWebContents(
 
 gfx::Image ContentSettingImageModel::GetIcon(SkColor icon_color) const {
   int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
-#if defined(OS_MACOSX) && !BUILDFLAG(MAC_VIEWS_BROWSER)
-  icon_size = gfx::kFaviconSize;
-#endif
   return gfx::Image(gfx::CreateVectorIconWithBadge(*icon_, icon_size,
                                                    icon_color, *icon_badge_));
 }

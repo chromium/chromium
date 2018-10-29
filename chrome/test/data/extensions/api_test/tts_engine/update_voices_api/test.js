@@ -54,6 +54,8 @@ chrome.test.runTests([
   },
   function testExtensionIdMismatch() {
     setup();
+    chrome.ttsEngine.updateVoices([]);
+
     chrome.ttsEngine.updateVoices([{
       eventTypes: [ 'end', 'interrupted', 'cancelled', 'error'],
       extensionId: 'interloper',

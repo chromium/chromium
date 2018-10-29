@@ -7,8 +7,10 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/auth.h"
 #include "ui/gfx/text_elider.h"
@@ -32,8 +34,8 @@ ShellLoginDialog::ShellLoginDialog(
 }
 
 void ShellLoginDialog::Init(net::AuthChallengeInfo* auth_info) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &ShellLoginDialog::PrepDialog, this,
           url_formatter::FormatOriginForSecurityDisplay(auth_info->challenger),
@@ -42,27 +44,28 @@ void ShellLoginDialog::Init(net::AuthChallengeInfo* auth_info) {
 
 void ShellLoginDialog::OnRequestCancelled() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ShellLoginDialog::PlatformRequestCancelled, this));
 }
 
 void ShellLoginDialog::UserAcceptedAuth(const base::string16& username,
                                         const base::string16& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&ShellLoginDialog::SendAuthToRequester,
-                                         this, true, username, password));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&ShellLoginDialog::SendAuthToRequester, this, true,
+                     username, password));
 }
 
 void ShellLoginDialog::UserCancelledAuth() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ShellLoginDialog::SendAuthToRequester, this, false,
                      base::string16(), base::string16()));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ShellLoginDialog::PlatformCleanUp, this));
 }
 
@@ -115,8 +118,8 @@ void ShellLoginDialog::SendAuthToRequester(bool success,
     }
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ShellLoginDialog::PlatformCleanUp, this));
 }
 

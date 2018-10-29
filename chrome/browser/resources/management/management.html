@@ -6,8 +6,10 @@
 <title>$i18n{title}</title>
 
 <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="management.css">
 
+<script src="chrome://resources/js/assert.js"></script>
 <script src="chrome://resources/js/cr.js"></script>
 <script src="chrome://resources/js/load_time_data.js"></script>
 <script src="chrome://resources/js/promise_resolver.js"></script>
@@ -23,16 +25,29 @@
     </header>
     <section id="main-section">
       <!--  This is where page content gets dynamically added. -->
-      <section id="management-status">
+      <section id="management-status" hidden>
         <p></p>
       </section>
 
-      <section id="policies">
-        <div id="device-configuration" hidden>
+      <section id="policies" hidden>
+        <h2 class="section-title">$i18n{deviceReporting}</h2>
+        <div id="device-configuration">
           $i18n{deviceConfiguration}
         </div>
         <ul id="reporting-info-list"></ul>
       </section>
+
+      <section id="extensions" hidden>
+        <h2 class="section-title">$i18n{extensionReporting}</h2>
+        <div id="extensions-installed">
+          $i18n{extensionsInstalled}
+        </div>
+        <table id="extensions-table">
+          <tr>
+            <th>$i18n{extensionName}</th>
+            <th>$i18n{extensionPermissions}</th>
+          </tr>
+        </table>
     </section>
   </div>
 </body>

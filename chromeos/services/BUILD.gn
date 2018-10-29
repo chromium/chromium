@@ -22,6 +22,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//chromeos/services/device_sync:unit_tests",
+    "//chromeos/services/ime:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/multidevice_setup:unit_tests",
     "//chromeos/services/secure_channel:unit_tests",
@@ -37,7 +38,7 @@ source_set("unit_tests") {
 # target below.
 service_test("chromeos_services_unittests") {
   deps = [
-    "//chromeos/services/ime:unit_tests",
+    "//chromeos/services/ime:services_unittests",
   ]
 
   if (enable_cros_assistant) {

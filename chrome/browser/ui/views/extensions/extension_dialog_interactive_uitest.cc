@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "ui/base/test/ui_controls.h"
@@ -21,8 +20,6 @@ class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
   ~ExtensionDialogUiTest() override = default;
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(ExtensionDialogUiTest);
 };
 

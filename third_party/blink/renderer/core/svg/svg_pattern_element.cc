@@ -34,38 +34,38 @@
 namespace blink {
 
 inline SVGPatternElement::SVGPatternElement(Document& document)
-    : SVGElement(SVGNames::patternTag, document),
+    : SVGElement(svg_names::kPatternTag, document),
       SVGURIReference(this),
       SVGTests(this),
       SVGFitToViewBox(this),
       x_(SVGAnimatedLength::Create(this,
-                                   SVGNames::xAttr,
+                                   svg_names::kXAttr,
                                    SVGLengthMode::kWidth,
                                    SVGLength::Initial::kUnitlessZero)),
       y_(SVGAnimatedLength::Create(this,
-                                   SVGNames::yAttr,
+                                   svg_names::kYAttr,
                                    SVGLengthMode::kHeight,
                                    SVGLength::Initial::kUnitlessZero)),
       width_(SVGAnimatedLength::Create(this,
-                                       SVGNames::widthAttr,
+                                       svg_names::kWidthAttr,
                                        SVGLengthMode::kWidth,
                                        SVGLength::Initial::kUnitlessZero)),
       height_(SVGAnimatedLength::Create(this,
-                                        SVGNames::heightAttr,
+                                        svg_names::kHeightAttr,
                                         SVGLengthMode::kHeight,
                                         SVGLength::Initial::kUnitlessZero)),
       pattern_transform_(
           SVGAnimatedTransformList::Create(this,
-                                           SVGNames::patternTransformAttr,
+                                           svg_names::kPatternTransformAttr,
                                            CSSPropertyTransform)),
       pattern_units_(SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
           this,
-          SVGNames::patternUnitsAttr,
+          svg_names::kPatternUnitsAttr,
           SVGUnitTypes::kSvgUnitTypeObjectboundingbox)),
       pattern_content_units_(
           SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
               this,
-              SVGNames::patternContentUnitsAttr,
+              svg_names::kPatternContentUnitsAttr,
               SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
@@ -121,7 +121,7 @@ void SVGPatternElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == SVGNames::patternTransformAttr) {
+  if (name == svg_names::kPatternTransformAttr) {
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyTransform,
         *pattern_transform_->CurrentValue()->CssValue());
@@ -132,18 +132,18 @@ void SVGPatternElement::CollectStyleForPresentationAttribute(
 
 void SVGPatternElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   bool is_length_attr =
-      attr_name == SVGNames::xAttr || attr_name == SVGNames::yAttr ||
-      attr_name == SVGNames::widthAttr || attr_name == SVGNames::heightAttr;
+      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
-  if (attr_name == SVGNames::patternTransformAttr) {
+  if (attr_name == svg_names::kPatternTransformAttr) {
     InvalidateSVGPresentationAttributeStyle();
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(attr_name));
   }
 
-  if (is_length_attr || attr_name == SVGNames::patternUnitsAttr ||
-      attr_name == SVGNames::patternContentUnitsAttr ||
-      attr_name == SVGNames::patternTransformAttr ||
+  if (is_length_attr || attr_name == svg_names::kPatternUnitsAttr ||
+      attr_name == svg_names::kPatternContentUnitsAttr ||
+      attr_name == svg_names::kPatternTransformAttr ||
       SVGFitToViewBox::IsKnownAttribute(attr_name) ||
       SVGTests::IsKnownAttribute(attr_name)) {
     SVGElement::InvalidationGuard invalidation_guard(this);

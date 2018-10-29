@@ -13,13 +13,13 @@ namespace internal {
 
 Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
-                         const base::Optional<int32_t>& signal_strength,
+                         int32_t signal_strength,
                          NetworkQualityObservationSource source)
     : Observation(value, timestamp, signal_strength, source, base::nullopt) {}
 
 Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
-                         const base::Optional<int32_t>& signal_strength,
+                         int32_t signal_strength,
                          NetworkQualityObservationSource source,
                          const base::Optional<IPHash>& host)
     : value_(value),
@@ -28,6 +28,8 @@ Observation::Observation(int32_t value,
       source_(source),
       host_(host) {
   DCHECK(!timestamp_.is_null());
+  DCHECK(signal_strength_ == INT32_MIN ||
+         (signal_strength_ >= 0 && signal_strength_ <= 4));
 }
 
 Observation::Observation(const Observation& other) = default;
@@ -53,6 +55,7 @@ std::vector<ObservationCategory> Observation::GetObservationCategories() const {
           ObservationCategory::OBSERVATION_CATEGORY_TRANSPORT);
       return observation_categories;
     case NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC:
+    case NETWORK_QUALITY_OBSERVATION_SOURCE_H2_PINGS:
       observation_categories.push_back(
           ObservationCategory::OBSERVATION_CATEGORY_TRANSPORT);
       observation_categories.push_back(

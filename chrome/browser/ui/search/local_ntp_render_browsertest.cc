@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,16 +38,17 @@ namespace {
 
 // Where the captures are stored.
 const base::FilePath& GetTestDataDir() {
-  CR_DEFINE_STATIC_LOCAL(base::FilePath, dir, ());
-  if (dir.empty()) {
+  static base::NoDestructor<base::FilePath> dir([]() {
+    base::FilePath dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
     dir = dir.AppendASCII("components")
               .AppendASCII("test")
               .AppendASCII("data")
               .AppendASCII("ntp")
               .AppendASCII("render");
-  }
-  return dir;
+    return dir;
+  }());
+  return *dir;
 }
 
 class LocalNTPRenderTest : public InProcessBrowserTest {

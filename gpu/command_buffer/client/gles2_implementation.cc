@@ -724,6 +724,10 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
     case GL_TEXTURE_BINDING_EXTERNAL_OES:
       *params = texture_units_[active_texture_unit_].bound_texture_external_oes;
       return true;
+    case GL_TEXTURE_BINDING_RECTANGLE_ARB:
+      *params =
+          texture_units_[active_texture_unit_].bound_texture_rectangle_arb;
+      return true;
     case GL_PIXEL_PACK_TRANSFER_BUFFER_BINDING_CHROMIUM:
       *params = bound_pixel_pack_transfer_buffer_id_;
       return true;
@@ -1193,20 +1197,26 @@ bool GLES2Implementation::GetQueryObjectValueHelper(const char* function_name,
   }
 
   bool valid_value = false;
+  const bool flush_if_pending =
+      pname != GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT;
   switch (pname) {
     case GL_QUERY_RESULT_EXT:
-      if (!query->CheckResultsAvailable(helper_)) {
+      if (!query->CheckResultsAvailable(helper_, flush_if_pending)) {
         helper_->WaitForToken(query->token());
-        if (!query->CheckResultsAvailable(helper_)) {
+        if (!query->CheckResultsAvailable(helper_, flush_if_pending)) {
           FinishHelper();
-          CHECK(query->CheckResultsAvailable(helper_));
+          CHECK(query->CheckResultsAvailable(helper_, flush_if_pending));
         }
       }
       *params = query->GetResult();
       valid_value = true;
       break;
     case GL_QUERY_RESULT_AVAILABLE_EXT:
-      *params = query->CheckResultsAvailable(helper_);
+      *params = query->CheckResultsAvailable(helper_, flush_if_pending);
+      valid_value = true;
+      break;
+    case GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT:
+      *params = query->CheckResultsAvailable(helper_, flush_if_pending);
       valid_value = true;
       break;
     default:
@@ -4413,9 +4423,7 @@ void GLES2Implementation::BindSamplerHelper(GLuint unit, GLuint sampler) {
 
 void GLES2Implementation::BindTextureHelper(GLenum target, GLuint texture) {
   // TODO(gman): See note #1 above.
-  // TODO(gman): Change this to false once we figure out why it's failing
-  //     on daisy.
-  bool changed = true;
+  bool changed = false;
   TextureUnit& unit = texture_units_[active_texture_unit_];
   switch (target) {
     case GL_TEXTURE_2D:
@@ -4433,6 +4441,12 @@ void GLES2Implementation::BindTextureHelper(GLenum target, GLuint texture) {
     case GL_TEXTURE_EXTERNAL_OES:
       if (unit.bound_texture_external_oes != texture) {
         unit.bound_texture_external_oes = texture;
+        changed = true;
+      }
+      break;
+    case GL_TEXTURE_RECTANGLE_ARB:
+      if (unit.bound_texture_rectangle_arb != texture) {
+        unit.bound_texture_rectangle_arb = texture;
         changed = true;
       }
       break;
@@ -4610,6 +4624,9 @@ void GLES2Implementation::UnbindTexturesHelper(GLsizei n,
       }
       if (textures[ii] == unit.bound_texture_external_oes) {
         unit.bound_texture_external_oes = 0;
+      }
+      if (textures[ii] == unit.bound_texture_rectangle_arb) {
+        unit.bound_texture_rectangle_arb = 0;
       }
     }
   }
@@ -6020,7 +6037,28 @@ GLuint GLES2Implementation::CreateAndConsumeTextureCHROMIUM(
   GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
   helper_->CreateAndConsumeTextureINTERNALImmediate(client_id, data);
   if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
+    helper_->CommandBufferHelper::OrderingBarrier();
+  CheckGLError();
+  return client_id;
+}
+
+GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
+    GLenum internal_format,
+    const GLbyte* data) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] CreateAndTexStorage2DSharedImageCHROMIUM("
+                     << GLES2Util::GetStringImageInternalFormat(internal_format)
+                     << ", " << static_cast<const void*>(data) << ")");
+  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(data);
+  DCHECK(mailbox.Verify()) << "CreateAndTexStorage2DSharedImageCHROMIUM was "
+                              "passed an invalid mailbox.";
+  GLuint client_id;
+  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
+  helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(
+      client_id, internal_format, data);
+  if (share_group_->bind_generates_resource())
+    helper_->CommandBufferHelper::OrderingBarrier();
   CheckGLError();
   return client_id;
 }
@@ -6315,15 +6353,6 @@ namespace {
 bool CreateImageValidInternalFormat(GLenum internalformat,
                                     const Capabilities& capabilities) {
   switch (internalformat) {
-    case GL_ATC_RGB_AMD:
-    case GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD:
-      return capabilities.texture_format_atc;
-    case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-      return capabilities.texture_format_dxt1;
-    case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-      return capabilities.texture_format_dxt5;
-    case GL_ETC1_RGB8_OES:
-      return capabilities.texture_format_etc1;
     case GL_R16_EXT:
       return capabilities.texture_norm16;
     case GL_RGB10_A2_EXT:
@@ -6367,8 +6396,7 @@ GLuint GLES2Implementation::CreateImageCHROMIUMHelper(ClientBuffer buffer,
   // previously created fence syncs are flushed first.
   FlushHelper();
 
-  int32_t image_id =
-      gpu_control_->CreateImage(buffer, width, height, internalformat);
+  int32_t image_id = gpu_control_->CreateImage(buffer, width, height);
   if (image_id < 0) {
     SetGLError(GL_OUT_OF_MEMORY, "glCreateImageCHROMIUM", "image_id < 0");
     return 0;
@@ -7305,6 +7333,25 @@ CommandBufferHelper* GLES2Implementation::cmd_buffer_helper() {
 
 CommandBuffer* GLES2Implementation::command_buffer() const {
   return helper_->command_buffer();
+}
+
+void GLES2Implementation::SetActiveURLCHROMIUM(const char* url) {
+  DCHECK(url);
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glSetActiveURLCHROMIUM(" << url);
+
+  if (last_active_url_ == url)
+    return;
+
+  last_active_url_ = url;
+  static constexpr size_t kMaxStrLen = 1024;
+  size_t len = strlen(url);
+  if (len == 0)
+    return;
+
+  SetBucketContents(kResultBucketId, url, std::min(len, kMaxStrLen));
+  helper_->SetActiveURLCHROMIUM(kResultBucketId);
+  helper_->SetBucketSize(kResultBucketId, 0);
 }
 
 // Include the auto-generated part of this file. We split this because it means

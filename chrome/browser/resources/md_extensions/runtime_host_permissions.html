@@ -38,14 +38,18 @@
         justify-content: space-between;
       }
 
+      #host-access {
+        margin-inline-start: 20px;
+      }
+
       a[href] {
         color: var(--google-blue-700);
         text-decoration: none;
       }
     </style>
-    <div id="permissions-mode">
+    <div id="permissions-mode" class="mid-section-header">
       <div>
-        <div class="mid-section-header">
+        <div>
           $i18n{hostPermissionsHeading}
         </div>
         <div>
@@ -77,7 +81,7 @@
       </div>
       <ul id="hosts">
         <template is="dom-repeat"
-            items="[[permissions.runtimeHostPermissions]]">
+            items="[[getRuntimeHosts_(permissions.specificSiteControls)]]">
           <li>
             <div>[[item]]</div>
             <paper-icon-button-light class="icon-more-vert">

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 interface CustomElementRegistry {
-    // TODO(yukishiino): |constructor| should be of callback function type
-    // (should be: callback T = any ()).
-    [CallWith=ScriptState, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CallbackFunctionTreatedAsScriptValue constructor, optional ElementDefinitionOptions options);
+    [CallWith=ScriptState, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options);
     any get(DOMString name);
     [CallWith=ScriptState,RaisesException] Promise<void> whenDefined(DOMString name);
     [CEReactions] void upgrade(Node root);
 };
+
+callback CustomElementConstructor = any ();

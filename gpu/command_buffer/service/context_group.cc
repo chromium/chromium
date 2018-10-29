@@ -15,18 +15,20 @@
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
+#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/path_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
-#include "gpu/command_buffer/service/progress_reporter.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
 
 namespace gpu {
 namespace gles2 {
@@ -70,9 +72,11 @@ ContextGroup::ContextGroup(
     bool bind_generates_resource,
     ImageManager* image_manager,
     gpu::ImageFactory* image_factory,
-    ProgressReporter* progress_reporter,
+    gl::ProgressReporter* progress_reporter,
     const GpuFeatureInfo& gpu_feature_info,
-    ServiceDiscardableManager* discardable_manager)
+    ServiceDiscardableManager* discardable_manager,
+    PassthroughDiscardableManager* passthrough_discardable_manager,
+    SharedImageManager* shared_image_manager)
     : gpu_preferences_(gpu_preferences),
       mailbox_manager_(mailbox_manager),
       memory_tracker_(std::move(memory_tracker)),
@@ -113,9 +117,11 @@ ContextGroup::ContextGroup(
       image_factory_(image_factory),
       use_passthrough_cmd_decoder_(false),
       passthrough_resources_(new PassthroughResources),
+      passthrough_discardable_manager_(passthrough_discardable_manager),
       progress_reporter_(progress_reporter),
       gpu_feature_info_(gpu_feature_info),
-      discardable_manager_(discardable_manager) {
+      discardable_manager_(discardable_manager),
+      shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
   DCHECK(mailbox_manager_);
@@ -592,6 +598,10 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
   }
 
   memory_tracker_ = nullptr;
+
+  if (passthrough_discardable_manager_) {
+    passthrough_discardable_manager_->DeleteContextGroup(this);
+  }
 
   if (passthrough_resources_) {
     gl::GLApi* api = have_context ? gl::g_current_gl_context : nullptr;

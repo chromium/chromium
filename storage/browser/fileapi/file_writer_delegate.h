@@ -14,6 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/blob_reader.h"
@@ -34,16 +36,18 @@ class STORAGE_EXPORT FileWriterDelegate {
   };
 
   using DelegateWriteCallback =
-      base::Callback<void(base::File::Error result,
-                          int64_t bytes,
-                          WriteProgressStatus write_status)>;
+      base::RepeatingCallback<void(base::File::Error result,
+                                   int64_t bytes,
+                                   WriteProgressStatus write_status)>;
 
   FileWriterDelegate(std::unique_ptr<FileStreamWriter> file_writer,
                      FlushPolicy flush_policy);
   virtual ~FileWriterDelegate();
 
   void Start(std::unique_ptr<BlobReader> blob_reader,
-             const DelegateWriteCallback& write_callback);
+             DelegateWriteCallback write_callback);
+  void Start(mojo::ScopedDataPipeConsumerHandle data_pipe,
+             DelegateWriteCallback write_callback);
 
   // Cancels the current write operation.  This will synchronously or
   // asynchronously call the given write callback (which may result in
@@ -56,7 +60,6 @@ class STORAGE_EXPORT FileWriterDelegate {
 
  private:
   void OnDidCalculateSize(int net_error);
-
   void Read();
   void OnReadCompleted(int bytes_read);
   void Write();
@@ -73,6 +76,9 @@ class STORAGE_EXPORT FileWriterDelegate {
                  WriteProgressStatus progress_status,
                  int flush_error);
 
+  void OnDataPipeReady(MojoResult result,
+                       const mojo::HandleSignalsState& state);
+
   WriteProgressStatus GetCompletionStatusOnError() const;
 
   DelegateWriteCallback write_callback_;
@@ -87,7 +93,13 @@ class STORAGE_EXPORT FileWriterDelegate {
   base::File::Error saved_read_error_ = base::File::FILE_OK;
   scoped_refptr<net::IOBufferWithSize> io_buffer_;
   scoped_refptr<net::DrainableIOBuffer> cursor_;
+
+  // Used when reading from a blob.
   std::unique_ptr<BlobReader> blob_reader_;
+
+  // Used when reading from a data pipe.
+  mojo::ScopedDataPipeConsumerHandle data_pipe_;
+  mojo::SimpleWatcher data_pipe_watcher_;
 
   base::WeakPtrFactory<FileWriterDelegate> weak_factory_;
 

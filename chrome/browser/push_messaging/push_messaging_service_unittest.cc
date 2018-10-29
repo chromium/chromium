@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -97,7 +98,7 @@ class PushMessagingServiceTest : public ::testing::Test {
 
     // Override the GCM Profile service so that we can send fake messages.
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, &BuildFakeGCMProfileService);
+        &profile_, base::BindRepeating(&BuildFakeGCMProfileService));
   }
 
   ~PushMessagingServiceTest() override {}

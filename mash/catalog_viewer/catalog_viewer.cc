@@ -218,7 +218,7 @@ void CatalogViewer::RemoveWindow(views::Widget* window) {
   DCHECK(it != windows_.end());
   windows_.erase(it);
   if (windows_.empty())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    context()->QuitNow();
 }
 
 void CatalogViewer::OnStart() {

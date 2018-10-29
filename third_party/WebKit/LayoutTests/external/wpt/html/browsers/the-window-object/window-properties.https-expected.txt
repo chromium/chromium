@@ -54,9 +54,15 @@ PASS Window method: setTimeout
 PASS Window method: clearTimeout
 PASS Window method: setInterval
 PASS Window method: clearInterval
+PASS Window method: queueMicrotask
+PASS Window method: createImageBitmap
 PASS Window method: getSelection
 PASS Window method: getComputedStyle
 PASS Window method: matchMedia
+PASS Window method: moveBy
+PASS Window method: moveTo
+PASS Window method: resizeBy
+PASS Window method: resizeTo
 PASS Window method: scroll
 PASS Window method: scrollTo
 PASS Window method: scrollBy
@@ -151,6 +157,7 @@ FAIL Window replaceable attribute: frames assert_equals: expected "function" but
 FAIL Window replaceable attribute: parent assert_equals: expected "function" but got "undefined"
 PASS Window replaceable attribute: external
 FAIL Window replaceable attribute: length assert_equals: expected "function" but got "undefined"
+PASS Window replaceable attribute: origin
 PASS Window replaceable attribute: screen
 PASS Window replaceable attribute: scrollX
 PASS Window replaceable attribute: scrollY
@@ -158,6 +165,8 @@ PASS Window replaceable attribute: pageXOffset
 PASS Window replaceable attribute: pageYOffset
 PASS Window replaceable attribute: innerWidth
 PASS Window replaceable attribute: innerHeight
+PASS Window replaceable attribute: screenLeft
+PASS Window replaceable attribute: screenTop
 PASS Window replaceable attribute: screenX
 PASS Window replaceable attribute: screenY
 PASS Window replaceable attribute: outerWidth

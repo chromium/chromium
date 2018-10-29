@@ -213,10 +213,7 @@ void ScanTuple(std::tuple<A, B, C, D>&& t1, ScanningResults* results) {
 template <class MessageType>
 class MessageScannerImpl {
  public:
-  explicit MessageScannerImpl(const IPC::Message* msg)
-      // The cast below is invalid. See https://crbug.com/520760.
-      : msg_(static_cast<const MessageType*>(msg)) {
-  }
+  explicit MessageScannerImpl(const IPC::Message* msg) : msg_(msg) {}
   bool ScanMessage(ScanningResults* results) {
     typename MessageType::Param params;
     if (!MessageType::Read(msg_, &params))
@@ -254,7 +251,7 @@ class MessageScannerImpl {
   }
 
  private:
-  const MessageType* msg_;
+  const IPC::Message* msg_;
 };
 
 }  // namespace

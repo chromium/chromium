@@ -3,9 +3,9 @@ Accept simple selectors after ::content For Polymer 0.5 compat
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(distributed).color is "rgb(0, 128, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 This text should be green

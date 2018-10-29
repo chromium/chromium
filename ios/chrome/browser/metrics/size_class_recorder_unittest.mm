@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/ui/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

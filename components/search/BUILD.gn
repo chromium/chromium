@@ -14,6 +14,19 @@ static_library("search") {
     "//components/search_engines",
     "//url",
   ]
+
+  if (!is_ios && !is_android) {
+    sources += [
+      "url_validity_checker.h",
+      "url_validity_checker_impl.cc",
+      "url_validity_checker_impl.h",
+    ]
+
+    deps += [
+      "//net",
+      "//services/network/public/cpp",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -28,4 +41,15 @@ source_set("unit_tests") {
     "//components/variations",
     "//testing/gtest",
   ]
+
+  if (!is_ios && !is_android) {
+    sources += [ "url_validity_checker_impl_unittest.cc" ]
+
+    deps += [
+      "//net",
+      "//net:test_support",
+      "//services/network:test_support",
+      "//testing/gmock",
+    ]
+  }
 }

@@ -18,7 +18,7 @@ namespace extensions {
 namespace {
 
 // Creates a very simple extension with a background page.
-scoped_refptr<Extension> CreateExtensionWithBackgroundPage() {
+scoped_refptr<const Extension> CreateExtensionWithBackgroundPage() {
   return ExtensionBuilder("test")
       .SetBackgroundPage(ExtensionBuilder::BackgroundPage::PERSISTENT)
       .SetID("id2")
@@ -40,11 +40,12 @@ class RuntimeDataTest : public testing::Test {
 
 TEST_F(RuntimeDataTest, IsBackgroundPageReady) {
   // An extension without a background page is always considered ready.
-  scoped_refptr<Extension> no_background = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> no_background =
+      ExtensionBuilder("Test").Build();
   EXPECT_TRUE(runtime_data_.IsBackgroundPageReady(no_background.get()));
 
   // An extension with a background page is not ready until the flag is set.
-  scoped_refptr<Extension> with_background =
+  scoped_refptr<const Extension> with_background =
       CreateExtensionWithBackgroundPage();
   EXPECT_FALSE(runtime_data_.IsBackgroundPageReady(with_background.get()));
 
@@ -56,7 +57,7 @@ TEST_F(RuntimeDataTest, IsBackgroundPageReady) {
 }
 
 TEST_F(RuntimeDataTest, IsBeingUpgraded) {
-  scoped_refptr<Extension> extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
   // An extension is not being upgraded until the flag is set.
   EXPECT_FALSE(runtime_data_.IsBeingUpgraded(extension->id()));
@@ -71,7 +72,8 @@ TEST_F(RuntimeDataTest, IsBeingUpgraded) {
 // Unloading an extension erases any data that shouldn't explicitly be kept
 // across loads.
 TEST_F(RuntimeDataTest, OnExtensionUnloaded) {
-  scoped_refptr<Extension> extension = CreateExtensionWithBackgroundPage();
+  scoped_refptr<const Extension> extension =
+      CreateExtensionWithBackgroundPage();
   runtime_data_.SetBackgroundPageReady(extension->id(), true);
   ASSERT_TRUE(runtime_data_.HasExtensionForTesting(extension->id()));
   runtime_data_.SetBeingUpgraded(extension->id(), true);

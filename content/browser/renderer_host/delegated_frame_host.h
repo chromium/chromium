@@ -16,6 +16,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_client.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/common/content_export.h"
@@ -44,14 +45,12 @@ class CONTENT_EXPORT DelegatedFrameHostClient {
 
   virtual ui::Layer* DelegatedFrameHostGetLayer() const = 0;
   virtual bool DelegatedFrameHostIsVisible() const = 0;
-
   // Returns the color that the resize gutters should be drawn with.
   virtual SkColor DelegatedFrameHostGetGutterColor() const = 0;
-
-  virtual void OnFirstSurfaceActivation(
-      const viz::SurfaceInfo& surface_info) = 0;
   virtual void OnBeginFrame(base::TimeTicks frame_time) = 0;
   virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;
+  virtual float GetDeviceScaleFactor() const = 0;
+  virtual void WasEvicted() = 0;
 };
 
 // The DelegatedFrameHost is used to host all of the RenderWidgetHostView state
@@ -149,11 +148,9 @@ class CONTENT_EXPORT DelegatedFrameHost
   void SetWantsAnimateOnlyBeginFrames();
   void DidNotProduceFrame(const viz::BeginFrameAck& ack);
 
-  // Returns the surface id for the surface most recently activated by
-  // OnFirstSurfaceActivation.
-  // TODO(ccameron): GetActiveSurfaceId may be a better name.
+  // Returns the surface id for the most recently embedded surface.
   viz::SurfaceId GetCurrentSurfaceId() const {
-    return viz::SurfaceId(frame_sink_id_, active_local_surface_id_);
+    return viz::SurfaceId(frame_sink_id_, local_surface_id_);
   }
   viz::CompositorFrameSinkSupport* GetCompositorFrameSinkSupportForTesting() {
     return support_.get();
@@ -172,8 +169,6 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   void DidNavigate();
 
-  bool IsPrimarySurfaceEvicted() const;
-
   void WindowTitleChanged(const std::string& title);
 
   // If our SurfaceLayer doesn't have a fallback, use the fallback info of
@@ -191,16 +186,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
                            DiscardDelegatedFramesWithLocking);
 
-  void LockResources();
-  void UnlockResources();
-
   SkColor GetGutterColor() const;
 
   void CreateCompositorFrameSinkSupport();
   void ResetCompositorFrameSinkSupport();
-
-  void ProcessCopyOutputRequest(
-      std::unique_ptr<viz::CopyOutputRequest> request);
 
   const viz::FrameSinkId frame_sink_id_;
   DelegatedFrameHostClient* const client_;
@@ -208,27 +197,16 @@ class CONTENT_EXPORT DelegatedFrameHost
   const bool should_register_frame_sink_id_;
   ui::Compositor* compositor_ = nullptr;
 
-  // The surface id that was most recently activated by
-  // OnFirstSurfaceActivation.
-  viz::LocalSurfaceId active_local_surface_id_;
-  // The scale factor of the above surface.
-  float active_device_scale_factor_ = 0.f;
-
-  // The local surface id as of the most recent call to
-  // EmbedSurface or WasShown. This is the surface that we expect
-  // future frames to reference. This will eventually equal the active surface.
-  viz::LocalSurfaceId pending_local_surface_id_;
+  // The LocalSurfaceId of the currently embedded surface.
+  viz::LocalSurfaceId local_surface_id_;
   // The size of the above surface (updated at the same time).
-  gfx::Size pending_surface_dip_size_;
+  gfx::Size surface_dip_size_;
 
   // In non-surface sync, this is the size of the most recently activated
   // surface (which is suitable for calculating gutter size). In surface sync,
   // this is most recent size set in EmbedSurface.
   // TODO(ccameron): The meaning of "current" should be made more clear here.
   gfx::Size current_frame_size_in_dip_;
-
-  // This is the last root background color from a swapped frame.
-  SkColor background_color_;
 
   viz::HostFrameSinkManager* const host_frame_sink_manager_;
 
@@ -243,9 +221,6 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
-
-  std::vector<std::unique_ptr<viz::CopyOutputRequest>>
-      pending_first_frame_requests_;
 
   base::WeakPtrFactory<DelegatedFrameHost> weak_factory_;
 

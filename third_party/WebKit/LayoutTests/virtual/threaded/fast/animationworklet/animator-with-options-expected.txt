@@ -1,6 +1,0 @@
-CONSOLE MESSAGE: line 4: animator constructor with options called.
-CONSOLE MESSAGE: line 5: options.dict.id = 1
-CONSOLE MESSAGE: line 6: options.dict.name = test_name
-CONSOLE MESSAGE: line 7: options.string = test_string
-CONSOLE MESSAGE: line 11: test animator animate called.
-

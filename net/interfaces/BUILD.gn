@@ -16,3 +16,19 @@ mojom("interfaces") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "ip_address_struct_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":interfaces",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net",
+    "//testing/gtest",
+  ]
+}

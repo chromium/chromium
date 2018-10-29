@@ -3,7 +3,6 @@ Test that different ways of changing an element's id all work properly.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 1. Check id after parsing.
 PASS document.getElementById("a") is document.body
 PASS document.body.id is "a"

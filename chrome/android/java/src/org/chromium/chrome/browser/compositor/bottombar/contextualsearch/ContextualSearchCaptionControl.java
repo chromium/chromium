@@ -14,7 +14,6 @@ import android.widget.TextView;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator.AnimatorUpdateListener;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
@@ -254,15 +253,11 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     // ============================================================================================
 
     private void animateTransitionIn() {
-        AnimatorUpdateListener listener = new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(CompositorAnimator animator) {
-                mAnimationPercentage = animator.getAnimatedValue();
-            }
-        };
         mTransitionAnimator = CompositorAnimator.ofFloat(mOverlayPanel.getAnimationHandler(),
                 ANIMATION_PERCENTAGE_ZERO, ANIMATION_PERCENTAGE_COMPLETE,
-                OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, listener);
+                OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
+        mTransitionAnimator.addUpdateListener(
+                animator -> mAnimationPercentage = animator.getAnimatedValue());
         mTransitionAnimator.setInterpolator(ANIMATION_INTERPOLATOR);
         mTransitionAnimator.start();
     }

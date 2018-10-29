@@ -49,9 +49,6 @@ UnifiedConsentServiceFactory* UnifiedConsentServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 UnifiedConsentServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!unified_consent::IsUnifiedConsentFeatureEnabled())
-    return nullptr;
-
   ios::ChromeBrowserState* browser_state =
       ios::ChromeBrowserState::FromBrowserState(context);
   PrefService* user_pref_service = browser_state->GetPrefs();
@@ -59,10 +56,18 @@ UnifiedConsentServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<unified_consent::UnifiedConsentServiceClient> service_client =
       std::make_unique<UnifiedConsentServiceClientImpl>(user_pref_service,
                                                         local_pref_service);
+
   identity::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+
+  if (!unified_consent::IsUnifiedConsentFeatureEnabled()) {
+    unified_consent::UnifiedConsentService::RollbackIfNeeded(
+        user_pref_service, sync_service, service_client.get());
+    return nullptr;
+  }
+
   return std::make_unique<unified_consent::UnifiedConsentService>(
       std::move(service_client), user_pref_service, identity_manager,
       sync_service);

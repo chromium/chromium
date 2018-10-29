@@ -85,6 +85,8 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
                  on_pref_changed_callback);
   registrar_.Add(proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
                  on_pref_changed_callback);
+  registrar_.Add(chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
+                 on_pref_changed_callback);
 
   SyncPrefsToLocalState();
 }
@@ -103,6 +105,9 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
                           base::Value(GetProximityThreshold()));
   user_prefs_dict->SetKey(prefs::kProximityAuthIsChromeOSLoginEnabled,
                           base::Value(IsChromeOSLoginEnabled()));
+  user_prefs_dict->SetKey(
+      chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
+      base::Value(IsChromeOSLoginAllowed()));
 
   DictionaryPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateUserPrefs);
@@ -124,7 +129,8 @@ void ProximityAuthProfilePrefManager::SetIsEasyUnlockEnabled(
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+          chromeos::features::kEnableUnifiedMultiDeviceSetup) &&
+      !is_in_legacy_host_mode_) {
     return feature_state_ ==
            chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
   }
@@ -173,13 +179,18 @@ ProximityAuthProfilePrefManager::GetProximityThreshold() const {
   return static_cast<ProximityThreshold>(pref_value);
 }
 
+bool ProximityAuthProfilePrefManager::IsChromeOSLoginAllowed() const {
+  return pref_service_->GetBoolean(
+      chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName);
+}
+
 void ProximityAuthProfilePrefManager::SetIsChromeOSLoginEnabled(
     bool is_enabled) {
   return pref_service_->SetBoolean(prefs::kProximityAuthIsChromeOSLoginEnabled,
                                    is_enabled);
 }
 
-bool ProximityAuthProfilePrefManager::IsChromeOSLoginEnabled() {
+bool ProximityAuthProfilePrefManager::IsChromeOSLoginEnabled() const {
   return pref_service_->GetBoolean(prefs::kProximityAuthIsChromeOSLoginEnabled);
 }
 
@@ -194,6 +205,14 @@ void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(
     return;
   }
   feature_state_ = it->second;
+
+  if (local_state_ && account_id_.is_valid())
+    SyncPrefsToLocalState();
+}
+
+void ProximityAuthProfilePrefManager::SetIsInLegacyHostMode(
+    bool is_in_legacy_host_mode) {
+  is_in_legacy_host_mode_ = is_in_legacy_host_mode;
 
   if (local_state_ && account_id_.is_valid())
     SyncPrefsToLocalState();

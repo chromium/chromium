@@ -5,9 +5,11 @@
 #include "content/public/browser/push_messaging_service.h"
 
 #include "base/callback.h"
+#include "base/task/post_task.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -28,14 +30,15 @@ void CallStringCallbackFromIO(
     DCHECK_EQ(1u, data.size());
     result = data[0];
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result, success, not_found));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(callback, result, success, not_found));
 }
 
 void CallClosureFromIO(const base::Closure& callback,
                        blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, callback);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, callback);
 }
 
 void GetUserDataOnIO(
@@ -92,8 +95,8 @@ void PushMessagingService::GetSenderId(BrowserContext* browser_context,
                                        int64_t service_worker_registration_id,
                                        const StringCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GetUserDataOnIO,
                      GetServiceWorkerContext(browser_context, origin),
                      service_worker_registration_id,
@@ -107,8 +110,8 @@ void PushMessagingService::ClearPushSubscriptionId(
     int64_t service_worker_registration_id,
     const base::Closure& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ClearPushSubscriptionIdOnIO,
                      GetServiceWorkerContext(browser_context, origin),
                      service_worker_registration_id, callback));
@@ -123,8 +126,8 @@ void PushMessagingService::StorePushSubscriptionForTesting(
     const std::string& sender_id,
     const base::Closure& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&StorePushSubscriptionOnIOForTesting,
                      GetServiceWorkerContext(browser_context, origin),
                      service_worker_registration_id, origin, subscription_id,

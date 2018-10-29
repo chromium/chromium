@@ -63,6 +63,8 @@ class MEDIA_EXPORT DemuxerStream {
     kStatusMax = kError,
   };
 
+  static const char* GetStatusName(Status status);
+
   // Request a buffer to returned via the provided callback.
   //
   // The first parameter indicates the status of the read.

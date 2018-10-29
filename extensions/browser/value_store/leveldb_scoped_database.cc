@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/threading/thread_restrictions.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace {
@@ -51,8 +50,6 @@ ValueStore::Status LeveldbScopedDatabase::Read(
     const std::string& scope,
     const std::string& key,
     std::unique_ptr<base::Value>* value) {
-  base::AssertBlockingAllowed();
-
   ValueStore::Status status = EnsureDbIsOpen();
   if (!status.ok())
     return status;
@@ -65,8 +62,6 @@ ValueStore::Status LeveldbScopedDatabase::Read(
 
 ValueStore::Status LeveldbScopedDatabase::Read(const std::string& scope,
                                                base::DictionaryValue* values) {
-  base::AssertBlockingAllowed();
-
   ValueStore::Status status = EnsureDbIsOpen();
   if (!status.ok())
     return status;

@@ -341,7 +341,7 @@ GLuint TexturedQuadRenderer::index_buffer_ = 0;
 
 void TexturedQuadRenderer::CreateBuffers() {
   GLuint buffers[2];
-  glGenBuffersARB(2, buffers);
+  glGenBuffers(2, buffers);
   vertex_buffer_ = buffers[0];
   index_buffer_ = buffers[1];
 

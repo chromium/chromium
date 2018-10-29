@@ -42,23 +42,30 @@ function testModel() {
   var recentItem = new NavigationModelFakeItem(
       'recent-label', NavigationModelItemType.RECENT,
       {toURL: () => 'fake-entry://recent'});
-  var addNewServicesItem = new NavigationModelMenuItem(
-      'menu-button-label', '#add-new-services', 'menu-button-icon');
-  var model = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, addNewServicesItem, true);
+  var model =
+      new NavigationListModel(volumeManager, shortcutListModel, recentItem);
   model.linuxFilesItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      {toURL: () => 'fake-entry://linux-files'});
+      new FakeEntry(
+          'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
 
-  assertEquals(6, model.length);
-  assertEquals('drive', model.item(0).volumeInfo.volumeId);
-  assertEquals('downloads', model.item(1).volumeInfo.volumeId);
-  assertEquals('fake-entry://recent', model.item(2).entry.toURL());
-  assertEquals('fake-entry://linux-files', model.item(3).entry.toURL());
-  assertEquals('/root/shortcut', model.item(4).entry.fullPath);
-  assertEquals('menu-button-label', model.item(5).label);
-  assertEquals('#add-new-services', model.item(5).menu);
-  assertEquals('menu-button-icon', model.item(5).icon);
+  assertEquals(4, model.length);
+  console.log(model.item(0).label);
+  console.log(model.item(1).label);
+  console.log(model.item(2).label);
+  console.log(model.item(3).label);
+  assertEquals('fake-entry://recent', model.item(0).entry.toURL());
+  assertEquals('/root/shortcut', model.item(1).entry.fullPath);
+  assertEquals('My files', model.item(2).label);
+  assertEquals('drive', model.item(3).volumeInfo.volumeId);
+
+  // Downloads and Crostini are displayed within My files.
+  const myFilesEntry = model.item(2).entry;
+  console.log(myFilesEntry.children[0].name);
+  console.log(myFilesEntry.children[1].name);
+  assertEquals(2, myFilesEntry.children.length);
+  assertEquals('Downloads', myFilesEntry.children[0].name);
+  assertEquals('linux-files-label', myFilesEntry.children[1].name);
 }
 
 function testNoRecentOrLinuxFiles() {
@@ -66,18 +73,13 @@ function testNoRecentOrLinuxFiles() {
   var shortcutListModel = new MockFolderShortcutDataModel(
       [new MockFileEntry(drive, '/root/shortcut')]);
   var recentItem = null;
-  var addNewServicesItem = new NavigationModelMenuItem(
-      'menu-button-label', '#add-new-services', 'menu-button-icon');
-  var model = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, addNewServicesItem, true);
+  var model =
+      new NavigationListModel(volumeManager, shortcutListModel, recentItem);
 
-  assertEquals(4, model.length);
-  assertEquals('drive', model.item(0).volumeInfo.volumeId);
-  assertEquals('downloads', model.item(1).volumeInfo.volumeId);
-  assertEquals('/root/shortcut', model.item(2).entry.fullPath);
-  assertEquals('menu-button-label', model.item(3).label);
-  assertEquals('#add-new-services', model.item(3).menu);
-  assertEquals('menu-button-icon', model.item(3).icon);
+  assertEquals(3, model.length);
+  assertEquals('/root/shortcut', model.item(0).entry.fullPath);
+  assertEquals('My files', model.item(1).label);
+  assertEquals('drive', model.item(2).volumeInfo.volumeId);
 }
 
 function testAddAndRemoveShortcuts() {
@@ -85,34 +87,34 @@ function testAddAndRemoveShortcuts() {
   var shortcutListModel = new MockFolderShortcutDataModel(
       [new MockFileEntry(drive, '/root/shortcut')]);
   var recentItem = null;
-  var addNewServicesItem = null;
-  var model = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, addNewServicesItem, true);
+  var model =
+      new NavigationListModel(volumeManager, shortcutListModel, recentItem);
 
   assertEquals(3, model.length);
 
-  // Add a shortcut at the tail.
+  // Add a shortcut at the tail, shortcuts are sorted by their label.
   shortcutListModel.splice(1, 0, new MockFileEntry(drive, '/root/shortcut2'));
   assertEquals(4, model.length);
-  assertEquals('/root/shortcut2', model.item(3).entry.fullPath);
+  assertEquals('shortcut', model.item(0).label);
+  assertEquals('shortcut2', model.item(1).label);
 
   // Add a shortcut at the head.
   shortcutListModel.splice(0, 0, new MockFileEntry(drive, '/root/hoge'));
   assertEquals(5, model.length);
-  assertEquals('/root/hoge', model.item(2).entry.fullPath);
-  assertEquals('/root/shortcut', model.item(3).entry.fullPath);
-  assertEquals('/root/shortcut2', model.item(4).entry.fullPath);
+  assertEquals('hoge', model.item(0).label);
+  assertEquals('shortcut', model.item(1).label);
+  assertEquals('shortcut2', model.item(2).label);
 
   // Remove the last shortcut.
   shortcutListModel.splice(2, 1);
   assertEquals(4, model.length);
-  assertEquals('/root/hoge', model.item(2).entry.fullPath);
-  assertEquals('/root/shortcut', model.item(3).entry.fullPath);
+  assertEquals('hoge', model.item(0).label);
+  assertEquals('shortcut', model.item(1).label);
 
   // Remove the first shortcut.
   shortcutListModel.splice(0, 1);
   assertEquals(3, model.length);
-  assertEquals('/root/shortcut', model.item(2).entry.fullPath);
+  assertEquals('shortcut', model.item(0).label);
 }
 
 function testAddAndRemoveVolumes() {
@@ -120,9 +122,8 @@ function testAddAndRemoveVolumes() {
   var shortcutListModel = new MockFolderShortcutDataModel(
       [new MockFileEntry(drive, '/root/shortcut')]);
   var recentItem = null;
-  var addNewServicesItem = null;
-  var model = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, addNewServicesItem, true);
+  var model =
+      new NavigationListModel(volumeManager, shortcutListModel, recentItem);
 
   assertEquals(3, model.length);
 
@@ -130,31 +131,31 @@ function testAddAndRemoveVolumes() {
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge'));
   assertEquals(4, model.length);
-  assertEquals('drive', model.item(0).volumeInfo.volumeId);
-  assertEquals('downloads', model.item(1).volumeInfo.volumeId);
-  assertEquals('removable:hoge', model.item(2).volumeInfo.volumeId);
-  assertEquals('/root/shortcut', model.item(3).entry.fullPath);
+  assertEquals('/root/shortcut', model.item(0).entry.fullPath);
+  assertEquals('My files', model.item(1).label);
+  assertEquals('drive', model.item(2).volumeInfo.volumeId);
+  assertEquals('removable:hoge', model.item(3).volumeInfo.volumeId);
 
   // Removable volume 'fuga' is mounted.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga'));
   assertEquals(5, model.length);
-  assertEquals('drive', model.item(0).volumeInfo.volumeId);
-  assertEquals('downloads', model.item(1).volumeInfo.volumeId);
-  assertEquals('removable:hoge', model.item(2).volumeInfo.volumeId);
-  assertEquals('removable:fuga', model.item(3).volumeInfo.volumeId);
-  assertEquals('/root/shortcut', model.item(4).entry.fullPath);
+  assertEquals('/root/shortcut', model.item(0).entry.fullPath);
+  assertEquals('My files', model.item(1).label);
+  assertEquals('drive', model.item(2).volumeInfo.volumeId);
+  assertEquals('removable:hoge', model.item(3).volumeInfo.volumeId);
+  assertEquals('removable:fuga', model.item(4).volumeInfo.volumeId);
 
   // A shortcut is created on the 'hoge' volume.
   shortcutListModel.splice(
       1, 0, new MockFileEntry(hoge, '/shortcut2'));
   assertEquals(6, model.length);
-  assertEquals('drive', model.item(0).volumeInfo.volumeId);
-  assertEquals('downloads', model.item(1).volumeInfo.volumeId);
-  assertEquals('removable:hoge', model.item(2).volumeInfo.volumeId);
-  assertEquals('removable:fuga', model.item(3).volumeInfo.volumeId);
-  assertEquals('/root/shortcut', model.item(4).entry.fullPath);
-  assertEquals('/shortcut2', model.item(5).entry.fullPath);
+  assertEquals('/root/shortcut', model.item(0).entry.fullPath);
+  assertEquals('/shortcut2', model.item(1).entry.fullPath);
+  assertEquals('My files', model.item(2).label);
+  assertEquals('drive', model.item(3).volumeInfo.volumeId);
+  assertEquals('removable:hoge', model.item(4).volumeInfo.volumeId);
+  assertEquals('removable:fuga', model.item(5).volumeInfo.volumeId);
 }
 
 /**
@@ -172,7 +173,6 @@ function testOrderAndNestItems() {
   const recentItem = new NavigationModelFakeItem(
       'recent-label', NavigationModelItemType.RECENT,
       {toURL: () => 'fake-entry://recent'});
-  const addNewServicesItem = null;
   const zipVolumeId = 'provided:dmboannefpncccogfdikhmhpmdnddgoe:' +
       '~%2FDownloads%2Fazip_file%2Ezip:' +
       '096eaa592ea7e8ffb9a27435e50dabd6c809c125';
@@ -224,8 +224,8 @@ function testOrderAndNestItems() {
   // 15.  provided:"zip" - mounted as provided: $zipVolumeId
 
   // Constructor already calls orderAndNestItems_.
-  const model = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, addNewServicesItem, false);
+  const model =
+      new NavigationListModel(volumeManager, shortcutListModel, recentItem);
 
   // Check items order and that MTP/Archive/Removable respect the original
   // order.

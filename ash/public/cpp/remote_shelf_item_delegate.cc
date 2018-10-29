@@ -19,15 +19,6 @@ void RemoteShelfItemDelegate::ItemSelected(std::unique_ptr<ui::Event> event,
                                            int64_t display_id,
                                            ShelfLaunchSource source,
                                            ItemSelectedCallback callback) {
-  // Mojo requires conversion of mouse and touch events to pointer events.
-  if (event && ui::PointerEvent::CanConvertFrom(*event.get())) {
-    if (event->IsMouseEvent())
-      event = std::make_unique<ui::PointerEvent>(*event->AsMouseEvent());
-    else if (event->IsTouchEvent())
-      event = std::make_unique<ui::PointerEvent>(*event->AsTouchEvent());
-    else
-      NOTREACHED() << "Need conversion of event to pointer event.";
-  }
   delegate_->ItemSelected(std::move(event), display_id, source,
                           std::move(callback));
 }

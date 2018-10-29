@@ -26,6 +26,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
@@ -40,6 +41,10 @@ namespace base {
 namespace trace_event {
 class ProcessMemoryDump;
 }
+
+namespace android {
+class ApplicationStatusListener;
+}  // namespace android
 }  // namespace base
 
 namespace disk_cache {
@@ -81,6 +86,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     virtual int CreateBackend(NetLog* net_log,
                               std::unique_ptr<disk_cache::Backend>* backend,
                               CompletionOnceCallback callback) = 0;
+
+#if defined(OS_ANDROID)
+    virtual void SetAppStatusListener(
+        base::android::ApplicationStatusListener* app_status_listener){};
+#endif
   };
 
   // A default backend factory for the common use cases.
@@ -102,11 +112,19 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                       std::unique_ptr<disk_cache::Backend>* backend,
                       CompletionOnceCallback callback) override;
 
+#if defined(OS_ANDROID)
+    void SetAppStatusListener(
+        base::android::ApplicationStatusListener* app_status_listener) override;
+#endif
+
    private:
     CacheType type_;
     BackendType backend_type_;
     const base::FilePath path_;
     int max_bytes_;
+#if defined(OS_ANDROID)
+    base::android::ApplicationStatusListener* app_status_listener_ = nullptr;
+#endif
   };
 
   // Whether a transaction can join parallel writing or not is a function of the

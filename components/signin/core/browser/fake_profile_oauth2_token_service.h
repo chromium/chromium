@@ -13,6 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 // Helper class to simplify writing unittests that depend on an instance of
 // ProfileOAuth2TokenService.
 //
@@ -43,12 +47,13 @@ class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
     std::string account_id;
     std::string client_id;
     std::string client_secret;
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
     ScopeSet scopes;
     base::WeakPtr<RequestImpl> request;
   };
 
-  FakeProfileOAuth2TokenService(PrefService* user_prefs);
-  explicit FakeProfileOAuth2TokenService(
+  explicit FakeProfileOAuth2TokenService(PrefService* user_prefs);
+  FakeProfileOAuth2TokenService(
       PrefService* user_prefs,
       std::unique_ptr<OAuth2TokenServiceDelegate> delegate);
   ~FakeProfileOAuth2TokenService() override;
@@ -75,11 +80,18 @@ class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
                           const std::string& access_token,
                           const base::Time& expiration);
 
+  void IssueTokenForScope(
+      const ScopeSet& scopes,
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response);
+
   void IssueErrorForScope(const ScopeSet& scopes,
                           const GoogleServiceAuthError& error);
 
   void IssueTokenForAllPendingRequests(const std::string& access_token,
                                        const base::Time& expiration);
+
+  void IssueTokenForAllPendingRequests(
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response);
 
   void IssueErrorForAllPendingRequests(const GoogleServiceAuthError& error);
 

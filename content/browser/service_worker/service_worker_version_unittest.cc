@@ -30,6 +30,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
@@ -146,9 +147,9 @@ class ServiceWorkerVersionTest : public testing::Test {
     helper_->context()->storage()->LazyInitializeForTest(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
-    pattern_ = GURL("https://www.example.com/test/");
+    scope_ = GURL("https://www.example.com/test/");
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = pattern_;
+    options.scope = scope_;
     registration_ = new ServiceWorkerRegistration(
         options, helper_->context()->storage()->NewRegistrationId(),
         helper_->context()->AsWeakPtr());
@@ -158,7 +159,7 @@ class ServiceWorkerVersionTest : public testing::Test {
         blink::mojom::ScriptType::kClassic,
         helper_->context()->storage()->NewVersionId(),
         helper_->context()->AsWeakPtr());
-    EXPECT_EQ(url::Origin::Create(pattern_), version_->script_origin());
+    EXPECT_EQ(url::Origin::Create(scope_), version_->script_origin());
     std::vector<ServiceWorkerDatabase::ResourceRecord> records;
     records.push_back(WriteToDiskCacheSync(
         helper_->context()->storage(), version_->script_url(), 10,
@@ -227,7 +228,7 @@ class ServiceWorkerVersionTest : public testing::Test {
   std::unique_ptr<MessageReceiver> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  GURL pattern_;
+  GURL scope_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerVersionTest);
@@ -446,7 +447,21 @@ TEST_F(ServiceWorkerVersionTest, DispatchEventToStoppedWorker) {
 
   // Dispatch an event without starting the worker.
   version_->SetStatus(ServiceWorkerVersion::INSTALLING);
+  EXPECT_TRUE(version_->HasNoWork());
   SimulateDispatchEvent(ServiceWorkerMetrics::EventType::INSTALL);
+
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
+    // The worker may still be handling events dispatched directly from
+    // controllees. We cannot say the version doesn't handle any tasks until the
+    // worker reports "No Work" (= ServiceWorkerVersion::OnRequestTermination()
+    // is called).
+    EXPECT_FALSE(version_->HasNoWork());
+  } else {
+    // In non-S13nServiceWorker case, ServiceWorkerVersion manages all of events
+    // dispatched to the service worker. Once all events have finished in the
+    // browser, the version should have no work.
+    EXPECT_TRUE(version_->HasNoWork());
+  }
 
   // The worker should be now started.
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -456,6 +471,19 @@ TEST_F(ServiceWorkerVersionTest, DispatchEventToStoppedWorker) {
   version_->StopWorker(base::BindOnce(&VerifyCalled, &has_stopped));
   SimulateDispatchEvent(ServiceWorkerMetrics::EventType::INSTALL);
   EXPECT_TRUE(has_stopped);
+
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
+    // The worker may still be handling events dispatched directly from
+    // controllees. We cannot say the version doesn't handle any tasks until the
+    // worker reports "No Work" (= ServiceWorkerVersion::OnRequestTermination()
+    // is called).
+    EXPECT_FALSE(version_->HasNoWork());
+  } else {
+    // In non-S13nServiceWorker case, ServiceWorkerVersion manages all of events
+    // dispatched to the service worker. Once all events have finished in the
+    // browser, the version should have no work.
+    EXPECT_TRUE(version_->HasNoWork());
+  }
 
   // The worker should be now started again.
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -469,7 +497,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   // Delete the registration.
   base::Optional<blink::ServiceWorkerStatusCode> status;
   helper_->context()->storage()->DeleteRegistration(
-      registration_->id(), registration_->pattern().GetOrigin(),
+      registration_->id(), registration_->scope().GetOrigin(),
       CreateReceiverOnCurrentThread(&status));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
@@ -559,7 +587,7 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
       33 /* dummy render process id */, 1 /* dummy provider_id */,
       true /* is_parent_frame_secure */, helper_->context()->AsWeakPtr(),
       &remote_endpoint);
-  host->SetDocumentUrl(registration_->pattern());
+  host->SetDocumentUrl(registration_->scope());
   host->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(host->controller());

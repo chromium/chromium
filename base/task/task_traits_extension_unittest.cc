@@ -9,6 +9,13 @@
 
 namespace base {
 
+TEST(TaskTraitsExtensionTest, NoExtension) {
+  constexpr TaskTraits traits = {};
+
+  EXPECT_EQ(traits.extension_id(),
+            TaskTraitsExtensionStorage::kInvalidExtensionId);
+}
+
 TEST(TaskTraitsExtensionTest, CreateWithOneExtensionTrait) {
   constexpr TaskTraits traits = {TestExtensionEnumTrait::kB};
 

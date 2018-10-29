@@ -23,8 +23,7 @@ void ElementVisibilityObserver::Start(float threshold) {
   DCHECK(!intersection_observer_);
 
   ExecutionContext* context = element_->GetExecutionContext();
-  DCHECK(context->IsDocument());
-  Document& document = ToDocument(*context);
+  Document& document = To<Document>(*context);
 
   intersection_observer_ = IntersectionObserver::Create(
       {} /* root_margin */, {threshold}, &document,

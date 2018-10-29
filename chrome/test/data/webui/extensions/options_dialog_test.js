@@ -42,19 +42,23 @@ cr.define('extension_options_dialog_tests', function() {
       optionsDialog.show(data);
       return test_util.eventToPromise('cr-dialog-open', optionsDialog)
           .then(function() {
-            assertTrue(isDialogVisible());
+            // The dialog size is set asynchronously (see onpreferredsizechanged
+            // in options_dialog.js) so wait one frame.
+            requestAnimationFrame(function() {
+              assertTrue(isDialogVisible());
 
-            const dialogElement = optionsDialog.$.dialog.getNative();
-            const rect = dialogElement.getBoundingClientRect();
-            assertGE(rect.width, extensions.OptionsDialogMinWidth);
-            assertLE(rect.height, extensions.OptionsDialogMaxHeight);
-            // This is the header height with default font size.
-            assertGE(rect.height, 68);
+              const dialogElement = optionsDialog.$.dialog.getNative();
+              const rect = dialogElement.getBoundingClientRect();
+              assertGE(rect.width, extensions.OptionsDialogMinWidth);
+              assertLE(rect.height, extensions.OptionsDialogMaxHeight);
+              // This is the header height with default font size.
+              assertGE(rect.height, 68);
 
-            assertEquals(
-                data.name,
-                assert(optionsDialog.$$('#icon-and-name-wrapper span'))
-                    .textContent.trim());
+              assertEquals(
+                  data.name,
+                  assert(optionsDialog.$$('#icon-and-name-wrapper span'))
+                      .textContent.trim());
+            });
           });
     });
   });

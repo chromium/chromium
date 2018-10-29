@@ -320,7 +320,12 @@
     "platforms" : ["win", "mac", "linux"],
     "whitelist" : [
       "FD15C63ABA854733FDCBC1D4D34A71E963A12ABD",  // https://crbug.com/825015
-      "08455FA7CB8734168378F731B00B354CEEE0088F"   // https://crbug.com/825015 - Test Extension
+      "08455FA7CB8734168378F731B00B354CEEE0088F",  // https://crbug.com/825015 - Test Extension
+      "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
+      "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
+      "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
+      "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
+      "2012C0122892D332325339998251D1CC3CAE396A"   // https://crbug.com/882461 SecureConnect
     ]
   },
   "experimental": {
@@ -510,30 +515,6 @@
       "session_types": ["kiosk"]
     }
   ],
-  "mediaGalleries": {
-    "channel": "stable",
-    "extension_types": [ "platform_app" ]
-  },
-  "mediaGalleries.allAutoDetected": {
-    "channel": "stable",
-    "extension_types": [ "platform_app" ]
-  },
-  "mediaGalleries.scan": {
-    "channel": "dev",
-    "extension_types": [ "platform_app" ]
-  },
-  "mediaGalleries.read": {
-    "channel": "stable",
-    "extension_types": [ "platform_app" ]
-  },
-  "mediaGalleries.copyTo": {
-    "channel": "stable",
-    "extension_types": [ "platform_app" ]
-  },
-  "mediaGalleries.delete": {
-    "channel": "stable",
-    "extension_types": [ "platform_app" ]
-  },
   "mediaPlayerPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
@@ -561,19 +542,6 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   }],
-  "musicManagerPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "whitelist": [
-      "4B1D0E19C6C43C008C44A8278C8B5BFE15ABEB3C", // Music Manager
-      "B8F61FD1B25DE03706DBB8906A73261E4DBB992A", // Test
-      "F7FA7ABC1ECB89BA8EE6656847EFABBF43BB9BCA",
-      "4FE45FA56EF6A25FDE8C302C44045CA9CE8A605A",
-      "3D14248405B8A59043420AAC160077C99E7788A9",
-      "A6C87307BBE5886CC5F1393025000E2FE8060BF2",
-      "3407516021EA3669C0EC8E65E6B9837E5A521B9C"
-    ]
-  },
   "notifications": {
     // The chrome.notifications functionality listed in notifications.idl is
     // available only to extension/platform_app types. The implementation of
@@ -683,15 +651,6 @@
       "0136FCB13DB29FD5CD442F56E59E53B61F1DF96F"   // http://crbug.com/642141
     ]
   },
-  "inlineInstallPrivate": {
-    "channel": "dev",
-    "extension_types": ["platform_app"],
-    "whitelist": [
-      "8076E9E4DA0DF53B33BFAF0454D3C3B898F93273", // Test Extension
-      "3A78E13285C1949EF84AA85E3BF65D1E83A3D9AB", // Test Extension
-      "4477F0B4FE934D0A8C88922C0986DA7B25D881E1"  // API Test
-    ]
-  },
   "resourcesPrivate": {
     "channel": "stable",
     "extension_types": [
@@ -760,22 +719,6 @@
   "signedInDevices": {
     "channel": "dev",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-  },
-  "streamsPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist": [
-      "787000072C6FBB934AF5A42275CDE73FC977D995",  // browser_tests
-      "2FC374607C2DF285634B67C64A2E356C607091C3",  // QuickOffice
-      "5D3851BEFF680AB6D954B76678EFCCE834465C23",  // QuickOffice Dev
-      "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QO component extension
-      "3727DD3E564B6055387425027AD74C58784ACC15",  // Editor
-      "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // PDF
-    ]
-  },
-  "syncFileSystem": {
-    "channel": "stable",
-    "extension_types": ["platform_app"]
   },
   "systemPrivate": {
     "channel": "stable",
@@ -910,16 +853,6 @@
     "whitelist": [
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
       "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
-    ]
-  },
-  "webstoreWidgetPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "whitelist": [
-      "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
-      "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
-      "5065C83E84321221675D20FBE4DC43C655CC8C6F"   // Files app tests
     ]
   }
 }

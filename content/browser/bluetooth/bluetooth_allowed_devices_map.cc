@@ -19,7 +19,7 @@ BluetoothAllowedDevicesMap::GetOrCreateAllowedDevices(
     const url::Origin& origin) {
   // "Unique" Origins generate the same key in maps, therefore are not
   // supported.
-  CHECK(!origin.unique());
+  CHECK(!origin.opaque());
   auto iter = origin_to_allowed_devices_map_.find(origin);
   if (iter == origin_to_allowed_devices_map_.end()) {
     iter = origin_to_allowed_devices_map_.insert(

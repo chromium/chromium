@@ -284,12 +284,13 @@ int MockHostResolverBase::ResolveStaleFromCache(
   next_request_id_++;
   int rv = ResolveFromIPLiteralOrCache(
       info.host_port_pair(), info.address_family(), info.host_resolver_flags(),
-      HostResolverSource::ANY, info.allow_cached_response(), addresses);
+      HostResolverSource::ANY, info.allow_cached_response(), addresses,
+      stale_info);
   return rv;
 }
 
 void MockHostResolverBase::DetachRequest(size_t id) {
-  RequestMap::iterator it = requests_.find(id);
+  auto it = requests_.find(id);
   CHECK(it != requests_.end());
   requests_.erase(it);
 }
@@ -311,7 +312,7 @@ bool MockHostResolverBase::HasCached(
 void MockHostResolverBase::ResolveAllPending() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ondemand_mode_);
-  for (RequestMap::iterator i = requests_.begin(); i != requests_.end(); ++i) {
+  for (auto i = requests_.begin(); i != requests_.end(); ++i) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::Bind(&MockHostResolverBase::ResolveNow, AsWeakPtr(), i->first));
@@ -330,6 +331,8 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching)
   rules_map_[HostResolverSource::ANY] = CreateCatchAllHostResolverProc();
   rules_map_[HostResolverSource::SYSTEM] = CreateCatchAllHostResolverProc();
   rules_map_[HostResolverSource::DNS] = CreateCatchAllHostResolverProc();
+  rules_map_[HostResolverSource::MULTICAST_DNS] =
+      CreateCatchAllHostResolverProc();
 
   if (use_caching) {
     cache_.reset(new HostCache(kMaxCacheEntries));
@@ -446,7 +449,7 @@ int MockHostResolverBase::ResolveProc(const HostPortPair& host,
 }
 
 void MockHostResolverBase::ResolveNow(size_t id) {
-  RequestMap::iterator it = requests_.find(id);
+  auto it = requests_.find(id);
   if (it == requests_.end())
     return;  // was canceled
 

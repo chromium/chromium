@@ -1,2 +1,3 @@
 88
+
 When a block element becomes positioned or float we should not strip anonymous blocks wrapping its siblings if any of their children are inline.

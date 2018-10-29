@@ -149,6 +149,9 @@ void AndroidVideoSurfaceChooserImpl::Choose() {
   if (!overlay_factory_)
     new_overlay_state = kUsingTextureOwner;
 
+  if (current_state_.always_use_texture_owner)
+    new_overlay_state = kUsingTextureOwner;
+
   // Make sure that we're in |new_overlay_state_|.
   if (new_overlay_state == kUsingTextureOwner)
     SwitchToTextureOwner();

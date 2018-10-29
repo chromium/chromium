@@ -74,7 +74,7 @@ class NetworkPortalDetectorImplBrowserTest
       public captive_portal::CaptivePortalDetectorTestBase {
  public:
   NetworkPortalDetectorImplBrowserTest()
-      : LoginManagerTest(false),
+      : LoginManagerTest(false, true),
         test_account_id_(
             AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId)),
         network_portal_detector_(nullptr) {}

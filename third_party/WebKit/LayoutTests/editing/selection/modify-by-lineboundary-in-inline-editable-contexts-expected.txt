@@ -3,7 +3,6 @@ You can run this test manually by placing the caret in the middle of the both of
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Modify moving forward in adjacent, editable spans
 PASS Modify moving backward in adjacent, editable spans
 PASS Modify moving forward in editable span in non-editable content

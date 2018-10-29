@@ -7,6 +7,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_view_manager/cr_view_manager.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="activity_log.html">
 <link rel="import" href="detail_view.html">
 <link rel="import" href="drop_overlay.html">
 <link rel="import" href="error_page.html">
@@ -89,9 +90,16 @@
         <template>
           <extensions-detail-view delegate="[[delegate]]" slot="view"
               in-dev-mode="[[inDevMode]]"
+              show-activity-log="[[showActivityLog]]"
               incognito-available="[[incognitoAvailable_]]"
               data="[[detailViewItem_]]">
           </extensions-detail-view>
+        </template>
+      </cr-lazy-render>
+      <cr-lazy-render id="activity-log">
+        <template>
+          <extensions-activity-log slot="view">
+          </extensions-activity-log>
         </template>
       </cr-lazy-render>
       <cr-lazy-render id="keyboard-shortcuts">

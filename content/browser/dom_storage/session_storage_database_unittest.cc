@@ -336,8 +336,7 @@ void SessionStorageDatabaseTest::CompareValuesMaps(
     const DOMStorageValuesMap& map1,
     const DOMStorageValuesMap& map2) const {
   ASSERT_EQ(map2.size(), map1.size());
-  for (DOMStorageValuesMap::const_iterator it = map1.begin();
-       it != map1.end(); ++it) {
+  for (auto it = map1.begin(); it != map1.end(); ++it) {
     base::string16 key = it->first;
     ASSERT_TRUE(map2.find(key) != map2.end());
     base::NullableString16 val1 = it->second;

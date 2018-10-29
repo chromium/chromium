@@ -208,7 +208,7 @@ std::string V4Store::DebugString() const {
   std::string state_base64;
   base::Base64Encode(state_, &state_base64);
 
-  return base::StringPrintf("path: %" PRIsFP "; state: %s",
+  return base::StringPrintf("path: %" PRFilePath "; state: %s",
                             store_path_.value().c_str(), state_base64.c_str());
 }
 
@@ -486,14 +486,9 @@ bool V4Store::GetNextSmallestUnmergedPrefix(
 
   for (const auto& iterator_pair : iterator_map) {
     PrefixSize prefix_size = iterator_pair.first;
-    CHECK_GE(prefix_size, 4u);  // Convert to DCHECK after fixing 787460.
     HashPrefixes::const_iterator start = iterator_pair.second;
 
-    CHECK(hash_prefix_map.end() !=
-          hash_prefix_map.find(
-              prefix_size));  // Convert to DCHECK after fixing 787460.
     const HashPrefixes& hash_prefixes = hash_prefix_map.at(prefix_size);
-
     PrefixSize distance = std::distance(start, hash_prefixes.end());
     CHECK_EQ(0u, distance % prefix_size);
     if (prefix_size <= distance) {
@@ -595,14 +590,12 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
 
       // Update the iterator map, which means that we have merged one hash
       // prefix of size |next_smallest_prefix_size| from the old store.
-      old_iterator_map.at(next_smallest_prefix_size) +=
-          next_smallest_prefix_size;
+      old_iterator_map[next_smallest_prefix_size] += next_smallest_prefix_size;
 
       if (!raw_removals || removals_iter == raw_removals->end() ||
           *removals_iter != total_picked_from_old) {
         // Append the smallest hash to the appropriate list.
-        hash_prefix_map_.at(next_smallest_prefix_size) +=
-            next_smallest_prefix_old;
+        hash_prefix_map_[next_smallest_prefix_size] += next_smallest_prefix_old;
 
         if (calculate_checksum) {
           checksum_ctx->Update(next_smallest_prefix_old.data(),
@@ -622,7 +615,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
       next_smallest_prefix_size = next_smallest_prefix_additions.size();
 
       // Append the smallest hash to the appropriate list.
-      hash_prefix_map_.at(next_smallest_prefix_size) +=
+      hash_prefix_map_[next_smallest_prefix_size] +=
           next_smallest_prefix_additions;
 
       if (calculate_checksum) {
@@ -632,7 +625,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
 
       // Update the iterator map, which means that we have merged one hash
       // prefix of size |next_smallest_prefix_size| from the update.
-      additions_iterator_map.at(next_smallest_prefix_size) +=
+      additions_iterator_map[next_smallest_prefix_size] +=
           next_smallest_prefix_size;
 
       // Find the next smallest unmerged element in the additions map.
@@ -811,12 +804,11 @@ bool V4Store::VerifyChecksum() {
   std::unique_ptr<crypto::SecureHash> checksum_ctx(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   while (has_unmerged) {
-    PrefixSize next_smallest_prefix_size;
-    next_smallest_prefix_size = next_smallest_prefix.size();
+    PrefixSize next_smallest_prefix_size = next_smallest_prefix.size();
 
     // Update the iterator map, which means that we have read one hash
     // prefix of size |next_smallest_prefix_size| from hash_prefix_map_.
-    iterator_map.at(next_smallest_prefix_size) += next_smallest_prefix_size;
+    iterator_map[next_smallest_prefix_size] += next_smallest_prefix_size;
 
     checksum_ctx->Update(next_smallest_prefix.data(),
                          next_smallest_prefix_size);

@@ -28,6 +28,8 @@ class GURL;
 // image is in template rendering mode, it is expected to be tinted by the image
 // view.
 - (UIImage*)suggestionTypeIcon;
+// Some suggestions are opened in an other tab.
+- (BOOL)isTabMatch;
 
 // Text of the suggestion.
 - (NSAttributedString*)text;

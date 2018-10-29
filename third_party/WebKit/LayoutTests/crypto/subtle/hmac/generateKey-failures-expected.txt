@@ -3,7 +3,6 @@ Tests generateKey() with bad HMAC parameters.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 generateKey() with a length of -3...
 error is: TypeError: HmacKeyGenParams: length: Outside of numeric range
 

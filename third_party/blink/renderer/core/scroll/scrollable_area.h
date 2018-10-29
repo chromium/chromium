@@ -398,6 +398,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual ScrollbarTheme& GetPageScrollbarTheme() const = 0;
 
+  float ScrollStep(ScrollGranularity, ScrollbarOrientation) const;
+
  protected:
   // Deduces the ScrollBehavior based on the element style and the parameter set
   // by programmatic scroll into either instant or smooth scroll.
@@ -409,7 +411,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   ScrollbarOrientation ScrollbarOrientationFromDirection(
       ScrollDirectionPhysical) const;
-  float ScrollStep(ScrollGranularity, ScrollbarOrientation) const;
 
   // Needed to let the animators call scrollOffsetChanged.
   friend class ScrollAnimatorCompositorCoordinator;

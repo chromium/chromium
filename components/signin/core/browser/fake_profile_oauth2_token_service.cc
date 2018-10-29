@@ -11,6 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gaia/fake_oauth2_token_service_delegate.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 FakeProfileOAuth2TokenService::PendingRequest::PendingRequest() {}
 
@@ -71,6 +72,14 @@ void FakeProfileOAuth2TokenService::IssueTokenForScope(
                        access_token, expiration, std::string() /* id_token */));
 }
 
+void FakeProfileOAuth2TokenService::IssueTokenForScope(
+    const ScopeSet& scope,
+    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
+  DCHECK(!auto_post_fetch_response_on_message_loop_);
+  CompleteRequests("", false, scope, GoogleServiceAuthError::AuthErrorNone(),
+                   token_response);
+}
+
 void FakeProfileOAuth2TokenService::IssueErrorForScope(
     const ScopeSet& scope,
     const GoogleServiceAuthError& error) {
@@ -96,6 +105,13 @@ void FakeProfileOAuth2TokenService::IssueTokenForAllPendingRequests(
                        access_token, expiration, std::string() /* id_token */));
 }
 
+void FakeProfileOAuth2TokenService::IssueTokenForAllPendingRequests(
+    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
+  DCHECK(!auto_post_fetch_response_on_message_loop_);
+  CompleteRequests("", true, ScopeSet(),
+                   GoogleServiceAuthError::AuthErrorNone(), token_response);
+}
+
 void FakeProfileOAuth2TokenService::UpdateAuthErrorForTesting(
     const std::string& account_id,
     const GoogleServiceAuthError& error) {
@@ -112,8 +128,7 @@ void FakeProfileOAuth2TokenService::CompleteRequests(
       GetPendingRequests();
 
   // Walk the requests and notify the callbacks.
-  for (std::vector<PendingRequest>::iterator it = requests.begin();
-       it != requests.end(); ++it) {
+  for (auto it = requests.begin(); it != requests.end(); ++it) {
     DCHECK(it->request);
 
     bool scope_matches = all_scopes || it->scopes == scope;
@@ -130,8 +145,8 @@ void FakeProfileOAuth2TokenService::CompleteRequests(
 std::vector<FakeProfileOAuth2TokenService::PendingRequest>
 FakeProfileOAuth2TokenService::GetPendingRequests() {
   std::vector<PendingRequest> valid_requests;
-  for (std::vector<PendingRequest>::iterator it = pending_requests_.begin();
-       it != pending_requests_.end(); ++it) {
+  for (auto it = pending_requests_.begin(); it != pending_requests_.end();
+       ++it) {
     if (it->request)
       valid_requests.push_back(*it);
   }
@@ -164,6 +179,7 @@ void FakeProfileOAuth2TokenService::FetchOAuth2Token(
   pending_request.account_id = account_id;
   pending_request.client_id = client_id;
   pending_request.client_secret = client_secret;
+  pending_request.url_loader_factory = url_loader_factory;
   pending_request.scopes = scopes;
   pending_request.request = request->AsWeakPtr();
   pending_requests_.push_back(pending_request);

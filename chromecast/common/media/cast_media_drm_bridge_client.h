@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/macros.h"
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/cdm/playready_drm_delegate_android.h"
 #include "components/cdm/common/widevine_drm_delegate_android.h"
 #include "media/base/android/media_drm_bridge_client.h"
@@ -26,9 +27,9 @@ class CastMediaDrmBridgeClient : public ::media::MediaDrmBridgeClient {
   ::media::MediaDrmBridgeDelegate* GetMediaDrmBridgeDelegate(
       const ::media::UUID& scheme_uuid) override;
 
-#if defined(PLAYREADY_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_PLAYREADY)
   PlayreadyDrmDelegateAndroid playready_delegate_;
-#endif
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
   cdm::WidevineDrmDelegateAndroid widevine_delegate_;
 

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/components/install_result_code.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "url/gurl.h"
 
 namespace web_app {

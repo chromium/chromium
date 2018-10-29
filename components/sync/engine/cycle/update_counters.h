@@ -21,9 +21,10 @@ struct UpdateCounters {
   std::unique_ptr<base::DictionaryValue> ToValue() const;
   std::string ToString() const;
 
-  int num_updates_received;
-  int num_reflected_updates_received;
-  int num_tombstone_updates_received;
+  int num_initial_updates_received;
+  int num_non_initial_updates_received;
+  int num_non_initial_reflected_updates_received;
+  int num_non_initial_tombstone_updates_received;
 
   int num_updates_applied;
   int num_hierarchy_conflict_application_failures;

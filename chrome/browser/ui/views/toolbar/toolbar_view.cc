@@ -99,7 +99,7 @@ int GetToolbarHorizontalPadding() {
   // In the touch-optimized UI, we don't use any horizontal paddings; the back
   // button starts from the beginning of the view, and the app menu button ends
   // at the end of the view.
-  return ui::MaterialDesignController::IsTouchOptimizedUiEnabled() ? 0 : 8;
+  return ui::MaterialDesignController::touch_ui() ? 0 : 8;
 }
 
 }  // namespace
@@ -127,6 +127,7 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
   chrome::AddCommandObserver(browser_, IDC_LOAD_NEW_TAB_PAGE, this);
 
   UpgradeDetector::GetInstance()->AddObserver(this);
+  md_observer_.Add(ui::MaterialDesignController::GetInstance());
 }
 
 ToolbarView::~ToolbarView() {
@@ -206,21 +207,19 @@ void ToolbarView::Init() {
   browser_actions_ =
       new BrowserActionsContainer(browser_, main_container, this);
 
-  if (ui::MaterialDesignController::IsRefreshUi()) {
-    if (media_router::MediaRouterEnabled(browser_->profile()) &&
-        media_router::ShouldUseViewsDialog()) {
-      cast_ = media_router::CastToolbarButton::Create(browser_).release();
-    }
-
-    bool show_avatar_toolbar_button = true;
-#if defined(OS_CHROMEOS)
-    // ChromeOS only badges Incognito and Guest icons in the browser window.
-    show_avatar_toolbar_button = browser_->profile()->IsOffTheRecord() ||
-                                 browser_->profile()->IsGuestSession();
-#endif  // !defined(OS_CHROMEOS)
-    if (show_avatar_toolbar_button)
-      avatar_ = new AvatarToolbarButton(browser_);
+  if (media_router::MediaRouterEnabled(browser_->profile()) &&
+      media_router::ShouldUseViewsDialog()) {
+    cast_ = media_router::CastToolbarButton::Create(browser_).release();
   }
+
+  bool show_avatar_toolbar_button = true;
+#if defined(OS_CHROMEOS)
+  // ChromeOS only badges Incognito and Guest icons in the browser window.
+  show_avatar_toolbar_button = browser_->profile()->IsOffTheRecord() ||
+                               browser_->profile()->IsGuestSession();
+#endif  // !defined(OS_CHROMEOS)
+  if (show_avatar_toolbar_button)
+    avatar_ = new AvatarToolbarButton(browser_);
 
   app_menu_button_ = new BrowserAppMenuButton(this);
   app_menu_button_->EnableCanvasFlippingForRTLUI(true);
@@ -338,17 +337,6 @@ void ToolbarView::ShowTranslateBubble(
                                   is_user_gesture
                                       ? TranslateBubbleView::USER_GESTURE
                                       : TranslateBubbleView::AUTOMATIC);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, AccessiblePaneView overrides:
-
-bool ToolbarView::SetPaneFocus(views::View* initial_focus) {
-  if (!AccessiblePaneView::SetPaneFocus(initial_focus))
-    return false;
-
-  location_bar_->SetFullKeyboardAcessibilityMode(true);
-  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -675,9 +663,12 @@ bool ToolbarView::SetPaneFocusAndFocusDefault() {
   return true;
 }
 
-void ToolbarView::RemovePaneFocus() {
-  AccessiblePaneView::RemovePaneFocus();
-  location_bar_->SetFullKeyboardAcessibilityMode(false);
+// ui::MaterialDesignControllerObserver:
+void ToolbarView::OnTouchUiChanged() {
+  if (is_display_mode_normal()) {
+    LoadImages();
+    PreferredSizeChanged();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -776,13 +767,15 @@ gfx::Size ToolbarView::SizeForContentSize(gfx::Size size) const {
     // In the touch-optimized UI, the toolbar buttons are big and occupy the
     // entire view's height, we don't need to add any extra vertical space.
     const int extra_vertical_space =
-        ui::MaterialDesignController::IsTouchOptimizedUiEnabled() ? 0 : 9;
+        ui::MaterialDesignController::touch_ui() ? 0 : 9;
     size.SetToMax(gfx::Size(0, content_height + extra_vertical_space));
   }
   return size;
 }
 
 void ToolbarView::LoadImages() {
+  DCHECK(is_display_mode_normal());
+
   const ui::ThemeProvider* tp = GetThemeProvider();
 
   const SkColor normal_color =
@@ -793,25 +786,24 @@ void ToolbarView::LoadImages() {
   browser_actions_->SetSeparatorColor(
       tp->GetColor(ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR));
 
-  const bool is_touch =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
 
   const gfx::VectorIcon& back_image =
-      is_touch ? kBackArrowTouchIcon : vector_icons::kBackArrowIcon;
+      touch_ui ? kBackArrowTouchIcon : vector_icons::kBackArrowIcon;
   back_->SetImage(views::Button::STATE_NORMAL,
                   gfx::CreateVectorIcon(back_image, normal_color));
   back_->SetImage(views::Button::STATE_DISABLED,
                   gfx::CreateVectorIcon(back_image, disabled_color));
 
   const gfx::VectorIcon& forward_image =
-      is_touch ? kForwardArrowTouchIcon : vector_icons::kForwardArrowIcon;
+      touch_ui ? kForwardArrowTouchIcon : vector_icons::kForwardArrowIcon;
   forward_->SetImage(views::Button::STATE_NORMAL,
                      gfx::CreateVectorIcon(forward_image, normal_color));
   forward_->SetImage(views::Button::STATE_DISABLED,
                      gfx::CreateVectorIcon(forward_image, disabled_color));
 
   const gfx::VectorIcon& home_image =
-      is_touch ? kNavigateHomeTouchIcon : kNavigateHomeIcon;
+      touch_ui ? kNavigateHomeTouchIcon : kNavigateHomeIcon;
   home_->SetImage(views::Button::STATE_NORMAL,
                   gfx::CreateVectorIcon(home_image, normal_color));
 

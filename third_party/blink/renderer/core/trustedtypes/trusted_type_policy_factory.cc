@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_url.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -57,6 +62,51 @@ Vector<String> TrustedTypePolicyFactory::getPolicyNames() const {
     policyNames.push_back(name);
   }
   return policyNames;
+}
+
+const WrapperTypeInfo*
+TrustedTypePolicyFactory::GetWrapperTypeInfoFromScriptValue(
+    ScriptState* script_state,
+    const ScriptValue& script_value) {
+  v8::Local<v8::Value> value = script_value.V8Value();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (value.IsEmpty() || !value->IsObject() ||
+      !V8DOMWrapper::IsWrapper(isolate, value))
+    return nullptr;
+  v8::Local<v8::Object> object = script_value.V8Value()->ToObject(isolate);
+  return ToWrapperTypeInfo(object);
+}
+
+bool TrustedTypePolicyFactory::isHTML(ScriptState* script_state,
+                                      const ScriptValue& script_value) {
+  const WrapperTypeInfo* wrapper_type_info =
+      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
+  return wrapper_type_info &&
+         wrapper_type_info->Equals(&V8TrustedHTML::wrapperTypeInfo);
+}
+
+bool TrustedTypePolicyFactory::isScript(ScriptState* script_state,
+                                        const ScriptValue& script_value) {
+  const WrapperTypeInfo* wrapper_type_info =
+      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
+  return wrapper_type_info &&
+         wrapper_type_info->Equals(&V8TrustedScript::wrapperTypeInfo);
+}
+
+bool TrustedTypePolicyFactory::isScriptURL(ScriptState* script_state,
+                                           const ScriptValue& script_value) {
+  const WrapperTypeInfo* wrapper_type_info =
+      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
+  return wrapper_type_info &&
+         wrapper_type_info->Equals(&V8TrustedScriptURL::wrapperTypeInfo);
+}
+
+bool TrustedTypePolicyFactory::isURL(ScriptState* script_state,
+                                     const ScriptValue& script_value) {
+  const WrapperTypeInfo* wrapper_type_info =
+      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
+  return wrapper_type_info &&
+         wrapper_type_info->Equals(&V8TrustedURL::wrapperTypeInfo);
 }
 
 void TrustedTypePolicyFactory::Trace(blink::Visitor* visitor) {

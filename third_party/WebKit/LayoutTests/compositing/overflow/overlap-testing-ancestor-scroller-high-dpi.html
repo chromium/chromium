@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<style>
+  html, body {
+    height: 100%;
+  }
+
+  #target {
+    height: 100%;
+    overflow: auto;
+    isolation: isolate;
+  }
+
+  .fixed-bg {
+    position: absolute;
+    backface-visibility: hidden;
+    background: white;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .item {
+    position: relative;
+    height: 800px;
+    background: lightgray;
+    width: 100%;
+  }
+</style>
+<body>
+  <div id=target>
+    <div class="fixed-bg"></div>
+    <div class="item" id=item1>Item 1</div>
+    <div class="item" id=item2>Item 2</div>
+  </div>
+</body>
+
+</html>
+<script>
+if (window.internals)
+  window.internals.settings.setPreferCompositingToLCDTextEnabled(true);
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
+      target.scrollBy(0, 800));
+      window.testRunner.notifyDone();
+  });
+}
+</script>

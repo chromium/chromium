@@ -1,0 +1,18 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+
+<dom-module id="setup-failed-page">
+  <template>
+    <ui-page header-text="[[headerText]]" icon-name="error-icon">
+      <span slot="message" inner-h-t-m-l="[[messageHtml]]"></span>
+      <div slot="additional-content">
+        This is empty... (PlAcEhOlDeR tExT!!)
+      </div>
+    </ui-page>
+  </template>
+  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/setup_failed_page.js">
+  </script>
+</dom-module>

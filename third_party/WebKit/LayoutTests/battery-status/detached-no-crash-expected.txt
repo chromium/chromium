@@ -2,7 +2,6 @@ Accessing navigator.getBattery() on a closed window.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS typeof(nav.getBattery()) == 'object' is true
 PASS nav.getBattery() is undefined.
 PASS successfullyParsed is true

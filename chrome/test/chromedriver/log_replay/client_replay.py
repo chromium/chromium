@@ -70,8 +70,6 @@ class Method(object):
 # this data throughout chromedriver code (see e.g. http_handler.cc)
 _COMMANDS = {
     "AcceptAlert": (Method.POST, "/session/:sessionId/alert/accept"),
-    "Activate": (Method.POST, "/session/:sessionId/ime/activate"),
-    "Activated": (Method.GET, "/session/:sessionId/ime/activated"),
     "AddCookie": (Method.POST, "/session/:sessionId/cookie"),
     "ClearElement": (Method.POST, "/session/:sessionId/element/:id/clear"),
     "ClearLocalStorage": (Method.DELETE, "/session/:sessionId/local_storage"),
@@ -80,7 +78,6 @@ _COMMANDS = {
     "Click": (Method.POST, "/session/:sessionId/click"),
     "ClickElement": (Method.POST, "/session/:sessionId/element/:id/click"),
     "CloseWindow": (Method.DELETE, "/session/:sessionId/window"),
-    "Deactivate": (Method.POST, "/session/:sessionId/ime/deactivate"),
     "DeleteActions": (Method.DELETE, "/session/:sessionId/actions"),
     "DeleteAllCookies": (Method.DELETE, "/session/:sessionId/cookie"),
     "DeleteCookie": (Method.DELETE, "/session/:sessionId/cookie/:name"),
@@ -90,13 +87,11 @@ _COMMANDS = {
     (Method.DELETE, "/session/:sessionId/orientation"),
     "DismissAlert": (Method.POST, "/session/:sessionId/dismiss_alert"),
     "DoubleClick": (Method.POST, "/session/:sessionId/doubleclick"),
-    "Drag": (Method.POST, "/session/:sessionId/element/:id/drag"),
     "ElementScreenshot":
     (Method.GET, "/session/:sessionId/element/:id/screenshot"),
     "ExecuteAsyncScript": (Method.POST, "/session/:sessionId/execute_async"),
     "ExecuteCDP": (Method.POST, "/session/:sessionId/goog/cdp/execute"),
     "ExecuteScript": (Method.POST, "/session/:sessionId/execute/sync"),
-    "ExecuteSql": (Method.POST, "/session/:sessionId/execute_sql"),
     "FindChildElement":
     (Method.POST, "/session/:sessionId/element/:id/element"),
     "FindChildElements":
@@ -106,12 +101,7 @@ _COMMANDS = {
     "Freeze": (Method.POST, "/session/:sessionId/goog/page/freeze"),
     "FullscreenWindow": (Method.POST, "/session/:sessionId/window/fullscreen"),
     "GetActiveElement": (Method.POST, "/session/:sessionId/element/active"),
-    "GetActiveEngine": (Method.GET, "/session/:sessionId/ime/active_engine"),
     "GetAlertMessage": (Method.GET, "/session/:sessionId/alert_text"),
-    "GetAvailableEngines":
-    (Method.GET, "/session/:sessionId/ime/available_engines"),
-    "GetBrowserConnection":
-    (Method.GET, "/session/:sessionId/browser_connection"),
     "GetCookies": (Method.GET, "/session/:sessionId/cookie"),
     "GetElementAttribute":
     (Method.GET, "/session/:sessionId/element/:id/attribute/:name"),
@@ -180,7 +170,6 @@ _COMMANDS = {
     (Method.GET, "/session/:sessionId/element/:id/selected"),
     "IsLoading": (Method.GET, "/session/:sessionId/is_loading"),
     "LaunchApp": (Method.POST, "/session/:sessionId/chromium/launch_app"),
-    "Logs": (Method.POST, "Logs"),
     "MaximizeWindow": (Method.POST, "/session/:sessionId/window/maximize"),
     "MinimizeWindow": (Method.POST, "/session/:sessionId/window/minimize"),
     "MouseDown": (Method.POST, "/session/:sessionId/buttondown"),
@@ -201,8 +190,6 @@ _COMMANDS = {
     (Method.POST, "/session/:sessionId/chromium/send_command_and_get_result"),
     "SetAlertPrompt": (Method.POST, "/session/:sessionId/alert_text"),
     "SetAutoReporting": (Method.POST, "/session/:sessionId/autoreport"),
-    "SetBrowserConnection":
-    (Method.POST, "/session/:sessionId/browser_connection"),
     "SetGeolocation": (Method.POST, "/session/:sessionId/location"),
     "SetImplicitWait":
     (Method.POST, "/session/:sessionId/timeouts/implicit_wait"),
@@ -237,8 +224,7 @@ _COMMANDS = {
     "TouchUp": (Method.POST, "/session/:sessionId/touch/up"),
     "Type": (Method.POST, "/session/:sessionId/keys"),
     "TypeElement": (Method.POST, "/session/:sessionId/element/:id/value"),
-    "UploadFile": (Method.POST, "/session/:sessionId/file"),
-    "Visible": (Method.POST, "/session/:sessionId/visible")
+    "UploadFile": (Method.POST, "/session/:sessionId/file")
 }
 
 MULTI_SESSION_COMMANDS = ["GetSessions"]

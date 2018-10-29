@@ -56,7 +56,7 @@ class DOMFileSystemCallbacksSyncHelper final
   ErrorCallbackBase* GetErrorCallback() { return new ErrorCallbackImpl(this); }
 
   CallbackArg* GetResultOrThrow(ExceptionState& exception_state) {
-    if (error_code_ != FileError::ErrorCode::kOK) {
+    if (error_code_ != base::File::FILE_OK) {
       FileError::ThrowDOMException(exception_state, error_code_);
       return nullptr;
     }
@@ -90,8 +90,8 @@ class DOMFileSystemCallbacksSyncHelper final
       visitor->Trace(helper_);
       ErrorCallbackBase::Trace(visitor);
     }
-    void Invoke(FileError::ErrorCode error_code) override {
-      DCHECK_NE(error_code, FileError::ErrorCode::kOK);
+    void Invoke(base::File::Error error_code) override {
+      DCHECK_NE(error_code, base::File::FILE_OK);
       helper_->error_code_ = error_code;
     }
 
@@ -106,7 +106,7 @@ class DOMFileSystemCallbacksSyncHelper final
   DOMFileSystemCallbacksSyncHelper() = default;
 
   Member<CallbackArg> result_;
-  FileError::ErrorCode error_code_ = FileError::ErrorCode::kOK;
+  base::File::Error error_code_ = base::File::FILE_OK;
 
   friend class SuccessCallbackImpl;
   friend class ErrorCallbackImpl;

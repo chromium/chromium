@@ -13,8 +13,8 @@ function selectText(start, end) {
   let startPoint = { x: 10 + 10, y: 20 + start * 20 + 8 };
   let endPoint = { x: 10 + 10, y: 20 + (end + 1) * 20 - 8 };
 
-  assert_exists(window, 'chrome');
-  assert_exists(window.chrome, 'gpuBenchmarking');
+  assert_own_property(window, 'chrome');
+  assert_own_property(window.chrome, 'gpuBenchmarking');
   return new Promise(function(resolve, reject) {
     chrome.gpuBenchmarking.pointerActionSequence(
       [{

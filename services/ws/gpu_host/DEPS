@@ -2,10 +2,13 @@ include_rules = [
   "+base",
   "+components/viz/common",
   "+components/viz/host",
+  "+components/viz/test",
   "+gpu/command_buffer/client",
+  "+gpu/command_buffer/service/gpu_switches.h",
   "+gpu/config",
   "+gpu/ipc/client",
   "+gpu/ipc/common",
+  "+gpu/ipc/host",
   "+mojo/public",
   "+services/viz/privileged/interfaces",
   "+services/viz/public/interfaces",
@@ -21,9 +24,6 @@ specific_include_rules = {
   ],
   "gpu_host_unittest.cc": [
     "+components/viz/service/gl/gpu_service_impl.h",
-  ],
-  "test_gpu_host.h": [
-    "+components/viz/test",
   ],
   ".*_(unit|pixel|perf)test.*\.cc": [
     "+components/viz/test",

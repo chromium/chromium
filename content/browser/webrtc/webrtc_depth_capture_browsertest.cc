@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
@@ -34,12 +35,10 @@ void RemoveSwitchFromCommandLine(base::CommandLine* command_line,
 #else
       switch_value;
 #endif
-  argv.erase(std::remove_if(
-                 argv.begin(), argv.end(),
-                 [switch_string](const base::CommandLine::StringType& value) {
-                   return value.find(switch_string) != std::string::npos;
-                 }),
-             argv.end());
+  base::EraseIf(argv,
+                [switch_string](const base::CommandLine::StringType& value) {
+                  return value.find(switch_string) != std::string::npos;
+                });
   command_line->InitFromArgv(argv);
 }
 

@@ -39,7 +39,7 @@ class HTMLFormElement;
 class SavedFormState;
 
 class FormControlState {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   FormControlState() : type_(kTypeSkip) {}
@@ -47,13 +47,13 @@ class FormControlState {
     values_.push_back(value);
   }
   static FormControlState Deserialize(const Vector<String>& state_vector,
-                                      size_t& index);
+                                      wtf_size_t& index);
   FormControlState(const FormControlState& another) = default;
   FormControlState& operator=(const FormControlState&);
 
   bool IsFailure() const { return type_ == kTypeFailure; }
-  size_t ValueSize() const { return values_.size(); }
-  const String& operator[](size_t i) const { return values_[i]; }
+  wtf_size_t ValueSize() const { return values_.size(); }
+  const String& operator[](wtf_size_t i) const { return values_[i]; }
   void Append(const String&);
   void SerializeTo(Vector<String>& state_vector) const;
 

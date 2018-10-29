@@ -31,6 +31,7 @@ class IdentityManager;
 }
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
@@ -58,6 +59,7 @@ class GCMProfileService : public KeyedService {
                network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       version_info::Channel channel,
       const std::string& product_category_for_subtypes,
       identity::IdentityManager* identity_manager,

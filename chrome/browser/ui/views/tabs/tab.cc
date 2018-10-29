@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 
 #include <stddef.h>
+
+#include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,12 +31,13 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/alert_indicator.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_style.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,6 +68,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/rect_based_targeting_utils.h"
+#include "ui/views/view_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -105,264 +110,6 @@ int Center(int size, int item_size) {
   return extra_space / 2;
 }
 
-void DrawHighlight(gfx::Canvas* canvas,
-                   const SkPoint& p,
-                   SkScalar radius,
-                   SkColor color) {
-  const SkColor colors[2] = { color, SkColorSetA(color, 0) };
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setShader(cc::PaintShader::MakeRadialGradient(
-      p, radius, colors, nullptr, 2, SkShader::kClamp_TileMode));
-  canvas->sk_canvas()->drawRect(
-      SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
-      flags);
-}
-
-// Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
-// during painting.
-const gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                     float scale,
-                                     float stroke_thickness) {
-  // Convert to layout bounds.  We must inset the width such that the right edge
-  // of one tab's layout bounds is the same as the left edge of the next tab's;
-  // this way the two tabs' separators will be drawn at the same coordinate.
-  gfx::RectF aligned_bounds(bounds);
-  const int corner_radius = Tab::GetCornerRadius();
-  // Note: This intentionally doesn't subtract TABSTRIP_TOOLBAR_OVERLAP from the
-  // bottom inset, because we want to pixel-align the bottom of the stroke, not
-  // the bottom of the overlap.
-  gfx::InsetsF layout_insets(stroke_thickness, corner_radius, stroke_thickness,
-                             corner_radius + Tab::kSeparatorThickness);
-  aligned_bounds.Inset(layout_insets);
-
-  // Scale layout bounds from DIP to px.
-  aligned_bounds.Scale(scale);
-
-  // Snap layout bounds to nearest pixels so we get clean lines.
-  const float x = std::round(aligned_bounds.x());
-  const float y = std::round(aligned_bounds.y());
-  // It's important to round the right edge and not the width, since rounding
-  // both x and width would mean the right edge would accumulate error.
-  const float right = std::round(aligned_bounds.right());
-  const float bottom = std::round(aligned_bounds.bottom());
-  aligned_bounds = gfx::RectF(x, y, right - x, bottom - y);
-
-  // Convert back to full bounds.  It's OK that the outer corners of the curves
-  // around the separator may not be snapped to the pixel grid as a result.
-  aligned_bounds.Inset(-layout_insets.Scale(scale));
-  return aligned_bounds;
-}
-
-// Offsets each path inward by |insets|, then intersects them together.
-gfx::Path OffsetAndIntersectPaths(gfx::Path& left_path,
-                                  gfx::Path& right_path,
-                                  const gfx::InsetsF& insets) {
-  // This code is not prepared to deal with vertical adjustments.
-  DCHECK_EQ(0, insets.top());
-  DCHECK_EQ(0, insets.bottom());
-
-  gfx::Path complete_path;
-  left_path.offset(insets.left(), 0);
-  right_path.offset(-insets.right(), 0);
-  Op(left_path, right_path, SkPathOp::kIntersect_SkPathOp, &complete_path);
-  return complete_path;
-}
-
-// Given a tab of width |width|, returns the radius to use for the corners.
-float GetTopCornerRadiusForWidth(int width) {
-  // Get the width of the top of the tab by subtracting the width of the outer
-  // corners.
-  const int ideal_radius = Tab::GetCornerRadius();
-  const int top_width = width - ideal_radius * 2;
-
-  // To maintain a round-rect appearance, ensure at least one third of the top
-  // of the tab is flat.
-  const float radius = top_width / 3.f;
-  return base::ClampToRange<float>(radius, 0, ideal_radius);
-}
-
-// Returns a path corresponding to the tab's content region inside the outer
-// stroke. The sides of the path will be inset by |insets|; this is useful when
-// trying to clip favicons to match the overall tab shape but be inset from the
-// edge.
-gfx::Path GetInteriorPath(float scale,
-                          float stroke_thickness,
-                          float bottom_offset,
-                          const gfx::Rect& bounds,
-                          const gfx::InsetsF& insets = gfx::InsetsF()) {
-  const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(bounds, scale, stroke_thickness);
-
-  stroke_thickness *= scale;
-  bottom_offset *= scale;
-
-  const float radius = GetTopCornerRadiusForWidth(bounds.width()) * scale;
-  const float bottom_radius = radius - bottom_offset;
-  const float top_radius = std::max(radius - stroke_thickness, 0.f);
-
-  // Compute |extension| as the width outside the separators.  This is a fixed
-  // value equal to the normal corner radius.
-  const float extension = Tab::GetCornerRadius() * scale;
-
-  // When the radius shrinks, it leaves a gap between the bottom corners and the
-  // edge of the tab.
-  const float corner_gap = extension - bottom_radius;
-
-  const float left = aligned_bounds.x() + stroke_thickness;
-  const float top = aligned_bounds.y() + stroke_thickness;
-  const float right = aligned_bounds.right() - stroke_thickness;
-
-  // Overlap the toolbar below us so that gaps don't occur when rendering at
-  // non-integral display scale factors.
-  const float extended_bottom = aligned_bounds.bottom();
-  const float bottom_extension =
-      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
-  const float bottom = extended_bottom - bottom_extension - bottom_offset;
-
-  // Construct the interior path by intersecting paths representing the left
-  // and right halves of the tab.  Compared to computing the full path at once,
-  // this makes it easier to avoid overdraw in the top center near minimum
-  // width, and to implement cases where !insets.IsEmpty().
-
-  // Bottom right.
-  gfx::Path right_path;
-  right_path.moveTo(right - corner_gap, extended_bottom);
-  right_path.lineTo(right - corner_gap, bottom);
-  right_path.rArcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-                    SkPath::kCW_Direction, -bottom_radius, -bottom_radius);
-
-  // Right vertical.
-  right_path.lineTo(right - extension, top + top_radius);
-
-  // Top right.
-  right_path.rArcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                    SkPath::kCCW_Direction, -top_radius, -top_radius);
-
-  // Top/bottom edges of right side.
-  right_path.lineTo(left, top);
-  right_path.lineTo(left, extended_bottom);
-  right_path.close();
-
-  // Top left.
-  gfx::Path left_path;
-  left_path.moveTo(left + extension + top_radius, top);
-  left_path.rArcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                   SkPath::kCCW_Direction, -top_radius, top_radius);
-
-  // Left vertical.
-  left_path.lineTo(left + extension, bottom - bottom_radius);
-
-  // Bottom left.
-  left_path.rArcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-                   SkPath::kCW_Direction, -bottom_radius, bottom_radius);
-  left_path.lineTo(left + corner_gap, extended_bottom);
-
-  // Bottom/top edges of left side.
-  left_path.lineTo(right, extended_bottom);
-  left_path.lineTo(right, top);
-  left_path.close();
-
-  // Convert paths to be relative to the tab origin.
-  gfx::PointF origin(bounds.origin());
-  origin.Scale(scale);
-  right_path.offset(-origin.x(), -origin.y());
-  left_path.offset(-origin.x(), -origin.y());
-
-  return OffsetAndIntersectPaths(left_path, right_path, insets.Scale(scale));
-}
-
-// Returns a path corresponding to the tab's outer border for a given tab
-// |scale| and |bounds|.  If |unscale_at_end| is true, this path will be
-// normalized to a 1x scale by scaling by 1/scale before returning.  If
-// |extend_to_top| is true, the path is extended vertically to the top of the
-// tab bounds.  The caller uses this for Fitts' Law purposes in
-// maximized/fullscreen mode.
-gfx::Path GetBorderPath(float scale,
-                        float stroke_thickness,
-                        float bottom_offset,
-                        bool unscale_at_end,
-                        bool extend_to_top,
-                        const gfx::Rect& bounds) {
-  const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(bounds, scale, stroke_thickness);
-
-  stroke_thickness *= scale;
-  bottom_offset *= scale;
-
-  const float top_radius = GetTopCornerRadiusForWidth(bounds.width()) * scale;
-  const float bottom_radius =
-      std::max(top_radius - stroke_thickness, 0.f) - bottom_offset;
-
-  // See comments in GetInteriorPath().
-  const float extension = Tab::GetCornerRadius() * scale;
-  const float corner_gap = extension - bottom_radius;
-
-  const float left = aligned_bounds.x();
-  const float top = aligned_bounds.y();
-  const float right = aligned_bounds.right();
-
-  // Overlap the toolbar below us so that gaps don't occur when rendering at
-  // non-integral display scale factors.
-  const float extended_bottom = aligned_bounds.bottom();
-  const float bottom_extension =
-      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
-  const float bottom = extended_bottom - bottom_extension - bottom_offset;
-
-  // Bottom left.
-  gfx::Path path;
-  path.moveTo(left, extended_bottom);
-  path.lineTo(left, bottom - stroke_thickness);
-  path.rLineTo(corner_gap, 0);
-  path.rArcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-              SkPath::kCCW_Direction, bottom_radius, -bottom_radius);
-
-  if (extend_to_top) {
-    // Left vertical.
-    path.lineTo(left + extension, top);
-
-    // Top edge.
-    path.lineTo(right - extension, top);
-  } else {
-    // Left vertical.
-    path.lineTo(left + extension, top + top_radius);
-
-    // Top left.
-    path.rArcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                SkPath::kCW_Direction, top_radius, -top_radius);
-
-    // Top edge.
-    path.lineTo(right - extension - top_radius, top);
-
-    // Top right.
-    path.rArcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                SkPath::kCW_Direction, top_radius, top_radius);
-  }
-
-  // Right vertical.
-  path.lineTo(right - extension, bottom - stroke_thickness - bottom_radius);
-
-  // Bottom right.
-  path.rArcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-              SkPath::kCCW_Direction, bottom_radius, bottom_radius);
-  path.rLineTo(corner_gap, 0);
-  path.rLineTo(0, stroke_thickness);
-  path.rLineTo(0, bottom_extension);
-
-  // Bottom edge.
-  path.close();
-
-  // Convert path to be relative to the tab origin.
-  gfx::PointF origin(bounds.origin());
-  origin.Scale(scale);
-  path.offset(-origin.x(), -origin.y());
-
-  if (unscale_at_end && (scale != 1))
-    path.transform(SkMatrix::MakeScale(1.f / scale));
-
-  return path;
-}
-
 }  // namespace
 
 // Tab -------------------------------------------------------------------------
@@ -379,6 +126,8 @@ Tab::Tab(TabController* controller, gfx::AnimationContainer* container)
       hover_controller_(this) {
   DCHECK(controller);
 
+  tab_style_.reset(TabStyle::CreateForTab(this));
+
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
   set_notify_enter_exit_on_child(true);
@@ -387,7 +136,7 @@ Tab::Tab(TabController* controller, gfx::AnimationContainer* container)
 
   // This will cause calls to GetContentsBounds to return only the rectangle
   // inside the tab shape, rather than to its extents.
-  SetBorder(views::CreateEmptyBorder(GetContentsInsets()));
+  SetBorder(views::CreateEmptyBorder(tab_style()->GetContentsInsets()));
 
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::FADE_TAIL);
@@ -401,8 +150,8 @@ Tab::Tab(TabController* controller, gfx::AnimationContainer* container)
   icon_ = new TabIcon;
   AddChildView(icon_);
 
-  alert_indicator_button_ = new AlertIndicatorButton(this);
-  AddChildView(alert_indicator_button_);
+  alert_indicator_ = new AlertIndicator(this);
+  AddChildView(alert_indicator_);
 
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
@@ -421,6 +170,10 @@ Tab::Tab(TabController* controller, gfx::AnimationContainer* container)
   title_animation_.SetContainer(animation_container_.get());
 
   hover_controller_.SetAnimationContainer(animation_container_.get());
+
+  // Enable keyboard focus.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  focus_ring_ = views::FocusRing::Install(this);
 }
 
 Tab::~Tab() {
@@ -455,10 +208,8 @@ void Tab::AnimationCanceled(const gfx::Animation* animation) {
 }
 
 void Tab::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  if (!alert_indicator_button_ || !alert_indicator_button_->visible())
+  if (!alert_indicator_ || !alert_indicator_->visible())
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
-  else if (alert_indicator_button_->enabled())
-    base::RecordAction(UserMetricsAction("CloseTab_MuteToggleAvailable"));
   else if (data_.alert_state == TabAlertState::AUDIO_PLAYING)
     base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
   else
@@ -485,11 +236,10 @@ bool Tab::GetHitTestMask(gfx::Path* mask) const {
   // When the window is maximized we don't want to shave off the edges or top
   // shadow of the tab, such that the user can click anywhere along the top
   // edge of the screen to select a tab. Ditto for immersive fullscreen.
-  const views::Widget* widget = GetWidget();
-  *mask = GetBorderPath(
-      GetWidget()->GetCompositor()->device_scale_factor(), GetStrokeThickness(),
-      GetBottomStrokeThickness(), true,
-      widget && (widget->IsMaximized() || widget->IsFullscreen()), bounds());
+  *mask = tab_style()->GetPath(
+      TabStyle::PathType::kHitTest,
+      GetWidget()->GetCompositor()->device_scale_factor(),
+      /* force_active */ false, TabStyle::RenderUnits::kDips);
   return true;
 }
 
@@ -516,7 +266,7 @@ void Tab::Layout() {
     favicon_bounds.set_size(
         gfx::Size(icon_->GetPreferredSize().width(),
                   contents_rect.height() - favicon_bounds.y()));
-    if (center_favicon_) {
+    if (center_icon_) {
       // When centering the favicon, the favicon is allowed to escape the normal
       // contents rect.
       favicon_bounds.set_x(Center(width(), gfx::kFaviconSize));
@@ -571,23 +321,24 @@ void Tab::Layout() {
     int right = contents_rect.right();
     if (showing_close_button_) {
       right = close_x;
-      if (extra_alert_indicator_padding_) {
-        constexpr int kTouchableAlertIndicatorCloseButtonPadding = 8;
-        constexpr int kAlertIndicatorCloseButtonPadding = 6;
-        right -= MD::IsTouchOptimizedUiEnabled()
-                     ? kTouchableAlertIndicatorCloseButtonPadding
-                     : kAlertIndicatorCloseButtonPadding;
-      }
+      if (extra_alert_indicator_padding_)
+        right -= MD::touch_ui() ? 8 : 6;
     }
-    const gfx::Size image_size = alert_indicator_button_->GetPreferredSize();
+    const gfx::Size image_size = alert_indicator_->GetPreferredSize();
     gfx::Rect bounds(
         std::max(contents_rect.x(), right - image_size.width()),
         contents_rect.y() + Center(contents_rect.height(), image_size.height()),
         image_size.width(), image_size.height());
-    MaybeAdjustLeftForPinnedTab(&bounds, bounds.width());
-    alert_indicator_button_->SetBoundsRect(bounds);
+    if (center_icon_) {
+      // When centering the alert icon, it is allowed to escape the normal
+      // contents rect.
+      bounds.set_x(Center(width(), bounds.width()));
+    } else {
+      MaybeAdjustLeftForPinnedTab(&bounds, bounds.width());
+    }
+    alert_indicator_->SetBoundsRect(bounds);
   }
-  alert_indicator_button_->SetVisible(showing_alert_indicator_);
+  alert_indicator_->SetVisible(showing_alert_indicator_);
 
   // Size the title to fill the remaining width and use all available height.
   bool show_title = ShouldRenderAsNormalTab();
@@ -604,7 +355,7 @@ void Tab::Layout() {
     }
     int title_right = contents_rect.right();
     if (showing_alert_indicator_) {
-      title_right = alert_indicator_button_->x() - after_title_padding;
+      title_right = alert_indicator_->x() - after_title_padding;
     } else if (showing_close_button_) {
       // Allow the title to overlay the close button's empty border padding.
       title_right = close_x - after_title_padding;
@@ -629,10 +380,28 @@ void Tab::Layout() {
     }
   }
   title_->SetVisible(show_title);
+
+  if (focus_ring_)
+    focus_ring_->Layout();
 }
 
 const char* Tab::GetClassName() const {
   return kViewClassName;
+}
+
+void Tab::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // Update focus ring path.
+  const SkPath path = tab_style_->GetPath(TabStyle::PathType::kHighlight, 1.0);
+  SetProperty(views::kHighlightPathKey, new SkPath(path));
+}
+
+bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_SPACE && !IsSelected()) {
+    controller_->SelectTab(this);
+    return true;
+  }
+
+  return false;
 }
 
 namespace {
@@ -723,11 +492,6 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
     // selection. Reset it now to handle the case where multiple tabs were
     // selected.
     controller_->SelectTab(this);
-
-    if (alert_indicator_button_ && alert_indicator_button_->visible() &&
-        alert_indicator_button_->bounds().Contains(event.location())) {
-      base::RecordAction(UserMetricsAction("TabAlertIndicator_Clicked"));
-    }
   }
 }
 
@@ -795,7 +559,7 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
 bool Tab::GetTooltipText(const gfx::Point& p, base::string16* tooltip) const {
   // Note: Anything that affects the tooltip text should be accounted for when
   // calling TooltipTextChanged() from Tab::SetData().
-  *tooltip = chrome::AssembleTabTooltipText(data_.title, data_.alert_state);
+  *tooltip = GetTooltipText(data_.title, data_.alert_state);
   return !tooltip->empty();
 }
 
@@ -807,14 +571,21 @@ bool Tab::GetTooltipTextOrigin(const gfx::Point& p, gfx::Point* origin) const {
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTab;
-  node_data->SetName(controller_->GetAccessibleTabName(this));
   node_data->AddState(ax::mojom::State::kMultiselectable);
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
+
+  base::string16 name = controller_->GetAccessibleTabName(this);
+  if (!name.empty()) {
+    node_data->SetName(name);
+  } else {
+    // Under some conditions, |GetAccessibleTabName| returns an empty string.
+    node_data->SetNameExplicitlyEmpty();
+  }
 }
 
 gfx::Size Tab::CalculatePreferredSize() const {
-  return gfx::Size(GetStandardWidth(), GetLayoutConstant(TAB_HEIGHT));
+  return gfx::Size(TabStyle::GetStandardWidth(), GetLayoutConstant(TAB_HEIGHT));
 }
 
 void Tab::PaintChildren(const views::PaintInfo& info) {
@@ -824,31 +595,20 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
   ui::ClipRecorder clip_recorder(info.context());
   // The paint recording scale for tabs is consistent along the x and y axis.
   const float paint_recording_scale = info.paint_recording_scale_x();
-  // When there is a separator, animate the clip to account for it, in sync with
-  // the separator's fading.
-  // TODO(pkasting): Consider crossfading the favicon instead of animating the
-  // clip, especially if other children get crossfaded.
-  const auto opacities = GetSeparatorOpacities(true);
-  constexpr float kChildClipPadding = 2.5f;
-  const gfx::InsetsF padding(0, kChildClipPadding + opacities.left, 0,
-                             kChildClipPadding + opacities.right);
-  clip_recorder.ClipPathWithAntiAliasing(
-      GetInteriorPath(paint_recording_scale, GetStrokeThickness(),
-                      GetBottomStrokeThickness(), bounds(), padding));
+
+  const gfx::Path clip_path = tab_style()->GetPath(
+      TabStyle::PathType::kInteriorClip, paint_recording_scale);
+
+  clip_recorder.ClipPathWithAntiAliasing(clip_path);
   View::PaintChildren(info);
 }
 
 void Tab::OnPaint(gfx::Canvas* canvas) {
   gfx::Path clip;
-  if (!controller_->ShouldPaintTab(
-          this,
-          base::BindRepeating(&GetBorderPath, canvas->image_scale(),
-                              GetStrokeThickness(), GetBottomStrokeThickness(),
-                              true, false),
-          &clip))
+  if (!controller_->ShouldPaintTab(this, canvas->image_scale(), &clip))
     return;
 
-  PaintTab(canvas, clip);
+  tab_style()->PaintTab(canvas, clip);
 }
 
 void Tab::AddedToWidget() {
@@ -862,10 +622,18 @@ void Tab::OnThemeChanged() {
 void Tab::SetClosing(bool closing) {
   closing_ = closing;
   ActiveStateChanged();
+
+  if (closing) {
+    // When closing, sometimes DCHECK fails because
+    // cc::Layer::IsPropertyChangeAllowed() returns false. Deleting
+    // the focus ring fixes this. TODO(collinbaker): investigate why
+    // this happens.
+    focus_ring_.reset();
+  }
 }
 
 SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
-  const bool is_touch_optimized = MD::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = MD::touch_ui();
   // If theme provider is not yet available, return the default button
   // color.
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
@@ -875,18 +643,17 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
   switch (state) {
     case TabAlertState::AUDIO_PLAYING:
     case TabAlertState::AUDIO_MUTING:
-      return is_touch_optimized ? theme_provider->GetColor(
-                                      ThemeProperties::COLOR_TAB_ALERT_AUDIO)
-                                : button_color_;
+      return touch_ui ? theme_provider->GetColor(
+                            ThemeProperties::COLOR_TAB_ALERT_AUDIO)
+                      : button_color_;
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
       return theme_provider->GetColor(
           ThemeProperties::COLOR_TAB_ALERT_RECORDING);
     case TabAlertState::TAB_CAPTURING:
-      return is_touch_optimized
-                 ? theme_provider->GetColor(
-                       ThemeProperties::COLOR_TAB_ALERT_CAPTURING)
-                 : button_color_;
+      return touch_ui ? theme_provider->GetColor(
+                            ThemeProperties::COLOR_TAB_ALERT_CAPTURING)
+                      : button_color_;
     case TabAlertState::PIP_PLAYING:
       return theme_provider->GetColor(ThemeProperties::COLOR_TAB_PIP_PLAYING);
     case TabAlertState::BLUETOOTH_CONNECTED:
@@ -906,7 +673,6 @@ bool Tab::IsActive() const {
 void Tab::ActiveStateChanged() {
   UpdateTabIconNeedsAttentionBlocked();
   UpdateForegroundColors();
-  alert_indicator_button_->UpdateEnabledForMuteToggle();
   Layout();
 }
 
@@ -955,7 +721,7 @@ void Tab::SetData(TabRendererData data) {
   title_->SetText(title);
 
   if (data_.alert_state != old.alert_state)
-    alert_indicator_button_->TransitionToAlertState(data_.alert_state);
+    alert_indicator_->TransitionToAlertState(data_.alert_state);
   if (old.pinned != data_.pinned)
     showing_alert_indicator_ = false;
 
@@ -994,102 +760,60 @@ void Tab::SetTabNeedsAttention(bool attention) {
   SchedulePaint();
 }
 
-float Tab::GetStrokeThickness(bool should_paint_as_active) const {
-  return (IsActive() || should_paint_as_active)
-             ? controller_->GetStrokeThickness()
-             : 0;
-}
-
-float Tab::GetBottomStrokeThickness(bool should_paint_as_active) const {
-  return (IsActive() || should_paint_as_active)
-             ? 0
-             : controller_->GetStrokeThickness();
-}
-
-int Tab::GetWidthOfLargestSelectableRegion() const {
-  // Assume the entire region to the left of the alert indicator and/or close
-  // buttons is available for click-to-select.  If neither are visible, the
-  // entire tab region is available.
-  const int indicator_left = alert_indicator_button_->visible()
-                                 ? alert_indicator_button_->x()
-                                 : width();
-  const int close_button_left =
-      close_button_->visible() ? close_button_->x() : width();
-  return std::min(indicator_left, close_button_left);
-}
-
-gfx::Insets Tab::GetContentsInsets() const {
-  const float stroke_thickness = GetStrokeThickness();
-  return GetContentsHorizontalInsets() +
-         gfx::Insets(
-             stroke_thickness, 0,
-             stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP), 0);
-}
-
 // static
-gfx::Insets Tab::GetContentsHorizontalInsets() {
-  return gfx::Insets(0, GetCornerRadius() * 2);
-}
+base::string16 Tab::GetTooltipText(const base::string16& title,
+                                   TabAlertState alert_state) {
+  if (alert_state == TabAlertState::NONE)
+    return title;
 
-// static
-int Tab::GetMinimumInactiveWidth() {
-  // Allow tabs to shrink until they appear to be 16 DIP wide excluding outer
-  // corners.
-  constexpr int kInteriorWidth = 16;
-  // The overlap contains the trailing separator that is part of the interior
-  // width; avoid double-counting it.
-  return kInteriorWidth - kSeparatorThickness + GetOverlap();
-}
-
-// static
-int Tab::GetMinimumActiveWidth() {
-  return TabCloseButton::GetWidth() + GetContentsHorizontalInsets().width();
-}
-
-// static
-int Tab::GetStandardWidth() {
-  // The standard tab width is 240 DIP including both separators.
-  constexpr int kTabWidth = 240;
-  // The overlap includes one separator, so subtract it here.
-  return kTabWidth + GetOverlap() - kSeparatorThickness;
-}
-
-// static
-int Tab::GetPinnedWidth() {
-  constexpr int kTabPinnedContentWidth = 23;
-  return kTabPinnedContentWidth + GetContentsHorizontalInsets().width();
-}
-
-// static
-int Tab::GetCornerRadius() {
-  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_HIGH);
-}
-
-// static
-int Tab::GetDragInset() {
-  return GetCornerRadius();
-}
-
-// static
-int Tab::GetOverlap() {
-  // Overlap the separators.
-  return GetCornerRadius() * 2 + kSeparatorThickness;
-}
-
-// static
-int Tab::GetTabSeparatorHeight() {
-  constexpr int kTabSeparatorHeight = 20;
-  constexpr int kTabSeparatorTouchHeight = 24;
-  return MD::IsTouchOptimizedUiEnabled() ? kTabSeparatorTouchHeight
-                                         : kTabSeparatorHeight;
+  base::string16 result = title;
+  if (!result.empty())
+    result.append(1, '\n');
+  switch (alert_state) {
+    case TabAlertState::AUDIO_PLAYING:
+      result.append(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING));
+      break;
+    case TabAlertState::AUDIO_MUTING:
+      result.append(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING));
+      break;
+    case TabAlertState::MEDIA_RECORDING:
+      result.append(l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING));
+      break;
+    case TabAlertState::TAB_CAPTURING:
+      result.append(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING));
+      break;
+    case TabAlertState::BLUETOOTH_CONNECTED:
+      result.append(l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED));
+      break;
+    case TabAlertState::USB_CONNECTED:
+      result.append(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED));
+      break;
+    case TabAlertState::PIP_PLAYING:
+      result.append(
+          l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING));
+      break;
+    case TabAlertState::DESKTOP_CAPTURING:
+      result.append(l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING));
+      break;
+    case TabAlertState::NONE:
+      NOTREACHED();
+      break;
+  }
+  return result;
 }
 
 void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
                                       int visual_width) const {
   if (ShouldRenderAsNormalTab())
     return;
-  const int pinned_width = GetPinnedWidth();
+  const int pinned_width = TabStyle::GetPinnedWidth();
   const int ideal_delta = width() - pinned_width;
   const int ideal_x = (pinned_width - visual_width) / 2;
   // TODO(pkasting): https://crbug.com/533570  This code is broken when the
@@ -1102,237 +826,23 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
           (ideal_x - bounds->x())));
 }
 
-void Tab::PaintTab(gfx::Canvas* canvas, const gfx::Path& clip) {
-  int active_tab_fill_id = 0;
-  int active_tab_y_inset = 0;
-  if (GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
-    active_tab_fill_id = IDR_THEME_TOOLBAR;
-    active_tab_y_inset = GetStrokeThickness(true);
-  }
+float Tab::GetThrobValue() const {
+  const bool is_selected = IsSelected();
+  double val = is_selected ? kSelectedTabOpacity : 0;
 
-  if (IsActive()) {
-    PaintTabBackground(canvas, true /* active */, active_tab_fill_id,
-                       active_tab_y_inset, nullptr /* clip */);
-  } else {
-    PaintInactiveTabBackground(canvas, clip);
-
-    const float throb_value = GetThrobValue();
-    if (throb_value > 0) {
-      canvas->SaveLayerAlpha(gfx::ToRoundedInt(throb_value * 0xff),
-                             GetLocalBounds());
-      PaintTabBackground(canvas, true /* active */, active_tab_fill_id,
-                         active_tab_y_inset, nullptr /* clip */);
-      canvas->Restore();
-    }
-  }
-}
-
-void Tab::PaintInactiveTabBackground(gfx::Canvas* canvas,
-                                     const gfx::Path& clip) {
-  bool has_custom_image;
-  int fill_id = controller_->GetBackgroundResourceId(&has_custom_image);
-  if (!has_custom_image)
-    fill_id = 0;
-
-  PaintTabBackground(canvas, false /* active */, fill_id, 0,
-                     controller_->MaySetClip() ? &clip : nullptr);
-}
-
-void Tab::PaintTabBackground(gfx::Canvas* canvas,
-                             bool active,
-                             int fill_id,
-                             int y_inset,
-                             const gfx::Path* clip) {
-  // |y_inset| is only set when |fill_id| is being used.
-  DCHECK(!y_inset || fill_id);
-
-  const SkColor active_color = controller_->GetTabBackgroundColor(TAB_ACTIVE);
-  const SkColor inactive_color =
-      GetThemeProvider()->GetDisplayProperty(
-          ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR)
-          ? controller_->GetTabBackgroundColor(TAB_INACTIVE)
-          : SK_ColorTRANSPARENT;
-  const SkColor stroke_color = controller_->GetToolbarTopSeparatorColor();
-  const bool paint_hover_effect = !active && hover_controller_.ShouldDraw();
-  const float scale = canvas->image_scale();
-  const float stroke_thickness = GetStrokeThickness(active);
-  const float bottom_offset = GetBottomStrokeThickness(active);
-  const auto paint_fill = [&](gfx::Canvas* canvas) {
-    // When there's a border, we want the stroke to cover up the edge of the
-    // fill path (https://crbug.com/873003), so set the fill path halfway
-    // between the inner path and the border paths.  When there's no stroke,
-    // |stroke_thickness| is 0 and the fill, inner, and stroke paths are all
-    // identical.
-    gfx::Path fill_path =
-        GetInteriorPath(scale, stroke_thickness / 2, bottom_offset, bounds());
-    PaintTabBackgroundFill(canvas, fill_path, active, paint_hover_effect,
-                           active_color, inactive_color, fill_id, y_inset);
-  };
-  const auto paint_stroke = [&](gfx::Canvas* canvas) {
-    gfx::Path interior_path =
-        GetInteriorPath(scale, stroke_thickness, bottom_offset, bounds());
-    gfx::Path outer_path = GetBorderPath(scale, stroke_thickness, bottom_offset,
-                                         false, false, bounds());
-    PaintTabBackgroundStroke(canvas, interior_path, outer_path, active,
-                             stroke_color);
+  // Wrapping in closure to only compute offset when needed (animate or hover).
+  const auto offset = [=] {
+    constexpr float kSelectedTabThrobScale = 0.95f - kSelectedTabOpacity;
+    const float opacity = GetHoverOpacity();
+    return is_selected ? (kSelectedTabThrobScale * opacity) : opacity;
   };
 
-  // If there is a |fill_id| we don't try to cache. This could be improved
-  // but would require knowing then the image from the ThemeProvider had been
-  // changed, and invalidating when the tab's x-coordinate or background_offset_
-  // changed.
-  //
-  // If |paint_hover_effect|, we don't try to cache since hover effects change
-  // on every invalidation and we would need to invalidate the cache based on
-  // the hover states.
-  //
-  // Finally, we don't cache for non-integral scale factors, since tabs draw
-  // with slightly different offsets so as to pixel-align the layout rect (see
-  // ScaleAndAlignBounds()).
-  if (fill_id || paint_hover_effect || (std::trunc(scale) != scale)) {
-    paint_fill(canvas);
-    if (stroke_thickness > 0) {
-      gfx::ScopedCanvas scoped_canvas(clip ? canvas : nullptr);
-      if (clip)
-        canvas->sk_canvas()->clipPath(*clip, SkClipOp::kDifference, true);
-      paint_stroke(canvas);
-    }
-  } else {
-    BackgroundCache& cache =
-        active ? background_active_cache_ : background_inactive_cache_;
-    if (!cache.CacheKeyMatches(scale, size(), active_color, inactive_color,
-                               stroke_color, stroke_thickness)) {
-      cc::PaintRecorder recorder;
-      {
-        gfx::Canvas cache_canvas(
-            recorder.beginRecording(size().width(), size().height()), scale);
-        paint_fill(&cache_canvas);
-        cache.fill_record = recorder.finishRecordingAsPicture();
-      }
-      if (stroke_thickness > 0) {
-        gfx::Canvas cache_canvas(
-            recorder.beginRecording(size().width(), size().height()), scale);
-        paint_stroke(&cache_canvas);
-        cache.stroke_record = recorder.finishRecordingAsPicture();
-      }
+  if (pulse_animation_.is_animating())
+    val += pulse_animation_.GetCurrentValue() * offset();
+  else if (hover_controller_.ShouldDraw())
+    val += hover_controller_.GetAnimationValue() * offset();
 
-      cache.SetCacheKey(scale, size(), active_color, inactive_color,
-                        stroke_color, stroke_thickness);
-    }
-
-    canvas->sk_canvas()->drawPicture(cache.fill_record);
-    if (stroke_thickness > 0) {
-      gfx::ScopedCanvas scoped_canvas(clip ? canvas : nullptr);
-      if (clip)
-        canvas->sk_canvas()->clipPath(*clip, SkClipOp::kDifference, true);
-      canvas->sk_canvas()->drawPicture(cache.stroke_record);
-    }
-  }
-
-  PaintSeparators(canvas);
-}
-
-void Tab::PaintTabBackgroundFill(gfx::Canvas* canvas,
-                                 const gfx::Path& fill_path,
-                                 bool active,
-                                 bool paint_hover_effect,
-                                 SkColor active_color,
-                                 SkColor inactive_color,
-                                 int fill_id,
-                                 int y_inset) {
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  const float scale = canvas->UndoDeviceScaleFactor();
-
-  canvas->ClipPath(fill_path, true);
-
-  // In the active case, always fill the tab with its bg color first in case the
-  // image is transparent. In the inactive case, the image is guaranteed to be
-  // opaque, so it's only necessary to fill the color when there's no image.
-  if (active || !fill_id) {
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(active ? active_color : inactive_color);
-    canvas->DrawRect(gfx::ScaleToEnclosingRect(GetLocalBounds(), scale), flags);
-  }
-
-  if (fill_id) {
-    gfx::ScopedCanvas scale_scoper(canvas);
-    canvas->sk_canvas()->scale(scale, scale);
-    canvas->TileImageInt(*GetThemeProvider()->GetImageSkiaNamed(fill_id),
-                         GetMirroredX() + background_offset_, 0, 0, y_inset,
-                         width(), height());
-  }
-
-  if (paint_hover_effect) {
-    SkPoint hover_location(gfx::PointToSkPoint(hover_controller_.location()));
-    hover_location.scale(SkFloatToScalar(scale));
-    const SkScalar kMinHoverRadius = 16;
-    const SkScalar radius =
-        std::max(SkFloatToScalar(width() / 4.f), kMinHoverRadius);
-    DrawHighlight(canvas, hover_location, radius * scale,
-                  SkColorSetA(active_color, hover_controller_.GetAlpha()));
-  }
-}
-
-void Tab::PaintTabBackgroundStroke(gfx::Canvas* canvas,
-                                   const gfx::Path& fill_path,
-                                   const gfx::Path& stroke_path,
-                                   bool active,
-                                   SkColor color) {
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  const float scale = canvas->UndoDeviceScaleFactor();
-
-  if (!active) {
-    // Clip out the bottom line; this will be drawn for us by
-    // TabStrip::PaintChildren().
-    canvas->ClipRect(gfx::RectF(width() * scale, height() * scale - 1));
-  }
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(color);
-  SkPath path;
-  Op(stroke_path, fill_path, kDifference_SkPathOp, &path);
-  canvas->DrawPath(path, flags);
-}
-
-void Tab::PaintSeparators(gfx::Canvas* canvas) {
-  const auto separator_opacities = GetSeparatorOpacities(false);
-  if (!separator_opacities.left && !separator_opacities.right)
-    return;
-
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  const float scale = canvas->UndoDeviceScaleFactor();
-
-  const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(bounds(), scale, GetStrokeThickness());
-  const int corner_radius = GetCornerRadius();
-  const float separator_height = GetTabSeparatorHeight() * scale;
-  gfx::RectF leading_separator_bounds(
-      aligned_bounds.x() + corner_radius * scale,
-      aligned_bounds.y() + (aligned_bounds.height() - separator_height) / 2,
-      kSeparatorThickness * scale, separator_height);
-  gfx::RectF trailing_separator_bounds = leading_separator_bounds;
-  trailing_separator_bounds.set_x(
-      aligned_bounds.right() - (corner_radius + kSeparatorThickness) * scale);
-
-  gfx::PointF origin(bounds().origin());
-  origin.Scale(scale);
-  leading_separator_bounds.Offset(-origin.x(), -origin.y());
-  trailing_separator_bounds.Offset(-origin.x(), -origin.y());
-
-  const SkColor separator_base_color = controller_->GetTabSeparatorColor();
-  const auto separator_color = [separator_base_color](float opacity) {
-    return SkColorSetA(separator_base_color,
-                       gfx::Tween::IntValueBetween(opacity, SK_AlphaTRANSPARENT,
-                                                   SK_AlphaOPAQUE));
-  };
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(separator_color(separator_opacities.left));
-  canvas->DrawRect(leading_separator_bounds, flags);
-  flags.setColor(separator_color(separator_opacities.right));
-  canvas->DrawRect(trailing_separator_bounds, flags);
+  return val;
 }
 
 void Tab::UpdateIconVisibility() {
@@ -1344,7 +854,7 @@ void Tab::UpdateIconVisibility() {
   // This prevents the icon and text from sliding left at the end of closing
   // a non-narrow tab.
   if (!closing_) {
-    center_favicon_ = false;
+    center_icon_ = false;
     extra_padding_before_content_ = false;
   }
 
@@ -1356,8 +866,8 @@ void Tab::UpdateIconVisibility() {
 
   const bool has_favicon = data().show_icon;
   const bool has_alert_icon =
-      (alert_indicator_button_ ? alert_indicator_button_->showing_alert_state()
-                               : data().alert_state) != TabAlertState::NONE;
+      (alert_indicator_ ? alert_indicator_->showing_alert_state()
+                        : data().alert_state) != TabAlertState::NONE;
 
   if (data().pinned) {
     // When the tab is pinned, we can show one of the two icons; the alert icon
@@ -1370,20 +880,18 @@ void Tab::UpdateIconVisibility() {
 
   int available_width = GetContentsBounds().width();
 
-  const bool is_touch_optimized = MD::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = MD::touch_ui();
   const int favicon_width = gfx::kFaviconSize;
-  const int alert_icon_width =
-      alert_indicator_button_->GetPreferredSize().width();
+  const int alert_icon_width = alert_indicator_->GetPreferredSize().width();
   // In case of touch optimized UI, the close button has an extra padding on the
   // left that needs to be considered.
   const int close_button_width =
       close_button_->GetPreferredSize().width() -
-      (is_touch_optimized ? close_button_->GetInsets().right()
-                          : close_button_->GetInsets().width());
+      (touch_ui ? close_button_->GetInsets().right()
+                : close_button_->GetInsets().width());
   const bool large_enough_for_close_button =
-      available_width >= (is_touch_optimized
-                              ? kTouchableMinimumContentsWidthForCloseButtons
-                              : kMinimumContentsWidthForCloseButtons);
+      available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
+                                   : kMinimumContentsWidthForCloseButtons);
 
   showing_close_button_ = !controller_->ShouldHideCloseButtonForTab(this);
   if (IsActive()) {
@@ -1417,15 +925,16 @@ void Tab::UpdateIconVisibility() {
     if (showing_close_button_ || show_on_hover)
       available_width -= close_button_width;
 
-    // If no other controls are visible, show favicon even though we
-    // don't have enough space. We'll clip the favicon in PaintChildren().
-    if (!showing_close_button_ && !showing_alert_indicator_ && !showing_icon_ &&
-        has_favicon) {
-      showing_icon_ = true;
+    // If no other controls are visible, show the alert icon or the favicon
+    // even though we don't have enough space. We'll clip the icon in
+    // PaintChildren().
+    if (!showing_close_button_ && !showing_alert_indicator_ && !showing_icon_) {
+      showing_alert_indicator_ = has_alert_icon;
+      showing_icon_ = !showing_alert_indicator_ && has_favicon;
 
       // See comments near top of function on why this conditional is here.
       if (!closing_)
-        center_favicon_ = true;
+        center_icon_ = true;
     }
   }
 
@@ -1445,120 +954,19 @@ void Tab::UpdateIconVisibility() {
 }
 
 bool Tab::ShouldRenderAsNormalTab() const {
-  return !data().pinned ||
-      (width() >= (GetPinnedWidth() + kPinnedTabExtraWidthToRenderAsNormal));
-}
-
-Tab::SeparatorOpacities Tab::GetSeparatorOpacities(bool for_layout) const {
-  // Something should visually separate tabs from each other and any adjacent
-  // new tab button.  Normally, active and hovered tabs draw distinct shapes
-  // (via different background colors) and thus need no separators, while
-  // background tabs need separators between them.  In single-tab mode, the
-  // active tab has no visible shape and thus needs separators on any side with
-  // an adjacent new tab button.  (The other sides will be faded out below.)
-  float leading_opacity, trailing_opacity;
-  if (controller_->SingleTabMode()) {
-    leading_opacity = trailing_opacity = 1.f;
-  } else if (IsActive()) {
-    leading_opacity = trailing_opacity = 0;
-  } else {
-    // Fade out the trailing separator while this tab or the subsequent tab is
-    // hovered.  If the subsequent tab is active, don't consider its hover
-    // animation value, lest the trailing separator on this tab disappear while
-    // the subsequent tab is being dragged.
-    const float hover_value = hover_controller_.GetAnimationValue();
-    const Tab* subsequent_tab = controller_->GetAdjacentTab(this, 1);
-    const float subsequent_hover =
-        !for_layout && subsequent_tab && !subsequent_tab->IsActive()
-            ? float{subsequent_tab->hover_controller_.GetAnimationValue()}
-            : 0;
-    trailing_opacity = 1.f - std::max(hover_value, subsequent_hover);
-
-    // The leading separator need not consider the previous tab's hover value,
-    // since if there is a previous tab that's hovered and not being dragged, it
-    // will draw atop this tab.
-    leading_opacity = 1.f - hover_value;
-
-    const Tab* previous_tab = controller_->GetAdjacentTab(this, -1);
-    if (IsSelected()) {
-      // Since this tab is selected, its shape will be visible against adjacent
-      // unselected tabs, so remove the separator in those cases.
-      if (previous_tab && !previous_tab->IsSelected())
-        leading_opacity = 0;
-      if (subsequent_tab && !subsequent_tab->IsSelected())
-        trailing_opacity = 0;
-    } else if (controller_->HasVisibleBackgroundTabShapes()) {
-      // Since this tab is unselected, adjacent selected tabs will normally
-      // paint atop it, covering the separator.  But if the user drags those
-      // selected tabs away, the exposed region looks like the window frame; and
-      // since background tab shapes are visible, there should be no separator.
-      // TODO(pkasting): https://crbug.com/876599  When a tab is animating into
-      // this gap, we should adjust its separator opacities as well.
-      if (previous_tab && previous_tab->IsSelected())
-        leading_opacity = 0;
-      if (subsequent_tab && subsequent_tab->IsSelected())
-        trailing_opacity = 0;
-    }
-  }
-
-  // For the first or last tab in the strip, fade the leading or trailing
-  // separator based on the NTB position and how close to the target bounds this
-  // tab is.  In the steady state, this hides separators on the opposite end of
-  // the strip from the NTB; it fades out the separators as tabs animate into
-  // these positions, after they pass by the other tabs; and it snaps the
-  // separators to full visibility immediately when animating away from these
-  // positions, which seems desirable.
-  const NewTabButtonPosition ntb_position =
-      controller_->GetNewTabButtonPosition();
-  const gfx::Rect target_bounds =
-      controller_->GetTabAnimationTargetBounds(this);
-  const int tab_width = std::max(width(), target_bounds.width());
-  const float target_opacity =
-      float{std::min(std::abs(x() - target_bounds.x()), tab_width)} / tab_width;
-  // If the tab shapes are visible, never draw end separators.
-  const bool always_hide_separators_on_ends =
-      controller_->HasVisibleBackgroundTabShapes();
-  if (controller_->IsFirstVisibleTab(this) &&
-      (ntb_position != LEADING || always_hide_separators_on_ends))
-    leading_opacity = target_opacity;
-  if (controller_->IsLastVisibleTab(this) &&
-      (ntb_position != AFTER_TABS || always_hide_separators_on_ends))
-    trailing_opacity = target_opacity;
-
-  // Return the opacities in physical order, rather than logical.
-  if (base::i18n::IsRTL())
-    std::swap(leading_opacity, trailing_opacity);
-  return {leading_opacity, trailing_opacity};
+  return !data().pinned || (width() >= (TabStyle::GetPinnedWidth() +
+                                        kPinnedTabExtraWidthToRenderAsNormal));
 }
 
 float Tab::GetHoverOpacity() const {
   // Opacity boost varies on tab width.  The interpolation is nonlinear so
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
-  const float range_start = float{GetStandardWidth()};
-  const float range_end = float{GetMinimumInactiveWidth()};
+  const float range_start = float{TabStyle::GetStandardWidth()};
+  const float range_end = float{TabStyle::GetMinimumInactiveWidth()};
   const float value_in_range = float{width()};
   const float t = (value_in_range - range_start) / (range_end - range_start);
   return controller_->GetHoverOpacityForTab(t * t);
-}
-
-float Tab::GetThrobValue() const {
-  const bool is_selected = IsSelected();
-  double val = is_selected ? kSelectedTabOpacity : 0;
-
-  // Wrapping in closure to only compute offset when needed (animate or hover).
-  const auto offset = [=] {
-    constexpr float kSelectedTabThrobScale = 0.95f - kSelectedTabOpacity;
-    const float opacity = GetHoverOpacity();
-    return is_selected ? (kSelectedTabThrobScale * opacity) : opacity;
-  };
-
-  if (pulse_animation_.is_animating())
-    val += pulse_animation_.GetCurrentValue() * offset();
-  else if (hover_controller_.ShouldDraw())
-    val += hover_controller_.GetAnimationValue() * offset();
-
-  return val;
 }
 
 void Tab::UpdateTabIconNeedsAttentionBlocked() {
@@ -1647,9 +1055,6 @@ void Tab::UpdateForegroundColors() {
 
   if (button_color_ != generated_icon_color) {
     button_color_ = generated_icon_color;
-    alert_indicator_button_->OnParentTabButtonColorChanged();
+    alert_indicator_->OnParentTabButtonColorChanged();
   }
 }
-
-Tab::BackgroundCache::BackgroundCache() = default;
-Tab::BackgroundCache::~BackgroundCache() = default;

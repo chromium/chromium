@@ -16,7 +16,6 @@ thakis@chromium.org
 
 # For Site Isolation FYI tests:
 per-file chromium.fyi.json=creis@chromium.org
-per-file chromium.fyi.json=nick@chromium.org
 
 per-file chromium.clang.json=hans@chromium.org
 per-file *chromium.perf*.json=dtu@chromium.org

@@ -1,4 +1,4 @@
 This page contains the following errors:
 error on line 14 at column 1: Extra content at the end of the document
-Below is a rendering of the page up to the first error.
 
+Below is a rendering of the page up to the first error.

@@ -18,6 +18,7 @@ group("closure_compile") {
     "cr_link_row:closure_compile",
     "cr_profile_avatar_selector:closure_compile",
     "cr_radio_button:closure_compile",
+    "cr_radio_group:closure_compile",
     "cr_searchable_drop_down:closure_compile",
     "cr_slider:closure_compile",
     "cr_toast:closure_compile",

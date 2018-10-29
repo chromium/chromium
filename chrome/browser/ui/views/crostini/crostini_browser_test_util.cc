@@ -4,29 +4,32 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_browser_test_util.h"
 
+#include <utility>
+
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_image_loader_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-// ChromeBrowserMainExtraParts used to install a MockNetworkChangeNotifier.
-class ChromeBrowserMainExtraPartsNetFactoryInstaller
+// ChromeBrowserMainExtraParts used to install a MockNetworkChangeNotifier and
+// FakeCrOSComponentManager.
+class CrostiniBrowserTestChromeBrowserMainExtraParts
     : public ChromeBrowserMainExtraParts {
  public:
-  ChromeBrowserMainExtraPartsNetFactoryInstaller() = default;
-  ~ChromeBrowserMainExtraPartsNetFactoryInstaller() override {
+  explicit CrostiniBrowserTestChromeBrowserMainExtraParts(bool register_termina)
+      : register_termina_(register_termina) {}
+
+  ~CrostiniBrowserTestChromeBrowserMainExtraParts() override {
     // |network_change_notifier_| needs to be destroyed before |net_installer_|.
     network_change_notifier_.reset();
   }
@@ -35,8 +38,34 @@ class ChromeBrowserMainExtraPartsNetFactoryInstaller
     return network_change_notifier_.get();
   }
 
+  component_updater::FakeCrOSComponentManager* cros_component_manager() {
+    return cros_component_manager_ptr_;
+  }
+
   // ChromeBrowserMainExtraParts:
-  void PreEarlyInitialization() override {}
+  void PostEarlyInitialization() override {
+    auto cros_component_manager =
+        std::make_unique<component_updater::FakeCrOSComponentManager>();
+    cros_component_manager->set_supported_components(
+        {imageloader::kTerminaComponentName});
+
+    if (register_termina_) {
+      cros_component_manager->set_registered_components(
+          {imageloader::kTerminaComponentName});
+      cros_component_manager->ResetComponentState(
+          imageloader::kTerminaComponentName,
+          component_updater::FakeCrOSComponentManager::ComponentInfo(
+              component_updater::CrOSComponentManager::Error::NONE,
+              base::FilePath("/dev/null"), base::FilePath("/dev/null")));
+    }
+    cros_component_manager_ptr_ = cros_component_manager.get();
+
+    browser_process_platform_part_test_api_ =
+        std::make_unique<BrowserProcessPlatformPartTestApi>(
+            g_browser_process->platform_part());
+    browser_process_platform_part_test_api_->InitializeCrosComponentManager(
+        std::move(cros_component_manager));
+  }
   void PostMainMessageLoopStart() override {
     ASSERT_TRUE(net::NetworkChangeNotifier::HasNetworkChangeNotifier());
     net_installer_ =
@@ -46,57 +75,49 @@ class ChromeBrowserMainExtraPartsNetFactoryInstaller
     network_change_notifier_->SetConnectionType(
         net::NetworkChangeNotifier::CONNECTION_WIFI);
   }
+  void PostMainMessageLoopRun() override {
+    cros_component_manager_ptr_ = nullptr;
+    browser_process_platform_part_test_api_->ShutdownCrosComponentManager();
+    browser_process_platform_part_test_api_.reset();
+  }
 
  private:
+  const bool register_termina_;
+
+  std::unique_ptr<BrowserProcessPlatformPartTestApi>
+      browser_process_platform_part_test_api_;
+  component_updater::FakeCrOSComponentManager* cros_component_manager_ptr_ =
+      nullptr;
+
   std::unique_ptr<net::test::MockNetworkChangeNotifier>
       network_change_notifier_;
   std::unique_ptr<net::NetworkChangeNotifier::DisableForTest> net_installer_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsNetFactoryInstaller);
+  DISALLOW_COPY_AND_ASSIGN(CrostiniBrowserTestChromeBrowserMainExtraParts);
 };
 
-CrostiniDialogBrowserTest::CrostiniDialogBrowserTest()
-    : dir_component_user_override_(component_updater::DIR_COMPONENT_USER) {
-  auto image_loader_client =
-      std::make_unique<chromeos::FakeImageLoaderClient>();
-  image_loader_client_ = image_loader_client.get();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetImageLoaderClient(
-      std::move(image_loader_client));
-}
+CrostiniDialogBrowserTest::CrostiniDialogBrowserTest(bool register_termina)
+    : register_termina_(register_termina) {}
+
+CrostiniDialogBrowserTest::~CrostiniDialogBrowserTest() = default;
 
 void CrostiniDialogBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
   ChromeBrowserMainParts* chrome_browser_main_parts =
       static_cast<ChromeBrowserMainParts*>(browser_main_parts);
-  extra_parts_ = new ChromeBrowserMainExtraPartsNetFactoryInstaller();
+  extra_parts_ =
+      new CrostiniBrowserTestChromeBrowserMainExtraParts(register_termina_);
   chrome_browser_main_parts->AddParts(extra_parts_);
 }
 
 void CrostiniDialogBrowserTest::SetUp() {
-  base::FilePath component_user_dir;
-  ASSERT_TRUE(base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                                     &component_user_dir));
-  ASSERT_TRUE(cros_termina_resources_.Set(
-      component_user_dir.Append("cros-components")
-          .Append(imageloader::kTerminaComponentName)));
-
-  image_loader_client_->SetMountPathForComponent(
-      imageloader::kTerminaComponentName, cros_termina_resources_.GetPath());
-
-  SetCrostiniUIAllowedForTesting(true);
+  crostini::SetCrostiniUIAllowedForTesting(true);
   DialogBrowserTest::SetUp();
 }
 
 void CrostiniDialogBrowserTest::SetUpOnMainThread() {
   browser()->profile()->GetPrefs()->SetBoolean(
       crostini::prefs::kCrostiniEnabled, true);
-  auto* cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
-  cros_component_manager->RegisterCompatiblePath(
-      imageloader::kTerminaComponentName, cros_termina_resources_.GetPath());
-  image_loader_client_->RegisterComponent(
-      imageloader::kTerminaComponentName, "1.1",
-      cros_termina_resources_.GetPath().value(), base::DoNothing());
 }
 
 void CrostiniDialogBrowserTest::SetConnectionType(
@@ -105,8 +126,9 @@ void CrostiniDialogBrowserTest::SetConnectionType(
 }
 
 void CrostiniDialogBrowserTest::UnregisterTermina() {
-  auto* cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
-  cros_component_manager->UnregisterCompatiblePath(
-      imageloader::kTerminaComponentName);
+  extra_parts_->cros_component_manager()->ResetComponentState(
+      imageloader::kTerminaComponentName,
+      component_updater::FakeCrOSComponentManager::ComponentInfo(
+          component_updater::CrOSComponentManager::Error::INSTALL_FAILURE,
+          base::FilePath(), base::FilePath()));
 }

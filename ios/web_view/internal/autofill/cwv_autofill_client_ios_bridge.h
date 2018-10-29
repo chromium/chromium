@@ -21,7 +21,7 @@ class CreditCard;
 
 // Bridge for AutofillClient's method |ConfirmSaveCreditCardLocally|.
 - (void)confirmSaveCreditCardLocally:(const autofill::CreditCard&)creditCard
-                            callback:(const base::RepeatingClosure&)callback;
+                            callback:(base::OnceClosure)callback;
 
 // Bridge for AutofillClient's method |ShowUnmaskPrompt|.
 - (void)
@@ -32,6 +32,9 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 // Bridge for AutofillClient's method |onUnmaskVerificationResult|.
 - (void)didReceiveUnmaskVerificationResult:
     (autofill::AutofillClient::PaymentsRpcResult)result;
+
+// Bridge for AutofillClient's method |LoadRiskData|.
+- (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback;
 
 @end
 

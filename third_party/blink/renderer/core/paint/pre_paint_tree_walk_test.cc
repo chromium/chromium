@@ -414,4 +414,42 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
   EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
 }
 
+TEST_P(PrePaintTreeWalkTest, ClipChangesDoNotCauseVisualRectUpdates) {
+  ScopedPaintTouchActionRectsForTest enable_paint_touch_action_rects(true);
+  SetBodyInnerHTML(R"HTML(
+    <style> #parent { width: 100px; height: 100px; overflow: hidden; } </style>
+    <div id='parent'>
+      <div id='child' style='width: 100px; height: 200px;'>
+      </div>
+    </div>
+  )HTML");
+
+  GetDocument().getElementById("parent")->setAttribute(HTMLNames::styleAttr,
+                                                       "border-radius: 5px");
+
+  GetDocument().View()->UpdateAllLifecyclePhases();
+  auto& parent = *GetLayoutObjectByElementId("parent");
+  auto& child = *GetLayoutObjectByElementId("child");
+
+  // Cause the child to go down the prepaint path but without on its own
+  // requiring a tree builder context.
+  child.SetShouldCheckForPaintInvalidationWithoutGeometryChange();
+
+  EXPECT_EQ(100, parent.FirstFragment().VisualRect().Width());
+  EXPECT_EQ(100, parent.FirstFragment().VisualRect().Height());
+  EXPECT_EQ(100, child.FirstFragment().VisualRect().Width());
+  EXPECT_EQ(200, child.FirstFragment().VisualRect().Height());
+
+  // Cause the child clip to change without changing paint property tree
+  // topology.
+  GetDocument().getElementById("parent")->setAttribute(HTMLNames::styleAttr,
+                                                       "border-radius: 6px");
+
+  GetDocument().View()->UpdateAllLifecyclePhases();
+  EXPECT_EQ(100, parent.FirstFragment().VisualRect().Width());
+  EXPECT_EQ(100, parent.FirstFragment().VisualRect().Height());
+  EXPECT_EQ(100, child.FirstFragment().VisualRect().Width());
+  EXPECT_EQ(200, child.FirstFragment().VisualRect().Height());
+}
+
 }  // namespace blink

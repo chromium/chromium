@@ -719,7 +719,7 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
 
   // Copy triggers and views directly to sqlite_master.  Any tables they refer
   // to should already exist.
-  static char kCreateMetaItemsSql[] =
+  static const char kCreateMetaItemsSql[] =
       "INSERT INTO main.sqlite_master "
       "SELECT type, name, tbl_name, rootpage, sql "
       "FROM corrupt.sqlite_master WHERE type='view' OR type='trigger'";

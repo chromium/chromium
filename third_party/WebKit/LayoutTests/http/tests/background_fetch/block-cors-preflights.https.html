@@ -30,22 +30,4 @@ backgroundFetchTest((t, bgFetch) => {
   }));
 }, 'same-origin fetches should register ok');
 
-backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(
-      t, new TypeError(),
-      bgFetch.fetch(uniqueTag(), new Request('https://example.com', {
-        method: 'PUT',
-        headers: {'Content-Type': 'text/plain'}
-      })));
-}, 'PUT method is not whitelisted, so should reject due to CORS preflight');
-
-backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(
-      t, new TypeError(),
-      bgFetch.fetch(uniqueTag(), new Request('https://example.com', {
-        method: 'POST',
-        headers: {'Content-Type': 'text/json'}
-      })));
-}, 'text/json is not whitelisted, so should reject due to CORS preflight');
-
 </script>

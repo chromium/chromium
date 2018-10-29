@@ -29,7 +29,7 @@ class Profile;
 namespace crostini {
 
 // Result types for CrostiniManager::StartTerminaVmCallback etc.
-enum class ConciergeClientResult {
+enum class CrostiniResult {
   SUCCESS,
   DBUS_ERROR,
   UNPARSEABLE_RESPONSE,
@@ -40,6 +40,9 @@ enum class ConciergeClientResult {
   LIST_VM_DISKS_FAILED,
   CLIENT_ERROR,
   DISK_TYPE_ERROR,
+  CONTAINER_DOWNLOAD_TIMED_OUT,
+  CONTAINER_CREATE_CANCELLED,
+  CONTAINER_CREATE_FAILED,
   CONTAINER_START_FAILED,
   LAUNCH_CONTAINER_APPLICATION_FAILED,
   INSTALL_LINUX_PACKAGE_FAILED,
@@ -71,6 +74,22 @@ struct Icon {
   std::string content;
 };
 
+struct LinuxPackageInfo {
+  LinuxPackageInfo();
+  ~LinuxPackageInfo();
+
+  bool success;
+
+  // A textual reason for the failure, only set when success is false.
+  std::string failure_reason;
+
+  // The remaining fields are only set when success is true.
+  std::string name;
+  std::string version;
+  std::string summary;
+  std::string description;
+};
+
 class InstallLinuxPackageProgressObserver {
  public:
   // A successfully started package install will continually fire progress
@@ -96,10 +115,9 @@ class CrostiniManager : public KeyedService,
                         public chromeos::ConciergeClient::Observer,
                         public chromeos::CiceroneClient::Observer {
  public:
-  using ConciergeClientCallback =
-      base::OnceCallback<void(ConciergeClientResult result)>;
+  using CrostiniResultCallback =
+      base::OnceCallback<void(CrostiniResult result)>;
   using BoolCallback = base::OnceCallback<void(bool)>;
-  using CrostiniResultCallback = ConciergeClientCallback;
 
   // The type of the callback for CrostiniManager::StartConcierge.
   using StartConciergeCallback = BoolCallback;
@@ -109,14 +127,13 @@ class CrostiniManager : public KeyedService,
   using StartTerminaVmCallback = CrostiniResultCallback;
   // The type of the callback for CrostiniManager::CreateDiskImage.
   using CreateDiskImageCallback =
-      base::OnceCallback<void(ConciergeClientResult result,
+      base::OnceCallback<void(CrostiniResult result,
                               const base::FilePath& disk_path)>;
   // The type of the callback for CrostiniManager::DestroyDiskImage.
   using DestroyDiskImageCallback = CrostiniResultCallback;
   // The type of the callback for CrostiniManager::ListVmDisks.
   using ListVmDisksCallback =
-      base::OnceCallback<void(ConciergeClientResult result,
-                              int64_t total_size)>;
+      base::OnceCallback<void(CrostiniResult result, int64_t total_size)>;
   // The type of the callback for CrostiniManager::StopVm.
   using StopVmCallback = CrostiniResultCallback;
   // The type of the callback for CrostiniManager::StartContainer.
@@ -127,17 +144,20 @@ class CrostiniManager : public KeyedService,
   using LaunchContainerApplicationCallback = CrostiniResultCallback;
   // The type of the callback for CrostiniManager::GetContainerAppIcons.
   using GetContainerAppIconsCallback =
-      base::OnceCallback<void(ConciergeClientResult result,
+      base::OnceCallback<void(CrostiniResult result,
                               const std::vector<Icon>& icons)>;
+  // The type of the callback for CrostiniManager::GetLinuxPackageInfo.
+  using GetLinuxPackageInfoCallback =
+      base::OnceCallback<void(const LinuxPackageInfo&)>;
   // The type of the callback for CrostiniManager::InstallLinuxPackage.
   // |failure_reason| is returned from the container upon failure
   // (INSTALL_LINUX_PACKAGE_FAILED), and not necessarily localized.
   using InstallLinuxPackageCallback =
-      base::OnceCallback<void(ConciergeClientResult result,
+      base::OnceCallback<void(CrostiniResult result,
                               const std::string& failure_reason)>;
   // The type of the callback for CrostiniManager::GetContainerSshKeys.
   using GetContainerSshKeysCallback =
-      base::OnceCallback<void(ConciergeClientResult result,
+      base::OnceCallback<void(CrostiniResult result,
                               const std::string& container_public_key,
                               const std::string& host_private_key,
                               const std::string& hostname)>;
@@ -150,14 +170,15 @@ class CrostiniManager : public KeyedService,
   class RestartObserver {
    public:
     virtual ~RestartObserver() {}
-    virtual void OnComponentLoaded(ConciergeClientResult result) = 0;
-    virtual void OnConciergeStarted(ConciergeClientResult result) = 0;
-    virtual void OnDiskImageCreated(ConciergeClientResult result) = 0;
-    virtual void OnVmStarted(ConciergeClientResult result) = 0;
+    virtual void OnComponentLoaded(CrostiniResult result) = 0;
+    virtual void OnConciergeStarted(CrostiniResult result) = 0;
+    virtual void OnDiskImageCreated(CrostiniResult result) = 0;
+    virtual void OnVmStarted(CrostiniResult result) = 0;
     virtual void OnContainerDownloading(int32_t download_percent) = 0;
-    virtual void OnContainerCreated(ConciergeClientResult result) = 0;
-    virtual void OnContainerStarted(ConciergeClientResult result) = 0;
-    virtual void OnSshKeysFetched(ConciergeClientResult result) = 0;
+    virtual void OnContainerCreated(CrostiniResult result) = 0;
+    virtual void OnContainerStarted(CrostiniResult result) = 0;
+    virtual void OnContainerSetup(CrostiniResult result) = 0;
+    virtual void OnSshKeysFetched(CrostiniResult result) = 0;
   };
 
   static CrostiniManager* GetForProfile(Profile* profile);
@@ -165,8 +186,11 @@ class CrostiniManager : public KeyedService,
   explicit CrostiniManager(Profile* profile);
   ~CrostiniManager() override;
 
-  // Checks if the cros-termina component is installed.
-  bool IsCrosTerminaInstalled() const;
+  // Returns true if the cros-termina component is installed.
+  static bool IsCrosTerminaInstalled();
+
+  // Returns true if the /dev/kvm directory is present.
+  static bool IsDevKvmPresent();
 
   // Generate the URL for Crostini terminal application.
   static GURL GenerateVshInCroshUrl(
@@ -184,6 +208,9 @@ class CrostiniManager : public KeyedService,
   // Installs the current version of cros-termina component. Attempts to apply
   // pending upgrades if a MaybeUpgradeCrostini failed.
   void InstallTerminaComponent(CrostiniResultCallback callback);
+
+  // Unloads and removes the cros-termina component. Returns success/failure.
+  bool UninstallTerminaComponent();
 
   // Starts the Concierge service. |callback| is called after the method call
   // finishes.
@@ -276,6 +303,14 @@ class CrostiniManager : public KeyedService,
                             int scale,
                             GetContainerAppIconsCallback callback);
 
+  // Asynchronously retrieve information about a Linux Package (.deb) inside the
+  // container.
+  void GetLinuxPackageInfo(Profile* profile,
+                           std::string vm_name,
+                           std::string container_name,
+                           std::string package_path,
+                           GetLinuxPackageInfoCallback callback);
+
   // Begin installation of a Linux Package inside the container. If the
   // installation is successfully started, further updates will be sent to
   // added InstallLinuxPackageProgressObservers.
@@ -331,6 +366,9 @@ class CrostiniManager : public KeyedService,
       std::string container_name,
       ShutdownContainerCallback shutdown_callback);
 
+  // Adds a callback to receive uninstall notification.
+  void AddRemoveCrostiniCallback(RemoveCrostiniCallback remove_callback);
+
   // Add/remove observers for package install progress.
   void AddInstallLinuxPackageProgressObserver(
       InstallLinuxPackageProgressObserver* observer);
@@ -368,6 +406,10 @@ class CrostiniManager : public KeyedService,
   void AddRunningVmForTesting(std::string vm_name,
                               vm_tools::concierge::VmInfo vm_info);
   bool IsContainerRunning(std::string vm_name, std::string container_name);
+
+  // If the Crostini reporting policy is set, save the last app launch
+  // time window and the Termina version in prefs for asynchronous reporting.
+  void UpdateLaunchMetricsForEnterpriseReporting();
 
   // Clear the lists of running VMs and containers.
   // Can be called for testing to skip restart.
@@ -413,7 +455,7 @@ class CrostiniManager : public KeyedService,
   // |callback|.
   void OnStartTremplin(std::string vm_name,
                        StartTerminaVmCallback callback,
-                       ConciergeClientResult result);
+                       CrostiniResult result);
 
   // Callback for ConciergeClient::StopVm. Called after the Concierge
   // service method finishes.
@@ -472,6 +514,11 @@ class CrostiniManager : public KeyedService,
       GetContainerAppIconsCallback callback,
       base::Optional<vm_tools::cicerone::ContainerAppIconResponse> reply);
 
+  // Callback for CrostiniManager::GetLinuxPackageInfo.
+  void OnGetLinuxPackageInfo(
+      GetLinuxPackageInfoCallback callback,
+      base::Optional<vm_tools::cicerone::LinuxPackageInfoResponse> reply);
+
   // Callback for CrostiniManager::InstallLinuxPackage.
   void OnInstallLinuxPackage(
       InstallLinuxPackageCallback callback,
@@ -483,9 +530,13 @@ class CrostiniManager : public KeyedService,
       GetContainerSshKeysCallback callback,
       base::Optional<vm_tools::concierge::ContainerSshKeysResponse> reply);
 
+  // Helper for CrostiniManager::MaybeUpgradeCrostini. Makes blocking calls to
+  // check for file paths and registered components.
+  static void CheckPathsAndComponents();
+
   // Helper for CrostiniManager::MaybeUpgradeCrostini. Separated because the
-  // checking registration code may block.
-  void MaybeUpgradeCrostiniAfterTerminaCheck(bool is_registered);
+  // checking component registration code may block.
+  void MaybeUpgradeCrostiniAfterChecks();
 
   // Helper for CrostiniManager::CreateDiskImage. Separated so it can be run
   // off the main thread.
@@ -494,8 +545,10 @@ class CrostiniManager : public KeyedService,
       CreateDiskImageCallback callback,
       int64_t free_disk_size);
 
-  void FinishRestart(CrostiniRestarter* restarter,
-                     ConciergeClientResult result);
+  void FinishRestart(CrostiniRestarter* restarter, CrostiniResult result);
+
+  // Callback for CrostiniManager::RemoveCrostini.
+  void OnRemoveCrostini(CrostiniResult result);
 
   Profile* profile_;
   std::string owner_id_;
@@ -505,8 +558,9 @@ class CrostiniManager : public KeyedService,
       component_manager_load_error_for_testing_ =
           component_updater::CrOSComponentManager::Error::NONE;
 
-  bool is_cros_termina_registered_ = false;
+  static bool is_cros_termina_registered_;
   bool termina_update_check_needed_ = false;
+  static bool is_dev_kvm_present_;
 
   // Pending container started callbacks are keyed by <vm_name, container_name>
   // string pairs.
@@ -534,6 +588,8 @@ class CrostiniManager : public KeyedService,
 
   // Running containers as keyed by vm name.
   std::multimap<std::string, std::string> running_containers_;
+
+  std::vector<RemoveCrostiniCallback> remove_crostini_callbacks_;
 
   base::ObserverList<InstallLinuxPackageProgressObserver>::Unchecked
       install_linux_package_progress_observers_;

@@ -13,7 +13,7 @@ namespace blink {
 
 AudioWorkletProcessor* AudioWorkletProcessor::Create(
     ExecutionContext* context) {
-  AudioWorkletGlobalScope* global_scope = ToAudioWorkletGlobalScope(context);
+  AudioWorkletGlobalScope* global_scope = To<AudioWorkletGlobalScope>(context);
   DCHECK(global_scope);
   DCHECK(global_scope->IsContextThread());
 

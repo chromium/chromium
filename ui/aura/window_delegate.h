@@ -24,10 +24,6 @@ namespace ui {
 class PaintContext;
 }
 
-namespace viz {
-class SurfaceInfo;
-}
-
 namespace aura {
 
 // Delegate interface for aura::Window.
@@ -105,10 +101,6 @@ class AURA_EXPORT WindowDelegate : public ui::EventHandler {
   // Called from Window::HitTest to retrieve hit test mask when HasHitTestMask
   // above returns true.
   virtual void GetHitTestMask(gfx::Path* mask) const = 0;
-
-  // Called when a child submits a CompositorFrame to a surface with the given
-  // |surface_info| for the first time.
-  virtual void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {}
 
   // Returns whether the window wants to receive and handle double tap gesture
   // events. Defaults to false.

@@ -509,7 +509,6 @@ bool BbrSender::UpdateBandwidthAndMinRtt(
     app_limited_since_last_probe_rtt_ = false;
   }
   DCHECK(!min_rtt_.IsZero());
-  DCHECK_GE(min_rtt_, rtt_stats_->min_rtt());
 
   return min_rtt_expired;
 }
@@ -774,11 +773,15 @@ void BbrSender::CalculateCongestionWindow(QuicByteCount bytes_acked,
   // Instead of immediately setting the target CWND as the new one, BBR grows
   // the CWND towards |target_window| by only increasing it |bytes_acked| at a
   // time.
+  const bool add_bytes_acked =
+      !GetQuicReloadableFlag(quic_bbr_no_bytes_acked_in_startup_recovery) ||
+      !InRecovery();
   if (is_at_full_bandwidth_) {
     congestion_window_ =
         std::min(target_window, congestion_window_ + bytes_acked);
-  } else if (congestion_window_ < target_window ||
-             sampler_.total_bytes_acked() < initial_congestion_window_) {
+  } else if (add_bytes_acked &&
+             (congestion_window_ < target_window ||
+              sampler_.total_bytes_acked() < initial_congestion_window_)) {
     // If the connection is not yet out of startup phase, do not decrease the
     // window.
     congestion_window_ = congestion_window_ + bytes_acked;

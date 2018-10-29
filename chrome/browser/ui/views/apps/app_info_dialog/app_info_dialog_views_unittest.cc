@@ -164,8 +164,8 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
  protected:
   views::Widget* widget_ = nullptr;
   AppInfoDialog* dialog_ = nullptr;  // Owned by |widget_|'s views hierarchy.
-  scoped_refptr<extensions::Extension> extension_;
-  scoped_refptr<extensions::Extension> chrome_app_;
+  scoped_refptr<const extensions::Extension> extension_;
+  scoped_refptr<const extensions::Extension> chrome_app_;
   extensions::TestExtensionEnvironment extension_environment_{
       extensions::TestExtensionEnvironment::Type::
           kInheritExistingTaskEnvironment};

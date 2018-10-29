@@ -59,8 +59,7 @@ FakeBluetoothGattDescriptorClient::FakeBluetoothGattDescriptorClient()
     : weak_ptr_factory_(this) {}
 
 FakeBluetoothGattDescriptorClient::~FakeBluetoothGattDescriptorClient() {
-  for (PropertiesMap::iterator iter = properties_.begin();
-       iter != properties_.end(); iter++)
+  for (auto iter = properties_.begin(); iter != properties_.end(); iter++)
     delete iter->second;
 }
 
@@ -99,7 +98,7 @@ void FakeBluetoothGattDescriptorClient::ReadValue(
     const dbus::ObjectPath& object_path,
     const ValueCallback& callback,
     const ErrorCallback& error_callback) {
-  PropertiesMap::iterator iter = properties_.find(object_path);
+  auto iter = properties_.find(object_path);
   if (iter == properties_.end()) {
     error_callback.Run(kUnknownDescriptorError, "");
     return;
@@ -180,7 +179,7 @@ dbus::ObjectPath FakeBluetoothGattDescriptorClient::ExposeDescriptor(
 
 void FakeBluetoothGattDescriptorClient::HideDescriptor(
     const dbus::ObjectPath& descriptor_path) {
-  PropertiesMap::iterator iter = properties_.find(descriptor_path);
+  auto iter = properties_.find(descriptor_path);
   if (iter == properties_.end()) {
     VLOG(1) << "Descriptor not exposed: " << descriptor_path.value();
     return;

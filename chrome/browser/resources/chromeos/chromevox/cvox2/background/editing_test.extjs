@@ -13,12 +13,12 @@ GEN_INCLUDE(['../../testing/mock_feedback.js']);
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function EditingTest() {
+function ChromeVoxEditingTest() {
   ChromeVoxNextE2ETest.call(this);
   window.RoleType = chrome.automation.RoleType;
 }
 
-EditingTest.prototype = {
+ChromeVoxEditingTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /**
@@ -50,7 +50,7 @@ line 3
 </textarea>
 */};
 
-TEST_F('EditingTest', 'Focus', function() {
+TEST_F('ChromeVoxEditingTest', 'Focus', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(doc, function(root) {
     var singleLine = root.find({role: RoleType.TEXT_FIELD,
@@ -73,7 +73,7 @@ TEST_F('EditingTest', 'Focus', function() {
   });
 });
 
-TEST_F('EditingTest', 'Multiline', function() {
+TEST_F('ChromeVoxEditingTest', 'Multiline', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(doc, function(root) {
     var textarea = root.find({role: RoleType.TEXT_FIELD,
@@ -102,7 +102,7 @@ TEST_F('EditingTest', 'Multiline', function() {
   });
 });
 
-TEST_F('EditingTest', 'TextButNoSelectionChange', function() {
+TEST_F('ChromeVoxEditingTest', 'TextButNoSelectionChange', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
     function() {/*!
@@ -137,7 +137,7 @@ TEST_F('EditingTest', 'TextButNoSelectionChange', function() {
     });
 });
 
-TEST_F('EditingTest', 'RichTextMoveByLine', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextMoveByLine', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>
@@ -184,7 +184,7 @@ TEST_F('EditingTest', 'RichTextMoveByLine', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextMoveByCharacter', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacter', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>This <b>is</b> a test.</div>
@@ -254,7 +254,7 @@ TEST_F('EditingTest', 'RichTextMoveByCharacter', function() {
 });
 
 // Tests specifically for cursor workarounds.
-TEST_F('EditingTest', 'RichTextMoveByCharacterNodeWorkaround', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacterNodeWorkaround', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>hello <b>world</b></div>
@@ -295,7 +295,7 @@ TEST_F('EditingTest', 'RichTextMoveByCharacterNodeWorkaround', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextMoveByCharacterEndOfLine', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacterEndOfLine', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>Test</div>
@@ -331,7 +331,7 @@ TEST_F('EditingTest', 'RichTextMoveByCharacterEndOfLine', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextLinkOutput', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextLinkOutput', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>a <a href="#">test</a></div>
@@ -375,7 +375,7 @@ TEST_F('EditingTest', 'RichTextLinkOutput', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextExtendByCharacter', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextExtendByCharacter', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go" role="textbox" contenteditable>Te<br>st</div>
@@ -409,7 +409,7 @@ TEST_F('EditingTest', 'RichTextExtendByCharacter', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextImageByCharacter', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextImageByCharacter', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <p id="go" contenteditable>
@@ -470,13 +470,17 @@ TEST_F('EditingTest', 'RichTextImageByCharacter', function() {
   });
 });
 
-TEST_F('EditingTest', 'RichTextSelectByLine', function() {
+TEST_F('ChromeVoxEditingTest', 'RichTextSelectByLine', function() {
   var mockFeedback = this.createMockFeedback();
+  // Use digit strings like "11111" and "22222" because the character widths
+  // of digits are always the same. This means the test can move down one line
+  // middle of "11111" and reliably hit a given character position in "22222",
+  // regardless of font configuration. https://crbug.com/898213
   this.runWithLoadedTree(function() {/*!
     <p id="go" contenteditable>
-      first line<br>
-      second line<br>
-      third line<br>
+      11111 line<br>
+      22222 line<br>
+      33333 line<br>
     </p>
     <script>
       var commands = [
@@ -513,11 +517,11 @@ TEST_F('EditingTest', 'RichTextSelectByLine', function() {
 
       // By character.
       mockFeedback.call(move)
-          .expectSpeech('f', 'selected')
-          .expectBraille('first line\nmled', {startIndex: 0, endIndex: 1})
+          .expectSpeech('1', 'selected')
+          .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 1})
           .call(move)
-          .expectSpeech('i', 'added to selection')
-          .expectBraille('first line\nmled', {startIndex: 0, endIndex: 2})
+          .expectSpeech('1', 'added to selection')
+          .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 2})
 
           // Forward selection.
 
@@ -526,54 +530,54 @@ TEST_F('EditingTest', 'RichTextSelectByLine', function() {
           // By line (notice the partial selections from the first and second
           // lines).
           .call(move)
-          .expectSpeech('rst line \n se', 'selected')
-          .expectBraille('second line\n', {startIndex: 0, endIndex: 2})
+          .expectSpeech('111 line \n 22', 'selected')
+          .expectBraille('22222 line\n', {startIndex: 0, endIndex: 2})
 
           .call(move)
-          .expectSpeech('cond line \n th', 'selected')
-          .expectBraille('third line\n', {startIndex: 0, endIndex: 2})
+          .expectSpeech('222 line \n 33', 'selected')
+          .expectBraille('33333 line\n', {startIndex: 0, endIndex: 2})
 
           // Shrinking.
           .call(move)
-          .expectSpeech('cond line \n th', 'unselected')
-          .expectBraille('second line\n', {startIndex: 0, endIndex: 2})
+          .expectSpeech('222 line \n 33', 'unselected')
+          .expectBraille('22222 line\n', {startIndex: 0, endIndex: 2})
 
           .call(move)
-          .expectSpeech('fi', 'selected')
-          .expectBraille('first line\nmled', {startIndex: 0, endIndex: 2})
+          .expectSpeech('11', 'selected')
+          .expectBraille('11111 line\nmled', {startIndex: 0, endIndex: 2})
 
           // Document boundary.
           .call(move)
-          .expectSpeech('rst line \n second line \n third line \n \n',
+          .expectSpeech('111 line \n 22222 line \n 33333 line \n \n',
                         'selected')
-          .expectBraille('third line\n', {startIndex: 0, endIndex: 10})
+          .expectBraille('33333 line\n', {startIndex: 0, endIndex: 10})
 
           // The script repositions the caret to the 'n' of the third line.
           .call(move)
-          .expectSpeech('third line')
-          .expectBraille('third line\n', {startIndex: 10, endIndex: 10})
+          .expectSpeech('33333 line')
+          .expectBraille('33333 line\n', {startIndex: 10, endIndex: 10})
           .call(move)
           .expectSpeech('e')
-          .expectBraille('third line\n', {startIndex: 9, endIndex: 9})
+          .expectBraille('33333 line\n', {startIndex: 9, endIndex: 9})
           .call(move)
           .expectSpeech('n')
-          .expectBraille('third line\n', {startIndex: 8, endIndex: 8})
+          .expectBraille('33333 line\n', {startIndex: 8, endIndex: 8})
 
           // Backward selection.
 
           // Growing.
           .call(move)
-          .expectSpeech(' line \n third li', 'selected')
-          .expectBraille('second line\n', {startIndex: 6, endIndex: 12})
+          .expectSpeech('ne \n 33333 li', 'selected')
+          .expectBraille('22222 line\n', {startIndex: 8, endIndex: 11})
 
           .call(move)
-          .expectSpeech('e \n second', 'selected')
-          .expectBraille('first line\n', {startIndex: 9, endIndex: 11})
+          .expectSpeech('ne \n 22222 li', 'selected')
+          .expectBraille('11111 line\n', {startIndex: 8, endIndex: 11})
 
           // Shrinking.
           .call(move)
-          .expectSpeech('e \n second', 'unselected')
-          .expectBraille('second line\n', {startIndex: 6, endIndex: 12})
+          .expectSpeech('ne \n 22222 li', 'unselected')
+          .expectBraille('22222 line\n', {startIndex: 8, endIndex: 11})
 
           .replay();
     });
@@ -581,7 +585,7 @@ TEST_F('EditingTest', 'RichTextSelectByLine', function() {
   });
 });
 
-TEST_F('EditingTest', 'EditableLineOneStaticText', function() {
+TEST_F('ChromeVoxEditingTest', 'EditableLineOneStaticText', function() {
   this.runWithLoadedTree(function() {/*!
     <p contenteditable style="word-spacing:100000px">this is a test</p>
   */}, function(root) {
@@ -633,7 +637,7 @@ TEST_F('EditingTest', 'EditableLineOneStaticText', function() {
   });
 });
 
-TEST_F('EditingTest', 'EditableLineTwoStaticTexts', function() {
+TEST_F('ChromeVoxEditingTest', 'EditableLineTwoStaticTexts', function() {
   this.runWithLoadedTree(function() {/*!
     <p contenteditable>hello <b>world</b></p>
   */}, function(root) {
@@ -686,7 +690,7 @@ TEST_F('EditingTest', 'EditableLineTwoStaticTexts', function() {
   });
 });
 
-TEST_F('EditingTest', 'EditableLineEquality', function() {
+TEST_F('ChromeVoxEditingTest', 'EditableLineEquality', function() {
   this.runWithLoadedTree(function() {/*!
     <div contenteditable role="textbox">
       <p style="word-spacing:100000px">this is a test</p>
@@ -763,7 +767,7 @@ TEST_F('EditingTest', 'EditableLineEquality', function() {
   });
 });
 
-TEST_F('EditingTest', 'EditableLineStrictEquality', function() {
+TEST_F('ChromeVoxEditingTest', 'EditableLineStrictEquality', function() {
   this.runWithLoadedTree(function() {/*!
     <div contenteditable role="textbox">
       <p style="word-spacing:100000px">this is a test</p>
@@ -818,7 +822,7 @@ TEST_F('EditingTest', 'EditableLineStrictEquality', function() {
   });
 });
 
-TEST_F('EditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
+TEST_F('ChromeVoxEditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
   this.runWithLoadedTree(function() {/*!
     <div contenteditable role="textbox">
       <p style="word-spacing:100000px">this is a test</p>
@@ -862,7 +866,7 @@ TEST_F('EditingTest', 'EditableLineBaseLineAnchorOrFocus', function() {
   })
 });
 
-TEST_F('EditingTest', 'IsValidLine', function() {
+TEST_F('ChromeVoxEditingTest', 'IsValidLine', function() {
   this.runWithLoadedTree(function() {/*!
     <div contenteditable role="textbox">
       <p style="word-spacing:100000px">this is a test</p>
@@ -904,7 +908,7 @@ TEST_F('EditingTest', 'IsValidLine', function() {
   })
 });
 
-TEST_F('EditingTest', 'TelTrimsWhitespace', function() {
+TEST_F('ChromeVoxEditingTest', 'TelTrimsWhitespace', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div id="go"></div>
@@ -947,7 +951,7 @@ TEST_F('EditingTest', 'TelTrimsWhitespace', function() {
   });
 });
 
-TEST_F('EditingTest', 'BackwardWordDelete', function() {
+TEST_F('ChromeVoxEditingTest', 'BackwardWordDelete', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div
@@ -978,7 +982,7 @@ TEST_F('EditingTest', 'BackwardWordDelete', function() {
   });
 });
 
-TEST_F('EditingTest', 'BackwardWordDeleteAcrossParagraphs', function() {
+TEST_F('ChromeVoxEditingTest', 'BackwardWordDeleteAcrossParagraphs', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <div

@@ -155,7 +155,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
 
   // Make the video decode callback pending by saving and not firing it.
   void EnterPendingDecodeState() {
-    EXPECT_TRUE(pending_video_decode_cb_.is_null());
+    EXPECT_TRUE(!pending_video_decode_cb_);
     EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(encrypted_buffer_, _))
         .WillOnce(SaveArg<1>(&pending_video_decode_cb_));
 
@@ -165,7 +165,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     // Make sure the Decode() on the decoder triggers a DecryptAndDecode() on
     // the decryptor.
-    EXPECT_FALSE(pending_video_decode_cb_.is_null());
+    EXPECT_FALSE(!pending_video_decode_cb_);
   }
 
   void EnterWaitingForKeyState() {
@@ -179,16 +179,16 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   void AbortPendingVideoDecodeCB() {
-    if (!pending_video_decode_cb_.is_null()) {
-      base::ResetAndReturn(&pending_video_decode_cb_)
+    if (pending_video_decode_cb_) {
+      std::move(pending_video_decode_cb_)
           .Run(Decryptor::kSuccess, scoped_refptr<VideoFrame>(NULL));
     }
   }
 
   void AbortAllPendingCBs() {
-    if (!pending_init_cb_.is_null()) {
-      ASSERT_TRUE(pending_video_decode_cb_.is_null());
-      base::ResetAndReturn(&pending_init_cb_).Run(false);
+    if (pending_init_cb_) {
+      ASSERT_TRUE(!pending_video_decode_cb_);
+      std::move(pending_init_cb_).Run(false);
       return;
     }
 
@@ -343,8 +343,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringPendingDecode) {
   // The video decode callback is returned after the correct decryption key is
   // added.
   key_added_cb_.Run();
-  base::ResetAndReturn(&pending_video_decode_cb_)
-      .Run(Decryptor::kNoKey, null_video_frame_);
+  std::move(pending_video_decode_cb_).Run(Decryptor::kNoKey, null_video_frame_);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -407,7 +406,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecoderInit) {
       .WillOnce(SaveArg<1>(&pending_init_cb_));
 
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
-  EXPECT_FALSE(pending_init_cb_.is_null());
+  EXPECT_FALSE(!pending_init_cb_);
 
   Destroy();
 }

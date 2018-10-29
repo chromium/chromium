@@ -7,9 +7,9 @@
 
 #include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {

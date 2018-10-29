@@ -22,6 +22,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
 
  private:
   // net::NetworkDelegateImpl implementation.
+  void OnBeforeSendHeaders(net::URLRequest* request,
+                           const net::ProxyInfo& proxy_info,
+                           const net::ProxyRetryInfoMap& proxy_retry_info,
+                           net::HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(net::URLRequest* request,
+                               net::CompletionOnceCallback callback,
+                               net::HttpRequestHeaders* headers) override;
   int OnHeadersReceived(
       net::URLRequest* request,
       net::CompletionOnceCallback callback,

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -16,14 +15,15 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/background_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
-#include "third_party/skia/include/core/SkColorSpaceXform.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -193,17 +193,11 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   sk_sp<SkImage> skia_image = image_->PaintImageForCurrentFrame().GetSkImage();
   DCHECK(skia_image);
 
-  // If image is lazy decoded, we can either draw it on a canvas or
-  // call readPixels() to trigger decoding. We expect drawing on a very small
-  // canvas to be faster than readPixels().
+  // If image is lazy decoded, call readPixels() to trigger decoding.
   if (skia_image->isLazyGenerated()) {
-    SkImageInfo info = SkImageInfo::MakeN32(1, 1, skia_image->alphaType());
-    sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
-    if (surface) {
-      SkPaint paint;
-      paint.setBlendMode(SkBlendMode::kSrc);
-      surface->getCanvas()->drawImage(skia_image.get(), 0, 0, &paint);
-    }
+    SkImageInfo info = SkImageInfo::MakeN32Premul(1, 1);
+    uint8_t pixel[info.bytesPerPixel()];
+    skia_image->readPixels(info, pixel, info.minRowBytes(), 0, 0);
   }
 
   // For kHTMLCanvasToBlobCallback and kOffscreenCanvasConvertToBlobPromise
@@ -225,52 +219,39 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   } else {
     sk_sp<SkColorSpace> blob_color_space =
         BlobColorSpaceToSkColorSpace(encode_options_.colorSpace());
-
-    if (!SkColorSpace::Equals(skia_image->colorSpace(),
-                              blob_color_space.get())) {
-      if (!skia_image->colorSpace()) {
-        skia_image->peekPixels(&src_data_);
-        src_data_.setColorSpace(SkColorSpace::MakeSRGB());
-        skia_image = SkImage::MakeFromRaster(src_data_, nullptr, nullptr);
-      }
+    bool needs_color_space_conversion = !ApproximatelyEqualSkColorSpaces(
+        skia_image->refColorSpace(), blob_color_space);
+    if (needs_color_space_conversion && !skia_image->colorSpace()) {
+      skia_image->peekPixels(&src_data_);
+      src_data_.setColorSpace(SkColorSpace::MakeSRGB());
+      skia_image = SkImage::MakeFromRaster(src_data_, nullptr, nullptr);
       DCHECK(skia_image->colorSpace());
-      skia_image = skia_image->makeColorSpace(blob_color_space);
+    }
+
+    SkColorType target_color_type = kN32_SkColorType;
+    if (encode_options_.pixelFormat() == kRGBA16ImagePixelFormatName)
+      target_color_type = kRGBA_F16_SkColorType;
+    // We can do color space and color type conversion together.
+    if (needs_color_space_conversion) {
+      image_ = StaticBitmapImage::Create(skia_image);
+      image_ = image_->ConvertToColorSpace(blob_color_space, target_color_type);
+      skia_image = image_->PaintImageForCurrentFrame().GetSkImage();
+    } else if (skia_image->colorType() != target_color_type) {
+      size_t data_length = skia_image->width() * skia_image->height() *
+                           SkColorTypeBytesPerPixel(target_color_type);
+      png_data_helper_ = SkData::MakeUninitialized(data_length);
+      SkImageInfo info = SkImageInfo::Make(
+          skia_image->width(), skia_image->height(), target_color_type,
+          skia_image->alphaType(), skia_image->refColorSpace());
+      SkPixmap src_data_f16(info, png_data_helper_->writable_data(),
+                            info.minRowBytes());
+      skia_image->readPixels(src_data_f16, 0, 0);
+      skia_image = SkImage::MakeFromRaster(src_data_f16, nullptr, nullptr);
       image_ = StaticBitmapImage::Create(skia_image);
     }
 
     if (skia_image->peekPixels(&src_data_))
       static_bitmap_image_loaded_ = true;
-
-    // If the source image is 8 bit per channel but the blob is requested in
-    // 16 bpc PNG, we need to ensure the color type of the pixmap is
-    // kRGBA_F16_SkColorType to kick in 16 bit encoding in SkPngEncoder. Since
-    // SkPixmap only holds a pointer to data, we need a helper data member here.
-    if (mime_type_ == kMimeTypePng &&
-        encode_options_.pixelFormat() == kRGBA16ImagePixelFormatName &&
-        src_data_.colorType() == kN32_SkColorType) {
-      size_t data_length = src_data_.width() * src_data_.height() *
-                           SkColorTypeBytesPerPixel(kRGBA_F16_SkColorType);
-      png_16bit_data_helper_ = SkData::MakeUninitialized(data_length);
-      SkColorSpaceXform::ColorFormat src_format =
-          SkColorSpaceXform::ColorFormat::kRGBA_8888_ColorFormat;
-      if (kN32_SkColorType == kBGRA_8888_SkColorType)
-        src_format = SkColorSpaceXform::ColorFormat::kBGRA_8888_ColorFormat;
-      if (SkColorSpaceXform::Apply(
-              src_data_.colorSpace(),
-              SkColorSpaceXform::ColorFormat::kRGBA_F16_ColorFormat,
-              png_16bit_data_helper_->writable_data(), src_data_.colorSpace(),
-              src_format, src_data_.addr(),
-              src_data_.width() * src_data_.height(),
-              SkColorSpaceXform::AlphaOp::kPreserve_AlphaOp)) {
-        SkImageInfo info = SkImageInfo::Make(
-            src_data_.width(), src_data_.height(), kRGBA_F16_SkColorType,
-            src_data_.alphaType(), src_data_.info().refColorSpace());
-        src_data_.reset(info, png_16bit_data_helper_->data(),
-                        info.minRowBytes());
-      }
-      skia_image = SkImage::MakeFromRaster(src_data_, nullptr, nullptr);
-      image_ = StaticBitmapImage::Create(skia_image);
-    }
   }
 
   if (static_bitmap_image_loaded_) {
@@ -359,7 +340,7 @@ void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
                         WrapPersistent(this)));
 
     } else {
-      BackgroundScheduler::PostOnBackgroundThread(
+      background_scheduler::PostOnBackgroundThread(
           FROM_HERE,
           CrossThreadBind(&CanvasAsyncBlobCreator::EncodeImageOnEncoderThread,
                           WrapCrossThreadPersistent(this), quality));

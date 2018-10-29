@@ -74,7 +74,7 @@ void FeedNetworkBridge::SendNetworkRequest(
   FeedNetworkingHost::ResponseCallback callback =
       base::BindOnce(&OnResult, ScopedJavaGlobalRef<jobject>(env, j_callback));
   std::vector<uint8_t> request_body;
-  base::android::JavaByteArrayToByteVector(env, j_body.obj(), &request_body);
+  base::android::JavaByteArrayToByteVector(env, j_body, &request_body);
 
   networking_host_->Send(url, ConvertJavaStringToUTF8(env, j_request_type),
                          std::move(request_body), std::move(callback));

@@ -2,9 +2,9 @@ This tests that getData is supported for type text/plain during paste. We select
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Pasted text matched expected text
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 foo

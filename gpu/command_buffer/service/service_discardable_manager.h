@@ -19,6 +19,11 @@ class TextureManager;
 class TextureRef;
 }
 
+GPU_GLES2_EXPORT size_t DiscardableCacheSizeLimit();
+GPU_GLES2_EXPORT size_t DiscardableCacheSizeLimitForPressure(
+    size_t base_cache_limit,
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
 class GPU_GLES2_EXPORT ServiceDiscardableManager {
  public:
   ServiceDiscardableManager();

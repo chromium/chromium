@@ -37,7 +37,6 @@ class CORE_EXPORT FetchHeaderList final
   size_t size() const;
   void Remove(const String&);
   bool Get(const String&, String&) const;
-  void GetAll(const String&, Vector<String>&) const;
   bool Has(const String&) const;
   void ClearList();
 

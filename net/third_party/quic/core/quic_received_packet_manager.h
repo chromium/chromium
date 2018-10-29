@@ -72,6 +72,10 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
     max_ack_ranges_ = max_ack_ranges;
   }
 
+  void set_save_timestamps(bool save_timestamps) {
+    save_timestamps_ = save_timestamps;
+  }
+
  private:
   friend class test::QuicConnectionPeer;
 
@@ -93,6 +97,9 @@ class QUIC_EXPORT_PRIVATE QuicReceivedPacketManager {
   // no packet numbers have been received since UpdateReceivedPacketInfo.
   // Needed for calculating ack_delay_time.
   QuicTime time_largest_observed_;
+
+  // If true, save timestamps in the ack_frame_.
+  bool save_timestamps_;
 
   QuicConnectionStats* stats_;
 };

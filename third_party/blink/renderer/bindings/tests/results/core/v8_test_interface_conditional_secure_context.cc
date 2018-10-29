@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -62,7 +62,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceConditionalSecureContextV8Internal {
+namespace test_interface_conditional_secure_context_v8_internal {
 
 static void secureContextAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -262,12 +262,12 @@ static void secureContextWorkerExposedRuntimeEnabledMethodMethod(const v8::Funct
   impl->secureContextWorkerExposedRuntimeEnabledMethod();
 }
 
-} // namespace TestInterfaceConditionalSecureContextV8Internal
+}  // namespace test_interface_conditional_secure_context_v8_internal
 
 void V8TestInterfaceConditionalSecureContext::secureContextAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -275,13 +275,13 @@ void V8TestInterfaceConditionalSecureContext::secureContextAttributeAttributeSet
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -289,13 +289,13 @@ void V8TestInterfaceConditionalSecureContext::secureContextRuntimeEnabledAttribu
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWindowExposedAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -303,13 +303,13 @@ void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedAttribut
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWorkerExposedAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -317,13 +317,13 @@ void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedAttribut
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWindowExposedRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -331,13 +331,13 @@ void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedRuntimeE
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWorkerExposedRuntimeEnabledAttribute_Getter");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetter(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -345,43 +345,43 @@ void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedRuntimeE
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextMethodMethod(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextRuntimeEnabledMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextRuntimeEnabledMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextRuntimeEnabledMethodMethod(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWindowExposedMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedMethodMethod(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWorkerExposedMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedMethodMethod(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWindowExposedRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWindowExposedRuntimeEnabledMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWindowExposedRuntimeEnabledMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWindowExposedRuntimeEnabledMethodMethod(info);
 }
 
 void V8TestInterfaceConditionalSecureContext::secureContextWorkerExposedRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConditionalSecureContext_secureContextWorkerExposedRuntimeEnabledMethod");
 
-  TestInterfaceConditionalSecureContextV8Internal::secureContextWorkerExposedRuntimeEnabledMethodMethod(info);
+  test_interface_conditional_secure_context_v8_internal::secureContextWorkerExposedRuntimeEnabledMethodMethod(info);
 }
 
 static void installV8TestInterfaceConditionalSecureContextTemplate(

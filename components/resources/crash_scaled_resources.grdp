@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
   <structure type="chrome_scaled_image" name="IDR_CRASH_SAD_FAVICON" file="crash/favicon_sad_tab.png" />
-  <if expr="is_macosx or is_ios">
+  <if expr="is_ios">
     <structure type="chrome_scaled_image" name="IDR_CRASH_SAD_TAB" file="crash/legacy/sadtab.png" />
   </if>
 </grit-part>

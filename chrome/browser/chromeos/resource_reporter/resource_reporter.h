@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -28,8 +27,7 @@ namespace chromeos {
 // Chrome tasks and reports a weighted random sample of them via Rappor whenever
 // memory pressure is critical. The reporting is limited to once per
 // |kMinimumTimeBetweenReportsInMS|.
-class ResourceReporter : public task_manager::TaskManagerObserver,
-                         public base::MemoryCoordinatorClient {
+class ResourceReporter : public task_manager::TaskManagerObserver {
  public:
   // A collection of the data of a task manager's task that the ResourceReporter
   // is interested in.
@@ -151,9 +149,6 @@ class ResourceReporter : public task_manager::TaskManagerObserver,
 
   // Gets the bucket in which the current system's number of CPU cores fall.
   static CpuCoresNumberRange GetCurrentSystemCpuCoresRange();
-
-  // base::MemoryCoordinatorClient:
-  void OnMemoryStateChange(base::MemoryState state) override;
 
   // Perform a weighted random sampling to select a task by its CPU or memory
   // usage weights so that we can record samples for them via Rappor.

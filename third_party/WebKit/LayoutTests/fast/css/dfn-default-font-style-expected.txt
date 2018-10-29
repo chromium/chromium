@@ -1,2 +1,2 @@
-This test ensures that whatever written within dfn tag is italicized. 
+This test ensures that whatever written within dfn tag is italicized.
 For example the dfn should be italicized. PASS

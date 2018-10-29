@@ -9,6 +9,7 @@ var importer = importer || {};
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to
  * access chrome's sync file system.  Call this during setUp.
  * @return {!importer.TestLogger}
+ * @suppress{accessControls} For testing.
  */
 importer.setupTestLogger = function() {
   var logger = new importer.TestLogger();

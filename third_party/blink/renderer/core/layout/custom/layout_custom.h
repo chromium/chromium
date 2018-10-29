@@ -36,6 +36,8 @@ class LayoutCustom final : public LayoutBlockFlow {
   LayoutCustomState State() const { return state_; }
   LayoutCustomPhase Phase() const { return phase_; }
 
+  bool IsLoaded() const { return State() != LayoutCustomState::kUnloaded; }
+
   // "ConstraintData" is the additional input data object passed from parent to
   // child layouts. It must be set before a custom layout pass, then
   // immediately cleared.

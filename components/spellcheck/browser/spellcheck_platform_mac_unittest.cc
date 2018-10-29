@@ -36,7 +36,7 @@ class SpellcheckPlatformMacTest: public testing::Test {
 
  private:
   void QuitMessageLoop() {
-    CHECK(base::MessageLoop::current() == &message_loop_);
+    ASSERT_TRUE(message_loop_.IsBoundToCurrentThread());
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 

@@ -4,8 +4,6 @@
 
 #import "ui/base/cocoa/controls/button_utils.h"
 
-#import "ui/base/cocoa/controls/hyperlink_button_cell.h"
-
 @implementation ButtonUtils
 
 + (NSButton*)buttonWithTitle:(NSString*)title
@@ -27,20 +25,6 @@
   [button setButtonType:NSSwitchButton];
   [button setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
   [button setBezelStyle:NSRegularSquareBezelStyle];
-  [button setTitle:title];
-  return button;
-}
-
-+ (NSButton*)linkWithTitle:(NSString*)title
-                    action:(SEL)action
-                    target:(id)target {
-  NSButton* button = [[[NSButton alloc] initWithFrame:NSZeroRect] autorelease];
-  // The cell has to be replaced before doing any of the other setup, or it will
-  // not get the new configuration.
-  [button setCell:[[[HyperlinkButtonCell alloc] init] autorelease]];
-  [button setAction:action];
-  [button setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
-  [button setTarget:target];
   [button setTitle:title];
   return button;
 }

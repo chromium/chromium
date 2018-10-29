@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/local_card_migration_dialog_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -41,6 +42,7 @@ class LocalCardMigrationDialogControllerImpl
       const std::vector<std::string>& selected_cards_guids) override;
   void OnCancelButtonClicked() override;
   void OnViewCardsButtonClicked() override;
+  void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnDialogClosed() override;
 
  protected:
@@ -51,9 +53,13 @@ class LocalCardMigrationDialogControllerImpl
   friend class content::WebContentsUserData<
       LocalCardMigrationDialogControllerImpl>;
 
+  void OpenUrl(const GURL& url);
+
   content::WebContents* web_contents_;
 
   LocalCardMigrationDialog* local_card_migration_dialog_;
+
+  PrefService* pref_service_;
 
   LocalCardMigrationDialogState view_state_;
 
@@ -67,6 +73,10 @@ class LocalCardMigrationDialogControllerImpl
   // LocalCardMigrationManager. Used in constructing the
   // LocalCardMigrationDialogView.
   std::vector<MigratableCreditCard> migratable_credit_cards_;
+
+  // Timer used to measure the amount of time that the local card migration
+  // dialog is visible to users.
+  base::ElapsedTimer dialog_is_visible_duration_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialogControllerImpl);
 };

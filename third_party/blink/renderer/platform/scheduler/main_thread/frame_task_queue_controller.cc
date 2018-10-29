@@ -10,11 +10,12 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
-#include "third_party/blink/renderer/platform/scheduler/util/tracing_helper.h"
 
 namespace blink {
 namespace scheduler {
@@ -65,6 +66,16 @@ FrameTaskQueueController::InspectorTaskQueue() {
 }
 
 scoped_refptr<MainThreadTaskQueue>
+FrameTaskQueueController::ExperimentalWebSchedulingTaskQueue(
+    WebSchedulingTaskQueueType task_queue_type) {
+  if (!web_scheduling_task_queues_[task_queue_type])
+    CreateWebSchedulingTaskQueue(task_queue_type);
+
+  DCHECK(web_scheduling_task_queues_[task_queue_type]);
+  return web_scheduling_task_queues_[task_queue_type];
+}
+
+scoped_refptr<MainThreadTaskQueue>
 FrameTaskQueueController::NonLoadingTaskQueue(
     MainThreadTaskQueue::QueueTraits queue_traits) {
   if (!non_loading_task_queues_.Contains(queue_traits.Key()))
@@ -87,6 +98,42 @@ void FrameTaskQueueController::CreateLoadingTaskQueue() {
   loading_task_queue_ = main_thread_scheduler_impl_->NewLoadingTaskQueue(
       MainThreadTaskQueue::QueueType::kFrameLoading, frame_scheduler_impl_);
   TaskQueueCreated(loading_task_queue_);
+}
+
+void FrameTaskQueueController::CreateWebSchedulingTaskQueue(
+    WebSchedulingTaskQueueType task_queue_type) {
+  DCHECK(RuntimeEnabledFeatures::WorkerTaskQueueEnabled());
+  DCHECK(!web_scheduling_task_queues_[task_queue_type]);
+  // |main_thread_scheduler_impl_| can be null in unit tests.
+  DCHECK(main_thread_scheduler_impl_);
+
+  MainThreadTaskQueue::QueueType main_thread_queue_type =
+      MainThreadTaskQueue::QueueType::kDefault;
+  switch (task_queue_type) {
+    case kWebSchedulingUserVisiblePriority:
+      main_thread_queue_type =
+          MainThreadTaskQueue::QueueType::kWebSchedulingUserInteraction;
+      break;
+    case kWebSchedulingBestEffortPriority:
+      main_thread_queue_type =
+          MainThreadTaskQueue::QueueType::kWebSchedulingBestEffort;
+      break;
+    case kWebSchedulingPriorityCount:
+      NOTREACHED();
+  }
+
+  scoped_refptr<MainThreadTaskQueue> task_queue =
+      main_thread_scheduler_impl_->NewTaskQueue(
+          MainThreadTaskQueue::QueueCreationParams(main_thread_queue_type)
+              .SetCanBePaused(true)
+              .SetCanBeFrozen(true)
+              .SetCanBeDeferred(task_queue_type !=
+                                kWebSchedulingUserVisiblePriority)
+              .SetCanBeThrottled(true)
+              .SetFrameScheduler(frame_scheduler_impl_));
+
+  TaskQueueCreated(task_queue);
+  web_scheduling_task_queues_[task_queue_type] = task_queue;
 }
 
 void FrameTaskQueueController::CreateLoadingControlTaskQueue() {

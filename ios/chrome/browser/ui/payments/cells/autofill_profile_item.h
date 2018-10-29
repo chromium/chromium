@@ -14,6 +14,11 @@
 // AutofillProfileItem is the model class corresponding to AutofillProfileCell.
 @interface AutofillProfileItem : CollectionViewItem<PaymentsIsSelectable>
 
+// TODO(crbug.com/891299) remove when all collection and table views are fixed
+// for dynamic types.
+// Set to YES to use dynamic font types.
+@property(nonatomic, assign) BOOL useScaledFont;
+
 // Profile's name.
 @property(nonatomic, copy) NSString* name;
 

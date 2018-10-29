@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_runner.h"
+#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/lifecycle/lifecycle_unittest.mojom.h"
 
@@ -22,16 +23,15 @@ namespace test {
 class AppClient : public Service,
                   public mojom::LifecycleControl {
  public:
-  AppClient();
+  explicit AppClient(service_manager::mojom::ServiceRequest request,
+                     base::OnceClosure quit_closure);
   ~AppClient() override;
-
-  void set_runner(ServiceRunner* runner) { runner_ = runner; }
 
   // Service:
   void OnBindInterface(const BindSourceInfo& source_info,
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
-  bool OnServiceManagerConnectionLost() override;
+  void OnDisconnected() override;
 
   void Create(mojom::LifecycleControlRequest request);
 
@@ -44,9 +44,11 @@ class AppClient : public Service,
  private:
   class ServiceImpl;
 
-  void BindingLost();
+  void LifecycleControlBindingLost();
 
-  ServiceRunner* runner_ = nullptr;
+  ServiceBinding service_binding_;
+  base::OnceClosure quit_closure_;
+
   BinderRegistry registry_;
   mojo::BindingSet<mojom::LifecycleControl> bindings_;
 

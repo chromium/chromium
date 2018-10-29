@@ -39,8 +39,8 @@ class PNGImageSource : public ImageSkiaSource {
     // 1) The ImageSkiaRep with the highest scale if all available
     // scales are smaller than |scale|.
     // 2) The ImageSkiaRep with the smallest one that is larger than |scale|.
-    for (ImageSkiaRepSet::const_iterator iter = image_skia_reps_.begin();
-         iter != image_skia_reps_.end(); ++iter) {
+    for (auto iter = image_skia_reps_.begin(); iter != image_skia_reps_.end();
+         ++iter) {
       if ((*iter).scale() == scale)
         return (*iter);
       if (!rep || rep->scale() < (*iter).scale())
@@ -76,7 +76,7 @@ class PNGImageSource : public ImageSkiaSource {
 
  private:
   struct Compare {
-    bool operator()(const ImageSkiaRep& rep1, const ImageSkiaRep& rep2) {
+    bool operator()(const ImageSkiaRep& rep1, const ImageSkiaRep& rep2) const {
       return rep1.scale() < rep2.scale();
     }
   };
@@ -112,7 +112,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
 
   scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
   if (image_skia_rep.scale() != 1.0f ||
-      !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.sk_bitmap(), false,
+      !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.GetBitmap(), false,
                                     &png_bytes->data())) {
     return NULL;
   }

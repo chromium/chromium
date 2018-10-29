@@ -36,7 +36,6 @@ const size_t kAcknowledgementThresholdBytes = 1024 * 1024;  // 1 MB.
 using midi::IsDataByte;
 using midi::IsSystemRealTimeMessage;
 using midi::IsValidWebMIDIData;
-using midi::MidiPortInfo;
 using midi::kSysExByte;
 using midi::kEndOfSysExByte;
 using midi::mojom::PortState;
@@ -147,14 +146,14 @@ void MidiHost::CompleteStartSession(Result result) {
   Send(new MidiMsg_SessionStarted(result));
 }
 
-void MidiHost::AddInputPort(const MidiPortInfo& info) {
+void MidiHost::AddInputPort(const midi::mojom::PortInfo& info) {
   base::AutoLock auto_lock(messages_queues_lock_);
   // MidiMessageQueue is created later in ReceiveMidiData().
   received_messages_queues_.push_back(nullptr);
   Send(new MidiMsg_AddInputPort(info));
 }
 
-void MidiHost::AddOutputPort(const MidiPortInfo& info) {
+void MidiHost::AddOutputPort(const midi::mojom::PortInfo& info) {
   base::AutoLock auto_lock(output_port_count_lock_);
   output_port_count_++;
   Send(new MidiMsg_AddOutputPort(info));

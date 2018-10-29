@@ -20,7 +20,7 @@
             android:src="@drawable/ic_omnibox_page"
             android:scaleType="center"
             android:contentDescription="@string/accessibility_toolbar_btn_site_info"/>
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/security_button"
             style="@style/LocationBarButton"
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:layout_gravity="center"
             android:alpha="0"
             android:visibility="invisible"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
     </FrameLayout>
 
     <include layout="@layout/location_bar_status" />

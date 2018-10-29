@@ -9,8 +9,11 @@
 
 #include "base/macros.h"
 
+namespace identity {
+class IdentityManager;
+}
+
 class Profile;
-class SigninManager;
 
 namespace base {
 class TimeDelta;
@@ -23,12 +26,12 @@ class ForcedReauthenticationDialog {
 
   virtual ~ForcedReauthenticationDialog() {}
   // Show the ForcedReauthenticationDialog for |profile|. If there're no opened
-  // browser windows for |profile|, |signin_manager| will be called to signed
+  // browser windows for |profile|, |identity_manager| will be called to signed
   // out immediately. Otherwise, dialog will be closed with all browser windows
   // are associated to |profile| after |countdown_duration| if there is no
   // reauth.
   virtual void ShowDialog(Profile* profile,
-                          SigninManager* signin_manager,
+                          identity::IdentityManager* identity_manager,
                           base::TimeDelta countdown_duration) = 0;
 
  protected:

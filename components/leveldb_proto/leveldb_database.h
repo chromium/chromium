@@ -5,14 +5,12 @@
 #ifndef COMPONENTS_LEVELDB_PROTO_LEVELDB_DATABASE_H_
 #define COMPONENTS_LEVELDB_PROTO_LEVELDB_DATABASE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
-#include "base/threading/thread_collision_warner.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace base {
@@ -24,7 +22,6 @@ namespace leveldb {
 class Cache;
 class DB;
 class Env;
-class Status;
 }  // namespace leveldb
 
 namespace leveldb_proto {
@@ -55,6 +52,7 @@ class LevelDB {
                     const std::vector<std::string>& keys_to_remove);
   virtual bool UpdateWithRemoveFilter(const base::StringPairs& entries_to_save,
                                       const KeyFilter& delete_key_filter);
+
   virtual bool Load(std::vector<std::string>* entries);
   virtual bool LoadWithFilter(const KeyFilter& filter,
                               std::vector<std::string>* entries);
@@ -62,6 +60,18 @@ class LevelDB {
                               std::vector<std::string>* entries,
                               const leveldb::ReadOptions& options,
                               const std::string& target_prefix);
+
+  virtual bool LoadKeysAndEntries(
+      std::map<std::string, std::string>* keys_entries);
+  virtual bool LoadKeysAndEntriesWithFilter(
+      const KeyFilter& filter,
+      std::map<std::string, std::string>* keys_entries);
+  virtual bool LoadKeysAndEntriesWithFilter(
+      const KeyFilter& filter,
+      std::map<std::string, std::string>* keys_entries,
+      const leveldb::ReadOptions& options,
+      const std::string& target_prefix);
+
   virtual bool LoadKeys(std::vector<std::string>* keys);
   virtual bool Get(const std::string& key, bool* found, std::string* entry);
   // Close (if currently open) and then destroy (i.e. delete) the database

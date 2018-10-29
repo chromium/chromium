@@ -56,8 +56,7 @@ void DocumentScanScanFunction::OnScannerListReceived(
     const std::vector<DocumentScanInterface::ScannerDescription>&
         scanner_descriptions,
     const std::string& error) {
-  std::vector<DocumentScanInterface::ScannerDescription>::const_iterator
-      scanner_i = scanner_descriptions.begin();
+  auto scanner_i = scanner_descriptions.cbegin();
 
   // If no |scanner_descriptions| is empty, this is an error.  If no
   // MIME types are specified, the first scanner is chosen.  If MIME

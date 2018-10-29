@@ -40,8 +40,7 @@ BluetoothRemoteGattServiceBlueZ::BluetoothRemoteGattServiceBlueZ(
       bluez::BluezDBusManager::Get()
           ->GetBluetoothGattCharacteristicClient()
           ->GetCharacteristics();
-  for (std::vector<dbus::ObjectPath>::const_iterator iter = gatt_chars.begin();
-       iter != gatt_chars.end(); ++iter)
+  for (auto iter = gatt_chars.begin(); iter != gatt_chars.end(); ++iter)
     GattCharacteristicAdded(*iter);
 }
 
@@ -181,7 +180,7 @@ void BluetoothRemoteGattServiceBlueZ::GattCharacteristicAdded(
 
 void BluetoothRemoteGattServiceBlueZ::GattCharacteristicRemoved(
     const dbus::ObjectPath& object_path) {
-  CharacteristicMap::iterator iter = characteristics_.find(object_path.value());
+  auto iter = characteristics_.find(object_path.value());
   if (iter == characteristics_.end()) {
     VLOG(2) << "Unknown GATT characteristic removed: " << object_path.value();
     return;

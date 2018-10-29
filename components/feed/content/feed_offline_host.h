@@ -47,8 +47,14 @@ class FeedOfflineHost : public offline_pages::SuggestionsProvider,
   // Initialize with callbacks to call into bridge/Java side. Should only be
   // called once, and done as soon as the bridge is ready. The FeedOfflineHost
   // will not be fully ready to perform its function without these dependencies.
+  // Neither of these callbacks will be invoked until after this method exits.
   void Initialize(const base::RepeatingClosure& trigger_get_known_content,
                   const NotifyStatusChangeCallback& notify_status_change);
+
+  // Called during initialization make ourselves known to |prefetch_service_|.
+  // This method is used to wrap PrefetchService::SetSuggestionProvider() to let
+  // our weak pointer guarantee everyone is still alive.
+  void SetSuggestionProvider();
 
   // Synchronously returns the offline id of the given page. The host will only
   // have knowledge of the page if it had previously returned status about it

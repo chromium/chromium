@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.design.widget.TabLayout;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.accessibility.AccessibilityTabModelAdapter.AccessibilityTabModelAdapterListener;
 
 /**
@@ -36,8 +36,8 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
     private TabLayout mStackButtonWrapper;
     private TabLayout.Tab mStandardButton;
     private TabLayout.Tab mIncognitoButton;
-    private TintedImageView mStandardButtonIcon;
-    private TintedImageView mIncognitoButtonIcon;
+    private AppCompatImageView mStandardButtonIcon;
+    private AppCompatImageView mIncognitoButtonIcon;
 
     private ColorStateList mTabIconDarkColor;
     private ColorStateList mTabIconLightColor;
@@ -106,30 +106,27 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
                 AppCompatResources.getColorStateList(getContext(), R.color.white_mode_tint);
         // Setting scaleY here to make sure the icons are not flipped due to the scaleY of its
         // container layout.
-        mStandardButtonIcon = new TintedImageView(getContext());
+        mStandardButtonIcon = new AppCompatImageView(getContext());
         mStandardButtonIcon.setImageResource(R.drawable.btn_normal_tabs);
         mStandardButtonIcon.setScaleY(-1.0f);
-        mIncognitoButtonIcon = new TintedImageView(getContext());
+        mStandardButtonIcon.setContentDescription(
+                getResources().getString(R.string.accessibility_tab_switcher_standard_stack));
+        mIncognitoButtonIcon = new AppCompatImageView(getContext());
         mIncognitoButtonIcon.setImageResource(R.drawable.btn_incognito_tabs);
         mIncognitoButtonIcon.setScaleY(-1.0f);
+        mIncognitoButtonIcon.setContentDescription(getResources().getString(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_STRINGS)
+                        ? R.string.accessibility_tab_switcher_private_stack
+                        : R.string.accessibility_tab_switcher_incognito_stack));
 
         setDividerDrawable(null);
         ((ListView) findViewById(R.id.list_view)).setDivider(null);
 
         mLayout = findViewById(R.id.tab_wrapper);
         mStackButtonWrapper = findViewById(R.id.tab_layout);
-        mStandardButton =
-                mStackButtonWrapper.newTab()
-                        .setCustomView(mStandardButtonIcon)
-                        .setContentDescription(R.string.accessibility_tab_switcher_standard_stack);
+        mStandardButton = mStackButtonWrapper.newTab().setCustomView(mStandardButtonIcon);
         mStackButtonWrapper.addTab(mStandardButton);
-        mIncognitoButton =
-                mStackButtonWrapper.newTab()
-                        .setCustomView(mIncognitoButtonIcon)
-                        .setContentDescription(
-                                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_STRINGS)
-                                        ? R.string.accessibility_tab_switcher_private_stack
-                                        : R.string.accessibility_tab_switcher_incognito_stack);
+        mIncognitoButton = mStackButtonWrapper.newTab().setCustomView(mIncognitoButtonIcon);
         mStackButtonWrapper.addTab(mIncognitoButton);
         mStackButtonWrapper.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -181,15 +178,16 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
                     getResources(), R.color.incognito_modern_primary_color));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedLightColor.getDefaultColor());
-            mStandardButtonIcon.setTint(mTabIconLightColor);
-            mIncognitoButtonIcon.setTint(mTabIconSelectedLightColor);
+            ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconLightColor);
+            ApiCompatibilityUtils.setImageTintList(
+                    mIncognitoButtonIcon, mTabIconSelectedLightColor);
         } else {
             setBackgroundColor(
                     ApiCompatibilityUtils.getColor(getResources(), R.color.modern_primary_color));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedDarkColor.getDefaultColor());
-            mStandardButtonIcon.setTint(mTabIconSelectedDarkColor);
-            mIncognitoButtonIcon.setTint(mTabIconDarkColor);
+            ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconSelectedDarkColor);
+            ApiCompatibilityUtils.setImageTintList(mIncognitoButtonIcon, mTabIconDarkColor);
         }
         // Ensure the tab in tab layout is correctly selected when tab switcher is
         // first opened.

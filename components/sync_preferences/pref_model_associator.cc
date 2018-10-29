@@ -22,6 +22,7 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -187,8 +188,7 @@ syncer::SyncMergeResult PrefModelAssociator::MergeDataAndStartSyncing(
 
   // Go through and check for all preferences we care about that sync already
   // knows about.
-  for (syncer::SyncDataList::const_iterator sync_iter =
-           initial_sync_data.begin();
+  for (auto sync_iter = initial_sync_data.begin();
        sync_iter != initial_sync_data.end(); ++sync_iter) {
     DCHECK_EQ(type_, sync_iter->GetDataType());
 
@@ -199,8 +199,7 @@ syncer::SyncMergeResult PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   // Go through and build sync data for any remaining preferences.
-  for (std::set<std::string>::iterator pref_name_iter =
-           remaining_preferences.begin();
+  for (auto pref_name_iter = remaining_preferences.begin();
        pref_name_iter != remaining_preferences.end(); ++pref_name_iter) {
     InitPrefAndAssociate(syncer::SyncData(), *pref_name_iter, &new_changes);
   }
@@ -332,7 +331,7 @@ syncer::SyncDataList PrefModelAssociator::GetAllSyncData(
     syncer::ModelType type) const {
   DCHECK_EQ(type_, type);
   syncer::SyncDataList current_data;
-  for (PreferenceSet::const_iterator iter = synced_preferences_.begin();
+  for (auto iter = synced_preferences_.begin();
        iter != synced_preferences_.end(); ++iter) {
     std::string name = *iter;
     if (pref_accessor_->GetPreferenceState(type_, name).registration_state !=

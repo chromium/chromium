@@ -11,10 +11,8 @@ namespace blink {
 
 class ScriptState;
 
-// Add the Javascript function countUse() to the "binding" object that is
-// exposed to the Javascript streams implementations.
-//
-// It must be called during initialisation of the V8 context.
+// Add the JavaScript function countUse() to the "binding" object that is
+// exposed to the JavaScript streams implementations.
 //
 // binding.countUse() takes a string and calls UseCounter::Count() on the
 // matching ID. It only does anything the first time it is called in a
@@ -22,6 +20,12 @@ class ScriptState;
 // the IDs in the JS files, but means that JS code should avoid calling it more
 // than once to avoid unnecessary overhead. Only string IDs that this code
 // specifically knows about will work.
+//
+// Also copy the original values of MessageChannel, MessagePort and MessageEvent
+// methods and accessors to the binding object where they can be used for
+// serialization by the streams code.
+//
+// This function must be called during initialisation of the V8 context.
 //
 // countUse() is not available during snapshot creation.
 void CORE_EXPORT InitializeV8ExtrasBinding(ScriptState*);

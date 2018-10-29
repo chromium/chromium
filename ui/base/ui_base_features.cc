@@ -67,7 +67,7 @@ bool IsNotificationIndicatorEnabled() {
 
 // Enables GPU rasterization for all UI drawing (where not blacklisted).
 const base::Feature kUiGpuRasterization = {"UiGpuRasterization",
-#if defined(OS_MACOSX)
+#if defined(OS_MACOSX) || defined(OS_CHROMEOS)
                                            base::FEATURE_ENABLED_BY_DEFAULT
 #else
                                            base::FEATURE_DISABLED_BY_DEFAULT
@@ -92,7 +92,7 @@ const base::Feature kUiCompositorScrollWithLayers = {
 #if defined(OS_WIN)
 // Enables InputPane API for controlling on screen keyboard.
 const base::Feature kInputPaneOnScreenKeyboard = {
-    "InputPaneOnScreenKeyboard", base::FEATURE_ENABLED_BY_DEFAULT};
+    "InputPaneOnScreenKeyboard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables using WM_POINTER instead of WM_TOUCH for touch events.
 const base::Feature kPointerEventsForTouch = {"PointerEventsForTouch",
@@ -153,20 +153,6 @@ const base::Feature kHostWindowsInAppShimProcess{
 bool HostWindowsInAppShimProcess() {
   return base::FeatureList::IsEnabled(kHostWindowsInAppShimProcess);
 }
-
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-// Causes Views browser builds to use Views browser windows by default rather
-// than Cocoa browser windows.
-const base::Feature kViewsBrowserWindows{"ViewsBrowserWindows",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Returns whether a Views-capable browser build should use the Cocoa browser
-// UI.
-bool IsViewsBrowserCocoa() {
-  return !base::FeatureList::IsEnabled(kViewsBrowserWindows) &&
-      !base::FeatureList::IsEnabled(kExperimentalUi);
-}
-#endif  //  BUILDFLAG(MAC_VIEWS_BROWSER)
 #endif  //  defined(OS_MACOSX)
 
 const base::Feature kEnableOzoneDrmMojo = {"OzoneDrmMojo",
@@ -176,5 +162,7 @@ bool IsOzoneDrmMojo() {
   return base::FeatureList::IsEnabled(kEnableOzoneDrmMojo) ||
          IsMultiProcessMash();
 }
+
+const base::Feature kDarkMode = {"DarkMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

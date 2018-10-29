@@ -16,7 +16,6 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
-#include "components/viz/test/test_frame_sink_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +25,6 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 namespace viz {
-namespace test {
 namespace {
 
 constexpr FrameSinkId kFrameSink1(1, 0);
@@ -59,14 +57,15 @@ class SurfaceReferencesTest : public testing::Test {
   // Destroy Surface with |surface_id|.
   void DestroySurface(const SurfaceId& surface_id) {
     GetCompositorFrameSinkSupport(surface_id.frame_sink_id())
-        .EvictLastActivatedSurface();
+        .EvictSurface(surface_id.local_surface_id());
   }
 
   CompositorFrameSinkSupport& GetCompositorFrameSinkSupport(
       const FrameSinkId& frame_sink_id) {
     auto& support_ptr = supports_[frame_sink_id];
     if (!support_ptr) {
-      manager_->RegisterFrameSinkId(frame_sink_id);
+      manager_->RegisterFrameSinkId(frame_sink_id,
+                                    true /* report_activation */);
       constexpr bool is_root = false;
       constexpr bool needs_sync_points = true;
       support_ptr = std::make_unique<CompositorFrameSinkSupport>(
@@ -125,9 +124,6 @@ class SurfaceReferencesTest : public testing::Test {
   void SetUp() override {
     // Start each test with a fresh SurfaceManager instance.
     manager_ = std::make_unique<FrameSinkManagerImpl>(&shared_bitmap_manager_);
-    frame_sink_manager_client_ =
-        std::make_unique<TestFrameSinkManagerClient>(manager_.get());
-    manager_->SetLocalClient(frame_sink_manager_client_.get());
   }
   void TearDown() override {
     supports_.clear();
@@ -140,7 +136,6 @@ class SurfaceReferencesTest : public testing::Test {
 
   ServerSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<FrameSinkManagerImpl> manager_;
-  std::unique_ptr<TestFrameSinkManagerClient> frame_sink_manager_client_;
   std::unordered_map<FrameSinkId,
                      std::unique_ptr<CompositorFrameSinkSupport>,
                      FrameSinkIdHash>
@@ -157,8 +152,6 @@ TEST_F(SurfaceReferencesTest, AddReference) {
 }
 
 TEST_F(SurfaceReferencesTest, AddRemoveReference) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   AddSurfaceReference(GetSurfaceManager().GetRootSurfaceId(), id1);
 
@@ -179,9 +172,6 @@ TEST_F(SurfaceReferencesTest, AddRemoveReference) {
 }
 
 TEST_F(SurfaceReferencesTest, NewSurfaceFromFrameSink) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink2, kFrameSink3);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   SurfaceId id2 = CreateSurface(kFrameSink2, 1);
   SurfaceId id3 = CreateSurface(kFrameSink3, 1);
@@ -243,8 +233,6 @@ TEST_F(SurfaceReferencesTest, ReferenceCycleGetsDeleted) {
 }
 
 TEST_F(SurfaceReferencesTest, SurfacesAreDeletedDuringGarbageCollection) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   SurfaceId id2 = CreateSurface(kFrameSink2, 1);
 
@@ -275,9 +263,6 @@ TEST_F(SurfaceReferencesTest, SurfacesAreDeletedDuringGarbageCollection) {
 }
 
 TEST_F(SurfaceReferencesTest, GarbageCollectionWorksRecursively) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink2, kFrameSink3);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   SurfaceId id2 = CreateSurface(kFrameSink2, 1);
   SurfaceId id3 = CreateSurface(kFrameSink3, 1);
@@ -312,9 +297,6 @@ TEST_F(SurfaceReferencesTest, GarbageCollectionWorksRecursively) {
 // Verify that surfaces marked as live are not garbage collected and any
 // dependencies are also not garbage collected.
 TEST_F(SurfaceReferencesTest, LiveSurfaceStillReachable) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink2, kFrameSink3);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   SurfaceId id2 = CreateSurface(kFrameSink2, 1);
   SurfaceId id3 = CreateSurface(kFrameSink3, 1);
@@ -347,8 +329,6 @@ TEST_F(SurfaceReferencesTest, LiveSurfaceStillReachable) {
 }
 
 TEST_F(SurfaceReferencesTest, TryAddReferenceSameReferenceTwice) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   SurfaceId id2 = CreateSurface(kFrameSink2, 1);
 
@@ -364,8 +344,6 @@ TEST_F(SurfaceReferencesTest, TryAddReferenceSameReferenceTwice) {
 }
 
 TEST_F(SurfaceReferencesTest, AddingSelfReferenceFails) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   SurfaceId id1 = CreateSurface(kFrameSink2, 1);
 
   // A temporary reference must exist to |id1|.
@@ -395,8 +373,6 @@ TEST_F(SurfaceReferencesTest, RemovingNonexistantReferenceFails) {
 }
 
 TEST_F(SurfaceReferencesTest, AddSurfaceThenReference) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   // Create a new surface.
   const SurfaceId surface_id = CreateSurface(kFrameSink2, 1);
 
@@ -410,14 +386,11 @@ TEST_F(SurfaceReferencesTest, AddSurfaceThenReference) {
   // The temporary reference to |surface_id| should be gone.
   // The only temporary reference should be to |parent_id|.
   // There must be a real reference from |parent_id| to |child_id|.
-  EXPECT_THAT(GetAllTempReferences(), IsEmpty());
   EXPECT_THAT(GetReferencesFrom(parent_id), ElementsAre(surface_id));
+  EXPECT_THAT(GetAllTempReferences(), ElementsAre(parent_id));
 }
 
 TEST_F(SurfaceReferencesTest, AddSurfaceThenRootReference) {
-  // The test will deal with temporary references explicitly.
-  frame_sink_manager_client_->DisableAssignTemporaryReferences();
-
   // Create a new surface.
   const SurfaceId surface_id = CreateSurface(kFrameSink1, 1);
 
@@ -435,9 +408,6 @@ TEST_F(SurfaceReferencesTest, AddSurfaceThenRootReference) {
 }
 
 TEST_F(SurfaceReferencesTest, AddTwoSurfacesThenOneReference) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink3);
-
   // Create two surfaces with different FrameSinkIds.
   const SurfaceId surface_id1 = CreateSurface(kFrameSink2, 1);
   const SurfaceId surface_id2 = CreateSurface(kFrameSink3, 1);
@@ -454,13 +424,12 @@ TEST_F(SurfaceReferencesTest, AddTwoSurfacesThenOneReference) {
   // to it must be gone.
   // There should still be a temporary reference left to |surface_id2|.
   // A temporary reference to |parent_id| must be created.
-  EXPECT_THAT(GetAllTempReferences(), UnorderedElementsAre(surface_id2));
+  EXPECT_THAT(GetAllTempReferences(),
+              UnorderedElementsAre(parent_id, surface_id2));
   EXPECT_THAT(GetReferencesFrom(parent_id), ElementsAre(surface_id1));
 }
 
 TEST_F(SurfaceReferencesTest, AddSurfacesSkipReference) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   // Add two surfaces that have the same FrameSinkId. This would happen
   // when a client submits two CompositorFrames before parent submits a new
   // CompositorFrame.
@@ -480,13 +449,11 @@ TEST_F(SurfaceReferencesTest, AddSurfacesSkipReference) {
   // The real reference should be added for |surface_id2| and the temporary
   // references to both |surface_id1| and |surface_id2| should be gone.
   // There should be a temporary reference to |parent_id|.
-  EXPECT_THAT(GetAllTempReferences(), IsEmpty());
+  EXPECT_THAT(GetAllTempReferences(), ElementsAre(parent_id));
   EXPECT_THAT(GetReferencesFrom(parent_id), ElementsAre(surface_id2));
 }
 
 TEST_F(SurfaceReferencesTest, RemoveFirstTempReferenceOnly) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   // Add two surfaces that have the same FrameSinkId. This would happen
   // when a client submits two CFs before parent submits a new CF.
   const SurfaceId surface_id1 = CreateSurface(kFrameSink2, 1);
@@ -505,13 +472,12 @@ TEST_F(SurfaceReferencesTest, RemoveFirstTempReferenceOnly) {
   // The real reference should be added for |surface_id1| and its temporary
   // reference should be removed. The temporary reference for |surface_id2|
   // should remain. A temporary reference must be added for |parent_id|.
-  EXPECT_THAT(GetAllTempReferences(), UnorderedElementsAre(surface_id2));
+  EXPECT_THAT(GetAllTempReferences(),
+              UnorderedElementsAre(parent_id, surface_id2));
   EXPECT_THAT(GetReferencesFrom(parent_id), ElementsAre(surface_id1));
 }
 
 TEST_F(SurfaceReferencesTest, SurfaceWithTemporaryReferenceIsNotDeleted) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   const SurfaceId id1 = CreateSurface(kFrameSink1, 1);
   AddSurfaceReference(GetSurfaceManager().GetRootSurfaceId(), id1);
 
@@ -536,25 +502,8 @@ TEST_F(SurfaceReferencesTest, SurfaceWithTemporaryReferenceIsNotDeleted) {
   EXPECT_NE(nullptr, GetSurfaceManager().GetSurfaceForId(id2));
 }
 
-// Checks that when a temporary reference is assigned an owner, if the owner is
-// invalidated then the temporary reference is also removed.
-TEST_F(SurfaceReferencesTest, InvalidateTempReferenceOwnerRemovesReference) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
-  // Surface |id1| should have a temporary reference on creation.
-  const SurfaceId id1 = CreateSurface(kFrameSink2, 1);
-  ASSERT_THAT(GetAllTempReferences(), UnorderedElementsAre(id1));
-
-  // When |kFrameSink1| is invalidated the temporary reference will be removed.
-  GetSurfaceManager().InvalidateFrameSinkId(kFrameSink1);
-  ASSERT_THAT(GetAllTempReferences(), IsEmpty());
-}
-
-// Checks that adding a surface reference clears the temporary reference and
-// ownership. Invalidating the old owner shouldn't do anything.
+// Checks that adding a surface reference clears the temporary reference.
 TEST_F(SurfaceReferencesTest, InvalidateHasNoEffectOnSurfaceReferences) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   const SurfaceId parent_id = CreateSurface(kFrameSink1, 1);
   AddSurfaceReference(GetSurfaceManager().GetRootSurfaceId(), parent_id);
 
@@ -565,62 +514,11 @@ TEST_F(SurfaceReferencesTest, InvalidateHasNoEffectOnSurfaceReferences) {
   AddSurfaceReference(parent_id, id1);
   ASSERT_THAT(GetAllTempReferences(), IsEmpty());
   ASSERT_THAT(GetReferencesFor(id1), UnorderedElementsAre(parent_id));
-
-  // When |kFrameSink1| is invalidated it shouldn't change the surface
-  // references.
-  DestroyCompositorFrameSinkSupport(kFrameSink1);
-  ASSERT_THAT(GetReferencesFor(id1), UnorderedElementsAre(parent_id));
-}
-
-TEST_F(SurfaceReferencesTest, CheckDropTemporaryReferenceWorks) {
-  // The test will deal with temporary references explicitly.
-  frame_sink_manager_client_->DisableAssignTemporaryReferences();
-
-  const SurfaceId id1 = CreateSurface(kFrameSink1, 1);
-  ASSERT_THAT(GetAllTempReferences(), UnorderedElementsAre(id1));
-
-  // An example of why this could happen is the window server doesn't know the
-  // owner, maybe it has crashed and been cleanup already, and asks to drop the
-  // temporary reference.
-  GetSurfaceManager().DropTemporaryReference(id1);
-  ASSERT_THAT(GetAllTempReferences(), IsEmpty());
-}
-
-// Checks that we handle ownership and temporary references correctly when there
-// are multiple temporary references. This tests something like the parent
-// client crashing, so it's
-TEST_F(SurfaceReferencesTest, TempReferencesWithClientCrash) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
-  const SurfaceId parent_id = CreateSurface(kFrameSink1, 1);
-  AddSurfaceReference(GetSurfaceManager().GetRootSurfaceId(), parent_id);
-
-  const SurfaceId id1a = CreateSurface(kFrameSink2, 1);
-
-  // Don't assign owner for temporary reference to |id1b|.
-  frame_sink_manager_client_->DisableAssignTemporaryReferences();
-  const SurfaceId id1b = CreateSurface(kFrameSink2, 2);
-
-  ASSERT_THAT(GetAllTempReferences(), UnorderedElementsAre(id1a, id1b));
-
-  // If the parent client crashes then the FrameSink connection will be closed
-  // and the FrameSinkId invalidated. The temporary reference |kFrameSink1|
-  // owns to |id2a| will be removed.
-  DestroyCompositorFrameSinkSupport(kFrameSink1);
-  ASSERT_THAT(GetAllTempReferences(), UnorderedElementsAre(id1b));
-
-  // If the parent has crashed then the window server will have already removed
-  // it from the ServerWindow hierarchy and won't have an owner for |id2b|. The
-  // window server will ask to drop the reference instead.
-  GetSurfaceManager().DropTemporaryReference(id1b);
-  ASSERT_THAT(GetAllTempReferences(), IsEmpty());
 }
 
 // Check that old temporary references are deleted, but only for surfaces marked
 // as destroyed.
 TEST_F(SurfaceReferencesTest, MarkOldTemporaryReferences) {
-  frame_sink_manager_client_->SetFrameSinkHierarchy(kFrameSink1, kFrameSink2);
-
   constexpr base::TimeDelta kFastForwardTime = base::TimeDelta::FromSeconds(30);
 
   // There are no temporary references so the timer should be stopped.
@@ -646,5 +544,4 @@ TEST_F(SurfaceReferencesTest, MarkOldTemporaryReferences) {
   EXPECT_FALSE(IsTemporaryReferenceTimerRunning());
 }
 
-}  // namespace test
 }  // namespace viz

@@ -28,7 +28,8 @@ namespace ash {
 
 VPNFeaturePodController::VPNFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
-    : tray_controller_(tray_controller) {}
+    : network_state_observer_(std::make_unique<TrayNetworkStateObserver>(this)),
+      tray_controller_(tray_controller) {}
 
 VPNFeaturePodController::~VPNFeaturePodController() = default;
 
@@ -51,6 +52,10 @@ void VPNFeaturePodController::OnIconPressed() {
 
 SystemTrayItemUmaType VPNFeaturePodController::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_VPN;
+}
+
+void VPNFeaturePodController::NetworkStateChanged(bool notify_a11y) {
+  Update();
 }
 
 void VPNFeaturePodController::Update() {

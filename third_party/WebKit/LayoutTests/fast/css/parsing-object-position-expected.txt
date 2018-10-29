@@ -2,7 +2,6 @@ This tests checks that all of the input values for object-position parse correct
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testComputedStyle(";") is "50% 50%"
 PASS testComputedStyle("object-position: 10px;") is "10px 50%"
 PASS testComputedStyle("object-position: 10px 10px;") is "10px 10px"

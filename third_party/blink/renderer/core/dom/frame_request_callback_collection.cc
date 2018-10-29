@@ -63,6 +63,14 @@ void FrameRequestCallbackCollection::ExecuteCallbacks(
   swap(callbacks_to_invoke_, callbacks_);
 
   for (const auto& callback : callbacks_to_invoke_) {
+    // When the ExecutionContext is destroyed (e.g. an iframe is detached),
+    // there is no path to perform wrapper tracing for the callbacks. In such a
+    // case, the callback functions may already have been collected by V8 GC.
+    // Since it's possible that a callback function being invoked detaches an
+    // iframe, we need to check the condition for each callback.
+    if (context_->IsContextDestroyed())
+      break;
+
     if (!callback->IsCancelled()) {
       TRACE_EVENT1(
           "devtools.timeline", "FireAnimationFrame", "data",

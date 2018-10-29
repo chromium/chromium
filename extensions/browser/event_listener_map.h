@@ -144,6 +144,8 @@ class EventListener {
 class EventListenerMap {
  public:
   using ListenerList = std::vector<std::unique_ptr<EventListener>>;
+  // The key here is an event name.
+  using ListenerMap = std::unordered_map<std::string, ListenerList>;
 
   class Delegate {
    public:
@@ -165,6 +167,9 @@ class EventListenerMap {
   // Remove a listener that .Equals() |listener|.
   // Returns true if the listener was removed .
   bool RemoveListener(const EventListener* listener);
+
+  // Get the map of all EventListeners.
+  const ListenerMap& listeners() const { return listeners_; };
 
   // Returns the set of listeners that want to be notified of |event|.
   std::set<const EventListener*> GetEventListeners(const Event& event);
@@ -218,8 +223,6 @@ class EventListenerMap {
                                  const base::DictionaryValue& filtered);
 
  private:
-  // The key here is an event name.
-  using ListenerMap = std::map<std::string, ListenerList>;
 
   void CleanupListener(EventListener* listener);
   bool IsFilteredEvent(const Event& event) const;

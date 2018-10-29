@@ -62,7 +62,7 @@ void ChooserOnlyTemporalInputTypeView::Trace(blink::Visitor* visitor) {
 void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   Document& document = GetElement().GetDocument();
   if (GetElement().IsDisabledOrReadOnly() || !GetElement().GetLayoutObject() ||
-      !Frame::HasTransientUserActivation(document.GetFrame()) ||
+      !LocalFrame::HasTransientUserActivation(document.GetFrame()) ||
       GetElement().OpenShadowRoot())
     return;
 

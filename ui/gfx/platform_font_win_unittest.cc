@@ -4,6 +4,10 @@
 
 #include "ui/gfx/platform_font_win.h"
 
+#include <memory.h>
+#include <string.h>
+#include <windows.h>
+
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
@@ -16,6 +20,121 @@
 #include "ui/gfx/win/scoped_set_map_mode.h"
 
 namespace gfx {
+
+TEST(PlatformFontWinTest, AdjustFontSize) {
+  PlatformFontWin::SetGetMinimumFontSizeCallback(nullptr);
+  EXPECT_EQ(10, PlatformFontWin::AdjustFontSize(10, 0));
+  EXPECT_EQ(-10, PlatformFontWin::AdjustFontSize(-10, 0));
+  EXPECT_EQ(8, PlatformFontWin::AdjustFontSize(10, -2));
+  EXPECT_EQ(-8, PlatformFontWin::AdjustFontSize(-10, -2));
+  EXPECT_EQ(13, PlatformFontWin::AdjustFontSize(10, 3));
+  EXPECT_EQ(-13, PlatformFontWin::AdjustFontSize(-10, 3));
+  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -9));
+  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -9));
+  EXPECT_EQ(0, PlatformFontWin::AdjustFontSize(10, -12));
+  EXPECT_EQ(0, PlatformFontWin::AdjustFontSize(-10, -12));
+}
+
+TEST(PlatformFontWinTest, AdjustFontSize_MinimumSizeSpecified) {
+  PlatformFontWin::SetGetMinimumFontSizeCallback([] { return 1; });
+  EXPECT_EQ(10, PlatformFontWin::AdjustFontSize(10, 0));
+  EXPECT_EQ(-10, PlatformFontWin::AdjustFontSize(-10, 0));
+  EXPECT_EQ(8, PlatformFontWin::AdjustFontSize(10, -2));
+  EXPECT_EQ(-8, PlatformFontWin::AdjustFontSize(-10, -2));
+  EXPECT_EQ(13, PlatformFontWin::AdjustFontSize(10, 3));
+  EXPECT_EQ(-13, PlatformFontWin::AdjustFontSize(-10, 3));
+  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -9));
+  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -9));
+  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -12));
+  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -12));
+}
+
+namespace {
+
+LOGFONT CreateLOGFONT(const base::string16& name, LONG height) {
+  LOGFONT logfont{};
+  logfont.lfHeight = height;
+  auto result = wcscpy_s(logfont.lfFaceName, name.c_str());
+  DCHECK_EQ(0, result);
+  return logfont;
+}
+
+const base::string16 kSegoeUI(L"Segoe UI");
+const base::string16 kArial(L"Arial");
+
+}  // namespace
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_NoAdjustment) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
+  PlatformFontWin::FontAdjustment adjustment;
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-12, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+}
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_ChangeFace) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
+  PlatformFontWin::FontAdjustment adjustment{kArial, 1.0};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-12, logfont.lfHeight);
+  EXPECT_EQ(kArial, logfont.lfFaceName);
+}
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleDown) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
+  PlatformFontWin::FontAdjustment adjustment{L"", 0.5};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-6, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+
+  logfont = CreateLOGFONT(kSegoeUI, 12);
+  adjustment = {L"", 0.5};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(6, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+}
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleDownWithRounding) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -10);
+  PlatformFontWin::FontAdjustment adjustment{L"", 0.85};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-9, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+
+  logfont = CreateLOGFONT(kSegoeUI, 10);
+  adjustment = {L"", 0.85};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(9, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+}
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleUpWithFaceChange) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
+  PlatformFontWin::FontAdjustment adjustment{kArial, 1.5};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-18, logfont.lfHeight);
+  EXPECT_EQ(kArial, logfont.lfFaceName);
+
+  logfont = CreateLOGFONT(kSegoeUI, 12);
+  adjustment = {kArial, 1.5};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(18, logfont.lfHeight);
+  EXPECT_EQ(kArial, logfont.lfFaceName);
+}
+
+TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleUpWithRounding) {
+  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -10);
+  PlatformFontWin::FontAdjustment adjustment{L"", 1.111};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(-11, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+
+  logfont = CreateLOGFONT(kSegoeUI, 10);
+  adjustment = {L"", 1.11};
+  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
+  EXPECT_EQ(11, logfont.lfHeight);
+  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
+}
 
 // Test whether font metrics retrieved by DirectWrite (skia) and GDI match as
 // per assumptions mentioned below:-

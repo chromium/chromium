@@ -186,7 +186,7 @@ HttpCache::Writers::EraseTransaction(TransactionMap::iterator it, int result) {
   Transaction* transaction = it->first;
   transaction->WriterAboutToBeRemovedFromEntry(result);
 
-  TransactionMap::iterator return_it = all_writers_.erase(it);
+  auto return_it = all_writers_.erase(it);
 
   if (all_writers_.empty() && next_state_ == State::NONE) {
     // This needs to be called to handle the edge case where even before Read is

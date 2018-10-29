@@ -119,6 +119,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   static LayoutInline* CreateAnonymous(Document*);
 
+  // Create an anonymous inline box for ::first-line. The instance created by
+  // this function has IsFirstLineAnonymous() == true.
+  static LayoutInline* CreateAnonymousForFirstLine(Document*);
+
   LayoutObject* FirstChild() const {
     DCHECK_EQ(Children(), VirtualChildren());
     return Children()->FirstChild();
@@ -141,7 +145,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   // True if this is an anonymous inline box for ::first-line that wraps the
   // whole inline formatting context.
-  bool IsFirstLineAnonymous() const;
+  virtual bool IsFirstLineAnonymous() const;
 
   LayoutUnit MarginLeft() const final;
   LayoutUnit MarginRight() const final;
@@ -154,6 +158,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutRect LinesBoundingBox() const;
   LayoutRect VisualOverflowRect() const final;
+  LayoutRect ReferenceBoxForClipPath() const;
 
   InlineFlowBox* CreateAndAppendInlineFlowBox();
 
@@ -179,6 +184,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   NGPaintFragment* FirstInlineFragment() const final;
   void SetFirstInlineFragment(NGPaintFragment*) final;
+
+  // Return true if this inline doesn't occur on any lines, i.e. when it creates
+  // no fragments.
+  bool IsEmpty() const { return !FirstLineBox() && !FirstInlineFragment(); }
 
   LayoutBoxModelObject* VirtualContinuation() const final {
     return Continuation();
@@ -353,9 +362,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void UpdateHitTestResult(HitTestResult&, const LayoutPoint&) const final;
 
-  void ImageChanged(WrappedImagePtr,
-                    CanDeferInvalidation,
-                    const IntRect* = nullptr) final;
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 
   void AddAnnotatedRegions(Vector<AnnotatedRegionValue>&) final;
 

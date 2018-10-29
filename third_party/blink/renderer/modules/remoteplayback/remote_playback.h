@@ -150,6 +150,9 @@ class MODULES_EXPORT RemotePlayback final
   // May be called more than once in a row.
   void StopListeningForAvailability();
 
+  // Clears bindings after remote playback stops.
+  void CleanupConnections();
+
   WebRemotePlaybackState state_;
   WebRemotePlaybackAvailability availability_;
   HeapHashMap<int, TraceWrapperMember<AvailabilityCallbackWrapper>>

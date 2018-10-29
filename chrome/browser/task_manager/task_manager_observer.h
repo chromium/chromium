@@ -49,10 +49,9 @@ enum RefreshType {
   REFRESH_TYPE_FD_COUNT = 1 << 14,
 #endif  // defined(OS_LINUX)
 
-  REFRESH_TYPE_MEMORY_STATE = 1 << 15,
-  REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 16,
-  REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 17,
-  REFRESH_TYPE_HARD_FAULTS = 1 << 18,
+  REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 15,
+  REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 16,
+  REFRESH_TYPE_HARD_FAULTS = 1 << 17,
 };
 
 // Defines the interface for observers of the task manager.

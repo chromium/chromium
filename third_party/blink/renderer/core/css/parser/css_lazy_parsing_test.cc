@@ -23,7 +23,7 @@ class CSSLazyParsingTest : public testing::Test {
     return rule->HasParsedProperties();
   }
 
-  StyleRule* RuleAt(StyleSheetContents* sheet, size_t index) {
+  StyleRule* RuleAt(StyleSheetContents* sheet, wtf_size_t index) {
     return ToStyleRule(sheet->ChildRules()[index]);
   }
 
@@ -45,9 +45,7 @@ TEST_F(CSSLazyParsingTest, Simple) {
   EXPECT_TRUE(HasParsedProperties(rule));
 }
 
-// Avoid parsing rules with ::before or ::after to avoid causing
-// collectFeatures() when we trigger parsing for attr();
-TEST_F(CSSLazyParsingTest, DontLazyParseBeforeAfter) {
+TEST_F(CSSLazyParsingTest, LazyParseBeforeAfter) {
   CSSParserContext* context = CSSParserContext::Create(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
@@ -57,8 +55,8 @@ TEST_F(CSSLazyParsingTest, DontLazyParseBeforeAfter) {
   CSSParser::ParseSheet(context, style_sheet, sheet_text,
                         CSSDeferPropertyParsing::kYes);
 
-  EXPECT_TRUE(HasParsedProperties(RuleAt(style_sheet, 0)));
-  EXPECT_TRUE(HasParsedProperties(RuleAt(style_sheet, 1)));
+  EXPECT_FALSE(HasParsedProperties(RuleAt(style_sheet, 0)));
+  EXPECT_FALSE(HasParsedProperties(RuleAt(style_sheet, 1)));
 }
 
 // Test for crbug.com/664115 where |shouldConsiderForMatchingRules| would flip
@@ -88,8 +86,8 @@ TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesDoesntChange1) {
       rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
 }
 
-// Test the same thing as above, with a property that does not get lazy parsed,
-// to ensure that we perform the optimization where possible.
+// Test the same thing as above with lazy parsing off to ensure that we perform
+// the optimization where possible.
 TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesSimple) {
   CSSParserContext* context = CSSParserContext::Create(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -97,7 +95,7 @@ TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesSimple) {
 
   String sheet_text = "p::before { ,badness, } ";
   CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kYes);
+                        CSSDeferPropertyParsing::kNo);
 
   StyleRule* rule = RuleAt(style_sheet, 0);
   EXPECT_TRUE(HasParsedProperties(rule));

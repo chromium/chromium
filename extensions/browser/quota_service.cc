@@ -116,7 +116,7 @@ bool QuotaLimitHeuristic::ApplyToArgs(const base::ListValue* args,
                                       const base::TimeTicks& event_time) {
   BucketList buckets;
   bucket_mapper_->GetBucketsForArgs(args, &buckets);
-  for (BucketList::iterator i = buckets.begin(); i != buckets.end(); ++i) {
+  for (auto i = buckets.begin(); i != buckets.end(); ++i) {
     if ((*i)->expiration().is_null())  // A brand new bucket.
       (*i)->Reset(config_, event_time);
     if (!Apply(*i, event_time))

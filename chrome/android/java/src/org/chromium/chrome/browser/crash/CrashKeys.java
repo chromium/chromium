@@ -21,9 +21,8 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * </ol>
  */
 public class CrashKeys {
-    private static final String[] KEYS = new String[] {
-            "loaded_dynamic_module", "active_dynamic_module",
-    };
+    private static final String[] KEYS =
+            new String[] {"loaded_dynamic_module", "active_dynamic_module", "application_status"};
 
     private final AtomicReferenceArray<String> mValues = new AtomicReferenceArray<>(KEYS.length);
 

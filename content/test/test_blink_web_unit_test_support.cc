@@ -35,7 +35,6 @@
 #include "third_party/blink/public/platform/web_rtc_certificate_generator.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/web/blink.h"
@@ -215,13 +214,6 @@ blink::WebBlobRegistry* TestBlinkWebUnitTestSupport::GetBlobRegistry() {
   return &blob_registry_;
 }
 
-std::unique_ptr<blink::WebIDBFactory>
-TestBlinkWebUnitTestSupport::CreateIdbFactory() {
-  NOTREACHED() <<
-      "IndexedDB cannot be tested with in-process harnesses.";
-  return nullptr;
-}
-
 std::unique_ptr<blink::WebURLLoaderFactory>
 TestBlinkWebUnitTestSupport::CreateDefaultURLLoaderFactory() {
   return std::make_unique<WebURLLoaderFactoryWithMock>(
@@ -299,12 +291,6 @@ blink::WebString TestBlinkWebUnitTestSupport::DefaultLocale() {
 blink::WebURLLoaderMockFactory*
 TestBlinkWebUnitTestSupport::GetURLLoaderMockFactory() {
   return url_loader_factory_.get();
-}
-
-blink::WebThread* TestBlinkWebUnitTestSupport::CurrentThread() {
-  if (main_thread_->IsCurrentThread())
-    return main_thread_;
-  return BlinkPlatformImpl::CurrentThread();
 }
 
 bool TestBlinkWebUnitTestSupport::IsThreadedAnimationEnabled() {

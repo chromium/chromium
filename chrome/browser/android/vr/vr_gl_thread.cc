@@ -493,6 +493,43 @@ void VrGLThread::UpdateWebInputIndices(int selection_start,
                           composition_start, composition_end));
 }
 
+void VrGLThread::OnSwapContents(int new_content_id) {
+  task_runner()->PostTask(
+      FROM_HERE, base::BindRepeating(&BrowserUiInterface::OnSwapContents,
+                                     weak_browser_ui_, new_content_id));
+}
+
+void VrGLThread::SetDialogLocation(float x, float y) {
+  task_runner()->PostTask(
+      FROM_HERE, base::BindRepeating(&BrowserUiInterface::SetDialogLocation,
+                                     weak_browser_ui_, x, y));
+}
+
+void VrGLThread::SetDialogFloating(bool floating) {
+  task_runner()->PostTask(
+      FROM_HERE, base::BindRepeating(&BrowserUiInterface::SetDialogFloating,
+                                     weak_browser_ui_, floating));
+}
+
+void VrGLThread::ShowPlatformToast(const base::string16& text) {
+  task_runner()->PostTask(
+      FROM_HERE, base::BindRepeating(&BrowserUiInterface::ShowPlatformToast,
+                                     weak_browser_ui_, text));
+}
+
+void VrGLThread::CancelPlatformToast() {
+  task_runner()->PostTask(
+      FROM_HERE, base::BindRepeating(&BrowserUiInterface::CancelPlatformToast,
+                                     weak_browser_ui_));
+}
+
+void VrGLThread::OnContentBoundsChanged(int width, int height) {
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindRepeating(&BrowserUiInterface::OnContentBoundsChanged,
+                          weak_browser_ui_, width, height));
+}
+
 void VrGLThread::AddOrUpdateTab(int id,
                                 bool incognito,
                                 const base::string16& title) {
@@ -516,9 +553,18 @@ void VrGLThread::RemoveAllTabs() {
       base::BindOnce(&BrowserUiInterface::RemoveAllTabs, weak_browser_ui_));
 }
 
+void VrGLThread::PerformKeyboardInputForTesting(
+    KeyboardTestInput keyboard_input) {
+  DCHECK(OnMainThread());
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserUiInterface::PerformKeyboardInputForTesting,
+                     weak_browser_ui_, keyboard_input));
+}
+
 void VrGLThread::ReportUiOperationResultForTesting(
     const UiTestOperationType& action_type,
-    const VrUiTestActivityResult& result) {
+    const UiTestOperationResult& result) {
   DCHECK(OnGlThread());
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VrShell::ReportUiOperationResultForTesting,

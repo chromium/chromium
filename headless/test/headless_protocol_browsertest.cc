@@ -26,6 +26,7 @@
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
@@ -45,6 +46,13 @@ class HeadlessProtocolBrowserTest
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "third_party/WebKit/LayoutTests/http/tests/inspector-protocol");
     EXPECT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
+                                    "MAP *.test 127.0.0.1");
+    HeadlessAsyncDevTooledBrowserTest::SetUpCommandLine(command_line);
   }
 
  private:
@@ -173,7 +181,6 @@ class HeadlessProtocolBrowserTest
     // Make sure the navigations spawn new processes. We run test harness
     // in one process (harness.test) and tests in another.
     builder.SetSitePerProcess(true);
-    builder.SetHostResolverRules("MAP *.test 127.0.0.1");
   }
 
  protected:

@@ -24,6 +24,7 @@ struct ELF {
   typedef Elf32_Sym Sym;
   typedef Elf32_Rel Rel;
   typedef Elf32_Rela Rela;
+  typedef Elf32_Word Relr;
   typedef Elf32_auxv_t auxv_t;
 
   enum { kElfClass = ELFCLASS32 };
@@ -53,6 +54,7 @@ struct ELF {
   typedef Elf64_Sym Sym;
   typedef Elf64_Rel Rel;
   typedef Elf64_Rela Rela;
+  typedef Elf64_Xword Relr;
   typedef Elf64_auxv_t auxv_t;
 
   enum { kElfClass = ELFCLASS64 };

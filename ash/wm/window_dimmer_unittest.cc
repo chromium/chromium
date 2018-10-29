@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
-#include "ui/aura/window_occlusion_tracker.h"
 
 namespace ash {
 
@@ -20,7 +19,7 @@ TEST_F(WindowDimmerTest, Occlusion) {
   aura::Window* root_window = CurrentContext();
   aura::Window* bottom_window = aura::test::CreateTestWindow(
       SK_ColorWHITE, 1, root_window->bounds(), root_window);
-  aura::WindowOcclusionTracker::Track(bottom_window);
+  bottom_window->TrackOcclusionState();
   WindowDimmer dimmer(root_window);
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
             bottom_window->occlusion_state());

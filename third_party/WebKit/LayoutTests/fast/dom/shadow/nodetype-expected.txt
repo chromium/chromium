@@ -1,5 +1,5 @@
-
 This tests the shadow host's and shadow root's nodeType.
+
 PASS progress.nodeType is Node.ELEMENT_NODE
 PASS shadow.nodeType is Node.DOCUMENT_FRAGMENT_NODE
 PASS shadowChild is non-null.

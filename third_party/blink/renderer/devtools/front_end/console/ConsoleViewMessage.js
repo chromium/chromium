@@ -45,6 +45,8 @@ Console.ConsoleViewMessage = class {
     this._repeatCount = 1;
     this._closeGroupDecorationCount = 0;
     this._nestingLevel = nestingLevel;
+    /** @type {!Array<!ObjectUI.ObjectPropertiesSection>} */
+    this._focusableChildren = [];
 
     /** @type {?DataGrid.DataGrid} */
     this._dataGrid = null;
@@ -52,6 +54,9 @@ Console.ConsoleViewMessage = class {
     this._searchRegex = null;
     /** @type {?UI.Icon} */
     this._messageLevelIcon = null;
+    this._traceExpanded = false;
+    /** @type {?function(boolean)} */
+    this._expandTrace = null;
   }
 
   /**
@@ -377,30 +382,28 @@ Console.ConsoleViewMessage = class {
         this._message.runtimeModel().target(), this._linkifier, this._message.stackTrace);
     stackTraceElement.appendChild(stackTracePreview);
     stackTraceElement.classList.add('hidden');
-
-    /**
-     * @param {boolean} expand
-     */
-    function expandStackTrace(expand) {
+    this._expandTrace = expand => {
       icon.setIconType(expand ? 'smallicon-triangle-down' : 'smallicon-triangle-right');
       stackTraceElement.classList.toggle('hidden', !expand);
-    }
+      this._traceExpanded = expand;
+    };
 
     /**
+     * @this {!Console.ConsoleViewMessage}
      * @param {?Event} event
      */
     function toggleStackTrace(event) {
       if (UI.isEditing() || contentElement.hasSelection())
         return;
-      expandStackTrace(stackTraceElement.classList.contains('hidden'));
+      this._expandTrace(stackTraceElement.classList.contains('hidden'));
       event.consume();
     }
 
-    clickableElement.addEventListener('click', toggleStackTrace, false);
+    clickableElement.addEventListener('click', toggleStackTrace.bind(this), false);
     if (this._message.type === SDK.ConsoleMessage.MessageType.Trace)
-      expandStackTrace(true);
+      this._expandTrace(true);
 
-    toggleElement._expandStackTraceForTest = expandStackTrace.bind(null, true);
+    toggleElement._expandStackTraceForTest = this._expandTrace.bind(this, true);
     return toggleElement;
   }
 
@@ -607,6 +610,7 @@ Console.ConsoleViewMessage = class {
     const section = new ObjectUI.ObjectPropertiesSection(obj, titleElement, this._linkifier);
     section.element.classList.add('console-view-object-properties-section');
     section.enableContextMenu();
+    this._focusableChildren.push(section);
     return section.element;
   }
 
@@ -735,31 +739,32 @@ Console.ConsoleViewMessage = class {
         object, propertyPath, onInvokeGetterClick.bind(this));
 
     /**
-     * @param {?SDK.RemoteObject} result
-     * @param {boolean=} wasThrown
+     * @param {!SDK.CallFunctionResult} result
      * @this {Console.ConsoleViewMessage}
      */
-    function onInvokeGetterClick(result, wasThrown) {
-      if (!result)
+    function onInvokeGetterClick(result) {
+      const wasThrown = result.wasThrown;
+      const object = result.object;
+      if (!object)
         return;
       rootElement.removeChildren();
       if (wasThrown) {
         const element = rootElement.createChild('span');
         element.textContent = Common.UIString('<exception>');
-        element.title = /** @type {string} */ (result.description);
+        element.title = /** @type {string} */ (object.description);
       } else if (isArrayEntry) {
-        rootElement.appendChild(this._formatAsArrayEntry(result));
+        rootElement.appendChild(this._formatAsArrayEntry(object));
       } else {
         // Make a PropertyPreview from the RemoteObject similar to the backend logic.
         const maxLength = 100;
-        const type = result.type;
-        const subtype = result.subtype;
+        const type = object.type;
+        const subtype = object.subtype;
         let description = '';
-        if (type !== 'function' && result.description) {
+        if (type !== 'function' && object.description) {
           if (type === 'string' || subtype === 'regexp')
-            description = result.description.trimMiddle(maxLength);
+            description = object.description.trimMiddle(maxLength);
           else
-            description = result.description.trimEnd(maxLength);
+            description = object.description.trimEnd(maxLength);
         }
         rootElement.appendChild(this._previewFormatter.renderPropertyPreview(type, subtype, description));
       }
@@ -1033,6 +1038,90 @@ Console.ConsoleViewMessage = class {
   }
 
   /**
+   * @return {number}
+   */
+  _focusedChildIndex() {
+    if (!this._focusableChildren.length)
+      return -1;
+    return this._focusableChildren.findIndex(child => child.element.hasFocus());
+  }
+
+  /**
+   * @param {!Event} event
+   */
+  _onKeyDown(event) {
+    if (UI.isEditing() || !this._element.hasFocus() || this._element.hasSelection())
+      return;
+    if (this.maybeHandleOnKeyDown(event))
+      event.consume(true);
+  }
+
+  /**
+   * @protected
+   * @param {!Event} event
+   */
+  maybeHandleOnKeyDown(event) {
+    // Handle trace expansion.
+    const focusedChildIndex = this._focusedChildIndex();
+    const isWrapperFocused = focusedChildIndex === -1;
+    if (this._expandTrace && isWrapperFocused) {
+      if ((event.key === 'ArrowLeft' && this._traceExpanded) || (event.key === 'ArrowRight' && !this._traceExpanded)) {
+        this._expandTrace(!this._traceExpanded);
+        return true;
+      }
+    }
+    if (!this._focusableChildren.length)
+      return false;
+
+    if (event.key === 'ArrowLeft') {
+      this._element.focus();
+      return true;
+    }
+    if (event.key === 'ArrowRight') {
+      if (isWrapperFocused) {
+        this._focusChild(0);
+        return true;
+      }
+    }
+    if (event.key === 'ArrowUp') {
+      if (focusedChildIndex === 0) {
+        this._element.focus();
+        return true;
+      } else if (focusedChildIndex > 0) {
+        this._focusChild(focusedChildIndex - 1);
+        return true;
+      }
+    }
+    if (event.key === 'ArrowDown') {
+      if (isWrapperFocused) {
+        this._focusChild(0);
+        return true;
+      } else if (focusedChildIndex < this._focusableChildren.length - 1) {
+        this._focusChild(focusedChildIndex + 1);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param {number} index
+   */
+  _focusChild(index) {
+    const section = this._focusableChildren[index];
+    if (!section.objectTreeElement().selected)
+      section.objectTreeElement().select();
+    section.focus();
+  }
+
+  focusLastChildOrSelf() {
+    if (this._focusableChildren.length)
+      this._focusChild(this._focusableChildren.length - 1);
+    else if (this._element)
+      this._element.focus();
+  }
+
+  /**
    * @return {!Element}
    */
   contentElement() {
@@ -1071,8 +1160,10 @@ Console.ConsoleViewMessage = class {
       return this._element;
 
     this._element = createElement('div');
-    if (Runtime.experiments.isEnabled('consoleKeyboardNavigation'))
+    if (Runtime.experiments.isEnabled('consoleKeyboardNavigation')) {
       this._element.tabIndex = -1;
+      this._element.addEventListener('keydown', this._onKeyDown.bind(this));
+    }
     this.updateMessageElement();
     return this._element;
   }
@@ -1101,7 +1192,6 @@ Console.ConsoleViewMessage = class {
     switch (this._message.level) {
       case SDK.ConsoleMessage.MessageLevel.Verbose:
         this._element.classList.add('console-verbose-level');
-        this._updateMessageLevelIcon('');
         break;
       case SDK.ConsoleMessage.MessageLevel.Info:
         this._element.classList.add('console-info-level');
@@ -1110,13 +1200,12 @@ Console.ConsoleViewMessage = class {
         break;
       case SDK.ConsoleMessage.MessageLevel.Warning:
         this._element.classList.add('console-warning-level');
-        this._updateMessageLevelIcon('smallicon-warning');
         break;
       case SDK.ConsoleMessage.MessageLevel.Error:
         this._element.classList.add('console-error-level');
-        this._updateMessageLevelIcon('smallicon-error');
         break;
     }
+    this._updateMessageLevelIcon();
     if (this._shouldRenderAsWarning())
       this._element.classList.add('console-warning-level');
 
@@ -1137,10 +1226,16 @@ Console.ConsoleViewMessage = class {
          this._message.source === SDK.ConsoleMessage.MessageSource.Recommendation);
   }
 
-  /**
-   * @param {string} iconType
-   */
-  _updateMessageLevelIcon(iconType) {
+  _updateMessageLevelIcon() {
+    let iconType = '';
+    let accessibleName = '';
+    if (this._message.level === SDK.ConsoleMessage.MessageLevel.Warning) {
+      iconType = 'smallicon-warning';
+      accessibleName = ls`Warning`;
+    } else if (this._message.level === SDK.ConsoleMessage.MessageLevel.Error) {
+      iconType = 'smallicon-error';
+      accessibleName = ls`Error`;
+    }
     if (!iconType && !this._messageLevelIcon)
       return;
     if (iconType && !this._messageLevelIcon) {
@@ -1149,6 +1244,7 @@ Console.ConsoleViewMessage = class {
         this._contentElement.insertBefore(this._messageLevelIcon, this._contentElement.firstChild);
     }
     this._messageLevelIcon.setIconType(iconType);
+    UI.ARIAUtils.setAccessibleName(this._messageLevelIcon, accessibleName);
   }
 
   /**
@@ -1208,6 +1304,12 @@ Console.ConsoleViewMessage = class {
       this._contentElement.classList.add('repeated-message');
     }
     this._repeatCountElement.textContent = this._repeatCount;
+    let accessibleName = ls`Repeat ${this._repeatCount}`;
+    if (this._message.level === SDK.ConsoleMessage.MessageLevel.Warning)
+      accessibleName = ls`Warning ${accessibleName}`;
+    else if (this._message.level === SDK.ConsoleMessage.MessageLevel.Error)
+      accessibleName = ls`Error ${accessibleName}`;
+    UI.ARIAUtils.setAccessibleName(this._repeatCountElement, accessibleName);
   }
 
   get text() {
@@ -1484,22 +1586,25 @@ Console.ConsoleGroupViewMessage = class extends Console.ConsoleViewMessage {
    * @param {!Components.Linkifier} linkifier
    * @param {!ProductRegistry.BadgePool} badgePool
    * @param {number} nestingLevel
+   * @param {function()} onToggle
    */
-  constructor(consoleMessage, linkifier, badgePool, nestingLevel) {
+  constructor(consoleMessage, linkifier, badgePool, nestingLevel, onToggle) {
     console.assert(consoleMessage.isGroupStartMessage());
     super(consoleMessage, linkifier, badgePool, nestingLevel);
     this._collapsed = consoleMessage.type === SDK.ConsoleMessage.MessageType.StartGroupCollapsed;
     /** @type {?UI.Icon} */
     this._expandGroupIcon = null;
+    this._onToggle = onToggle;
   }
 
   /**
    * @param {boolean} collapsed
    */
-  setCollapsed(collapsed) {
+  _setCollapsed(collapsed) {
     this._collapsed = collapsed;
     if (this._expandGroupIcon)
       this._expandGroupIcon.setIconType(this._collapsed ? 'smallicon-triangle-right' : 'smallicon-triangle-down');
+    this._onToggle.call(null);
   }
 
   /**
@@ -1511,19 +1616,35 @@ Console.ConsoleGroupViewMessage = class extends Console.ConsoleViewMessage {
 
   /**
    * @override
+   * @param {!Event} event
+   */
+  maybeHandleOnKeyDown(event) {
+    const focusedChildIndex = this._focusedChildIndex();
+    if (focusedChildIndex === -1) {
+      if ((event.key === 'ArrowLeft' && !this._collapsed) || (event.key === 'ArrowRight' && this._collapsed)) {
+        this._setCollapsed(!this._collapsed);
+        return true;
+      }
+    }
+    return super.maybeHandleOnKeyDown(event);
+  }
+
+  /**
+   * @override
    * @return {!Element}
    */
   toMessageElement() {
     if (!this._element) {
       super.toMessageElement();
-      this._expandGroupIcon = UI.Icon.create('', 'expand-group-icon');
+      const iconType = this._collapsed ? 'smallicon-triangle-right' : 'smallicon-triangle-down';
+      this._expandGroupIcon = UI.Icon.create(iconType, 'expand-group-icon');
       // Intercept focus to avoid highlight on click.
       this._contentElement.tabIndex = -1;
       if (this._repeatCountElement)
         this._repeatCountElement.insertBefore(this._expandGroupIcon, this._repeatCountElement.firstChild);
       else
         this._element.insertBefore(this._expandGroupIcon, this._contentElement);
-      this.setCollapsed(this._collapsed);
+      this._element.addEventListener('click', () => this._setCollapsed(!this._collapsed));
     }
     return this._element;
   }

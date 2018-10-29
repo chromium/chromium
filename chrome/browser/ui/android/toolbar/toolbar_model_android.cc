@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/android/toolbar/toolbar_model_android.h"
 
 #include "base/android/jni_string.h"
-#include "components/toolbar/toolbar_model_impl.h"
+#include "components/omnibox/browser/toolbar_model_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"

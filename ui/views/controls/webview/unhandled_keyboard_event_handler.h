@@ -23,12 +23,12 @@ class WEBVIEW_EXPORT UnhandledKeyboardEventHandler {
   UnhandledKeyboardEventHandler();
   ~UnhandledKeyboardEventHandler();
 
-  void HandleKeyboardEvent(const content::NativeWebKeyboardEvent& event,
+  bool HandleKeyboardEvent(const content::NativeWebKeyboardEvent& event,
                            FocusManager* focus_manager);
 
  private:
   // Platform specific handling for unhandled keyboard events.
-  static void HandleNativeKeyboardEvent(gfx::NativeEvent event,
+  static bool HandleNativeKeyboardEvent(gfx::NativeEvent event,
                                         FocusManager* focus_manager);
 
   // Whether to ignore the next Char keyboard event.

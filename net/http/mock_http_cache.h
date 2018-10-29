@@ -75,7 +75,8 @@ class MockDiskEntry : public disk_cache::Entry,
                         CompletionOnceCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
-  int ReadyForSparseIO(CompletionOnceCallback completion_callback) override;
+  net::Error ReadyForSparseIO(
+      CompletionOnceCallback completion_callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   uint8_t in_memory_data() const { return in_memory_data_; }
@@ -148,23 +149,23 @@ class MockDiskCache : public disk_cache::Backend {
 
   CacheType GetCacheType() const override;
   int32_t GetEntryCount() const override;
-  int OpenEntry(const std::string& key,
-                net::RequestPriority request_priority,
-                disk_cache::Entry** entry,
-                CompletionOnceCallback callback) override;
-  int CreateEntry(const std::string& key,
-                  net::RequestPriority request_priority,
-                  disk_cache::Entry** entry,
-                  CompletionOnceCallback callback) override;
-  int DoomEntry(const std::string& key,
-                net::RequestPriority request_priority,
-                CompletionOnceCallback callback) override;
-  int DoomAllEntries(CompletionOnceCallback callback) override;
-  int DoomEntriesBetween(base::Time initial_time,
-                         base::Time end_time,
-                         CompletionOnceCallback callback) override;
-  int DoomEntriesSince(base::Time initial_time,
+  net::Error OpenEntry(const std::string& key,
+                       net::RequestPriority request_priority,
+                       disk_cache::Entry** entry,
                        CompletionOnceCallback callback) override;
+  net::Error CreateEntry(const std::string& key,
+                         net::RequestPriority request_priority,
+                         disk_cache::Entry** entry,
+                         CompletionOnceCallback callback) override;
+  net::Error DoomEntry(const std::string& key,
+                       net::RequestPriority request_priority,
+                       CompletionOnceCallback callback) override;
+  net::Error DoomAllEntries(CompletionOnceCallback callback) override;
+  net::Error DoomEntriesBetween(base::Time initial_time,
+                                base::Time end_time,
+                                CompletionOnceCallback callback) override;
+  net::Error DoomEntriesSince(base::Time initial_time,
+                              CompletionOnceCallback callback) override;
   int64_t CalculateSizeOfAllEntries(
       Int64CompletionOnceCallback callback) override;
   std::unique_ptr<Iterator> CreateIterator() override;
@@ -319,10 +320,10 @@ class MockHttpCache {
 
 // This version of the disk cache doesn't invoke CreateEntry callbacks.
 class MockDiskCacheNoCB : public MockDiskCache {
-  int CreateEntry(const std::string& key,
-                  net::RequestPriority request_priority,
-                  disk_cache::Entry** entry,
-                  CompletionOnceCallback callback) override;
+  net::Error CreateEntry(const std::string& key,
+                         net::RequestPriority request_priority,
+                         disk_cache::Entry** entry,
+                         CompletionOnceCallback callback) override;
 };
 
 class MockBackendNoCbFactory : public HttpCache::BackendFactory {

@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_OBJECT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_OBJECT_ELEMENT_H_
 
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
@@ -59,7 +60,7 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool HasFallbackContent() const override;
   bool UseFallbackContent() const override;
   bool CanRenderFallbackContent() const override { return true; }
-  void RenderFallbackContent() override;
+  void RenderFallbackContent(Frame*) override;
 
   bool IsFormControlElement() const override { return false; }
 
@@ -67,6 +68,10 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool IsInteractiveContent() const override;
 
   bool ChildrenCanHaveStyle() const override { return UseFallbackContent(); }
+
+  FrameOwnerElementType OwnerType() const final {
+    return FrameOwnerElementType::kObject;
+  }
 
   // Implementations of constraint validation API.
   // Note that the object elements are always barred from constraint validation.

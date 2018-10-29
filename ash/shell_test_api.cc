@@ -6,13 +6,18 @@
 
 #include <utility>
 
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/ws/window_service_owner.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "services/ws/window_service.h"
+#include "services/ws/window_tree.h"
 
 namespace ash {
 
@@ -78,6 +83,29 @@ void ShellTestApi::EnableTabletModeWindowManager(bool enable) {
 
 void ShellTestApi::EnableVirtualKeyboard(EnableVirtualKeyboardCallback cb) {
   shell_->EnableKeyboard();
+  std::move(cb).Run();
+}
+
+void ShellTestApi::SnapWindowInSplitView(const std::string& client_name,
+                                         ws::Id window_id,
+                                         SnapWindowInSplitViewCallback cb) {
+  auto* window_service = shell_->window_service_owner()->window_service();
+  aura::Window* window = nullptr;
+  for (ws::WindowTree* window_tree : window_service->window_trees()) {
+    if (client_name == window_tree->client_name()) {
+      window = window_tree->GetWindowByTransportId(window_id);
+      break;
+    }
+  }
+  DCHECK(window);
+  shell_->split_view_controller()->SnapWindow(window,
+                                              ash::SplitViewController::LEFT);
+  shell_->split_view_controller()->FlushForTesting();
+  std::move(cb).Run();
+}
+
+void ShellTestApi::ToggleFullscreen(ToggleFullscreenCallback cb) {
+  ash::accelerators::ToggleFullscreen();
   std::move(cb).Run();
 }
 

@@ -43,9 +43,7 @@ class CONTENT_EXPORT BackgroundFetchJobController final
       base::OnceCallback<void(const BackgroundFetchRegistrationId&,
                               blink::mojom::BackgroundFetchFailureReason)>;
   using ProgressCallback =
-      base::RepeatingCallback<void(const std::string& /* unique_id */,
-                                   uint64_t /* download_total */,
-                                   uint64_t /* downloaded */)>;
+      base::RepeatingCallback<void(const BackgroundFetchRegistration&)>;
 
   BackgroundFetchJobController(
       BackgroundFetchDelegateProxy* delegate_proxy,
@@ -66,7 +64,8 @@ class CONTENT_EXPORT BackgroundFetchJobController final
       int total_downloads,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      const std::string& ui_title);
+      const std::string& ui_title,
+      bool start_paused);
 
   // Gets the number of bytes downloaded for jobs that are currently running.
   uint64_t GetInProgressDownloadedBytes();
@@ -93,6 +92,11 @@ class CONTENT_EXPORT BackgroundFetchJobController final
   // Returns the number of requests that comprise the whole job.
   int total_downloads() const { return total_downloads_; }
 
+  // If |failure_reason_| is none, overwrites it with |failure_reason|, and
+  // returns the new value.
+  blink::mojom::BackgroundFetchFailureReason MergeFailureReason(
+      blink::mojom::BackgroundFetchFailureReason failure_reason);
+
   base::WeakPtr<BackgroundFetchJobController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -110,17 +114,34 @@ class CONTENT_EXPORT BackgroundFetchJobController final
   bool HasMoreRequests() override;
   void StartRequest(scoped_refptr<BackgroundFetchRequestInfo> request,
                     RequestFinishedCallback request_finished_callback) override;
-  bool IsProcessingARequest() override;
-  void Resume(RequestFinishedCallback request_finished_callback) override;
+  std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
+  TakeOutstandingRequests() override;
   void Abort(
-      blink::mojom::BackgroundFetchFailureReason reason_to_abort) override;
+      blink::mojom::BackgroundFetchFailureReason failure_reason) override;
 
  private:
+  // Performs mixed content checks on the |request| for Background Fetch.
+  // Background Fetch depends on Service Workers, which are restricted for use
+  // on secure origins. We can therefore assume that the registration's origin
+  // is secure. This test ensures that the origin for the url of every
+  // request is also secure.
+  bool IsMixedContent(const BackgroundFetchRequestInfo& request);
+
+  // Whether the |request| needs CORS preflight.
+  // Requests that require CORS preflights are temporarily blocked, because the
+  // browser side of Background Fetch doesn't yet support performing CORS
+  // checks. TODO(crbug.com/711354): Remove this temporary block.
+  bool RequiresCORSPreflight(const BackgroundFetchRequestInfo& request);
+
   // Options for the represented background fetch registration.
   BackgroundFetchOptions options_;
 
   // Icon for the represented background fetch registration.
   SkBitmap icon_;
+
+  // The list of requests for this fetch that started in a previous session
+  // and did not finish.
+  std::vector<scoped_refptr<BackgroundFetchRequestInfo>> outstanding_requests_;
 
   // Number of bytes downloaded for the active request.
   uint64_t active_request_downloaded_bytes_ = 0;
@@ -148,11 +169,8 @@ class CONTENT_EXPORT BackgroundFetchJobController final
   // Number of the requests that have been completed so far.
   int completed_downloads_ = 0;
 
-  // Whether the DownloadService is processing a request.
-  bool is_processing_a_request_ = false;
-
   // The reason background fetch was aborted.
-  blink::mojom::BackgroundFetchFailureReason reason_to_abort_ =
+  blink::mojom::BackgroundFetchFailureReason failure_reason_ =
       blink::mojom::BackgroundFetchFailureReason::NONE;
 
   base::WeakPtrFactory<BackgroundFetchJobController> weak_ptr_factory_;

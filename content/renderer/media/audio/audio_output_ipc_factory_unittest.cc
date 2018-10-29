@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_output_ipc.h"
 #include "mojo/public/cpp/bindings/binding.h"
@@ -99,7 +99,7 @@ class AudioOutputIPCFactoryTest : public testing::Test {
 TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   // This test makes sure that AudioOutputIPCFactory correctly binds the
   // RendererAudioOutputStreamFactoryPtr to the IO thread.
-  base::MessageLoop message_loop;
+  base::test::ScopedTaskEnvironment task_environment;
   base::RunLoop run_loop;
   auto io_thread = MakeIOThread();
 
@@ -137,7 +137,7 @@ TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
 
 TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
   // This test simulates having several frames being created and destructed.
-  base::MessageLoop message_loop;
+  base::test::ScopedTaskEnvironment task_environment;
   auto io_thread = MakeIOThread();
   const int n_factories = 5;
 
@@ -197,7 +197,7 @@ TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
 TEST_F(AudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
   // This test makes sure that calling Register... followed by Deregister...
   // correctly sequences the registration before the deregistration.
-  base::MessageLoop message_loop;
+  base::test::ScopedTaskEnvironment task_environment;
   auto io_thread = MakeIOThread();
 
   FakeRemoteFactory remote_factory;

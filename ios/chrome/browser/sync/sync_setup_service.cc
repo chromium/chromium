@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_prefs.h"
@@ -33,7 +34,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service,
     : sync_service_(sync_service), prefs_(prefs) {
   DCHECK(sync_service_);
   DCHECK(prefs_);
-  for (unsigned int i = 0; i < arraysize(kDataTypes); ++i) {
+  for (unsigned int i = 0; i < base::size(kDataTypes); ++i) {
     if (kDataTypes[i] == syncer::USER_EVENTS &&
         !unified_consent::IsUnifiedConsentFeatureEnabled())
       continue;
@@ -45,7 +46,7 @@ SyncSetupService::~SyncSetupService() {
 }
 
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
-  DCHECK(datatype < arraysize(kDataTypes));
+  DCHECK(datatype < base::size(kDataTypes));
   return kDataTypes[datatype];
 }
 
@@ -63,7 +64,8 @@ bool SyncSetupService::IsDataTypePreferred(syncer::ModelType datatype) const {
 
 void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
                                           bool enabled) {
-  sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  if (!sync_blocker_)
+    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
   syncer::ModelTypeSet types = GetPreferredDataTypes();
   if (enabled)
     types.Put(datatype);
@@ -105,7 +107,8 @@ bool SyncSetupService::IsSyncingAllDataTypes() const {
 }
 
 void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
-  sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  if (!sync_blocker_)
+    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
   if (sync_all && !IsSyncEnabled())
     SetSyncEnabled(true);
   sync_service_->OnUserChoseDatatypes(
@@ -177,7 +180,8 @@ void SyncSetupService::PrepareForFirstSyncSetup() {
   // |PrepareForFirstSyncSetup| should always be called while the user is signed
   // out. At that time, sync setup is not completed.
   DCHECK(!sync_service_->IsFirstSetupComplete());
-  sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  if (!sync_blocker_)
+    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
 }
 
 void SyncSetupService::CommitChanges() {
@@ -198,7 +202,8 @@ bool SyncSetupService::HasUncommittedChanges() {
 
 void SyncSetupService::SetSyncEnabledWithoutChangingDatatypes(
     bool sync_enabled) {
-  sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  if (!sync_blocker_)
+    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
   if (sync_enabled) {
     sync_service_->RequestStart();
   } else {

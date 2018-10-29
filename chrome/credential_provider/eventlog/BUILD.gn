@@ -1,0 +1,39 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/win/message_compiler.gni")
+import("//chrome/process_version_rc_template.gni")
+
+message_compiler("gcp_eventlog_messages") {
+  sources = [
+    "gcp_eventlog_messages.mc",
+  ]
+
+  user_mode_logging = false
+  compile_generated_code = false
+}
+
+process_version_rc_template("gcp_eventlog_provider_dll_version") {
+  sources = [
+    "gcp_eventlog_provider.ver",
+  ]
+  output = "$target_gen_dir/gcp_eventlog_provider_dll_version.rc"
+}
+
+shared_library("gcp_eventlog_provider") {
+  sources = [
+    "$root_gen_dir/chrome/credential_provider/eventlog/gcp_eventlog_messages.rc",
+    "gcp_eventlog_provider.cc",
+  ]
+
+  if (!is_asan) {
+    ldflags = [ "/NOENTRY" ]
+  }
+
+  deps = [
+    ":gcp_eventlog_messages",
+    ":gcp_eventlog_provider_dll_version",
+  ]
+}

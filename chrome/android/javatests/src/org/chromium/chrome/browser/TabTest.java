@@ -20,12 +20,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -50,6 +52,10 @@ public class TabTest {
             mOnTitleUpdatedHelper.notifyCalled();
         }
     };
+
+    private boolean isShowingSadTab() throws Exception {
+        return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(mTab));
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -101,11 +107,12 @@ public class TabTest {
 
         Assert.assertFalse(mTab.needsReload());
         Assert.assertFalse(mTab.isHidden());
-        Assert.assertFalse(mTab.isShowingSadTab());
+        Assert.assertFalse(isShowingSadTab());
 
         // Stop the activity and simulate a killed renderer.
         ApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
-        ThreadUtils.runOnUiThreadBlocking(() -> mTab.simulateRendererKilledForTesting(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeTabUtils.simulateRendererKilledForTesting(mTab, false));
 
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
@@ -114,7 +121,7 @@ public class TabTest {
             }
         });
         Assert.assertTrue(mTab.needsReload());
-        Assert.assertFalse(mTab.isShowingSadTab());
+        Assert.assertFalse(isShowingSadTab());
 
         ApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
 
@@ -126,7 +133,7 @@ public class TabTest {
             }
         });
         Assert.assertFalse(mTab.needsReload());
-        Assert.assertFalse(mTab.isShowingSadTab());
+        Assert.assertFalse(isShowingSadTab());
     }
 
     @Test

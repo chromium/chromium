@@ -72,8 +72,8 @@ std::unique_ptr<const PermissionSet> UnpackPermissionSet(
   std::vector<std::string>* permissions_list = permissions.permissions.get();
   if (permissions_list) {
     PermissionsInfo* info = PermissionsInfo::GetInstance();
-    for (std::vector<std::string>::iterator it = permissions_list->begin();
-        it != permissions_list->end(); ++it) {
+    for (auto it = permissions_list->begin(); it != permissions_list->end();
+         ++it) {
       // This is a compromise: we currently can't switch to a blend of
       // objects/strings all the way through the API. Until then, put this
       // processing here.
@@ -127,8 +127,8 @@ std::unique_ptr<const PermissionSet> UnpackPermissionSet(
 
   URLPatternSet origins;
   if (permissions.origins.get()) {
-    for (std::vector<std::string>::iterator it = permissions.origins->begin();
-        it != permissions.origins->end(); ++it) {
+    for (auto it = permissions.origins->begin();
+         it != permissions.origins->end(); ++it) {
       int allowed_schemes = Extension::kValidHostPermissionSchemes;
       if (!allow_file_access)
         allowed_schemes &= ~URLPattern::SCHEME_FILE;

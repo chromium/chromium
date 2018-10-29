@@ -20,7 +20,7 @@ OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() {}
 
 bool OverlayStrategySingleOnTop::Attempt(
     const SkMatrix44& output_color_matrix,
-    const OverlayProcessor::FilterOperationsMap& render_pass_background_filters,
+    const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     RenderPass* render_pass,
     OverlayCandidateList* candidate_list,
@@ -44,29 +44,25 @@ bool OverlayStrategySingleOnTop::Attempt(
   if (best_quad_it == quad_list->end())
     return false;
 
-  if (TryOverlay(quad_list, candidate_list, best_candidate, best_quad_it))
-    return true;
+  OverlayCandidateList new_candidate_list;
+  if (candidate_list->size() == 1) {
+    OverlayProcessor::EliminateOrCropPrimary(*quad_list, best_quad_it,
+                                             &candidate_list->back(),
+                                             &new_candidate_list);
+  } else {
+    new_candidate_list = *candidate_list;
+  }
 
-  return false;
-}
-
-bool OverlayStrategySingleOnTop::TryOverlay(
-    QuadList* quad_list,
-    OverlayCandidateList* candidate_list,
-    const OverlayCandidate& candidate,
-    QuadList::Iterator candidate_iterator) {
   // Add the overlay.
-  OverlayCandidateList new_candidate_list = *candidate_list;
-  new_candidate_list.push_back(candidate);
+  new_candidate_list.push_back(best_candidate);
   new_candidate_list.back().plane_z_order = 1;
 
   // Check for support.
   capability_checker_->CheckOverlaySupport(&new_candidate_list);
 
-  const OverlayCandidate& overlay_candidate = new_candidate_list.back();
   // If the candidate can be handled by an overlay, create a pass for it.
-  if (overlay_candidate.overlay_handled) {
-    quad_list->EraseAndInvalidateAllPointers(candidate_iterator);
+  if (new_candidate_list.back().overlay_handled) {
+    quad_list->EraseAndInvalidateAllPointers(best_quad_it);
     candidate_list->swap(new_candidate_list);
     return true;
   }

@@ -12,8 +12,7 @@
 #include "content/public/browser/download_manager.h"
 
 // An implementation of DownloadShelf for testing.
-class TestDownloadShelf : public DownloadShelf,
-                          public content::DownloadManager::Observer {
+class TestDownloadShelf : public DownloadShelf {
  public:
   TestDownloadShelf();
   ~TestDownloadShelf() override;
@@ -26,25 +25,22 @@ class TestDownloadShelf : public DownloadShelf,
   // Return |true| if a download was added to this shelf.
   bool did_add_download() const { return did_add_download_; }
 
-  // Set download_manager_ (and the result of calling GetDownloadManager())
-  void set_download_manager(content::DownloadManager* download_manager);
-
-  // DownloadManager::Observer implementation.
-  void ManagerGoingDown(content::DownloadManager* manager) override;
+  // Set a profile.
+  void set_profile(Profile* profile) { profile_ = profile; }
 
  protected:
-  void DoAddDownload(download::DownloadItem* download) override;
+  void DoAddDownload(DownloadUIModelPtr download) override;
   void DoOpen() override;
   void DoClose(CloseReason reason) override;
   void DoHide() override;
   void DoUnhide() override;
   base::TimeDelta GetTransientDownloadShowDelay() override;
-  content::DownloadManager* GetDownloadManager() override;
+  Profile* profile() const override;
 
  private:
   bool is_showing_;
   bool did_add_download_;
-  content::DownloadManager* download_manager_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDownloadShelf);
 };

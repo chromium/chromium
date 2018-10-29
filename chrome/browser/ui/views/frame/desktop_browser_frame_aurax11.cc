@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/shell_integration_linux.h"
-#include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -62,10 +61,8 @@ bool DesktopBrowserFrameAuraX11::UseCustomFrame() const {
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
   // feature is enabled).
-  if (extensions::HostedAppBrowserController::IsForExperimentalHostedAppBrowser(
-          browser_view()->browser())) {
+  if (browser_view()->IsBrowserTypeHostedApp())
     return true;
-  }
 
   return false;
 }

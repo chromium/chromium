@@ -297,6 +297,9 @@ class VolumeManager : public KeyedService,
   // Removes specified sshfs crostini mount.
   void RemoveSshfsCrostiniVolume(const base::FilePath& sshfs_mount_path);
 
+  // Removes Downloads volume used for testing.
+  void RemoveDownloadsDirectoryForTesting();
+
   // For testing purpose, registers a native local file system pointing to
   // |path| with DOWNLOADS type, and adds its volume info.
   bool RegisterDownloadsDirectoryForTesting(const base::FilePath& path);

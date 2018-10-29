@@ -55,6 +55,16 @@ print_preview_new.DuplexMode = {
   UNKNOWN_DUPLEX_MODE: -1
 };
 
+/**
+ * Values matching the types of duplex in a CDD.
+ * @enum {string}
+ */
+print_preview_new.DuplexType = {
+  NO_DUPLEX: 'NO_DUPLEX',
+  LONG_EDGE: 'LONG_EDGE',
+  SHORT_EDGE: 'SHORT_EDGE'
+};
+
 (function() {
 'use strict';
 
@@ -364,19 +374,31 @@ Polymer({
     this.set('settings.collate.available', !!caps && !!(caps.collate));
     this.set('settings.layout.available', this.isLayoutAvailable_(caps));
     this.set('settings.color.available', this.destination.hasColorCapability);
+
     if (this.destination.isColorManaged) {
       // |this.setSetting| does nothing if policy is present.
       // We want to set the value nevertheless so we call |this.set| directly.
       this.set('settings.color.value', this.destination.colorPolicyValue);
     }
-
     this.set('settings.color.setByPolicy', this.destination.isColorManaged);
+
+    if (this.destination.isDuplexManaged)
+      this.set('settings.duplex.value', this.destination.duplexPolicyValue);
+    this.set('settings.duplex.setByPolicy', this.destination.isDuplexManaged);
 
     this.set(
         'settings.dpi.available',
         !!caps && !!caps.dpi && !!caps.dpi.option &&
             caps.dpi.option.length > 1);
-    this.set('settings.duplex.available', !!caps && !!caps.duplex);
+
+    this.set(
+        'settings.duplex.available',
+        !!caps && !!caps.duplex && !!caps.duplex.option &&
+            caps.duplex.option.some(
+                o => o.type == print_preview_new.DuplexType.LONG_EDGE) &&
+            caps.duplex.option.some(
+                o => o.type == print_preview_new.DuplexType.NO_DUPLEX));
+
     this.set(
         'settings.vendorItems.available', !!caps && !!caps.vendor_capability);
 
@@ -532,6 +554,11 @@ Polymer({
                 defaultOption.type));
       }
     } else if (
+        this.destination.id ===
+            print_preview.Destination.GooglePromotedId.DOCS ||
+        this.destination.type === print_preview.DestinationType.MOBILE) {
+      this.set('settings.color.unavailableValue', true);
+    } else if (
         caps && caps.color && caps.color.option &&
         caps.color.option.length > 0) {
       this.set(
@@ -540,6 +567,24 @@ Polymer({
               caps.color.option[0].type));
     } else {  // if no color capability is reported, assume black and white.
       this.set('settings.color.unavailableValue', false);
+    }
+
+    if (this.settings.duplex.available) {
+      const defaultOption = caps.duplex.option.find(o => !!o.is_default);
+      this.setSetting(
+          'duplex',
+          defaultOption ?
+              defaultOption.type == print_preview_new.DuplexType.LONG_EDGE :
+              false);
+    } else if (
+        caps && caps.duplex && caps.duplex.option &&
+        !caps.duplex.option.some(
+            o => o.type != print_preview_new.DuplexType.LONG_EDGE)) {
+      // If the only option available is long edge, the value should always be
+      // true.
+      this.set('settings.duplex.unavailableValue', true);
+    } else {  // If no duplex capability is reported, assume false.
+      this.set('settings.duplex.unavailableValue', false);
     }
 
     if (this.settings.vendorItems.available) {
@@ -567,7 +612,7 @@ Polymer({
 
   /** @private */
   updateRecentDestinations_: function() {
-    if (!this.initialized_)
+    if (!this.initialized_ || !this.destination)
       return;
 
     // Determine if this destination is already in the recent destinations,
@@ -814,7 +859,9 @@ Polymer({
       cjt.print.copies = {copies: parseInt(this.getSettingValue('copies'), 10)};
     if (this.settings.duplex.available) {
       cjt.print.duplex = {
-        type: this.settings.duplex.value ? 'LONG_EDGE' : 'NO_DUPLEX'
+        type: this.settings.duplex.value ?
+            print_preview_new.DuplexType.LONG_EDGE :
+            print_preview_new.DuplexType.NO_DUPLEX,
       };
     }
     if (this.settings.mediaSize.available) {

@@ -24,13 +24,13 @@ static void SuspendAllMediaPlayersInRenderFrame(RenderFrameHost* rfh) {
 // and that players suspended in this way can be resumed. Note: This does not
 // test suspend in various ready states; those tests are handled by layout tests
 // for ease of writing and ready state manipulation.
-class MediaSuspendTest : public content::MediaBrowserTest {
+class MediaSuspendTest : public MediaBrowserTest {
  public:
   void RunSuspendTest(const std::string& load_until) {
     base::StringPairs query_params;
     query_params.emplace_back("event", load_until);
 
-    GURL gurl = content::GetFileUrlWithQuery(
+    GURL gurl = GetFileUrlWithQuery(
         media::GetTestDataFilePath("media_suspend_test.html"),
         media::GetURLQueryString(query_params));
 
@@ -74,7 +74,7 @@ class MediaSuspendTest : public content::MediaBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    content::MediaBrowserTest::SetUpCommandLine(command_line);
+    MediaBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 };

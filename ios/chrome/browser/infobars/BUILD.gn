@@ -15,8 +15,6 @@ source_set("infobars") {
     "infobar_container_ios.h",
     "infobar_container_ios.mm",
     "infobar_container_state_delegate.h",
-    "infobar_container_view.h",
-    "infobar_container_view.mm",
     "infobar_controller+protected.h",
     "infobar_controller.h",
     "infobar_controller.mm",
@@ -29,8 +27,7 @@ source_set("infobars") {
   deps = [
     "//base",
     "//components/translate/core/browser",
-    "//ios/chrome/browser/ui/infobars",
-    "//ios/chrome/common",
+    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/web",
     "//ui/base",
     "//ui/gfx",

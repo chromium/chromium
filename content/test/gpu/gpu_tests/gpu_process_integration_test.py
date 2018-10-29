@@ -80,7 +80,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('GpuProcess_driver_bug_workarounds_in_gpu_process', 'chrome:gpu'),
              ('GpuProcess_readback_webgl_gpu_process', 'chrome:gpu'),
              ('GpuProcess_feature_status_under_swiftshader', 'chrome:gpu'),
-             ('GpuProcess_only_one_workaround', 'chrome:gpu'),
+             ('GpuProcess_one_extra_workaround', 'chrome:gpu'),
              ('GpuProcess_disable_gpu', 'gpu/functional_webgl.html'),
              ('GpuProcess_disable_gpu_and_swiftshader',
               'gpu/functional_webgl.html'),
@@ -321,7 +321,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       else:
         pass
 
-  def _GpuProcess_only_one_workaround(self, test_path):
+  def _GpuProcess_one_extra_workaround(self, test_path):
     # Start this test by launching the browser with no command line
     # arguments.
     self.RestartBrowserIfNecessaryWithArgs([])
@@ -329,12 +329,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._VerifyGpuProcessPresent()
     recorded_workarounds, recorded_disabled_gl_extensions = (
       self._CompareAndCaptureDriverBugWorkarounds())
-    # Relaunch the browser with OS-specific command line arguments.
-    # Trigger test group 1 with entry 215, where only
+    # Relaunch the browser enabling test group 1 with entry 215, where
     # use_gpu_driver_workaround_for_testing is enabled.
     browser_args = ['--gpu-driver-bug-list-test-group=1']
-    for workaround in recorded_workarounds:
-      browser_args.append('--' + workaround)
     # Add the testing workaround to the recorded workarounds.
     recorded_workarounds.append('use_gpu_driver_workaround_for_testing')
     browser_args.append('--disable-gl-extensions=' +

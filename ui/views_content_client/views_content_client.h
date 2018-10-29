@@ -66,6 +66,13 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   void set_task(const Task& task) { task_ = task; }
   const Task& task() const { return task_; }
 
+  // Called by ViewsContentClientMainParts to supply the quit-closure to use
+  // to exit RunMain().
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+  base::OnceClosure& quit_closure() { return quit_closure_; }
+
  private:
 #if defined(OS_WIN)
   HINSTANCE instance_;
@@ -75,6 +82,7 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   const char** argv_;
 #endif
   Task task_;
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewsContentClient);
 };

@@ -10,23 +10,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <org.chromium.chrome.browser.widget.TintedImageView
-        android:id="@+id/arrow"
-        android:layout_height="@dimen/bottom_control_container_slim_peek_height"
-        android:layout_width="match_parent"
-        android:background="@android:color/white"
-        android:gravity="center"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:src="@drawable/ic_expand_less_black_24dp"
-        android:scaleType="center"
-        android:visibility="gone"
-        app:chrometint="@color/dark_mode_tint" />
-
     <LinearLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_control_container_peek_height"
+        android:layout_height="@dimen/bottom_sheet_peek_height"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@android:color/white" >
@@ -58,10 +45,10 @@
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_more_vert_black_24dp"
-            app:chrometint="@color/dark_mode_tint"
+            app:tint="@color/dark_mode_tint"
             tools:ignore="ContentDescription" />
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/close_button"
             android:layout_height="match_parent"
             android:layout_width="@dimen/contextual_suggestions_toolbar_icon_size"
@@ -69,14 +56,14 @@
             android:src="@drawable/btn_close"
             android:scaleType="center"
             android:contentDescription="@string/contextual_suggestions_close_button_description"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
    </LinearLayout>
 
    <ImageView
         android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_shadow_height"
-        android:layout_marginTop="@dimen/bottom_control_container_peek_height"
+        android:layout_marginTop="@dimen/bottom_sheet_peek_height"
         android:src="@drawable/modern_toolbar_shadow"
         android:scaleType="fitXY"
         tools:ignore="ContentDescription"

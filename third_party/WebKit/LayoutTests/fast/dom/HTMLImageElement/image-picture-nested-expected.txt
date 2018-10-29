@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById("canary").clientWidth is 75
 PASS currentSrcFileName("canary") is "blue_rect.jpg?0"
 PASS document.getElementById("picture_in_picture").clientWidth is 800
@@ -20,6 +21,6 @@ PASS currentSrcFileName("picture_at_end") is "blue_rect.jpg?52"
 PASS document.getElementById("picture_no_source").clientWidth is 75
 PASS currentSrcFileName("picture_no_source") is "blue_rect.jpg?6"
  
- 
- 
-     
+
+
+    

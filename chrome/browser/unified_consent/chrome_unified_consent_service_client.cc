@@ -32,10 +32,9 @@ ChromeUnifiedConsentServiceClient::ChromeUnifiedConsentServiceClient(
                            prefs::kNetworkPredictionOptions, pref_service_);
   ObserveServicePrefChange(Service::kSafeBrowsing, prefs::kSafeBrowsingEnabled,
                            pref_service_);
-  ObserveServicePrefChange(
-      Service::kSafeBrowsingExtendedReporting,
-      safe_browsing::GetExtendedReportingPrefName(*pref_service_),
-      pref_service_);
+  ObserveServicePrefChange(Service::kSafeBrowsingExtendedReporting,
+                           prefs::kSafeBrowsingScoutReportingEnabled,
+                           pref_service_);
   ObserveServicePrefChange(Service::kSearchSuggest,
                            prefs::kSearchSuggestEnabled, pref_service_);
   ObserveServicePrefChange(Service::kSpellCheck,

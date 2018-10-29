@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600 clip at (0,0) size 785x585 scrollWidth 829 scrollHeight 622
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 829x622 backgroundClip at (0,0) size 785x585 clip at (0,0) size 785x585
-  LayoutSVGRoot {svg} at (0,0) size 829.44x622.08
-    LayoutSVGRect {rect} at (1,1) size 478x358 [stroke={[type=SOLID] [color=#000000]}] [x=1.00] [y=1.00] [width=478.00] [height=358.00]
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0

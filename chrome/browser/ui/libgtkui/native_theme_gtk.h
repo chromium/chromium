@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LIBGTKUI_NATIVE_THEME_GTK_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/optional.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -65,6 +66,8 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       const FrameTopAreaExtraParams& frame_top_area) const override;
 
  private:
+  friend class base::NoDestructor<NativeThemeGtk>;
+
   NativeThemeGtk();
   ~NativeThemeGtk() override;
 

@@ -9,7 +9,6 @@
 
 #include "base/optional.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {

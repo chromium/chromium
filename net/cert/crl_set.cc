@@ -257,8 +257,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
 }
 
 CRLSet::Result CRLSet::CheckSPKI(const base::StringPiece& spki_hash) const {
-  for (std::vector<std::string>::const_iterator i = blocked_spkis_.begin();
-       i != blocked_spkis_.end(); ++i) {
+  for (auto i = blocked_spkis_.begin(); i != blocked_spkis_.end(); ++i) {
     if (spki_hash.size() == i->size() &&
         memcmp(spki_hash.data(), i->data(), i->size()) == 0) {
       return REVOKED;

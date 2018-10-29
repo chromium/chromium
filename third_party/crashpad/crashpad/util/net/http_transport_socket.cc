@@ -57,8 +57,7 @@ struct ScopedAddrinfoTraits {
   static addrinfo* InvalidValue() { return nullptr; }
   static void Free(addrinfo* ai) { freeaddrinfo(ai); }
 };
-using ScopedAddrinfo =
-    base::ScopedGeneric<addrinfo*, ScopedAddrinfoTraits>;
+using ScopedAddrinfo = base::ScopedGeneric<addrinfo*, ScopedAddrinfoTraits>;
 
 class Stream {
  public:
@@ -81,7 +80,7 @@ class FdStream : public Stream {
     return LoggingReadFileExactly(fd_, data, size);
   }
 
-  bool LoggingReadToEOF(std::string* result) override{
+  bool LoggingReadToEOF(std::string* result) override {
     return crashpad::LoggingReadToEOF(fd_, result);
   }
 
@@ -545,7 +544,8 @@ bool HTTPTransportSocket::ExecuteSynchronously(std::string* response_body) {
   }
 
 #if !defined(CRASHPAD_USE_BORINGSSL)
-  CHECK(scheme == "http");
+  CHECK(scheme == "http") << "Got " << scheme << " for scheme in '" << url()
+                          << "'";
 #endif
 
   base::ScopedFD sock(CreateSocket(hostname, port));

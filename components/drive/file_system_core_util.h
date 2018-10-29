@@ -25,6 +25,9 @@ const char kDriveOtherDirLocalId[] = "<other>";
 // "drive/team_drives" diretory's local ID is fixed to this value.
 const char kDriveTeamDrivesDirLocalId[] = "<team_drives>";
 
+// "drive/Computers" directory's local ID is fixed to this value.
+constexpr char kDriveComputersDirLocalId[] = "<computers>";
+
 // "drive/trash" diretory's local ID is fixed to this value.
 const char kDriveTrashDirLocalId[] = "<trash>";
 
@@ -34,6 +37,7 @@ const char kDriveGrandRootDirName[] = "drive";
 const char kDriveMyDriveRootDirName[] = "root";
 const char kDriveOtherDirName[] = "other";
 const char kDriveTeamDrivesDirName[] = "team_drives";
+constexpr char kDriveComputersDirName[] = "Computers";
 const char kDriveTrashDirName[] = "trash";
 
 // The team_drive_id value that signifies the users default corpus.

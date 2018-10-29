@@ -11,6 +11,7 @@ typemaps = [
   "//services/network/public/cpp/mutable_network_traffic_annotation_tag.typemap",
   "//services/network/public/cpp/mutable_partial_network_traffic_annotation_tag.typemap",
   "//services/network/public/cpp/network_param.typemap",
+  "//services/network/public/cpp/network_param_android.typemap",
   "//services/network/public/cpp/network_types.typemap",
   "//services/network/public/cpp/p2p.typemap",
   "//services/network/public/cpp/proxy_config.typemap",

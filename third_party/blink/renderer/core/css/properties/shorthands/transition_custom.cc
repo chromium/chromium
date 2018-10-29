@@ -56,13 +56,13 @@ bool Transition::ParseShorthand(
     return false;
   }
 
-  for (size_t i = 0; i < longhand_count; ++i) {
+  for (unsigned i = 0; i < longhand_count; ++i) {
     if (shorthand.properties()[i]->IDEquals(CSSPropertyTransitionProperty) &&
         !CSSParsingUtils::IsValidPropertyList(*longhands[i]))
       return false;
   }
 
-  for (size_t i = 0; i < longhand_count; ++i) {
+  for (unsigned i = 0; i < longhand_count; ++i) {
     CSSPropertyParserHelpers::AddProperty(
         shorthand.properties()[i]->PropertyID(), shorthand.id(), *longhands[i],
         important, CSSPropertyParserHelpers::IsImplicitProperty::kNotImplicit,
@@ -81,7 +81,7 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
   const CSSTransitionData* transition_data = style.Transitions();
   if (transition_data) {
     CSSValueList* transitions_list = CSSValueList::CreateCommaSeparated();
-    for (size_t i = 0; i < transition_data->PropertyList().size(); ++i) {
+    for (wtf_size_t i = 0; i < transition_data->PropertyList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       list->Append(*ComputedStyleUtils::CreateTransitionPropertyValue(
           transition_data->PropertyList()[i]));

@@ -6,9 +6,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -55,42 +55,6 @@ class TestStateStoreObserver : public StateStore::TestObserver {
   ScopedObserver<StateStore, StateStore::TestObserver> scoped_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestStateStoreObserver);
-};
-
-// A helper class to observe ExtensionActionAPI changes.
-class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
- public:
-  TestExtensionActionAPIObserver(content::BrowserContext* context,
-                                 const std::string& extension_id)
-      : extension_id_(extension_id), scoped_observer_(this) {
-    scoped_observer_.Add(ExtensionActionAPI::Get(context));
-  }
-  ~TestExtensionActionAPIObserver() override {}
-
-  void OnExtensionActionUpdated(
-      ExtensionAction* extension_action,
-      content::WebContents* web_contents,
-      content::BrowserContext* browser_context) override {
-    if (extension_action->extension_id() == extension_id_) {
-      last_web_contents_ = web_contents;
-      run_loop_.QuitWhenIdle();
-    }
-  }
-
-  const content::WebContents* last_web_contents() const {
-    return last_web_contents_;
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  content::WebContents* last_web_contents_ = nullptr;
-  std::string extension_id_;
-  base::RunLoop run_loop_;
-  ScopedObserver<ExtensionActionAPI, ExtensionActionAPI::Observer>
-      scoped_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionActionAPIObserver);
 };
 
 }  // namespace

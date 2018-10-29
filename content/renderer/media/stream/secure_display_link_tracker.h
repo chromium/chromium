@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/stl_util.h"
+
 // Tracks all connected links (video sinks / tracks), and reports if they are
 // all secure for video capturing.
 template <typename T>
@@ -30,8 +32,7 @@ class SecureDisplayLinkTracker {
 
 template <typename T>
 void SecureDisplayLinkTracker<T>::Add(T* link, bool is_link_secure) {
-  DCHECK(std::find(insecure_links_.begin(), insecure_links_.end(), link) ==
-         insecure_links_.end());
+  DCHECK(!base::ContainsValue(insecure_links_, link));
 
   if (!is_link_secure)
     insecure_links_.push_back(link);

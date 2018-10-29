@@ -92,6 +92,6 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
 
     // Non-standard APIs
     // The number of bytes consumed by the media decoder.
-    [MeasureAs=PrefixedAudioDecodedByteCount] readonly attribute unsigned long webkitAudioDecodedByteCount;
-    [MeasureAs=PrefixedVideoDecodedByteCount] readonly attribute unsigned long webkitVideoDecodedByteCount;
+    [MeasureAs=PrefixedAudioDecodedByteCount] readonly attribute unsigned long long webkitAudioDecodedByteCount;
+    [MeasureAs=PrefixedVideoDecodedByteCount] readonly attribute unsigned long long webkitVideoDecodedByteCount;
 };

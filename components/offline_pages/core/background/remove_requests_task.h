@@ -33,7 +33,7 @@ class RemoveRequestsTask : public Task {
   // Step for early termination, that builds failure result.
   void CompleteEarly(ItemActionStatus status);
   // Step 2. Processes update result, calls callback.
-  void CompleteWithResult(std::unique_ptr<UpdateRequestsResult> result);
+  void CompleteWithResult(UpdateRequestsResult result);
 
   // Store that this task updates.
   RequestQueueStore* store_;

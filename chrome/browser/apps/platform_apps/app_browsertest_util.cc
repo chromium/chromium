@@ -89,7 +89,7 @@ AppWindow* PlatformAppBrowserTest::GetFirstAppWindowForBrowser(
   const AppWindowRegistry::AppWindowList& app_windows =
       app_registry->app_windows();
 
-  AppWindowRegistry::const_iterator iter = app_windows.begin();
+  auto iter = app_windows.begin();
   if (iter != app_windows.end())
     return *iter;
 
@@ -185,7 +185,7 @@ AppWindow* PlatformAppBrowserTest::GetFirstAppWindowForApp(
   const AppWindowRegistry::AppWindowList& app_windows =
       app_registry->GetAppWindowsForApp(app_id);
 
-  AppWindowRegistry::const_iterator iter = app_windows.begin();
+  auto iter = app_windows.begin();
   if (iter != app_windows.end())
     return *iter;
 

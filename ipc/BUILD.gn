@@ -18,46 +18,12 @@ buildflag_header("ipc_buildflags") {
 
 component("ipc") {
   sources = [
-    "ipc_channel.cc",
-    "ipc_channel.h",
-    "ipc_channel_common.cc",
-    "ipc_channel_factory.cc",
-    "ipc_channel_factory.h",
-    "ipc_channel_handle.h",
-    "ipc_channel_mojo.cc",
-    "ipc_channel_mojo.h",
-    "ipc_channel_nacl.cc",
-    "ipc_channel_nacl.h",
-    "ipc_channel_proxy.cc",
-    "ipc_channel_proxy.h",
-    "ipc_channel_reader.cc",
-    "ipc_channel_reader.h",
-    "ipc_listener.h",
-    "ipc_logging.cc",
-    "ipc_logging.h",
-    "ipc_message_macros.h",
-    "ipc_message_pipe_reader.cc",
-    "ipc_message_pipe_reader.h",
-    "ipc_message_start.h",
-    "ipc_message_templates.h",
-    "ipc_message_templates_impl.h",
+    # These are the param_traits sources needed by all platforms,
+    # including ios. The rest are added in a conditional block below.
     "ipc_message_utils.cc",
     "ipc_message_utils.h",
-    "ipc_mojo_bootstrap.cc",
-    "ipc_mojo_bootstrap.h",
     "ipc_mojo_param_traits.cc",
     "ipc_mojo_param_traits.h",
-    "ipc_sender.h",
-    "ipc_sync_channel.cc",
-    "ipc_sync_channel.h",
-    "ipc_sync_message_filter.cc",
-    "ipc_sync_message_filter.h",
-    "message_filter.cc",
-    "message_filter.h",
-    "message_filter_router.cc",
-    "message_filter_router.h",
-    "message_router.cc",
-    "message_router.h",
     "param_traits_log_macros.h",
     "param_traits_macros.h",
     "param_traits_read_macros.h",
@@ -66,13 +32,53 @@ component("ipc") {
     "struct_destructor_macros.h",
   ]
 
+  if (!is_ios) {
+    sources += [
+      # Most sources go here since ios only needs the param_traits
+      # code.
+      "ipc_channel.h",
+      "ipc_channel_common.cc",
+      "ipc_channel_factory.cc",
+      "ipc_channel_factory.h",
+      "ipc_channel_handle.h",
+      "ipc_channel_mojo.cc",
+      "ipc_channel_mojo.h",
+      "ipc_channel_proxy.cc",
+      "ipc_channel_proxy.h",
+      "ipc_channel_reader.cc",
+      "ipc_channel_reader.h",
+      "ipc_listener.h",
+      "ipc_logging.cc",
+      "ipc_logging.h",
+      "ipc_message_macros.h",
+      "ipc_message_pipe_reader.cc",
+      "ipc_message_pipe_reader.h",
+      "ipc_message_start.h",
+      "ipc_message_templates.h",
+      "ipc_message_templates_impl.h",
+      "ipc_mojo_bootstrap.cc",
+      "ipc_mojo_bootstrap.h",
+      "ipc_sender.h",
+      "ipc_sync_channel.cc",
+      "ipc_sync_channel.h",
+      "ipc_sync_message_filter.cc",
+      "ipc_sync_message_filter.h",
+      "message_filter.cc",
+      "message_filter.h",
+      "message_filter_router.cc",
+      "message_filter_router.h",
+      "message_router.cc",
+      "message_router.h",
+    ]
+  }
+
   if (is_nacl && !is_nacl_nonsfi) {
-    sources -= [ "ipc_channel.cc" ]
-  } else {
-    sources -= [
+    sources += [
       "ipc_channel_nacl.cc",
       "ipc_channel_nacl.h",
     ]
+  } else {
+    sources += [ "ipc_channel.cc" ]
   }
 
   defines = [ "IS_IPC_IMPL" ]

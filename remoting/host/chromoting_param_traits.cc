@@ -322,5 +322,34 @@ void ParamTraits<remoting::protocol::AggregatedProcessResourceUsage>::Log(
   l->append(")");
 }
 
+// static
+void ParamTraits<remoting::protocol::ActionRequest>::Write(
+    base::Pickle* m,
+    const param_type& p) {
+  std::string serialized_action_request;
+  bool result = p.SerializeToString(&serialized_action_request);
+  DCHECK(result);
+  m->WriteString(serialized_action_request);
+}
+
+// static
+bool ParamTraits<remoting::protocol::ActionRequest>::Read(
+    const base::Pickle* m,
+    base::PickleIterator* iter,
+    param_type* p) {
+  std::string serialized_action_request;
+  if (!iter->ReadString(&serialized_action_request))
+    return false;
+
+  return p->ParseFromString(serialized_action_request);
+}
+
+// static
+void ParamTraits<remoting::protocol::ActionRequest>::Log(const param_type& p,
+                                                         std::string* l) {
+  l->append(base::StringPrintf("ActionRequest action: %d, id: %u", p.action(),
+                               p.request_id()));
+}
+
 }  // namespace IPC
 

@@ -2,7 +2,6 @@ isContentEditable should not change if its contentEditable is set, no matter whe
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 document.designMode = "on"
 PASS document.getElementById("div").getAttribute("contentEditable") is "false"
 PASS document.getElementById("div").contentEditable is "false"

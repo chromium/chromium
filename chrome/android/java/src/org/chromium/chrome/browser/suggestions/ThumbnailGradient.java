@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.SystemClock;
 import android.support.annotation.IntDef;
 
@@ -84,7 +83,7 @@ public class ThumbnailGradient {
                             ? R.drawable.thumbnail_gradient_top_left
                             : R.drawable.thumbnail_gradient_top_right);
 
-            return new LayerDrawable(
+            return ApiCompatibilityUtils.createLayerDrawable(
                     new Drawable[] {new BitmapDrawable(resources, bitmap), gradient});
         }
 

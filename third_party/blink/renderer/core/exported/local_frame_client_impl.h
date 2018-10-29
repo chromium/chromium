@@ -37,7 +37,6 @@
 #include "base/memory/scoped_refptr.h"
 
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
-#include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -97,8 +96,10 @@ class LocalFrameClientImpl final : public LocalFrameClient {
                                        WebHistoryCommitType,
                                        bool content_initiated) override;
   void DispatchWillCommitProvisionalLoad() override;
-  void DispatchDidStartProvisionalLoad(DocumentLoader*,
-                                       ResourceRequest&) override;
+  void DispatchDidStartProvisionalLoad(
+      DocumentLoader*,
+      ResourceRequest&,
+      mojo::ScopedMessagePipeHandle navigation_initiator_handle) override;
   void DispatchDidReceiveTitle(const String&) override;
   void DispatchDidChangeIcons(IconType) override;
   void DispatchDidCommitLoad(HistoryItem*,
@@ -117,6 +118,7 @@ class LocalFrameClientImpl final : public LocalFrameClient {
       DocumentLoader*,
       WebNavigationType,
       NavigationPolicy,
+      bool has_transient_activation,
       bool should_replace_current_entry,
       bool is_client_redirect,
       WebTriggeringEventInfo,
@@ -125,8 +127,7 @@ class LocalFrameClientImpl final : public LocalFrameClient {
       mojom::blink::BlobURLTokenPtr,
       base::TimeTicks input_start_time) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
-  void DispatchWillSubmitForm(HTMLFormElement*) override;
-  void DidStartLoading(LoadStartType) override;
+  void DidStartLoading() override;
   void DidStopLoading() override;
   void ProgressEstimateChanged(double progress_estimate) override;
   void ForwardResourceTimingToParent(const WebResourceTimingInfo&) override;
@@ -139,7 +140,6 @@ class LocalFrameClientImpl final : public LocalFrameClient {
   void DidContainInsecureFormAction() override;
   void DidRunInsecureContent(const SecurityOrigin*,
                              const KURL& insecure_url) override;
-  void DidDetectXSS(const KURL&, bool did_block_entire_page) override;
   void DidDispatchPingLoader(const KURL&) override;
   void DidDisplayContentWithCertificateErrors() override;
   void DidRunContentWithCertificateErrors() override;
@@ -148,6 +148,7 @@ class LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveLoadingBehavior(WebLoadingBehaviorFlag) override;
   void DidObserveNewFeatureUsage(mojom::WebFeature) override;
   void DidObserveNewCssPropertyUsage(int, bool) override;
+  void DidObserveLayoutJank(double jank_fraction) override;
   bool ShouldTrackUseCounter(const KURL&) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;
@@ -162,6 +163,8 @@ class LocalFrameClientImpl final : public LocalFrameClient {
       const SubstituteData&,
       ClientRedirectPolicy,
       const base::UnguessableToken& devtools_navigation_token,
+      WebFrameLoadType,
+      WebNavigationType,
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
 
@@ -215,7 +218,7 @@ class LocalFrameClientImpl final : public LocalFrameClient {
 
   std::unique_ptr<WebServiceWorkerProvider> CreateServiceWorkerProvider()
       override;
-  ContentSettingsClient& GetContentSettingsClient() override;
+  WebContentSettingsClient* GetContentSettingsClient() override;
 
   SharedWorkerRepositoryClient* GetSharedWorkerRepositoryClient() override;
 
@@ -270,8 +273,6 @@ class LocalFrameClientImpl final : public LocalFrameClient {
   void BubbleLogicalScrollInParentFrame(ScrollDirection direction,
                                         ScrollGranularity granularity) override;
 
-  void SetVirtualTimePauser(WebScopedVirtualTimePauser) override;
-
   String evaluateInInspectorOverlayForTesting(const String& script) override;
 
   bool HandleCurrentKeyboardEvent() override;
@@ -307,8 +308,6 @@ class LocalFrameClientImpl final : public LocalFrameClient {
   Member<WebLocalFrameImpl> web_frame_;
 
   String user_agent_;
-
-  mutable WebScopedVirtualTimePauser virtual_time_pauser_;
 };
 
 DEFINE_TYPE_CASTS(LocalFrameClientImpl,

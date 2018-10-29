@@ -1073,7 +1073,7 @@ TEST_F(BindTest, BindMoveOnlyVector) {
   using MoveOnlyVector = std::vector<std::unique_ptr<int>>;
 
   MoveOnlyVector v;
-  v.push_back(WrapUnique(new int(12345)));
+  v.push_back(std::make_unique<int>(12345));
 
   // Early binding should work:
   base::Callback<MoveOnlyVector()> bound_cb =

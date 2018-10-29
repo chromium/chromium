@@ -30,6 +30,11 @@ def GetParser():
             'perf builders'),
       choices=bot_platforms.ALL_PLATFORM_NAMES,
       default=bot_platforms.ALL_PLATFORM_NAMES)
+  parser.add_argument(
+      '--debug', action='store_true',
+      help=('Whether to include detailed debug info of the sharding map in the'
+            'shard maps.'), default=False)
+
   parser_update.set_defaults(func=_UpdateShardsForBuilders)
 
   parser_create = subparsers.add_parser('create')
@@ -93,7 +98,8 @@ def _LoadTimingData(args):
   print 'Finish retrieve story timing data for %s' % repr(builder_name)
 
 
-def _GenerateShardMap(builder, num_of_shards, output_path, benchmark=None):
+def _GenerateShardMap(
+    builder, num_of_shards, output_path, debug, benchmark):
   timing_data = []
   if builder:
     with open(builder.timing_file_path) as f:
@@ -103,7 +109,7 @@ def _GenerateShardMap(builder, num_of_shards, output_path, benchmark=None):
           b.Name() == benchmark)])
   sharding_map = sharding_map_generator.generate_sharding_map(
       benchmarks_to_shard, timing_data, num_shards=num_of_shards,
-      debug=False)
+      debug=debug)
   with open(output_path, 'w') as output_file:
     json.dump(sharding_map, output_file, indent=4, separators=(',', ': '))
 
@@ -112,14 +118,15 @@ def _UpdateShardsForBuilders(args):
   builders = {b for b in bot_platforms.ALL_PLATFORMS if b.name in args.builders}
   if args.regenerate_timing_data:
     print 'Update shards timing data. May take a while...'
-    args = []
+    load_timing_args = []
     for b in builders:
-      args.append((b.name, b.timing_file_path))
-    p = multiprocessing.Pool(len(args))
-    p.map(_LoadTimingData, args)
+      load_timing_args.append((b.name, b.timing_file_path))
+    p = multiprocessing.Pool(len(load_timing_args))
+    p.map(_LoadTimingData, load_timing_args)
 
   for b in builders:
-    _GenerateShardMap(b, b.num_shards, b.shards_map_file_path)
+    _GenerateShardMap(
+        b, b.num_shards, b.shards_map_file_path, args.debug, benchmark=None)
     print 'Updated sharding map for %s' % repr(b.name)
 
 
@@ -139,7 +146,8 @@ def _CreateShardMapForBenchmark(args):
   if args.timing_data_source:
     [builder] = [b for b in bot_platforms.ALL_PLATFORMS
                  if b.name == args.timing_data_source]
-  _GenerateShardMap(builder, args.shards_num, args.output_path, args.benchmark)
+  _GenerateShardMap(
+      builder, args.shards_num, args.output_path, args.debug, args.benchmark)
 
 
 def main():

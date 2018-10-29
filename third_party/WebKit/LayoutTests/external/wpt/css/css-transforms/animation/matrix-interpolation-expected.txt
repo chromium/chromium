@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS "rotateY(360deg)" and "rotateX(720deg)" are valid transform values
+FAIL Animation between "rotateY(360deg)" and "rotateX(720deg)" at progress 0.5 assert_equals: expected "matrix(1, 0, 0, 1, 0, 0)" but got "matrix3d(1, 0, 0, 0, 0, 1, -4.89859e-16, 0, 0, 4.89859e-16, 1, 0, 0, 0, 0, 1)"
+Harness: the test ran to completion.
+

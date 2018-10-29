@@ -5,10 +5,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/test/device_factory_provider_test.h"
-#include "services/video_capture/test/mock_producer.h"
+#include "services/video_capture/test/mock_devices_changed_observer.h"
 
 using testing::_;
 using testing::Exactly;
@@ -56,13 +58,10 @@ TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
 // when calling GetDeviceInfos.
 TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
        VirtualDeviceEnumeratedAfterAdd) {
-  base::RunLoop wait_loop;
   const std::string virtual_device_id = "/virtual/device";
-  media::VideoCaptureDeviceInfo info;
-  info.descriptor.device_id = virtual_device_id;
-  mojom::SharedMemoryVirtualDevicePtr virtual_device_proxy;
-  mojom::ProducerPtr producer_proxy;
-  MockProducer producer(mojo::MakeRequest(&producer_proxy));
+  auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
+
+  base::RunLoop wait_loop;
   EXPECT_CALL(device_info_receiver_, Run(_))
       .Times(Exactly(1))
       .WillOnce(
@@ -78,12 +77,68 @@ TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
             EXPECT_TRUE(virtual_device_enumerated);
             wait_loop.Quit();
           }));
-  factory_->AddSharedMemoryVirtualDevice(
-      info, std::move(producer_proxy),
-      false /* send_buffer_handles_to_producer_as_raw_file_descriptors */,
-      mojo::MakeRequest(&virtual_device_proxy));
   factory_->GetDeviceInfos(device_info_receiver_.Get());
   wait_loop.Run();
+}
+
+TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
+       AddingAndRemovingVirtualDevicesRaisesDevicesChangedEvent) {
+  mojom::DevicesChangedObserverPtr observer;
+  MockDevicesChangedObserver mock_observer;
+  mojo::Binding<mojom::DevicesChangedObserver> observer_binding(
+      &mock_observer, mojo::MakeRequest(&observer));
+  factory_->RegisterVirtualDevicesChangedObserver(std::move(observer));
+
+  std::unique_ptr<SharedMemoryVirtualDeviceContext> device_context_1;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_observer, OnDevicesChanged())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    device_context_1 = AddSharedMemoryVirtualDevice("TestDevice1");
+    run_loop.Run();
+  }
+
+  mojom::TextureVirtualDevicePtr device_context_2;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_observer, OnDevicesChanged())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    device_context_2 = AddTextureVirtualDevice("TestDevice2");
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_observer, OnDevicesChanged())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    device_context_1.reset();
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_observer, OnDevicesChanged())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    device_context_2.reset();
+    run_loop.Run();
+  }
+}
+
+// Tests that disconnecting a devices changed observer does not lead to any
+// crash or bad state.
+TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
+       AddAndRemoveVirtualDeviceAfterObserverHasDisconnected) {
+  mojom::DevicesChangedObserverPtr observer;
+  MockDevicesChangedObserver mock_observer;
+  mojo::Binding<mojom::DevicesChangedObserver> observer_binding(
+      &mock_observer, mojo::MakeRequest(&observer));
+  factory_->RegisterVirtualDevicesChangedObserver(std::move(observer));
+
+  // Disconnect observer
+  observer_binding.Close();
+
+  auto device_context = AddTextureVirtualDevice("TestDevice");
+  device_context = nullptr;
 }
 
 // Tests that VideoCaptureDeviceFactory::CreateDevice() returns an error
@@ -112,22 +167,15 @@ TEST_F(VideoCaptureServiceDeviceFactoryProviderTest,
        CreateDeviceSuccessForVirtualDevice) {
   base::RunLoop wait_loop;
   const std::string virtual_device_id = "/virtual/device";
-  media::VideoCaptureDeviceInfo info;
-  info.descriptor.device_id = virtual_device_id;
-  mojom::DevicePtr device_proxy;
-  mojom::SharedMemoryVirtualDevicePtr virtual_device_proxy;
-  mojom::ProducerPtr producer_proxy;
-  MockProducer producer(mojo::MakeRequest(&producer_proxy));
+  auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
+
   base::MockCallback<mojom::DeviceFactory::CreateDeviceCallback>
       create_device_proxy_callback;
   EXPECT_CALL(create_device_proxy_callback,
               Run(mojom::DeviceAccessResultCode::SUCCESS))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-  factory_->AddSharedMemoryVirtualDevice(
-      info, std::move(producer_proxy),
-      false /* send_buffer_handles_to_producer_as_raw_file_descriptors */,
-      mojo::MakeRequest(&virtual_device_proxy));
+  mojom::DevicePtr device_proxy;
   factory_->CreateDevice(virtual_device_id, mojo::MakeRequest(&device_proxy),
                          create_device_proxy_callback.Get());
   wait_loop.Run();

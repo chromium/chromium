@@ -49,7 +49,7 @@
         "--enable-features=CredentialManager"
       ],
       "device type": "iPad Air 2",
-      "os": "10.3",
+      "os": "12.0",
       "xctest": true,
       "dimensions": [
         { "os": "Mac-10.13.4", "pool": "Chrome" },

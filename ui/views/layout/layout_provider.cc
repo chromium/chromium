@@ -143,19 +143,18 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
 
 int LayoutProvider::GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
                                           const gfx::Size& size) const {
-  const bool is_touch =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
   switch (emphasis_metric) {
     case views::EMPHASIS_NONE:
       NOTREACHED();
       return 0;
     case EMPHASIS_LOW:
     case EMPHASIS_MEDIUM:
-      return is_touch ? 4 : 2;
+      return touch_ui ? 4 : 2;
     case EMPHASIS_HIGH:
-      return is_touch ? 8 : 4;
+      return touch_ui ? 8 : 4;
     case EMPHASIS_MAXIMUM:
-      return is_touch ? std::min(size.width(), size.height()) / 2 : 4;
+      return touch_ui ? std::min(size.width(), size.height()) / 2 : 4;
   }
 }
 

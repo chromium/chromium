@@ -64,7 +64,8 @@ class MockHandler final : public WebRTCDataChannelHandler {
     unsigned long old_buffered_amount = buffered_amount_;
     buffered_amount_ -= bytes;
     if (client_) {
-      client_->DidDecreaseBufferedAmount(old_buffered_amount);
+      client_->DidDecreaseBufferedAmount(
+          static_cast<unsigned>(old_buffered_amount));
     }
   }
 

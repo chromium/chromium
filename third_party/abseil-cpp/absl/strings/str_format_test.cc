@@ -391,7 +391,7 @@ TEST(StrFormat, BehavesAsDocumented) {
 #endif
 
   // Other conversion
-  int64_t value = 0x7ffdeb6;
+  int64_t value = 0x7ffdeb4;
   auto ptr_value = static_cast<uintptr_t>(value);
   const int& something = *reinterpret_cast<const int*>(ptr_value);
   EXPECT_EQ(StrFormat("%p", &something), StrFormat("0x%x", ptr_value));
@@ -601,3 +601,39 @@ TEST_F(ParsedFormatTest, RegressionMixPositional) {
 
 }  // namespace
 }  // namespace absl
+
+// Some codegen thunks that we can use to easily dump the generated assembly for
+// different StrFormat calls.
+
+inline std::string CodegenAbslStrFormatInt(int i) {
+  return absl::StrFormat("%d", i);
+}
+
+inline std::string CodegenAbslStrFormatIntStringInt64(int i, const std::string& s,
+                                                 int64_t i64) {
+  return absl::StrFormat("%d %s %d", i, s, i64);
+}
+
+inline void CodegenAbslStrAppendFormatInt(std::string* out, int i) {
+  absl::StrAppendFormat(out, "%d", i);
+}
+
+inline void CodegenAbslStrAppendFormatIntStringInt64(std::string* out, int i,
+                                                     const std::string& s,
+                                                     int64_t i64) {
+  absl::StrAppendFormat(out, "%d %s %d", i, s, i64);
+}
+
+auto absl_internal_str_format_force_codegen_funcs = std::make_tuple(
+    CodegenAbslStrFormatInt, CodegenAbslStrFormatIntStringInt64,
+    CodegenAbslStrAppendFormatInt, CodegenAbslStrAppendFormatIntStringInt64);
+
+bool absl_internal_str_format_force_codegen_always_false;
+// Force the compiler to generate the functions by making it look like we
+// escape the function pointers.
+// It can't statically know that
+// absl_internal_str_format_force_codegen_always_false is not changed by someone
+// else.
+bool absl_internal_str_format_force_codegen =
+    absl_internal_str_format_force_codegen_always_false &&
+    printf("%p", &absl_internal_str_format_force_codegen_funcs) == 0;

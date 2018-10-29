@@ -6,6 +6,8 @@
 
 namespace syncer {
 
+SyncableService::SyncableService() {}
+
 SyncableService::~SyncableService() {}
 
 }  // namespace syncer

@@ -82,17 +82,17 @@ void EventDispatcher::DispatchSimulatedClick(
   // before dispatchSimulatedClick() returns. This vector is here just to
   // prevent the code from running into an infinite recursion of
   // dispatchSimulatedClick().
-  DEFINE_STATIC_LOCAL(HeapHashSet<Member<Node>>,
+  DEFINE_STATIC_LOCAL(Persistent<HeapHashSet<Member<Node>>>,
                       nodes_dispatching_simulated_clicks,
                       (new HeapHashSet<Member<Node>>));
 
   if (IsDisabledFormControl(&node))
     return;
 
-  if (nodes_dispatching_simulated_clicks.Contains(&node))
+  if (nodes_dispatching_simulated_clicks->Contains(&node))
     return;
 
-  nodes_dispatching_simulated_clicks.insert(&node);
+  nodes_dispatching_simulated_clicks->insert(&node);
 
   if (mouse_event_options == kSendMouseOverUpDownEvents)
     EventDispatcher(node, *MouseEvent::Create(EventTypeNames::mouseover,
@@ -121,7 +121,7 @@ void EventDispatcher::DispatchSimulatedClick(
                                             underlying_event, creation_scope))
       .Dispatch();
 
-  nodes_dispatching_simulated_clicks.erase(&node);
+  nodes_dispatching_simulated_clicks->erase(&node);
 }
 
 // https://dom.spec.whatwg.org/#dispatching-events
@@ -145,7 +145,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
       UseCounter::Count(node_->GetDocument(),
                         WebFeature::kPerformanceEventTimingConstructor);
       eventTiming = std::make_unique<EventTiming>(frame->DomWindow());
-      eventTiming->WillDispatchEvent(event_);
+      eventTiming->WillDispatchEvent(*event_);
     }
   }
   event_->GetEventPath().EnsureWindowEventContext();
@@ -187,6 +187,9 @@ DispatchEventResult EventDispatcher::Dispatch() {
                               pre_dispatch_event_handler_result) ==
       kContinueDispatching) {
     if (DispatchEventAtCapturing() == kContinueDispatching) {
+      // TODO(crbug/882574): Remove these.
+      CHECK(event_->HasEventPath());
+      CHECK(!event_->GetEventPath().IsEmpty());
       if (DispatchEventAtTarget() == kContinueDispatching)
         DispatchEventAtBubbling();
     }
@@ -194,7 +197,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   DispatchEventPostProcess(activation_target,
                            pre_dispatch_event_handler_result);
   if (eventTiming)
-    eventTiming->DidDispatchEvent(event_);
+    eventTiming->DidDispatchEvent(*event_);
 
   return EventTarget::GetDispatchEventResult(*event_);
 }
@@ -302,7 +305,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
                   ToMouseEvent(*event_).type() == EventTypeNames::click;
   if (is_click) {
     // Fire an accessibility event indicating a node was clicked on.  This is
-    // safe if m_event->target()->toNode() returns null.
+    // safe if event_->target()->ToNode() returns null.
     if (AXObjectCache* cache = node_->GetDocument().ExistingAXObjectCache())
       cache->HandleClicked(event_->target()->ToNode());
 

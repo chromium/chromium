@@ -82,12 +82,12 @@ cr.define('settings_people_page_quick_unlock', function() {
         testElement = document.createElement(
             'settings-lock-screen-password-prompt-dialog');
         testElement.writeUma_ = fakeUma.recordProgress.bind(fakeUma);
+        document.body.appendChild(testElement);
 
         passwordPromptDialog = getFromElement('#passwordPrompt');
         passwordPromptDialog.quickUnlockPrivate = quickUnlockPrivateApi;
 
         Polymer.dom.flush();
-        document.body.appendChild(testElement);
 
         passwordElement = passwordPromptDialog.$$('#passwordInput');
       });
@@ -253,7 +253,7 @@ cr.define('settings_people_page_quick_unlock', function() {
         return isVisible(setupPinButton);
       }
 
-      setup(function(done) {
+      setup(function() {
         PolymerTest.clearBody();
 
         CrSettingsPrefs.deferInitialization = true;
@@ -280,34 +280,34 @@ cr.define('settings_people_page_quick_unlock', function() {
 
         // Wait for prefElement to finish initializing; it takes some time for
         // the prefs element to get allocated.
-        prefElement.addEventListener('prefs-changed', function prefsReady() {
-          prefElement.removeEventListener('prefs-changed', prefsReady);
+        return test_util.eventToPromise('prefs-changed', prefElement)
+            .then(function() {
+              quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();
 
-          quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();
+              // Create choose-method element.
+              testElement = document.createElement('settings-lock-screen');
+              testElement.settingsPrivate_ = fakeSettings;
+              testElement.quickUnlockPrivate = quickUnlockPrivateApi;
+              testElement.prefs = prefElement.prefs;
+              testElement.writeUma_ = fakeUma.recordProgress.bind(fakeUma);
 
-          // Create choose-method element.
-          testElement = document.createElement('settings-lock-screen');
-          testElement.settingsPrivate_ = fakeSettings;
-          testElement.quickUnlockPrivate = quickUnlockPrivateApi;
-          testElement.prefs = prefElement.prefs;
-          testElement.writeUma_ = fakeUma.recordProgress.bind(fakeUma);
+              document.body.appendChild(testElement);
+              Polymer.dom.flush();
 
-          document.body.appendChild(testElement);
-          Polymer.dom.flush();
+              testElement.setModes_ = quickUnlockPrivateApi.setModes.bind(
+                  quickUnlockPrivateApi, quickUnlockPrivateApi.getFakeToken(),
+                  [], [], () => {
+                    return true;
+                  });
 
-          testElement.setModes_ = quickUnlockPrivateApi.setModes.bind(
-              quickUnlockPrivateApi, quickUnlockPrivateApi.getFakeToken(), [],
-              [], () => {
-                return true;
-              });
-
-          passwordRadioButton =
-              getFromElement('cr-radio-button[name="password"]');
-          pinPasswordRadioButton =
-              getFromElement('cr-radio-button[name="pin+password"]');
-
-          done();
-        });
+              return test_util.waitForRender(testElement);
+            })
+            .then(() => {
+              passwordRadioButton =
+                  getFromElement('cr-radio-button[name="password"]');
+              pinPasswordRadioButton =
+                  getFromElement('cr-radio-button[name="pin+password"]');
+            });
       });
 
       // Showing the choose method screen does not make any destructive pref or
@@ -628,10 +628,10 @@ cr.define('settings_people_page_quick_unlock', function() {
         assertTrue(!!backspaceButton);
         assertTrue(backspaceButton.disabled);
 
-        pinKeyboard.value = '11';
+        pinKeyboard.$$('cr-input').value = '11';
         assertFalse(backspaceButton.disabled);
 
-        pinKeyboard.value = '';
+        pinKeyboard.$$('cr-input').value = '';
         assertTrue(backspaceButton.disabled);
       });
     });

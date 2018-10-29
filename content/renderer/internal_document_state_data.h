@@ -20,6 +20,7 @@ class WebDocumentLoader;
 namespace content {
 
 class DocumentState;
+class NavigationState;
 
 // Stores internal state per WebDocumentLoader.
 class InternalDocumentStateData : public base::SupportsUserData::Data {
@@ -30,6 +31,8 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
   static InternalDocumentStateData* FromDocumentLoader(
       blink::WebDocumentLoader* document_loader);
   static InternalDocumentStateData* FromDocumentState(DocumentState* ds);
+
+  void CopyFrom(InternalDocumentStateData* other);
 
   int http_status_code() const { return http_status_code_; }
   void set_http_status_code(int http_status_code) {
@@ -69,12 +72,16 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
     return cache_policy_override_set_;
   }
 
+  NavigationState* navigation_state() { return navigation_state_.get(); }
+  void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
+
  private:
   int http_status_code_;
   bool is_overriding_user_agent_;
   bool must_reset_scroll_and_scale_state_;
   bool cache_policy_override_set_;
   blink::mojom::FetchCacheMode cache_policy_override_;
+  std::unique_ptr<NavigationState> navigation_state_;
 
   DISALLOW_COPY_AND_ASSIGN(InternalDocumentStateData);
 };

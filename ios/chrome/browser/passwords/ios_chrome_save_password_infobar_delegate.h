@@ -28,10 +28,9 @@ class IOSChromeSavePasswordInfoBarDelegate
     : public IOSChromePasswordManagerInfoBarDelegate {
  public:
   // Creates the infobar for |form_to_save| and adds it to |infobar_manager|.
-  // |is_smart_lock_enabled| controls the branding string. |dispatcher| is not
-  // retained.
+  // |is_sync_user| controls the footer string. |dispatcher| is not retained.
   static void Create(
-      bool is_smart_lock_branding_enabled,
+      bool is_sync_user,
       infobars::InfoBarManager* infobar_manager,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       id<ApplicationCommands> dispatcher);
@@ -42,7 +41,7 @@ class IOSChromeSavePasswordInfoBarDelegate
 
  private:
   IOSChromeSavePasswordInfoBarDelegate(
-      bool is_smart_lock_branding_enabled,
+      bool is_sync_user,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
 
   // ConfirmInfoBarDelegate implementation.

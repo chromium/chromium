@@ -7,15 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "ui/views/pointer_watcher.h"
-
-namespace gfx {
-class Point;
-}
-
-namespace ui {
-class PointerEvent;
-}
+#include "ui/events/event_handler.h"
 
 namespace ash {
 
@@ -33,7 +25,7 @@ enum class DownEventFormFactor {
 // This enum is used to control a UMA histogram buckets. If you change this
 // enum, you should update DownEventMetric as well.
 enum class DownEventSource {
-  kUnknown = 0,
+  kUnknown = 0,  // Deprecated, never occurs in practice.
   kMouse,
   kStylus,
   kTouch,
@@ -44,6 +36,7 @@ enum class DownEventSource {
 // This enum is used to back an UMA histogram and new values should
 // be inserted immediately above kCombinationCount.
 enum class DownEventMetric {
+  // All "Unknown" types are deprecated, never occur in practice.
   kUnknownClamshellOthers = 0,
   kUnknownClamshellBrowser,
   kUnknownClamshellChromeApp,
@@ -96,15 +89,14 @@ enum class DownEventMetric {
 };
 
 // A metrics recorder that records pointer related metrics.
-class ASH_EXPORT PointerMetricsRecorder : public views::PointerWatcher {
+class ASH_EXPORT PointerMetricsRecorder : public ui::EventHandler {
  public:
   PointerMetricsRecorder();
   ~PointerMetricsRecorder() override;
 
-  // views::PointerWatcher:
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              gfx::NativeView target) override;
+  // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PointerMetricsRecorder);

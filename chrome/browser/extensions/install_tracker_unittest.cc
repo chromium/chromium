@@ -28,7 +28,7 @@ const char kExtensionId1[] = "oochhailbdickimldhhodijaldpllppf";
 const char kExtensionId2[] = "ahionppacfhbbmpmlcbkdgcpokfpflji";
 const char kExtensionId3[] = "ladmcjmmmmgonboiadnaindoekpbljde";
 
-scoped_refptr<Extension> CreateDummyExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateDummyExtension(const std::string& id) {
   return extensions::ExtensionBuilder("Dummy name")
       .SetLocation(extensions::Manifest::INTERNAL)
       .SetID(id)
@@ -191,7 +191,8 @@ TEST_F(InstallTrackerTest, ExtensionInstalledEvent) {
   retrieved_data = NULL;
 
   // Simulate an extension install.
-  scoped_refptr<Extension> extension = CreateDummyExtension(kExtensionId1);
+  scoped_refptr<const Extension> extension =
+      CreateDummyExtension(kExtensionId1);
   ASSERT_TRUE(extension.get());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   ASSERT_TRUE(registry);

@@ -129,7 +129,7 @@ MediaStream::~MediaStream() {
 }
 
 void MediaStream::Initialize(const base::Closure& init_done_cb) {
-  DCHECK(!init_done_cb.is_null());
+  DCHECK(init_done_cb);
   if (!init_done_callback_.is_null()) {
     OnError("Duplicate initialization");
     return;
@@ -196,7 +196,7 @@ void MediaStream::OnInitializeCallback(
     OnError("config missing");
     return;
   }
-  base::ResetAndReturn(&init_done_callback_).Run();
+  std::move(init_done_callback_).Run();
 }
 
 void MediaStream::OnReadUntilCallback(std::unique_ptr<pb::RpcMessage> message) {
@@ -299,7 +299,7 @@ void MediaStream::FlushUntil(int count) {
 
 void MediaStream::Read(const ReadCB& read_cb) {
   DCHECK(read_complete_callback_.is_null());
-  DCHECK(!read_cb.is_null());
+  DCHECK(read_cb);
   read_complete_callback_ = read_cb;
   if (buffers_.empty() && config_changed_) {
     CompleteRead(DemuxerStream::kConfigChanged);
@@ -333,17 +333,17 @@ void MediaStream::CompleteRead(DemuxerStream::Status status) {
 #endif  // DCHECK_IS_ON()
       }
       config_changed_ = false;
-      base::ResetAndReturn(&read_complete_callback_).Run(status, nullptr);
+      std::move(read_complete_callback_).Run(status, nullptr);
       return;
     case DemuxerStream::kAborted:
     case DemuxerStream::kError:
-      base::ResetAndReturn(&read_complete_callback_).Run(status, nullptr);
+      std::move(read_complete_callback_).Run(status, nullptr);
       return;
     case DemuxerStream::kOk:
       DCHECK(!buffers_.empty());
       scoped_refptr<DecoderBuffer> frame_data = buffers_.front();
       buffers_.pop_front();
-      base::ResetAndReturn(&read_complete_callback_).Run(status, frame_data);
+      std::move(read_complete_callback_).Run(status, frame_data);
       return;
   }
 }
@@ -383,7 +383,7 @@ void MediaStream::OnError(const std::string& error) {
   VLOG(1) << __func__ << ": " << error;
   if (error_callback_.is_null())
     return;
-  base::ResetAndReturn(&error_callback_).Run();
+  std::move(error_callback_).Run();
 }
 
 StreamProvider::StreamProvider(RpcBroker* rpc_broker,
@@ -432,21 +432,21 @@ void StreamProvider::OnError(const std::string& error) {
   VLOG(1) << __func__ << ": " << error;
   if (error_callback_.is_null())
     return;
-  base::ResetAndReturn(&error_callback_).Run();
+  std::move(error_callback_).Run();
 }
 
 void StreamProvider::AudioStreamInitialized() {
   DCHECK(!init_done_callback_.is_null());
   audio_stream_initialized_ = true;
   if (video_stream_initialized_ || !video_stream_)
-    base::ResetAndReturn(&init_done_callback_).Run();
+    std::move(init_done_callback_).Run();
 }
 
 void StreamProvider::VideoStreamInitialized() {
   DCHECK(!init_done_callback_.is_null());
   video_stream_initialized_ = true;
   if (audio_stream_initialized_ || !audio_stream_)
-    base::ResetAndReturn(&init_done_callback_).Run();
+    std::move(init_done_callback_).Run();
 }
 
 std::vector<DemuxerStream*> StreamProvider::GetAllStreams() {

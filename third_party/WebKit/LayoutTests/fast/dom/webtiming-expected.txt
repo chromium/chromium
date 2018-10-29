@@ -2,7 +2,6 @@ This test checks that all of the Web Timing attributes are available and have re
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS timing.navigationStart is >= oneHourAgoUTC
 PASS timing.redirectStart is 0
 PASS timing.redirectEnd is 0

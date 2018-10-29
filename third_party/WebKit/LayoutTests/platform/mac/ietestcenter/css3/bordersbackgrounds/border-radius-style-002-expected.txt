@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x288
-  LayoutBlockFlow {HTML} at (0,0) size 800x288.38
-    LayoutBlockFlow {BODY} at (8,16) size 784x264.38
-      LayoutBlockFlow {P} at (0,0) size 784x18
-        LayoutText {#text} at (0,0) size 484x18
-          text run at (0,0) width 484: "Test passes if there is a box below with dashed border and rounded corners."
-      LayoutBlockFlow {DIV} at (0,34) size 230.38x230.38 [border: (19.19px dashed #000000)]

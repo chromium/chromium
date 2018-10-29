@@ -31,7 +31,7 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
 
   // IMEObserver:
   void OnIMERefresh() override;
-  void OnIMEMenuActivationChanged(bool is_activated) override;
+  void OnIMEMenuActivationChanged(bool is_active) override;
 
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;

@@ -203,6 +203,12 @@ config("lld_pack_relocations") {
   ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
 }
 
+# Pack relocations with Android-specific relocations and RELR relocations that
+# are only supported by the crazy linker and Android P+.
+config("lld_pack_relocations_with_relr") {
+  ldflags = [ "-Wl,--pack-dyn-relocs=android+relr,--use-android-relr-tags" ]
+}
+
 # Used for instrumented build to generate the orderfile.
 config("default_orderfile_instrumentation") {
   if (use_order_profiling) {

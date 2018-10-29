@@ -27,12 +27,14 @@ struct IcuEnvironment {
 IcuEnvironment* env = new IcuEnvironment();
 
 DEFINE_BINARY_PROTO_FUZZER(const ::form_data_fuzzer::Form& form_proto) {
-  FormParsingMode mode = form_proto.is_mode_filling() ? FormParsingMode::FILLING
-                                                      : FormParsingMode::SAVING;
+  FormDataParser::Mode mode = form_proto.is_mode_filling()
+                                  ? FormDataParser::Mode::kFilling
+                                  : FormDataParser::Mode::kSaving;
   autofill::FormData form_data = GenerateWithProto(form_proto);
 
+  FormDataParser parser;
   std::unique_ptr<autofill::PasswordForm> result =
-      ParseFormData(form_data, nullptr, mode);
+      parser.Parse(form_data, mode);
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.

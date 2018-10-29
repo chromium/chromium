@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <body>
+    <div><span id="rm2"></span> </div>
+    <span id="rm1"></span>
+  </body>
+  <script>
+    test(() => {
+      document.body.offsetTop;
+      rm1.remove();
+      rm2.remove();
+      document.documentElement.style.display = "none";
+      document.body.offsetTop;
+      // This change makes it crash more reliably:
+      document.body.display = "block";
+    }, "Should not cause DCHECK failures or crashes.");
+  </script>
+</html>

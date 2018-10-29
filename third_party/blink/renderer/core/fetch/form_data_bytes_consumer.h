@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -71,7 +72,7 @@ class FormDataBytesConsumer final : public BytesConsumer {
                                     scoped_refptr<EncodedFormData>,
                                     BytesConsumer* consumer_for_testing);
 
-  const Member<BytesConsumer> impl_;
+  const TraceWrapperMember<BytesConsumer> impl_;
 };
 
 }  // namespace blink

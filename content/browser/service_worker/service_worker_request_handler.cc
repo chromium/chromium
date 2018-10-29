@@ -82,7 +82,7 @@ void ServiceWorkerRequestHandler::InitializeForNavigation(
     network::mojom::RequestContextFrameType frame_type,
     bool is_parent_frame_secure,
     scoped_refptr<network::ResourceRequestBody> body,
-    const base::Callback<WebContents*(void)>& web_contents_getter) {
+    base::RepeatingCallback<WebContents*()> web_contents_getter) {
   // Only create a handler when there is a ServiceWorkerNavigationHandlerCore
   // to take ownership of a pre-created SeviceWorkerProviderHost.
   if (!navigation_handle_core)
@@ -115,7 +115,8 @@ void ServiceWorkerRequestHandler::InitializeForNavigation(
   // Initialize the SWProviderHost.
   base::WeakPtr<ServiceWorkerProviderHost> provider_host =
       ServiceWorkerProviderHost::PreCreateNavigationHost(
-          context->AsWeakPtr(), is_parent_frame_secure, web_contents_getter);
+          context->AsWeakPtr(), is_parent_frame_secure,
+          std::move(web_contents_getter));
 
   std::unique_ptr<ServiceWorkerRequestHandler> handler(
       provider_host->CreateRequestHandler(
@@ -146,13 +147,14 @@ ServiceWorkerRequestHandler::InitializeForNavigationNetworkService(
     network::mojom::RequestContextFrameType frame_type,
     bool is_parent_frame_secure,
     scoped_refptr<network::ResourceRequestBody> body,
-    const base::Callback<WebContents*(void)>& web_contents_getter) {
+    base::RepeatingCallback<WebContents*()> web_contents_getter) {
   DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
   DCHECK(navigation_handle_core);
 
   // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
-  if (!url.SchemeIsHTTPOrHTTPS() && !OriginCanAccessServiceWorkers(url)) {
+  if (!url.SchemeIsHTTPOrHTTPS() && !OriginCanAccessServiceWorkers(url) &&
+      !SchemeMaySupportRedirectingToHTTPS(url)) {
     return nullptr;
   }
 
@@ -166,7 +168,8 @@ ServiceWorkerRequestHandler::InitializeForNavigationNetworkService(
   // Initialize the SWProviderHost.
   base::WeakPtr<ServiceWorkerProviderHost> provider_host =
       ServiceWorkerProviderHost::PreCreateNavigationHost(
-          context->AsWeakPtr(), is_parent_frame_secure, web_contents_getter);
+          context->AsWeakPtr(), is_parent_frame_secure,
+          std::move(web_contents_getter));
 
   std::unique_ptr<ServiceWorkerRequestHandler> handler(
       provider_host->CreateRequestHandler(

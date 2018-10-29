@@ -523,11 +523,7 @@ void VideoDecoderResource::OnPluginMsgResetComplete(
 
 void VideoDecoderResource::RunCallbackWithError(
     scoped_refptr<TrackedCallback>* callback) {
-  if (TrackedCallback::IsPending(*callback)) {
-    scoped_refptr<TrackedCallback> temp;
-    callback->swap(temp);
-    temp->Run(decoder_last_error_);
-  }
+  SafeRunCallback(callback, decoder_last_error_);
 }
 
 void VideoDecoderResource::DeleteGLTexture(uint32_t id) {

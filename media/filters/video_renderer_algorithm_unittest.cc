@@ -79,7 +79,7 @@ class VideoRendererAlgorithmTest : public testing::Test {
     // Always start the TickClock at a non-zero value since null values have
     // special connotations.
     tick_clock_->Advance(base::TimeDelta::FromMicroseconds(10000));
-    time_source_.set_tick_clock_for_testing(tick_clock_.get());
+    time_source_.SetTickClockForTesting(tick_clock_.get());
   }
   ~VideoRendererAlgorithmTest() override = default;
 

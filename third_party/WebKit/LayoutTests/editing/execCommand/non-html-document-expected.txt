@@ -2,7 +2,6 @@ Non HTMLDocument such as XMLDocument shouldn't support execCommand
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS xmldoc.execCommand('bold') threw exception InvalidStateError: Failed to execute 'execCommand' on 'Document': execCommand is only supported on HTML documents..
 PASS xmldoc.queryCommandEnabled('bold') threw exception InvalidStateError: Failed to execute 'queryCommandEnabled' on 'Document': queryCommandEnabled is only supported on HTML documents..
 PASS xmldoc.queryCommandIndeterm('bold') threw exception InvalidStateError: Failed to execute 'queryCommandIndeterm' on 'Document': queryCommandIndeterm is only supported on HTML documents..

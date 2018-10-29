@@ -20,7 +20,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/invalidate_type.h"
@@ -65,8 +64,6 @@ class BrowserViewTest : public InProcessBrowserTest {
   DevToolsWindow* devtools_;
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(BrowserViewTest);
 };
 
@@ -212,51 +209,14 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
   int change_count() const { return change_count_; }
   void clear_change_count() { change_count_ = 0; }
 
-  int end_count() const { return end_count_; }
-  void clear_end_count() { end_count_ = 0; }
-
   // BookmarkBarViewObserver:
   void OnBookmarkBarVisibilityChanged() override { change_count_++; }
-  void OnBookmarkBarAnimationEnded() override { end_count_++; }
 
  private:
   int change_count_ = 0;
-  int end_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewObserverImpl);
 };
-
-// Verifies we notify the BookmarkBarViewObserver when an animation ends.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, VerifyAnimationEndObserved) {
-  BookmarkBarView::DisableAnimationsForTesting(true);
-  // No bookmark bar.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kShowBookmarkBar, false);
-
-  // Add observer and confirm bookmark bar not visible.
-  ASSERT_TRUE(browser_view()->bookmark_bar());
-  BookmarkBarViewObserverImpl observer;
-  BookmarkBarView* bookmark_bar = browser_view()->bookmark_bar();
-  bookmark_bar->AddObserver(&observer);
-  EXPECT_FALSE(bookmark_bar->visible());
-  EXPECT_EQ(0, observer.end_count());
-
-  // Show the bookmark bar.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kShowBookmarkBar, true);
-
-  EXPECT_TRUE(bookmark_bar->visible());
-  EXPECT_EQ(1, observer.end_count());
-  observer.clear_end_count();
-
-  // Hide the bookmark bar.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kShowBookmarkBar, false);
-
-  EXPECT_FALSE(bookmark_bar->visible());
-  EXPECT_EQ(1, observer.end_count());
-  BookmarkBarView::DisableAnimationsForTesting(false);
-}
 
 // Verifies we don't unnecessarily change the visibility of the BookmarkBarView.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
@@ -279,14 +239,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
   EXPECT_FALSE(bookmark_bar->visible());
   EXPECT_EQ(1, observer.change_count());
   observer.clear_change_count();
-  EXPECT_EQ(0, observer.end_count());
 
   // Go to ntp tab. Bookmark bar should show.
   browser()->tab_strip_model()->ActivateTabAt(1, true);
   EXPECT_TRUE(bookmark_bar->visible());
   EXPECT_EQ(1, observer.change_count());
   observer.clear_change_count();
-  EXPECT_EQ(0, observer.end_count());
 
   // Repeat with the bookmark bar always visible.
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -294,19 +252,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
   browser()->tab_strip_model()->ActivateTabAt(1, true);
   EXPECT_TRUE(bookmark_bar->visible());
   observer.clear_change_count();
-  EXPECT_EQ(0, observer.end_count());
 
   browser()->tab_strip_model()->ActivateTabAt(0, true);
   EXPECT_TRUE(bookmark_bar->visible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
-  EXPECT_EQ(0, observer.end_count());
 
   browser()->tab_strip_model()->ActivateTabAt(1, true);
   EXPECT_TRUE(bookmark_bar->visible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
-  EXPECT_EQ(0, observer.end_count());
 
   browser_view()->bookmark_bar()->RemoveObserver(&observer);
 }

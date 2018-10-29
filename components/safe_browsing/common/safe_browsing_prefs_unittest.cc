@@ -26,10 +26,6 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingScoutReportingEnabled, false);
     prefs_.registry()->RegisterBooleanPref(
-        prefs::kSafeBrowsingScoutGroupSelected, false);
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kSafeBrowsingSawInterstitialExtendedReporting, false);
-    prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingSawInterstitialScoutReporting, false);
     prefs_.registry()->RegisterStringPref(
         prefs::kPasswordProtectionChangePasswordURL, "");
@@ -37,147 +33,29 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingWhitelistDomains);
-
-    ResetExperiments(/*can_show_scout=*/false);
   }
 
-  void ResetPrefs(bool scout_reporting, bool scout_group) {
+  void ResetPrefs(bool scout_reporting) {
     prefs_.SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                       scout_reporting);
-    prefs_.SetBoolean(prefs::kSafeBrowsingScoutGroupSelected, scout_group);
   }
 
-  void ResetExperiments(bool can_show_scout) {
-    std::vector<base::StringPiece> enabled_features;
-    std::vector<base::StringPiece> disabled_features;
-
-    auto* target_vector =
-        can_show_scout ? &enabled_features : &disabled_features;
-    target_vector->push_back(kCanShowScoutOptIn.name);
-
-    feature_list_.reset(new base::test::ScopedFeatureList);
-    feature_list_->InitFromCommandLine(
-        base::JoinString(enabled_features, ","),
-        base::JoinString(disabled_features, ","));
-  }
-
-  std::string GetActivePref() { return GetExtendedReportingPrefName(prefs_); }
-
-  // Convenience method for explicitly setting up all combinations of prefs and
-  // experiments.
-  void TestGetPrefName(bool scout_reporting,
-                       bool scout_group,
-                       bool can_show_scout,
-                       const std::string& expected_pref) {
-    ResetPrefs(scout_reporting, scout_group);
-    ResetExperiments(can_show_scout);
-    EXPECT_EQ(expected_pref, GetActivePref())
-        << " scout=" << scout_reporting << " scout_group=" << scout_group
-        << " can_show_scout=" << can_show_scout;
-  }
-
-  bool IsScoutGroupSelected() {
-    return prefs_.GetBoolean(prefs::kSafeBrowsingScoutGroupSelected);
-  }
-
-  void ExpectPrefs(bool scout_reporting, bool scout_group) {
-    LOG(INFO) << "Pref values: scout=" << scout_reporting
-              << " scout_group=" << scout_group;
+  void ExpectPrefs(bool scout_reporting) {
+    LOG(INFO) << "Pref values: scout=" << scout_reporting;
     EXPECT_EQ(scout_reporting,
               prefs_.GetBoolean(prefs::kSafeBrowsingScoutReportingEnabled));
-    EXPECT_EQ(scout_group,
-              prefs_.GetBoolean(prefs::kSafeBrowsingScoutGroupSelected));
   }
 
-  void ExpectPrefsExist(bool scout_reporting, bool scout_group) {
-    LOG(INFO) << "Prefs exist: scout=" << scout_reporting
-              << " scout_group=" << scout_group;
+  void ExpectPrefsExist(bool scout_reporting) {
+    LOG(INFO) << "Prefs exist: scout=" << scout_reporting;
     EXPECT_EQ(scout_reporting,
               prefs_.HasPrefPath(prefs::kSafeBrowsingScoutReportingEnabled));
-    EXPECT_EQ(scout_group,
-              prefs_.HasPrefPath(prefs::kSafeBrowsingScoutGroupSelected));
   }
   TestingPrefServiceSimple prefs_;
 
  private:
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   content::TestBrowserThreadBundle thread_bundle_;
 };
-
-// This test ensures that we correctly select Scout as the
-// active preference in a number of common scenarios.
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
-#define MAYBE_GetExtendedReportingPrefName_Common \
-  DISABLED_GetExtendedReportingPrefName_Common
-#else
-#define MAYBE_GetExtendedReportingPrefName_Common \
-  GetExtendedReportingPrefName_Common
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_GetExtendedReportingPrefName_Common) {
-  const std::string& scout = prefs::kSafeBrowsingScoutReportingEnabled;
-
-  // By default (all prefs and experiment features disabled), Scout pref is
-  // used.
-  TestGetPrefName(false, false, false, scout);
-
-  // Changing any prefs (including ScoutGroupSelected) keeps Scout as the active
-  // pref because the experiment remains in the Control group.
-  TestGetPrefName(/*scout=*/true, false, false, scout);
-  TestGetPrefName(false, /*scout_group=*/true, false, scout);
-
-  // Being in the experiment group with ScoutGroup selected makes Scout the
-  // active pref.
-  TestGetPrefName(false, /*scout_group=*/true, /*can_show_scout=*/true, scout);
-
-  // When ScoutGroup is not selected then Scout still remains the active pref,
-  // regardless if the experiment is enabled.
-  TestGetPrefName(false, false, /*can_show_scout=*/true, scout);
-}
-
-// Here we exhaustively check all combinations of pref and experiment states.
-// This should help catch regressions.
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
-#define MAYBE_GetExtendedReportingPrefName_Exhaustive \
-  DISABLED_GetExtendedReportingPrefName_Exhaustive
-#else
-#define MAYBE_GetExtendedReportingPrefName_Exhaustive \
-  GetExtendedReportingPrefName_Exhaustive
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_GetExtendedReportingPrefName_Exhaustive) {
-  const std::string& scout = prefs::kSafeBrowsingScoutReportingEnabled;
-  TestGetPrefName(false, false, false, scout);
-  TestGetPrefName(false, false, true, scout);
-  TestGetPrefName(false, true, false, scout);
-  TestGetPrefName(false, true, true, scout);
-  TestGetPrefName(true, false, false, scout);
-  TestGetPrefName(true, false, true, scout);
-  TestGetPrefName(true, true, false, scout);
-  TestGetPrefName(true, true, true, scout);
-}
-
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
-#define MAYBE_ChooseOptInText DISABLED_ChooseOptInText
-#else
-#define MAYBE_ChooseOptInText ChooseOptInText
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_ChooseOptInText) {
-  // Ensure that Scout resources are always chosen.
-  const int kSberResource = 100;
-  const int kScoutResource = 500;
-
-  // By default, Scout opt-in is used
-  EXPECT_EQ(kScoutResource,
-            ChooseOptInTextResource(prefs_, kSberResource, kScoutResource));
-
-  // Enabling Scout still uses the Scout opt-in text.
-  ResetExperiments(/*can_show_scout=*/true);
-  ResetPrefs(/*scout=*/false, /*scout_group=*/true);
-  EXPECT_EQ(kScoutResource,
-            ChooseOptInTextResource(prefs_, kSberResource, kScoutResource));
-}
 
 // TODO(crbug.com/881476) disabled for flaky crashes.
 #if defined(OS_WIN)
@@ -188,28 +66,15 @@ TEST_F(SafeBrowsingPrefsTest, MAYBE_ChooseOptInText) {
   GetSafeBrowsingExtendedReportingLevel
 #endif
 TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
-  // By Default, extneded reporting is off.
+  // By Default, extended reporting is off.
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 
-  // The value of the Scout pref affects the reporting level directly,
-  // regardless of the experiment configuration since Scout is the only level
-  // we are using.
-  // No scout group.
-  ResetPrefs(/*scout_reporting=*/true, /*scout_group=*/false);
+  // The value of the Scout pref affects the reporting level directly.
+  ResetPrefs(/*scout_reporting=*/true);
   EXPECT_EQ(SBER_LEVEL_SCOUT, GetExtendedReportingLevel(prefs_));
-  // Scout group but no experiment.
-  ResetPrefs(/*scout_reporting=*/true, /*scout_group=*/true);
-  EXPECT_EQ(SBER_LEVEL_SCOUT, GetExtendedReportingLevel(prefs_));
-  ResetExperiments(/*can_show_scout=*/true);
   // Scout pref off, so reporting is off.
-  ResetPrefs(/*scout_reporting=*/false, /*scout_group=*/true);
+  ResetPrefs(/*scout_reporting=*/false);
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
-  // Scout pref off with the experiment group off, so reporting remains off.
-  ResetPrefs(/*scout_reporting=*/false, /*scout_group=*/true);
-  EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
-  // Turning on Scout gives us Scout level reporting
-  ResetPrefs(/*scout_reporting=*/true, /*scout_group=*/true);
-  EXPECT_EQ(SBER_LEVEL_SCOUT, GetExtendedReportingLevel(prefs_));
 }
 
 // TODO(crbug.com/881476) disabled for flaky crashes.
@@ -279,9 +144,10 @@ TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
   // Make the SBER pref managed and enable it and ensure that the pref gets
   // the expected value. Making SBER managed doesn't change the
   // SBEROptInAllowed setting.
-  prefs_.SetManagedPref(GetExtendedReportingPrefName(prefs_),
+  prefs_.SetManagedPref(prefs::kSafeBrowsingScoutReportingEnabled,
                         std::make_unique<base::Value>(true));
-  EXPECT_TRUE(prefs_.IsManagedPreference(GetExtendedReportingPrefName(prefs_)));
+  EXPECT_TRUE(
+      prefs_.IsManagedPreference(prefs::kSafeBrowsingScoutReportingEnabled));
   // The value of the pref comes from the policy.
   EXPECT_TRUE(IsExtendedReportingEnabled(prefs_));
   // SBER being managed doesn't change the SBEROptInAllowed pref.

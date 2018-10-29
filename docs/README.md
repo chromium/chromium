@@ -48,6 +48,8 @@ used when committed.
     (on a Linux host)
 *   [Cast for Android Build Instructions](android_cast_build_instructions.md) -
     Cast for Android (on a Linux host)
+*   [Fuchsia Build Instructions](fuchsia_build_instructions.md) - Fuchsia target
+    (on a Linux host)
 *   [iOS Build Instructions](ios/build_instructions.md) - iOS target (on a MacOS
     host)
 *   [Chrome OS Build Instructions](chromeos_build_instructions.md) - Chrome OS
@@ -105,6 +107,8 @@ used when committed.
     builder migration for Chromium
 *   [Tour of Continuous Integration UI](tour_of_luci_ui.md) - A tour of our
     the user interface for LUCI, our continuous integration system
+*   [Parsing Test Results](parsing_test_results.md) - An introduction for how to
+    understand the results emitted by polygerrit and CI builds.
 *   [Closure Compilation](closure_compilation.md) - The _Closure_ JavaScript
     compiler
 *   [Threading and Tasks in Chrome](threading_and_tasks.md) - How to run tasks
@@ -132,8 +136,6 @@ used when committed.
     the window system and low level input and graphics.
 *   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
     more performant
-*   [ES6 Support in Chromium](es6_chromium.md) - Implementation of ECMAScript6
-    features in Chromium
 *   [Adding a new feature flag in chrome://flags](how_to_add_your_feature_flag.md) - Quick
     guide to add a new feature flag to experiment your feature.
 *   [Guidelines for considering branch dates in project planning](release_branch_guidance.md) -
@@ -290,7 +292,7 @@ used when committed.
     Enabling spoken feedback (ChromeVox) on desktop Linux.
 *   [Offscreen, Invisible and Size](accessibility/offscreen.md) - How Chrome
     defines offscreen, invisible and size in the accessibility tree.
-*   [Text to Speech](accessibility/tts.md) - Overview of text to speech in 
+*   [Text to Speech](accessibility/tts.md) - Overview of text to speech in
     Chrome and Chrome OS.
 *   [BRLTTY in Chrome OS](accessibility/brltty.md) - Chrome OS integration with
     BRLTTY to support refreshable braille displays
@@ -328,6 +330,7 @@ used when committed.
     install Chromium OS on VMWare.
 *   [User Data Directory](user_data_dir.md) - How the user data and cache
     directories are determined on all platforms.
+*   [Mojo](../mojo/README.md) - IPC mechanism used by services.
 
 ### Probably Obsolete
 *   [TPM Quick Reference](tpm_quick_ref.md) - Trusted Platform Module notes.

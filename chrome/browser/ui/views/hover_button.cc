@@ -11,14 +11,13 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/view_properties.h"
 
 namespace {
 
@@ -80,7 +79,7 @@ HoverButton::HoverButton(views::ButtonListener* button_listener,
       DISTANCE_CONTROL_LIST_VERTICAL);
   SetBorder(CreateBorderWithVerticalSpacing(vert_spacing));
 
-  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
 }
 
 HoverButton::HoverButton(views::ButtonListener* button_listener,
@@ -273,10 +272,6 @@ views::Button::KeyClickAction HoverButton::GetKeyClickActionForEvent(
   return MenuButton::GetKeyClickActionForEvent(event);
 }
 
-void HoverButton::SetHighlightingView(views::View* highlighting_view) {
-  highlighting_view_ = highlighting_view;
-}
-
 void HoverButton::StateChanged(ButtonState old_state) {
   MenuButton::StateChanged(old_state);
 
@@ -289,38 +284,19 @@ void HoverButton::StateChanged(ButtonState old_state) {
   }
 }
 
-bool HoverButton::ShouldUseFloodFillInkDrop() const {
-  return true;
-}
-
 SkColor HoverButton::GetInkDropBaseColor() const {
   return views::style::GetColor(*this, views::style::CONTEXT_BUTTON,
                                 STYLE_SECONDARY);
 }
 
 std::unique_ptr<views::InkDrop> HoverButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = LabelButton::CreateInkDrop();
+  std::unique_ptr<views::InkDrop> ink_drop =
+      CreateDefaultFloodFillInkDropImpl();
   // Turn on highlighting when the button is focused only - hovering the button
   // will request focus.
-  // Note that the setup done in Button::CreateInkDrop() needs to be repeated
-  // here to configure flood-fill ink drops from LabelButton.
   ink_drop->SetShowHighlightOnFocus(true);
   ink_drop->SetShowHighlightOnHover(false);
   return ink_drop;
-}
-
-std::unique_ptr<views::InkDropHighlight> HoverButton::CreateInkDropHighlight()
-    const {
-  // HoverButtons are supposed to encompass the full width of their parent, so
-  // remove the rounded corners.
-  std::unique_ptr<views::InkDropHighlight> highlight(
-      new views::InkDropHighlight(
-          highlighting_view_->size(), 0,
-          gfx::RectF(GetMirroredRect(highlighting_view_->GetContentsBounds()))
-              .CenterPoint(),
-          GetInkDropBaseColor()));
-  highlight->set_explode_size(gfx::SizeF(CalculateLargeInkDropSize(size())));
-  return highlight;
 }
 
 void HoverButton::Layout() {
@@ -357,6 +333,12 @@ views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
 }
 
 void HoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // HoverButtons use a rectangular highlight to encompass the full width of
+  // their parent.
+  auto path = std::make_unique<SkPath>();
+  path->addRect(RectToSkRect(GetLocalBounds()));
+  SetProperty(views::kHighlightPathKey, path.release());
+
   if (title_) {
     SetTooltipAndAccessibleName(this, title_, subtitle_, GetLocalBounds(),
                                 taken_width_, auto_compute_tooltip_);

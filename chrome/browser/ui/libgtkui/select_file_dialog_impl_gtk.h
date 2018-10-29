@@ -109,6 +109,16 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
                                   const base::FilePath& default_path,
                                   gfx::NativeWindow parent);
 
+  // Destroys the widget and deallocates all resources for dialogs_[dialog].
+  void DestroyDialog(GtkWidget* dialog);
+
+  // Deallocates all resources for dialogs_[dialog].
+  void OnFileChooserDestroyInternal(GtkWidget* dialog);
+
+  // The below callbacks may only be called from GTK, otherwise it's possible
+  // that the keep_alive scoped_refptr's will double-destruct |this|
+  // (https://crbug.com/897999).
+
   // Callback for when the user responds to a Save As or Open File dialog.
   CHROMEG_CALLBACK_1(SelectFileDialogImplGTK,
                      void,

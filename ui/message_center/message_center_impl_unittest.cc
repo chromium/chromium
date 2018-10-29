@@ -291,8 +291,7 @@ class TotalNotificationBlocker : public PopupNotificationBlocker {
 bool PopupNotificationsContain(
     const NotificationList::PopupNotifications& popups,
     const std::string& id) {
-  for (NotificationList::PopupNotifications::const_iterator iter =
-           popups.begin(); iter != popups.end(); ++iter) {
+  for (auto iter = popups.begin(); iter != popups.end(); ++iter) {
     if ((*iter)->id() == id)
       return true;
   }
@@ -303,8 +302,7 @@ bool PopupNotificationsContain(
 bool NotificationsContain(
     const NotificationList::Notifications& notifications,
     const std::string& id) {
-  for (NotificationList::Notifications::const_iterator iter =
-           notifications.begin(); iter != notifications.end(); ++iter) {
+  for (auto iter = notifications.begin(); iter != notifications.end(); ++iter) {
     if ((*iter)->id() == id)
       return true;
   }

@@ -38,6 +38,10 @@
 #include "base/spinlock.h"
 #include "getenv_safe.h" // TCMallocGetenvSafe
 
+#if defined(HAVE_UNISTD_H) && defined(HAVE_GETPAGESIZE)
+#include <unistd.h>  // for getpagesize
+#endif
+
 namespace tcmalloc {
 
 // Define the maximum number of object per classe type to transfer between
@@ -235,7 +239,8 @@ void SizeMap::Init() {
 
 // Metadata allocator -- keeps stats about how many bytes allocated.
 static uint64_t metadata_system_bytes_ = 0;
-static const size_t kMetadataAllocChunkSize = 8*1024*1024;
+
+static const size_t kMetadataAllocChunkSize = 8 * 1024 * 1024;
 // As ThreadCache objects are allocated with MetaDataAlloc, and also
 // CACHELINE_ALIGNED, we must use the same alignment as TCMalloc_SystemAlloc.
 static const size_t kMetadataAllignment = sizeof(MemoryAligner);
@@ -246,11 +251,23 @@ static size_t metadata_chunk_avail_;
 static SpinLock metadata_alloc_lock(SpinLock::LINKER_INITIALIZED);
 
 void* MetaDataAlloc(size_t bytes) {
-  if (bytes >= kMetadataAllocChunkSize) {
-    void *rv = TCMalloc_SystemAlloc(bytes,
-                                    NULL, kMetadataAllignment);
+  static size_t pagesize;
+#ifdef HAVE_GETPAGESIZE
+  if (pagesize == 0)
+    pagesize = getpagesize();
+#endif
+
+  if (bytes + pagesize >= kMetadataAllocChunkSize) {
+    void* rv = TCMalloc_SystemAlloc(bytes + pagesize, NULL, pagesize);
     if (rv != NULL) {
-      metadata_system_bytes_ += bytes;
+      metadata_system_bytes_ += bytes + pagesize;
+
+      // This guard page protects the metadata from being corrupted by a
+      // buffer overrun. We currently have no mechanism for freeing it, since
+      // we never release the metadata buffer. If that changes we'll need to
+      // add something like TCMalloc_SystemRemoveGuard.
+      TCMalloc_SystemAddGuard(rv, bytes + pagesize);
+      rv = static_cast<void*>(static_cast<char*>(rv) + pagesize);
     }
     return rv;
   }
@@ -266,14 +283,16 @@ void* MetaDataAlloc(size_t bytes) {
 
   if (metadata_chunk_avail_ < bytes + alignment) {
     size_t real_size;
-    void *ptr = TCMalloc_SystemAlloc(kMetadataAllocChunkSize,
-                                     &real_size, kMetadataAllignment);
+    void* ptr =
+        TCMalloc_SystemAlloc(kMetadataAllocChunkSize, &real_size, pagesize);
     if (ptr == NULL) {
       return NULL;
     }
 
-    metadata_chunk_alloc_ = static_cast<char *>(ptr);
-    metadata_chunk_avail_ = real_size;
+    TCMalloc_SystemAddGuard(ptr, kMetadataAllocChunkSize);
+    metadata_chunk_alloc_ = static_cast<char*>(ptr) + pagesize;
+    metadata_chunk_avail_ = real_size - pagesize;
+    metadata_system_bytes_ += pagesize;
 
     alignment = 0;
   }

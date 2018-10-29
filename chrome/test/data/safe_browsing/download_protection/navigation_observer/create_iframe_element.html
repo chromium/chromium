@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <script>
+      function clickLink(linkId) {
+        var node = document.getElementById(linkId);
+        if (node != null) {
+          // Click and open link in the same tab.
+          node.click();
+        }
+      }
+
+      function runTest() {
+        var download_url = "../signed.exe";
+        var ifrm = document.createElement("iframe");
+        ifrm.setAttribute("src", download_url);
+        document.body.appendChild(ifrm);
+      }
+    </script>
+  </head>
+  <body>
+    <a id="do_download" onclick="runTest()">Click for download</div>
+  </body>
+</html>

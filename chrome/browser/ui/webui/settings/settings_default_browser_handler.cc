@@ -30,9 +30,7 @@ bool DefaultBrowserIsDisabledByPolicy() {
 
 }  // namespace
 
-DefaultBrowserHandler::DefaultBrowserHandler(content::WebUI* webui)
-    : weak_ptr_factory_(this) {
-}
+DefaultBrowserHandler::DefaultBrowserHandler() : weak_ptr_factory_(this) {}
 
 DefaultBrowserHandler::~DefaultBrowserHandler() {}
 
@@ -74,15 +72,19 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
 
 void DefaultBrowserHandler::SetAsDefaultBrowser(const base::ListValue* args) {
   CHECK(!DefaultBrowserIsDisabledByPolicy());
-
-  base::RecordAction(base::UserMetricsAction("Options_SetAsDefaultBrowser"));
-  UMA_HISTOGRAM_COUNTS_1M("Settings.StartSetAsDefault", true);
+  AllowJavascript();
+  RecordSetAsDefaultUMA();
 
   default_browser_worker_->StartSetAsDefault();
 
   // If the user attempted to make Chrome the default browser, notify
   // them when this changes.
   ResetDefaultBrowserPrompt(Profile::FromWebUI(web_ui()));
+}
+
+void DefaultBrowserHandler::RecordSetAsDefaultUMA() {
+  base::RecordAction(base::UserMetricsAction("Options_SetAsDefaultBrowser"));
+  UMA_HISTOGRAM_COUNTS("Settings.StartSetAsDefault", true);
 }
 
 void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(

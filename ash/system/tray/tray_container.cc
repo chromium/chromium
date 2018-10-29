@@ -84,7 +84,8 @@ void TrayContainer::UpdateLayout() {
     std::swap(horizontal_margin, vertical_margin);
 
   auto layout = std::make_unique<views::BoxLayout>(
-      orientation, gfx::Insets(vertical_margin, horizontal_margin), 0);
+      orientation, gfx::Insets(vertical_margin, horizontal_margin),
+      kUnifiedTraySpacingBetweenIcons);
   layout->set_minimum_cross_axis_size(kTrayItemSize);
   views::View::SetLayoutManager(std::move(layout));
 

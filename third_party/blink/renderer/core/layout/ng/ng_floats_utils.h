@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float_vector.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -22,6 +22,8 @@ struct NGBfcOffset;
 struct NGLogicalSize;
 struct NGPositionedFloat;
 struct NGUnpositionedFloat;
+
+typedef Vector<NGPositionedFloat, 8> NGPositionedFloatVector;
 
 enum NGFloatTypeValue {
   kFloatTypeNone = 0b00,
@@ -51,7 +53,7 @@ PositionFloat(const NGLogicalSize& float_available_size,
 
 // Positions the list of {@code unpositioned_floats}. Adds them as exclusions to
 // {@code space}.
-CORE_EXPORT const Vector<NGPositionedFloat> PositionFloats(
+CORE_EXPORT void PositionFloats(
     const NGLogicalSize& float_available_size,
     const NGLogicalSize& float_percentage_size,
     const NGLogicalSize& float_replaced_percentage_size,
@@ -59,7 +61,8 @@ CORE_EXPORT const Vector<NGPositionedFloat> PositionFloats(
     LayoutUnit container_block_offset,
     NGUnpositionedFloatVector& unpositioned_floats,
     const NGConstraintSpace& space,
-    NGExclusionSpace* exclusion_space);
+    NGExclusionSpace* exclusion_space,
+    NGPositionedFloatVector* positioned_floats);
 
 // Add a pending float to the list. It will be committed (positioned) once we
 // have resolved the BFC block offset.

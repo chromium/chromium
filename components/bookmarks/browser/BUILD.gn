@@ -14,7 +14,6 @@ static_library("browser") {
     "bookmark_model_observer.h",
     "bookmark_node.h",
     "bookmark_node_data.h",
-    "bookmark_pasteboard_helper_mac.h",
     "bookmark_storage.h",
     "bookmark_undo_delegate.h",
     "bookmark_undo_provider.h",
@@ -39,8 +38,6 @@ static_library("browser") {
     "bookmark_node.cc",
     "bookmark_node_data.cc",
     "bookmark_node_data_ios.cc",
-    "bookmark_node_data_mac.cc",
-    "bookmark_pasteboard_helper_mac.mm",
     "bookmark_storage.cc",
     "bookmark_utils.cc",
     "model_loader.cc",
@@ -76,11 +73,19 @@ static_library("browser") {
   ]
 
   if (toolkit_views) {
-    sources += [ "bookmark_node_data_views.cc" ]
     deps += [ "//ui/views" ]
   }
 
+  if (toolkit_views && !is_mac) {
+    sources += [ "bookmark_node_data_views.cc" ]
+  }
+
   if (is_mac) {
+    sources += [
+      "bookmark_node_data_mac.mm",
+      "bookmark_pasteboard_helper_mac.h",
+      "bookmark_pasteboard_helper_mac.mm",
+    ]
     libs = [
       "AppKit.framework",
       "Foundation.framework",

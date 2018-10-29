@@ -10,15 +10,12 @@
 <dom-module id="print-preview-scaling-settings">
   <template>
     <style include="print-preview-shared">
-      print-preview-settings-section {
-        margin-bottom: 0;
-      }
     </style>
     <print-preview-settings-section hidden$="[[!settings.fitToPage.available]]">
       <span slot="title">$i18n{scalingLabel}</span>
       <div slot="controls" class="checkbox">
         <cr-checkbox id="fit-to-page-checkbox" tabindex="1"
-            disabled$="[[getDisabled_(disabled, inputValid_)]]"
+            disabled$="[[getDisabled_(disabled, currentState_)]]"
             on-change="onFitToPageChange_" aria-live="polite">
           $i18n{optionFitToPage}
         </cr-checkbox>

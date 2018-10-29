@@ -87,7 +87,7 @@ class ASH_EXPORT TouchExplorationManager
  private:
   // keyboard::KeyboardControllerObserver overrides:
   void OnKeyboardVisibleBoundsChanged(const gfx::Rect& new_bounds) override;
-  void OnKeyboardDisabled() override;
+  void OnKeyboardEnabledChanged(bool is_enabled) override;
 
   void UpdateTouchExplorationState();
   bool VolumeAdjustSoundEnabled();

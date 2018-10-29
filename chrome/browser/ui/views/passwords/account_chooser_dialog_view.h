@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 namespace content {
 class WebContents;
@@ -18,7 +17,6 @@ class WebContents;
 class PasswordDialogController;
 
 class AccountChooserDialogView : public views::BubbleDialogDelegateView,
-                                 public views::StyledLabelListener,
                                  public views::ButtonListener,
                                  public AccountChooserPrompt {
  public:
@@ -35,18 +33,13 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  void AddedToWidget() override;
   void WindowClosing() override;
 
   // DialogDelegate:
   bool Accept() override;
   int GetDialogButtons() const override;
   base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-
-  // StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
+  views::View* CreateFootnoteView() override;
 
   // ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

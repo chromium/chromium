@@ -9,20 +9,20 @@ for more details about the presubmit API built into depot_tools.
 
 This presubmit checks for two rules:
 1. If anything in the webapk/libs/common or the webapk/shell_apk directories
-has changed (excluding test files), $WAM_MINT_TRIGGER_VARIABLE should be
-updated.
-2. If $CHROME_UPDATE_TIRGGER_VARIABLE is changed in
-$SHELL_APK_VERSION_LOCAL_PATH, $SHELL_APK_VERSION_LOCAL_PATH should be the
-only changed file and changing $CHROME_UPDATE_TRIGGER_VARIABLE should be
-the only change.
+has changed (excluding test files), $CURRENT_VERSION_VARIABLE should be updated.
+2. If $REQUEST_UPDATE_FOR_VERSION_VARIABLE in
+$REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH is changed, the variable change should
+be the only change in the CL.
 """
 
-WAM_MINT_TRIGGER_VARIABLE = r'template_shell_apk_version'
-CHROME_UPDATE_TRIGGER_VARIABLE = r'expected_shell_apk_version'
+CURRENT_VERSION_VARIABLE = 'current_shell_apk_version'
+CURRENT_VERSION_LOCAL_PATH = 'shell_apk/current_version/current_version.gni'
 
-SHELL_APK_VERSION_LOCAL_PATH = r'shell_apk/shell_apk_version.gni'
+REQUEST_UPDATE_FOR_VERSION_VARIABLE = 'request_update_for_shell_apk_version'
+REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH = (
+    'shell_apk/request_update_for_shell_apk_version.gni')
 
-WAM_MINT_TRIGGER_LOCAL_PATHS = [
+TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS = [
     'libs/common/src/',
     'shell_apk/AndroidManifest.xml',
     'shell_apk/res/',
@@ -52,20 +52,21 @@ def _CheckChromeUpdateTriggerRule(input_api, output_api):
   Check that if |expected_shell_apk_version| is updated it is the only
   change in the CL.
   """
-  if _CheckVersionVariableChanged(input_api, SHELL_APK_VERSION_LOCAL_PATH,
-                                  CHROME_UPDATE_TRIGGER_VARIABLE):
+  if _CheckVersionVariableChanged(input_api,
+                                  REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
+                                  REQUEST_UPDATE_FOR_VERSION_VARIABLE):
     if (len(input_api.AffectedFiles()) != 1 or
         len(input_api.AffectedFiles[0].ChangedContents()) != 1):
       return [
         output_api.PresubmitError(
             '{} in {} must be updated in a standalone CL.'.format(
-                CHROME_UPDATE_TRIGGER_VARIABLE,
-                SHELL_APK_VERSION_LOCAL_PATH))
+                REQUEST_UPDATE_FOR_VERSION_VARIABLE,
+                REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH))
         ]
   return []
 
 
-def _CheckWamMintTriggerRule(input_api, output_api):
+def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   """
   Check that if a file in $WAM_MINT_TRIGGER_LOCAL_PATHS is updated that
   |template_shell_apk_version| is updated as well.
@@ -74,18 +75,18 @@ def _CheckWamMintTriggerRule(input_api, output_api):
   for f in input_api.AffectedFiles():
     local_path = input_api.os_path.relpath(f.AbsoluteLocalPath(),
                                            input_api.PresubmitLocalPath())
-    for wam_mint_trigger_local_path in WAM_MINT_TRIGGER_LOCAL_PATHS:
-      if local_path.startswith(wam_mint_trigger_local_path):
+    for trigger_local_path in TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS:
+      if local_path.startswith(trigger_local_path):
         files_requiring_version_increase.append(local_path)
 
   if not files_requiring_version_increase:
     return []
 
-  if not _CheckVersionVariableChanged(input_api, SHELL_APK_VERSION_LOCAL_PATH,
-                                      WAM_MINT_TRIGGER_VARIABLE):
+  if not _CheckVersionVariableChanged(input_api, CURRENT_VERSION_LOCAL_PATH,
+                                      CURRENT_VERSION_VARIABLE):
     return [output_api.PresubmitPromptWarning(
         '{} in {} needs to updated due to changes in:'.format(
-            WAM_MINT_TRIGGER_VARIABLE, SHELL_APK_VERSION_LOCAL_PATH),
+            CURRENT_VERSION_VARIABLE, CURRENT_VERSION_LOCAL_PATH),
         items=files_requiring_version_increase)]
 
   return []
@@ -95,7 +96,7 @@ def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   result = []
   result.extend(_CheckChromeUpdateTriggerRule(input_api, output_api))
-  result.extend(_CheckWamMintTriggerRule(input_api, output_api))
+  result.extend(_CheckCurrentVersionIncreaseRule(input_api, output_api))
 
   return result
 

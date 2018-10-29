@@ -5,20 +5,25 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_H_
 
-#include <memory>
+#include <stdint.h>
 
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace ui {
+
+struct AXActionData;
+class AXUniqueId;
+
+}  // namespace ui
 
 namespace views {
 
@@ -29,9 +34,8 @@ class Widget;
 // |ViewAXPlatformNodeDelegate| to interface with the native accessibility
 // toolkit. This class owns the |AXPlatformNode|, which implements those native
 // APIs.
-class VIEWS_EXPORT ViewAXPlatformNodeDelegate
-    : public ViewAccessibility,
-      public ui::AXPlatformNodeDelegateBase {
+class ViewAXPlatformNodeDelegate : public ViewAccessibility,
+                                   public ui::AXPlatformNodeDelegateBase {
  public:
   ~ViewAXPlatformNodeDelegate() override;
 
@@ -56,8 +60,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
-  const ui::AXUniqueId& GetUniqueId()
-      const override;  // Also in ViewAccessibility
+  // Also in |ViewAccessibility|.
+  const ui::AXUniqueId& GetUniqueId() const override;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
@@ -74,7 +78,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   void OnMenuEnd();
 
   // We own this, but it is reference-counted on some platforms so we can't use
-  // a scoped_ptr. It is dereferenced in the destructor.
+  // a unique_ptr. It is destroyed in the destructor.
   ui::AXPlatformNode* ax_node_;
 
   mutable ui::AXNodeData data_;

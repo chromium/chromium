@@ -36,7 +36,19 @@ void AssistantUiModel::SetVisibility(AssistantVisibility visibility,
   const AssistantVisibility old_visibility = visibility_;
   visibility_ = visibility;
 
+  // Cache the Assistant entry point used for query count UMA metric.
+  if (visibility == AssistantVisibility::kVisible)
+    entry_point_ = source;
+
   NotifyUiVisibilityChanged(old_visibility, source);
+}
+
+void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
+  if (usable_work_area == usable_work_area_)
+    return;
+
+  usable_work_area_ = usable_work_area;
+  NotifyUsableWorkAreaChanged();
 }
 
 void AssistantUiModel::NotifyUiModeChanged() {
@@ -49,6 +61,11 @@ void AssistantUiModel::NotifyUiVisibilityChanged(
     AssistantSource source) {
   for (AssistantUiModelObserver& observer : observers_)
     observer.OnUiVisibilityChanged(visibility_, old_visibility, source);
+}
+
+void AssistantUiModel::NotifyUsableWorkAreaChanged() {
+  for (AssistantUiModelObserver& observer : observers_)
+    observer.OnUsableWorkAreaChanged(usable_work_area_);
 }
 
 }  // namespace ash

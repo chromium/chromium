@@ -53,11 +53,34 @@ class AutofillDriverIOSWebFrameFactory
   AutofillManager::AutofillDownloadManagerState enable_download_manager_;
 };
 
+// AutofillDriverIOSWebFrame will keep a refcountable AutofillDriverIOS. This is
+// a workaround crbug.com/892612. On submission, AutofillDownloadManager and
+// CreditCardSaveManager expect autofillManager and autofillDriver to live after
+// web frame deletion so AutofillAgent will keep the latest submitted
+// AutofillDriver alive.
+// TODO(crbug.com/892612): remove this workaround once life cycle of autofill
+// manager is fixed.
+class AutofillDriverIOSRefCountable
+    : public AutofillDriverIOS,
+      public base::RefCountedThreadSafe<AutofillDriverIOSRefCountable> {
+ public:
+  AutofillDriverIOSRefCountable(
+      web::WebState* web_state,
+      web::WebFrame* web_frame,
+      AutofillClient* client,
+      id<AutofillDriverIOSBridge> bridge,
+      const std::string& app_locale,
+      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+
+ private:
+  friend class base::RefCountedThreadSafe<AutofillDriverIOSRefCountable>;
+  ~AutofillDriverIOSRefCountable() override = default;
+};
+
 // TODO(crbug.com/883203): Merge with AutofillDriverIOS class once WebFrame is
 // released.
 class AutofillDriverIOSWebFrame
-    : public AutofillDriverIOS,
-      public web::WebFrameUserData<AutofillDriverIOSWebFrame> {
+    : public web::WebFrameUserData<AutofillDriverIOSWebFrame> {
  public:
   // Creates a AutofillDriverIOSWebFrame for |web_frame|.
   static void CreateForWebFrameAndDelegate(
@@ -70,6 +93,9 @@ class AutofillDriverIOSWebFrame
 
   ~AutofillDriverIOSWebFrame() override;
 
+  AutofillDriverIOS* driver() { return driver_.get(); }
+  scoped_refptr<AutofillDriverIOSRefCountable> GetRetainableDriver();
+
  private:
   AutofillDriverIOSWebFrame(
       web::WebState* web_state,
@@ -78,6 +104,7 @@ class AutofillDriverIOSWebFrame
       id<AutofillDriverIOSBridge> bridge,
       const std::string& app_locale,
       AutofillManager::AutofillDownloadManagerState enable_download_manager);
+  scoped_refptr<AutofillDriverIOSRefCountable> driver_;
 };
 }  // namespace autofill
 

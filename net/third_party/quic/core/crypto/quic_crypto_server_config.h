@@ -554,7 +554,8 @@ class QUIC_EXPORT_PRIVATE QuicCryptoServerConfig {
   void ProcessClientHelloAfterGetProof(
       bool found_error,
       std::unique_ptr<ProofSource::Details> proof_source_details,
-      const ValidateClientHelloResultCallback::Result& validate_chlo_result,
+      QuicReferenceCountedPointer<ValidateClientHelloResultCallback::Result>
+          validate_chlo_result,
       bool reject_only,
       QuicConnectionId connection_id,
       const QuicSocketAddress& client_address,

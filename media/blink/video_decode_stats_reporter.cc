@@ -30,7 +30,7 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
       tick_clock_(tick_clock),
       stats_cb_timer_(tick_clock_) {
   DCHECK(recorder_ptr_.is_bound());
-  DCHECK(!get_pipeline_stats_cb_.is_null());
+  DCHECK(get_pipeline_stats_cb_);
   DCHECK(video_config_.IsValidConfig());
 
   recorder_ptr_.set_connection_error_handler(base::BindRepeating(
@@ -352,8 +352,8 @@ void VideoDecodeStatsReporter::UpdateStats() {
 
   DVLOG(2) << __func__ << " Recording -- dropped:" << targets->frames_dropped
            << "/" << targets->frames_decoded
-           << " power efficient:" << targets->frames_decoded_power_efficient
-           << "/" << targets->frames_decoded;
+           << " power efficient:" << targets->frames_power_efficient << "/"
+           << targets->frames_decoded;
   recorder_ptr_->UpdateRecord(std::move(targets));
 }
 

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1018939186200882850">مورد منو</translation>
-<translation id="1020833440720551630">بیصداکردن تراک صوتی</translation>
 <translation id="10623998915015855">دکمه تغییر حالت</translation>
 <translation id="1088086359088493902">ثانیه</translation>
 <translation id="1171774979989969504">لطفاً یک نشانی ایمیل وارد کنید.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">دست‌اندرکاران</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">برنما</translation>
-<translation id="1548116112524424341">پخش ویدیو در حالت تصویر در تصویر</translation>
 <translation id="1589122976691792535">منطقه</translation>
 <translation id="1591562245178063882">این ماه</translation>
 <translation id="1637811476055996098">انتخاب فایل‌ها</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">شبکه درختی</translation>
 <translation id="1822429046913737220">ق.ظ/ب.ظ</translation>
 <translation id="1832974991323546415">پخش در دستگاه راه دور</translation>
-<translation id="1838818994221231429">جابه‌جایی تمام‌صفحه به ناحیه برش نمایشگر</translation>
 <translation id="190587075670221089">حذف</translation>
 <translation id="1907737156431278478">مثال</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">زمان</translation>
 <translation id="5630795885300617244">روی سمت راست یا چپ دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
 <translation id="5631759159893697722">انتزاعی</translation>
-<translation id="5641012560118721995">مکث بازپخش</translation>
 <translation id="5643186887447432888">دکمه</translation>
 <translation id="5677946354068040947">گزینه‌های بیشتر</translation>
 <translation id="576709008726043716">مقدمه</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="5966707198760109579">هفته</translation>
 <translation id="5987525920412732405">دکمه چرخش</translation>
+<translation id="6011459053400940133">لغزنده میزان صدا</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6023896073578205740">کادر فهرست</translation>
-<translation id="6101327004457443354">صدادارکردن تراک صوتی</translation>
 <translation id="6150588977291308318">فهرست منابع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">سخن پایانی</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ساعت</translation>
 <translation id="7681220483256441252">فهرست موضوعی</translation>
 <translation id="7720026100085573005">زمان باقی‌مانده</translation>
-<translation id="7740016676195725605">توقف نمایش زیرنویس ناشنوایان</translation>
 <translation id="7740050170769002709">‏محتوای HTML</translation>
 <translation id="7750228210027921155">تصویردرتصویر</translation>
 <translation id="7789962463072032349">مکث</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">فیلد نوشتاری جستجو</translation>
 <translation id="8057695513531652401">اطلاعیه</translation>
 <translation id="8105797009065549151">مرجع یادداشت</translation>
-<translation id="8115662671911883373">شروع به نمایش زیرنویس ناشنوایان</translation>
 <translation id="8117451130807776954">این هفته</translation>
-<translation id="819205353528511139">پخش فیلم در حالت تمام صفحه</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">زیرنویس‌ها</translation>
 <translation id="835897206747267392">مقدار نامعتبر.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">کنترل بازپخش راه دور</translation>
 <translation id="862370744433916922">زیرنویس</translation>
 <translation id="8750798805984357768">لطفاً یکی از این گزینه‌ها را انتخاب کنید.</translation>
-<translation id="8785498733064193001">شروع بازپخش</translation>
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8845239796550121995">درحال ارسال محتوا به تلویزیون</translation>
 <translation id="8851136666856101339">اصلی</translation>

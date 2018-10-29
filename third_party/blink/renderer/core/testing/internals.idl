@@ -412,11 +412,11 @@ enum EffectiveConnectionType {
     // LocalFrameView::UpdateLifecyclePhasesInternal).
     unsigned long LifecycleUpdateCount();
 
-    // This disables the 100-millisecond frequency throttling for computing
-    // IntersectionObserver notifications. This eliminates the need to add
-    // setTimeout(..., 100) calls to layout tests to wait for notifications
+    // Disable the 'delay' option for IntersectionObserver, so that observations
+    // are recomputed on every frame.  This eliminates the need to add
+    // setTimeout(..., delay_ms) calls to layout tests to wait for notifications
     // to be generated.
-    void DisableIntersectionObserverV2Throttle();
+    void DisableIntersectionObserverThrottleDelay();
 
     // Declare that the given |name| is in use by the embedder via the custom
     // element mechanism.

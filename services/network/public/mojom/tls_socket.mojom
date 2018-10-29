@@ -20,6 +20,11 @@ interface TLSClientSocket {
 struct TLSClientSocketOptions {
   SSLVersion version_min = kTLS1;
   SSLVersion version_max = kTLS12;
-  // If |true|, the SSLInfo will be returned in the UpgradeToTLS callback.
+
+  // If true, the SSLInfo will be returned in the UpgradeToTLS callback on
+  // success.
+  bool send_ssl_info = false;
+
+  // If true, the SSLInfo will also be returned in the UpgradeToTLS callback.
   bool unsafely_skip_cert_verification = false;
 };

@@ -6,7 +6,7 @@
 </div>
 <script>
 test(() => {
-  assert_exists(window, 'eventSender', 'this test requires window.eventSender');
+  assert_own_property(window, 'eventSender', 'this test requires window.eventSender');
   input.focus();
   assert_equals(document.activeElement, input);
   outer.focus();

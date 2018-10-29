@@ -14,8 +14,8 @@ CdmCallbackPromise<T...>::CdmCallbackPromise(
     base::OnceCallback<void(const T&...)> resolve_cb,
     PromiseRejectedCB reject_cb)
     : resolve_cb_(std::move(resolve_cb)), reject_cb_(std::move(reject_cb)) {
-  DCHECK(!resolve_cb_.is_null());
-  DCHECK(!reject_cb_.is_null());
+  DCHECK(resolve_cb_);
+  DCHECK(reject_cb_);
 }
 
 template <typename... T>
@@ -23,7 +23,7 @@ CdmCallbackPromise<T...>::~CdmCallbackPromise() {
   if (IsPromiseSettled())
     return;
 
-  DCHECK(!resolve_cb_.is_null() && !reject_cb_.is_null());
+  DCHECK(resolve_cb_ && reject_cb_);
   RejectPromiseOnDestruction();
 }
 

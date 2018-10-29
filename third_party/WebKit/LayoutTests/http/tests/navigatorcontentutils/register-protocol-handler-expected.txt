@@ -42,7 +42,6 @@ PASS The registeration of URL that has the same origin with the document origin 
 PASS URL with origin different than document origin threw SecurityError exception: "Failed to execute 'registerProtocolHandler' on 'Navigator': Can only register custom handler in the document's origin.".
 PASS Valid call succeeded.
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

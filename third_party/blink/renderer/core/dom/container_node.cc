@@ -245,14 +245,14 @@ bool ContainerNode::EnsurePreInsertionValidity(
     return false;
   }
 
-  if (IsDocumentNode()) {
+  if (auto* document = DynamicTo<Document>(this)) {
     // Step 2 is unnecessary. No one can have a Document child.
     // Step 3:
     if (!CheckReferenceChildParent(*this, next, old_child, exception_state))
       return false;
     // Step 4-6.
-    return ToDocument(this)->CanAcceptChild(new_child, next, old_child,
-                                            exception_state);
+    return document->CanAcceptChild(new_child, next, old_child,
+                                    exception_state);
   }
 
   // 2. If node is a host-including inclusive ancestor of parent, throw a
@@ -282,7 +282,8 @@ bool ContainerNode::EnsurePreInsertionValidity(
 }
 
 // We need this extra structural check because prior DOM mutation operations
-// dispatched synchronous events, and their handlers might modified DOM trees.
+// dispatched synchronous events, so their handlers may have modified DOM
+// trees.
 bool ContainerNode::RecheckNodeInsertionStructuralPrereq(
     const NodeVector& new_children,
     const Node* next,
@@ -293,13 +294,12 @@ bool ContainerNode::RecheckNodeInsertionStructuralPrereq(
       // node.  Firefox and Edge don't throw in this case.
       return false;
     }
-    if (IsDocumentNode()) {
+    if (auto* document = DynamicTo<Document>(this)) {
       // For Document, no need to check host-including inclusive ancestor
       // because a Document node can't be a child of other nodes.
       // However, status of existing doctype or root element might be changed
       // and we need to check it again.
-      if (!ToDocument(this)->CanAcceptChild(*child, next, nullptr,
-                                            exception_state))
+      if (!document->CanAcceptChild(*child, next, nullptr, exception_state))
         return false;
     } else {
       if (IsHostIncludingInclusiveAncestorOfThis(*child, exception_state))
@@ -474,12 +474,13 @@ void ContainerNode::AppendChildCommon(Node& child) {
 }
 
 bool ContainerNode::CheckParserAcceptChild(const Node& new_child) const {
-  if (!IsDocumentNode())
+  auto* document = DynamicTo<Document>(this);
+  if (!document)
     return true;
   // TODO(esprehn): Are there other conditions where the parser can create
   // invalid trees?
-  return ToDocument(*this).CanAcceptChild(new_child, nullptr, nullptr,
-                                          IGNORE_EXCEPTION_FOR_TESTING);
+  return document->CanAcceptChild(new_child, nullptr, nullptr,
+                                  IGNORE_EXCEPTION_FOR_TESTING);
 }
 
 void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
@@ -622,13 +623,13 @@ void ContainerNode::WillRemoveChild(Node& child) {
   DispatchChildRemovalEvents(child);
   ChildFrameDisconnector(child).Disconnect();
   if (GetDocument() != child.GetDocument()) {
-    // |child| was moved another document by DOM mutation event handler.
+    // |child| was moved to another document by the DOM mutation event handler.
     return;
   }
 
   // |nodeWillBeRemoved()| must be run after |ChildFrameDisconnector|, because
-  // |ChildFrameDisconnector| can run script which may cause state that is to
-  // be invalidated by removing the node.
+  // |ChildFrameDisconnector| may remove the node, resulting in an invalid
+  // state.
   ScriptForbiddenScope script_forbidden_scope;
   EventDispatchForbiddenScope assert_no_event_dispatch;
   // e.g. mutation event listener can create a new range.
@@ -706,6 +707,7 @@ Node* ContainerNode::RemoveChild(Node* old_child,
     Node* next = child->nextSibling();
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
+      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
       RemoveBetween(prev, next, *child);
       NotifyNodeRemoved(*child);
     }
@@ -768,9 +770,11 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
 
   Node* prev = old_child.previousSibling();
   Node* next = old_child.nextSibling();
-  RemoveBetween(prev, next, old_child);
-
-  NotifyNodeRemoved(old_child);
+  {
+    StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+    RemoveBetween(prev, next, old_child);
+    NotifyNodeRemoved(old_child);
+  }
   ChildrenChanged(ChildrenChange::ForRemoval(old_child, prev, next,
                                              kChildrenChangeSourceParser));
 }
@@ -805,6 +809,7 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
     TreeOrderedMap::RemoveScope tree_remove_scope;
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
+      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
       EventDispatchForbiddenScope assert_no_event_dispatch;
       ScriptForbiddenScope forbid_script;
 
@@ -1039,7 +1044,7 @@ void ContainerNode::FocusStateChanged() {
   SetNeedsStyleRecalc(
       change_type,
       StyleChangeReasonForTracing::CreateWithExtraData(
-          StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_focus));
+          style_change_reason::kPseudoClass, StyleChangeExtraData::g_focus));
 
   if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByFocus())
     ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoFocus);
@@ -1058,7 +1063,7 @@ void ContainerNode::FocusVisibleStateChanged() {
           : kLocalStyleChange;
   SetNeedsStyleRecalc(change_type,
                       StyleChangeReasonForTracing::CreateWithExtraData(
-                          StyleChangeReason::kPseudoClass,
+                          style_change_reason::kPseudoClass,
                           StyleChangeExtraData::g_focus_visible));
 
   if (IsElementNode() &&
@@ -1074,7 +1079,7 @@ void ContainerNode::FocusWithinStateChanged() {
             : kLocalStyleChange;
     SetNeedsStyleRecalc(change_type,
                         StyleChangeReasonForTracing::CreateWithExtraData(
-                            StyleChangeReason::kPseudoClass,
+                            style_change_reason::kPseudoClass,
                             StyleChangeExtraData::g_focus_within));
   }
   if (IsElementNode() &&
@@ -1112,13 +1117,14 @@ void ContainerNode::SetFocused(bool received, WebFocusType focus_type) {
 
   // If :focus sets display: none, we lose focus but still need to recalc our
   // style.
-  if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByFocus())
+  if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByFocus()) {
     ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoFocus);
-  else
+  } else {
     SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::CreateWithExtraData(
-            StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_focus));
+            style_change_reason::kPseudoClass, StyleChangeExtraData::g_focus));
+  }
 
   if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
     if (IsElementNode() &&
@@ -1127,7 +1133,7 @@ void ContainerNode::SetFocused(bool received, WebFocusType focus_type) {
     } else {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::CreateWithExtraData(
-                              StyleChangeReason::kPseudoClass,
+                              style_change_reason::kPseudoClass,
                               StyleChangeExtraData::g_focus_visible));
     }
   }
@@ -1138,7 +1144,7 @@ void ContainerNode::SetFocused(bool received, WebFocusType focus_type) {
   } else {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::CreateWithExtraData(
-                            StyleChangeReason::kPseudoClass,
+                            style_change_reason::kPseudoClass,
                             StyleChangeExtraData::g_focus_within));
   }
 }
@@ -1159,13 +1165,14 @@ void ContainerNode::SetActive(bool down) {
 
   if (!GetLayoutObject()) {
     if (IsElementNode() &&
-        ToElement(this)->ChildrenOrSiblingsAffectedByActive())
+        ToElement(this)->ChildrenOrSiblingsAffectedByActive()) {
       ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoActive);
-    else
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::CreateWithExtraData(
-              StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_active));
+    } else {
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::CreateWithExtraData(
+                              style_change_reason::kPseudoClass,
+                              StyleChangeExtraData::g_active));
+    }
     return;
   }
 
@@ -1177,7 +1184,7 @@ void ContainerNode::SetActive(bool down) {
     SetNeedsStyleRecalc(
         change_type,
         StyleChangeReasonForTracing::CreateWithExtraData(
-            StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_active));
+            style_change_reason::kPseudoClass, StyleChangeExtraData::g_active));
   }
   if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByActive())
     ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoActive);
@@ -1196,13 +1203,16 @@ void ContainerNode::SetDragged(bool new_value) {
   if (!GetLayoutObject()) {
     if (new_value)
       return;
-    if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByDrag())
+    if (IsElementNode() &&
+        ToElement(this)->ChildrenOrSiblingsAffectedByDrag()) {
       ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoDrag);
-    else
+
+    } else {
       SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::CreateWithExtraData(
-              StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_drag));
+              style_change_reason::kPseudoClass, StyleChangeExtraData::g_drag));
+    }
     return;
   }
 
@@ -1214,7 +1224,7 @@ void ContainerNode::SetDragged(bool new_value) {
     SetNeedsStyleRecalc(
         change_type,
         StyleChangeReasonForTracing::CreateWithExtraData(
-            StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_drag));
+            style_change_reason::kPseudoClass, StyleChangeExtraData::g_drag));
   }
   if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByDrag())
     ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoDrag);
@@ -1234,7 +1244,7 @@ void ContainerNode::SetHovered(bool over) {
     SetNeedsStyleRecalc(
         change_type,
         StyleChangeReasonForTracing::CreateWithExtraData(
-            StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_hover));
+            style_change_reason::kPseudoClass, StyleChangeExtraData::g_hover));
   }
   if (IsElementNode() && ToElement(this)->ChildrenOrSiblingsAffectedByHover())
     ToElement(this)->PseudoStateChanged(CSSSelector::kPseudoHover);
@@ -1390,7 +1400,7 @@ void ContainerNode::RecalcDescendantStyles(StyleRecalcChange change) {
   DCHECK(change >= kUpdatePseudoElements || ChildNeedsStyleRecalc());
   DCHECK(!NeedsStyleRecalc());
 
-  for (Node* child = lastChild(); child; child = child->previousSibling()) {
+  for (Node* child = firstChild(); child; child = child->nextSibling()) {
     if (child->IsTextNode()) {
       ToText(child)->RecalcTextStyle(change);
     } else if (child->IsElementNode()) {

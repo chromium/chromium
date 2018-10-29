@@ -45,19 +45,19 @@ String ConvertTypeToEnum(const UsbTransferType& type) {
 }  // namespace
 
 USBEndpoint* USBEndpoint::Create(const USBAlternateInterface* alternate,
-                                 size_t endpoint_index) {
+                                 wtf_size_t endpoint_index) {
   return new USBEndpoint(alternate, endpoint_index);
 }
 
 USBEndpoint* USBEndpoint::Create(const USBAlternateInterface* alternate,
-                                 size_t endpoint_number,
+                                 uint8_t endpoint_number,
                                  const String& direction,
                                  ExceptionState& exception_state) {
   UsbTransferDirection mojo_direction = direction == "in"
                                             ? UsbTransferDirection::INBOUND
                                             : UsbTransferDirection::OUTBOUND;
   const auto& endpoints = alternate->Info().endpoints;
-  for (size_t i = 0; i < endpoints.size(); ++i) {
+  for (wtf_size_t i = 0; i < endpoints.size(); ++i) {
     const auto& endpoint = endpoints[i];
     if (endpoint->endpoint_number == endpoint_number &&
         endpoint->direction == mojo_direction)
@@ -69,7 +69,7 @@ USBEndpoint* USBEndpoint::Create(const USBAlternateInterface* alternate,
 }
 
 USBEndpoint::USBEndpoint(const USBAlternateInterface* alternate,
-                         size_t endpoint_index)
+                         wtf_size_t endpoint_index)
     : alternate_(alternate), endpoint_index_(endpoint_index) {
   DCHECK(alternate_);
   DCHECK_LT(endpoint_index_, alternate_->Info().endpoints.size());

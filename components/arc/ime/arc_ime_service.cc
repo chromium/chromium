@@ -13,6 +13,7 @@
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/ime/arc_ime_bridge_impl.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -24,10 +25,15 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/range/range.h"
 #include "ui/keyboard/keyboard_controller.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace arc {
 
 namespace {
+
+// TODO(yhanada): Remove this once IsArcAppWindow is fixed for ARC++ Kiosk app.
+constexpr char kArcAppIdPrefix[] = "org.chromium.arc";
 
 base::Optional<double> g_override_default_device_scale_factor;
 
@@ -47,9 +53,24 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   ~ArcWindowDelegateImpl() override = default;
 
   bool IsInArcAppWindow(const aura::Window* window) const override {
+    aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
       if (IsArcAppWindow(window))
         return true;
+
+      // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
+      // have to check application id of the active window to cover that case.
+      // TODO(yhanada): Make IsArcAppWindow support a window of ARC++ Kiosk.
+      // Specifically, a window of ARC++ Kiosk should have ash::AppType::ARC_APP
+      // property. Please see implementation of IsArcAppWindow().
+      if (window == active) {
+        const std::string* app_id = exo::ShellSurface::GetApplicationId(window);
+        if (IsArcKioskMode() && app_id &&
+            base::StartsWith(*app_id, kArcAppIdPrefix,
+                             base::CompareCase::SENSITIVE)) {
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -140,7 +161,8 @@ ArcImeService::~ArcImeService() {
   // from KeyboardController observers.
   if (keyboard::KeyboardController::HasInstance()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    keyboard_controller->RemoveObserver(this);
+    if (keyboard_controller->HasObserver(this))
+      keyboard_controller->RemoveObserver(this);
   }
 }
 
@@ -182,7 +204,7 @@ void ArcImeService::OnWindowInitialized(aura::Window* new_window) {
   if (!features::IsUsingWindowService() &&
       keyboard::KeyboardController::HasInstance()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled() &&
+    if (keyboard_controller->IsEnabled() &&
         !keyboard_controller->HasObserver(this)) {
       keyboard_controller->AddObserver(this);
     }
@@ -293,12 +315,17 @@ void ArcImeService::OnCursorRectChangedWithSurroundingText(
 }
 
 void ArcImeService::RequestHideIme() {
+  // Ignore the request when the ARC app is not focused.
+  ui::InputMethod* const input_method = GetInputMethod();
+  if (!input_method || input_method->GetTextInputClient() != nullptr)
+    return;
+
   // TODO(mash): Support virtual keyboard under MASH. There is no
   // KeyboardController in the browser process under MASH.
   if (!features::IsUsingWindowService() &&
       keyboard::KeyboardController::HasInstance()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled())
+    if (keyboard_controller->IsEnabled())
       keyboard_controller->HideKeyboardImplicitlyBySystem();
   }
 }
@@ -526,6 +553,20 @@ bool ArcImeService::UpdateCursorRect(const gfx::Rect& rect,
     converted.Offset(focused_arc_window_->GetToplevelWindow()
                          ->GetBoundsInScreen()
                          .OffsetFromOrigin());
+  } else if (focused_arc_window_) {
+    auto* window = focused_arc_window_->GetToplevelWindow();
+    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+    // Check fullscreen window as well because it's possible for ARC to request
+    // frame regardless of window state.
+    bool covers_display =
+        widget && (widget->IsMaximized() || widget->IsFullscreen());
+    if (covers_display) {
+      auto* frame_view = widget->non_client_view()->frame_view();
+      // The frame height will be subtracted from client bounds.
+      gfx::Rect bounds =
+          frame_view->GetWindowBoundsForClientBounds(gfx::Rect());
+      converted.Offset(0, -bounds.y());
+    }
   }
 
   if (cursor_rect_ == converted)

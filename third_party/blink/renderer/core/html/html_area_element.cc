@@ -47,9 +47,9 @@ using namespace HTMLNames;
 inline HTMLAreaElement::HTMLAreaElement(Document& document)
     : HTMLAnchorElement(areaTag, document), shape_(kRect) {}
 
-// An explicit empty destructor should be in HTMLAreaElement.cpp, because
+// An explicit empty destructor should be in html_area_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
-// HTMLAreaElement.h, when including HTMLAreaElement.h, msvc tries to expand
+// html_area_element.h, when including html_area_element.h, msvc tries to expand
 // the destructor and causes a compile error because of lack of blink::Path
 // definition.
 HTMLAreaElement::~HTMLAreaElement() = default;

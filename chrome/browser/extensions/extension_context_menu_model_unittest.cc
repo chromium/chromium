@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -406,15 +408,16 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
     // A component extension's context menu should not include options for
     // managing extensions or removing it, and should only include an option for
     // the options page if the extension has one (which this one doesn't).
-    EXPECT_EQ(-1,
-              menu.GetIndexOfCommandId(ExtensionContextMenuModel::CONFIGURE));
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(ExtensionContextMenuModel::OPTIONS));
     EXPECT_EQ(-1,
               menu.GetIndexOfCommandId(ExtensionContextMenuModel::UNINSTALL));
-    EXPECT_EQ(-1, menu.GetIndexOfCommandId(ExtensionContextMenuModel::MANAGE));
+    EXPECT_EQ(-1, menu.GetIndexOfCommandId(
+                      ExtensionContextMenuModel::MANAGE_EXTENSIONS));
     // The "name" option should be present, but not enabled for component
     // extensions.
-    EXPECT_NE(-1, menu.GetIndexOfCommandId(ExtensionContextMenuModel::NAME));
-    EXPECT_FALSE(menu.IsCommandIdEnabled(ExtensionContextMenuModel::NAME));
+    EXPECT_NE(-1,
+              menu.GetIndexOfCommandId(ExtensionContextMenuModel::HOME_PAGE));
+    EXPECT_FALSE(menu.IsCommandIdEnabled(ExtensionContextMenuModel::HOME_PAGE));
   }
 
   {
@@ -432,9 +435,8 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
                                    ExtensionContextMenuModel::VISIBLE, nullptr);
     service()->AddExtension(extension.get());
     EXPECT_TRUE(extensions::OptionsPageInfo::HasOptionsPage(extension.get()));
-    EXPECT_NE(-1,
-              menu.GetIndexOfCommandId(ExtensionContextMenuModel::CONFIGURE));
-    EXPECT_TRUE(menu.IsCommandIdEnabled(ExtensionContextMenuModel::CONFIGURE));
+    EXPECT_NE(-1, menu.GetIndexOfCommandId(ExtensionContextMenuModel::OPTIONS));
+    EXPECT_TRUE(menu.IsCommandIdEnabled(ExtensionContextMenuModel::OPTIONS));
   }
 }
 
@@ -447,7 +449,8 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionItemTest) {
   MenuManager* manager = static_cast<MenuManager*>(
       (MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(),
-          &MenuManagerFactory::BuildServiceInstanceForTesting)));
+          base::BindRepeating(
+              &MenuManagerFactory::BuildServiceInstanceForTesting))));
   ASSERT_TRUE(manager);
 
   MenuBuilder builder(extension, GetBrowser(), manager);
@@ -495,7 +498,8 @@ TEST_F(ExtensionContextMenuModelTest,
   // Create a MenuManager for adding context items.
   MenuManager* manager = static_cast<MenuManager*>(
       MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), &MenuManagerFactory::BuildServiceInstanceForTesting));
+          profile(), base::BindRepeating(
+                         &MenuManagerFactory::BuildServiceInstanceForTesting)));
   ASSERT_TRUE(manager);
 
   MenuBuilder builder(extension, GetBrowser(), manager);
@@ -581,12 +585,13 @@ TEST_F(ExtensionContextMenuModelTest,
 
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  ExtensionContextMenuModel::VISIBLE, nullptr);
-  EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::NAME));
-  EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::CONFIGURE));
+  EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::HOME_PAGE));
+  EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::OPTIONS));
   EXPECT_TRUE(
       menu.IsCommandIdVisible(ExtensionContextMenuModel::TOGGLE_VISIBILITY));
   EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::UNINSTALL));
-  EXPECT_TRUE(menu.IsCommandIdVisible(ExtensionContextMenuModel::MANAGE));
+  EXPECT_TRUE(
+      menu.IsCommandIdVisible(ExtensionContextMenuModel::MANAGE_EXTENSIONS));
   EXPECT_TRUE(
       menu.IsCommandIdVisible(ExtensionContextMenuModel::INSPECT_POPUP));
   EXPECT_TRUE(menu.IsCommandIdVisible(
@@ -1306,6 +1311,92 @@ TEST_F(ExtensionContextMenuModelTest, TestClickingPageAccessLearnMore) {
 
   EXPECT_EQ(GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL),
             web_contents->GetLastCommittedURL());
+}
+
+TEST_F(ExtensionContextMenuModelTest, HistogramTest_Basic) {
+  InitializeEmptyExtensionService();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").Build();
+  InitializeAndAddExtension(*extension);
+  constexpr char kHistogramName[] = "Extensions.ContextMenuAction";
+  {
+    base::HistogramTester tester;
+    {
+      // The menu is constructed, but never shown.
+      ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
+                                     ExtensionContextMenuModel::VISIBLE,
+                                     nullptr);
+    }
+    tester.ExpectTotalCount(kHistogramName, 0);
+  }
+
+  {
+    base::HistogramTester tester;
+    {
+      // The menu is constructed and shown, but no action is taken.
+      ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
+                                     ExtensionContextMenuModel::VISIBLE,
+                                     nullptr);
+      menu.OnMenuWillShow(&menu);
+      menu.MenuClosed(&menu);
+    }
+    tester.ExpectUniqueSample(
+        kHistogramName, ExtensionContextMenuModel::ContextMenuAction::kNoAction,
+        1 /* expected_count */);
+  }
+
+  {
+    base::HistogramTester tester;
+    {
+      // The menu is constructed, shown, and an action taken.
+      ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
+                                     ExtensionContextMenuModel::VISIBLE,
+                                     nullptr);
+      menu.OnMenuWillShow(&menu);
+      menu.ExecuteCommand(ExtensionContextMenuModel::MANAGE_EXTENSIONS, 0);
+      menu.MenuClosed(&menu);
+    }
+
+    tester.ExpectUniqueSample(
+        kHistogramName,
+        ExtensionContextMenuModel::ContextMenuAction::kManageExtensions,
+        1 /* expected_count */);
+  }
+}
+
+TEST_F(ExtensionContextMenuModelTest, HistogramTest_CustomCommand) {
+  constexpr char kHistogramName[] = "Extensions.ContextMenuAction";
+
+  InitializeEmptyExtensionService();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension")
+          .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .Build();
+  InitializeAndAddExtension(*extension);
+
+  // Create a MenuManager for adding context items.
+  MenuManager* manager = static_cast<MenuManager*>(
+      (MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              &MenuManagerFactory::BuildServiceInstanceForTesting))));
+  ASSERT_TRUE(manager);
+
+  MenuBuilder builder(extension, GetBrowser(), manager);
+  builder.AddContextItem(MenuItem::BROWSER_ACTION);
+  std::unique_ptr<ExtensionContextMenuModel> menu = builder.BuildMenu();
+  EXPECT_EQ(1, CountExtensionItems(*menu));
+
+  base::HistogramTester tester;
+  menu->OnMenuWillShow(menu.get());
+  menu->ExecuteCommand(
+      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), 0);
+  menu->MenuClosed(menu.get());
+
+  tester.ExpectUniqueSample(
+      kHistogramName,
+      ExtensionContextMenuModel::ContextMenuAction::kCustomCommand,
+      1 /* expected_count */);
 }
 
 }  // namespace extensions

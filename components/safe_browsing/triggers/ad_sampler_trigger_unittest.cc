@@ -48,7 +48,6 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
     safe_browsing::RegisterProfilePrefs(prefs_.registry());
     prefs_.SetBoolean(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     prefs_.SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
-    prefs_.SetBoolean(prefs::kSafeBrowsingScoutGroupSelected, true);
   }
 
   void CreateTriggerWithFrequency(const size_t denominator) {

@@ -1,0 +1,129 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "MultiDevice UI is Chrome OS only.")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":button_bar",
+    ":fake_mojo_service",
+    ":mojo_api",
+    ":multidevice_setup",
+    ":multidevice_setup_browser_proxy",
+    ":multidevice_setup_delegate",
+    ":setup_failed_page",
+    ":setup_succeeded_page",
+    ":start_setup_page",
+    ":ui_page_container_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("button_bar") {
+}
+
+js_library("fake_mojo_service") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+
+  extra_deps = [
+    "//chromeos/services/device_sync/public/mojom:mojom_js",
+    "//chromeos/services/multidevice_setup/public/mojom:mojom_js",
+    "//mojo/public/mojom/base:base_js",
+  ]
+
+  externs_list = [
+    "$root_gen_dir/chromeos/services/device_sync/public/mojom/device_sync.mojom.externs.js",
+    "$root_gen_dir/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.externs.js",
+    "$root_gen_dir/mojo/public/mojom/base/time.mojom.externs.js",
+    "$externs_path/mojo.js",
+  ]
+}
+
+js_library("mojo_api") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("multidevice_setup") {
+  deps = [
+    ":button_bar",
+    ":fake_mojo_service",
+    ":mojo_api",
+    ":multidevice_setup_delegate",
+    ":password_page",
+    ":setup_failed_page",
+    ":setup_succeeded_page",
+    ":start_setup_page",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+
+  extra_deps = [
+    "//chromeos/services/device_sync/public/mojom:mojom_js",
+    "//chromeos/services/multidevice_setup/public/mojom:mojom_js",
+    "//mojo/public/mojom/base:base_js",
+  ]
+
+  externs_list = [
+    "$root_gen_dir/chromeos/services/device_sync/public/mojom/device_sync.mojom.externs.js",
+    "$root_gen_dir/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.externs.js",
+    "$root_gen_dir/mojo/public/mojom/base/time.mojom.externs.js",
+    "$externs_path/mojo.js",
+  ]
+}
+
+js_library("multidevice_setup_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("multidevice_setup_delegate") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("password_page") {
+  deps = [
+    ":multidevice_setup_browser_proxy",
+    ":ui_page_container_behavior",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/quick_unlock_private.js" ]
+  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
+}
+
+js_library("setup_failed_page") {
+  deps = [
+    ":ui_page_container_behavior",
+  ]
+}
+
+js_library("setup_succeeded_page") {
+  deps = [
+    ":multidevice_setup_browser_proxy",
+    ":ui_page_container_behavior",
+  ]
+}
+
+js_library("start_setup_page") {
+  deps = [
+    ":ui_page_container_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("ui_page_container_behavior") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}

@@ -31,8 +31,7 @@ namespace {
 template<typename T>int GetZPosition(const T* child) {
   const T* parent = child->parent();
   const std::vector<T*> children = parent->children();
-  typename std::vector<T*>::const_iterator iter =
-      std::find(children.begin(), children.end(), child);
+  auto iter = std::find(children.begin(), children.end(), child);
   DCHECK(iter != children.end());
   return iter - children.begin();
 }

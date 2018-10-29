@@ -12,13 +12,13 @@ namespace content {
 
 class ServiceWorkerContext;
 
-// Stops the active service worker of the registration whose scope is |pattern|,
+// Stops the active service worker of the registration for the given |scope|,
 // and calls |complete_callback_ui| callback on UI thread when done.
 //
 // Can be called from UI/IO thread.
-void StopServiceWorkerForPattern(ServiceWorkerContext* context,
-                                 const GURL& pattern,
-                                 base::OnceClosure complete_callback_ui);
+void StopServiceWorkerForScope(ServiceWorkerContext* context,
+                               const GURL& scope,
+                               base::OnceClosure complete_callback_ui);
 
 }  // namespace content
 

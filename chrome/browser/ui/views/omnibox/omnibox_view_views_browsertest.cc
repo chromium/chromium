@@ -22,7 +22,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "content/public/browser/web_contents.h"
@@ -34,6 +33,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -98,7 +98,12 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   // Touch down and release at the specified locations.
   void Tap(const gfx::Point& press_location,
            const gfx::Point& release_location) {
-    ui::test::EventGenerator generator(browser()->window()->GetNativeWindow());
+    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+#if defined(OS_CHROMEOS)
+    if (features::IsUsingWindowService())
+      window = nullptr;
+#endif
+    ui::test::EventGenerator generator(window);
     if (press_location == release_location) {
       generator.GestureTapAt(press_location);
     } else {
@@ -116,8 +121,6 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
     chrome::FocusLocationBar(browser());
     ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   }
-
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxViewViewsTest);
 };

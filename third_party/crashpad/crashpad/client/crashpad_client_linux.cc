@@ -78,28 +78,8 @@ std::vector<std::string> BuildAppProcessArgs(
 
 #endif  // OS_ANDROID
 
-class SignalHandler {
- public:
-  virtual void HandleCrashFatal(int signo,
-                                siginfo_t* siginfo,
-                                void* context) = 0;
-  virtual bool HandleCrashNonFatal(int signo,
-                                   siginfo_t* siginfo,
-                                   void* context) = 0;
-
-  void SetFirstChanceHandler(CrashpadClient::FirstChanceHandler handler) {
-    first_chance_handler_ = handler;
-  }
-
- protected:
-  SignalHandler() = default;
-  ~SignalHandler() = default;
-
-  CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
-};
-
 // Launches a single use handler to snapshot this process.
-class LaunchAtCrashHandler : public SignalHandler {
+class LaunchAtCrashHandler {
  public:
   static LaunchAtCrashHandler* Get() {
     static LaunchAtCrashHandler* instance = new LaunchAtCrashHandler();
@@ -120,12 +100,10 @@ class LaunchAtCrashHandler : public SignalHandler {
                                                   &exception_information_));
 
     StringVectorToCStringVector(argv_strings_, &argv_);
-    return Signals::InstallCrashHandlers(HandleCrash, 0, nullptr);
+    return Signals::InstallCrashHandlers(HandleCrash, 0, &old_actions_);
   }
 
-  bool HandleCrashNonFatal(int signo,
-                           siginfo_t* siginfo,
-                           void* context) override {
+  bool HandleCrashNonFatal(int signo, siginfo_t* siginfo, void* context) {
     if (first_chance_handler_ &&
         first_chance_handler_(
             signo, siginfo, static_cast<ucontext_t*>(context))) {
@@ -162,12 +140,19 @@ class LaunchAtCrashHandler : public SignalHandler {
     return false;
   }
 
-  void HandleCrashFatal(int signo, siginfo_t* siginfo, void* context) override {
-    if (HandleCrashNonFatal(signo, siginfo, context)) {
+  void HandleCrashFatal(int signo, siginfo_t* siginfo, void* context) {
+    if (enabled_ && HandleCrashNonFatal(signo, siginfo, context)) {
       return;
     }
-    Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, nullptr);
+    Signals::RestoreHandlerAndReraiseSignalOnReturn(
+        siginfo, old_actions_.ActionForSignal(signo));
   }
+
+  void SetFirstChanceHandler(CrashpadClient::FirstChanceHandler handler) {
+    first_chance_handler_ = handler;
+  }
+
+  static void Disable() { enabled_ = false; }
 
  private:
   LaunchAtCrashHandler() = default;
@@ -179,20 +164,25 @@ class LaunchAtCrashHandler : public SignalHandler {
     state->HandleCrashFatal(signo, siginfo, context);
   }
 
+  Signals::OldActions old_actions_ = {};
   std::vector<std::string> argv_strings_;
   std::vector<const char*> argv_;
   std::vector<std::string> envp_strings_;
   std::vector<const char*> envp_;
-  bool set_envp_ = false;
   ExceptionInformation exception_information_;
+  CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
+  bool set_envp_ = false;
+
+  static thread_local bool enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(LaunchAtCrashHandler);
 };
+thread_local bool LaunchAtCrashHandler::enabled_ = true;
 
 // A pointer to the currently installed crash signal handler. This allows
 // the static method CrashpadClient::DumpWithoutCrashing to simulate a crash
 // using the currently configured crash handling strategy.
-static SignalHandler* g_crash_handler;
+static LaunchAtCrashHandler* g_crash_handler;
 
 }  // namespace
 
@@ -316,6 +306,12 @@ void CrashpadClient::DumpWithoutCrash(NativeCPUContext* context) {
   siginfo.si_code = 0;
   g_crash_handler->HandleCrashNonFatal(
       siginfo.si_signo, &siginfo, reinterpret_cast<void*>(context));
+}
+
+// static
+void CrashpadClient::CrashWithoutDump(const std::string& message) {
+  LaunchAtCrashHandler::Disable();
+  LOG(FATAL) << message;
 }
 
 // static

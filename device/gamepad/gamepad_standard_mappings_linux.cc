@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
 namespace device {
@@ -20,10 +21,20 @@ enum SwitchProButtons {
 // axes are capable of, and as a result the received axis values only use about
 // 70% of the total range. We renormalize the axis values to cover the full
 // range. The axis extents were determined experimentally.
-const static float kSwitchProAxisXMin = -0.7f;
-const static float kSwitchProAxisXMax = 0.7f;
-const static float kSwitchProAxisYMin = -0.65f;
-const static float kSwitchProAxisYMax = 0.75f;
+const float kSwitchProAxisXMin = -0.7f;
+const float kSwitchProAxisXMax = 0.7f;
+const float kSwitchProAxisYMin = -0.65f;
+const float kSwitchProAxisYMax = 0.75f;
+
+// The hid-sony driver in newer kernels uses an alternate mapping for Sony
+// Playstation 3 and Playstation 4 gamepads than in older kernels. To allow
+// applications to distinguish between the old mapping and the new mapping,
+// hid-sony sets the high bit of the device's version number.
+// Dualshock 4 devices are patched in 4.10:
+// https://github.com/torvalds/linux/commit/9131f8cc2b4eaf7c08d402243429e0bfba9aa0d6
+// Dualshock 3 and SIXAXIS devices are patched in 4.12:
+// https://github.com/torvalds/linux/commit/e19a267b9987135c00155a51e683e434b9abb56b
+const uint16_t kDualshockPatchedVersion = 0x8111;
 
 void MapperXInputStyleGamepad(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
@@ -535,61 +546,62 @@ void MapperLogitechDInput(const Gamepad& input, Gamepad* mapped) {
 }
 
 struct MappingData {
-  const char* const vendor_id;
-  const char* const product_id;
+  const uint16_t vendor_id;
+  const uint16_t product_id;
   GamepadStandardMappingFunction function;
 } AvailableMappings[] = {
     // http://www.linux-usb.org/usb.ids
-    {"0079", "0006", MapperDragonRiseGeneric},   // DragonRise Generic USB
-    {"045e", "028e", MapperXInputStyleGamepad},  // Xbox 360 Wired
-    {"045e", "028f", MapperXInputStyleGamepad},  // Xbox 360 Wireless
-    {"045e", "02a1", MapperXInputStyleGamepad},  // Xbox 360 Wireless
-    {"045e", "0291", MapperXInputStyleGamepad},  // Xbox 360 Wireless
-    {"045e", "02d1", MapperXInputStyleGamepad},  // Xbox One Wired
-    {"045e", "02dd", MapperXInputStyleGamepad},  // Xbox One Wired (2015 FW)
-    {"045e", "02e0", MapperXboxOneS},            // Xbox One S (Bluetooth)
-    {"045e", "02e3", MapperXInputStyleGamepad},  // Xbox One Elite Wired
-    {"045e", "02ea", MapperXInputStyleGamepad},  // Xbox One S (USB)
-    {"045e", "02fd", MapperXboxOneS2016Firmware},  // Xbox One S (Bluetooth)
-    {"045e", "0719", MapperXInputStyleGamepad},  // Xbox 360 Wireless
-    {"046d", "c216", MapperLogitechDInput},      // Logitech F310 D-mode
-    {"046d", "c218", MapperLogitechDInput},      // Logitech F510 D-mode
-    {"046d", "c219", MapperLogitechDInput},      // Logitech F710 D-mode
-    {"046d", "c21d", MapperXInputStyleGamepad},  // Logitech F310 X-mode
-    {"046d", "c21e", MapperXInputStyleGamepad},  // Logitech F510 X-mode
-    {"046d", "c21f", MapperXInputStyleGamepad},  // Logitech F710 X-mode
-    {"04e8", "a000", MapperSamsung_EI_GP20},     // Samsung Gamepad EI-GP20
-    {"054c", "0268", MapperDualshock3SixAxis},   // Dualshock 3 / SIXAXIS
-    {"054c", "05c4", MapperDualshock4},          // Playstation Dualshock 4
-    {"054c", "09cc", MapperDualshock4},          // Dualshock 4 (PS4 Slim)
-    {"054c", "0ba0", MapperDualshock4},          // Dualshock 4 USB receiver
-    {"057e", "2009", MapperSwitchProUsb},        // Switch Pro Controller
-    {"0583", "2060", MapperIBuffalo},            // iBuffalo Classic
-    {"0925", "0005", MapperLakeviewResearch},    // SmartJoy PLUS Adapter
-    {"0925", "8866", MapperLakeviewResearch},    // WiseGroup MP-8866
-    {"0955", "7210", MapperNvShield},            // Nvidia Shield gamepad (2015)
-    {"0955", "7214", MapperNvShield2017},        // Nvidia Shield gamepad (2017)
-    {"0b05", "4500", MapperADT1},                // Nexus Player Controller
-    {"0e8f", "0003", MapperXGEAR},           // XFXforce XGEAR PS2 Controller
-    {"1038", "1412", MapperSteelSeries},     // Zeemote: SteelSeries FREE
-    {"1532", "0900", MapperRazerServal},     // Razer Serval Controller
-    {"18d1", "2c40", MapperADT1},            // ADT-1 Controller
-    {"20d6", "6271", MapperMoga},            // Moga Pro Controller (HID mode)
-    {"20d6", "89e5", MapperMoga},            // Moga 2 HID
-    {"2378", "1008", MapperOnLiveWireless},  // OnLive Controller (Bluetooth)
-    {"2378", "100a", MapperOnLiveWireless},  // OnLive Controller (Wired)
-    {"2836", "0001", MapperOUYA},            // OUYA Controller
+    {0x0079, 0x0006, MapperDragonRiseGeneric},     // DragonRise Generic USB
+    {0x045e, 0x028e, MapperXInputStyleGamepad},    // Xbox 360 Wired
+    {0x045e, 0x028f, MapperXInputStyleGamepad},    // Xbox 360 Wireless
+    {0x045e, 0x02a1, MapperXInputStyleGamepad},    // Xbox 360 Wireless
+    {0x045e, 0x0291, MapperXInputStyleGamepad},    // Xbox 360 Wireless
+    {0x045e, 0x02d1, MapperXInputStyleGamepad},    // Xbox One Wired
+    {0x045e, 0x02dd, MapperXInputStyleGamepad},    // Xbox One Wired (2015 FW)
+    {0x045e, 0x02e0, MapperXboxOneS},              // Xbox One S (Bluetooth)
+    {0x045e, 0x02e3, MapperXInputStyleGamepad},    // Xbox One Elite Wired
+    {0x045e, 0x02ea, MapperXInputStyleGamepad},    // Xbox One S (USB)
+    {0x045e, 0x02fd, MapperXboxOneS2016Firmware},  // Xbox One S (Bluetooth)
+    {0x045e, 0x0719, MapperXInputStyleGamepad},    // Xbox 360 Wireless
+    {0x046d, 0xc216, MapperLogitechDInput},        // Logitech F310 D-mode
+    {0x046d, 0xc218, MapperLogitechDInput},        // Logitech F510 D-mode
+    {0x046d, 0xc219, MapperLogitechDInput},        // Logitech F710 D-mode
+    {0x046d, 0xc21d, MapperXInputStyleGamepad},    // Logitech F310 X-mode
+    {0x046d, 0xc21e, MapperXInputStyleGamepad},    // Logitech F510 X-mode
+    {0x046d, 0xc21f, MapperXInputStyleGamepad},    // Logitech F710 X-mode
+    {0x04e8, 0xa000, MapperSamsung_EI_GP20},       // Samsung Gamepad EI-GP20
+    {0x054c, 0x0268, MapperDualshock3SixAxis},     // Dualshock 3 / SIXAXIS
+    {0x054c, 0x05c4, MapperDualshock4},            // Playstation Dualshock 4
+    {0x054c, 0x09cc, MapperDualshock4},            // Dualshock 4 (PS4 Slim)
+    {0x054c, 0x0ba0, MapperDualshock4},            // Dualshock 4 USB receiver
+    {0x057e, 0x2009, MapperSwitchProUsb},          // Switch Pro Controller
+    {0x0583, 0x2060, MapperIBuffalo},              // iBuffalo Classic
+    {0x0925, 0x0005, MapperLakeviewResearch},      // SmartJoy PLUS Adapter
+    {0x0925, 0x8866, MapperLakeviewResearch},      // WiseGroup MP-8866
+    {0x0955, 0x7210, MapperNvShield},        // Nvidia Shield gamepad (2015)
+    {0x0955, 0x7214, MapperNvShield2017},    // Nvidia Shield gamepad (2017)
+    {0x0b05, 0x4500, MapperADT1},            // Nexus Player Controller
+    {0x0e8f, 0x0003, MapperXGEAR},           // XFXforce XGEAR PS2 Controller
+    {0x1038, 0x1412, MapperSteelSeries},     // Zeemote: SteelSeries FREE
+    {0x1532, 0x0900, MapperRazerServal},     // Razer Serval Controller
+    {0x18d1, 0x2c40, MapperADT1},            // ADT-1 Controller
+    {0x20d6, 0x6271, MapperMoga},            // Moga Pro Controller (HID mode)
+    {0x20d6, 0x89e5, MapperMoga},            // Moga 2 HID
+    {0x2378, 0x1008, MapperOnLiveWireless},  // OnLive Controller (Bluetooth)
+    {0x2378, 0x100a, MapperOnLiveWireless},  // OnLive Controller (Wired)
+    {0x2836, 0x0001, MapperOUYA},            // OUYA Controller
 };
+const size_t kAvailableMappingsLen = base::size(AvailableMappings);
 
 }  // namespace
 
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const base::StringPiece& vendor_id,
-    const base::StringPiece& product_id,
-    const base::StringPiece& version_number,
+    const uint16_t vendor_id,
+    const uint16_t product_id,
+    const uint16_t version_number,
     GamepadBusType bus_type) {
   GamepadStandardMappingFunction mapper = nullptr;
-  for (size_t i = 0; i < arraysize(AvailableMappings); ++i) {
+  for (size_t i = 0; i < kAvailableMappingsLen; ++i) {
     MappingData& item = AvailableMappings[i];
     if (vendor_id == item.vendor_id && product_id == item.product_id) {
       mapper = item.function;
@@ -600,9 +612,11 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
   // The Linux kernel was updated in version 4.10 to better support Dualshock 4
   // and Dualshock 3/SIXAXIS gamepads. The driver patches the hardware version
   // when using the new mapping to allow downstream users to distinguish them.
-  if (mapper == MapperDualshock4 && version_number == "8111") {
+  if (mapper == MapperDualshock4 &&
+      version_number == kDualshockPatchedVersion) {
     mapper = MapperDualshock4New;
-  } else if (mapper == MapperDualshock3SixAxis && version_number == "8111") {
+  } else if (mapper == MapperDualshock3SixAxis &&
+             version_number == kDualshockPatchedVersion) {
     mapper = MapperDualshock3SixAxisNew;
   }
 

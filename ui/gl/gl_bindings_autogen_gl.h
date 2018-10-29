@@ -136,9 +136,6 @@ typedef void(GL_BINDING_CALL* glColorMaskProc)(GLboolean red,
                                                GLboolean blue,
                                                GLboolean alpha);
 typedef void(GL_BINDING_CALL* glCompileShaderProc)(GLuint shader);
-typedef void(GL_BINDING_CALL* glCompressedCopyTextureCHROMIUMProc)(
-    GLuint sourceId,
-    GLuint destId);
 typedef void(GL_BINDING_CALL* glCompressedTexImage2DProc)(GLenum target,
                                                           GLint level,
                                                           GLenum internalformat,
@@ -1779,8 +1776,6 @@ struct ExtensionsGL {
   bool b_GL_ARB_transform_feedback2;
   bool b_GL_ARB_vertex_array_object;
   bool b_GL_CHROMIUM_bind_uniform_location;
-  bool b_GL_CHROMIUM_compressed_copy_texture;
-  bool b_GL_CHROMIUM_copy_compressed_texture;
   bool b_GL_CHROMIUM_copy_texture;
   bool b_GL_CHROMIUM_framebuffer_mixed_samples;
   bool b_GL_CHROMIUM_gles_depth_binding_hack;
@@ -1873,7 +1868,6 @@ struct ProcsGL {
   glClientWaitSyncProc glClientWaitSyncFn;
   glColorMaskProc glColorMaskFn;
   glCompileShaderProc glCompileShaderFn;
-  glCompressedCopyTextureCHROMIUMProc glCompressedCopyTextureCHROMIUMFn;
   glCompressedTexImage2DProc glCompressedTexImage2DFn;
   glCompressedTexImage2DRobustANGLEProc glCompressedTexImage2DRobustANGLEFn;
   glCompressedTexImage3DProc glCompressedTexImage3DFn;
@@ -2419,8 +2413,6 @@ class GL_EXPORT GLApi {
                              GLboolean blue,
                              GLboolean alpha) = 0;
   virtual void glCompileShaderFn(GLuint shader) = 0;
-  virtual void glCompressedCopyTextureCHROMIUMFn(GLuint sourceId,
-                                                 GLuint destId) = 0;
   virtual void glCompressedTexImage2DFn(GLenum target,
                                         GLint level,
                                         GLenum internalformat,
@@ -3920,8 +3912,6 @@ class GL_EXPORT GLApi {
 #define glClientWaitSync ::gl::g_current_gl_context->glClientWaitSyncFn
 #define glColorMask ::gl::g_current_gl_context->glColorMaskFn
 #define glCompileShader ::gl::g_current_gl_context->glCompileShaderFn
-#define glCompressedCopyTextureCHROMIUM \
-  ::gl::g_current_gl_context->glCompressedCopyTextureCHROMIUMFn
 #define glCompressedTexImage2D \
   ::gl::g_current_gl_context->glCompressedTexImage2DFn
 #define glCompressedTexImage2DRobustANGLE \

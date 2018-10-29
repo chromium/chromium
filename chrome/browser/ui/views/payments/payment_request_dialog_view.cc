@@ -189,7 +189,7 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
 
 void PaymentRequestDialogView::RetryDialog() {
   HideProcessingSpinner();
-  ShowInitialPaymentSheet();
+  GoBackToPaymentSheet(false /* animate */);
 
   if (request_->spec()->has_shipping_address_error()) {
     autofill::AutofillProfile* profile =
@@ -265,11 +265,11 @@ void PaymentRequestDialogView::GoBack() {
     observer_for_testing_->OnBackNavigation();
 }
 
-void PaymentRequestDialogView::GoBackToPaymentSheet() {
+void PaymentRequestDialogView::GoBackToPaymentSheet(bool animate) {
   // This assumes that the Payment Sheet is the first view in the stack. Thus if
   // there is only one view, we are already showing the payment sheet.
   if (view_stack_->size() > 1)
-    view_stack_->PopMany(view_stack_->size() - 1);
+    view_stack_->PopMany(view_stack_->size() - 1, animate);
 
   if (observer_for_testing_)
     observer_for_testing_->OnBackToPaymentSheetNavigation();

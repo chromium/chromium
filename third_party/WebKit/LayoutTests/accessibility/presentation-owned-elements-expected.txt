@@ -19,13 +19,14 @@ Button has a button role because it has an explicit role.
  I have a bike   Male  Female
 The option A has a static text role because it has a presentation role and is disabled.
 The option B has option role because it has an explicit role.
+A
+B
 
 End of test
 
 This test make sure that presentation role is inherited to required owned elements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 AXRole: AXWebArea
     AXRole: AXGenericContainer
@@ -106,6 +107,7 @@ AXRole: AXWebArea
         AXRole: AXListBoxOption "B"
     AXRole: AXParagraph
         AXRole: AXStaticText "End of test"
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

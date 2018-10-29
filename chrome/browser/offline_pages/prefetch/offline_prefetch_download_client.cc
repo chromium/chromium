@@ -74,6 +74,7 @@ void OfflinePrefetchDownloadClient::OnDownloadUpdated(
 
 void OfflinePrefetchDownloadClient::OnDownloadFailed(
     const std::string& guid,
+    const download::CompletionInfo& completion_info,
     download::Client::FailureReason reason) {
   PrefetchDownloader* downloader = GetPrefetchDownloader();
   if (downloader)

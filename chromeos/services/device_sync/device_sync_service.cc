@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/device_sync_service.h"
 
+#include "base/timer/timer.h"
 #include "chromeos/components/proximity_auth/logging/logging.h"
 #include "chromeos/services/device_sync/device_sync_base.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
@@ -31,9 +32,10 @@ void DeviceSyncService::OnStart() {
 
   // context() cannot be invoked until after the constructor is run, so
   // |device_sync_impl_| cannot be initialized until OnStart().
-  device_sync_ = DeviceSyncImpl::Factory::NewInstance(
+  device_sync_ = DeviceSyncImpl::Factory::Get()->BuildInstance(
       identity_manager_, gcm_driver_, context()->connector(),
-      gcm_device_info_provider_, url_loader_factory_);
+      gcm_device_info_provider_, url_loader_factory_,
+      std::make_unique<base::OneShotTimer>());
 
   registry_.AddInterface(base::Bind(&DeviceSyncBase::BindRequest,
                                     base::Unretained(device_sync_.get())));

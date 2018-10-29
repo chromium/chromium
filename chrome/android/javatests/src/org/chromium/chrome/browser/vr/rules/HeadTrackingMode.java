@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
+import android.support.annotation.IntDef;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,16 +32,19 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HeadTrackingMode {
-    public enum SupportedMode {
-        FROZEN, // Locked looking straight forward.
-        SWEEP, // Rotates back and forth horizontally in a 180 degree arc.
-        ROTATE, // Rotates 360 degrees.
-        CIRCLE_STRAFE, // Rotates 360 degrees, and if 6DOF is supported, changes position.
-        MOTION_SICKNESS // Moves in a figure-eight-like pattern.
+    @IntDef({SupportedMode.FROZEN, SupportedMode.SWEEP, SupportedMode.ROTATE,
+            SupportedMode.CIRCLE_STRAFE, SupportedMode.MOTION_SICKNESS})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface SupportedMode {
+        int FROZEN = 0; // Locked looking straight forward.
+        int SWEEP = 1; // Rotates back and forth horizontally in a 180 degree arc.
+        int ROTATE = 2; // Rotates 360 degrees.
+        int CIRCLE_STRAFE = 3; // Rotates 360 degrees, and if 6DOF is supported, changes position.
+        int MOTION_SICKNESS = 4; // Moves in a figure-eight-like pattern.
     }
 
     /**
      * @return The supported mode.
      */
-    public SupportedMode value();
+    public @SupportedMode int value();
 }

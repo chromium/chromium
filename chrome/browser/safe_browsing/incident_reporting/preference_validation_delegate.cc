@@ -99,14 +99,13 @@ void PreferenceValidationDelegate::OnSplitPreferenceValidation(
     incident->set_path(pref_path);
     if (proto_value_state == TPIncident::BYPASS_CLEARED ||
         proto_value_state == TPIncident::BYPASS_CHANGED) {
-      for (std::vector<std::string>::const_iterator scan(
-               external_validation_invalid_keys.begin());
+      for (auto scan(external_validation_invalid_keys.begin());
            scan != external_validation_invalid_keys.end(); ++scan) {
         incident->add_split_key(*scan);
       }
     } else {
-      for (std::vector<std::string>::const_iterator scan(invalid_keys.begin());
-           scan != invalid_keys.end(); ++scan) {
+      for (auto scan(invalid_keys.begin()); scan != invalid_keys.end();
+           ++scan) {
         incident->add_split_key(*scan);
       }
     }

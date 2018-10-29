@@ -111,7 +111,6 @@
       "extension_types": ["legacy_packaged_app", "platform_app"],
       "whitelist": [
         "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",
-        "1630F9F78E4527E19E5D9008B99847A8D690F65D",  // ZIP unpacker.
         "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/453955
         "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/453955
         "11A01C82EF355E674E4F9728A801F5C3CB40D83F",  // http://crbug.com/453955

@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
+#include "media/base/decoder_buffer.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -23,24 +25,12 @@ class CdmVideoDecoder {
   virtual bool Initialize(const cdm::VideoDecoderConfig_3& config) = 0;
   virtual void Deinitialize() = 0;
   virtual void Reset() = 0;
-  virtual bool is_initialized() const = 0;
-
-  // Decodes |compressed_frame|. Stores output frame in |decoded_frame| and
-  // returns |cdm::kSuccess| when an output frame is available. Returns
-  // |cdm::kNeedMoreData| when |compressed_frame| does not produce an output
-  // frame. Returns |cdm::kDecodeError| when decoding fails.
-  //
-  // A null |compressed_frame| will attempt to flush the decoder of any
-  // remaining frames. |compressed_frame_size| and |timestamp| are ignored.
-  virtual cdm::Status DecodeFrame(const uint8_t* compressed_frame,
-                                  int32_t compressed_frame_size,
-                                  int64_t timestamp,
-                                  CdmVideoFrame* decoded_frame) = 0;
+  virtual cdm::Status Decode(scoped_refptr<DecoderBuffer> buffer,
+                             CdmVideoFrame* decoded_frame) = 0;
 };
 
-// Initializes the appropriate video decoder based on build flags and the value
-// of |config.codec|. Returns a scoped_ptr containing a non-null initialized
-// CdmVideoDecoder pointer upon success.
+// Creates a CdmVideoDecoder based on the |config|. Returns nullptr if no
+// decoder can be created.
 std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     CdmHostProxy* cdm_host_proxy,
     const cdm::VideoDecoderConfig_3& config);

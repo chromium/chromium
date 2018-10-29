@@ -40,15 +40,18 @@ _TEST_APP_PACKAGE_NAME = 'org.chromium.customtabs.test'
 _INVALID_VALUE = -1
 
 
-def RunOnce(device, url, speculated_url, warmup, skip_launcher_activity,
-            speculation_mode, delay_to_may_launch_url, delay_to_launch_url,
-            cold, chrome_args, reset_chrome_state):
+def RunOnce(device, url, speculated_url, parallel_url, warmup,
+            skip_launcher_activity, speculation_mode, delay_to_may_launch_url,
+            delay_to_launch_url, cold, chrome_args, reset_chrome_state):
   """Runs a test on a device once.
 
   Args:
     device: (DeviceUtils) device to run the tests on.
-    url: (str) URL to load.
+    url: (str) URL to load. End of the redirect chain when using a
+        parallel request.
     speculated_url: (str) Speculated URL.
+    parallel_url: ([str]) URL to load in parallel, typically
+        the start of the redirect chain.
     warmup: (bool) Whether to call warmup.
     skip_launcher_activity: (bool) Whether to skip the launcher activity.
     speculation_mode: (str) Speculation Mode.
@@ -57,7 +60,7 @@ def RunOnce(device, url, speculated_url, warmup, skip_launcher_activity,
     cold: (bool) Whether the page cache should be dropped.
     chrome_args: ([str]) List of arguments to pass to Chrome.
     reset_chrome_state: (bool) Whether to reset the Chrome local state before
-                        the run.
+        the run.
 
   Returns:
     The output line (str), like this (one line only):
@@ -81,6 +84,7 @@ def RunOnce(device, url, speculated_url, warmup, skip_launcher_activity,
         activity='org.chromium.customtabs.test.MainActivity',
         extras={'url': str(url),
                 'speculated_url': str(speculated_url),
+                'parallel_url': str (parallel_url),
                 'warmup': warmup,
                 'skip_launcher_activity': skip_launcher_activity,
                 'speculation_mode': str(speculation_mode),
@@ -166,7 +170,10 @@ def LoopOnDevice(device, configs, output_filename, once=False,
             '--force-fieldtrial-params=trial.group:mode/external-prefetching',
             '--enable-features=SpeculativeResourcePrefetching<trial'])
 
-      result = RunOnce(device, config['url'], config['speculated_url'],
+      result = RunOnce(device,
+                       config['url'],
+                       config['speculated_url'],
+                       config['parallel_url'],
                        config['warmup'], config['skip_launcher_activity'],
                        config['speculation_mode'],
                        config['delay_to_may_launch_url'],
@@ -220,6 +227,8 @@ def _CreateOptionParser():
                     help='URL to call mayLaunchUrl() with.',)
   parser.add_option('--url', help='URL to navigate to.',
                     default='https://www.android.com')
+  parser.add_option('--parallel_url', help='URL to navigate to.in parallel, '
+                    'e.g. the start of the redirect chain.')
   parser.add_option('--warmup', help='Call warmup.', default=False,
                     action='store_true')
   parser.add_option('--skip_launcher_activity',
@@ -265,6 +274,7 @@ def main():
       'url': options.url,
       'skip_launcher_activity': options.skip_launcher_activity,
       'speculated_url': options.speculated_url or options.url,
+      'parallel_url': options.parallel_url,
       'warmup': options.warmup,
       'speculation_mode': options.speculation_mode,
       'delay_to_may_launch_url': options.delay_to_may_launch_url,

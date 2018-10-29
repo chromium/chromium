@@ -15,10 +15,8 @@
 // Some convenience macros for checking expected error.
 #define EXPECT_ABS_LT(a, b) EXPECT_LT(std::abs(a), std::abs(b))
 #define EXPECT_ABS_LE(a, b) EXPECT_LE(std::abs(a), std::abs(b))
-#define EXPECT_NEAR_SMR(expected, actual, weight) \
-  EXPECT_NEAR(expected, actual, MaxErrorSMR(expected, weight))
-#define EXPECT_NEAR_VARIANCE_OF_ROOT(expected, actual, mean, weight) \
-  EXPECT_NEAR(expected, actual, MaxErrorSMR(mean, weight));
+#define EXPECT_NEAR_SQRT_APPROX(expected, actual) \
+  EXPECT_NEAR(expected, actual, MaxErrorSQRTApprox(expected, actual))
 
 namespace ui {
 namespace frame_metrics {
@@ -76,21 +74,6 @@ void AddPatternHelper(SharedWindowedAnalyzerClient* shared_client,
   }
 }
 
-// Same as AddPatternHelper, but uses each value (+1) as its own weight.
-// The "Cubed" name comes from the fact that the squared_accumulator
-// for the RMS will effectively be a "cubed accumulator".
-template <typename AnalyzerType>
-void AddCubedPatternHelper(SharedWindowedAnalyzerClient* shared_client,
-                           AnalyzerType* analyzer,
-                           const std::vector<uint32_t>& values) {
-  for (auto i : values) {
-    shared_client->window_begin += base::TimeDelta::FromMicroseconds(1);
-    shared_client->window_end += base::TimeDelta::FromMicroseconds(1);
-    // weight is i+1 to avoid divide by zero.
-    AddSamplesHelper(analyzer, i, i + 1, 1);
-  }
-}
-
 // Mean and RMS can be exact for most values, however SMR loses a bit of
 // precision internally when accumulating the roots. Make sure the SMR
 // precision is at least within .5 (i.e. rounded to the nearest integer
@@ -99,8 +82,8 @@ void AddCubedPatternHelper(SharedWindowedAnalyzerClient* shared_client,
 // between ~5 and ~13 decimal places.
 // The precision should be even better when the sample's |weight| > 1 since
 // the implementation should only do any rounding after scaling by weight.
-inline double MaxErrorSMR(double expected_value, uint64_t weight) {
-  return std::max(.5, 1e-8 * expected_value / weight);
+inline double MaxErrorSQRTApprox(double expected_value, double value) {
+  return std::max(0.5, std::max(expected_value, value) * 1e-3);
 }
 
 // This class initializes the ratio boundaries on construction in a way that

@@ -41,14 +41,24 @@ var CrScrollableBehavior = {
   intervalId_: null,
 
   ready: function() {
-    this.requestUpdateScroll();
+    const readyAsync = () => {
+      this.requestUpdateScroll();
 
-    // Listen to the 'scroll' event for each scrollable container.
-    var scrollableElements = this.root.querySelectorAll('[scrollable]');
-    for (var i = 0; i < scrollableElements.length; i++) {
-      scrollableElements[i].addEventListener(
-          'scroll', this.updateScrollEvent_.bind(this));
+      // Listen to the 'scroll' event for each scrollable container.
+      var scrollableElements = this.root.querySelectorAll('[scrollable]');
+      for (var i = 0; i < scrollableElements.length; i++) {
+        scrollableElements[i].addEventListener(
+            'scroll', this.updateScrollEvent_.bind(this));
+      }
+    };
+
+    // TODO(dpapad): Remove Polymer 1 codepath when Polymer 2 migration has
+    // completed.
+    if (Polymer.DomIf) {
+      Polymer.RenderStatus.beforeNextRender(this, readyAsync);
+      return;
     }
+    readyAsync();
   },
 
   detached: function() {

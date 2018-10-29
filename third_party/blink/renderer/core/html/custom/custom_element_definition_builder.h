@@ -35,10 +35,6 @@ class CORE_EXPORT CustomElementDefinitionBuilder {
   // registry. Return false if processing should not proceed.
   virtual bool CheckConstructorNotRegistered() = 0;
 
-  // Checking the prototype may destroy the window. Return false if
-  // processing should not proceed.
-  virtual bool CheckPrototype() = 0;
-
   // Cache properties for build to use. Return false if processing
   // should not proceed.
   virtual bool RememberOriginalProperties() = 0;

@@ -195,7 +195,8 @@ class BaseIdleHelperTest : public testing::Test {
         scheduler_helper_.get(),
         required_quiescence_duration_before_long_idle_period,
         scheduler_helper_->NewTaskQueue(TaskQueue::Spec("idle_test")));
-    default_task_runner_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
+    default_task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
+    default_task_runner_ = default_task_queue_->CreateTaskRunner(0);
     idle_task_runner_ = idle_helper_->IdleTaskRunner();
     test_task_runner_->AdvanceMockTickClock(
         base::TimeDelta::FromMicroseconds(5000));
@@ -276,6 +277,7 @@ class BaseIdleHelperTest : public testing::Test {
   std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
   SequenceManager* sequence_manager_;  // Owned by scheduler_helper_.
   std::unique_ptr<IdleHelperForTest> idle_helper_;
+  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 

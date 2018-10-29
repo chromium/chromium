@@ -2,5 +2,6 @@ PASS window.scrollY == 800 became true
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Link to bottom
 scrollY should be 800: PASS

@@ -4,7 +4,6 @@ See Bug 20247: setAttributeNode() does not work when attribute name has a capita
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testGetAttributeCaseInsensitive() is "x"
 PASS testGetAttributeNodeMixedCase() is "x"
 PASS testGetAttributeNodeLowerCase() is "x"

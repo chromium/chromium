@@ -2484,6 +2484,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createImageBitmap
 [Worker]     method fetch
 [Worker]     method importScripts
+[Worker]     method queueMicrotask
 [Worker]     method requestAnimationFrame
 [Worker]     method setInterval
 [Worker]     method setTimeout

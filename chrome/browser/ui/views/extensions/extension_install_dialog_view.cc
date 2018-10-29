@@ -168,20 +168,12 @@ void ShowExtensionInstallDialogImpl(
     const ExtensionInstallPrompt::DoneCallback& done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  bool use_tab_modal_dialog = prompt->ShouldUseTabModalDialog();
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
       show_params->profile(), show_params->GetParentWebContents(),
       done_callback, std::move(prompt));
-  if (use_tab_modal_dialog) {
-    content::WebContents* parent_web_contents =
-        show_params->GetParentWebContents();
-    if (parent_web_contents)
-      constrained_window::ShowWebModalDialogViews(dialog, parent_web_contents);
-  } else {
-    constrained_window::CreateBrowserModalDialogViews(
-        dialog, show_params->GetParentWindow())
-        ->Show();
-  }
+  constrained_window::CreateBrowserModalDialogViews(
+      dialog, show_params->GetParentWindow())
+      ->Show();
 }
 
 // A custom scrollable view implementation for the dialog.
@@ -437,8 +429,7 @@ base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
 }
 
 ui::ModalType ExtensionInstallDialogView::GetModalType() const {
-  return prompt_->ShouldUseTabModalDialog() ? ui::MODAL_TYPE_CHILD
-                                            : ui::MODAL_TYPE_WINDOW;
+  return ui::MODAL_TYPE_WINDOW;
 }
 
 void ExtensionInstallDialogView::LinkClicked(views::Link* source,

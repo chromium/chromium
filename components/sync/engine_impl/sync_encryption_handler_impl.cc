@@ -224,7 +224,6 @@ KeyDerivationMethod GetKeyDerivationMethodFromNigori(
 std::string GetScryptSaltFromNigori(const sync_pb::NigoriSpecifics& nigori) {
   DCHECK_EQ(nigori.custom_passphrase_key_derivation_method(),
             sync_pb::NigoriSpecifics::SCRYPT_8192_8_11);
-  DCHECK(nigori.has_custom_passphrase_key_derivation_salt());
   std::string decoded_salt;
   bool result = base::Base64Decode(
       nigori.custom_passphrase_key_derivation_salt(), &decoded_salt);
@@ -239,7 +238,6 @@ KeyDerivationParams GetKeyDerivationParamsFromNigori(
     case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
       return KeyDerivationParams::CreateForPbkdf2();
     case KeyDerivationMethod::SCRYPT_8192_8_11:
-      DCHECK(nigori.has_custom_passphrase_key_derivation_salt());
       return KeyDerivationParams::CreateForScrypt(
           GetScryptSaltFromNigori(nigori));
     case KeyDerivationMethod::UNSUPPORTED:
@@ -312,9 +310,7 @@ SyncEncryptionHandlerImpl::SyncEncryptionHandlerImpl(
     const std::string& restored_keystore_key_for_bootstrapping,
     const base::RepeatingCallback<std::string()>& random_salt_generator)
     : user_share_(user_share),
-      vault_unsafe_(encryptor,
-                    SensitiveTypes(),
-                    PassphraseType::IMPLICIT_PASSPHRASE),
+      vault_unsafe_(encryptor, SensitiveTypes(), kInitialPassphraseType),
       encrypt_everything_(false),
       nigori_overwrite_count_(0),
       random_salt_generator_(random_salt_generator),
@@ -432,8 +428,7 @@ void SyncEncryptionHandlerImpl::Init() {
 }
 
 void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
-    const std::string& passphrase,
-    bool is_explicit) {
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We do not accept empty passphrases.
   if (passphrase.empty()) {
@@ -455,15 +450,6 @@ void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
   // Once we've migrated to keystore, the only way to set a passphrase for
   // encryption is to set a custom passphrase.
   if (IsNigoriMigratedToKeystore(node.GetNigoriSpecifics())) {
-    if (!is_explicit) {
-      // The user is setting a new implicit passphrase. At this point we don't
-      // care, so drop it on the floor. This is safe because if we have a
-      // migrated nigori node, then we don't need to create an initial
-      // encryption key.
-      LOG(WARNING) << "Ignoring new implicit passphrase. Keystore migration "
-                   << "already performed.";
-      return;
-    }
     // Will fail if we already have an explicit passphrase or we have pending
     // keys.
     SetCustomPassphrase(passphrase, &trans, &node);
@@ -509,26 +495,16 @@ void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
         // Case 1 and 2. We set a new GAIA passphrase when there are no pending
         // keys (1), or overwriting an implicit passphrase with a new explicit
         // one (2) when there are no pending keys.
-        if (is_explicit) {
-          DVLOG(1) << "Setting explicit passphrase for encryption.";
-          *passphrase_type = PassphraseType::CUSTOM_PASSPHRASE;
-          custom_passphrase_time_ = base::Time::Now();
-          for (auto& observer : observers_) {
-            observer.OnPassphraseTypeChanged(
-                *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
-          }
-        } else {
-          DVLOG(1) << "Setting implicit passphrase for encryption.";
+        DVLOG(1) << "Setting explicit passphrase for encryption.";
+        *passphrase_type = PassphraseType::CUSTOM_PASSPHRASE;
+        custom_passphrase_time_ = base::Time::Now();
+        for (auto& observer : observers_) {
+          observer.OnPassphraseTypeChanged(
+              *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
         }
         cryptographer->GetBootstrapToken(&bootstrap_token);
 
-        // With M26, sync accounts can be in only one of two encryption states:
-        // 1) Encrypt only passwords with an implicit passphrase.
-        // 2) Encrypt all sync datatypes with an explicit passphrase.
-        // We deprecate the "EncryptAllData" and "CustomPassphrase" histograms,
-        // and keep track of an account's encryption state via the
-        // "CustomEncryption" histogram. See http://crbug.com/131478.
-        UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", is_explicit);
+        UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", true);
 
         success = true;
       } else {
@@ -536,41 +512,11 @@ void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
         success = false;
       }
     } else {  // cryptographer->has_pending_keys() == true
-      if (is_explicit) {
-        // This can only happen if the nigori node is updated with a new
-        // implicit passphrase while a client is attempting to set a new custom
-        // passphrase (race condition).
-        DVLOG(1) << "Failing because an implicit passphrase is already set.";
-        success = false;
-      } else {  // is_explicit == false
-        KeyParams key_params = {KeyDerivationParams::CreateForPbkdf2(),
-                                passphrase};
-        if (cryptographer->DecryptPendingKeys(key_params)) {
-          // Case 4. We successfully decrypted with the implicit GAIA passphrase
-          // passed in.
-          DVLOG(1) << "Implicit internal passphrase accepted for decryption.";
-          cryptographer->GetBootstrapToken(&bootstrap_token);
-          success = true;
-        } else {
-          // Case 5. Encryption was done with an old GAIA password, but we were
-          // provided with the current GAIA password. We need to generate a new
-          // bootstrap token to preserve it. We build a temporary cryptographer
-          // to allow us to extract these params without polluting our current
-          // cryptographer.
-          DVLOG(1) << "Implicit internal passphrase failed to decrypt, adding "
-                   << "anyways as default passphrase and persisting via "
-                   << "bootstrap token.";
-          Cryptographer temp_cryptographer(cryptographer->encryptor());
-          temp_cryptographer.AddKey(key_params);
-          temp_cryptographer.GetBootstrapToken(&bootstrap_token);
-          // We then set the new passphrase as the default passphrase of the
-          // real cryptographer, even though we have pending keys. This is safe,
-          // as although Cryptographer::is_initialized() will now be true,
-          // is_ready() will remain false due to having pending keys.
-          cryptographer->AddKey(key_params);
-          success = false;
-        }
-      }     // is_explicit
+      // This can only happen if the nigori node is updated with a new
+      // implicit passphrase while a client is attempting to set a new custom
+      // passphrase (race condition).
+      DVLOG(1) << "Failing because an implicit passphrase is already set.";
+      success = false;
     }       // cryptographer->has_pending_keys()
   } else {  // IsExplicitPassphrase(passphrase_type) == true.
     // Case 6. We do not want to override a previously set explicit passphrase,

@@ -55,9 +55,10 @@ void FakeJpegDecodeAccelerator::Decode(
 
   // Unretained |this| is safe because |this| owns |decoder_thread_|.
   decoder_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&FakeJpegDecodeAccelerator::DecodeOnDecoderThread,
-                            base::Unretained(this), bitstream_buffer,
-                            video_frame, base::Passed(&src_shm)));
+      FROM_HERE,
+      base::BindOnce(&FakeJpegDecodeAccelerator::DecodeOnDecoderThread,
+                     base::Unretained(this), bitstream_buffer, video_frame,
+                     base::Passed(&src_shm)));
 }
 
 void FakeJpegDecodeAccelerator::DecodeOnDecoderThread(

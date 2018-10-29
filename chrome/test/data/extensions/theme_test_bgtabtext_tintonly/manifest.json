@@ -1,0 +1,15 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAngrAGJuOC5YkLdbZZpslN12eVb/pZ+9QmJU9kLFXqiP46zuogXxDZTNdvcmpnO1xfhEIYmQLfTgJ+0tIZdnapDK+EpyJQc79TmTTM1lfWh4GrEp5hmYk5nRmA1/CO28l+ZiHrZaz0bJsinvzQ7/S12dvmoIPgTShSr7wF2ZN205ObJbBbLuN7YIGMxH2Qlob1s0KVL3USjzYWLvoOL6B/Y/yYR3QvXgqnZGhg5/9bfkkzzDwMUjEB0QM7nH14F/VTuTVv4r8goBc6pzAYebVCjcjjb5s3thRgXyzQBBYJFz1m2BaeqzTHdqo2pwownzEtEtMbeqKGMJzZGtWFNy4vwIDAQAB",
+  "manifest_version": 2,
+  "version": "0.0.1",
+  "name": "test_bgtabtext_tintonly",
+  "theme": {
+	"colors": {
+	  "frame": [255,255,255],
+	  "tab_background_text": [0,0,0]
+	},
+    "tints": {
+      "background_tab": [ -1.0, -1.0, 0.01 ]
+    }
+  }
+}

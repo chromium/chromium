@@ -64,6 +64,7 @@ Design doc: http://www.chromium.org/developers/design-documents/idl-compiler
 
 import abc
 
+from idl_types import IdlAnnotatedType
 from idl_types import IdlFrozenArrayType
 from idl_types import IdlNullableType
 from idl_types import IdlRecordType
@@ -951,7 +952,7 @@ def type_node_to_type(node):
     base_type = type_node_inner_to_type(children[0])
     if len(children) == 2:
         extended_attributes = ext_attributes_node_to_extended_attributes(children[1])
-        base_type.set_extended_attributes(extended_attributes)
+        base_type = IdlAnnotatedType(base_type, extended_attributes)
 
     if node.GetProperty('NULLABLE'):
         base_type = IdlNullableType(base_type)

@@ -26,10 +26,6 @@ extra_cq_trybots = [
     "buildernames": ["linux_optional_gpu_tests_rel"]
   },
   {
-    "mastername": "master.tryserver.chromium.linux",
-    "buildernames": ["linux_chromium_cfi_rel_ng"]
-  },
-  {
     "mastername": "luci.chromium.try",
     "buildernames": ["android_optional_gpu_tests_rel"]
   }

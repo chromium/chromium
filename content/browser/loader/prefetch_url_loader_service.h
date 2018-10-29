@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/common/content_export.h"
 #include "content/common/url_loader_factory_bundle.h"
 #include "content/public/browser/browser_thread.h"
@@ -20,7 +21,6 @@ class URLRequestContextGetter;
 
 namespace network {
 class SharedURLLoaderFactory;
-class URLLoaderFactoryBundleInfo;
 }
 
 namespace content {
@@ -42,9 +42,10 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       ResourceContext* resource_context,
       scoped_refptr<net::URLRequestContextGetter> request_context_getter);
 
-  void GetFactory(network::mojom::URLLoaderFactoryRequest request,
-                  int frame_tree_node_id,
-                  std::unique_ptr<URLLoaderFactoryBundleInfo> factory_info);
+  void GetFactory(
+      network::mojom::URLLoaderFactoryRequest request,
+      int frame_tree_node_id,
+      std::unique_ptr<network::SharedURLLoaderFactoryInfo> factory_info);
 
   // Used only when NetworkService is not enabled (or indirectly via the
   // other CreateLoaderAndStart when NetworkService is enabled).
@@ -68,6 +69,11 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
   void RegisterPrefetchLoaderCallbackForTest(
       const base::RepeatingClosure& prefetch_load_callback) {
     prefetch_load_callback_for_testing_ = prefetch_load_callback;
+  }
+
+  scoped_refptr<SignedExchangePrefetchMetricRecorder>
+  signed_exchange_prefetch_metric_recorder() {
+    return signed_exchange_prefetch_metric_recorder_;
   }
 
  private:
@@ -103,6 +109,9 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       loader_factory_bindings_;
 
   base::RepeatingClosure prefetch_load_callback_for_testing_;
+
+  scoped_refptr<SignedExchangePrefetchMetricRecorder>
+      signed_exchange_prefetch_metric_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoaderService);
 };

@@ -26,6 +26,7 @@ AndroidSmsService::AndroidSmsService(content::BrowserContext* browser_context)
 AndroidSmsService::~AndroidSmsService() = default;
 
 void AndroidSmsService::Shutdown() {
+  connection_manager_.reset();
   session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 

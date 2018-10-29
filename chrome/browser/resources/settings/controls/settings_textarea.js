@@ -32,12 +32,6 @@ Polymer({
     'aria-disabled': 'false',
   },
 
-  listeners: {
-    'input.focus': 'onInputFocusChange_',
-    'input.blur': 'onInputFocusChange_',
-    'input.change': 'onInputChange_',
-  },
-
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
    * This function helps propagate it to host since change events don't

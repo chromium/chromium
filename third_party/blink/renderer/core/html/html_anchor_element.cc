@@ -24,11 +24,14 @@
 
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/download/download_stats.h"
 #include "third_party/blink/renderer/bindings/core/v8/usv_string_or_trusted_url.h"
 #include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -50,6 +53,28 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
+
+namespace {
+
+void RecordDownloadMetrics(LocalFrame* frame) {
+  DownloadStats::FrameType frame_type =
+      frame->IsMainFrame()
+          ? DownloadStats::FrameType::kMainFrame
+          : frame->IsAdSubframe()
+                ? frame->IsCrossOriginSubframe()
+                      ? DownloadStats::FrameType::kCrossOriginAdSubframe
+                      : DownloadStats::FrameType::kSameOriginAdSubframe
+                : frame->IsCrossOriginSubframe()
+                      ? DownloadStats::FrameType::kCrossOriginNonAdSubframe
+                      : DownloadStats::FrameType::kSameOriginNonAdSubframe;
+  DownloadStats::GestureType gesture_type =
+      LocalFrame::HasTransientUserActivation(frame)
+          ? DownloadStats::GestureType::kWithGesture
+          : DownloadStats::GestureType::kWithoutGesture;
+  DownloadStats::Record(frame_type, gesture_type);
+}
+
+}  // namespace
 
 using namespace HTMLNames;
 
@@ -385,16 +410,17 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // the event is an alt-click or similar.
     if (NavigationPolicyFromEvent(&event) != kNavigationPolicyDownload &&
         GetDocument().GetSecurityOrigin()->CanReadContent(completed_url)) {
+      RecordDownloadMetrics(frame);
       request.SetSuggestedFilename(
           static_cast<String>(FastGetAttribute(downloadAttr)));
-      request.SetRequestContext(WebURLRequest::kRequestContextDownload);
+      request.SetRequestContext(mojom::RequestContextType::DOWNLOAD);
       request.SetRequestorOrigin(SecurityOrigin::Create(GetDocument().Url()));
       frame->Client()->DownloadURL(request,
                                    DownloadCrossOriginRedirects::kNavigate);
       return;
     }
   }
-  request.SetRequestContext(WebURLRequest::kRequestContextHyperlink);
+  request.SetRequestContext(mojom::RequestContextType::HYPERLINK);
   FrameLoadRequest frame_request(&GetDocument(), request,
                                  getAttribute(targetAttr));
   if (HasRel(kRelationNoReferrer)) {

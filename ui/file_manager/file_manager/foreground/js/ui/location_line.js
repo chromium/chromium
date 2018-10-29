@@ -89,8 +89,13 @@ LocationLine.prototype.getComponents_ = function(entry) {
   }
   if (locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER) {
     // When target path is a shared directory, volume should be shared with me.
-    displayRootUrl = this.replaceRootName_(displayRootUrl, '/other');
-    displayRootFullPath = '/other';
+    const match = entry.fullPath.match(/\/\.files-by-id\/\d+\//);
+    if (match) {
+      displayRootFullPath = match[0];
+    } else {
+      displayRootFullPath = '/other';
+    }
+    displayRootUrl = this.replaceRootName_(displayRootUrl, displayRootFullPath);
     var sharedWithMeFakeEntry = locationInfo.volumeInfo.fakeEntries[
         VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME];
     components.push(new LocationLine.PathComponent(

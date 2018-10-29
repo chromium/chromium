@@ -23,6 +23,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
+#include "media/cdm/cdm_type_conversion.h"
 #include "media/cdm/json_web_key.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 #include "media/cdm/library_cdm/cdm_host_proxy_impl.h"
@@ -132,86 +133,6 @@ static std::string GetUnitTestResultMessage(bool success) {
   return message;
 }
 
-static cdm::Exception ConvertException(
-    media::CdmPromise::Exception exception_code) {
-  switch (exception_code) {
-    case media::CdmPromise::Exception::NOT_SUPPORTED_ERROR:
-      return cdm::kExceptionNotSupportedError;
-    case media::CdmPromise::Exception::INVALID_STATE_ERROR:
-      return cdm::kExceptionInvalidStateError;
-    case media::CdmPromise::Exception::TYPE_ERROR:
-      return cdm::kExceptionTypeError;
-    case media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR:
-      return cdm::kExceptionQuotaExceededError;
-  }
-  NOTREACHED();
-  return cdm::kExceptionInvalidStateError;
-}
-
-static media::CdmSessionType ConvertSessionType(cdm::SessionType session_type) {
-  switch (session_type) {
-    case cdm::kTemporary:
-      return media::CdmSessionType::kTemporary;
-    case cdm::kPersistentLicense:
-      return media::CdmSessionType::kPersistentLicense;
-    case cdm::kPersistentUsageRecord:
-      return media::CdmSessionType::kPersistentUsageRecord;
-  }
-  NOTREACHED();
-  return media::CdmSessionType::kTemporary;
-}
-
-static media::EmeInitDataType ConvertInitDataType(
-    cdm::InitDataType init_data_type) {
-  switch (init_data_type) {
-    case cdm::kCenc:
-      return media::EmeInitDataType::CENC;
-    case cdm::kKeyIds:
-      return media::EmeInitDataType::KEYIDS;
-    case cdm::kWebM:
-      return media::EmeInitDataType::WEBM;
-  }
-  NOTREACHED();
-  return media::EmeInitDataType::UNKNOWN;
-}
-
-cdm::KeyStatus ConvertKeyStatus(media::CdmKeyInformation::KeyStatus status) {
-  switch (status) {
-    case media::CdmKeyInformation::KeyStatus::USABLE:
-      return cdm::kUsable;
-    case media::CdmKeyInformation::KeyStatus::INTERNAL_ERROR:
-      return cdm::kInternalError;
-    case media::CdmKeyInformation::KeyStatus::EXPIRED:
-      return cdm::kExpired;
-    case media::CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED:
-      return cdm::kOutputRestricted;
-    case media::CdmKeyInformation::KeyStatus::OUTPUT_DOWNSCALED:
-      return cdm::kOutputDownscaled;
-    case media::CdmKeyInformation::KeyStatus::KEY_STATUS_PENDING:
-      return cdm::kStatusPending;
-    case media::CdmKeyInformation::KeyStatus::RELEASED:
-      return cdm::kReleased;
-  }
-  NOTREACHED();
-  return cdm::kInternalError;
-}
-
-cdm::MessageType ConvertMessageType(media::CdmMessageType message_type) {
-  switch (message_type) {
-    case media::CdmMessageType::LICENSE_REQUEST:
-      return cdm::kLicenseRequest;
-    case media::CdmMessageType::LICENSE_RENEWAL:
-      return cdm::kLicenseRenewal;
-    case media::CdmMessageType::LICENSE_RELEASE:
-      return cdm::kLicenseRelease;
-    case media::CdmMessageType::INDIVIDUALIZATION_REQUEST:
-      return cdm::kIndividualizationRequest;
-  }
-
-  NOTREACHED();
-  return cdm::kLicenseRequest;
-}
-
 // Shallow copy all the key information from |keys_info| into |keys_vector|.
 // |keys_vector| is only valid for the lifetime of |keys_info| because it
 // contains pointers into the latter.
@@ -222,7 +143,7 @@ void ConvertCdmKeysInfo(const media::CdmKeysInfo& keys_info,
     cdm::KeyInformation key = {};
     key.key_id = key_info->key_id.data();
     key.key_id_size = key_info->key_id.size();
-    key.status = ConvertKeyStatus(key_info->status);
+    key.status = ToCdmKeyStatus(key_info->status);
     key.system_code = key_info->system_code;
     keys_vector->push_back(key);
   }
@@ -230,10 +151,7 @@ void ConvertCdmKeysInfo(const media::CdmKeysInfo& keys_info,
 
 void INITIALIZE_CDM_MODULE() {
   DVLOG(1) << __func__;
-#if defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER)
   media::InitializeMediaLibrary();
-#endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
-
   g_is_cdm_module_initialized = true;
 }
 
@@ -523,7 +441,7 @@ void ClearKeyCdm::CreateSessionAndGenerateRequest(
           base::Bind(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id)));
   cdm_->CreateSessionAndGenerateRequest(
-      ConvertSessionType(session_type), ConvertInitDataType(init_data_type),
+      ToMediaSessionType(session_type), ToEmeInitDataType(init_data_type),
       std::vector<uint8_t>(init_data, init_data + init_data_size),
       std::move(promise));
 
@@ -558,8 +476,8 @@ void ClearKeyCdm::LoadSession(uint32_t promise_id,
                      promise_id),
           base::Bind(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id)));
-  cdm_->LoadSession(ConvertSessionType(session_type), web_session_str,
-                    std::move(promise));
+  cdm_->LoadSession(ToMediaSessionType(session_type),
+                    std::move(web_session_str), std::move(promise));
 }
 
 void ClearKeyCdm::UpdateSession(uint32_t promise_id,
@@ -570,23 +488,54 @@ void ClearKeyCdm::UpdateSession(uint32_t promise_id,
   DVLOG(1) << __func__;
   std::string web_session_str(session_id, session_id_length);
   std::vector<uint8_t> response_vector(response, response + response_size);
+  auto pending_update_params = std::make_unique<UpdateParams>(
+      promise_id, std::move(web_session_str), response_vector);
 
-  // Push the license to CdmProxy.
-  // TODO(xhwang): There's a potential race condition here where key status
-  // update is dispatched in the render process first, which triggers the
-  // resume-decryption-after-no-key logic, and by the time we try to decrypt
-  // again in the ClearKeyCdmProxy (GPU process), SetKey() hasn't been
-  // dispatched yet. To solve this, handle no-key in ClearKeyCdmProxy.
-  if (cdm_proxy_handler_)
-    cdm_proxy_handler_->SetKey(response_vector);
+  // Push the license to the CdmProxy. The license will still be pushed to the
+  // |cdm_| after OnKeySet() is called, which then triggers
+  // OnSessionKeysChange(). This order is critical to avoid race conditions like
+  // OnSessionKeysChange() being called before the keys are actually available
+  // in the CdmProxy.
+  if (cdm_proxy_handler_) {
+    if (pending_update_params_) {
+      OnPromiseFailed(promise_id, CdmPromise::Exception::INVALID_STATE_ERROR, 0,
+                      "Parallel updates not supported.");
+      return;
+    }
 
+    pending_update_params_ = std::move(pending_update_params);
+    cdm_proxy_handler_->SetKey(
+        response_vector,
+        base::BindOnce(&ClearKeyCdm::OnCdmProxyKeySet, base::Unretained(this)));
+    return;
+  }
+
+  UpdateSessionInternal(std::move(pending_update_params));
+}
+
+void ClearKeyCdm::OnCdmProxyKeySet(bool success) {
+  DCHECK(pending_update_params_);
+
+  if (!success) {
+    auto promise_id = pending_update_params_->promise_id;
+    pending_update_params_.reset();
+    OnPromiseFailed(promise_id, CdmPromise::Exception::INVALID_STATE_ERROR, 0,
+                    "Parallel updates not supported.");
+    return;
+  }
+
+  UpdateSessionInternal(std::move(pending_update_params_));
+}
+
+void ClearKeyCdm::UpdateSessionInternal(std::unique_ptr<UpdateParams> params) {
   std::unique_ptr<media::SimpleCdmPromise> promise(
       new media::CdmCallbackPromise<>(
           base::Bind(&ClearKeyCdm::OnUpdateSuccess, base::Unretained(this),
-                     promise_id, web_session_str),
+                     params->promise_id, params->session_id),
           base::Bind(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
-                     promise_id)));
-  cdm_->UpdateSession(web_session_str, response_vector, std::move(promise));
+                     params->promise_id)));
+
+  cdm_->UpdateSession(params->session_id, params->response, std::move(promise));
 }
 
 void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
@@ -642,7 +591,7 @@ void ClearKeyCdm::CloseSession(uint32_t promise_id,
                      promise_id),
           base::Bind(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id)));
-  cdm_->CloseSession(web_session_str, std::move(promise));
+  cdm_->CloseSession(std::move(web_session_str), std::move(promise));
 }
 
 void ClearKeyCdm::RemoveSession(uint32_t promise_id,
@@ -657,7 +606,7 @@ void ClearKeyCdm::RemoveSession(uint32_t promise_id,
                      promise_id),
           base::Bind(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id)));
-  cdm_->RemoveSession(web_session_str, std::move(promise));
+  cdm_->RemoveSession(std::move(web_session_str), std::move(promise));
 }
 
 void ClearKeyCdm::SetServerCertificate(uint32_t promise_id,
@@ -786,15 +735,14 @@ cdm::Status ClearKeyCdm::InitializeVideoDecoder(
     return cdm::kInitializationError;
   }
 
-  if (video_decoder_ && video_decoder_->is_initialized()) {
-    DCHECK(!video_decoder_->is_initialized());
-    return cdm::kInitializationError;
+  if (!video_decoder_) {
+    video_decoder_ =
+        CreateVideoDecoder(cdm_host_proxy_.get(), video_decoder_config);
+    if (!video_decoder_)
+      return cdm::kInitializationError;
   }
 
-  // Any uninitialized decoder will be replaced.
-  video_decoder_ =
-      CreateVideoDecoder(cdm_host_proxy_.get(), video_decoder_config);
-  if (!video_decoder_)
+  if (!video_decoder_->Initialize(video_decoder_config))
     return cdm::kInitializationError;
 
   return cdm::kSuccess;
@@ -858,16 +806,7 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeFrame(
   if (status != cdm::kSuccess)
     return status;
 
-  const uint8_t* data = NULL;
-  int32_t size = 0;
-  int64_t timestamp = 0;
-  if (!buffer->end_of_stream()) {
-    data = buffer->data();
-    size = buffer->data_size();
-    timestamp = encrypted_buffer.timestamp;
-  }
-
-  return video_decoder_->DecodeFrame(data, size, timestamp, decoded_frame);
+  return video_decoder_->Decode(buffer, decoded_frame);
 }
 
 cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
@@ -1038,7 +977,7 @@ void ClearKeyCdm::OnSessionMessage(const std::string& session_id,
   DVLOG(1) << __func__ << ": size = " << message.size();
 
   cdm_host_proxy_->OnSessionMessage(
-      session_id.data(), session_id.length(), ConvertMessageType(message_type),
+      session_id.data(), session_id.length(), ToCdmMessageType(message_type),
       reinterpret_cast<const char*>(message.data()), message.size());
 }
 
@@ -1090,7 +1029,7 @@ void ClearKeyCdm::OnPromiseFailed(uint32_t promise_id,
                                   uint32_t system_code,
                                   const std::string& error_message) {
   DVLOG(1) << __func__ << ": error = " << error_message;
-  cdm_host_proxy_->OnRejectPromise(promise_id, ConvertException(exception_code),
+  cdm_host_proxy_->OnRejectPromise(promise_id, ToCdmException(exception_code),
                                    system_code, error_message.data(),
                                    error_message.length());
 }
@@ -1161,5 +1100,14 @@ void ClearKeyCdm::OnCdmProxyHandlerInitialized(bool success) {
 
   cdm_host_proxy_->OnInitialized(success);
 }
+
+ClearKeyCdm::UpdateParams::UpdateParams(uint32_t promise_id,
+                                        std::string session_id,
+                                        std::vector<uint8_t> response)
+    : promise_id(promise_id),
+      session_id(std::move(session_id)),
+      response(std::move(response)) {}
+
+ClearKeyCdm::UpdateParams::~UpdateParams() {}
 
 }  // namespace media

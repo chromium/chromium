@@ -8,8 +8,8 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_task_environment.h"
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/public/common/resource_type.h"
 #include "content/public/common/url_loader_throttle.h"
@@ -163,20 +163,20 @@ class SignedExchangeCertFetcherTest : public testing::Test {
   }
 
   static std::string CreateCertMessage(const base::StringPiece& cert_data) {
-    cbor::CBORValue::MapValue cbor_map;
-    cbor_map[cbor::CBORValue("sct")] =
-        cbor::CBORValue("SCT", cbor::CBORValue::Type::BYTE_STRING);
-    cbor_map[cbor::CBORValue("cert")] =
-        cbor::CBORValue(cert_data, cbor::CBORValue::Type::BYTE_STRING);
-    cbor_map[cbor::CBORValue("ocsp")] =
-        cbor::CBORValue("OCSP", cbor::CBORValue::Type::BYTE_STRING);
+    cbor::Value::MapValue cbor_map;
+    cbor_map[cbor::Value("sct")] =
+        cbor::Value("SCT", cbor::Value::Type::BYTE_STRING);
+    cbor_map[cbor::Value("cert")] =
+        cbor::Value(cert_data, cbor::Value::Type::BYTE_STRING);
+    cbor_map[cbor::Value("ocsp")] =
+        cbor::Value("OCSP", cbor::Value::Type::BYTE_STRING);
 
-    cbor::CBORValue::ArrayValue cbor_array;
-    cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-    cbor_array.push_back(cbor::CBORValue(std::move(cbor_map)));
+    cbor::Value::ArrayValue cbor_array;
+    cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+    cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
     base::Optional<std::vector<uint8_t>> serialized =
-        cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+        cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
     if (!serialized)
       return std::string();
     return std::string(reinterpret_cast<char*>(serialized->data()),

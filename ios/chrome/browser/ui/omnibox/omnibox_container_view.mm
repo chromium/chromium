@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 
-#import "ios/chrome/browser/ui/animation_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/animation_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -59,16 +59,12 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 #pragma mark - Public methods
 
 - (instancetype)initWithFrame:(CGRect)frame
-                         font:(UIFont*)font
-                   largerFont:(UIFont*)largerFont
                     textColor:(UIColor*)textColor
                 textFieldTint:(UIColor*)textFieldTint
                      iconTint:(UIColor*)iconTint {
   self = [super initWithFrame:frame];
   if (self) {
     _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
-                                                       font:font
-                                                 largerFont:largerFont
                                                   textColor:textColor
                                                   tintColor:textFieldTint];
     [self addSubview:_textField];

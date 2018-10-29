@@ -17,7 +17,7 @@ HorizontalImageSequenceAnimationDecoder::
 
 AnimationFrames HorizontalImageSequenceAnimationDecoder::Decode(
     float image_scale) {
-  SkBitmap bitmap = image_.GetRepresentation(image_scale).sk_bitmap();
+  SkBitmap bitmap = image_.GetRepresentation(image_scale).GetBitmap();
 
   float frame_width = static_cast<float>(bitmap.width()) / num_frames_;
   base::TimeDelta frame_duration = duration_ / num_frames_;

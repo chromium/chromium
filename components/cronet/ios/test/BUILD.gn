@@ -29,6 +29,7 @@ test("cronet_test") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/cronet:cronet_buildflags",
     "//components/cronet/ios:cronet_framework+link",
     "//components/cronet/native/test:cronet_native_tests",
     "//components/cronet/test:test_support",

@@ -7,11 +7,6 @@ import urllib
 from core import benchmark_finders
 
 
-UNSCHEDULED_TELEMETRY_BENCHMARKS = set([
-    'experimental.startup.android.coldish'
-])
-
-
 _SHARD_MAP_DIR = os.path.join(os.path.dirname(__file__), 'shard_maps')
 
 
@@ -20,8 +15,7 @@ _ALL_TELEMETRY_BENCHMARKS_BY_NAMES= dict(
 
 
 _ALL_PERF_WATERFALL_TELEMETRY_BENCHMARKS = frozenset(
-    s for s in benchmark_finders.GetAllPerfBenchmarks() if s.Name() not in
-    UNSCHEDULED_TELEMETRY_BENCHMARKS)
+    benchmark_finders.GetAllPerfBenchmarks())
 
 
 _ANDROID_GO_BENCHMARK_NAMES = {
@@ -158,7 +152,7 @@ ANDROID_NEXUS_5X_WEBVIEW = PerfPlatform(
 
 ANDROID_NEXUS_6_WEBVIEW = PerfPlatform(
     'Android Nexus6 WebView Perf', 'Android AOSP MOB30K',
-    num_shards=16)
+    num_shards=8)  # Reduced from 16 per crbug.com/891848.
 
 
 ALL_PLATFORMS = {

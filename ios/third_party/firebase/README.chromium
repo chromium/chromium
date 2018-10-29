@@ -1,0 +1,12 @@
+Name: Firebase SDK
+Short Name: Firebase
+URL: https://firebase.google.com/terms/
+Version: 5.8.0
+License: Custom License
+License File: LICENSE
+
+Description:
+This directory contains Analytics package from Firebase SDK.
+The portion of Firebase SDK used by Google Chrome for iOS
+is extracted and repacked into a CIPD packaged.
+See cipd.yaml for additional info.

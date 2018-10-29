@@ -23,6 +23,8 @@ source_set("base") {
     "leaky_bucket.cc",
     "leaky_bucket.h",
     "name_value_map.h",
+    "platform_details.cc",
+    "platform_details.h",
     "rate_counter.cc",
     "rate_counter.h",
     "remoting_bot.cc",
@@ -75,6 +77,7 @@ source_set("base") {
     sources -= [
       "chromium_url_request.cc",
       "chromoting_event.cc",
+      "platform_details.cc",
       "telemetry_log_writer.cc",
       "url_request_context_getter.cc",
     ]
@@ -177,6 +180,7 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
+    "//base",
     "//mojo/core/embedder",
     "//net:test_support",
     "//third_party/libyuv",

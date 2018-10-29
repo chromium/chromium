@@ -25,8 +25,9 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.omnibox.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
@@ -115,7 +117,12 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(this);
+        return new ActivityWindowAndroid(this) {
+            @Override
+            protected ActivityKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
+                return new SingleWindowKeyboardVisibilityDelegate(getActivity());
+            }
+        };
     }
 
     @Override
@@ -135,7 +142,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
-        mSearchBox.showCachedZeroSuggestResultsIfAvailable();
+        mSearchBox.getAutocompleteCoordinator().showCachedZeroSuggestResultsIfAvailable();
 
         // Kick off loading of the native library.
         if (!getActivityDelegate().shouldDelayNativeInitialization()) {

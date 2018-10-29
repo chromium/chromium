@@ -5,9 +5,11 @@
 #include "chrome/browser/chromeos/file_system_provider/fileapi/watcher_manager.h"
 
 #include "base/files/file.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/file_system_provider/mount_path_util.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/fileapi/file_system_url.h"
 
@@ -25,15 +27,15 @@ using ChangeType = storage::WatcherManager::ChangeType;
 void CallStatusCallbackOnIOThread(const StatusCallback& callback,
                                   base::File::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(callback, error));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(callback, error));
 }
 
 void CallNotificationCallbackOnIOThread(const NotificationCallback& callback,
                                         ChangeType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(callback, type));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(callback, type));
 }
 
 void AddWatcherOnUIThread(const storage::FileSystemURL& url,
@@ -92,8 +94,8 @@ void WatcherManager::AddWatcher(
     const StatusCallback& callback,
     const NotificationCallback& notification_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&AddWatcherOnUIThread, url, recursive,
                      base::Bind(&CallStatusCallbackOnIOThread, callback),
                      base::Bind(&CallNotificationCallbackOnIOThread,
@@ -104,8 +106,8 @@ void WatcherManager::RemoveWatcher(const storage::FileSystemURL& url,
                                    bool recursive,
                                    const StatusCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RemoveWatcherOnUIThread, url, recursive,
                      base::Bind(&CallStatusCallbackOnIOThread, callback)));
 }

@@ -6,4 +6,6 @@ miu@chromium.org
 per-file media_devices_*=guidou@chromium.org
 per-file midi_*=toyoshim@chromium.org
 
+per-file media_internals_audio_focus_helper*=file://services/media_session/OWNERS
+
 # COMPONENT: Internals>Media

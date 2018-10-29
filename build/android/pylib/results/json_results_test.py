@@ -175,6 +175,33 @@ class JsonResultsTest(unittest.TestCase):
         [raw_results], global_tags=global_tags)
     self.assertEquals(['UNRELIABLE_RESULTS'], results_dict['global_tags'])
 
+  def testGenerateResultsDict_loslessSnippet(self):
+    result = base_test_result.BaseTestResult(
+        'test.package.TestName', base_test_result.ResultType.FAIL)
+    log = 'blah-blah'
+    result.SetLog(log)
+
+    all_results = base_test_result.TestRunResults()
+    all_results.AddResult(result)
+
+    results_dict = json_results.GenerateResultsDict([all_results])
+    self.assertEquals(
+        ['test.package.TestName'],
+        results_dict['all_tests'])
+    self.assertEquals(1, len(results_dict['per_iteration_data']))
+
+    iteration_result = results_dict['per_iteration_data'][0]
+    self.assertTrue('test.package.TestName' in iteration_result)
+    self.assertEquals(1, len(iteration_result['test.package.TestName']))
+
+    test_iteration_result = iteration_result['test.package.TestName'][0]
+    self.assertTrue('losless_snippet' in test_iteration_result)
+    self.assertTrue(test_iteration_result['losless_snippet'])
+    self.assertTrue('output_snippet' in test_iteration_result)
+    self.assertEquals(log, test_iteration_result['output_snippet'])
+    self.assertTrue('output_snippet_base64' in test_iteration_result)
+    self.assertEquals('', test_iteration_result['output_snippet_base64'])
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

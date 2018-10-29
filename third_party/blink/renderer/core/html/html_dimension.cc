@@ -134,9 +134,9 @@ Vector<HTMLDimension> ParseListOfDimensions(const String& input) {
   // Step 3. To avoid String copies, we just look for commas instead of
   // splitting.
   Vector<HTMLDimension> parsed_dimensions;
-  size_t last_parsed_index = 0;
+  wtf_size_t last_parsed_index = 0;
   while (true) {
-    size_t next_comma = trimmed_string.find(kComma, last_parsed_index);
+    wtf_size_t next_comma = trimmed_string.find(kComma, last_parsed_index);
     if (next_comma == kNotFound)
       break;
 

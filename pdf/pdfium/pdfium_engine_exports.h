@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "pdf/pdf_engine.h"
 

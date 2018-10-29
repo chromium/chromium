@@ -22,15 +22,12 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace printing {
 
 namespace {
-
-int Round(double x) {
-  return static_cast<int>(x + 0.5);
-}
 
 // Sets the page sizes for a |PrintSettings| object.  |width| and |height|
 // arguments should be in device units.
@@ -45,7 +42,9 @@ void SetSizes(PrintSettings* settings, int dpi, int width, int height) {
                                     false);
 }
 
-void GetPageRanges(JNIEnv* env, jintArray int_arr, PageRanges* range_vector) {
+void GetPageRanges(JNIEnv* env,
+                   const JavaRef<jintArray>& int_arr,
+                   PageRanges* range_vector) {
   std::vector<int> pages;
   base::android::JavaIntArrayToIntVector(env, int_arr, &pages);
   for (int page : pages) {
@@ -64,9 +63,9 @@ std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
 }
 
 // static
-void PrintingContextAndroid::PdfWritingDone(int fd, int page_count) {
+void PrintingContextAndroid::PdfWritingDone(int page_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PrintingContext_pdfWritingDone(env, fd, page_count);
+  Java_PrintingContext_pdfWritingDone(env, page_count);
 }
 
 PrintingContextAndroid::PrintingContextAndroid(Delegate* delegate)
@@ -119,17 +118,17 @@ void PrintingContextAndroid::AskUserForSettingsReply(
 
   ScopedJavaLocalRef<jintArray> intArr =
       Java_PrintingContext_getPages(env, j_printing_context_);
-  if (intArr.obj()) {
+  if (!intArr.is_null()) {
     PageRanges range_vector;
-    GetPageRanges(env, intArr.obj(), &range_vector);
+    GetPageRanges(env, intArr, &range_vector);
     settings_.set_ranges(range_vector);
   }
 
   int dpi = Java_PrintingContext_getDpi(env, j_printing_context_);
   int width = Java_PrintingContext_getWidth(env, j_printing_context_);
   int height = Java_PrintingContext_getHeight(env, j_printing_context_);
-  width = Round(ConvertUnitDouble(width, kMilsPerInch, 1.0) * dpi);
-  height = Round(ConvertUnitDouble(height, kMilsPerInch, 1.0) * dpi);
+  width = ConvertUnit(width, kMilsPerInch, dpi);
+  height = ConvertUnit(height, kMilsPerInch, dpi);
   SetSizes(&settings_, dpi, width, height);
 
   std::move(callback_).Run(OK);

@@ -38,54 +38,55 @@ WebSize WebViewFrameWidget::Size() {
 }
 
 void WebViewFrameWidget::Resize(const WebSize& size) {
-  return web_view_->Resize(size);
+  web_view_->Resize(size);
 }
 
 void WebViewFrameWidget::ResizeVisualViewport(const WebSize& size) {
-  return web_view_->ResizeVisualViewport(size);
+  web_view_->ResizeVisualViewport(size);
 }
 
 void WebViewFrameWidget::DidEnterFullscreen() {
-  return web_view_->DidEnterFullscreen();
+  web_view_->DidEnterFullscreen();
 }
 
 void WebViewFrameWidget::DidExitFullscreen() {
-  return web_view_->DidExitFullscreen();
+  web_view_->DidExitFullscreen();
 }
 
 void WebViewFrameWidget::SetSuppressFrameRequestsWorkaroundFor704763Only(
     bool suppress_frame_requests) {
-  return web_view_->SetSuppressFrameRequestsWorkaroundFor704763Only(
+  web_view_->SetSuppressFrameRequestsWorkaroundFor704763Only(
       suppress_frame_requests);
 }
 void WebViewFrameWidget::BeginFrame(base::TimeTicks last_frame_time) {
-  return web_view_->BeginFrame(last_frame_time);
+  web_view_->BeginFrame(last_frame_time);
+}
+
+void WebViewFrameWidget::RecordEndOfFrameMetrics(
+    base::TimeTicks frame_begin_time) {
+  web_view_->RecordEndOfFrameMetrics(frame_begin_time);
 }
 
 void WebViewFrameWidget::UpdateLifecycle(LifecycleUpdate requested_update) {
-  return web_view_->UpdateLifecycle(requested_update);
-}
-
-void WebViewFrameWidget::UpdateAllLifecyclePhasesAndCompositeForTesting() {
-  web_view_->UpdateAllLifecyclePhasesAndCompositeForTesting();
+  web_view_->UpdateLifecycle(requested_update);
 }
 
 void WebViewFrameWidget::PaintContent(cc::PaintCanvas* canvas,
                                       const WebRect& view_port) {
-  return web_view_->PaintContent(canvas, view_port);
+  web_view_->PaintContent(canvas, view_port);
 }
 
 void WebViewFrameWidget::LayoutAndPaintAsync(base::OnceClosure callback) {
-  return web_view_->LayoutAndPaintAsync(std::move(callback));
+  web_view_->LayoutAndPaintAsync(std::move(callback));
 }
 
 void WebViewFrameWidget::CompositeAndReadbackAsync(
     base::OnceCallback<void(const SkBitmap&)> callback) {
-  return web_view_->CompositeAndReadbackAsync(std::move(callback));
+  web_view_->CompositeAndReadbackAsync(std::move(callback));
 }
 
 void WebViewFrameWidget::ThemeChanged() {
-  return web_view_->ThemeChanged();
+  web_view_->ThemeChanged();
 }
 
 WebInputEventResult WebViewFrameWidget::HandleInputEvent(
@@ -98,33 +99,27 @@ WebInputEventResult WebViewFrameWidget::DispatchBufferedTouchEvents() {
 }
 
 void WebViewFrameWidget::SetCursorVisibilityState(bool is_visible) {
-  return web_view_->SetCursorVisibilityState(is_visible);
+  web_view_->SetCursorVisibilityState(is_visible);
 }
 
-void WebViewFrameWidget::ApplyViewportDeltas(
-    const WebFloatSize& visual_viewport_delta,
-    const WebFloatSize& layout_viewport_delta,
-    const WebFloatSize& elastic_overscroll_delta,
-    float scale_factor,
-    float browser_controls_shown_ratio_delta) {
-  return web_view_->ApplyViewportDeltas(
-      visual_viewport_delta, layout_viewport_delta, elastic_overscroll_delta,
-      scale_factor, browser_controls_shown_ratio_delta);
+void WebViewFrameWidget::ApplyViewportChanges(
+    const ApplyViewportChangesArgs& args) {
+  web_view_->ApplyViewportChanges(args);
 }
 
 void WebViewFrameWidget::RecordWheelAndTouchScrollingCount(
     bool has_scrolled_by_wheel,
     bool has_scrolled_by_touch) {
-  return web_view_->RecordWheelAndTouchScrollingCount(has_scrolled_by_wheel,
-                                                      has_scrolled_by_touch);
+  web_view_->RecordWheelAndTouchScrollingCount(has_scrolled_by_wheel,
+                                               has_scrolled_by_touch);
 }
 
 void WebViewFrameWidget::MouseCaptureLost() {
-  return web_view_->MouseCaptureLost();
+  web_view_->MouseCaptureLost();
 }
 
 void WebViewFrameWidget::SetFocus(bool enable) {
-  return web_view_->SetFocus(enable);
+  web_view_->SetFocus(enable);
 }
 
 bool WebViewFrameWidget::SelectionBounds(WebRect& anchor,
@@ -137,7 +132,7 @@ bool WebViewFrameWidget::IsAcceleratedCompositingActive() const {
 }
 
 void WebViewFrameWidget::WillCloseLayerTreeView() {
-  return web_view_->WillCloseLayerTreeView();
+  web_view_->WillCloseLayerTreeView();
 }
 
 SkColor WebViewFrameWidget::BackgroundColor() const {
@@ -148,16 +143,13 @@ WebPagePopup* WebViewFrameWidget::GetPagePopup() const {
   return web_view_->GetPagePopup();
 }
 
-void WebViewFrameWidget::UpdateBrowserControlsState(
-    cc::BrowserControlsState constraints,
-    cc::BrowserControlsState current,
-    bool animate) {
-  return web_view_->UpdateBrowserControlsState(constraints, current, animate);
+WebURL WebViewFrameWidget::GetURLForDebugTrace() {
+  return web_view_->GetURLForDebugTrace();
 }
 
 void WebViewFrameWidget::SetVisibilityState(
     mojom::PageVisibilityState visibility_state) {
-  return web_view_->SetVisibilityState(visibility_state, false);
+  web_view_->SetVisibilityState(visibility_state, false);
 }
 
 void WebViewFrameWidget::SetBackgroundColorOverride(SkColor color) {
@@ -165,7 +157,7 @@ void WebViewFrameWidget::SetBackgroundColorOverride(SkColor color) {
 }
 
 void WebViewFrameWidget::ClearBackgroundColorOverride() {
-  return web_view_->ClearBackgroundColorOverride();
+  web_view_->ClearBackgroundColorOverride();
 }
 
 void WebViewFrameWidget::SetBaseBackgroundColorOverride(SkColor color) {
@@ -173,7 +165,7 @@ void WebViewFrameWidget::SetBaseBackgroundColorOverride(SkColor color) {
 }
 
 void WebViewFrameWidget::ClearBaseBackgroundColorOverride() {
-  return web_view_->ClearBaseBackgroundColorOverride();
+  web_view_->ClearBaseBackgroundColorOverride();
 }
 
 void WebViewFrameWidget::SetBaseBackgroundColor(SkColor color) {
@@ -191,6 +183,12 @@ bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
 
 void WebViewFrameWidget::Initialize() {
   web_view_->SetCompositorVisibility(true);
+}
+
+void WebViewFrameWidget::SetLayerTreeView(WebLayerTreeView*) {
+  // The WebViewImpl already has its LayerTreeView, the WebWidgetClient
+  // thus does not initialize and set another one here.
+  NOTREACHED();
 }
 
 void WebViewFrameWidget::ScheduleAnimation() {

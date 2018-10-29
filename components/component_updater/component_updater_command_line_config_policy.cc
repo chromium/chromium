@@ -55,8 +55,7 @@ std::string GetSwitchArgument(const std::vector<std::string>& vec,
                               const char* test) {
   if (vec.empty())
     return std::string();
-  for (std::vector<std::string>::const_iterator it = vec.begin();
-       it != vec.end(); ++it) {
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
     const std::size_t found = it->find("=");
     if (found != std::string::npos) {
       if (it->substr(0, found) == test) {

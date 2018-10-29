@@ -80,6 +80,8 @@ def GetDisplaysToProfileURLMap():
     device_info = ColorSyncDeviceCopyDeviceInfo(
         kColorSyncDisplayDeviceClass,
         CGDisplayCreateUUIDFromDisplayID(display_id))
+    if not device_info:
+      raise Exception('KVM connection on bot is broken, please file a bug')
     device_id = device_info['DeviceID']
     custom_profile_url = None
     if 'CustomProfiles' in device_info and '1' in device_info['CustomProfiles']:

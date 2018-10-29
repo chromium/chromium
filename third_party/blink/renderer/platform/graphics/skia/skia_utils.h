@@ -77,6 +77,10 @@ SkColor PLATFORM_EXPORT ScaleAlpha(SkColor, float);
 gfx::ColorSpace PLATFORM_EXPORT
 SkColorSpaceToGfxColorSpace(const sk_sp<SkColorSpace>);
 
+bool PLATFORM_EXPORT
+ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
+                                sk_sp<SkColorSpace> dst_color_space);
+
 // Skia has problems when passed infinite, etc floats, filter them to 0.
 inline SkScalar WebCoreFloatToSkScalar(float f) {
   return SkFloatToScalar(std::isfinite(f) ? f : 0);

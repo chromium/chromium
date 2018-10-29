@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_COMPRESSOR_ARCHIVE_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_COMPRESSOR_ARCHIVE_H_
 
-#include "compressor_io_javascript_stream.h"
+#include <cstdint>
+#include <string>
+
+#include "base/time/time.h"
+
+class CompressorStream;
 
 // Defines a wrapper for packing operations executed on an archive. API is not
 // meant to be thread safe and its methods shouldn't be called in parallel.
@@ -42,7 +47,7 @@ class CompressorArchive {
   // can be obtained with CompressorArchive::error_message().
   virtual bool AddToArchive(const std::string& filename,
                             int64_t file_size,
-                            int64_t modification_time,
+                            base::Time modification_time,
                             bool is_directory) = 0;
 
   // A getter function for compressor_stream_.

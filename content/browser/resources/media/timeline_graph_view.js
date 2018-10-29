@@ -139,8 +139,8 @@ var TimelineGraphView = (function() {
     },
 
     /**
-    * Adds |dataSeries| to the current graph.
-    */
+     * Adds |dataSeries| to the current graph.
+     */
     addDataSeries: function(dataSeries) {
       if (!this.graph_)
         this.graph_ = new Graph();
@@ -153,7 +153,7 @@ var TimelineGraphView = (function() {
      */
     repaint: function() {
       if (this.canvas_.offsetParent === null) {
-        return; // do not repaint graphs that are not visible.
+        return;  // do not repaint graphs that are not visible.
       }
 
       this.repaintTimerRunning_ = false;

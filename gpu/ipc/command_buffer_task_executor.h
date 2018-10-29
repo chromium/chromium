@@ -14,9 +14,11 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/image_manager.h"
+#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
@@ -108,12 +110,16 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
   ServiceDiscardableManager* discardable_manager() {
     return &discardable_manager_;
   }
+  PassthroughDiscardableManager* passthrough_discardable_manager() {
+    return &passthrough_discardable_manager_;
+  }
   gles2::ShaderTranslatorCache* shader_translator_cache() {
     return &shader_translator_cache_;
   }
   gles2::FramebufferCompletenessCache* framebuffer_completeness_cache() {
     return &framebuffer_completeness_cache_;
   }
+  SharedImageManager* shared_image_manager() { return &shared_image_manager_; }
 
   // These methods construct accessed fields if not already initialized.
   scoped_refptr<gl::GLShareGroup> share_group();
@@ -137,8 +143,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
   std::unique_ptr<gles2::ProgramCache> program_cache_;
   gles2::ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
+  PassthroughDiscardableManager passthrough_discardable_manager_;
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
+  SharedImageManager shared_image_manager_;
 
   // No-op default initialization is used in in-process mode.
   GpuProcessActivityFlags activity_flags_;

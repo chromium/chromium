@@ -19,6 +19,7 @@ Polymer({
     inputValid: {
       type: Boolean,
       notify: true,
+      reflectToAttribute: true,
       value: true,
     },
 
@@ -42,16 +43,6 @@ Polymer({
     hintMessage: String,
 
     disabled: Boolean,
-
-    /**
-     * Whether the error message should be displayed on the input.
-     * @private {boolean}
-     */
-    errorDisplayed_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      computed: 'computeErrorDisplayed_(inputString_, inputValid)',
-    },
   },
 
   listeners: {
@@ -83,8 +74,13 @@ Polymer({
    * @param {!KeyboardEvent} e The keyboard event
    */
   onKeydown_: function(e) {
-    if (e.key == '.' || e.key == 'e' || e.key == '-')
+    if (['.', 'e', 'E', '-', '+'].includes(e.key)) {
       e.preventDefault();
+      return;
+    }
+
+    if (e.key == 'Enter')
+      this.onBlur_();
   },
 
   /** @private */
@@ -115,14 +111,6 @@ Polymer({
   computeValid_: function() {
     // Make sure value updates first, in case inputString_ was updated by JS.
     this.$.userValue.value = this.inputString_;
-    return !this.$.userValue.invalid && this.inputString_ != '';
-  },
-
-  /**
-   * @return {boolean} Whether the error message should be empty.
-   * @private
-   */
-  computeErrorDisplayed_: function() {
-    return !this.inputValid && this.inputString_ != '';
+    return !this.$.userValue.invalid;
   },
 });

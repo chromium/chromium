@@ -20,9 +20,9 @@ V0CustomElementMicrotaskDispatcher::V0CustomElementMicrotaskDispatcher()
 
 V0CustomElementMicrotaskDispatcher&
 V0CustomElementMicrotaskDispatcher::Instance() {
-  DEFINE_STATIC_LOCAL(V0CustomElementMicrotaskDispatcher, instance,
+  DEFINE_STATIC_LOCAL(Persistent<V0CustomElementMicrotaskDispatcher>, instance,
                       (new V0CustomElementMicrotaskDispatcher));
-  return instance;
+  return *instance;
 }
 
 void V0CustomElementMicrotaskDispatcher::Enqueue(

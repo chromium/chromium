@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +35,7 @@
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/engine/net/network_resources.h"
 #include "components/sync/syncable/read_transaction.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "google/cacheinvalidation/types.pb.h"
@@ -107,9 +109,6 @@ ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(JNIEnv* env, jobject obj)
 bool ProfileSyncServiceAndroid::Init() {
   if (sync_service_) {
     sync_service_->AddObserver(this);
-    sync_service_->SetPlatformSyncAllowedProvider(
-        base::Bind(&ProfileSyncServiceAndroid::IsSyncAllowedByAndroid,
-                   base::Unretained(this)));
     return true;
   } else {
     return false;
@@ -119,8 +118,6 @@ bool ProfileSyncServiceAndroid::Init() {
 ProfileSyncServiceAndroid::~ProfileSyncServiceAndroid() {
   if (sync_service_) {
     sync_service_->RemoveObserver(this);
-    sync_service_->SetPlatformSyncAllowedProvider(
-        ProfileSyncService::PlatformSyncAllowedProvider());
   }
 }
 
@@ -161,11 +158,11 @@ void ProfileSyncServiceAndroid::RequestStop(JNIEnv* env,
   sync_service_->RequestStop(ProfileSyncService::KEEP_DATA);
 }
 
-void ProfileSyncServiceAndroid::SignOutSync(JNIEnv* env,
-                                            const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile_);
-  sync_service_->RequestStop(ProfileSyncService::CLEAR_DATA);
+void ProfileSyncServiceAndroid::SetSyncAllowedByPlatform(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean allowed) {
+  sync_service_->SetSyncAllowedByPlatform(allowed);
 }
 
 jboolean ProfileSyncServiceAndroid::IsSyncActive(
@@ -188,7 +185,9 @@ void ProfileSyncServiceAndroid::SetSetupInProgress(
     jboolean in_progress) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (in_progress) {
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+    if (!sync_blocker_) {
+      sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+    }
   } else {
     sync_blocker_.reset();
   }
@@ -301,7 +300,7 @@ void ProfileSyncServiceAndroid::SetEncryptionPassphrase(
     const JavaParamRef<jstring>& passphrase) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string key = ConvertJavaStringToUTF8(env, passphrase);
-  sync_service_->SetEncryptionPassphrase(key, ProfileSyncService::EXPLICIT);
+  sync_service_->SetEncryptionPassphrase(key);
 }
 
 jboolean ProfileSyncServiceAndroid::SetDecryptionPassphrase(
@@ -410,7 +409,8 @@ void ProfileSyncServiceAndroid::SetSyncSessionsId(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile_);
   std::string machine_tag = ConvertJavaStringToUTF8(env, tag);
-  sync_prefs_->SetSyncSessionsGUID(machine_tag);
+  SessionSyncServiceFactory::GetForProfile(profile_)->SetSyncSessionsGUID(
+      machine_tag);
 }
 
 jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(

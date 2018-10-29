@@ -85,6 +85,7 @@
 namespace base {
 
 class FieldTrialList;
+class FieldTrialMemoryServer;
 
 class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
  public:
@@ -588,6 +589,10 @@ class BASE_EXPORT FieldTrialList {
       base::HandlesToInheritVector* handles);
 #elif defined(OS_FUCHSIA)
   // TODO(fuchsia): Implement shared-memory configuration (crbug.com/752368).
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+  // On Mac, the field trial shared memory is accessed via a Mach server, which
+  // the child looks up directly.
+  static FieldTrialMemoryServer* GetFieldTrialMemoryServer();
 #elif defined(OS_POSIX) && !defined(OS_NACL)
   // On POSIX, we also need to explicitly pass down this file descriptor that
   // should be shared with the child process. Returns an invalid handle if it
@@ -682,6 +687,7 @@ class BASE_EXPORT FieldTrialList {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, ClearParamsFromSharedMemory);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
                            SerializeSharedMemoryHandleMetadata);
+  friend int SerializeSharedMemoryHandleMetadata(void);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, CheckReadOnlySharedMemoryHandle);
 
   // Serialization is used to pass information about the handle to child
@@ -690,7 +696,8 @@ class BASE_EXPORT FieldTrialList {
   // underlying OS resource - that must be done by the Process launcher.
   static std::string SerializeSharedMemoryHandleMetadata(
       const SharedMemoryHandle& shm);
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
   static SharedMemoryHandle DeserializeSharedMemoryHandleMetadata(
       const std::string& switch_value);
 #elif defined(OS_POSIX) && !defined(OS_NACL)
@@ -699,7 +706,8 @@ class BASE_EXPORT FieldTrialList {
       const std::string& switch_value);
 #endif
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
   // Takes in |handle_switch| from the command line which represents the shared
   // memory handle for field trials, parses it, and creates the field trials.
   // Returns true on success, false on failure.
@@ -792,6 +800,12 @@ class BASE_EXPORT FieldTrialList {
   // because it's needed from both CopyFieldTrialStateToFlags() and
   // AppendFieldTrialHandleIfNeeded().
   base::SharedMemoryHandle readonly_allocator_handle_;
+
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+  // Mach message server that handles requests to acquire the shared memory
+  // object.
+  std::unique_ptr<FieldTrialMemoryServer> field_trial_server_;
+#endif
 
   // Tracks whether CreateTrialsFromCommandLine() has been called.
   bool create_trials_from_command_line_called_ = false;

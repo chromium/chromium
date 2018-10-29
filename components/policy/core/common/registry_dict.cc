@@ -56,8 +56,7 @@ std::unique_ptr<base::Value> ConvertRegistryValue(const base::Value& value,
       return std::move(result);
     } else if (value.GetAsList(&list)) {
       std::unique_ptr<base::ListValue> result(new base::ListValue());
-      for (base::ListValue::const_iterator entry(list->begin());
-           entry != list->end(); ++entry) {
+      for (auto entry(list->begin()); entry != list->end(); ++entry) {
         std::unique_ptr<base::Value> converted =
             ConvertRegistryValue(*entry, schema.GetItems());
         if (converted)
@@ -156,12 +155,12 @@ RegistryDict::~RegistryDict() {
 }
 
 RegistryDict* RegistryDict::GetKey(const std::string& name) {
-  KeyMap::iterator entry = keys_.find(name);
+  auto entry = keys_.find(name);
   return entry != keys_.end() ? entry->second.get() : nullptr;
 }
 
 const RegistryDict* RegistryDict::GetKey(const std::string& name) const {
-  KeyMap::const_iterator entry = keys_.find(name);
+  auto entry = keys_.find(name);
   return entry != keys_.end() ? entry->second.get() : nullptr;
 }
 
@@ -177,7 +176,7 @@ void RegistryDict::SetKey(const std::string& name,
 
 std::unique_ptr<RegistryDict> RegistryDict::RemoveKey(const std::string& name) {
   std::unique_ptr<RegistryDict> result;
-  KeyMap::iterator entry = keys_.find(name);
+  auto entry = keys_.find(name);
   if (entry != keys_.end()) {
     result = std::move(entry->second);
     keys_.erase(entry);
@@ -190,12 +189,12 @@ void RegistryDict::ClearKeys() {
 }
 
 base::Value* RegistryDict::GetValue(const std::string& name) {
-  ValueMap::iterator entry = values_.find(name);
+  auto entry = values_.find(name);
   return entry != values_.end() ? entry->second.get() : nullptr;
 }
 
 const base::Value* RegistryDict::GetValue(const std::string& name) const {
-  ValueMap::const_iterator entry = values_.find(name);
+  auto entry = values_.find(name);
   return entry != values_.end() ? entry->second.get() : nullptr;
 }
 
@@ -212,7 +211,7 @@ void RegistryDict::SetValue(const std::string& name,
 std::unique_ptr<base::Value> RegistryDict::RemoveValue(
     const std::string& name) {
   std::unique_ptr<base::Value> result;
-  ValueMap::iterator entry = values_.find(name);
+  auto entry = values_.find(name);
   if (entry != values_.end()) {
     result = std::move(entry->second);
     values_.erase(entry);
@@ -225,16 +224,15 @@ void RegistryDict::ClearValues() {
 }
 
 void RegistryDict::Merge(const RegistryDict& other) {
-  for (KeyMap::const_iterator entry(other.keys_.begin());
-       entry != other.keys_.end(); ++entry) {
+  for (auto entry(other.keys_.begin()); entry != other.keys_.end(); ++entry) {
     std::unique_ptr<RegistryDict>& subdict = keys_[entry->first];
     if (!subdict)
       subdict = std::make_unique<RegistryDict>();
     subdict->Merge(*entry->second);
   }
 
-  for (ValueMap::const_iterator entry(other.values_.begin());
-       entry != other.values_.end(); ++entry) {
+  for (auto entry(other.values_.begin()); entry != other.values_.end();
+       ++entry) {
     SetValue(entry->first, entry->second->CreateDeepCopy());
   }
 }

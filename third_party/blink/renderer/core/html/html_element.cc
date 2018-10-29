@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_element.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -114,7 +115,8 @@ bool IsEditable(const Node& node) {
     return true;
   if (IsSVGSVGElement(node))
     return true;
-  if (node.IsElementNode() && ToElement(node).HasTagName(MathMLNames::mathTag))
+  if (node.IsElementNode() &&
+      ToElement(node).HasTagName(mathml_names::kMathTag))
     return true;
   return !node.IsElementNode() && node.parentNode()->IsHTMLElement();
 }
@@ -207,7 +209,7 @@ void HTMLElement::MapLanguageAttributeToLocale(
     else if (IsHTMLBodyElement(*this))
       UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnBody);
     String html_language = value.GetString();
-    size_t first_separator = html_language.find('-');
+    wtf_size_t first_separator = html_language.find('-');
     if (first_separator != kNotFound)
       html_language = html_language.Left(first_separator);
     String ui_language = DefaultLanguage();
@@ -230,7 +232,7 @@ void HTMLElement::MapLanguageAttributeToLocale(
 
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (name == alignAttr || name == contenteditableAttr || name == hiddenAttr ||
-      name == langAttr || name.Matches(XMLNames::langAttr) ||
+      name == langAttr || name.Matches(xml_names::kLangAttr) ||
       name == draggableAttr || name == dirAttr)
     return true;
   return Element::IsPresentationAttribute(name);
@@ -308,11 +310,11 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         AddPropertyToPresentationAttributeStyle(style, CSSPropertyUnicodeBidi,
                                                 CSSValueIsolate);
     }
-  } else if (name.Matches(XMLNames::langAttr)) {
+  } else if (name.Matches(xml_names::kLangAttr)) {
     MapLanguageAttributeToLocale(value, style);
   } else if (name == langAttr) {
     // xml:lang has a higher priority than lang.
-    if (!FastHasAttribute(XMLNames::langAttr))
+    if (!FastHasAttribute(xml_names::kLangAttr))
       MapLanguageAttributeToLocale(value, style);
   } else {
     Element::CollectStyleForPresentationAttribute(name, value, style);
@@ -331,7 +333,7 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
       {nonceAttr, kNoWebFeature, kNoEvent, &HTMLElement::OnNonceAttrChanged},
       {tabindexAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnTabIndexAttrChanged},
-      {XMLNames::langAttr, kNoWebFeature, kNoEvent,
+      {xml_names::kLangAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnXMLLangAttrChanged},
 
       {onabortAttr, kNoWebFeature, EventTypeNames::abort, nullptr},
@@ -536,11 +538,11 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        nullptr},
   };
 
-  using AttributeToTriggerIndexMap = HashMap<QualifiedName, int>;
+  using AttributeToTriggerIndexMap = HashMap<QualifiedName, uint32_t>;
   DEFINE_STATIC_LOCAL(AttributeToTriggerIndexMap,
                       attribute_to_trigger_index_map, ());
   if (!attribute_to_trigger_index_map.size()) {
-    for (size_t i = 0; i < arraysize(attribute_triggers); ++i)
+    for (uint32_t i = 0; i < base::size(attribute_triggers); ++i)
       attribute_to_trigger_index_map.insert(attribute_triggers[i].attribute, i);
   }
 
@@ -625,21 +627,25 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
         break;
     }
 
-    fragment->AppendChild(
-        Text::Create(GetDocument(), text.Substring(start, i - start)),
-        exception_state);
+    if (i > start) {
+      fragment->AppendChild(
+          Text::Create(GetDocument(), text.Substring(start, i - start)),
+          exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+    }
+
+    if (i == length)
+      break;
+
+    fragment->AppendChild(HTMLBRElement::Create(GetDocument()),
+                          exception_state);
     if (exception_state.HadException())
       return nullptr;
 
-    if (c == '\r' || c == '\n') {
-      fragment->AppendChild(HTMLBRElement::Create(GetDocument()),
-                            exception_state);
-      if (exception_state.HadException())
-        return nullptr;
-      // Make sure \r\n doesn't result in two line breaks.
-      if (c == '\r' && i + 1 < length && text[i + 1] == '\n')
-        i++;
-    }
+    // Make sure \r\n doesn't result in two line breaks.
+    if (c == '\r' && i + 1 < length && text[i + 1] == '\n')
+      i++;
 
     start = i + 1;  // Character after line break.
   }
@@ -657,25 +663,6 @@ void HTMLElement::setInnerText(const String& text,
       return;
     }
     ReplaceChildrenWithText(this, text, exception_state);
-    return;
-  }
-
-  // FIXME: Do we need to be able to detect preserveNewline style even when
-  // there's no layoutObject?
-  // FIXME: Can the layoutObject be out of date here? Do we need to call
-  // updateStyleIfNeeded?  For example, for the contents of textarea elements
-  // that are display:none?
-  LayoutObject* r = GetLayoutObject();
-  if (r && r->Style()->PreserveNewline()) {
-    if (!text.Contains('\r')) {
-      ReplaceChildrenWithText(this, text, exception_state);
-      return;
-    }
-    String text_with_consistent_line_breaks = text;
-    text_with_consistent_line_breaks.Replace("\r\n", "\n");
-    text_with_consistent_line_breaks.Replace('\r', '\n');
-    ReplaceChildrenWithText(this, text_with_consistent_line_breaks,
-                            exception_state);
     return;
   }
 
@@ -1028,7 +1015,7 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
       if (ElementAffectsDirectionality(element_to_adjust)) {
         element_to_adjust->SetNeedsStyleRecalc(
             kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                   StyleChangeReason::kWritingModeChange));
+                                   style_change_reason::kWritingModeChange));
         return;
       }
     }
@@ -1038,10 +1025,11 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
 void HTMLElement::CalculateAndAdjustDirectionality() {
   TextDirection text_direction = Directionality();
   const ComputedStyle* style = GetComputedStyle();
-  if (style && style->Direction() != text_direction)
+  if (style && style->Direction() != text_direction) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::Create(
-                            StyleChangeReason::kWritingModeChange));
+                            style_change_reason::kWritingModeChange));
+  }
 }
 
 void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
@@ -1104,7 +1092,7 @@ static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   // max.
   Vector<char, kMaxColorLength + 2> digit_buffer;
 
-  size_t i = 0;
+  wtf_size_t i = 0;
   // Skip a leading #.
   if (color_string[0] == '#')
     i = 1;
@@ -1135,11 +1123,13 @@ static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   // Split the digits into three components, then search the last 8 digits of
   // each component.
   DCHECK_GE(digit_buffer.size(), 6u);
-  size_t component_length = digit_buffer.size() / 3;
-  size_t component_search_window_length = std::min<size_t>(component_length, 8);
-  size_t red_index = component_length - component_search_window_length;
-  size_t green_index = component_length * 2 - component_search_window_length;
-  size_t blue_index = component_length * 3 - component_search_window_length;
+  wtf_size_t component_length = digit_buffer.size() / 3;
+  wtf_size_t component_search_window_length =
+      std::min<wtf_size_t>(component_length, 8);
+  wtf_size_t red_index = component_length - component_search_window_length;
+  wtf_size_t green_index =
+      component_length * 2 - component_search_window_length;
+  wtf_size_t blue_index = component_length * 3 - component_search_window_length;
   // Skip digits until one of them is non-zero, or we've only got two digits
   // left in the component.
   while (digit_buffer[red_index] == '0' && digit_buffer[green_index] == '0' &&

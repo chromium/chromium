@@ -136,7 +136,7 @@ class PresentationConnection : public EventTargetWithInlineData,
   void SendMessageToTargetConnection(
       mojom::blink::PresentationConnectionMessagePtr);
   void DidReceiveTextMessage(const WebString&);
-  void DidReceiveBinaryMessage(const uint8_t*, size_t length);
+  void DidReceiveBinaryMessage(const uint8_t*, uint32_t length);
 
   // Closes the PresentationConnection with the given reason and notifies the
   // target connection.

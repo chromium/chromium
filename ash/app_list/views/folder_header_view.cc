@@ -201,7 +201,10 @@ void FolderHeaderView::Layout() {
       folder_name_view_->GetInsets().width();
   text_width = std::min(text_width, GetMaxFolderNameWidth());
   text_bounds.set_x(rect.x() + (rect.width() - text_width) / 2);
-  text_bounds.set_width(text_width);
+
+  // The width of the text field should always be maximum length, to prevent the
+  // touch target from resizing with the text.
+  text_bounds.set_width(GetMaxFolderNameWidth());
   text_bounds.ClampToCenteredSize(gfx::Size(
       text_bounds.width(), folder_name_view_->GetPreferredSize().height()));
   folder_name_view_->SetBoundsRect(text_bounds);

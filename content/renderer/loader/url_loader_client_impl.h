@@ -38,7 +38,8 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   URLLoaderClientImpl(int request_id,
                       ResourceDispatcher* resource_dispatcher,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      bool bypass_redirect_checks);
+                      bool bypass_redirect_checks,
+                      const GURL& request_url);
   ~URLLoaderClientImpl() override;
 
   // Sets |is_deferred_|. From now, the received messages are not dispatched
@@ -54,9 +55,9 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   // If set to true, this causes the raw datapipe containing the response body
   // to be passed on to the ResourceDispatcher. Otherwise a
   // URLResponseBodyConsumer is created that passes individual chunks of data
-  // from teh body to the dispatcher.
+  // from the body to the dispatcher.
   void SetPassResponsePipeToDispatcher(bool pass_pipe) {
-    pass_response_pipe_to_dispatcher_ = true;
+    pass_response_pipe_to_dispatcher_ = pass_pipe;
   }
 
   // Binds this instance to the given URLLoaderClient endpoints so that it can
@@ -105,6 +106,7 @@ class CONTENT_EXPORT URLLoaderClientImpl final
   ResourceDispatcher* const resource_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
+  GURL last_loaded_url_;
 
   network::mojom::URLLoaderPtr url_loader_;
   mojo::Binding<network::mojom::URLLoaderClient> url_loader_client_binding_;

@@ -40,7 +40,8 @@ namespace {
 
 using LoadingState = TabLoadTracker::LoadingState;
 
-const char* kSessionTypeName[] = {"SessionRestore", "BackgroundTabOpening"};
+const char* const kSessionTypeName[] = {"SessionRestore",
+                                        "BackgroundTabOpening"};
 
 constexpr int kSamplingOdds = 10;
 

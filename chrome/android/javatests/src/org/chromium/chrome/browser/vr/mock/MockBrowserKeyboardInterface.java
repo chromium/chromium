@@ -41,16 +41,33 @@ public class MockBrowserKeyboardInterface
 
     private Boolean mLastKeyboardVisibility;
     private Indices mLastIndices;
+    private VrInputMethodManagerWrapper.BrowserKeyboardInterface mWrappedInterface;
+
+    public MockBrowserKeyboardInterface() {
+        this(null);
+    }
+
+    public MockBrowserKeyboardInterface(
+            VrInputMethodManagerWrapper.BrowserKeyboardInterface interfaceToWrap) {
+        mWrappedInterface = interfaceToWrap;
+    }
 
     @Override
     public void showSoftInput(boolean show) {
         mLastKeyboardVisibility = show;
+        if (mWrappedInterface != null) {
+            mWrappedInterface.showSoftInput(show);
+        }
     }
 
     @Override
     public void updateIndices(
             int selectionStart, int selectionEnd, int compositionStart, int compositionEnd) {
         mLastIndices = new Indices(selectionEnd, selectionEnd, compositionStart, compositionEnd);
+        if (mWrappedInterface != null) {
+            mWrappedInterface.updateIndices(
+                    selectionStart, selectionEnd, compositionStart, compositionEnd);
+        }
     }
 
     public Boolean getLastKeyboardVisibility() {

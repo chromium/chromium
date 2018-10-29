@@ -45,7 +45,7 @@ class CORE_EXPORT TimeRanges final : public ScriptWrappable {
  public:
   // We consider all the Ranges to be semi-bounded as follow: [start, end[
   struct Range {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     Range() = default;

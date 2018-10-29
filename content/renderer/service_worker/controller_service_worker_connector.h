@@ -5,6 +5,8 @@
 #ifndef CONTENT_RENDERER_SERVICE_WORKER_CONTROLLER_SERVICE_WORKER_CONNECTOR_H_
 #define CONTENT_RENDERER_SERVICE_WORKER_CONTROLLER_SERVICE_WORKER_CONNECTOR_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -97,16 +99,11 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
 
   mojo::BindingSet<mojom::ControllerServiceWorkerConnector> bindings_;
 
-  // Keeps the mojo end to the browser process on its own.
-  // Non-null only for the service worker clients that are workers (i.e., only
-  // when created for dedicated workers or shared workers).
+  // Connection to the container host in the browser process.
   mojom::ServiceWorkerContainerHostPtr container_host_ptr_;
 
-  // Connection to the ControllerServiceWorker. The consumer of this connection
-  // should not need to know which process this is connected to.
-  // (Currently this is connected to BrowserSideControllerServiceWorker,
-  // but will eventually be directly connected to the controller service worker
-  // in the renderer process)
+  // Connection to the controller service worker, which lives in a renderer
+  // process that's not necessarily the same as this connector.
   mojom::ControllerServiceWorkerPtr controller_service_worker_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;

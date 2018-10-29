@@ -95,7 +95,7 @@ if (window.testRunner && window.accessibilityController) {
     // Test label that gets a control reparented into it.
     shouldBe("hasTitleUIElement(axElement('control5'))", "false");
 
-    shouldBe("reparentNodeIntoContainer(document.getElementById('control5'), document.getElementById('label5')); axElement('control5').nameElementAtIndex(0) != null", "true");
+    shouldBe("reparentNodeIntoContainer(document.getElementById('control5'), document.getElementById('label5')); document.body.offsetTop; axElement('control5').nameElementAtIndex(0) != null", "true");
     shouldBe("axElement('control5').nameElementAtIndex(0).isEqual(axElement('label5'))", "true");
 
     // Make sure the first label is returned, even as labels are added and removed.

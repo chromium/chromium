@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_end_effect.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
 namespace blink {
@@ -29,7 +29,7 @@ struct NGInlineItemsData;
 //
 // NGLineBreaker produces, and NGInlineLayoutAlgorithm consumes.
 struct CORE_EXPORT NGInlineItemResult {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // The NGInlineItem and its index.
@@ -117,7 +117,7 @@ using NGInlineItemResults = Vector<NGInlineItemResult, 32>;
 //
 // NGLineBreaker produces, and NGInlineLayoutAlgorithm consumes.
 class CORE_EXPORT NGLineInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   const NGInlineItemsData& ItemsData() const {
@@ -176,6 +176,8 @@ class CORE_EXPORT NGLineInfo {
   // Start text offset of this line.
   unsigned StartOffset() const { return start_offset_; }
   void SetStartOffset(unsigned offset) { start_offset_ = offset; }
+  unsigned EndItemIndex() const { return end_item_index_; }
+  void SetEndItemIndex(unsigned index) { end_item_index_ = index; }
 
   // The base direction of this line for the bidi algorithm.
   TextDirection BaseDirection() const { return base_direction_; }
@@ -202,6 +204,7 @@ class CORE_EXPORT NGLineInfo {
   LayoutUnit text_indent_;
 
   unsigned start_offset_;
+  unsigned end_item_index_;
 
   TextDirection base_direction_ = TextDirection::kLtr;
 

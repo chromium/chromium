@@ -32,8 +32,8 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "net/base/proxy_server.h"
-#include "net/socket/socket_test_util.h"
-#include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -210,38 +210,36 @@ TEST(DataReductionProxySettingsStandaloneTest, TestEndToEndSecureProxyCheck) {
   };
 
   for (const TestCase& test_case : kTestCases) {
-    net::TestURLRequestContext context(true);
+    network::TestURLLoaderFactory test_url_loader_factory;
+    auto test_shared_url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory);
 
     std::unique_ptr<DataReductionProxyTestContext> drp_test_context =
         DataReductionProxyTestContext::Builder()
-            .WithURLRequestContext(&context)
+            .WithURLLoaderFactory(test_shared_url_loader_factory)
             .SkipSettingsInitialization()
             .Build();
 
     drp_test_context->DisableWarmupURLFetch();
-
-    context.set_net_log(drp_test_context->net_log());
-    net::MockClientSocketFactory mock_socket_factory;
-    context.set_client_socket_factory(&mock_socket_factory);
-    context.Init();
 
     // Start with the Data Reduction Proxy disabled.
     drp_test_context->SetDataReductionProxyEnabled(false);
     drp_test_context->InitSettings();
     drp_test_context->RunUntilIdle();
 
-    net::MockRead mock_reads[] = {
-        net::MockRead(test_case.response_headers),
-        net::MockRead(test_case.response_body),
-        net::MockRead(net::SYNCHRONOUS, test_case.net_error_code),
-    };
-    net::StaticSocketDataProvider socket_data_provider(
-        mock_reads, base::span<net::MockWrite>());
-    mock_socket_factory.AddSocketDataProvider(&socket_data_provider);
-
     // Toggle the pref to trigger the secure proxy check.
     drp_test_context->SetDataReductionProxyEnabled(true);
     drp_test_context->RunUntilIdle();
+
+    network::ResourceResponseHead resource_response_head;
+    std::string headers(test_case.response_headers);
+    resource_response_head.headers = new net::HttpResponseHeaders(
+        net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
+    test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
+        test_url_loader_factory.GetPendingRequest(0), resource_response_head,
+        test_case.response_body,
+        network::URLLoaderCompletionStatus(test_case.net_error_code));
 
     if (test_case.expected_restricted) {
       EXPECT_EQ(std::vector<net::ProxyServer>(1, kHttpProxy),

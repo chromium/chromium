@@ -36,7 +36,6 @@
 #include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
 #include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/common/pref_names.h"
@@ -47,10 +46,12 @@
 #include "chromeos/dbus/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart_client.h"
+#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/settings/install_attributes.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -192,6 +193,11 @@ void BrowserPolicyConnectorChromeOS::Init(
           chromeos::NetworkHandler::Get()->network_device_handler(),
           chromeos::CrosSettings::Get(),
           DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher());
+  // NetworkCertLoader may be not initialized in tests.
+  if (chromeos::NetworkCertLoader::IsInitialized()) {
+    chromeos::NetworkCertLoader::Get()->AddPolicyCertificateProvider(
+        device_network_configuration_updater_.get());
+  }
 
   bluetooth_policy_handler_ =
       std::make_unique<BluetoothPolicyHandler>(chromeos::CrosSettings::Get());
@@ -214,6 +220,11 @@ void BrowserPolicyConnectorChromeOS::PreShutdown() {
 }
 
 void BrowserPolicyConnectorChromeOS::Shutdown() {
+  // NetworkCertLoader may be not initialized in tests.
+  if (chromeos::NetworkCertLoader::IsInitialized()) {
+    chromeos::NetworkCertLoader::Get()->RemovePolicyCertificateProvider(
+        device_network_configuration_updater_.get());
+  }
   device_network_configuration_updater_.reset();
 
   if (device_local_account_policy_service_)
@@ -233,6 +244,11 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
 
 bool BrowserPolicyConnectorChromeOS::IsEnterpriseManaged() const {
   return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+}
+
+bool BrowserPolicyConnectorChromeOS::HasMachineLevelPolicies() {
+  NOTREACHED() << "This method is only defined for desktop Chrome";
+  return false;
 }
 
 bool BrowserPolicyConnectorChromeOS::IsCloudManaged() const {
@@ -263,6 +279,13 @@ std::string BrowserPolicyConnectorChromeOS::GetDeviceAssetID() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_annotated_asset_id())
     return policy->annotated_asset_id();
+  return std::string();
+}
+
+std::string BrowserPolicyConnectorChromeOS::GetMachineName() const {
+  const em::PolicyData* policy = GetDevicePolicy();
+  if (policy && policy->has_machine_name())
+    return policy->machine_name();
   return std::string();
 }
 

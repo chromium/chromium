@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -226,9 +225,5 @@ void SadTabView::RemovedFromWidget() {
 
 SadTab* SadTab::Create(content::WebContents* web_contents,
                        SadTabKind kind) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return CreateCocoa(web_contents, kind);
-#endif
   return new SadTabView(web_contents, kind);
 }

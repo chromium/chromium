@@ -39,7 +39,10 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
     if (property == "value") {
       return ConvertToV8(isolate, value_);
     } else if (property == "func") {
-      return GetFunctionTemplate(isolate, "func")->GetFunction();
+      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      return GetFunctionTemplate(isolate, "func")
+          ->GetFunction(context)
+          .ToLocalChecked();
     } else {
       return v8::Local<v8::Value>();
     }

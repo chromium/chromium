@@ -104,8 +104,6 @@ const char kSupportedInWindowsOnlyError[] = "Supported in Windows only";
 const char kInvalidWindowTypeError[] = "Invalid value for type";
 const char kInvalidWindowStateError[] = "Invalid value for state";
 const char kScreenshotsDisabled[] = "Taking screenshots has been disabled";
-const char kCannotUpdateMuteDisabled[] =
-    "Failed to update mute state for tab *, --* must be enabled";
 const char kCannotUpdateMuteCaptured[] =
     "Cannot update mute state for tab *, tab has audio or video currently "
     "being captured";
@@ -114,6 +112,9 @@ const char kCannotDetermineLanguageOfUnloadedTab[] =
 const char kMissingLockWindowFullscreenPrivatePermission[] =
     "Cannot lock window to fullscreen or close a locked fullscreen window "
     "without lockWindowFullscreenPrivate manifest permission";
+const char kJavaScriptUrlsNotAllowedInTabsUpdate[] =
+    "JavaScript URLs are not allowed in chrome.tabs.update. Use "
+    "chrome.tabs.executeScript instead.";
 
 }  // namespace tabs_constants
 }  // namespace extensions

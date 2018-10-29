@@ -68,7 +68,7 @@ void FakeDemuxerStream::Initialize() {
 
 void FakeDemuxerStream::Read(const ReadCB& read_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(read_cb_.is_null());
+  DCHECK(!read_cb_);
 
   read_cb_ = BindToCurrentLoop(read_cb);
 
@@ -115,7 +115,7 @@ void FakeDemuxerStream::HoldNextConfigChangeRead() {
 void FakeDemuxerStream::SatisfyRead() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(read_to_hold_, next_read_num_);
-  DCHECK(!read_cb_.is_null());
+  DCHECK(read_cb_);
 
   read_to_hold_ = -1;
   DoRead();
@@ -124,7 +124,7 @@ void FakeDemuxerStream::SatisfyRead() {
 void FakeDemuxerStream::SatisfyReadAndHoldNext() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(read_to_hold_, next_read_num_);
-  DCHECK(!read_cb_.is_null());
+  DCHECK(read_cb_);
 
   ++read_to_hold_;
   DoRead();
@@ -133,15 +133,15 @@ void FakeDemuxerStream::SatisfyReadAndHoldNext() {
 void FakeDemuxerStream::Reset() {
   read_to_hold_ = -1;
 
-  if (!read_cb_.is_null())
-    base::ResetAndReturn(&read_cb_).Run(kAborted, NULL);
+  if (read_cb_)
+    std::move(read_cb_).Run(kAborted, NULL);
 }
 
 void FakeDemuxerStream::Error() {
   read_to_hold_ = -1;
 
-  if (!read_cb_.is_null())
-    base::ResetAndReturn(&read_cb_).Run(kError, nullptr);
+  if (read_cb_)
+    std::move(read_cb_).Run(kError, nullptr);
 }
 
 void FakeDemuxerStream::SeekToStart() {
@@ -166,22 +166,21 @@ void FakeDemuxerStream::UpdateVideoDecoderConfig() {
 
 void FakeDemuxerStream::DoRead() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!read_cb_.is_null());
+  DCHECK(read_cb_);
 
   next_read_num_++;
 
   if (num_buffers_left_in_current_config_ == 0) {
     // End of stream.
     if (num_configs_left_ == 0) {
-      base::ResetAndReturn(&read_cb_).Run(kOk,
-                                          DecoderBuffer::CreateEOSBuffer());
+      std::move(read_cb_).Run(kOk, DecoderBuffer::CreateEOSBuffer());
       return;
     }
 
     // Config change.
     num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
     UpdateVideoDecoderConfig();
-    base::ResetAndReturn(&read_cb_).Run(kConfigChanged, NULL);
+    std::move(read_cb_).Run(kConfigChanged, NULL);
     return;
   }
 
@@ -203,7 +202,7 @@ void FakeDemuxerStream::DoRead() {
     num_configs_left_--;
 
   num_buffers_returned_++;
-  base::ResetAndReturn(&read_cb_).Run(kOk, buffer);
+  std::move(read_cb_).Run(kOk, buffer);
 }
 
 FakeMediaResource::FakeMediaResource(int num_video_configs,

@@ -232,8 +232,7 @@ size_t EntryKernel::EstimateMemoryUsage() const {
 std::unique_ptr<base::ListValue> EntryKernelMutationMapToValue(
     const EntryKernelMutationMap& mutations) {
   std::unique_ptr<base::ListValue> list(new base::ListValue());
-  for (EntryKernelMutationMap::const_iterator it = mutations.begin();
-       it != mutations.end(); ++it) {
+  for (auto it = mutations.begin(); it != mutations.end(); ++it) {
     list->Append(EntryKernelMutationToValue(it->second));
   }
   return list;

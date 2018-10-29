@@ -40,9 +40,6 @@ source_set("side_swipe") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [
-    "//ios/chrome/browser/infobars",
-  ]
   libs = [ "UIKit.framework" ]
 }
 
@@ -56,9 +53,30 @@ source_set("unit_tests") {
     ":side_swipe",
     "//base",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/ui/toolbar",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("eg_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "side_swipe_egtest.mm",
+  ]
+
+  deps = [
+    ":side_swipe",
+    "//base",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
+    "//ios/third_party/earl_grey:earl_grey+link",
+    "//ios/web/public/test/http_server",
+  ]
+  libs = [ "XCTest.framework" ]
 }

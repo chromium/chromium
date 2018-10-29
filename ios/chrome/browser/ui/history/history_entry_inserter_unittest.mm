@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 
+#include "base/i18n/time_formatting.h"
 #import "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/browsing_history_service.h"
-#import "ios/chrome/browser/ui/history/legacy_history_entry_item.h"
+#import "ios/chrome/browser/ui/history/history_entry_item.h"
+#include "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -22,16 +25,23 @@
 
 using history::BrowsingHistoryService;
 
-LegacyHistoryEntryItem* TestHistoryEntryItem(base::Time timestamp,
-                                             const std::string& name) {
+HistoryEntryItem* TestHistoryEntryItem(base::Time timestamp,
+                                       const std::string& name) {
   BrowsingHistoryService::HistoryEntry entry(
       BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
       GURL(("http://" + name).c_str()), base::UTF8ToUTF16(name.c_str()),
       timestamp, std::string(), false, base::string16(), false);
-  return [[LegacyHistoryEntryItem alloc] initWithType:kItemTypeEnumZero
-                                         historyEntry:entry
-                                         browserState:nil
-                                             delegate:nil];
+  HistoryEntryItem* item =
+      [[HistoryEntryItem alloc] initWithType:kItemTypeEnumZero
+                       accessibilityDelegate:nil];
+  item.text = [history::FormattedTitle(entry.title, entry.url) copy];
+  item.detailText =
+      [base::SysUTF8ToNSString(entry.url.GetOrigin().spec()) copy];
+  item.timeText =
+      [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
+  item.URL = entry.url;
+  item.timestamp = entry.time;
+  return item;
 }
 
 // Test fixture for HistoryEntryInserter.
@@ -58,10 +68,9 @@ TEST_F(HistoryEntryInserterTest, AddItems) {
   base::Time today =
       base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
   base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
-  LegacyHistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry1");
-  LegacyHistoryEntryItem* entry2 =
-      TestHistoryEntryItem(today - minute, "entry2");
-  LegacyHistoryEntryItem* entry3 =
+  HistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry1");
+  HistoryEntryItem* entry2 = TestHistoryEntryItem(today - minute, "entry2");
+  HistoryEntryItem* entry3 =
       TestHistoryEntryItem(today - 2 * (minute), "entry3");
 
   OCMockObject* mock_delegate = (OCMockObject*)mock_delegate_;
@@ -89,8 +98,8 @@ TEST_F(HistoryEntryInserterTest, AddItems) {
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(3, [model_ numberOfItemsInSection:1]);
 
-  NSArray<LegacyHistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  NSArray<HistoryEntryItem*>* section_1 =
+      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:kSectionIdentifierEnumZero + 1]);
   EXPECT_NSEQ(@"entry1", section_1[0].text);
   EXPECT_NSEQ(@"entry2", section_1[1].text);
@@ -105,12 +114,12 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
       base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(12);
   base::TimeDelta day = base::TimeDelta::FromDays(1);
   base::TimeDelta minute = base::TimeDelta::FromMinutes(1);
-  LegacyHistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
-  LegacyHistoryEntryItem* day2_entry1 =
+  HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
+  HistoryEntryItem* day2_entry1 =
       TestHistoryEntryItem(today - day, "day2_entry1");
-  LegacyHistoryEntryItem* day2_entry2 =
+  HistoryEntryItem* day2_entry2 =
       TestHistoryEntryItem(today - day - minute, "day2_entry2");
-  LegacyHistoryEntryItem* day3 = TestHistoryEntryItem(today - 2 * day, "day3");
+  HistoryEntryItem* day3 = TestHistoryEntryItem(today - 2 * day, "day3");
 
   OCMockObject* mock_delegate = (OCMockObject*)mock_delegate_;
 
@@ -124,8 +133,8 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(2, [model_ numberOfSections]);
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
-  NSArray<LegacyHistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  NSArray<HistoryEntryItem*>* section_1 =
+      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_1[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -141,11 +150,11 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
-  NSArray<LegacyHistoryEntryItem*>* section_2 =
-      base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  NSArray<HistoryEntryItem*>* section_2 =
+      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_2[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -162,14 +171,14 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:3]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
-  section_2 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_2 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry2", section_2[0].text);
-  NSArray<LegacyHistoryEntryItem*>* section_3 =
-      base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  NSArray<HistoryEntryItem*>* section_3 =
+      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:day3_identifier]);
   EXPECT_NSEQ(@"day3", section_3[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -183,14 +192,14 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
   EXPECT_EQ(2, [model_ numberOfItemsInSection:2]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:3]);
-  section_1 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_1 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day1_identifier]);
   EXPECT_NSEQ(@"day1", section_1[0].text);
-  section_2 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_2 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day2_identifier]);
   EXPECT_NSEQ(@"day2_entry1", section_2[0].text);
   EXPECT_NSEQ(@"day2_entry2", section_2[1].text);
-  section_3 = base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  section_3 = base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
       [model_ itemsInSectionWithIdentifier:day3_identifier]);
   EXPECT_NSEQ(@"day3", section_3[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -199,8 +208,8 @@ TEST_F(HistoryEntryInserterTest, AddSections) {
 // Tests that items are only ever added once.
 TEST_F(HistoryEntryInserterTest, AddDuplicateItems) {
   base::Time today = base::Time::Now();
-  LegacyHistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry");
-  LegacyHistoryEntryItem* entry2 = TestHistoryEntryItem(today, "entry");
+  HistoryEntryItem* entry1 = TestHistoryEntryItem(today, "entry");
+  HistoryEntryItem* entry2 = TestHistoryEntryItem(today, "entry");
 
   OCMockObject* mock_delegate = (OCMockObject*)mock_delegate_;
   [[mock_delegate expect] historyEntryInserter:inserter_
@@ -215,8 +224,8 @@ TEST_F(HistoryEntryInserterTest, AddDuplicateItems) {
   EXPECT_EQ(0, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:1]);
 
-  NSArray<LegacyHistoryEntryItem*>* section_1 =
-      base::mac::ObjCCastStrict<NSArray<LegacyHistoryEntryItem*>>(
+  NSArray<HistoryEntryItem*>* section_1 =
+      base::mac::ObjCCastStrict<NSArray<HistoryEntryItem*>>(
           [model_ itemsInSectionWithIdentifier:kSectionIdentifierEnumZero + 1]);
   EXPECT_NSEQ(@"entry", section_1[0].text);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
@@ -227,8 +236,8 @@ TEST_F(HistoryEntryInserterTest, RemoveSection) {
   base::Time today =
       base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(1);
   base::TimeDelta day = base::TimeDelta::FromDays(1);
-  LegacyHistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
-  LegacyHistoryEntryItem* day2 = TestHistoryEntryItem(today - day, "day2");
+  HistoryEntryItem* day1 = TestHistoryEntryItem(today, "day1");
+  HistoryEntryItem* day2 = TestHistoryEntryItem(today - day, "day2");
 
   OCMockObject* mock_delegate = (OCMockObject*)mock_delegate_;
 

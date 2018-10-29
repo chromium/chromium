@@ -49,7 +49,7 @@ SystemModalContainerLayoutManager::SystemModalContainerLayoutManager(
 
 SystemModalContainerLayoutManager::~SystemModalContainerLayoutManager() {
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled())
+  if (keyboard_controller->HasObserver(this))
     keyboard_controller->RemoveObserver(this);
 }
 
@@ -160,7 +160,7 @@ void SystemModalContainerLayoutManager::CreateModalBackground() {
     window_dimmer_->window()->SetName(
         "SystemModalContainerLayoutManager.ModalBackground");
     // The keyboard isn't always enabled.
-    if (keyboard::KeyboardController::Get()->enabled())
+    if (keyboard::KeyboardController::Get()->IsEnabled())
       keyboard::KeyboardController::Get()->AddObserver(this);
   }
   window_dimmer_->window()->Show();
@@ -171,7 +171,7 @@ void SystemModalContainerLayoutManager::DestroyModalBackground() {
     return;
 
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled())
+  if (keyboard_controller->HasObserver(this))
     keyboard_controller->RemoveObserver(this);
   window_dimmer_.reset();
 }
@@ -257,7 +257,7 @@ gfx::Rect SystemModalContainerLayoutManager::GetUsableDialogArea() const {
   gfx::Rect valid_bounds = container_->bounds();
   keyboard::KeyboardController* keyboard_controller =
       keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled()) {
+  if (keyboard_controller->IsEnabled()) {
     gfx::Rect bounds = keyboard_controller->GetWorkspaceOccludedBounds();
     valid_bounds.set_height(
         std::max(0, valid_bounds.height() - bounds.height()));

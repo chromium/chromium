@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/ws/public/mojom/event_injector.mojom.h"
@@ -27,6 +28,7 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) EventInjector
 
  private:
   struct EventAndHost;
+  struct QueuedEvent;
   struct HandlerAndCallback;
 
   void OnEventDispatched(InjectedEventHandler* handler);
@@ -37,6 +39,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) EventInjector
   // not be dispatched.
   EventAndHost DetermineEventAndHost(int64_t display_id,
                                      std::unique_ptr<ui::Event> event);
+
+  void DispatchNextQueuedEvent();
 
   // mojom::EventInjector:
   void InjectEvent(int64_t display_id,
@@ -53,6 +57,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) EventInjector
   std::vector<std::unique_ptr<HandlerAndCallback>> handlers_;
 
   mojo::BindingSet<mojom::EventInjector> bindings_;
+
+  base::circular_deque<QueuedEvent> queued_events_;
 
   DISALLOW_COPY_AND_ASSIGN(EventInjector);
 };

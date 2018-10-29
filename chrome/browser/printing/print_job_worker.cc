@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -193,16 +195,16 @@ void PrintJobWorker::GetSettings(bool ask_user_for_settings,
   // When we delegate to a destination, we don't ask the user for settings.
   // TODO(mad): Ask the destination for settings.
   if (ask_user_for_settings) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &WorkerHoldRefCallback, base::WrapRefCounted(query_),
             base::BindOnce(&PrintJobWorker::GetSettingsWithUI,
                            base::Unretained(this), document_page_count,
                            has_selection, is_scripted)));
   } else {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&WorkerHoldRefCallback, base::WrapRefCounted(query_),
                        base::BindOnce(&PrintJobWorker::UseDefaultSettings,
                                       base::Unretained(this))));
@@ -214,8 +216,8 @@ void PrintJobWorker::SetSettings(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(query_);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &WorkerHoldRefCallback, base::WrapRefCounted(query_),
           base::BindOnce(&PrintJobWorker::UpdatePrintSettings,
@@ -228,8 +230,8 @@ void PrintJobWorker::SetSettingsFromPOD(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(query_);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &WorkerHoldRefCallback, base::WrapRefCounted(query_),
           base::BindOnce(&PrintJobWorker::UpdatePrintSettingsFromPOD,

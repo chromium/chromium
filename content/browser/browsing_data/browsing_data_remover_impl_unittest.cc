@@ -24,10 +24,12 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/cookie_store_factory.h"
@@ -53,6 +55,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/cookie_manager.h"
+#include "services/network/test/test_network_context.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,7 +113,8 @@ struct StoragePartitionRemovalData {
   StoragePartitionRemovalData()
       : remove_mask(0),
         quota_storage_remove_mask(0),
-        cookie_deletion_filter(network::mojom::CookieDeletionFilter::New()) {}
+        cookie_deletion_filter(network::mojom::CookieDeletionFilter::New()),
+        remove_code_cache(false) {}
 
   StoragePartitionRemovalData(const StoragePartitionRemovalData& other)
       : remove_mask(other.remove_mask),
@@ -118,7 +122,8 @@ struct StoragePartitionRemovalData {
         remove_begin(other.remove_begin),
         remove_end(other.remove_end),
         origin_matcher(other.origin_matcher),
-        cookie_deletion_filter(other.cookie_deletion_filter.Clone()) {}
+        cookie_deletion_filter(other.cookie_deletion_filter.Clone()),
+        remove_code_cache(other.remove_code_cache) {}
 
   StoragePartitionRemovalData& operator=(
       const StoragePartitionRemovalData& rhs) {
@@ -128,6 +133,7 @@ struct StoragePartitionRemovalData {
     remove_end = rhs.remove_end;
     origin_matcher = rhs.origin_matcher;
     cookie_deletion_filter = rhs.cookie_deletion_filter.Clone();
+    remove_code_cache = rhs.remove_code_cache;
     return *this;
   }
 
@@ -137,6 +143,7 @@ struct StoragePartitionRemovalData {
   base::Time remove_end;
   StoragePartition::OriginMatcherFunction origin_matcher;
   CookieDeletionFilterPtr cookie_deletion_filter;
+  bool remove_code_cache;
 };
 
 net::CanonicalCookie CreateCookieWithHost(const GURL& source) {
@@ -162,7 +169,6 @@ class StoragePartitionRemovalTestStoragePartition
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
                  const GURL& storage_origin,
-                 const OriginMatcherFunction& origin_matcher,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override {
@@ -172,10 +178,9 @@ class StoragePartitionRemovalTestStoragePartition
         quota_storage_remove_mask;
     storage_partition_removal_data_.remove_begin = begin;
     storage_partition_removal_data_.remove_end = end;
-    storage_partition_removal_data_.origin_matcher = origin_matcher;
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &StoragePartitionRemovalTestStoragePartition::AsyncRunCallback,
             base::Unretained(this), std::move(callback)));
@@ -185,6 +190,7 @@ class StoragePartitionRemovalTestStoragePartition
                  uint32_t quota_storage_remove_mask,
                  const OriginMatcherFunction& origin_matcher,
                  CookieDeletionFilterPtr cookie_deletion_filter,
+                 bool perform_cleanup,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override {
@@ -198,11 +204,15 @@ class StoragePartitionRemovalTestStoragePartition
     storage_partition_removal_data_.cookie_deletion_filter =
         std::move(cookie_deletion_filter);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &StoragePartitionRemovalTestStoragePartition::AsyncRunCallback,
             base::Unretained(this), std::move(callback)));
+  }
+
+  void ClearCodeCaches(base::OnceClosure callback) override {
+    storage_partition_removal_data_.remove_code_cache = true;
   }
 
   const StoragePartitionRemovalData& GetStoragePartitionRemovalData() const {
@@ -397,6 +407,8 @@ class BrowsingDataRemoverImplTest : public testing::Test {
                                      int remove_mask,
                                      bool include_protected_origins) {
     StoragePartitionRemovalTestStoragePartition storage_partition;
+    network::TestNetworkContext nop_network_context;
+    storage_partition.set_network_context(&nop_network_context);
     remover_->OverrideStoragePartitionForTesting(&storage_partition);
 
     int origin_type_mask = BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
@@ -1388,6 +1400,15 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveDownloadsByOrigin) {
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
                               std::move(builder));
+}
+
+TEST_F(BrowsingDataRemoverImplTest, RemoveCodeCache) {
+  RemoveDownloadsTester tester(GetBrowserContext());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                BrowsingDataRemover::DATA_TYPE_CACHE, false);
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_TRUE(removal_data.remove_code_cache);
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)

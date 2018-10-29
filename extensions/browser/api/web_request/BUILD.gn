@@ -21,7 +21,6 @@ source_set("web_request") {
     "web_request_api_helpers.h",
     "web_request_event_details.cc",
     "web_request_event_details.h",
-    "web_request_event_router_delegate.h",
     "web_request_info.cc",
     "web_request_info.h",
     "web_request_permissions.cc",

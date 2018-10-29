@@ -20,6 +20,7 @@ bool Validators::QueryObjectParameterValidator::IsValid(
   switch (value) {
     case GL_QUERY_RESULT_EXT:
     case GL_QUERY_RESULT_AVAILABLE_EXT:
+    case GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT:
       return true;
   }
   return false;

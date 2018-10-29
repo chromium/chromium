@@ -20,8 +20,8 @@
 #include <cstring>
 
 #include "absl/base/casts.h"
+#include "absl/base/internal/bits.h"
 #include "absl/numeric/int128.h"
-#include "absl/strings/internal/bits.h"
 #include "absl/strings/internal/charconv_bigint.h"
 #include "absl/strings/internal/charconv_parse.h"
 
@@ -243,9 +243,9 @@ struct CalculatedFloat {
 // minus the number of leading zero bits.)
 int BitWidth(uint128 value) {
   if (Uint128High64(value) == 0) {
-    return 64 - strings_internal::CountLeadingZeros64(Uint128Low64(value));
+    return 64 - base_internal::CountLeadingZeros64(Uint128Low64(value));
   }
-  return 128 - strings_internal::CountLeadingZeros64(Uint128High64(value));
+  return 128 - base_internal::CountLeadingZeros64(Uint128High64(value));
 }
 
 // Calculates how far to the right a mantissa needs to be shifted to create a
@@ -518,7 +518,7 @@ CalculatedFloat CalculateFromParsedHexadecimal(
     const strings_internal::ParsedFloat& parsed_hex) {
   uint64_t mantissa = parsed_hex.mantissa;
   int exponent = parsed_hex.exponent;
-  int mantissa_width = 64 - strings_internal::CountLeadingZeros64(mantissa);
+  int mantissa_width = 64 - base_internal::CountLeadingZeros64(mantissa);
   const int shift = NormalizedShiftSize<FloatType>(mantissa_width, exponent);
   bool result_exact;
   exponent += shift;

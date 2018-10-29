@@ -18,19 +18,14 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 200, 500, 200],
           "reason": "incremental"
         },
         {
           "object": "NGPhysicalTextFragment 'Test passes if you see \"Success\" after window resizes.'",
           "rect": [8, 8, 341, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Test passes if you see \"Success\" after window resizes.'",
-          "rect": [8, 8, 341, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow HTML",

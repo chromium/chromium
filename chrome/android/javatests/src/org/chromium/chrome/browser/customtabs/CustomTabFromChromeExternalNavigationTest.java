@@ -183,7 +183,7 @@ public class CustomTabFromChromeExternalNavigationTest {
         Assert.assertFalse(customTabDelegateFactory.getExternalNavigationDelegate()
                                    instanceof CustomTabNavigationDelegate);
 
-        showAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity().getAppMenuHandler());
+        CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
         Menu menu =
                 mCustomTabActivityTestRule.getActivity().getAppMenuHandler().getAppMenu().getMenu();
 

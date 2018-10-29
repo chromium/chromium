@@ -28,7 +28,7 @@ bool URLRequestJobFactoryImpl::SetProtocolHandler(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!protocol_handler) {
-    ProtocolHandlerMap::iterator it = protocol_handler_map_.find(scheme);
+    auto it = protocol_handler_map_.find(scheme);
     if (it == protocol_handler_map_.end())
       return false;
 
@@ -54,7 +54,7 @@ URLRequestJob* URLRequestJobFactoryImpl::MaybeCreateJobWithProtocolHandler(
       return job;
   }
 
-  ProtocolHandlerMap::const_iterator it = protocol_handler_map_.find(scheme);
+  auto it = protocol_handler_map_.find(scheme);
   if (it == protocol_handler_map_.end())
     return NULL;
   return it->second->MaybeCreateJob(request, network_delegate);
@@ -87,8 +87,7 @@ bool URLRequestJobFactoryImpl::IsSafeRedirectTarget(
     // Error cases are safely handled.
     return true;
   }
-  ProtocolHandlerMap::const_iterator it = protocol_handler_map_.find(
-      location.scheme());
+  auto it = protocol_handler_map_.find(location.scheme());
   if (it == protocol_handler_map_.end()) {
     // Unhandled cases are safely handled.
     return true;

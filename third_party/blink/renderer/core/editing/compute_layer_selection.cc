@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -120,11 +121,12 @@ std::pair<LayoutPoint, LayoutPoint> static GetLocalSelectionEndpoints(
 
 static LayoutPoint GetSamplePointForVisibility(
     const LayoutPoint& edge_top_in_layer,
-    const LayoutPoint& edge_bottom_in_layer) {
+    const LayoutPoint& edge_bottom_in_layer,
+    float zoom_factor) {
   FloatSize diff(edge_top_in_layer - edge_bottom_in_layer);
   // Adjust by ~1px to avoid integer snapping error. This logic is the same
   // as that in ComputeViewportSelectionBound in cc.
-  diff.Scale(1 / diff.DiagonalLength());
+  diff.Scale(zoom_factor / diff.DiagonalLength());
   LayoutPoint sample_point = edge_bottom_in_layer;
   sample_point.Move(LayoutSize(diff));
   return sample_point;
@@ -149,7 +151,8 @@ static bool IsVisible(const LayoutObject& rect_layout_object,
     return true;
 
   const LayoutPoint sample_point =
-      GetSamplePointForVisibility(edge_top_in_layer, edge_bottom_in_layer);
+      GetSamplePointForVisibility(edge_top_in_layer, edge_bottom_in_layer,
+                                  rect_layout_object.View()->ZoomFactor());
 
   LayoutBox* const text_control_object = ToLayoutBox(layout_object);
   const LayoutPoint position_in_input(rect_layout_object.LocalToAncestorPoint(

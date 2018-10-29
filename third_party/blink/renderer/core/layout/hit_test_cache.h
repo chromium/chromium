@@ -35,7 +35,7 @@ namespace blink {
 #define HIT_TEST_CACHE_SIZE (2)
 
 struct HitTestCacheEntry {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   void Trace(blink::Visitor*);
   HitTestLocation location;

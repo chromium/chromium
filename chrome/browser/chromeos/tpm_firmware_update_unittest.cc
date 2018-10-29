@@ -222,7 +222,7 @@ class TPMFirmwareUpdateModesEnterpriseTest : public TPMFirmwareUpdateModesTest {
  public:
   void SetUp() override {
     TPMFirmwareUpdateModesTest::SetUp();
-    cros_settings_test_helper_.ReplaceProvider(kTPMFirmwareUpdateSettings);
+    cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
     cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
         "example.com", "fake-device-id");
   }

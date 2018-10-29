@@ -2,9 +2,9 @@ Style :active should not be applied for disabled Form Control elements
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS background is "rgb(0, 255, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Click Me!

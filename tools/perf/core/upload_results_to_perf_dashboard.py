@@ -75,9 +75,11 @@ def _GetDashboardHistogramData(options):
 
   begin_time = time.time()
   hs = results_dashboard.MakeHistogramSetWithDiagnostics(
-      options.results_file, stripped_test_name,
-      options.configuration_name, options.buildername, options.buildnumber,
-      revisions, is_reference_build,
+      histograms_file=options.results_file, test_name=stripped_test_name,
+      bot=options.configuration_name, buildername=options.buildername,
+      buildnumber=options.buildnumber,
+      project=options.project, buildbucket=options.buildbucket,
+      revisions_dict=revisions, is_reference_build=is_reference_build,
       perf_dashboard_machine_group=options.perf_dashboard_machine_group)
   end_time = time.time()
   print 'Duration of adding diagnostics for %s: %d seconds' % (
@@ -94,6 +96,8 @@ def _CreateParser():
   parser.add_option('--configuration-name')
   parser.add_option('--results-url')
   parser.add_option('--perf-dashboard-machine-group')
+  parser.add_option('--project')
+  parser.add_option('--buildbucket')
   parser.add_option('--buildername')
   parser.add_option('--buildnumber')
   parser.add_option('--got-webrtc-revision')

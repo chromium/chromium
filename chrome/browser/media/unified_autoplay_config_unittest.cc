@@ -26,7 +26,9 @@ class UnifiedAutoplaySoundSettingsTest
   ~UnifiedAutoplaySoundSettingsTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(media::kAutoplaySoundSettings);
+    scoped_feature_list_.InitWithFeatures(
+        {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings},
+        {});
     ChromeRenderViewHostTestHarness::SetUp();
 
     SoundContentSettingObserver::CreateForWebContents(web_contents());
@@ -100,7 +102,8 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Block) {
 TEST_F(UnifiedAutoplaySoundSettingsTest, Feature_DisabledNoop) {
   // Explicitly disable the feature.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {media::kAutoplaySoundSettings});
+  scoped_feature_list.InitWithFeatures(
+      {}, {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings});
 
   SetAutoplayPrefValue(false);
   EXPECT_FALSE(ShouldBlockAutoplay());

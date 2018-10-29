@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import org.chromium.base.test.util.Feature;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
+
+import org.chromium.base.test.util.Feature;
 
 /**
  * Unit tests for VersionNumber.

@@ -10,4 +10,3 @@ Writing abcdefghijklmnopqrstuvwxyz to the file...
 Created a writer.
 Write succeeded.
 PASS testFile.size is testText2.length
-

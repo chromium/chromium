@@ -25,7 +25,7 @@ worker.postMessage("eval foo//bar");
 
 worker.onmessage = function(evt) {
     if (!/foo\/\/bar/.test(evt.data))
-        log(evt.data.replace(new RegExp("/.*LayoutTests"), "<...>"));
+        log(evt.data.replace(new RegExp("/.*(LayoutTests|web_tests)"), "<...>"));
     else {
         log("DONE");
         if (window.testRunner)

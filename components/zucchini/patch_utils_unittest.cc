@@ -116,8 +116,7 @@ TEST(PatchUtilsTest, DecodeVarUInt32Malformed) {
   // written to.
   uint32_t value = uint32_t(-1);
 
-  auto TestDecodeVarInt = [&value,
-                           kUninit](const std::vector<uint8_t>& buffer) {
+  auto TestDecodeVarInt = [&value](const std::vector<uint8_t>& buffer) {
     value = kUninit;
     return DecodeVarUInt(buffer.begin(), buffer.end(), &value);
   };
@@ -148,8 +147,7 @@ TEST(PatchUtilsTest, DecodeVarUInt64Malformed) {
   constexpr uint64_t kUninit = static_cast<uint64_t>(-1);
 
   uint64_t value = kUninit;
-  auto TestDecodeVarInt = [&value,
-                           kUninit](const std::vector<uint8_t>& buffer) {
+  auto TestDecodeVarInt = [&value](const std::vector<uint8_t>& buffer) {
     value = kUninit;
     return DecodeVarUInt(buffer.begin(), buffer.end(), &value);
   };

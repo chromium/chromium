@@ -348,8 +348,8 @@ void ChannelMultiplexer::CreateChannel(const std::string& name,
 }
 
 void ChannelMultiplexer::CancelChannelCreation(const std::string& name) {
-  for (std::list<PendingChannel>::iterator it = pending_channels_.begin();
-       it != pending_channels_.end(); ++it) {
+  for (auto it = pending_channels_.begin(); it != pending_channels_.end();
+       ++it) {
     if (it->name == name) {
       pending_channels_.erase(it);
       return;
@@ -442,8 +442,7 @@ void ChannelMultiplexer::OnIncomingPacket(
 
   int receive_id = packet->channel_id();
   MuxChannel* channel = nullptr;
-  std::map<int, MuxChannel*>::iterator it =
-      channels_by_receive_id_.find(receive_id);
+  auto it = channels_by_receive_id_.find(receive_id);
   if (it != channels_by_receive_id_.end()) {
     channel = it->second;
   } else {

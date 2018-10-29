@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -47,13 +47,12 @@ bool IsFirstPartyOrigin(Frame* frame, const KURL& url) {
 // JavaScript was blocked from being executed.
 bool AllowScriptFromSourceWithoutNotifying(
     const KURL& url,
-    ContentSettingsClient* settings_client,
+    WebContentSettingsClient* settings_client,
     Settings* settings) {
-  if (settings_client && !settings_client->AllowScriptFromSource(
-                             !settings || settings->GetScriptEnabled(), url)) {
-    return false;
-  }
-  return true;
+  bool allow_script = !settings || settings->GetScriptEnabled();
+  if (settings_client)
+    allow_script = settings_client->AllowScriptFromSource(allow_script, url);
+  return allow_script;
 }
 
 // Notifies content settings client of persistent client hint headers.
@@ -78,8 +77,10 @@ void NotifyPersistentClientHintsToContentSettingsClient(Document& document) {
     return;
   }
 
-  document.GetFrame()->GetContentSettingsClient()->PersistClientHints(
-      enabled_client_hints, persist_duration, document.Url());
+  if (auto* settings_client = document.GetFrame()->GetContentSettingsClient()) {
+    settings_client->PersistClientHints(enabled_client_hints, persist_duration,
+                                        document.Url());
+  }
 }
 
 }  // namespace

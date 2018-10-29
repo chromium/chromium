@@ -34,9 +34,7 @@ MidiService::MidiService(std::unique_ptr<ManagerFactory> factory)
 
 MidiService::~MidiService() {
   base::AutoLock lock(lock_);
-
-  manager_.reset();
-
+  DCHECK(!manager_);
   base::AutoLock threads_lock(threads_lock_);
   threads_.clear();
 }
@@ -45,9 +43,6 @@ void MidiService::Shutdown() {
   base::AutoLock lock(lock_);
   if (manager_) {
     DCHECK(manager_destructor_runner_);
-    manager_destructor_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MidiManager::Shutdown,
-                                  base::Unretained(manager_.get())));
     manager_destructor_runner_->DeleteSoon(FROM_HERE, std::move(manager_));
     manager_destructor_runner_ = nullptr;
   }
@@ -78,7 +73,6 @@ bool MidiService::EndSession(MidiManagerClient* client) {
   if (!manager_->HasOpenSession()) {
     // MidiManager for each platform should be able to shutdown correctly even
     // if following destruction happens in the middle of StartInitialization().
-    manager_->Shutdown();
     manager_.reset();
     DCHECK(manager_destructor_runner_);
     DCHECK(manager_destructor_runner_->BelongsToCurrentThread());

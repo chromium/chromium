@@ -62,23 +62,16 @@ class UiInterface {
       PlatformUiInputDelegate* delegate,
       float width_percentage,
       float height_percentage) = 0;
-  virtual void SetAlertDialogSize(float width, float height) = 0;
-  virtual void SetContentOverlayAlertDialogSize(float width_percentage,
-                                                float height_percentage) = 0;
-  virtual void SetDialogLocation(float x, float y) = 0;
-  virtual void SetDialogFloating(bool floating) = 0;
-  virtual void ShowPlatformToast(const base::string16& text) = 0;
-  virtual void CancelPlatformToast() = 0;
   virtual void OnPause() = 0;
   virtual void OnControllerUpdated(const ControllerModel& controller_model,
                                    const ReticleModel& reticle_model) = 0;
   virtual void OnProjMatrixChanged(const gfx::Transform& proj_matrix) = 0;
-  virtual void OnSwapContents(int new_content_id) = 0;
-  virtual void OnContentBoundsChanged(int width, int height) = 0;
   virtual void AcceptDoffPromptForTesting() = 0;
   virtual gfx::Point3F GetTargetPointForTesting(
       UserFriendlyElementName element_name,
       const gfx::PointF& position) = 0;
+  virtual bool GetElementVisibilityForTesting(
+      UserFriendlyElementName element_name) = 0;
   virtual bool IsContentVisibleAndOpaque() = 0;
   virtual void SetContentUsesQuadLayer(bool uses_quad_buffers) = 0;
   virtual gfx::Transform GetContentWorldSpaceTransform() = 0;

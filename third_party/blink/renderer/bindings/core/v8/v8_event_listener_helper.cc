@@ -31,10 +31,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_helper.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/custom_wrappable_adapter.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_error_handler.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_or_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 
@@ -63,7 +62,6 @@ ListenerType* GetEventListenerInternal(
 EventListener* V8EventListenerHelper::GetEventListener(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
-    bool is_attribute,
     ListenerLookupType lookup) {
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kGetEventListener);
@@ -73,40 +71,37 @@ EventListener* V8EventListenerHelper::GetEventListener(
   v8::Local<v8::Object> object = value.As<v8::Object>();
   v8::Isolate* isolate = script_state->GetIsolate();
   V8PrivateProperty::Symbol listener_property =
-      is_attribute
-          ? V8PrivateProperty::GetCustomWrappableEventHandler(isolate)
-          : V8PrivateProperty::GetCustomWrappableEventListener(isolate);
+      V8PrivateProperty::GetCustomWrappableEventListener(isolate);
 
   return GetEventListenerInternal<EventListener>(
       script_state, object, listener_property, lookup,
-      [object, is_attribute, script_state, listener_property]() {
-        return is_attribute
-                   ? static_cast<EventListener*>(
-                         V8EventListenerOrEventHandler::Create(
-                             object, is_attribute, script_state,
-                             listener_property))
-                   : static_cast<EventListener*>(V8EventListenerImpl::Create(
-                         object, script_state, listener_property));
+      [object, script_state, listener_property]() {
+        return static_cast<EventListener*>(
+            JSEventListener::Create(script_state, object, listener_property));
       });
 }
 
 // static
-EventListener* V8EventListenerHelper::EnsureErrorHandler(
+EventListener* V8EventListenerHelper::GetEventHandler(
     ScriptState* script_state,
-    v8::Local<v8::Value> value) {
+    v8::Local<v8::Value> value,
+    JSEventHandler::HandlerType handler_type,
+    ListenerLookupType lookup) {
+  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
+                           RuntimeCallStats::CounterId::kGetEventListener);
+
   if (!value->IsObject())
     return nullptr;
   v8::Local<v8::Object> object = value.As<v8::Object>();
   v8::Isolate* isolate = script_state->GetIsolate();
   V8PrivateProperty::Symbol listener_property =
-      V8PrivateProperty::GetV8ErrorHandlerErrorHandler(isolate);
+      V8PrivateProperty::GetCustomWrappableEventHandler(isolate);
 
-  return GetEventListenerInternal<V8ErrorHandler>(
-      script_state, object, listener_property, kListenerFindOrCreate,
-      [object, script_state, listener_property]() {
-        const bool is_attribute = true;
-        return V8ErrorHandler::Create(object, is_attribute, script_state,
-                                      listener_property);
+  return GetEventListenerInternal<EventListener>(
+      script_state, object, listener_property, lookup,
+      [object, script_state, listener_property, handler_type]() {
+        return static_cast<EventListener*>(JSEventHandler::Create(
+            script_state, object, listener_property, handler_type));
       });
 }
 

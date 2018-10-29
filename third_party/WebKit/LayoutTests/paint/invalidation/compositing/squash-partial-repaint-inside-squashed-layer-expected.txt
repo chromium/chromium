@@ -36,7 +36,7 @@
         {
           "object": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
           "rect": [80, 80, 182, 29],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

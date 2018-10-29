@@ -233,7 +233,7 @@ void MailboxManagerSync::ProduceTexture(const Mailbox& mailbox,
     return;
   }
 
-  Texture* texture = static_cast<Texture*>(texture_base);
+  Texture* texture = Texture::CheckedCast(texture_base);
 
   TextureToGroupMap::iterator tex_it = texture_to_group_.find(texture);
   TextureGroup* group_for_texture = nullptr;
@@ -266,7 +266,7 @@ void MailboxManagerSync::TextureDeleted(TextureBase* texture_base) {
   base::ScopedAllowCrossThreadRefCountAccess
       scoped_allow_cross_thread_ref_count_access;
 
-  Texture* texture = static_cast<Texture*>(texture_base);
+  Texture* texture = Texture::CheckedCast(texture_base);
   DCHECK(texture != nullptr);
 
   TextureToGroupMap::iterator tex_it = texture_to_group_.find(texture);
@@ -281,7 +281,7 @@ void MailboxManagerSync::UpdateDefinitionLocked(TextureBase* texture_base,
                                                 TextureGroupRef* group_ref) {
   g_lock.Get().AssertAcquired();
 
-  Texture* texture = static_cast<Texture*>(texture_base);
+  Texture* texture = Texture::CheckedCast(texture_base);
   DCHECK(texture != nullptr);
 
   if (SkipTextureWorkarounds(texture))

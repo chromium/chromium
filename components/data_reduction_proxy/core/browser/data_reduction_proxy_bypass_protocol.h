@@ -9,10 +9,7 @@
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
-
-namespace net {
-class URLRequest;
-}
+#include "net/base/net_errors.h"
 
 namespace data_reduction_proxy {
 
@@ -38,28 +35,36 @@ class DataReductionProxyBypassProtocol {
 
   // Constructs a DataReductionProxyBypassProtocol object. |config| must be
   // non-NULL and outlive |this|.
-  DataReductionProxyBypassProtocol(DataReductionProxyConfig* config);
+  explicit DataReductionProxyBypassProtocol(DataReductionProxyConfig* config);
 
   ~DataReductionProxyBypassProtocol();
 
-  // Decides whether to mark the data reduction proxy as temporarily bad and
-  // put it on the proxy retry map, which is maintained by the
-  // ProxyResolutionService of the URLRequestContext. Returns true if the
-  // request should be retried. Updates the load flags in |request| for some
-  // bypass types, e.g., "block-once". Returns the DataReductionProxyBypassType
-  // (if not NULL).
+  // Decides whether to restart the request, whether to bypass proxies when
+  // doing so, and whether to mark any data reduction proxies as bad based on
+  // the response.
+  // Returns true if the request should be retried. Sets
+  // |should_bypass_proxy_and_cache| if when restarting the request it should
+  // completely bypass proxies (e.g., in response to "block-once"). Fills
+  // |bad_proxies| with the list of proxies to mark as bad.
   bool MaybeBypassProxyAndPrepareToRetry(
-      net::URLRequest* request,
+      const std::string& method,
+      const std::vector<GURL>& url_chain,
+      const net::HttpResponseHeaders* response_headers,
+      const net::ProxyServer& proxy_server,
+      net::Error net_error,
+      const net::ProxyRetryInfoMap& proxy_retry_info,
       DataReductionProxyBypassType* proxy_bypass_type,
-      DataReductionProxyInfo* data_reduction_proxy_info);
+      DataReductionProxyInfo* data_reduction_proxy_info,
+      std::vector<net::ProxyServer>* bad_proxies,
+      bool* should_bypass_proxy_and_cache);
 
  private:
   // Decides whether to mark the data reduction proxy as temporarily bad and
   // put it on the proxy retry map. Returns true if the request should be
-  // retried. Should be called only when the response of the |request| had null
-  // response headers.
+  // retried. Should be called only when the response had null response headers.
   bool HandleInvalidResponseHeadersCase(
-      const net::URLRequest& request,
+      const std::vector<GURL>& url_chain,
+      net::Error net_error,
       const base::Optional<DataReductionProxyTypeInfo>&
           data_reduction_proxy_type_info,
       DataReductionProxyInfo* data_reduction_proxy_info,
@@ -67,10 +72,12 @@ class DataReductionProxyBypassProtocol {
 
   // Decides whether to mark the data reduction proxy as temporarily bad and
   // put it on the proxy retry map. Returns true if the request should be
-  // retried. Should be called only when the response of the |request| had
-  // non-null response headers.
+  // retried. Should be called only when the response had non-null response
+  // headers.
   bool HandleValidResponseHeadersCase(
-      const net::URLRequest& request,
+      const std::vector<GURL>& url_chain,
+      const net::HttpResponseHeaders* response_headers,
+      const net::ProxyRetryInfoMap& proxy_retry_info,
       const DataReductionProxyTypeInfo& data_reduction_proxy_type_info,
       DataReductionProxyBypassType* proxy_bypass_type,
       DataReductionProxyInfo* data_reduction_proxy_info,

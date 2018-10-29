@@ -43,6 +43,7 @@ CASE 1, original layer tree:
     }
   ]
 }
+
 CASE 2, scrolling y to 80, the "container" element should remain positioned with respect to the scrolled document, the fixed-pos layer compensates for the new scroll position:
 {
   "layers": [

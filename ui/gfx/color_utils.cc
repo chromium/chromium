@@ -189,9 +189,10 @@ void MakeHSLShiftValid(HSL* hsl) {
 }
 
 bool IsHSLShiftMeaningful(const HSL& hsl) {
-  // -1 in any channel is no-op, but additionally 0.5 is no-op for S/L.
-  return hsl.h != -1 && hsl.s != -1 && hsl.s != 0.5 && hsl.l != -1 &&
-         hsl.l != 0.5;
+  // -1 in any channel has no effect, and 0.5 has no effect for S/L.  A shift
+  // with an effective value in ANY channel is meaningful.
+  return hsl.h != -1 || (hsl.s != -1 && hsl.s != 0.5) ||
+         (hsl.l != -1 && hsl.l != 0.5);
 }
 
 SkColor HSLShift(SkColor color, const HSL& shift) {
@@ -442,7 +443,7 @@ void SetDarkestColor(SkColor color) {
   g_color_utils_luma_midpoint = (GetLuma(color) + 255) / 2;
 }
 
-SkColor GetDarkestColorForTesting() {
+SkColor GetDarkestColor() {
   return g_color_utils_darkest;
 }
 

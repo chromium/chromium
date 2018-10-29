@@ -29,14 +29,13 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   static const int kContentEdgeShadowThickness;
 
   // Constants public for testing only.
-  static constexpr int kRefreshNonClientExtraTopThickness = 1;
+  static constexpr int kNonClientExtraTopThickness = 1;
   static const int kFrameBorderThickness;
   static const int kTitlebarTopEdgeThickness;
   static const int kIconLeftSpacing;
   static const int kIconTitleSpacing;
   static const int kCaptionSpacing;
   static const int kCaptionButtonBottomPadding;
-  static const int kNewTabCaptionCondensedSpacing;
 
   OpaqueBrowserFrameViewLayout();
   ~OpaqueBrowserFrameViewLayout() override;
@@ -55,9 +54,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   gfx::Size GetMinimumSize(int available_width) const;
 
-  // Distance between the left edge of the NonClientFrameView and the tab strip.
-  int GetTabStripLeftInset() const;
-
   // Returns the bounds of the window required to display the content area at
   // the specified bounds.
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -73,10 +69,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // window is restored regardless of the actual mode.
   int FrameTopBorderThickness(bool restored) const;
 
-  // Returns the thickness of the entire nonclient left, right, and bottom
-  // borders, including both the window frame and any client edge.
-  int NonClientBorderThickness() const;
-
   // Returns the height of the entire nonclient top border, from the edge of the
   // window to the top of the tabs. If |restored| is true, this is calculated as
   // if the window was restored, regardless of its current state.
@@ -85,9 +77,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   int GetTabStripInsetsTop(bool restored) const;
 
   // Returns the y-coordinate of the caption button when native frame buttons
-  // are disabled.  Also used to position the profile chooser button.  If
-  // |restored| is true, acts as if the window is restored regardless of the
-  // real mode.
+  // are disabled.  If |restored| is true, acts as if the window is restored
+  // regardless of the real mode.
   int DefaultCaptionButtonY(bool restored) const;
 
   // Returns the y-coordinate of button |button_id|.  If |restored| is true,
@@ -134,11 +125,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   const gfx::Rect& client_view_bounds() const { return client_view_bounds_; }
 
-  // Returns the extra thickness of the area above the tabs. The value returned
-  // is dependent on whether in material refresh mode or not.
+  // Returns the extra thickness of the area above the tabs.
   int GetNonClientRestoredExtraThickness() const;
-
-  bool HasClientEdge() const;
 
  protected:
   // Whether a specific button should be inserted on the leading or trailing
@@ -148,40 +136,29 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
     ALIGN_TRAILING
   };
 
-  bool has_trailing_buttons() const { return has_trailing_buttons_; }
+  // views::LayoutManager:
+  void Layout(views::View* host) override;
 
-  virtual void LayoutNewStyleAvatar(views::View* host);
+  bool has_trailing_buttons() const { return has_trailing_buttons_; }
 
   virtual bool ShouldDrawImageMirrored(views::ImageButton* button,
                                        ButtonAlignment alignment) const;
 
   OpaqueBrowserFrameViewLayoutDelegate* delegate_;
 
-  views::View* new_avatar_button_;
-
   // The leading and trailing x positions of the empty space available for
   // laying out titlebar elements.
   int available_space_leading_x_;
   int available_space_trailing_x_;
 
-  // The size of the window buttons, and the avatar menu item (if any). This
-  // does not count labels or other elements that should be counted in a
-  // minimal frame.
+  // The size of the window buttons. This does not count labels or other
+  // elements that should be counted in a minimal frame.
   int minimum_size_for_buttons_;
 
  private:
-  // Determines whether the incognito icon should be shown on the right side of
-  // the tab strip (instead of the usual left).
-  bool ShouldIncognitoIconBeOnRight() const;
-
-  // Determines the amount of spacing between the tabstrip and the caption
-  // buttons.
-  int TabStripCaptionSpacing() const;
-
   // Layout various sub-components of this view.
   void LayoutWindowControls(views::View* host);
   void LayoutTitleBar(views::View* host);
-  void LayoutIncognitoIcon(views::View* host);
 
   void ConfigureButton(views::View* host,
                        views::FrameButton button_id,
@@ -200,7 +177,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   void SetView(int id, views::View* view);
 
   // views::LayoutManager:
-  void Layout(views::View* host) override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
   void ViewAdded(views::View* host, views::View* view) override;
   void ViewRemoved(views::View* host, views::View* view) override;
@@ -234,8 +210,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::Label* window_title_;
 
   HostedAppButtonContainer* hosted_app_button_container_ = nullptr;
-
-  views::View* incognito_icon_;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;

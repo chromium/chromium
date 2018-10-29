@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -40,8 +42,8 @@ void SSLClientCertificateSelectorTestBase::SetUpInProcessBrowserTestFixture() {
 void SSLClientCertificateSelectorTestBase::SetUpOnMainThread() {
   url_request_context_getter_ = browser()->profile()->GetRequestContext();
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SSLClientCertificateSelectorTestBase::SetUpOnIOThread,
                      base::Unretained(this)));
 
@@ -54,8 +56,8 @@ void SSLClientCertificateSelectorTestBase::SetUpOnMainThread() {
 // Have to release our reference to the auth handler during the test to allow
 // it to be destroyed while the Browser and its IO thread still exist.
 void SSLClientCertificateSelectorTestBase::TearDownOnMainThread() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SSLClientCertificateSelectorTestBase::TearDownOnIOThread,
                      base::Unretained(this)));
 

@@ -21,14 +21,14 @@ static const CGFloat sideMargins = 16;
 static const CGFloat iOS10MarginFontMultiplier = 1.18;
 // The base top margin, only used in iOS 10. Refer to
 // |iOS10MarginFontMultiplier| for how it is used.
-static const CGFloat iOS10BaseTopMargin = 24;
+static const CGFloat iOS10BaseTopMargin = 4;
 // The base bottom margin, only used in iOS 10. Refer to
 // |iOS10MarginFontMultiplier| for how it is used.
-static const CGFloat iOS10BaseBottomMargin = 6;
+static const CGFloat iOS10BaseBottomMargin = 4;
 // The multiplier for the base system spacing at the top margin.
-static const CGFloat TopBaseSystemSpacingMultiplier = 1.78;
+static const CGFloat TopBaseSystemSpacingMultiplier = 1.1;
 // The multiplier for the base system spacing at the bottom margin.
-static const CGFloat BottomBaseSystemSpacingMultiplier = 2.26;
+static const CGFloat BottomBaseSystemSpacingMultiplier = 1.5;
 }  // namespace
 
 @interface ManualFillActionItem ()
@@ -39,8 +39,6 @@ static const CGFloat BottomBaseSystemSpacingMultiplier = 2.26;
 @end
 
 @implementation ManualFillActionItem
-@synthesize action = _action;
-@synthesize title = _title;
 
 - (instancetype)initWithTitle:(NSString*)title action:(void (^)(void))action {
   self = [super initWithType:kItemTypeEnumZero];
@@ -55,7 +53,10 @@ static const CGFloat BottomBaseSystemSpacingMultiplier = 2.26;
 - (void)configureCell:(ManualFillActionCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  [cell setUpWithTitle:self.title action:self.action];
+  cell.accessibilityIdentifier = nil;
+  [cell setUpWithTitle:self.title
+       accessibilityID:self.accessibilityIdentifier
+                action:self.action];
 }
 
 @end
@@ -76,13 +77,19 @@ static const CGFloat BottomBaseSystemSpacingMultiplier = 2.26;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.action = nil;
+  [self.titleButton setTitle:nil forState:UIControlStateNormal];
+  self.titleButton.accessibilityIdentifier = nil;
 }
 
-- (void)setUpWithTitle:(NSString*)title action:(void (^)(void))action {
+- (void)setUpWithTitle:(NSString*)title
+       accessibilityID:(NSString*)accessibilityID
+                action:(void (^)(void))action {
   if (self.contentView.subviews.count == 0) {
     [self createView];
   }
+
   [self.titleButton setTitle:title forState:UIControlStateNormal];
+  self.titleButton.accessibilityIdentifier = accessibilityID;
   self.action = action;
 }
 

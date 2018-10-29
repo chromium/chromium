@@ -1,0 +1,28 @@
+{
+   "extensions": {
+      "settings": {
+         "emfkafnhnpcmabnnkckkchdilgeoekbo": {
+            "location": 1,
+            "path": "emfkafnhnpcmabnnkckkchdilgeoekbo/1.0",
+            "app_launcher_ordinal": "n",
+            "page_ordinal": "n",
+            "state": 1,
+            "install_time": "12968795380420751",
+            "creation_flags": 1032,
+            "manifest": {
+              "key": "AAAAB3NzaC1yc2EAAAADAQABAAABAQCxUatX2sx1yjeTAnu8ydtVhdD/JPn2wrmK7rX1Qko7FY4BRA733YPuY7JTWdKDbNU4OKaJOjexkz3klsj0vvTwRJgNghSgYePTPHZfWtRzy7WVG3KOQX2IgNMuOMWE/r5Eyg84Zi+0vLIcTzaqdAOcFwGYhp0/jRvDWDRpoQLKld6p58c/kORJ4sZrZMnp22OSz0rrLZseDEH+4ZJt0GWPUwzlKKLAsC8WthW5ntNjzkjxJSpRrM+WF7nr/dmYUX3791rRia7rtJFNx66AZroZ3PT7H1uOkr7f5vQyZbQrtMfmoxUtuu0yGGJS3JPw9i+0Pg7iHUQkRYUG/dNVYh//",
+              "version": "1.0",
+              "name": "Packaged App 1",
+              "icons": {
+                "128": "icon_128.png"
+              },
+              "app": {
+                "launch": {
+                  "local_path": "main.html"
+                }
+              }
+            }
+         }
+      }
+   }
+}

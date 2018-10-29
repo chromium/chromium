@@ -81,6 +81,14 @@ void OomInterventionTabHelper::OnHighMemoryUsage() {
       config->is_navigate_ads_enabled()) {
     NearOomReductionInfoBar::Show(web_contents(), this);
     intervention_state_ = InterventionState::UI_SHOWN;
+    if (!last_navigation_timestamp_.is_null()) {
+      base::TimeDelta time_since_last_navigation =
+          base::TimeTicks::Now() - last_navigation_timestamp_;
+      UMA_HISTOGRAM_COUNTS_1M(
+          "Memory.Experimental.OomIntervention."
+          "RendererTimeSinceLastNavigationAtIntervention",
+          time_since_last_navigation.InSeconds());
+    }
   }
   near_oom_detected_time_ = base::TimeTicks::Now();
   renderer_detection_timer_.AbandonAndStop();
@@ -292,6 +300,8 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
     }
   }
 
+  if (!renderer_pause_enabled && !navigate_ads_enabled)
+    return;
   content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
   DCHECK(main_frame);
   content::RenderProcessHost* render_process_host = main_frame->GetProcess();

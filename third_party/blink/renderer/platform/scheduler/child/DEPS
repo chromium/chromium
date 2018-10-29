@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/blink/public/platform/scheduler/base",
-  "+third_party/blink/renderer/platform/scheduler/base",
-]

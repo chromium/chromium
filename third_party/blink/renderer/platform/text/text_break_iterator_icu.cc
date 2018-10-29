@@ -57,7 +57,7 @@ class LineBreakIteratorPool final {
 
   icu::BreakIterator* Take(const AtomicString& locale) {
     icu::BreakIterator* iterator = nullptr;
-    for (size_t i = 0; i < pool_.size(); ++i) {
+    for (wtf_size_t i = 0; i < pool_.size(); ++i) {
       if (pool_[i].first == locale) {
         iterator = pool_[i].second;
         pool_.EraseAt(i);

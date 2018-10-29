@@ -11,39 +11,36 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace gfx {
-class Size;
-class ColorSpace;
-}  // namespace gfx
-
 namespace gpu {
-
 class GpuDriverBugWorkarounds;
+class ImageFactory;
+class MailboxManager;
+class SharedImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
-class ImageFactory;
-
-class MailboxManager;
-
-namespace gles2 {
 class MemoryTracker;
-class MemoryTypeTracker;
-class TexturePassthrough;
-};  // namespace gles2
+
+namespace raster {
+class WrappedSkImageFactory;
+struct RasterDecoderContextState;
+}  // namespace raster
 
 class GPU_GLES2_EXPORT SharedImageFactory {
  public:
   SharedImageFactory(const GpuPreferences& gpu_preferences,
                      const GpuDriverBugWorkarounds& workarounds,
                      const GpuFeatureInfo& gpu_feature_info,
+                     raster::RasterDecoderContextState* context_state,
                      MailboxManager* mailbox_manager,
+                     SharedImageManager* manager,
                      ImageFactory* image_factory,
-                     gles2::MemoryTracker* tracker);
+                     MemoryTracker* tracker);
   ~SharedImageFactory();
 
   bool CreateSharedImage(const Mailbox& mailbox,
@@ -60,54 +57,19 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                     uint64_t client_tracing_id);
 
  private:
-  struct FormatInfo {
-    FormatInfo();
-    ~FormatInfo();
-
-    // Whether this format is supported.
-    bool enabled = false;
-
-    // Whether to use glTexStorage2D or glTexImage2D.
-    bool use_storage = false;
-
-    // Whether to allow SHARED_IMAGE_USAGE_SCANOUT.
-    bool allow_scanout = false;
-
-    // GL internal_format/format/type triplet.
-    GLuint internal_format = 0;
-    GLenum gl_format = 0;
-    GLenum gl_type = 0;
-
-    const gles2::Texture::CompatibilitySwizzle* swizzle = nullptr;
-    GLuint adjusted_internal_format = 0;
-    GLenum adjusted_format = 0;
-
-    // GL target to use for scanout images.
-    GLenum target_for_scanout = GL_TEXTURE_2D;
-
-    // BufferFormat for scanout images.
-    gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
-  };
-
-  bool use_passthrough_;
   MailboxManager* mailbox_manager_;
-  ImageFactory* image_factory_;
-  std::unique_ptr<gles2::MemoryTypeTracker> memory_tracker_;
-  FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
+  SharedImageManager* shared_image_manager_;
 
-  int32_t max_texture_size_ = 0;
-  bool texture_usage_angle_ = false;
-  bool es3_capable_ = false;
-
-  // Mailboxes that have been created by the SharedImageFactory. If not using
-  // passthrough, the textures pointed to by these mailboxes are kept alive with
-  // a lightweight ref.
+  // The set of mailboxes which have been registered with the
+  // SharedImageManager.
   base::flat_set<Mailbox> mailboxes_;
 
-  // Textures created by the SharedImageFactory, if using passthrough, to keep
-  // them alive.
-  base::flat_set<scoped_refptr<gles2::TexturePassthrough>>
-      passthrough_textures_;
+  // TODO(ericrk): This should be some sort of map from usage to factory
+  // eventually.
+  std::unique_ptr<SharedImageBackingFactory> backing_factory_;
+
+  // Non-null if gpu_preferences.enable_raster_to_sk_image.
+  std::unique_ptr<raster::WrappedSkImageFactory> wrapped_sk_image_factory_;
 };
 
 }  // namespace gpu

@@ -145,6 +145,21 @@ PageCoordinationUnitImpl::GetMainFrameCoordinationUnit() const {
   return nullptr;
 }
 
+void PageCoordinationUnitImpl::OnFrameLifecycleStateChanged(
+    FrameCoordinationUnitImpl* frame_cu,
+    mojom::LifecycleState old_state) {
+  DCHECK(base::ContainsKey(frame_coordination_units_, frame_cu));
+  DCHECK_NE(old_state, frame_cu->lifecycle_state());
+
+  int delta = 0;
+  if (old_state == mojom::LifecycleState::kFrozen)
+    delta = -1;
+  else if (frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen)
+    delta = 1;
+  if (delta != 0)
+    OnNumFrozenFramesStateChange(delta);
+}
+
 void PageCoordinationUnitImpl::OnEventReceived(mojom::Event event) {
   for (auto& observer : observers())
     observer.OnPageEventReceived(this, event);
@@ -160,14 +175,62 @@ void PageCoordinationUnitImpl::OnPropertyChanged(
 }
 
 bool PageCoordinationUnitImpl::AddFrame(FrameCoordinationUnitImpl* frame_cu) {
-  return frame_coordination_units_.count(frame_cu)
-             ? false
-             : frame_coordination_units_.insert(frame_cu).second;
+  const bool inserted = frame_coordination_units_.insert(frame_cu).second;
+  if (inserted) {
+    OnNumFrozenFramesStateChange(
+        frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen ? 1 : 0);
+  }
+  return inserted;
 }
 
 bool PageCoordinationUnitImpl::RemoveFrame(
     FrameCoordinationUnitImpl* frame_cu) {
-  return frame_coordination_units_.erase(frame_cu) > 0;
+  bool removed = frame_coordination_units_.erase(frame_cu) > 0;
+  if (removed) {
+    OnNumFrozenFramesStateChange(
+        frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen ? -1 : 0);
+  }
+  return removed;
+}
+
+void PageCoordinationUnitImpl::OnNumFrozenFramesStateChange(
+    int num_frozen_frames_delta) {
+  num_frozen_frames_ += num_frozen_frames_delta;
+  DCHECK_GE(num_frozen_frames_, 0u);
+  DCHECK_LE(num_frozen_frames_, frame_coordination_units_.size());
+
+  const int64_t kRunning =
+      static_cast<int64_t>(mojom::LifecycleState::kRunning);
+  const int64_t kFrozen = static_cast<int64_t>(mojom::LifecycleState::kFrozen);
+
+  // We are interested in knowing when we have transitioned to or from
+  // "fully frozen". A page with no frames is considered to be running by
+  // default.
+  bool was_fully_frozen =
+      GetPropertyOrDefault(mojom::PropertyType::kLifecycleState, kRunning) ==
+      kFrozen;
+  bool is_fully_frozen = frame_coordination_units_.size() > 0 &&
+                         num_frozen_frames_ == frame_coordination_units_.size();
+  if (was_fully_frozen == is_fully_frozen)
+    return;
+
+  if (is_fully_frozen) {
+    // Aggregate the beforeunload handler information from the entire frame
+    // tree.
+    bool has_nonempty_beforeunload = false;
+    for (auto* frame : frame_coordination_units_) {
+      if (frame->has_nonempty_beforeunload()) {
+        has_nonempty_beforeunload = true;
+        break;
+      }
+    }
+    set_has_nonempty_beforeunload(has_nonempty_beforeunload);
+  }
+
+  // TODO(fdoray): Store the lifecycle state as a member on the
+  // PageCoordinationUnit rather than as a non-typed property.
+  SetProperty(mojom::PropertyType::kLifecycleState,
+              is_fully_frozen ? kFrozen : kRunning);
 }
 
 }  // namespace resource_coordinator

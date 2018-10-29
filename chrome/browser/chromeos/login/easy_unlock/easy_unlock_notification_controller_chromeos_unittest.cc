@@ -138,24 +138,5 @@ TEST_F(EasyUnlockNotificationControllerTest,
   EXPECT_TRUE(display_service_->GetNotification(kPairingAppliedId));
 }
 
-TEST_F(EasyUnlockNotificationControllerTest, TestShowPromotionNotification) {
-  const char kNotificationId[] = "easyunlock_notification_ids.promotion";
-
-  notification_controller_->ShowPromotionNotification();
-  base::Optional<message_center::Notification> notification =
-      display_service_->GetNotification(kNotificationId);
-  ASSERT_TRUE(notification);
-  ASSERT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
-
-  // Clicking notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
-  notification->delegate()->Click(0, base::nullopt);
-
-  // Clicking the notification itself should also launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
-  notification->delegate()->Click(base::nullopt, base::nullopt);
-}
-
 }  // namespace
 }  // namespace chromeos

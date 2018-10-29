@@ -38,7 +38,7 @@ class MEDIA_EXPORT VideoFrameExtractor {
  public:
   using VideoFrameCallback =
       base::OnceCallback<void(bool success,
-                              const std::vector<uint8_t>& data,
+                              std::vector<uint8_t> data,
                               const VideoDecoderConfig& decoder_config)>;
 
   explicit VideoFrameExtractor(DataSource* data_source);

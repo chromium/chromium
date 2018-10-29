@@ -19,10 +19,10 @@ namespace variations {
 
 namespace {
 
-// Size of the "num-experiments" crash key in bytes. 2048 bytes should be able
-// to hold about 113 entries, given each entry is 18 bytes long (due to being
+// Size of the "num-experiments" crash key in bytes. 4096 bytes should be able
+// to hold about 227 entries, given each entry is 18 bytes long (due to being
 // of the form "8e7abfb0-c16397b7,").
-constexpr size_t kVariationsKeySize = 2048;
+constexpr size_t kVariationsKeySize = 4096;
 
 // Crash key reporting the number of experiments. 8 is the size of the crash key
 // in bytes, which is used to hold an int as a string.

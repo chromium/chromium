@@ -63,4 +63,28 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
             android_urls.link);
 }
 
+TEST(SortKeyIdGeneratorTest, GenerateIds) {
+  using ::testing::Pointee;
+  using ::testing::Eq;
+
+  SortKeyIdGenerator id_generator;
+  int foo_id = id_generator.GenerateId("foo");
+
+  // Check idempotence.
+  EXPECT_EQ(foo_id, id_generator.GenerateId("foo"));
+
+  // Check TryGetSortKey(id) == s iff id == GenerateId(*s).
+  EXPECT_THAT(id_generator.TryGetSortKey(foo_id), Pointee(Eq("foo")));
+  EXPECT_EQ(nullptr, id_generator.TryGetSortKey(foo_id + 1));
+
+  // Check that different sort keys result in different ids.
+  int bar_id = id_generator.GenerateId("bar");
+  int baz_id = id_generator.GenerateId("baz");
+  EXPECT_NE(foo_id, bar_id);
+  EXPECT_NE(bar_id, baz_id);
+
+  EXPECT_THAT(id_generator.TryGetSortKey(bar_id), Pointee(Eq("bar")));
+  EXPECT_THAT(id_generator.TryGetSortKey(baz_id), Pointee(Eq("baz")));
+}
+
 }  // namespace extensions

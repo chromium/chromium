@@ -21,7 +21,8 @@ AudioWorklet* AudioWorklet::Create(BaseAudioContext* context) {
 }
 
 AudioWorklet::AudioWorklet(BaseAudioContext* context)
-    : Worklet(ToDocument(context->GetExecutionContext())), context_(context) {}
+    : Worklet(To<Document>(context->GetExecutionContext())),
+      context_(context) {}
 
 void AudioWorklet::CreateProcessor(
     scoped_refptr<AudioWorkletHandler> handler,

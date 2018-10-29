@@ -83,7 +83,7 @@ InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(
 
 // The print for |InlineBoxPosition| is available only for testing
 // in "webkit_unit_tests", and implemented in
-// "core/editing/InlineBoxPositionTest.cpp".
+// "core/editing/inline_box_position_test.cc".
 std::ostream& operator<<(std::ostream&, const InlineBoxPosition&);
 
 }  // namespace blink

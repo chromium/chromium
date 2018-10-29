@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
@@ -41,6 +42,11 @@
 #include "url/gurl.h"
 
 namespace extensions {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const base::Feature kExtensionsAllAccountsFeature{
+    "ExtensionsAllAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 IdentityTokenCacheValue::IdentityTokenCacheValue()
     : status_(CACHE_STATUS_NOTFOUND) {}
@@ -107,7 +113,7 @@ IdentityMintRequestQueue* IdentityAPI::mint_queue() { return &mint_queue_; }
 
 void IdentityAPI::SetCachedToken(const ExtensionTokenKey& key,
                                  const IdentityTokenCacheValue& token_data) {
-  CachedTokens::iterator it = token_cache_.find(key);
+  auto it = token_cache_.find(key);
   if (it != token_cache_.end() && it->second.status() <= token_data.status())
     token_cache_.erase(it);
 
@@ -151,6 +157,19 @@ static base::LazyInstance<BrowserContextKeyedAPIFactory<IdentityAPI>>::
 // static
 BrowserContextKeyedAPIFactory<IdentityAPI>* IdentityAPI::GetFactoryInstance() {
   return g_identity_api_factory.Pointer();
+}
+
+bool IdentityAPI::AreExtensionsRestrictedToPrimaryAccount() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!signin::DiceMethodGreaterOrEqual(
+          AccountConsistencyModeManager::GetMethodForProfile(profile_),
+          signin::AccountConsistencyMethod::kDiceMigration)) {
+    return true;
+  }
+  return !base::FeatureList::IsEnabled(kExtensionsAllAccountsFeature);
+#else
+  return true;
+#endif
 }
 
 void IdentityAPI::OnRefreshTokenAvailable(const std::string& account_id) {

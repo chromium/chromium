@@ -47,6 +47,16 @@ class GerritAPI(object):
         }
         return self.host.web.request('POST', url, data=json.dumps(data), headers=headers)
 
+    def query_cl(self, change_id):
+        """Quries a commit information from Gerrit."""
+        path = '/changes/%s' % (change_id)
+        try:
+            cl_data = self.get(path)
+        except NetworkTimeout:
+            raise GerritError('Timed out querying CL using changeid')
+        cl = GerritCL(data=cl_data, api=self)
+        return cl
+
     def query_exportable_open_cls(self, limit=200):
         path = ('/changes/?q=project:\"chromium/src\"+status:open'
                 '&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
@@ -105,6 +115,10 @@ class GerritCL(object):
     @property
     def current_revision_description(self):
         return self.current_revision['description']
+
+    @property
+    def status(self):
+        return self._data['status']
 
     def post_comment(self, message):
         """Posts a comment to the CL."""

@@ -201,7 +201,7 @@ void AXPositionTest::SetUp() {
   initial_state.nodes.push_back(static_text2_);
   initial_state.nodes.push_back(inline_box2_);
   initial_state.has_tree_data = true;
-  initial_state.tree_data.tree_id = 0;
+  initial_state.tree_data.tree_id = AXTreeID::FromString("0");
   initial_state.tree_data.title = "Dialog title";
   AXSerializableTree src_tree(initial_state);
 

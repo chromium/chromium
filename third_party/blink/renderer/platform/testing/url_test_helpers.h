@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
-namespace URLTestHelpers {
+namespace url_test_helpers {
 
 inline blink::KURL ToKURL(const std::string& url) {
   WTF::String wtf_string(url.c_str());
@@ -85,7 +85,7 @@ void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
 // Registers a mock URL that returns a 404 error.
 void RegisterMockedErrorURLLoad(const WebURL& full_url);
 
-}  // namespace URLTestHelpers
+}  // namespace url_test_helpers
 }  // namespace blink
 
 #endif

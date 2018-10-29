@@ -16,11 +16,11 @@
 #include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/keyboard/arc/arc_virtual_keyboard_container_layout_manager.h"
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/keyboard/virtual_keyboard_container_layout_manager.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -372,11 +372,7 @@ SystemTray* RootWindowController::GetSystemTray() {
 }
 
 bool RootWindowController::IsSystemTrayVisible() {
-  TrayBackgroundView* tray = nullptr;
-  if (features::IsSystemTrayUnifiedEnabled())
-    tray = GetStatusAreaWidget()->unified_system_tray();
-  else
-    tray = GetSystemTray();
+  TrayBackgroundView* tray = GetStatusAreaWidget()->unified_system_tray();
   return tray && tray->GetWidget()->IsVisible() && tray->visible();
 }
 
@@ -470,7 +466,11 @@ void RootWindowController::CloseChildWindows() {
 
   // Deactivate keyboard container before closing child windows and shutting
   // down associated layout managers.
-  DeactivateKeyboard(keyboard::KeyboardController::Get());
+  auto* ash_keyboard_controller = Shell::Get()->ash_keyboard_controller();
+  if (ash_keyboard_controller->keyboard_controller()->GetRootWindow() ==
+      GetRootWindow()) {
+    ash_keyboard_controller->DeactivateKeyboard();
+  }
 
   shelf_->ShutdownShelfWidget();
 
@@ -531,36 +531,6 @@ void RootWindowController::InitTouchHuds() {
 
 aura::Window* RootWindowController::GetWindowForFullscreenMode() {
   return wm::GetWindowForFullscreenMode(GetRootWindow());
-}
-
-void RootWindowController::ActivateKeyboard(
-    keyboard::KeyboardController* keyboard_controller) {
-  DCHECK(keyboard_controller);
-  if (!keyboard::IsKeyboardEnabled() || !keyboard_controller->enabled())
-    return;
-
-  // If the keyboard is already activated, ensure that it is activated in this
-  // root window.
-  if (keyboard_controller->GetRootWindow() == GetRootWindow())
-    return;
-
-  aura::Window* vk_container =
-      GetContainer(kShellWindowId_VirtualKeyboardContainer);
-  DCHECK(vk_container);
-  keyboard_controller->ActivateKeyboardInContainer(vk_container);
-
-  keyboard_controller->LoadKeyboardWindowInBackground();
-}
-
-void RootWindowController::DeactivateKeyboard(
-    keyboard::KeyboardController* keyboard_controller) {
-  DCHECK(keyboard_controller);
-  if (!keyboard_controller->enabled())
-    return;
-
-  // If the VK is under the root window of this controller.
-  if (keyboard_controller->GetRootWindow() == GetRootWindow())
-    keyboard_controller->DeactivateKeyboard();
 }
 
 void RootWindowController::SetTouchAccessibilityAnchorPoint(

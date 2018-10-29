@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/wm/immersive_focus_watcher_classic.h"
 #include "ash/wm/immersive_gesture_handler_classic.h"
 
 namespace ash {
@@ -14,12 +13,6 @@ namespace ash {
 ImmersiveHandlerFactoryAsh::ImmersiveHandlerFactoryAsh() = default;
 
 ImmersiveHandlerFactoryAsh::~ImmersiveHandlerFactoryAsh() = default;
-
-std::unique_ptr<ImmersiveFocusWatcher>
-ImmersiveHandlerFactoryAsh::CreateFocusWatcher(
-    ImmersiveFullscreenController* controller) {
-  return std::make_unique<ImmersiveFocusWatcherClassic>(controller);
-}
 
 std::unique_ptr<ImmersiveGestureHandler>
 ImmersiveHandlerFactoryAsh::CreateGestureHandler(

@@ -11,6 +11,8 @@
 <link rel="import" href="../clear_browsing_data_dialog/clear_browsing_data_dialog.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../lifetime_browser_proxy.html">
+<link rel="import" href="../people_page/sync_browser_proxy.html">
+<link rel="import" href="../people_page/signout_dialog.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_page/settings_animated_pages.html">
 <link rel="import" href="../settings_page/settings_subpage.html">
@@ -29,6 +31,9 @@
 <link rel="import" href="../site_settings/zoom_levels.html">
 <link rel="import" href="../site_settings_page/site_settings_page.html">
 
+<if expr="not chromeos">
+<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
+</if>
 <if expr="use_nss_certs">
   <link rel="import" href="chrome://resources/cr_components/certificate_manager/certificate_manager.html">
 </if>
@@ -38,6 +43,18 @@
 <dom-module id="settings-privacy-page">
   <template>
     <style include="settings-shared">
+<if expr="not chromeos">
+      #toast {
+        color: white;
+        left: 0;
+        z-index: 1;
+      }
+
+      :host-context([dir='rtl']) #toast {
+        left: auto;
+        right: 0;
+      }
+</if>
     </style>
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
       <settings-clear-browsing-data-dialog prefs="{{prefs}}"
@@ -45,7 +62,8 @@
       </settings-clear-browsing-data-dialog>
     </template>
     <template id="doNotTrackDialogIf" is="dom-if"
-        if="[[showDoNotTrackDialog_]]" notify-dom-change>
+        if="[[showDoNotTrackDialog_]]" notify-dom-change
+        on-dom-change="onDoNotTrackDomChange_">
       <cr-dialog id="confirmDoNotTrackDialog"
           close-text="$i18n{close}" on-cancel="onDoNotTrackDialogCancel_"
           on-close="onDoNotTrackDialogClosed_">
@@ -72,6 +90,17 @@
               $i18nRaw{improveBrowsingExperience}
             </p>
           </div>
+        </template>
+<if expr="not chromeos">
+        <settings-toggle-button id="signinAllowedToggle"
+            pref="{{prefs.signin.allowed_on_next_startup}}"
+            label="$i18n{signinAllowedTitle}"
+            sub-label="$i18n{signinAllowedDescription}"
+            on-settings-boolean-control-change="onSigninAllowedChange_"
+            no-set-pref>
+        </settings-toggle-button>
+</if><!-- not chromeos -->
+        <template is="dom-if" if="[[!unifiedConsentEnabled_]]">
           <settings-personalization-options prefs="{{prefs}}"
               page-visibility="[[pageVisibility]]"
               unified-consent-enabled="[[unifiedConsentEnabled_]]">
@@ -382,12 +411,10 @@
       </template>
       <template is="dom-if" route-path="/content/flash" no-search>
         <settings-subpage page-title="$i18n{siteSettingsFlash}">
-          <template is="dom-if" if="[[enableEphemeralFlashPermission_]]">
-            <a class="settings-box inherit-color no-outline" tabindex="-1"
-                target="_blank">
-              $i18n{siteSettingsFlashPermissionsEphemeral}
-            </a>
-          </template>
+          <a class="settings-box first" tabindex="-1"
+              target="_blank">
+            $i18n{siteSettingsFlashPermissionsEphemeral}
+          </a>
           <category-default-setting category="{{ContentSettingsTypes.PLUGINS}}"
               toggle-off-label="$i18n{siteSettingsFlashBlock}"
               toggle-on-label="$i18n{siteSettingsFlashAskFirstRecommended}">
@@ -404,8 +431,7 @@
 </if>
           <category-setting-exceptions
               category="{{ContentSettingsTypes.PLUGINS}}"
-              block-header="$i18n{siteSettingsBlock}"
-              read-only-list="[[enableEphemeralFlashPermission_]]">
+              block-header="$i18n{siteSettingsBlock}" read-only-list>
           </category-setting-exceptions>
         </settings-subpage>
       </template>
@@ -556,6 +582,21 @@
        </template>
       </template>
     </settings-animated-pages>
+
+    <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
+      <settings-signout-dialog sync-status="[[syncStatus]]"
+          on-close="onSignoutDialogClosed_">
+      </settings-signout-dialog>
+    </template>
+
+<if expr="not chromeos">
+    <cr-toast id="toast" open="[[showRestart_]]">
+      <div>$i18n{restartToApplyChanges}</div>
+      <paper-button on-click="onRestartTap_">
+        $i18n{restart}
+      </paper-button>
+    </cr-toast>
+</if>
   </template>
   <script src="privacy_page.js"></script>
 </dom-module>

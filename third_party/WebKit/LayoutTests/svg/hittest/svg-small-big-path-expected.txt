@@ -8,7 +8,6 @@ PASS path contains point at (5, 107)
 PASS path contains point at (5, 110)
 PASS path does not contain point at (5, 103)
 PASS path does not contain point at (5, 111)
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

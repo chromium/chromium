@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_layout_jank.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
@@ -186,7 +187,8 @@ WindowPerformance::CreateNavigationTimingInstance() {
     return nullptr;
   const DocumentLoader* document_loader =
       GetFrame()->Loader().GetDocumentLoader();
-  DCHECK(document_loader);
+  if (!document_loader)
+    return nullptr;
   ResourceTimingInfo* info = document_loader->GetNavigationTimingInfo();
   if (!info)
     return nullptr;
@@ -254,15 +256,15 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
     return std::make_pair(kAmbiguousAttribution, nullptr);
   }
 
-  if (!task_context || !task_context->IsDocument() ||
-      !ToDocument(task_context)->GetFrame()) {
+  Document* document = DynamicTo<Document>(task_context);
+  if (!document || !document->GetFrame()) {
     // Unable to attribute as no script was involved.
     DEFINE_STATIC_LOCAL(const AtomicString, kUnknownAttribution, ("unknown"));
     return std::make_pair(kUnknownAttribution, nullptr);
   }
 
   // Exactly one culprit location, attribute based on origin boundary.
-  Frame* culprit_frame = ToDocument(task_context)->GetFrame();
+  Frame* culprit_frame = document->GetFrame();
   DCHECK(culprit_frame);
   if (CanAccessOrigin(observer_frame, culprit_frame)) {
     // From accessible frames or same origin, return culprit location URL.
@@ -429,6 +431,12 @@ void WindowPerformance::DispatchFirstInputTiming(
   DCHECK(!first_input_timing_);
   if (ShouldBufferEventTiming())
     first_input_timing_ = entry;
+}
+
+void WindowPerformance::AddLayoutJankFraction(double jank_fraction) {
+  DCHECK(RuntimeEnabledFeatures::LayoutJankAPIEnabled());
+  PerformanceEntry* entry = PerformanceLayoutJank::Create(jank_fraction);
+  NotifyObserversOfEntry(*entry);
 }
 
 }  // namespace blink

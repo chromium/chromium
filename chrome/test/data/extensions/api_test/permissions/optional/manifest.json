@@ -7,16 +7,14 @@
    "background": {
      "scripts": ["background.js"]
    },
-   "permissions": [ 
+   "permissions": [
      "management",
      "http://a.com/*"
    ],
    "optional_permissions": [
      "bookmarks",
      "cookies",
-     "management",
      "background",
-     "http://a.com/*",
      "http://*.c.com/*"
    ]
 }

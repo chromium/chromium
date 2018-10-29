@@ -93,7 +93,7 @@
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
   return [self.cellClass heightForWidth:width
-                              withImage:self.hasImage
+                     withImageAvailable:self.hasImage
                                   title:self.title
                           publisherName:self.publisher
                         publicationDate:[self relativeDate]];

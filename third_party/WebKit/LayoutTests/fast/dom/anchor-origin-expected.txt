@@ -4,6 +4,7 @@ Link
 Link
 Link
 Link
+
 http://example.com/foo/bar => http://example.com
 http://example.com/foo/bar => http://example.com
 https://example.com/ttt?ggg => https://example.com

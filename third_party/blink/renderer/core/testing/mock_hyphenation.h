@@ -11,8 +11,8 @@ namespace blink {
 
 class MockHyphenation : public Hyphenation {
  public:
-  size_t LastHyphenLocation(const StringView&,
-                            size_t before_index) const override;
+  wtf_size_t LastHyphenLocation(const StringView&,
+                                wtf_size_t before_index) const override;
 };
 
 }  // namespace blink

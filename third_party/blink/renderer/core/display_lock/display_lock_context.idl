@@ -1,0 +1,18 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=DisplayLocking]
+callback DisplayLockCallback = void(DisplayLockContext context);
+
+[RuntimeEnabled=DisplayLocking, ActiveScriptWrappable]
+interface DisplayLockContext {
+  // Schedule continuation work for this context. Multiple calls are allowed and
+  // will run in the order scheduled.
+  void schedule(DisplayLockCallback callback);
+
+  // Suspend the context, preventing the lock from being released. Multiple
+  // calls to suspend are allowed: in order to resume the context, resume() must
+  // be called on each of the returned DisplayLockSuspendedHandles.
+  DisplayLockSuspendedHandle suspend();
+};

@@ -259,9 +259,7 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
   std::vector<UploadList::UploadInfo> uploads;
   text_log_upload_list_->GetUploads(50, &uploads);
 
-  for (std::vector<UploadList::UploadInfo>::iterator i = uploads.begin();
-       i != uploads.end();
-       ++i) {
+  for (auto i = uploads.begin(); i != uploads.end(); ++i) {
     std::unique_ptr<base::DictionaryValue> upload(new base::DictionaryValue());
     upload->SetString("id", i->upload_id);
 

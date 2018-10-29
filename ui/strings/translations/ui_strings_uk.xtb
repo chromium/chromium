@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
 <translation id="1243314992276662751">Завантажити</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
 <translation id="1368832886055348810">Зліва направо</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Сторінка вниз</translation>
 <translation id="8245914219290430011">Tab</translation>
+<translation id="8259556432390118667">Шістнадцятковий код кольору</translation>
 <translation id="8328145009876646418">Лівий край</translation>
 <translation id="8331626408530291785">Прокрутка вгору</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 рік}one{# рік}few{# роки}many{# років}other{# року}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Додати нотатку до зображення</translation>
+<translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
 <translation id="9002566407876343676">відкрити</translation>
 <translation id="9038489124413477075">Папка без назви</translation>

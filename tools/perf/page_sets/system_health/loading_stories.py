@@ -51,11 +51,25 @@ class LoadAmazonDesktopStory(_LoadingStory):
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
+class LoadAmazonDesktopStory2018(_LoadingStory):
+  NAME = 'load:search:amazon:2018'
+  URL = 'https://www.amazon.com/s/?field-keywords=pixel'
+  TAGS = [story_tags.YEAR_2018]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
 class LoadTaobaoDesktopStory(_LoadingStory):
   NAME = 'load:search:taobao'
   URL = 'https://world.taobao.com/'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2016]
+
+
+class LoadTaobaoDesktopStory2018(_LoadingStory):
+  NAME = 'load:search:taobao:2018'
+  URL = 'https://world.taobao.com/'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
 
 
 class LoadTaobaoMobileStory(_LoadingStory):
@@ -106,10 +120,24 @@ class LoadVkStory(_LoadingStory):
   TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2016]
 
 
+class LoadVkDesktopStory2018(_LoadingStory):
+  NAME = 'load:social:vk:2018'
+  URL = 'https://vk.com/sbeatles'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
+
+
 class LoadInstagramDesktopStory(_LoadingStory):
   NAME = 'load:social:instagram'
   URL = 'https://www.instagram.com/selenagomez/'
   TAGS = [story_tags.YEAR_2016]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
+class LoadInstagramDesktopStory2018(_LoadingStory):
+  NAME = 'load:social:instagram:2018'
+  URL = 'https://www.instagram.com/selenagomez/'
+  TAGS = [story_tags.YEAR_2018]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
@@ -135,11 +163,24 @@ class LoadBbcDesktopStory(_LoadingStory):
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
+class LoadBbcDesktopStory2018(_LoadingStory):
+  NAME = 'load:news:bbc:2018'
+  URL = 'https://www.bbc.co.uk/news'
+  TAGS = [story_tags.YEAR_2018]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
 class LoadCnnStory(_LoadingStory):
   NAME = 'load:news:cnn'
   # Using "https://" shows "Your connection is not private".
   URL = 'http://edition.cnn.com'
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2016]
+
+
+class LoadCnnStory2018(_LoadingStory):
+  NAME = 'load:news:cnn:2018'
+  URL = 'https://edition.cnn.com'
+  TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2018]
 
 
 class LoadFlipboardDesktopStory(_LoadingStory):
@@ -156,10 +197,24 @@ class LoadHackerNewsDesktopStory(_LoadingStory):
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
+class LoadHackerNewsDesktopStory2018(_LoadingStory):
+  NAME = 'load:news:hackernews:2018'
+  URL = 'https://news.ycombinator.com'
+  TAGS = [story_tags.YEAR_2018]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
 class LoadNytimesDesktopStory(_LoadingStory):
   NAME = 'load:news:nytimes'
   URL = 'http://www.nytimes.com'
   TAGS = [story_tags.YEAR_2016]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
+class LoadNytimesDesktopStory2018(_LoadingStory):
+  NAME = 'load:news:nytimes:2018'
+  URL = 'http://www.nytimes.com'
+  TAGS = [story_tags.YEAR_2018]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
@@ -177,10 +232,24 @@ class LoadQqMobileStory(_LoadingStory):
   TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2016]
 
 
+class LoadQqDesktopStory2018(_LoadingStory):
+  NAME = 'load:news:qq:2018'
+  URL = 'https://news.qq.com'
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
 class LoadRedditDesktopStory(_LoadingStory):
   NAME = 'load:news:reddit'
   URL = 'https://www.reddit.com/r/news/top/?sort=top&t=week'
   TAGS = [story_tags.YEAR_2016]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
+class LoadRedditDesktopStory2018(_LoadingStory):
+  NAME = 'load:news:reddit:2018'
+  URL = 'https://www.reddit.com/r/news/top/?sort=top&t=week'
+  TAGS = [story_tags.YEAR_2018]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
 
 
@@ -356,6 +425,13 @@ class LoadStackOverflowStory(_LoadingStory):
       'https://stackoverflow.com/questions/36827659/compiling-an-application-for-use-in-highly-radioactive-environments')
   TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2016]
 
+class LoadStackOverflowStory2018(_LoadingStory):
+  """Load a typical question & answer page of stackoverflow.com"""
+  NAME = 'load:tools:stackoverflow:2018'
+  URL = (
+      'https://stackoverflow.com/questions/36827659/compiling-an-application-for-use-in-highly-radioactive-environments')
+  TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2018]
+
 
 class LoadDropboxStory(_LoadingStory):
   NAME = 'load:tools:dropbox'
@@ -429,6 +505,13 @@ class LoadMiniclipStory(_LoadingStory):
 
 class LoadAlphabettyStory(_LoadingStory):
   NAME = 'load:games:alphabetty'
+  URL = 'https://king.com/play/alphabetty'
+  TAGS = [story_tags.YEAR_2016]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY  # Requires Flash.
+
+
+class LoadAlphabettyStory2018(_LoadingStory):
+  NAME = 'load:games:alphabetty:2018'
   URL = 'https://king.com/play/alphabetty'
   TAGS = [story_tags.YEAR_2016]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY  # Requires Flash.

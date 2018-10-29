@@ -7,6 +7,14 @@ suite('focus-row-behavior', function() {
 
   suiteSetup(function() {
     document.body.innerHTML = `
+      <dom-module id="button-three">
+        <template>
+          <button>
+            fake button three
+          </button>
+        </template>
+      </dom-module>
+
       <dom-module id="focus-row-element">
         <template>
           <div id="container" focus-row-container>
@@ -17,10 +25,21 @@ suite('focus-row-behavior', function() {
             <button id="controlTwo" focus-row-control focus-type='fake-btn-two'>
               fake button two
             </button>
+            <button-three focus-row-control focus-type='fake-btn-three'>
+            </button-three>
           </div>
         </template>
       </dom-module>
     `;
+
+    Polymer({
+      is: 'button-three',
+
+      /** @return {!Element} */
+      getFocusableElement: function() {
+        return this.$$('button');
+      },
+    });
 
     Polymer({
       is: 'focus-row-element',
@@ -74,5 +93,18 @@ suite('focus-row-behavior', function() {
     // in the test, so its necessary to manually fire 'focus' after tap.
     testElement.fire('focus');
     assertFalse(focused);
+  });
+
+  test('when focus-override is defined, returned element gains focus', () => {
+    const lastButton = document.createElement('button');
+    lastButton.setAttribute('focus-type', 'fake-btn-three');
+    testElement.lastFocused = lastButton;
+
+    const wait = test_util.eventToPromise('focus', testElement);
+    testElement.fire('focus');
+    return wait.then(() => {
+      const button = getDeepActiveElement();
+      assertEquals('fake button three', button.textContent.trim());
+    });
   });
 });

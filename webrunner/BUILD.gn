@@ -39,7 +39,7 @@ executable("webrunner_exe") {
     "app/web_content_runner.h",
   ]
   deps = [
-    ":fidl",
+    ":web_fidl",
     "//base",
     "//url",
   ]
@@ -53,8 +53,8 @@ fuchsia_package("service_pkg") {
 
 executable("service_exe") {
   deps = [
-    ":fidl",
     ":service_lib",
+    ":web_fidl",
     "//base",
     "//content/public/app:both",
     "//services/service_manager/embedder:embedder_switches",
@@ -96,7 +96,7 @@ component("service_lib") {
     "$root_out_dir/webrunner.pak",
   ]
   public_deps = [
-    ":fidl",
+    ":web_fidl",
   ]
   configs += [ ":webrunner_implementation" ]
 
@@ -174,6 +174,9 @@ repack("service_pak") {
 test("webrunner_browsertests") {
   sources = [
     "browser/context_impl_browsertest.cc",
+    "browser/frame_impl_browsertest.cc",
+    "browser/test_common.cc",
+    "browser/test_common.h",
     "browser/webrunner_browser_test.cc",
     "browser/webrunner_browser_test.h",
     "browser/webrunner_test_launcher.cc",
@@ -183,8 +186,8 @@ test("webrunner_browsertests") {
     "browser/test/data",
   ]
   deps = [
-    ":fidl",
     ":service_lib",
+    ":web_fidl",
     "//base/test:test_support",
     "//content/test:test_support",
     "//net:test_support",
@@ -199,8 +202,8 @@ test("webrunner_unittests") {
     "service/context_provider_impl_unittest.cc",
   ]
   deps = [
-    ":fidl",
     ":service_lib",
+    ":web_fidl",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",
@@ -208,23 +211,22 @@ test("webrunner_unittests") {
   ]
 }
 
-fidl_library("fidl") {
+fidl_library("web_fidl") {
   library_name = "web"
   namespace = "chromium"
-  namespace_path = "chromium"
 
   sources = [
-    "fidl/context.fidl",
-    "fidl/context_provider.fidl",
-    "fidl/frame.fidl",
-    "fidl/navigation_controller.fidl",
-    "fidl/navigation_event_observer.fidl",
+    "fidl/web/context.fidl",
+    "fidl/web/context_provider.fidl",
+    "fidl/web/frame.fidl",
+    "fidl/web/navigation_controller.fidl",
+    "fidl/web/navigation_event_observer.fidl",
   ]
 
   public_deps = [
-    "//third_party/fuchsia-sdk:gfx",
-    "//third_party/fuchsia-sdk:sys",
-    "//third_party/fuchsia-sdk:viewsv1",
+    "//third_party/fuchsia-sdk/sdk:gfx",
+    "//third_party/fuchsia-sdk/sdk:sys",
+    "//third_party/fuchsia-sdk/sdk:viewsv1",
   ]
 }
 

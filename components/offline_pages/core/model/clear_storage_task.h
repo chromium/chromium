@@ -36,10 +36,7 @@ class ClearStorageTask : public Task {
     DELETE_FAILURE,                         // Deletion failed.
     DEPRECATED_EXPIRE_AND_DELETE_FAILURES,  // Both expiration and deletion
                                             // failed. (DEPRECATED)
-    // NOTE: always keep this entry at the end. Add new result types only
-    // immediately above this line. Make sure to update the corresponding
-    // histogram enum accordingly.
-    RESULT_COUNT,
+    kMaxValue = DEPRECATED_EXPIRE_AND_DELETE_FAILURES,
   };
 
   // Callback used when calling ClearPagesIfNeeded.

@@ -35,9 +35,8 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   ui::PageTransition transition_type = ui::PageTransition::PAGE_TRANSITION_LINK;
   bool target_frame_is_main = true;
   bool has_user_gesture = false;
-  GURL source_url("http://source.url");
   WebStatePolicyDecider::RequestInfo request_info(
-      transition_type, source_url, target_frame_is_main, has_user_gesture);
+      transition_type, target_frame_is_main, has_user_gesture);
   decider_bridge_.ShouldAllowRequest(request, request_info);
   FakeShouldAllowRequestInfo* should_allow_request_info =
       [decider_ shouldAllowRequestInfo];
@@ -47,7 +46,6 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
             should_allow_request_info->request_info.target_frame_is_main);
   EXPECT_EQ(has_user_gesture,
             should_allow_request_info->request_info.has_user_gesture);
-  EXPECT_EQ(source_url, should_allow_request_info->request_info.source_url);
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       transition_type,
       should_allow_request_info->request_info.transition_type));

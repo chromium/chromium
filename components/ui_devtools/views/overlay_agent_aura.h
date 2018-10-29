@@ -54,22 +54,27 @@ class OverlayAgentAura : public OverlayAgent,
     return highlight_rect_config_;
   };
 
-  // Return the id of the UI element targeted by an event located at |p|, where
-  // |p| is in the local coodinate space of |root_window|. The function
-  // first searches for the targeted window, then the targeted widget (if one
-  // exists), then the targeted view (if one exists). Return 0 if no valid
-  // target is found.
-  int FindElementIdTargetedByPoint(const gfx::Point& p,
-                                   gfx::NativeWindow root_window) const;
+  // Return the id of the UI element located at |event|'s root location.
+  // The function first searches for the targeted window, then the targeted
+  // widget (if one exists), then the targeted view (if one exists). Return 0 if
+  // no valid target is found.
+  int FindElementIdTargetedByPoint(ui::LocatedEvent* event) const;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest,
+                           MouseEventsGenerateFEEventsInInspectMode);
+  FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest, HighlightNonexistentNode);
+  FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest, HighlightWidget);
+#if defined(USE_AURA)
+  FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest, HighlightWindow);
+#endif
+  protocol::Response HighlightNode(int node_id, bool show_size = false);
+  void UpdateHighlight(
+      const std::pair<gfx::NativeWindow, gfx::Rect>& window_and_bounds);
 
   // Shows the distances between the nodes identified by |pinned_id| and
   // |element_id| in the highlight overlay.
   void ShowDistancesInHighlightOverlay(int pinned_id, int element_id);
-
- private:
-  protocol::Response HighlightNode(int node_id, bool show_size = false);
-  void UpdateHighlight(
-      const std::pair<gfx::NativeWindow, gfx::Rect>& window_and_bounds);
 
   // ui:EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -79,6 +84,8 @@ class OverlayAgentAura : public OverlayAgent,
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
+
+  ui::Layer* layer_for_highlighting() { return layer_for_highlighting_.get(); }
 
   std::unique_ptr<gfx::RenderText> render_text_;
   bool show_size_on_canvas_ = false;

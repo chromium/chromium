@@ -14,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -22,7 +23,7 @@
 #include "content/public/common/service_names.mojom.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "services/service_manager/embedder/embedded_service_runner.h"
+#include "services/service_manager/public/cpp/embedded_service_runner.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_context.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
@@ -339,14 +340,15 @@ class ServiceManagerConnectionImpl::IOThreadContext
 
   std::unique_ptr<service_manager::ServiceContext> service_context_;
   mojo::BindingSet<service_manager::mojom::ServiceFactory> factory_bindings_;
-  int next_filter_id_ = kInvalidConnectionFilterId;
 
   // Not owned.
   MessageLoopObserver* message_loop_observer_ = nullptr;
 
-  // Guards |connection_filters_|.
+  // Guards |connection_filters_| and |next_filter_id_|.
   base::Lock lock_;
-  std::map<int, std::unique_ptr<ConnectionFilter>> connection_filters_;
+  std::map<int, std::unique_ptr<ConnectionFilter>> connection_filters_
+      GUARDED_BY(lock_);
+  int next_filter_id_ GUARDED_BY(lock_) = kInvalidConnectionFilterId;
 
   std::map<std::string, std::unique_ptr<service_manager::EmbeddedServiceRunner>>
       embedded_services_;

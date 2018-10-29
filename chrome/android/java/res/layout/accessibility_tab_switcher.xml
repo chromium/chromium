@@ -54,14 +54,14 @@
         android:id="@+id/button_wrapper"
         android:visibility="gone">
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/standard_tabs_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_holo_active"
             android:src="@drawable/btn_normal_tabs"
-            app:chrometint="@color/light_mode_tint"
+            app:tint="@color/light_mode_tint"
             android:contentDescription="@string/accessibility_tab_switcher_standard_stack"
             style="?android:attr/borderlessButtonStyle" />
 
@@ -71,13 +71,13 @@
             android:layout_gravity="center_vertical"
             android:background="#292929" />
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/incognito_tabs_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/btn_incognito_tabs"
-            app:chrometint="@color/light_mode_tint"
+            app:tint="@color/light_mode_tint"
             android:background="@drawable/btn_bg_holo"
             android:contentDescription="@string/accessibility_tab_switcher_incognito_stack"
             style="?android:attr/borderlessButtonStyle" />

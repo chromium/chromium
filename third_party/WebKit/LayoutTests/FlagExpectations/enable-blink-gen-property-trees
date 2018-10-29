@@ -1,6 +1,6 @@
 # Expectations for --enable-blink-gen-property-trees
-# We are focused on scrolling, compositing, animations, threading, and paint
-# related tests with all other directories skipped to improve bot cycle time.
+# TODO(pdr): Remove these expectations as blink-gen-property-trees is enabled as
+# experimental and runs by default on layout tests.
 
 Bug(none) app_banner/ [ Skip ]
 Bug(none) battery-status/ [ Skip ]
@@ -60,16 +60,12 @@ Bug(none) usb/ [ Skip ]
 Bug(none) vibration/ [ Skip ]
 Bug(none) virtual/cors-rfc1918/ [ Skip ]
 Bug(none) virtual/custom-user-timing/ [ Skip ]
-Bug(none) virtual/enable_asmjs/ [ Skip ]
-Bug(none) virtual/enable_wasm/ [ Skip ]
-Bug(none) virtual/enable_wasm_streaming/ [ Skip ]
 Bug(none) virtual/exotic-color-space/ [ Skip ]
 Bug(none) virtual/feature-policy-permissions/ [ Skip ]
 Bug(none) virtual/feature-policy-vibrate/ [ Skip ]
 Bug(none) virtual/gpu-rasterization/ [ Skip ]
 Bug(none) virtual/gpu/ [ Skip ]
 Bug(none) virtual/high-contrast-mode/ [ Skip ]
-Bug(none) virtual/import-meta-url/ [ Skip ]
 Bug(none) virtual/layout_ng/ [ Skip ]
 Bug(none) virtual/layout_ng_experimental/ [ Skip ]
 Bug(none) virtual/linux-subpixel/ [ Skip ]
@@ -111,107 +107,3 @@ Bug(none) webmidi/ [ Skip ]
 Bug(none) webshare/ [ Skip ]
 Bug(none) xmlviewer/ [ Skip ]
 Bug(none) xr/ [ Skip ]
-
-# These tests failed in normal mode but are fixed with BlinkGenPropertyTrees.
-Bug(none) compositing/overflow/clip-escaping-reverse-order-should-not-crash.html [ Pass ]
-Bug(none) compositing/overflow/composited-scroll-with-fractional-translation.html [ Pass ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/clip-escaping-reverse-order-should-not-crash.html [ Pass ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/composited-scroll-with-fractional-translation.html [ Pass ]
-crbug.com/865039 compositing/masks/mask-with-added-filters.html [ Pass ]
-# Link highlights are no longer affected by ancestor effects.
-crbug.com/857501 compositing/gestures/gesture-tapHighlight-with-filter.html [ Pass ]
-crbug.com/400829 media/video-object-fit.html [ Pass ]
-crbug.com/400829 compositing/composited-canvas-with-overflowing-object-fit.html [ Pass ]
-
-# These tests are no longer applicable with layer list mode.
-# Move to NeverFixTests later.
-Bug(none) http/tests/devtools/layers/layer-sticky-position-constraint-get.js [ Skip ]
-Bug(none) inspector-protocol/layers/get-layers.js [ Skip ]
-
-# Backdrop filters are experimental (behind a flag) and do not really work with
-# or without BlinkGenPropertyTrees. These tests are marked as failing because
-# the expectations differ, but these do not block BlinkGenPropertyTrees.
-crbug.com/854189 css3/filters/backdrop-filter-rendering-no-background.html [ Failure ]
-crbug.com/854189 css3/filters/backdrop-filter-rendering.html [ Failure ]
-
-# These scrolling tests should pass.
-crbug.com/836913 virtual/threaded/external/wpt/css/css-scroll-snap/snap-at-user-scroll-end-manual.html [ Timeout ]
-
-# Reflection / mask ordering issue
-crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
-
-# Single pixel snapping difference on scrolling content size.
-Bug(none) compositing/iframes/invisible-nested-iframe-show.html [ Failure ]
-
-# Gradient/image slightly changed. Likely benign.
-Bug(none) compositing/masks/simple-composited-mask.html [ Failure ]
-Bug(none) compositing/masks/masked-ancestor.html [ Failure ]
-Bug(none) compositing/masks/multiple-masks.html [ Failure ]
-Bug(none) compositing/lots-of-img-layers.html [ Failure ]
-Bug(none) compositing/lots-of-img-layers-with-opacity.html [ Failure ]
-
-# Subpixel differences on text. Likely benign.
-Bug(none) css3/blending/background-blend-mode-overlapping-accelerated-elements.html [ Failure ]
-
-# Benign subpixel differences.
-Bug(none) transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
-Bug(none) transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
-Bug(none) compositing/masks/direct-image-mask.html [ Failure ]
-Bug(none) compositing/geometry/layer-due-to-layer-children.html [ Failure ]
-Bug(none) compositing/perpendicular-layer-sorting.html [ Failure ]
-Bug(none) compositing/perspective-interest-rect.html [ Failure ]
-
-# Rounded borders have slightly different antialiasing
-Bug(none) compositing/composited-scaled-child-with-border-radius-parent-clip.html [ Failure ]
-Bug(none) compositing/composited-translated-child-with-border-radius-parent-clip.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-above-composited-subframe.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-composited-subframe.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-on-grandparent-composited-grandchild.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-on-parent-composited-grandchild.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-on-two-ancestors-composited-grandchild.html [ Failure ]
-Bug(none) compositing/overflow/border-radius-styles-with-composited-child.html [ Failure ]
-Bug(none) compositing/overflow/grandchild-composited-with-border-radius-ancestor.html [ Failure ]
-Bug(none) compositing/overflow/grandchild-with-border-radius-ancestor.html [ Failure ]
-Bug(none) compositing/overflow/siblings-composited-with-border-radius-ancestor.html [ Failure ]
-Bug(none) compositing/overflow/siblings-composited-with-border-radius-ancestor-one-clipped.html [ Failure ]
-Bug(none) compositing/overflow/siblings-with-border-radius-ancestor.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-canvas-border.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-canvas.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-video-ratio.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-video-shadow.html [ Failure ]
-Bug(none) fast/borders/border-radius-mask-video.html [ Failure ]
-Bug(none) fast/clip/overflow-border-radius-composited-parent.html [ Failure ]
-Bug(none) fast/clip/overflow-border-radius-composited.html [ Failure ]
-Bug(none) compositing/overflow/tiled-mask.html [ Failure ]
-Bug(none) compositing/opacity-with-mask.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-above-composited-subframe.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-composited-subframe.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-on-grandparent-composited-grandchild.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-on-parent-composited-grandchild.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-on-two-ancestors-composited-grandchild.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/border-radius-styles-with-composited-child.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/grandchild-composited-with-border-radius-ancestor.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/grandchild-with-border-radius-ancestor.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/siblings-composited-with-border-radius-ancestor.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/siblings-composited-with-border-radius-ancestor-one-clipped.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/siblings-with-border-radius-ancestor.html [ Failure ]
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/tiled-mask.html [ Failure ]
-
-# One line of pixels different when clipping the scrollbar.
-Bug(none) virtual/prefer_compositing_to_lcd_text/compositing/overflow/scaled-overflow.html [ Failure ]
-Bug(none) compositing/overflow/scaled-overflow.html [ Failure ]
-
-# Incorrect clipping.
-crbug.com/879173 compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
-crbug.com/879173 virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
-
-crbug.com/882975 virtual/threaded/fast/events/pinch/gesture-pinch-zoom-prevent-in-handler.html [ Failure Pass ]
-crbug.com/882975 virtual/threaded/fast/events/pinch/scroll-visual-viewport-send-boundary-events.html [ Failure Pass ]
-crbug.com/882975 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-desktop.html [ Failure Pass ]
-
-crbug.com/882973 http/tests/devtools/layers/layer-tree-model.js [ Failure ]
-
-crbug.com/884239 virtual/threaded/fast/animationworklet/worklet-animation-local-time-undefined.html [ Failure ]
-
-crbug.com/884240 images/cross-fade-invalidation.html [ Pass Failure ]

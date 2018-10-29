@@ -23,6 +23,7 @@
 #include "content/public/common/page_state.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/was_activated_option.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/resource_response.h"
@@ -56,6 +57,28 @@ struct CONTENT_EXPORT SourceLocation {
 
 // Provided by the browser or the renderer -------------------------------------
 
+// Represents the Content Security Policy of the initator of the navigation.
+struct CONTENT_EXPORT InitiatorCSPInfo {
+  InitiatorCSPInfo();
+  InitiatorCSPInfo(CSPDisposition should_check_main_world_csp,
+                   const std::vector<ContentSecurityPolicy>& initiator_csp,
+                   const base::Optional<CSPSource>& initiator_self_source);
+  InitiatorCSPInfo(const InitiatorCSPInfo& other);
+  ~InitiatorCSPInfo();
+
+  // Whether or not the CSP of the main world should apply. When the navigation
+  // is initiated from a content script in an isolated world, the CSP defined
+  // in the main world should not apply.
+  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
+  // world which has initiated the navigation should be passed.
+  // See https://crbug.com/702540
+  CSPDisposition should_check_main_world_csp = CSPDisposition::CHECK;
+
+  // The relevant CSP policies and the initiator 'self' source to be used.
+  std::vector<ContentSecurityPolicy> initiator_csp;
+  base::Optional<CSPSource> initiator_self_source;
+};
+
 // Used by all navigation IPCs.
 struct CONTENT_EXPORT CommonNavigationParams {
   CommonNavigationParams();
@@ -73,11 +96,9 @@ struct CONTENT_EXPORT CommonNavigationParams {
       std::string method,
       const scoped_refptr<network::ResourceRequestBody>& post_data,
       base::Optional<SourceLocation> source_location,
-      CSPDisposition should_check_main_world_csp,
       bool started_from_context_menu,
       bool has_user_gesture,
-      const std::vector<ContentSecurityPolicy>& initiator_csp,
-      const base::Optional<CSPSource>& initiator_self_source,
+      const InitiatorCSPInfo& initiator_csp_info,
       base::TimeTicks input_start = base::TimeTicks());
   CommonNavigationParams(const CommonNavigationParams& other);
   ~CommonNavigationParams();
@@ -140,14 +161,6 @@ struct CONTENT_EXPORT CommonNavigationParams {
   // not be set.
   base::Optional<SourceLocation> source_location;
 
-  // Whether or not the CSP of the main world should apply. When the navigation
-  // is initiated from a content script in an isolated world, the CSP defined
-  // in the main world should not apply.
-  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
-  // world which has initiated the navigation should be passed.
-  // See https://crbug.com/702540
-  CSPDisposition should_check_main_world_csp = CSPDisposition::CHECK;
-
   // Whether or not this navigation was started from a context menu.
   bool started_from_context_menu = false;
 
@@ -155,8 +168,7 @@ struct CONTENT_EXPORT CommonNavigationParams {
   bool has_user_gesture = false;
 
   // We require a copy of the relevant CSP to perform navigation checks.
-  std::vector<ContentSecurityPolicy> initiator_csp;
-  base::Optional<CSPSource> initiator_self_source;
+  InitiatorCSPInfo initiator_csp_info;
 
   // The current origin policy for this request's origin.
   // (Empty if none applies.)
@@ -300,15 +312,15 @@ struct CONTENT_EXPORT RequestNavigationParams {
   // The AppCache host id to be used to identify this navigation.
   int appcache_host_id = kAppCacheNoHostId;
 
-  // True if a navigation is following the rules of user activation propagation.
-  // This is different from |has_user_gesture| (in CommonNavigationParams) as
-  // the activation may have happened before the navigation was triggered, for
-  // example.
+  // Set to |kYes| if a navigation is following the rules of user activation
+  // propagation. This is different from |has_user_gesture|
+  // (in CommonNavigationParams) as the activation may have happened before
+  // the navigation was triggered, for example.
   // In other words, the distinction isn't regarding user activation and user
   // gesture but whether there was an activation prior to the navigation or to
   // start it. `was_activated` will answer the former question while
   // `user_gesture` will answer the latter.
-  bool was_activated = false;
+  WasActivatedOption was_activated = WasActivatedOption::kUnknown;
 
 #if defined(OS_ANDROID)
   // The real content of the data: URL. Only used in Android WebView for

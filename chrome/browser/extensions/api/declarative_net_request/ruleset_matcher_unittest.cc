@@ -46,8 +46,7 @@ class RulesetMatcherTest : public DNRTestBase {
     // Create extension directory.
     ASSERT_TRUE(base::CreateDirectory(extension_dir));
     WriteManifestAndRuleset(extension_dir, kJSONRulesetFilepath,
-                            kJSONRulesFilename, rules,
-                            {URLPattern::kAllUrlsPattern});
+                            kJSONRulesFilename, rules, {} /* hosts */);
 
     extension_ = CreateExtensionLoader()->LoadExtension(extension_dir);
     ASSERT_TRUE(extension_);

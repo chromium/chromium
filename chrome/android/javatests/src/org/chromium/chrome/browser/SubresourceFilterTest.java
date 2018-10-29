@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.infobar.AdsBlockedInfoBar;
 import org.chromium.chrome.browser.infobar.InfoBar;
+import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.subresource_filter.TestSubresourceFilterPublisher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
@@ -124,8 +125,7 @@ public final class SubresourceFilterTest {
         // Think better of it and just close the infobar.
         ThreadUtils.runOnUiThreadBlocking(infobar::onCloseButtonClicked);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        CriteriaHelper.pollUiThread(
-                () -> tab.getInfoBarContainer().getInfoBarsForTesting().isEmpty());
+        CriteriaHelper.pollUiThread(() -> !InfoBarContainer.get(tab).hasInfoBars());
     }
 
     @Test
@@ -165,8 +165,7 @@ public final class SubresourceFilterTest {
         tabCreatedCallback.waitForCallback("Never received tab created event", 0);
 
         // The infobar should not be removed on the original tab.
-        CriteriaHelper.pollUiThread(
-                () -> !originalTab.getInfoBarContainer().getInfoBarsForTesting().isEmpty());
+        CriteriaHelper.pollUiThread(() -> InfoBarContainer.get(originalTab).hasInfoBars());
     }
 
     @Test
@@ -194,8 +193,7 @@ public final class SubresourceFilterTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
 
-        CriteriaHelper.pollUiThread(
-                () -> tab.getInfoBarContainer().getInfoBarsForTesting().isEmpty());
+        CriteriaHelper.pollUiThread(() -> !InfoBarContainer.get(tab).hasInfoBars());
 
         // Reloading should whitelist the site, so resources should no longer be filtered.
         loaded = mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded");

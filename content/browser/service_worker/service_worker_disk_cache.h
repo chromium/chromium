@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "content/browser/appcache/appcache_disk_cache.h"
+#include "content/browser/appcache/appcache_response.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -29,9 +30,8 @@ class CONTENT_EXPORT ServiceWorkerResponseReader
   // Should only be constructed by the storage class.
   friend class ServiceWorkerStorage;
 
-  ServiceWorkerResponseReader(
-      int64_t resource_id,
-      base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+  ServiceWorkerResponseReader(int64_t resource_id,
+                              base::WeakPtr<AppCacheDiskCache> disk_cache);
 };
 
 class CONTENT_EXPORT ServiceWorkerResponseWriter
@@ -40,9 +40,8 @@ class CONTENT_EXPORT ServiceWorkerResponseWriter
   // Should only be constructed by the storage class.
   friend class ServiceWorkerStorage;
 
-  ServiceWorkerResponseWriter(
-      int64_t resource_id,
-      base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+  ServiceWorkerResponseWriter(int64_t resource_id,
+                              base::WeakPtr<AppCacheDiskCache> disk_cache);
 };
 
 class CONTENT_EXPORT ServiceWorkerResponseMetadataWriter
@@ -53,7 +52,7 @@ class CONTENT_EXPORT ServiceWorkerResponseMetadataWriter
 
   ServiceWorkerResponseMetadataWriter(
       int64_t resource_id,
-      base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+      base::WeakPtr<AppCacheDiskCache> disk_cache);
 };
 
 }  // namespace content

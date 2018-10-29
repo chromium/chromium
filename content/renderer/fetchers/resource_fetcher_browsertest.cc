@@ -149,7 +149,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
 
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 
@@ -168,7 +168,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
 
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 
@@ -187,7 +187,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
 
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 
@@ -205,7 +205,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
     GURL url("http://localhost:1339/doesnotexist");
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 
@@ -225,7 +225,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
 
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
     fetcher->SetTimeout(base::TimeDelta());
@@ -246,7 +246,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
 
     std::unique_ptr<EvilFetcherDelegate> delegate(new EvilFetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
     fetcher->SetTimeout(base::TimeDelta());
@@ -266,7 +266,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
     fetcher->SetMethod("POST");
     fetcher->SetBody(kBody);
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 
@@ -285,7 +285,7 @@ class ResourceFetcherTests : public ContentBrowserTest {
     std::unique_ptr<FetcherDelegate> delegate(new FetcherDelegate);
     std::unique_ptr<ResourceFetcher> fetcher(ResourceFetcher::Create(url));
     fetcher->SetHeader("header", kHeader);
-    fetcher->Start(frame, WebURLRequest::kRequestContextInternal,
+    fetcher->Start(frame, blink::mojom::RequestContextType::INTERNAL,
                    RenderFrame::FromWebFrame(frame)->GetURLLoaderFactory(),
                    TRAFFIC_ANNOTATION_FOR_TESTS, delegate->NewCallback());
 

@@ -34,10 +34,21 @@ class PageLoadCappingInfoBarDelegate : public ConfirmInfoBarDelegate {
   // resumed based on |pause|.
   using PauseCallback = base::RepeatingCallback<void(bool pause)>;
 
+  // A callback used to get the earliest possible time (offset from now) that
+  // the InfoBar could be dismissed based on lack of network usage.
+  // |time_to_expire| must be passed in as TimeDelta initialized to 0 to handle
+  // the case of the underlying weak pointer being destroyed.
+  using TimeToExpireCallback =
+      base::RepeatingCallback<void(base::TimeDelta* time_to_expire)>;
+
   // Creates an InfoBar for page load capping. Returns whether the InfoBar was
   // created. |web_contents| is the WebContents that caused the data usage.
+  // |pause_callback| is used to pause and unpause the resource loading of the
+  // page. |time_to_expire_callback| is used to get the earliest time at which
+  // the page is considered to have stopped using data.
   static bool Create(content::WebContents* web_contents,
-                     const PauseCallback& set_handles_callback);
+                     const PauseCallback& pause_callback,
+                     const TimeToExpireCallback& time_to_expire_callback);
 
   ~PageLoadCappingInfoBarDelegate() override;
 
@@ -47,7 +58,8 @@ class PageLoadCappingInfoBarDelegate : public ConfirmInfoBarDelegate {
     kShowedInfoBar = 0,
     kPausedPage = 1,
     kResumedPage = 2,
-    kMaxValue = kResumedPage,
+    kDismissedByNetworkStopped = 3,
+    kMaxValue = kDismissedByNetworkStopped,
   };
 
  protected:

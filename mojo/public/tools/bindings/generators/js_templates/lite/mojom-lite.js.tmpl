@@ -1,0 +1,29 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+'use strict';
+
+(function() {
+let mojomId = '{{module.path}}';
+if (mojo.internal.isMojomLoaded(mojomId)) {
+  console.warn('The following mojom is loaded multiple times: ' + mojomId);
+  return;
+}
+mojo.internal.markMojomLoaded(mojomId);
+
+{#- TODO(crbug.com/795977): Change the media router extension to not mess with
+    the mojo namespace, so that we can refer to mojo directly. #}
+let exports = mojo.internal.exposeNamespace('{{module.namespace}}');
+
+{%- for import in imports %}
+let {{import.unique_name}} =
+    mojo.internal.exposeNamespace('{{import.namespace}}');
+if (mojo.config.autoLoadMojomDeps) {
+  mojo.internal.loadMojomIfNecessary(
+      '{{import.path}}', '{{import|get_relative_url(module)}}.js');
+}
+{%- endfor %}
+
+{% include "lite/module_definition.tmpl" %}
+})();

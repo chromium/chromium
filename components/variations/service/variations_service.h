@@ -175,6 +175,9 @@ class VariationsService
                         std::unique_ptr<base::FeatureList> feature_list,
                         variations::PlatformFieldTrials* platform_field_trials);
 
+  // Overrides cached UI strings on the resource bundle once it is initialized.
+  void OverrideCachedUIStrings();
+
   int request_count() const { return request_count_; }
 
  protected:

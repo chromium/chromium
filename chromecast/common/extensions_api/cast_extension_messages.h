@@ -79,7 +79,7 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityEventBundleParams)
   // ID of the accessibility tree that this event applies to.
-  IPC_STRUCT_MEMBER(int, tree_id)
+  IPC_STRUCT_MEMBER(ui::AXTreeID, tree_id)
 
   // Zero or more updates to the accessibility tree to apply first.
   IPC_STRUCT_MEMBER(std::vector<ui::AXTreeUpdate>, updates)
@@ -93,7 +93,7 @@ IPC_STRUCT_END()
 
 IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityLocationChangeParams)
   // ID of the accessibility tree that this event applies to.
-  IPC_STRUCT_MEMBER(int, tree_id)
+  IPC_STRUCT_MEMBER(ui::AXTreeID, tree_id)
 
   // ID of the object whose location is changing.
   IPC_STRUCT_MEMBER(int, id)

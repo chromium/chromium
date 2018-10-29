@@ -9,17 +9,35 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_launch_help_app.h"
+#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_redeem_offers.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_sync_files.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_welcome.h"
 
 namespace chromeos {
+namespace {
+
+// Owned by ChromeBrowserMainPartsChromeos.
+DiscoverManager* g_discover_manager = nullptr;
+
+}  // namespace
 
 DiscoverManager::DiscoverManager() {
+  DCHECK(!g_discover_manager);
+  g_discover_manager = this;
+
   CreateModules();
 }
 
-DiscoverManager::~DiscoverManager() = default;
+DiscoverManager::~DiscoverManager() {
+  DCHECK_EQ(g_discover_manager, this);
+  g_discover_manager = nullptr;
+}
+
+// static
+DiscoverManager* DiscoverManager::Get() {
+  return g_discover_manager;
+}
 
 bool DiscoverManager::IsCompleted() const {
   // Returns true if all of the modules are completed.
@@ -38,6 +56,8 @@ void DiscoverManager::CreateModules() {
       std::make_unique<DiscoverModuleSyncFiles>();
   modules_[DiscoverModuleWelcome::kModuleName] =
       std::make_unique<DiscoverModuleWelcome>();
+  modules_[DiscoverModulePinSetup::kModuleName] =
+      std::make_unique<DiscoverModulePinSetup>();
 }
 
 std::vector<std::unique_ptr<DiscoverHandler>>
@@ -47,6 +67,12 @@ DiscoverManager::CreateWebUIHandlers() const {
     handlers.emplace_back(module_pair.second->CreateWebUIHandler());
   }
   return handlers;
+}
+
+DiscoverModule* DiscoverManager::GetModuleByName(
+    const std::string& module_name) const {
+  const auto it = modules_.find(module_name);
+  return it == modules_.end() ? nullptr : it->second.get();
 }
 
 }  // namespace chromeos

@@ -70,10 +70,6 @@ class ManagePasswordsBubbleModel {
   // clicked by the user.
   void OnNavigateToPasswordManagerAccountDashboardLinkClicked();
 
-  // Called by the view code when the brand name link is clicked by the user.
-  // TODO(crbug.com/862269): Remove when "Smart Lock" is gone.
-  void OnBrandLinkClicked();
-
   // Called by the view code when the auto-signin toast is about to close due to
   // timeout.
   void OnAutoSignInToastTimeout();
@@ -108,10 +104,6 @@ class ManagePasswordsBubbleModel {
   }
   const gfx::Range& save_confirmation_link_range() const {
     return save_confirmation_link_range_;
-  }
-
-  const gfx::Range& title_brand_link_range() const {
-    return title_brand_link_range_;
   }
 
   bool are_passwords_revealed_when_bubble_is_opened() const {
@@ -161,8 +153,7 @@ class ManagePasswordsBubbleModel {
 
  private:
   class InteractionKeeper;
-  // Updates |title_| and |title_brand_link_range_| for the
-  // PENDING_PASSWORD_STATE.
+  // Updates |title_| for the PENDING_PASSWORD_STATE.
   void UpdatePendingStateTitle();
   // Updates |title_| for the MANAGE_STATE.
   void UpdateManageStateTitle();
@@ -171,9 +162,6 @@ class ManagePasswordsBubbleModel {
   GURL origin_;
   password_manager::ui::State state_;
   base::string16 title_;
-  // Range of characters in the title that contains the Smart Lock Brand and
-  // should point to an article. For the default title the range is empty.
-  gfx::Range title_brand_link_range_;
   autofill::PasswordForm pending_password_;
   std::vector<autofill::PasswordForm> local_credentials_;
   base::string16 manage_link_;

@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -107,6 +108,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   static bool UseExternalPopupMenus();
 
   // WebWidget methods:
+  void SetLayerTreeView(WebLayerTreeView*) override;
   void Close() override;
   WebSize Size() override;
   void Resize(const WebSize&) override;
@@ -116,10 +118,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) override;
   void BeginFrame(base::TimeTicks last_frame_time) override;
-
+  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override;
   void UpdateLifecycle(LifecycleUpdate requested_update) override;
-  void UpdateAllLifecyclePhasesAndCompositeForTesting() override;
-  void CompositeWithRasterForTesting() override;
+  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
   void PaintContent(cc::PaintCanvas*, const WebRect&) override;
   void PaintContentIgnoringCompositing(cc::PaintCanvas*,
                                        const WebRect&) override;
@@ -130,12 +131,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void SetCursorVisibilityState(bool is_visible) override;
-
-  void ApplyViewportDeltas(const WebFloatSize& visual_viewport_delta,
-                           const WebFloatSize& layout_viewport_delta,
-                           const WebFloatSize& elastic_overscroll_delta,
-                           float page_scale_delta,
-                           float browser_controls_shown_ratio_delta) override;
+  void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override;
   void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                          bool has_scrolled_by_touch) override;
   void MouseCaptureLost() override;
@@ -149,6 +145,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidNotAcquirePointerLock() override;
   void DidLosePointerLock() override;
   void ShowContextMenu(WebMenuSourceType) override;
+  WebURL GetURLForDebugTrace() override;
 
   // WebView methods:
   bool IsWebView() const override { return true; }
@@ -362,7 +359,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void EnableTapHighlightAtPoint(
       const GestureEventWithHitTestResults& targeted_tap_event);
   void EnableTapHighlights(HeapVector<Member<Node>>&);
-  void AnimateDoubleTapZoom(const IntPoint&);
+  void AnimateDoubleTapZoom(const IntPoint&, const WebRect& block_bounds);
 
   void EnableFakePageScaleAnimationForTesting(bool);
   bool FakeDoubleTapAnimationPendingForTesting() const {
@@ -391,9 +388,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   WebSettingsImpl* SettingsImpl();
 
-  // Returns the bounding box of the block type node touched by the WebPoint.
-  WebRect ComputeBlockBound(const WebPoint&, bool ignore_clipping);
-
   WebLayerTreeView* LayerTreeView() const { return layer_tree_view_; }
   CompositorAnimationHost* AnimationHost() const {
     return animation_host_.get();
@@ -402,10 +396,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   bool MatchesHeuristicsForGpuRasterizationForTesting() const {
     return matches_heuristics_for_gpu_rasterization_;
   }
-
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraint,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
 
   BrowserControls& GetBrowserControls();
   // Called anytime browser controls layout height or content offset have
@@ -468,6 +458,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void RefreshPageScaleFactor();
   IntSize ContentsSize() const;
 
+  void UpdateBrowserControlsConstraint(cc::BrowserControlsState constraint);
   void UpdateICBAndResizeViewport();
   void ResizeViewWhileAnchored(float top_controls_height,
                                float bottom_controls_height,
@@ -497,8 +488,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   HitTestResult HitTestResultForRootFramePos(const LayoutPoint&);
 
   void ConfigureAutoResizeMode();
-
-  void InitializeLayerTreeView();
 
   void SetIsAcceleratedCompositingActive(bool);
   void DoComposite();

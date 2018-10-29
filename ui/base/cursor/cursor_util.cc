@@ -108,7 +108,7 @@ void GetImageCursorBitmap(int resource_id,
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
   // TODO(oshima): The cursor should use resource scale factor when
   // fractional scale factor is enabled. crbug.com/372212
-  (*bitmap) = image_rep.sk_bitmap();
+  (*bitmap) = image_rep.GetBitmap();
   ScaleAndRotateCursorBitmapAndHotpoint(
       scale / image_rep.scale(), rotation, bitmap, hotspot);
   // |image_rep| is owned by the resource bundle. So we do not need to free it.
@@ -123,7 +123,7 @@ void GetAnimatedCursorBitmaps(int resource_id,
   const gfx::ImageSkia* image =
       ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   const gfx::ImageSkiaRep& image_rep = image->GetRepresentation(scale);
-  SkBitmap bitmap = image_rep.sk_bitmap();
+  SkBitmap bitmap = image_rep.GetBitmap();
   int frame_width = bitmap.height();
   int frame_height = frame_width;
   int total_width = bitmap.width();

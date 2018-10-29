@@ -12,7 +12,7 @@
 namespace blink {
 
 class LinkHeader {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   const String& Url() const { return url_; }

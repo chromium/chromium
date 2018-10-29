@@ -125,6 +125,12 @@ ProcessId Process::Pid() const {
   return GetProcId(Handle());
 }
 
+Time Process::CreationTime() const {
+  // TODO(https://crbug.com/726484): There is no syscall providing this data.
+  NOTIMPLEMENTED();
+  return Time();
+}
+
 bool Process::is_current() const {
   return is_current_process_;
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+
+let resolved_promises = 0;
+
+function after_task() {
+  resolved_promises++;
+
+  if (resolved_promises == 10) {
+    done();
+  }
+}
+
+function queue_tasks(task_type) {
+  let task_queue = TaskQueue.default(task_type);
+  for (var i = 1; i < 11; i++) {
+    task_queue.postTask(function() {
+
+    }).then(after_task);
+  }
+}
+
+queue_tasks('user-interaction');
+
+</script>

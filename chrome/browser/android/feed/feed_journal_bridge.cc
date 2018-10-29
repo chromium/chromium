@@ -26,10 +26,12 @@
 namespace feed {
 
 using base::android::AttachCurrentThread;
+using base::android::JavaByteArrayToByteVector;
 using base::android::JavaRef;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaArrayOfStrings;
 
 namespace {
@@ -40,14 +42,29 @@ void OnLoadJournalDone(
     bool success,
     std::vector<std::string> entries) {
   JNIEnv* env = AttachCurrentThread();
+
+  if (success) {
+    RunObjectCallbackAndroid(success_callback,
+                             ToJavaArrayOfByteArray(env, entries));
+  } else {
+    RunObjectCallbackAndroid(failure_callback, nullptr);
+  }
+}
+
+void OnLoadJournalKeyDone(
+    base::android::ScopedJavaGlobalRef<jobject> success_callback,
+    base::android::ScopedJavaGlobalRef<jobject> failure_callback,
+    bool success,
+    std::vector<std::string> entries) {
+  JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> j_entries =
       ToJavaArrayOfStrings(env, entries);
 
-  if (!success) {
+  if (success) {
+    RunObjectCallbackAndroid(success_callback, j_entries);
+  } else {
     RunObjectCallbackAndroid(failure_callback, nullptr);
-    return;
   }
-  RunObjectCallbackAndroid(success_callback, j_entries);
 }
 
 void OnStorageCheckExistingCallbackDone(
@@ -55,11 +72,11 @@ void OnStorageCheckExistingCallbackDone(
     ScopedJavaGlobalRef<jobject> failure_callback,
     bool success,
     bool exists) {
-  if (!success) {
+  if (success) {
+    RunBooleanCallbackAndroid(success_callback, exists);
+  } else {
     RunObjectCallbackAndroid(failure_callback, nullptr);
-    return;
   }
-  RunBooleanCallbackAndroid(success_callback, exists);
 }
 
 void OnStorageBooleanCallbackDone(ScopedJavaGlobalRef<jobject> callback,
@@ -146,8 +163,8 @@ void FeedJournalBridge::LoadAllJournalKeys(
   ScopedJavaGlobalRef<jobject> success_callback(j_success_callback);
   ScopedJavaGlobalRef<jobject> failure_callback(j_failure_callback);
 
-  feed_journal_database_->LoadAllJournalKeys(
-      base::BindOnce(&OnLoadJournalDone, success_callback, failure_callback));
+  feed_journal_database_->LoadAllJournalKeys(base::BindOnce(
+      &OnLoadJournalKeyDone, success_callback, failure_callback));
 }
 
 void FeedJournalBridge::DeleteAllJournals(
@@ -180,10 +197,12 @@ void FeedJournalBridge::DeleteJournalMutation(
 void FeedJournalBridge::AddAppendOperation(
     JNIEnv* j_env,
     const base::android::JavaRef<jobject>& j_this,
-    const base::android::JavaRef<jstring>& j_value) {
+    const base::android::JavaRef<jbyteArray>& j_value) {
   DCHECK(journal_mutation_);
-  std::string value = ConvertJavaStringToUTF8(j_env, j_value);
-  journal_mutation_->AddAppendOperation(std::move(value));
+  std::vector<uint8_t> bytes_vector;
+  JavaByteArrayToByteVector(j_env, j_value, &bytes_vector);
+  journal_mutation_->AddAppendOperation(
+      std::string(bytes_vector.begin(), bytes_vector.end()));
 }
 
 void FeedJournalBridge::AddCopyOperation(

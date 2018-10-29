@@ -7,9 +7,28 @@
  * Only changes to offline gaia style are defined here.
  */
 
-.advanced-option-subtitle {
-  color: rgba(0, 0, 0, 0.54);
+.select-title {
+  color: var(--google-grey-900);
+  font-size: 13px;
+  line-height: var(--subtitle-line-height);
+  padding-right: 16px;
+}
+
+oobe-dialog [slot='subtitle'] {
+  color: rgb(95, 99, 104);
+  padding-bottom: 64px;
+  padding-top: 2px;
+}
+
+.encryption-subtitle {
+  color: --google-grey-600;
   font: 13px Roboto, sans-serif;
+  padding-bottom: 9px;
+  padding-top: 9px;
+}
+
+.encryption-select-row {
+  padding-bottom: 24px;
 }
 
 iron-icon[icon='cr:warning'] {
@@ -18,4 +37,39 @@ iron-icon[icon='cr:warning'] {
   margin-inline-end: 15px;
   margin-inline-start: 0;
   margin-top: 0;
+}
+
+.select-divider-line {
+  border-bottom: 1px solid #ebebeb;
+  display: block;
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  position: relative;
+}
+
+.top-line {
+  margin-bottom: 8px;
+}
+
+.bottom-line {
+  margin-bottom: 26px;
+  margin-top: 8px;
+}
+
+.md-select {
+  height: 32px;
+  width: 240px;
+}
+
+#moreOptionsDlg [slot='title'] {
+  padding-bottom: 18px;
+  padding-top: 20px;
+}
+
+#moreOptionsDlg {
+  --cr-input-error-display: none;
+}
+
+#orgUnitInput {
+  padding-bottom: 28px;
 }

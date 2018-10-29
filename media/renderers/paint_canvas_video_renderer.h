@@ -29,6 +29,7 @@ class RectF;
 
 namespace gpu {
 struct Capabilities;
+class ContextSupport;
 }
 
 namespace media {
@@ -39,25 +40,29 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   PaintCanvasVideoRenderer();
   ~PaintCanvasVideoRenderer();
 
-  // Paints |video_frame| on |canvas|, scaling and rotating the result to fit
-  // dimensions specified by |dest_rect|.
-  // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
-  // must be provided.
+  // Paints |video_frame| translated and scaled to |dest_rect| on |canvas|.
   //
-  // Black will be painted on |canvas| if |video_frame| is null.
+  // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
+  // and |context_support| must be provided.
+  //
+  // If |video_frame| is nullptr or an unsupported format, |dest_rect| will be
+  // painted black.
   void Paint(const scoped_refptr<VideoFrame>& video_frame,
              cc::PaintCanvas* canvas,
              const gfx::RectF& dest_rect,
              cc::PaintFlags& flags,
              VideoRotation video_rotation,
-             const Context3D& context_3d);
+             const Context3D& context_3d,
+             gpu::ContextSupport* context_support);
 
-  // Copy |video_frame| on |canvas|.
+  // Paints |video_frame| scaled to its visible size on |canvas|.
+  //
   // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
-  // must be provided.
+  // and |context_support| must be provided.
   void Copy(const scoped_refptr<VideoFrame>& video_frame,
             cc::PaintCanvas* canvas,
-            const Context3D& context_3d);
+            const Context3D& context_3d,
+            gpu::ContextSupport* context_support);
 
   // Convert the contents of |video_frame| to raw RGB pixels. |rgb_pixels|
   // should point into a buffer large enough to hold as many 32 bit RGBA pixels
@@ -82,15 +87,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       bool premultiply_alpha,
       bool flip_y);
 
-  // Copy the contents of texture of |video_frame| to texture |texture| in
-  // context |destination_gl|.
-  // |level|, |internal_format|, |type| specify target texture |texture|.
+  // Copy the contents of |video_frame| to |texture| of |destination_gl|.
+  //
   // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.
-  // |context_3d| has a GrContext that may be used during the copy.
-  // CorrectLastImageDimensions() ensures that the source texture will be
-  // cropped to |visible_rect|. Returns true on success.
   bool CopyVideoFrameTexturesToGLTexture(
       const Context3D& context_3d,
+      gpu::ContextSupport* context_support,
       gpu::gles2::GLES2Interface* destination_gl,
       const scoped_refptr<VideoFrame>& video_frame,
       unsigned int target,
@@ -168,8 +170,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // never be painted again, so we can release the resource.
   void ResetCache();
 
-  void CorrectLastImageDimensions(const SkIRect& visible_rect);
-
   // Used for unit test.
   SkISize LastImageDimensionsForTesting();
 
@@ -178,6 +178,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // if the image couldn't be updated.
   bool UpdateLastImage(const scoped_refptr<VideoFrame>& video_frame,
                        const Context3D& context_3d);
+
+  void CorrectLastImageDimensions(const SkIRect& visible_rect);
 
   // Last image used to draw to the canvas.
   cc::PaintImage last_image_;

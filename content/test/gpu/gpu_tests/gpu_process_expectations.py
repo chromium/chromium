@@ -11,4 +11,4 @@ class GpuProcessExpectations(GpuTestExpectations):
     self.Fail('GpuProcess_video', ['linux'], bug=257109)
 
     # Seems to have become flaky on Windows recently.
-    self.Flaky('GpuProcess_only_one_workaround', ['win'], bug=700522)
+    self.Flaky('GpuProcess_one_extra_workaround', ['win'], bug=700522)

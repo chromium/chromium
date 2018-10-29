@@ -138,6 +138,9 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     ~ValidationResult();
   };
 
+  // Returns a human-readable representation of |status|.
+  static const char* StatusToString(Status status);
+
   virtual ~CloudPolicyValidatorBase();
 
   // Validation status which can be read after completion has been signaled.

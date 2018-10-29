@@ -82,10 +82,8 @@ public class RemotingCastSession
             Log.e(TAG, "Failed to register media namespace listener", e);
         }
 
-        mMediaPlayerWrapper =
-                new RemoteMediaPlayerWrapper(mApiClient, mNotificationBuilder, mCastDevice);
-
-        mMediaPlayerWrapper.load(((RemotingMediaSource) source).getMediaUrl());
+        mMediaPlayerWrapper = new RemoteMediaPlayerWrapper(mApiClient, mNotificationBuilder,
+                mCastDevice, ((RemotingMediaSource) source).getMediaUrl());
     }
 
     /**

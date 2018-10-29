@@ -73,4 +73,7 @@ const char kEmulateShaderPrecision[] = "emulate-shader-precision";
 // tracking.
 const char kUseCmdDecoder[] = "use-cmd-decoder";
 
+// Turns on rastering to SkImage with RasterDecoder.
+const char kEnableRasterToSkImage[] = "enable-raster-to-sk-image";
+
 }  // namespace switches

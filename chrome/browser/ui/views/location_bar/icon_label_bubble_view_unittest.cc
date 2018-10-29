@@ -84,6 +84,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
  protected:
   // IconLabelBubbleView:
   SkColor GetTextColor() const override { return kTestColor; }
+  SkColor GetInkDropBaseColor() const override { return kTestColor; }
 
   bool ShouldShowLabel() const override {
     return !IsShrinking() ||

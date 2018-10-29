@@ -65,7 +65,7 @@ class CheckWaiter {
 
 class DevToolsManagerDelegateTest : public InProcessBrowserTest {
  public:
-  void SendCommand(std::string state) {
+  void SendCommand(const std::string& state) {
     auto window_bounds =
         protocol::Browser::Bounds::Create().SetWindowState(state).Build();
     BrowserHandler handler(nullptr);

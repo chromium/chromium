@@ -80,7 +80,7 @@ public class PageInfoControllerTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             PageInfoController pageInfo = new PageInfoController(mActivityTestRule.getActivity(),
                     mActivityTestRule.getActivity().getActivityTab(), ConnectionSecurityLevel.NONE,
-                    null, null, PageInfoController.OfflinePageState.NOT_OFFLINE_PAGE, null,
+                    null, null, PageInfoController.OfflinePageState.NOT_OFFLINE_PAGE,
                     PageInfoController.PreviewPageState.NOT_PREVIEW, null);
             PageInfoView pageInfoView = pageInfo.getPageInfoViewForTesting();
             // Test that the title contains the Unicode hostname rather than strict equality, as

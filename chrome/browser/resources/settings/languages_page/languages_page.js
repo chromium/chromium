@@ -155,6 +155,19 @@ Polymer({
   },
 
   /**
+   * Checks if there are supported languages that are not enabled but can be
+   * enabled.
+   * @param {LanguagesModel|undefined} languages
+   * @return {boolean} True if there is at least one available language.
+   * @private
+   */
+  canEnableSomeSupportedLanguage_: function(languages) {
+    return languages == undefined || languages.supported.some(language => {
+      return this.languageHelper.canEnableLanguage(language);
+    });
+  },
+
+  /**
    * Used to determine which "Move" buttons to show for ordering enabled
    * languages.
    * @param {number} n
@@ -213,8 +226,10 @@ Polymer({
       menu.querySelector('#uiLanguageItem').hidden = true;
 
     // The UI language choice doesn't persist for guests.
-    if (loadTimeData.getBoolean('isGuest'))
+    if (loadTimeData.getBoolean('isGuest') &&
+        !loadTimeData.getBoolean('isDemoSession')) {
       menu.querySelector('#uiLanguageItem').hidden = true;
+    }
   },
 
   /**
@@ -304,9 +319,9 @@ Polymer({
     if (languageState.language.code == prospectiveUILanguage)
       return true;
 
-    // Check if the language is prohibited by the current "AllowedUILocales"
+    // Check if the language is prohibited by the current "AllowedLanguages"
     // policy.
-    if (languageState.language.isProhibitedUILocale)
+    if (languageState.language.isProhibitedLanguage)
       return true;
 
     // Otherwise, the prospective language can be changed to this language.

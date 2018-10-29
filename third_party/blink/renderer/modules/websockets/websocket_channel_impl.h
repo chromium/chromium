@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -133,7 +134,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
   void SendInternal(WebSocketHandle::MessageType,
                     const char* data,
-                    size_t total_size,
+                    wtf_size_t total_size,
                     uint64_t* consumed_buffered_amount);
   void ProcessSendQueue();
   void FlowControlIfNecessary();
@@ -200,7 +201,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   bool receiving_message_type_is_text_;
   uint64_t sending_quota_;
   uint64_t received_data_size_for_flow_control_;
-  size_t sent_size_of_top_message_;
+  wtf_size_t sent_size_of_top_message_;
   std::unique_ptr<FrameScheduler::ActiveConnectionHandle>
       connection_handle_for_scheduler_;
 

@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "sql/database.h"
@@ -21,6 +20,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "url/gurl.h"
 
 using blink::mojom::StorageType;
 
@@ -121,7 +121,7 @@ QuotaDatabase::OriginInfoTableEntry::OriginInfoTableEntry()
     : type(StorageType::kUnknown), used_count(0) {}
 
 QuotaDatabase::OriginInfoTableEntry::OriginInfoTableEntry(
-    const GURL& origin,
+    const url::Origin& origin,
     StorageType type,
     int used_count,
     const base::Time& last_access_time,
@@ -130,8 +130,7 @@ QuotaDatabase::OriginInfoTableEntry::OriginInfoTableEntry(
       type(type),
       used_count(used_count),
       last_access_time(last_access_time),
-      last_modified_time(last_modified_time) {
-}
+      last_modified_time(last_modified_time) {}
 
 // QuotaDatabase ------------------------------------------------------------
 QuotaDatabase::QuotaDatabase(const base::FilePath& path)
@@ -188,8 +187,9 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
   return true;
 }
 
-bool QuotaDatabase::SetOriginLastAccessTime(
-    const GURL& origin, StorageType type, base::Time last_access_time) {
+bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
+                                            StorageType type,
+                                            base::Time last_access_time) {
   if (!LazyOpen(true))
     return false;
 
@@ -211,11 +211,11 @@ bool QuotaDatabase::SetOriginLastAccessTime(
         " (used_count, last_access_time, origin, type, last_modified_time)"
         " VALUES (?, ?, ?, ?, ?)";
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(4, last_access_time.ToInternalValue());
+    statement.BindInt64(4, TimeToSqlValue(last_access_time));
   }
   statement.BindInt(0, entry.used_count);
-  statement.BindInt64(1, last_access_time.ToInternalValue());
-  statement.BindString(2, origin.spec());
+  statement.BindInt64(1, TimeToSqlValue(last_access_time));
+  statement.BindString(2, origin.GetURL().spec());
   statement.BindInt(3, static_cast<int>(type));
 
   if (!statement.Run())
@@ -225,8 +225,9 @@ bool QuotaDatabase::SetOriginLastAccessTime(
   return true;
 }
 
-bool QuotaDatabase::SetOriginLastModifiedTime(
-    const GURL& origin, StorageType type, base::Time last_modified_time) {
+bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
+                                              StorageType type,
+                                              base::Time last_modified_time) {
   if (!LazyOpen(true))
     return false;
 
@@ -245,10 +246,11 @@ bool QuotaDatabase::SetOriginLastModifiedTime(
         "INSERT INTO OriginInfoTable"
         " (last_modified_time, origin, type, last_access_time)  VALUES (?, ?, ?, ?)";
     statement.Assign(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(3, last_modified_time.ToInternalValue());
+    statement.BindInt64(3, TimeToSqlValue(last_modified_time));
   }
-  statement.BindInt64(0, last_modified_time.ToInternalValue());
-  statement.BindString(1, origin.spec());
+  statement.BindInt64(0, TimeToSqlValue(last_modified_time));
+
+  statement.BindString(1, origin.GetURL().spec());
   statement.BindInt(2, static_cast<int>(type));
 
   if (!statement.Run())
@@ -258,7 +260,7 @@ bool QuotaDatabase::SetOriginLastModifiedTime(
   return true;
 }
 
-bool QuotaDatabase::GetOriginLastEvictionTime(const GURL& origin,
+bool QuotaDatabase::GetOriginLastEvictionTime(const url::Origin& origin,
                                               StorageType type,
                                               base::Time* last_modified_time) {
   DCHECK(last_modified_time);
@@ -271,17 +273,17 @@ bool QuotaDatabase::GetOriginLastEvictionTime(const GURL& origin,
       " WHERE origin = ? AND type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.spec());
+  statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Step())
     return false;
 
-  *last_modified_time = base::Time::FromInternalValue(statement.ColumnInt64(0));
+  *last_modified_time = TimeFromSqlValue(statement.ColumnInt64(0));
   return true;
 }
 
-bool QuotaDatabase::SetOriginLastEvictionTime(const GURL& origin,
+bool QuotaDatabase::SetOriginLastEvictionTime(const url::Origin& origin,
                                               StorageType type,
                                               base::Time last_modified_time) {
   if (!LazyOpen(true))
@@ -292,8 +294,8 @@ bool QuotaDatabase::SetOriginLastEvictionTime(const GURL& origin,
       " (last_eviction_time, origin, type)"
       " VALUES (?, ?, ?)";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, last_modified_time.ToInternalValue());
-  statement.BindString(1, origin.spec());
+  statement.BindInt64(0, TimeToSqlValue(last_modified_time));
+  statement.BindString(1, origin.GetURL().spec());
   statement.BindInt(2, static_cast<int>(type));
 
   if (!statement.Run())
@@ -303,7 +305,7 @@ bool QuotaDatabase::SetOriginLastEvictionTime(const GURL& origin,
   return true;
 }
 
-bool QuotaDatabase::DeleteOriginLastEvictionTime(const GURL& origin,
+bool QuotaDatabase::DeleteOriginLastEvictionTime(const url::Origin& origin,
                                                  StorageType type) {
   if (!LazyOpen(false))
     return false;
@@ -313,7 +315,7 @@ bool QuotaDatabase::DeleteOriginLastEvictionTime(const GURL& origin,
       " WHERE origin = ? AND type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.spec());
+  statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Run())
@@ -324,7 +326,8 @@ bool QuotaDatabase::DeleteOriginLastEvictionTime(const GURL& origin,
 }
 
 bool QuotaDatabase::RegisterInitialOriginInfo(
-    const std::set<GURL>& origins, StorageType type) {
+    const std::set<url::Origin>& origins,
+    StorageType type) {
   if (!LazyOpen(true))
     return false;
 
@@ -333,7 +336,7 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
         "INSERT OR IGNORE INTO OriginInfoTable"
         " (origin, type) VALUES (?, ?)";
     sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindString(0, origin.spec());
+    statement.BindString(0, origin.GetURL().spec());
     statement.BindInt(1, static_cast<int>(type));
 
     if (!statement.Run())
@@ -344,7 +347,7 @@ bool QuotaDatabase::RegisterInitialOriginInfo(
   return true;
 }
 
-bool QuotaDatabase::GetOriginInfo(const GURL& origin,
+bool QuotaDatabase::GetOriginInfo(const url::Origin& origin,
                                   StorageType type,
                                   QuotaDatabase::OriginInfoTableEntry* entry) {
   if (!LazyOpen(false))
@@ -354,17 +357,18 @@ bool QuotaDatabase::GetOriginInfo(const GURL& origin,
       "SELECT * FROM OriginInfoTable"
       " WHERE origin = ? AND type = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.spec());
+  statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Step())
     return false;
 
+  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
   *entry = OriginInfoTableEntry(
-      GURL(statement.ColumnString(0)),
+      url::Origin::Create(GURL(statement.ColumnString(0))),
       static_cast<StorageType>(statement.ColumnInt(1)), statement.ColumnInt(2),
-      base::Time::FromInternalValue(statement.ColumnInt64(3)),
-      base::Time::FromInternalValue(statement.ColumnInt64(4)));
+      TimeFromSqlValue(statement.ColumnInt64(3)),
+      TimeFromSqlValue(statement.ColumnInt64(4)));
 
   return true;
 }
@@ -389,8 +393,8 @@ bool QuotaDatabase::DeleteHostQuota(
   return true;
 }
 
-bool QuotaDatabase::DeleteOriginInfo(
-    const GURL& origin, StorageType type) {
+bool QuotaDatabase::DeleteOriginInfo(const url::Origin& origin,
+                                     StorageType type) {
   if (!LazyOpen(false))
     return false;
 
@@ -399,7 +403,7 @@ bool QuotaDatabase::DeleteOriginInfo(
       " WHERE origin = ? AND type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, origin.spec());
+  statement.BindString(0, origin.GetURL().spec());
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Run())
@@ -423,11 +427,10 @@ bool QuotaDatabase::SetQuotaConfigValue(const char* key, int64_t value) {
   return meta_table_->SetValue(key, value);
 }
 
-bool QuotaDatabase::GetLRUOrigin(
-    StorageType type,
-    const std::set<GURL>& exceptions,
-    SpecialStoragePolicy* special_storage_policy,
-    GURL* origin) {
+bool QuotaDatabase::GetLRUOrigin(StorageType type,
+                                 const std::set<url::Origin>& exceptions,
+                                 SpecialStoragePolicy* special_storage_policy,
+                                 base::Optional<url::Origin>* origin) {
   DCHECK(origin);
   if (!LazyOpen(false))
     return false;
@@ -441,26 +444,28 @@ bool QuotaDatabase::GetLRUOrigin(
   statement.BindInt(0, static_cast<int>(type));
 
   while (statement.Step()) {
-    GURL url(statement.ColumnString(0));
-    if (base::ContainsKey(exceptions, url))
+    url::Origin read_origin =
+        url::Origin::Create(GURL(statement.ColumnString(0)));
+    if (base::ContainsKey(exceptions, read_origin))
       continue;
 
-    if (special_storage_policy && (
-        special_storage_policy->IsStorageDurable(url) ||
-        special_storage_policy->IsStorageUnlimited(url))) {
+    if (special_storage_policy &&
+        (special_storage_policy->IsStorageDurable(read_origin.GetURL()) ||
+         special_storage_policy->IsStorageUnlimited(read_origin.GetURL()))) {
       continue;
     }
 
-    *origin = url;
+    *origin = read_origin;
     return true;
   }
 
-  *origin = GURL();
+  origin->reset();
   return statement.Succeeded();
 }
 
-bool QuotaDatabase::GetOriginsModifiedSince(
-    StorageType type, std::set<GURL>* origins, base::Time modified_since) {
+bool QuotaDatabase::GetOriginsModifiedSince(StorageType type,
+                                            std::set<url::Origin>* origins,
+                                            base::Time modified_since) {
   DCHECK(origins);
   if (!LazyOpen(false))
     return false;
@@ -470,11 +475,11 @@ bool QuotaDatabase::GetOriginsModifiedSince(
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(type));
-  statement.BindInt64(1, modified_since.ToInternalValue());
+  statement.BindInt64(1, TimeToSqlValue(modified_since));
 
   origins->clear();
   while (statement.Step())
-    origins->insert(GURL(statement.ColumnString(0)));
+    origins->insert(url::Origin::Create(GURL(statement.ColumnString(0))));
 
   return statement.Succeeded();
 }
@@ -564,8 +569,8 @@ bool QuotaDatabase::LazyOpen(bool create_if_needed) {
 }
 
 bool QuotaDatabase::EnsureDatabaseVersion() {
-  static const size_t kTableCount = arraysize(kTables);
-  static const size_t kIndexCount = arraysize(kIndexes);
+  static const size_t kTableCount = base::size(kTables);
+  static const size_t kIndexCount = base::size(kIndexes);
   if (!sql::MetaTable::DoesTableExist(db_.get()))
     return CreateSchema(db_.get(), meta_table_.get(),
                         kQuotaDatabaseCurrentSchemaVersion,
@@ -750,17 +755,27 @@ bool QuotaDatabase::DumpOriginInfoTable(
 
   while (statement.Step()) {
     OriginInfoTableEntry entry(
-      GURL(statement.ColumnString(0)),
-      static_cast<StorageType>(statement.ColumnInt(1)),
-      statement.ColumnInt(2),
-      base::Time::FromInternalValue(statement.ColumnInt64(3)),
-      base::Time::FromInternalValue(statement.ColumnInt64(4)));
+        url::Origin::Create(GURL(statement.ColumnString(0))),
+        static_cast<StorageType>(statement.ColumnInt(1)),
+        statement.ColumnInt(2), TimeFromSqlValue(statement.ColumnInt64(3)),
+        TimeFromSqlValue(statement.ColumnInt64(4)));
 
     if (!callback.Run(entry))
       return true;
   }
 
   return statement.Succeeded();
+}
+
+// static
+base::Time QuotaDatabase::TimeFromSqlValue(int64_t time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(time));
+}
+
+// static
+int64_t QuotaDatabase::TimeToSqlValue(const base::Time& time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
 bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,

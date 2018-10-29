@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 701 tests; 639 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 701 tests; 640 PASS, 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testInterpolation function
 PASS align-content uses discrete animation when animating between "flex-start" and "flex-end" with linear easing
@@ -257,7 +257,7 @@ PASS fill-rule uses discrete animation when animating between "evenodd" and "non
 PASS filter (type: filterList) has testInterpolation function
 PASS filter: blur function
 PASS filter: hue-rotate function with same unit(deg)
-FAIL filter: hue-rotate function with different unit(deg -> rad) assert_equals: The value should be hue-rotate(50.0873rad) at 500ms expected "hue-rotate(50.0873rad)" but got "hue-rotate(2869.79deg)"
+PASS filter: hue-rotate function with different unit(deg -> rad)
 PASS filter: drop-shadow function
 PASS filter: percentage or numeric-specifiable functions (number value)
 PASS filter: percentage or numeric-specifiable functions (percentage value)

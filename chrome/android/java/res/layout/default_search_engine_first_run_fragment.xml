@@ -7,7 +7,6 @@
 <!-- Layout used to present a set of default search engines to the user. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/signin_body_background"
@@ -43,7 +42,7 @@
                     android:paddingBottom="@dimen/signin_chooser_padding"
                     android:background="@color/signin_head_background"
                     android:importantForAccessibility="no"
-                    android:textAppearance="@style/BlackHeadline1"
+                    android:textAppearance="@style/BlackHeadline"
                     android:text="@string/search_engine_dialog_title" />
 
                 <View style="@style/HorizontalDivider" />
@@ -78,8 +77,6 @@
         android:paddingStart="@dimen/fre_button_padding"
         android:paddingEnd="@dimen/fre_button_padding"
         android:text="@string/ok"
-        android:textAppearance="@style/WhiteButtonText"
-        app:buttonColor="@color/light_active_color"
-        app:buttonRaised="false" />
+        style="@style/FilledButton.Flat" />
 
 </LinearLayout>

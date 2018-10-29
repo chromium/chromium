@@ -17,6 +17,7 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }
 
 namespace device {
@@ -67,6 +68,8 @@ class XRDeviceImpl : public device::mojom::XRDevice {
   base::WeakPtr<XRDeviceImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  content::WebContents* GetWebContents();
 
  private:
   void ReportRequestPresent();

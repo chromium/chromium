@@ -6,7 +6,6 @@
 
 #include "base/atomicops.h"
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_task_environment.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -134,7 +133,8 @@ TEST(TestBrowserThreadBundleTest, RunIOThreadUntilIdle) {
 }
 
 TEST(TestBrowserThreadBundleTest, MessageLoopTypeMismatch) {
-  base::MessageLoopForUI message_loop;
+  base::test::ScopedTaskEnvironment task_environment(
+      base::test::ScopedTaskEnvironment::MainThreadType::UI);
 
   EXPECT_DEATH_IF_SUPPORTED(
       {

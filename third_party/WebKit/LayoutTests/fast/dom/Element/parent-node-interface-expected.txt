@@ -2,7 +2,6 @@ This tests that Element implements the ParentNode interface.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS element.children.length is 0
 PASS element.childElementCount is 0
 PASS element.firstElementChild is null

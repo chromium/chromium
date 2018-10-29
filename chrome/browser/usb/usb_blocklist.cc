@@ -11,7 +11,6 @@
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
 #include "device/usb/public/mojom/device.mojom.h"
-#include "device/usb/usb_device.h"
 
 namespace {
 
@@ -124,12 +123,6 @@ bool UsbBlocklist::IsExcluded(const Entry& entry) const {
   return EntryMatches(std::begin(kStaticEntries), std::end(kStaticEntries),
                       entry) ||
          EntryMatches(dynamic_entries_.begin(), dynamic_entries_.end(), entry);
-}
-
-bool UsbBlocklist::IsExcluded(
-    const scoped_refptr<const device::UsbDevice>& device) const {
-  return IsExcluded(Entry(device->vendor_id(), device->product_id(),
-                          device->device_version()));
 }
 
 bool UsbBlocklist::IsExcluded(

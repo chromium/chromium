@@ -16,6 +16,7 @@
 #include "base/task/task_scheduler/scheduler_lock.h"
 #include "base/task/task_scheduler/sequence_sort_key.h"
 #include "base/task/task_scheduler/task.h"
+#include "base/task/task_traits.h"
 #include "base/threading/sequence_local_storage_map.h"
 
 namespace base {
@@ -41,7 +42,8 @@ namespace internal {
 // This class is thread-safe.
 class BASE_EXPORT Sequence : public RefCountedThreadSafe<Sequence> {
  public:
-  Sequence();
+  // |traits| is metadata that applies to all Tasks in the Sequence.
+  explicit Sequence(const TaskTraits& traits);
 
   // Adds |task| in a new slot at the end of the Sequence. Returns true if the
   // Sequence was empty before this operation.
@@ -74,6 +76,9 @@ class BASE_EXPORT Sequence : public RefCountedThreadSafe<Sequence> {
     return &sequence_local_storage_;
   }
 
+  // Returns the TaskTraits for all Tasks in the Sequence.
+  TaskTraits traits() const { return traits_; }
+
  private:
   friend class RefCountedThreadSafe<Sequence>;
   ~Sequence();
@@ -86,12 +91,11 @@ class BASE_EXPORT Sequence : public RefCountedThreadSafe<Sequence> {
   // Queue of tasks to execute.
   base::queue<Task> queue_;
 
-  // Number of tasks contained in the Sequence for each priority.
-  size_t num_tasks_per_priority_[static_cast<int>(TaskPriority::HIGHEST) + 1] =
-      {};
-
   // Holds data stored through the SequenceLocalStorageSlot API.
   SequenceLocalStorageMap sequence_local_storage_;
+
+  // The TaskTraits of all Tasks in the Sequence.
+  const TaskTraits traits_;
 
   DISALLOW_COPY_AND_ASSIGN(Sequence);
 };

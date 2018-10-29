@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGHiddenContainer {symbol} at (0,0) size 0x0
-    LayoutSVGHiddenContainer {g} at (0,0) size 0x0
-      LayoutSVGContainer {use} at (0,0) size 0x0
-        LayoutSVGViewportContainer {svg} at (0,0) size 0x0

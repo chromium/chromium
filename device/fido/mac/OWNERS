@@ -1,5 +1,4 @@
-martinkr@chromium.org
-martinkr@google.com
+file://device/fido/OWNERS
 
-# TEAM: security-dev@chromium.org
 # COMPONENT: Blink>WebAuthentication
+# TEAM: identity-dev@chromium.org

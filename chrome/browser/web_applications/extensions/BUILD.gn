@@ -8,8 +8,6 @@ assert(enable_extensions)
 
 source_set("extensions") {
   sources = [
-    "bookmark_app_data_retriever.cc",
-    "bookmark_app_data_retriever.h",
     "bookmark_app_installation_task.cc",
     "bookmark_app_installation_task.h",
     "bookmark_app_installer.cc",
@@ -44,7 +42,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "bookmark_app_data_retriever_unittest.cc",
     "bookmark_app_installation_task_unittest.cc",
     "bookmark_app_installer_unittest.cc",
     "pending_bookmark_app_manager_unittest.cc",
@@ -55,6 +52,7 @@ source_set("unit_tests") {
     ":extensions",
     "//chrome/browser",
     "//chrome/browser/web_applications:web_app_group",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -82,8 +80,8 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ui",
-    "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_group",
+    "//chrome/browser/web_applications:web_applications_on_extensions",
     "//chrome/browser/web_applications/components",
     "//chrome/test:test_support_ui",
     "//extensions/browser",

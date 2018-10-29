@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.blink_public.web.WebReferrerPolicy;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,6 +46,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.network.mojom.ReferrerPolicy;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
@@ -342,9 +342,8 @@ public class TabsOpenedFromExternalAppTest {
     @Feature({"Navigation"})
     public void testReferrerPolicyHttpsReferrerPolicyOrigin() throws InterruptedException {
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        launchAndVerifyReferrerWithPolicy(url, mActivityTestRule,
-                WebReferrerPolicy.ORIGIN, HTTPS_REFERRER_WITH_PATH,
-                HTTPS_REFERRER);
+        launchAndVerifyReferrerWithPolicy(url, mActivityTestRule, ReferrerPolicy.ORIGIN,
+                HTTPS_REFERRER_WITH_PATH, HTTPS_REFERRER);
     }
 
     /**
@@ -359,8 +358,7 @@ public class TabsOpenedFromExternalAppTest {
             throws InterruptedException {
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
         launchAndVerifyReferrerWithPolicy(url, mActivityTestRule,
-                WebReferrerPolicy.ORIGIN_WHEN_CROSS_ORIGIN,
-                HTTPS_REFERRER_WITH_PATH, HTTPS_REFERRER);
+                ReferrerPolicy.ORIGIN_WHEN_CROSS_ORIGIN, HTTPS_REFERRER_WITH_PATH, HTTPS_REFERRER);
     }
 
     /**
@@ -372,8 +370,8 @@ public class TabsOpenedFromExternalAppTest {
     @Feature({"Navigation"})
     public void testReferrerPolicyHttpsReferrerPolicyStrictOrigin() throws InterruptedException {
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        launchAndVerifyReferrerWithPolicy(url, mActivityTestRule,
-                WebReferrerPolicy.STRICT_ORIGIN, HTTPS_REFERRER, "");
+        launchAndVerifyReferrerWithPolicy(
+                url, mActivityTestRule, ReferrerPolicy.STRICT_ORIGIN, HTTPS_REFERRER, "");
     }
 
     /**

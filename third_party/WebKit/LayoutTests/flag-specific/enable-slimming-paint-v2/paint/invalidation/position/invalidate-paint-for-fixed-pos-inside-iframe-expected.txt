@@ -9,7 +9,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV",
           "rect": [18, 418, 50, 50],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

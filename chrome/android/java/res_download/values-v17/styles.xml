@@ -72,6 +72,17 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">8dp</item>
     </style>
+
+    <!-- Download Home V2 Snowflake Contender Styles -->
+    <style name="TinyCircularProgress">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:tint">@color/modern_blue_600</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="resumeSrc">@drawable/circular_progress_bar_resume_tiny</item>
+        <item name="retrySrc">@drawable/circular_progress_bar_retry_tiny</item>
+        <item name="pauseSrc">@drawable/circular_progress_bar_pause_tiny</item>
+    </style>
     <style name="SmallCircularProgress">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
@@ -80,8 +91,7 @@
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_small</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_small</item>
         <item name="resumeSrc">@drawable/ic_play_arrow_white_24dp</item>
-        <!-- TODO(883387): Support retrying failed downloads. -->
-        <item name="retrySrc">@drawable/ic_play_arrow_white_24dp</item>
+        <item name="retrySrc">@drawable/ic_refresh_white_24dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_24dp</item>
     </style>
     <style name="LargeCircularProgress">
@@ -92,8 +102,11 @@
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_large</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_large</item>
         <item name="resumeSrc">@drawable/ic_play_arrow_white_36dp</item>
-        <!-- TODO(883387): Support retrying failed downloads. -->
-        <item name="retrySrc">@drawable/ic_play_arrow_white_36dp</item>
+        <item name="retrySrc">@drawable/ic_refresh_white_36dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_36dp</item>
+    </style>
+    <style name="AsyncImageView">
+        <item name="unavailableSrc">@drawable/async_image_view_unavailable</item>
+        <item name="waitingSrc">@drawable/async_image_view_waiting</item>
     </style>
 </resources>

@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/raster_decoder_context_state.h"
 #include "gpu/command_buffer/service/raster_decoder_unittest_base.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_image_stub.h"
@@ -568,7 +569,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         &framebuffer_completeness_cache_, feature_info,
         false /* bind_generates_resource */, &image_manager_,
         nullptr /* image_factory */, nullptr /* progress_reporter */,
-        gpu_feature_info, &discardable_manager_);
+        gpu_feature_info, &discardable_manager_,
+        nullptr /* passthrough_discardable_manager */, &shared_image_manager_);
   }
   void TearDown() override {
     context_state_ = nullptr;
@@ -621,6 +623,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   gles2::ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
+  SharedImageManager shared_image_manager_;
   scoped_refptr<gles2::ContextGroup> group_;
 };
 

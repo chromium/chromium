@@ -2,7 +2,6 @@ This tests checks that all of the input values for text-rendering parse correctl
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("text-rendering: auto;") is "auto"
 PASS test("text-rendering: optimizespeed;") is "optimizespeed"
 PASS test("text-rendering: optimizelegibility;") is "optimizelegibility"

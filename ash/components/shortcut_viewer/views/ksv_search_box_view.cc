@@ -56,15 +56,16 @@ void KSVSearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void KSVSearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key = event->key_code();
-  const bool is_escape_key = (key == ui::VKEY_ESCAPE);
-  if (!is_escape_key && key != ui::VKEY_BROWSER_BACK)
+  if ((key != ui::VKEY_ESCAPE && key != ui::VKEY_BROWSER_BACK) ||
+      event->type() != ui::ET_KEY_PRESSED) {
     return;
+  }
 
   event->SetHandled();
   // |VKEY_BROWSER_BACK| will only clear all the text.
   ClearSearch();
   // |VKEY_ESCAPE| will clear text and exit search mode directly.
-  if (is_escape_key)
+  if (key == ui::VKEY_ESCAPE)
     SetSearchBoxActive(false, event->type());
 }
 

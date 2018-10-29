@@ -102,11 +102,14 @@ void BrowserLifetimeHandler::HandleFactoryReset(
     return;
   }
 
+  // TODO(crbug.com/891905): Centralize powerwash restriction checks.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  bool allow_powerwash = !connector->IsEnterpriseManaged() &&
+  bool allow_powerwash =
+      !connector->IsEnterpriseManaged() &&
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
-      !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser();
+      !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser() &&
+      !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   if (!allow_powerwash)
     return;

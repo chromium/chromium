@@ -180,10 +180,6 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   // set it as the source url of this navigation. Otherwise, this is the
   // first url going to commit in this frame. We set navigation_handle's URL as
   // the source url.
-  // TODO(jialiul): source_url, source_tab_id, and source_main_frame_url may be
-  // incorrect when another frame is targeting this frame. Need to refine this
-  // logic after the true initiator details are added to NavigationHandle
-  // (https://crbug.com/651895).
   int current_process_id =
       navigation_handle->GetStartingSiteInstance()->GetProcess()->GetID();
   content::RenderFrameHost* current_frame_host =

@@ -1,3 +1,4 @@
 Test for bug 26570. There should be two green boxes on this page.
 
+
 PASS

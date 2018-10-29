@@ -28,9 +28,6 @@ class LabelButtonLabel;
 // LabelButton is a button with text and an icon, it's not focusable by default.
 class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
  public:
-  // The length of the hover fade animation.
-  static const int kHoverAnimationDurationMs;
-
   static const char kViewClassName[];
 
   // Creates a LabelButton with ButtonPressed() events sent to |listener| and

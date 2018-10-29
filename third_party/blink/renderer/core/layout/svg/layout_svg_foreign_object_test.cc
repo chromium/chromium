@@ -68,6 +68,17 @@ TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   EXPECT_EQ(div.GetNode(), HitTest(349, 249));
   EXPECT_EQ(foreign, HitTest(350, 250));
   EXPECT_EQ(svg, HitTest(450, 350));
+
+  // Rect based hit testing
+  auto results = RectBasedHitTest(LayoutRect(0, 0, 300, 300));
+  int count = 0;
+  EXPECT_EQ(3u, results.size());
+  for (auto result : results) {
+    Node* node = result.Get();
+    if (node == svg || node == div.GetNode() || node == foreign)
+      count++;
+  }
+  EXPECT_EQ(3, count);
 }
 
 TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
@@ -75,7 +86,7 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
     <style>body { margin: 0 }</style>
     <svg id='svg' style='width: 500px; height: 450px'>
       <foreignObject id='foreign' x='100' y='100' width='300' height='250'>
-        <iframe style='border: none; margin: 30px;
+        <iframe id=iframe style='border: none; margin: 30px;
              width: 240px; height: 190px'></iframe>
       </foreignObject>
     </svg>
@@ -92,6 +103,7 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   const auto& svg = *GetDocument().getElementById("svg");
   const auto& foreign = *GetDocument().getElementById("foreign");
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
+  const auto& iframe = *GetDocument().getElementById("iframe");
   const auto& div = *ChildDocument().getElementById("div")->GetLayoutObject();
 
   EXPECT_EQ(FloatRect(100, 100, 300, 250), foreign_object.ObjectBoundingBox());
@@ -136,13 +148,25 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   EXPECT_EQ(ChildDocument().documentElement(), HitTest(369, 319));
   EXPECT_EQ(foreign, HitTest(370, 320));
   EXPECT_EQ(svg, HitTest(450, 400));
+
+  // Rect based hit testing
+  auto results = RectBasedHitTest(LayoutRect(0, 0, 300, 300));
+  int count = 0;
+  EXPECT_EQ(7u, results.size());
+  for (auto result : results) {
+    Node* node = result.Get();
+    if (node == svg || node == div.GetNode() || node == foreign ||
+        node == iframe)
+      count++;
+  }
+  EXPECT_EQ(4, count);
 }
 
 TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <style>* { margin: 0; zoom: 150% }</style>
     <svg id='svg' style='width: 200px; height: 200px'>
-      <foreignObject id='foreign' x='10' y='10' width='100' height='150'>
+      <foreignObject id='foreign' x='10' y='10' width='100' height='150' style='overflow: visible'>
         <div id='div' style='margin: 50px; width: 50px; height: 50px'>
         </div>
       </foreignObject>
@@ -184,6 +208,17 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   EXPECT_EQ(svg, HitTest(20, 20));
   EXPECT_EQ(foreign, HitTest(280, 280));
   EXPECT_EQ(div, HitTest(290, 290));
+
+  // Rect based hit testing
+  auto results = RectBasedHitTest(LayoutRect(0, 0, 300, 300));
+  int count = 0;
+  EXPECT_EQ(3u, results.size());
+  for (auto result : results) {
+    Node* node = result.Get();
+    if (node == svg || node == &div || node == foreign)
+      count++;
+  }
+  EXPECT_EQ(3, count);
 }
 
 TEST_F(LayoutSVGForeignObjectTest, HitTestViewBoxForeignObject) {

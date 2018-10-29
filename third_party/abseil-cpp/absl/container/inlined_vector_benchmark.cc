@@ -66,7 +66,7 @@ BENCHMARK(BM_StdVectorFill)->Range(0, 1024);
 // The purpose of the next two benchmarks is to verify that
 // absl::InlinedVector is efficient when moving is more efficent than
 // copying. To do so, we use strings that are larger than the short
-// std::string optimization.
+// string optimization.
 bool StringRepresentedInline(std::string s) {
   const char* chars = s.data();
   std::string s1 = std::move(s);

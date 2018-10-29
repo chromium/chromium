@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<div id="container" style="width: 300px; height: 300px; overflow: scroll; outline: 10px solid yellow; will-change: transform">
+  <!-- This is to trigger the foreground layer -->
+  <div style="position: absolute; width: 100px; height: 100px; will-change: transform; z-index: -1; background-color: red"></div>
+  <div style="width: 3000px; height: 3000px">CONTENT</div>
+</div>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  container.scrollTop = 400;
+}
+onload = runRepaintAndPixelTest;
+</script>

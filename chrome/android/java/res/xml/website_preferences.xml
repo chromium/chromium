@@ -19,11 +19,11 @@
     <org.chromium.chrome.browser.preferences.website.TriStateSiteSettingsPreference
         android:key="tri_state_toggle" />
 
-    <!-- A toggle for allowing third-party cookies, only shown for the Cookies category. -->
+    <!-- A toggle for blocking third-party cookies, only shown for the Cookies category. -->
     <org.chromium.chrome.browser.preferences.ChromeBaseCheckBoxPreference
         android:key="third_party_cookies"
-        android:title="@string/allow_third_party_cookies_title"
-        android:summary="@string/allow_third_party_cookies_summary"
+        android:title="@string/block_third_party_cookies_title"
+        android:summary="@string/block_third_party_cookies_summary"
         android:defaultValue="true"
         android:persistent="false" />
     <!-- A toggle for enabling vibration in notifications. -->

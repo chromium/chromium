@@ -14,12 +14,14 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "content/child/thread_safe_sender.h"
 #include "content/common/content_export.h"
 #include "media/mojo/interfaces/interface_factory.mojom.h"
+#include "media/mojo/interfaces/video_decoder.mojom.h"
 #include "media/mojo/interfaces/video_encode_accelerator.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,7 +33,7 @@ class GpuMemoryBufferManager;
 
 namespace ui {
 class ContextProviderCommandBuffer;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -70,6 +72,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       media::MediaLog* media_log,
       const media::RequestOverlayInfoCB& request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) override;
+  bool IsDecoderConfigSupported(
+      const media::VideoDecoderConfig& config) override;
   std::unique_ptr<media::VideoDecodeAccelerator> CreateVideoDecodeAccelerator()
       override;
   std::unique_ptr<media::VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
@@ -151,6 +155,10 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   void SetContextProviderLost();
   void SetContextProviderLostOnMainThread();
 
+  void OnSupportedDecoderConfigs(
+      std::vector<media::mojom::SupportedVideoDecoderConfigPtr>
+          supported_configs);
+
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
@@ -179,6 +187,11 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   media::mojom::InterfaceFactoryPtr interface_factory_;
   media::mojom::VideoEncodeAcceleratorProviderPtr vea_provider_;
+
+  // SupportedDecoderConfigs state.
+  mojo::InterfacePtr<media::mojom::VideoDecoder> video_decoder_;
+  base::Optional<std::vector<media::mojom::SupportedVideoDecoderConfigPtr>>
+      supported_decoder_configs_;
 
   // For sending requests to allocate shared memory in the Browser process.
   scoped_refptr<ThreadSafeSender> thread_safe_sender_;

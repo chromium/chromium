@@ -1,0 +1,22 @@
+Test css.getPlatformFontsForNode method.
+
+Running test: testFirstLetterPseudoClass
+Font #0
+    name: <Some-family-name-0>
+    glyphCount: 29
+    isCustomFont: true
+Font #1
+    name: <Some-family-name-1>
+    glyphCount: 6
+    isCustomFont: false
+Font #2
+    name: <Some-family-name-2>
+    glyphCount: 1
+    isCustomFont: false
+
+Running test: testSelectElementPlatformFonts
+Font #0
+    name: <Some-family-name-0>
+    glyphCount: 27
+    isCustomFont: false
+

@@ -10,6 +10,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/window_selector_controller.h"
@@ -37,8 +38,7 @@ namespace ash {
 
 namespace {
 
-constexpr float kDegreesToRadians = 3.1415926f / 180.0f;
-constexpr float kMeanGravity = 9.8066f;
+constexpr float kMeanGravity = TabletModeControllerTestApi::kMeanGravity;
 
 // The strings are "Touchview" as they're already used in metrics.
 constexpr char kTabletModeInitiallyDisabled[] = "Touchview_Initially_Disabled";
@@ -101,27 +101,15 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
   void TriggerLidUpdate(const gfx::Vector3dF& lid) {
-    scoped_refptr<chromeos::AccelerometerUpdate> update(
-        new chromeos::AccelerometerUpdate());
-    update->Set(chromeos::ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(),
-                lid.z());
-    tablet_mode_controller()->OnAccelerometerUpdated(update);
+    test_api_->TriggerLidUpdate(lid);
   }
 
   void TriggerBaseAndLidUpdate(const gfx::Vector3dF& base,
                                const gfx::Vector3dF& lid) {
-    scoped_refptr<chromeos::AccelerometerUpdate> update(
-        new chromeos::AccelerometerUpdate());
-    update->Set(chromeos::ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, base.x(),
-                base.y(), base.z());
-    update->Set(chromeos::ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(),
-                lid.z());
-    tablet_mode_controller()->OnAccelerometerUpdated(update);
+    test_api_->TriggerBaseAndLidUpdate(base, lid);
   }
 
-  bool IsTabletModeStarted() {
-    return tablet_mode_controller()->IsTabletModeWindowManagerEnabled();
-  }
+  bool IsTabletModeStarted() const { return test_api_->IsTabletModeStarted(); }
 
   // Attaches a SimpleTestTickClock to the TabletModeController with a non
   // null value initial value.
@@ -134,47 +122,15 @@ class TabletModeControllerTest : public AshTestBase {
     test_tick_clock_.Advance(delta);
   }
 
-  void OpenLidToAngle(float degrees) {
-    DCHECK(degrees >= 0.0f);
-    DCHECK(degrees <= 360.0f);
-
-    float radians = degrees * kDegreesToRadians;
-    gfx::Vector3dF base_vector(0.0f, -kMeanGravity, 0.0f);
-    gfx::Vector3dF lid_vector(0.0f, kMeanGravity * cos(radians),
-                              kMeanGravity * sin(radians));
-    TriggerBaseAndLidUpdate(base_vector, lid_vector);
-  }
-
-  void HoldDeviceVertical() {
-    gfx::Vector3dF base_vector(9.8f, 0.0f, 0.0f);
-    gfx::Vector3dF lid_vector(9.8f, 0.0f, 0.0f);
-    TriggerBaseAndLidUpdate(base_vector, lid_vector);
-  }
-
-  void OpenLid() {
-    tablet_mode_controller()->LidEventReceived(
-        chromeos::PowerManagerClient::LidState::OPEN,
-        test_api_->tick_clock()->NowTicks());
-  }
-
-  void CloseLid() {
-    tablet_mode_controller()->LidEventReceived(
-        chromeos::PowerManagerClient::LidState::CLOSED,
-        test_api_->tick_clock()->NowTicks());
-  }
-
+  void OpenLidToAngle(float degrees) { test_api_->OpenLidToAngle(degrees); }
+  void HoldDeviceVertical() { test_api_->HoldDeviceVertical(); }
+  void OpenLid() { test_api_->OpenLid(); }
+  void CloseLid() { test_api_->CloseLid(); }
   bool CanUseUnstableLidAngle() { return test_api_->CanUseUnstableLidAngle(); }
 
-  void SetTabletMode(bool on) {
-    tablet_mode_controller()->TabletModeEventReceived(
-        on ? chromeos::PowerManagerClient::TabletMode::ON
-           : chromeos::PowerManagerClient::TabletMode::OFF,
-        test_api_->tick_clock()->NowTicks());
-  }
+  void SetTabletMode(bool on) { test_api_->SetTabletMode(on); }
 
-  bool AreEventsBlocked() {
-    return tablet_mode_controller()->AreInternalInputDeviceEventsBlocked();
-  }
+  bool AreEventsBlocked() const { return test_api_->AreEventsBlocked(); }
 
   TabletModeController::UiMode forced_ui_mode() const {
     return test_api_->force_ui_mode();
@@ -584,7 +540,8 @@ TEST_F(TabletModeControllerTest, NoTabletModeWithDisabledInternalDisplay) {
   EXPECT_TRUE(IsTabletModeStarted());
   EXPECT_TRUE(AreEventsBlocked());
 
-  // Deactivate the internal display to simulate Docked Mode.
+  // Close lid and deactivate the internal display to simulate Docked Mode.
+  CloseLid();
   display_manager()->OnNativeDisplaysChanged(secondary_only);
   ASSERT_FALSE(display_manager()->IsActiveDisplayId(internal_display_id));
   EXPECT_FALSE(IsTabletModeStarted());
@@ -674,58 +631,16 @@ TEST_F(TabletModeControllerTest, InitializedWhileTabletModeSwitchOn) {
           chromeos::DBusThreadManager::Get()->GetPowerManagerClient());
   power_manager_client->SetTabletMode(
       chromeos::PowerManagerClient::TabletMode::ON, base::TimeTicks::Now());
+
+  // Clear the callback that was set by the original TabletModeController.
+  TabletMode::SetCallback({});
+
   TabletModeController controller;
+  controller.OnShellInitialized();
   EXPECT_FALSE(controller.IsTabletModeWindowManagerEnabled());
   // PowerManagerClient callback is a posted task.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(controller.IsTabletModeWindowManagerEnabled());
-}
-
-// Verify when the force touch view mode flag is turned on, tablet mode is on
-// initially, and opening the lid to less than 180 degress or setting tablet
-// mode to off will not turn off tablet mode.
-TEST_F(TabletModeControllerTest, ForceTabletModeTest) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kAshUiMode, switches::kAshUiModeTablet);
-  tablet_mode_controller()->OnShellInitialized();
-  EXPECT_EQ(TabletModeController::UiMode::kTabletMode, forced_ui_mode());
-  EXPECT_TRUE(IsTabletModeStarted());
-  EXPECT_TRUE(AreEventsBlocked());
-
-  OpenLidToAngle(30.0f);
-  EXPECT_TRUE(IsTabletModeStarted());
-  EXPECT_TRUE(AreEventsBlocked());
-
-  SetTabletMode(false);
-  EXPECT_TRUE(IsTabletModeStarted());
-  EXPECT_TRUE(AreEventsBlocked());
-
-  // Tests that attaching a external mouse will not change the mode.
-  ws::InputDeviceClientTestApi().SetMouseDevices({ui::InputDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, "mouse")});
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsTabletModeStarted());
-  EXPECT_TRUE(AreEventsBlocked());
-}
-
-// Tests that when the force touch view mode flag is set to clamshell, clamshell
-// mode is on initially, and cannot be changed by lid angle or manually entering
-// tablet mode.
-TEST_F(TabletModeControllerTest, ForceClamshellModeTest) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kAshUiMode, switches::kAshUiModeClamshell);
-  tablet_mode_controller()->OnShellInitialized();
-  EXPECT_EQ(TabletModeController::UiMode::kClamshell, forced_ui_mode());
-  EXPECT_FALSE(IsTabletModeStarted());
-  EXPECT_FALSE(AreEventsBlocked());
-
-  OpenLidToAngle(200.0f);
-  EXPECT_FALSE(IsTabletModeStarted());
-  EXPECT_FALSE(AreEventsBlocked());
-
-  SetTabletMode(true);
-  EXPECT_FALSE(IsTabletModeStarted());
-  EXPECT_FALSE(AreEventsBlocked());
 }
 
 TEST_F(TabletModeControllerTest, RestoreAfterExit) {
@@ -800,8 +715,8 @@ TEST_F(TabletModeControllerTest, CannotEnterTabletModeWithExternalMouse) {
   EXPECT_FALSE(IsTabletModeStarted());
 
   // Attach a external mouse.
-  ws::InputDeviceClientTestApi().SetMouseDevices({ui::InputDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, "mouse")});
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsTabletModeStarted());
 
@@ -826,8 +741,8 @@ TEST_F(TabletModeControllerTest, LeaveTabletModeWhenExternalMouseConnected) {
 
   // Attach external mouse and keyboard. Verify that tablet mode has ended, but
   // events are still blocked because the keyboard is still facing the bottom.
-  ws::InputDeviceClientTestApi().SetMouseDevices({ui::InputDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, "mouse")});
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsTabletModeStarted());
   EXPECT_TRUE(AreEventsBlocked());
@@ -837,6 +752,223 @@ TEST_F(TabletModeControllerTest, LeaveTabletModeWhenExternalMouseConnected) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsTabletModeStarted());
   EXPECT_TRUE(AreEventsBlocked());
+}
+
+// Test that plug in or out a mouse in laptop mode will not change current
+// laptop mode.
+TEST_F(TabletModeControllerTest, ExternalMouseInLaptopMode) {
+  // Set the current list of devices to empty so that they don't interfere
+  // with the test.
+  base::RunLoop().RunUntilIdle();
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+
+  // Start in laptop mode.
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Attach external mouse doesn't change the mode.
+  ws::InputDeviceClientTestApi().SetMouseDevices({ui::InputDevice(
+      3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Now remove the external mouse. It still should maintain in laptop mode
+  // because its lid angle is still in laptop mode.
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+}
+
+// Test that the ui mode and input event blocker should be both correctly
+// updated when there is a change in external mouse and lid angle.
+TEST_F(TabletModeControllerTest, ExternalMouseWithLidAngleTest) {
+  // Set the current list of devices to empty so that they don't interfere
+  // with the test.
+  base::RunLoop().RunUntilIdle();
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+
+  // Start in laptop mode.
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Attach external mouse doesn't change the mode.
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Now flip the device to tablet mode angle. The device should stay in
+  // clamshell mode because of the external mouse. But the internal input events
+  // should be blocked.
+  OpenLidToAngle(300.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Remove the external mouse should enter tablet mode now. The internal input
+  // events should still be blocked.
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Attach the mouse again should enter clamshell mode again.
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Flip the device back to clamshell angle. The device should stay in
+  // clamshell mode and the internal input events should not be blocked.
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Now remove the mouse. The device should stay in clamshell mode and the
+  // internal events should not be blocked.
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+}
+
+// Test that the ui mode and input event blocker should be both correctly
+// updated when there is a change in external mouse and tablet mode switch
+// value.
+TEST_F(TabletModeControllerTest, ExternalMouseWithTabletModeSwithTest) {
+  // Set the current list of devices to empty so that they don't interfere
+  // with the test.
+  base::RunLoop().RunUntilIdle();
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+
+  // Start in laptop mode.
+  SetTabletMode(false);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Attach external mouse doesn't change the mode.
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Now set tablet mode switch value to true. The device should stay in
+  // clamshell mode because of the external mouse. But the internal input events
+  // should be blocked.
+  SetTabletMode(true);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Remove the external mouse should enter tablet mode now. The internal input
+  // events should still be blocked.
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Attach the mouse again should enter clamshell mode again.
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Set tablet mode switch value to false. The device should stay in
+  // clamshell mode and the internal input events should not be blocked.
+  SetTabletMode(false);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  // Now remove the mouse. The device should stay in clamshell mode and the
+  // internal events should not be blocked.
+  ws::InputDeviceClientTestApi().SetMouseDevices({});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+}
+
+class TabletModeControllerForceTabletModeTest
+    : public TabletModeControllerTest {
+ public:
+  TabletModeControllerForceTabletModeTest() = default;
+  ~TabletModeControllerForceTabletModeTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kAshUiMode, switches::kAshUiModeTablet);
+    TabletModeControllerTest::SetUp();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceTabletModeTest);
+};
+
+// Verify when the force touch view mode flag is turned on, tablet mode is on
+// initially, and opening the lid to less than 180 degress or setting tablet
+// mode to off will not turn off tablet mode.
+TEST_F(TabletModeControllerForceTabletModeTest, ForceTabletModeTest) {
+  EXPECT_EQ(TabletModeController::UiMode::kTabletMode, forced_ui_mode());
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  OpenLidToAngle(30.0f);
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  SetTabletMode(false);
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  // Tests that attaching a external mouse will not change the mode.
+  ws::InputDeviceClientTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsTabletModeStarted());
+  EXPECT_TRUE(AreEventsBlocked());
+}
+
+class TabletModeControllerForceClamshellModeTest
+    : public TabletModeControllerTest {
+ public:
+  TabletModeControllerForceClamshellModeTest() = default;
+  ~TabletModeControllerForceClamshellModeTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kAshUiMode, switches::kAshUiModeClamshell);
+    TabletModeControllerTest::SetUp();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceClamshellModeTest);
+};
+
+// Tests that when the force touch view mode flag is set to clamshell, clamshell
+// mode is on initially, and cannot be changed by lid angle or manually entering
+// tablet mode.
+TEST_F(TabletModeControllerForceClamshellModeTest, ForceClamshellModeTest) {
+  EXPECT_EQ(TabletModeController::UiMode::kClamshell, forced_ui_mode());
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  OpenLidToAngle(200.0f);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  SetTabletMode(true);
+  EXPECT_FALSE(IsTabletModeStarted());
+  EXPECT_FALSE(AreEventsBlocked());
 }
 
 }  // namespace ash

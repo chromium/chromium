@@ -33,7 +33,7 @@ namespace blink {
 
 class Node;
 
-namespace XPath {
+namespace xpath {
 
 // @return whether the given node is the root node
 bool IsRootDomNode(Node*);
@@ -45,7 +45,7 @@ String StringValue(Node*);
 // @return whether the given node is a valid context node
 bool IsValidContextNode(Node*);
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_UTIL_H_

@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/win/window_impl.h"
 
@@ -29,7 +30,8 @@ class TestCompositorHostWin : public TestCompositorHost,
         false /* enable_surface_synchronization */,
         false /* enable_pixel_canvas */));
     compositor_->SetAcceleratedWidget(hwnd());
-    compositor_->SetScaleAndSize(1.0f, GetSize(), viz::LocalSurfaceId());
+    compositor_->SetScaleAndSize(1.0f, GetSize(), viz::LocalSurfaceId(),
+                                 base::TimeTicks());
   }
 
   ~TestCompositorHostWin() override { DestroyWindow(hwnd()); }

@@ -36,8 +36,8 @@ TEST_F(QuicFramesTest, AckFrameToString) {
   std::ostringstream stream;
   stream << frame;
   EXPECT_EQ(
-      "{ largest_acked: 5, ack_delay_time: 3, "
-      "packets: [ 4 5  ], received_packets: [ 6 at 7  ] }\n",
+      "{ largest_acked: 5, ack_delay_time: 3, packets: [ 4 5  ], "
+      "received_packets: [ 6 at 7  ], ecn_counters_populated: 0 }\n",
       stream.str());
 }
 
@@ -51,8 +51,8 @@ TEST_F(QuicFramesTest, BigAckFrameToString) {
   std::ostringstream stream;
   stream << frame;
   EXPECT_EQ(
-      "{ largest_acked: 500, ack_delay_time: 3, "
-      "packets: [ 4...500  ], received_packets: [ 500 at 7  ] }\n",
+      "{ largest_acked: 500, ack_delay_time: 3, packets: [ 4...500  ], "
+      "received_packets: [ 500 at 7  ], ecn_counters_populated: 0 }\n",
       stream.str());
 }
 
@@ -84,7 +84,8 @@ TEST_F(QuicFramesTest, ConnectionCloseFrameToString) {
   std::ostringstream stream;
   stream << frame;
   EXPECT_EQ(
-      "{ error_code: 25, error_details: 'No recent network activity.' "
+      "{ error_code: 25, error_details: 'No recent network activity.', "
+      "frame_type: 0"
       "}\n",
       stream.str());
 }

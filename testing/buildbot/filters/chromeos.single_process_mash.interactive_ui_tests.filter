@@ -1,0 +1,56 @@
+# These tests currently fail with SingleProcessMash enabled.
+# Bug: crbug.com/883523
+
+# TODO(sky): this now fails because of differences in timing. In particular,
+# in classic mode an accelerator that moves focus is processed *after* text
+# is inserted, where as now the accelerator runs first, resulting in text
+# going to the wrong place. The right fix likely entails updating the test for
+# ChromeOS.
+-BrowserKeyEventsTest.AccessKeys
+
+# Broken tests related to accessibility. crbug.com/888750 and crbug.com/889093
+-GuestSpokenFeedbackTest.FocusToolbar
+-SelectToSpeakTest.ActivatesWithTapOnSelectToSpeakTray
+-SelectToSpeakTest.BreaksAtParagraphBounds
+-SelectToSpeakTest.ContinuesReadingDuringResize
+-SelectToSpeakTest.FocusRingMovesWithMouse
+-SelectToSpeakTest.ReadsStaticTextWithoutInlineTextChildren
+-SelectToSpeakTest.SelectToSpeakTrayNotSpoken
+-SelectToSpeakTest.SmoothlyReadsAcrossFormattedText
+-SelectToSpeakTest.SmoothlyReadsAcrossInlineUrl
+-SelectToSpeakTest.SmoothlyReadsAcrossMultipleLines
+-SelectToSpeakTest.SpeakStatusTray
+-SelectToSpeakTest.WorksWithStickyKeys
+-StickyKeysBrowserTest.CtrlClickHomeButton
+-StickyKeysBrowserTest.OpenNewTabs
+-StickyKeysBrowserTest.OpenTrayMenu
+-StickyKeysBrowserTest.OverlayShown
+-StickyKeysBrowserTest.SearchLeftOmnibox
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxNextTabRecovery/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxNextTabRecovery/1
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxShiftSearch/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxShiftSearch/1
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusToolbar/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusToolbar/1
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OpenStatusTray/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OpenStatusTray/1
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/1
+
+# TabDragging: crbug.com/890071
+-TabDragging/DetachToBrowserInSeparateDisplayTabDragControllerTest.DragBrowserWindowWhenMajorityOfBoundsInSecondDisplay/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DeferredTargetTabStripTest/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowWhileInImmersiveFullscreenMode/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DoNotAttachToOtherWindowTest/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DoNotObserveDraggedWidgetAfterDragEnds/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToOverviewNewWindowItem/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToOverviewWindow/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DragWithMaskedWindows/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragWithMaskedWindows/1
+-TabDragging/DetachToBrowserTabDragControllerTestTouch.PressSecondFingerWhileDetached/0
+-TabDragging/DetachToBrowserTabDragControllerTestTouch.SecondFingerPressTest/0
+
+# This test is flaky. https://crbug.com/897879
+-ExtensionApiTest.DisplayModeWindowIsInFullscreen

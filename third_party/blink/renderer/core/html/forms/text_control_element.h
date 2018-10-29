@@ -214,9 +214,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // creating a number of TreeScope data structures to track elements by ID.
   Member<TextControlInnerEditorElement> inner_editor_;
 
-  // In m_valueBeforeFirstUserEdit, we distinguish a null String and zero-length
-  // String. Null String means the field doesn't have any data yet, and
-  // zero-length String is a valid data.
+  // In value_before_first_user_edit_, we distinguish a null String and
+  // zero-length String. Null String means the field doesn't have any data yet,
+  // and zero-length String is a valid data.
   String value_before_first_user_edit_;
   bool last_change_was_user_edit_;
 

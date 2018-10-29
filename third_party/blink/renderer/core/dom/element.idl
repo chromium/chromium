@@ -115,10 +115,6 @@ interface Element : Node {
     [Affects=Nothing] readonly attribute long clientWidth;
     [Affects=Nothing] readonly attribute long clientHeight;
 
-    // Scroll Customization API. See crbug.com/410974 for details.
-    [RuntimeEnabled=ScrollCustomization] void setApplyScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
-    [RuntimeEnabled=ScrollCustomization] void setDistributeScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
-
     // Typed OM
     // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects
     [SameObject, MeasureAs=CSSTypedOMStylePropertyMap] readonly attribute StylePropertyMap attributeStyleMap;
@@ -141,11 +137,10 @@ interface Element : Node {
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
-    attribute EventHandler oncopy;
-    attribute EventHandler oncut;
-    attribute EventHandler onpaste;
     attribute EventHandler onsearch;
-    attribute EventHandler onselectstart;
+
+    // Display locking.
+    [RuntimeEnabled=DisplayLocking, CallWith=ScriptState] Promise acquireDisplayLock(DisplayLockCallback callback);
 };
 
 Element implements ParentNode;

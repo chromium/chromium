@@ -36,7 +36,7 @@
 
 namespace blink {
 
-using namespace XPath;
+using namespace xpath;
 
 XPathExpression* XPathEvaluator::createExpression(
     const String& expression,

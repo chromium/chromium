@@ -1,0 +1,11 @@
+Tests Accessibility.getFullAXTree
+
+WebArea
+  GenericContainer
+    text "Some text in a div, also a"
+      InlineTextBox
+    link "link"
+      text "link"
+        InlineTextBox
+  button "Hello Button"
+

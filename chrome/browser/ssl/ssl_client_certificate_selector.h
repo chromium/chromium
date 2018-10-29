@@ -33,14 +33,6 @@ void ShowSSLClientCertificateSelector(
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate);
 
-#if defined(OS_MACOSX)
-void ShowSSLClientCertificateSelectorCocoa(
-    content::WebContents* contents,
-    net::SSLCertRequestInfo* cert_request_info,
-    net::ClientCertIdentityList client_certs,
-    std::unique_ptr<content::ClientCertificateDelegate> delegate);
-#endif
-
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_SSL_SSL_CLIENT_CERTIFICATE_SELECTOR_H_

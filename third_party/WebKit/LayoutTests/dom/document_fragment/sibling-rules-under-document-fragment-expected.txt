@@ -2,7 +2,6 @@ Tests :first-child rule under DocumentFragment.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS fragmentSelected is a1
 PASS elementSelected is a2
 PASS successfullyParsed is true

@@ -7,35 +7,14 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
+#include "ui/accessibility/ax_enum_util.h"
 
 namespace arc {
 namespace mojom {
-class AccessibilityNodeInfoData;
-enum class AccessibilityBooleanProperty;
-enum class AccessibilityIntProperty;
-enum class AccessibilityStringProperty;
-enum class AccessibilityIntListProperty;
-enum class AccessibilityStringListProperty;
+enum class AccessibilityEventType;
 }  // namespace mojom
 
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityBooleanProperty prop);
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityIntProperty prop,
-                 int32_t* out_value);
-bool HasProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringProperty prop);
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringProperty prop,
-                 std::string* out_value);
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityIntListProperty prop,
-                 std::vector<int32_t>* out_value);
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringListProperty prop,
-                 std::vector<std::string>* out_value);
+ax::mojom::Event ToAXEvent(mojom::AccessibilityEventType arc_event_type);
 
 }  // namespace arc
 

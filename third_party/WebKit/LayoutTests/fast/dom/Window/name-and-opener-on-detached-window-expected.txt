@@ -2,7 +2,6 @@ Tests that getting and setting name and opener on a cached DOMWindow after the a
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS childWindow.name is 'oldname'
 PASS childWindow.opener is null
 PASS childWindow.name is ''

@@ -19,7 +19,7 @@ struct MinMaxSizeInput;
 
 // Base class for all LayoutNG algorithms.
 template <typename NGInputNodeType,
-          typename NGFragmentBuilderType,
+          typename NGBoxFragmentBuilderType,
           typename NGBreakTokenType>
 class CORE_EXPORT NGLayoutAlgorithm {
   STACK_ALLOCATED();
@@ -28,7 +28,7 @@ class CORE_EXPORT NGLayoutAlgorithm {
                     scoped_refptr<const ComputedStyle> style,
                     const NGConstraintSpace& space,
                     TextDirection direction,
-                    NGBreakTokenType* break_token)
+                    const NGBreakTokenType* break_token)
       : node_(node),
         constraint_space_(space),
         break_token_(break_token),
@@ -36,7 +36,7 @@ class CORE_EXPORT NGLayoutAlgorithm {
 
   NGLayoutAlgorithm(NGInputNodeType node,
                     const NGConstraintSpace& space,
-                    NGBreakTokenType* break_token)
+                    const NGBreakTokenType* break_token)
       : NGLayoutAlgorithm(node,
                           &node.Style(),
                           space,
@@ -74,15 +74,15 @@ class CORE_EXPORT NGLayoutAlgorithm {
 
   NGInputNodeType Node() const { return node_; }
 
-  NGBreakTokenType* BreakToken() const { return break_token_; }
+  const NGBreakTokenType* BreakToken() const { return break_token_; }
 
   NGInputNodeType node_;
   const NGConstraintSpace& constraint_space_;
 
   // The break token from which we are currently resuming layout.
-  NGBreakTokenType* break_token_;
+  const NGBreakTokenType* break_token_;
 
-  NGFragmentBuilderType container_builder_;
+  NGBoxFragmentBuilderType container_builder_;
 };
 
 }  // namespace blink

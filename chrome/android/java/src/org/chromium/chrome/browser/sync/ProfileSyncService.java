@@ -153,10 +153,6 @@ public class ProfileSyncService {
         return get().mNativeProfileSyncServiceAndroid;
     }
 
-    public void signOut() {
-        nativeSignOutSync(mNativeProfileSyncServiceAndroid);
-    }
-
     /**
      * Sets the the machine tag used by session sync.
      */
@@ -373,12 +369,6 @@ public class ProfileSyncService {
         nativeSetFirstSetupComplete(mNativeProfileSyncServiceAndroid);
     }
 
-    // TODO(maxbogue): Remove when downstream is updated to use the above.
-    @Deprecated
-    public void setSyncSetupCompleted() {
-        nativeSetFirstSetupComplete(mNativeProfileSyncServiceAndroid);
-    }
-
     public boolean isFirstSetupComplete() {
         return nativeIsFirstSetupComplete(mNativeProfileSyncServiceAndroid);
     }
@@ -453,6 +443,10 @@ public class ProfileSyncService {
      */
     public void requestStop() {
         nativeRequestStop(mNativeProfileSyncServiceAndroid);
+    }
+
+    public void setSyncAllowedByPlatform(boolean allowed) {
+        nativeSetSyncAllowedByPlatform(mNativeProfileSyncServiceAndroid, allowed);
     }
 
     /**
@@ -556,8 +550,9 @@ public class ProfileSyncService {
     private native long nativeInit();
     private native void nativeRequestStart(long nativeProfileSyncServiceAndroid);
     private native void nativeRequestStop(long nativeProfileSyncServiceAndroid);
+    private native void nativeSetSyncAllowedByPlatform(
+            long nativeProfileSyncServiceAndroid, boolean allowed);
     private native void nativeFlushDirectory(long nativeProfileSyncServiceAndroid);
-    private native void nativeSignOutSync(long nativeProfileSyncServiceAndroid);
     private native void nativeSetSyncSessionsId(long nativeProfileSyncServiceAndroid, String tag);
     private native int nativeGetAuthError(long nativeProfileSyncServiceAndroid);
     private native int nativeGetProtocolErrorClientAction(long nativeProfileSyncServiceAndroid);

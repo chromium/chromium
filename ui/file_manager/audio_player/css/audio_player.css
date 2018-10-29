@@ -4,6 +4,9 @@
 
 html {
   height: 100%;
+  /* crbug.com/812035 Remove 300ms delay for 'click' event, when using
+     touch interface. */
+  touch-action: manipulation;
 }
 
 body {

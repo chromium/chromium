@@ -42,6 +42,7 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.blink.mojom.MediaSessionAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -1070,11 +1071,15 @@ public class MediaNotificationManager {
 
     private void setMediaStyleLayoutForNotificationBuilder(ChromeNotificationBuilder builder) {
         setMediaStyleNotificationText(builder);
+        // Notifications in incognito shouldn't show an icon to avoid leaking information.
+        boolean hideUserData = mMediaNotificationInfo.isPrivate
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
         if (!mMediaNotificationInfo.supportsPlayPause()) {
             // Non-playback (Cast) notification will not use MediaStyle, so not
             // setting the large icon is fine.
             builder.setLargeIcon(null);
-        } else if (mMediaNotificationInfo.notificationLargeIcon != null) {
+        } else if (mMediaNotificationInfo.notificationLargeIcon != null && !hideUserData) {
             builder.setLargeIcon(mMediaNotificationInfo.notificationLargeIcon);
         } else if (!isRunningAtLeastN()) {
             if (mDefaultNotificationLargeIcon == null
@@ -1133,6 +1138,21 @@ public class MediaNotificationManager {
     }
 
     private void setMediaStyleNotificationText(ChromeNotificationBuilder builder) {
+        boolean hideUserData = mMediaNotificationInfo.isPrivate
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
+        if (hideUserData) {
+            // Notifications in incognito shouldn't show what is playing to avoid leaking
+            // information.
+            builder.setContentTitle(
+                    getContext().getResources().getString(R.string.media_notification_incognito));
+            if (isRunningAtLeastN()) {
+                builder.setSubText(
+                        getContext().getResources().getString(R.string.notification_incognito_tab));
+            }
+            return;
+        }
+
         builder.setContentTitle(mMediaNotificationInfo.metadata.getTitle());
         String artistAndAlbumText = getArtistAndAlbumText(mMediaNotificationInfo.metadata);
         if (isRunningAtLeastN() || !artistAndAlbumText.isEmpty()) {

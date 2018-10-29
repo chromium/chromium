@@ -5,6 +5,7 @@
 #include "media/mojo/services/media_metrics_provider.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
 #include "media/mojo/services/watch_time_recorder.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -54,6 +55,23 @@ MediaMetricsProvider::~MediaMetricsProvider() {
     builder.SetTimeToPlayReady(time_to_play_ready_.InMilliseconds());
 
   builder.Record(ukm_recorder);
+
+  // Buffered bytes are reported from a different source for EME/MSE.
+  std::string suffix;
+  if (is_eme_)
+    suffix = "EME";
+  else if (is_mse_)
+    suffix = "MSE";
+  else
+    suffix = "SRC";
+  base::UmaHistogramMemoryKB("Media.BytesReceived." + suffix,
+                             total_bytes_received_ >> 10);
+  if (is_ad_media_) {
+    base::UmaHistogramMemoryKB("Ads.Media.BytesReceived",
+                               total_bytes_received_ >> 10);
+    base::UmaHistogramMemoryKB("Ads.Media.BytesReceived." + suffix,
+                               total_bytes_received_ >> 10);
+  }
 }
 
 // static
@@ -82,6 +100,11 @@ void MediaMetricsProvider::Initialize(bool is_mse,
 void MediaMetricsProvider::OnError(PipelineStatus status) {
   DCHECK(initialized_);
   pipeline_status_ = status;
+}
+
+void MediaMetricsProvider::SetIsAdMedia() {
+  // This may be called before Initialize().
+  is_ad_media_ = true;
 }
 
 void MediaMetricsProvider::SetIsEME() {
@@ -143,6 +166,10 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
   mojo::MakeStrongBinding(std::make_unique<VideoDecodeStatsRecorder>(
                               save_cb_, source_id_, is_top_frame_, player_id_),
                           std::move(request));
+}
+
+void MediaMetricsProvider::AddBytesReceived(uint64_t bytes_received) {
+  total_bytes_received_ += bytes_received;
 }
 
 }  // namespace media

@@ -3,17 +3,17 @@ documents the flow of accelerators.
 
 1. wm::AcceleratorFilter() sees events first as it's a pre-target handler on
 Shell.
-2. wm::AcceleratorFilter calls to AcceleratorDelegate.
-3. AcceleratorDelegate calls AcceleratorRouter. AcceleratorRouter handles
-accelerators that need to be handled early on, such as system keys. This does
-not include accelerators such as control-n (for new window).
+2. wm::AcceleratorFilter calls to PreTargetAcceleratorHandler.
+3. PreTargetAcceleratorHandler handles accelerators that need to be handled
+early on, such as system keys. This does not include accelerators such as
+control-n (for new window).
 4. If focus is on a Widget, then views handles the accelerator.
 5. Views does normally processing first (meaning sends to the focused view). If
 the focused view doesn't handle the event, then Views sends to the
 FocusManager.
 6. FocusManager::OnKeyEvent() calls
-AshFocusManagerFactory::Delegate::ProcessAccelerator().
-7. AshFocusManagerFactory::Delegate::ProcessAccelerator() calls to
+PostTargerAcceleratorHandler::ProcessAccelerator().
+7. PostTargerAcceleratorHandler::ProcessAccelerator() calls to
 Ash's AcceleratorController.
 
 Steps 1-3 give Ash the opportunity to have accelerators before the target

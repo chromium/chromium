@@ -131,12 +131,10 @@ RenderProcessImpl::RenderProcessImpl(
   SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
                        "--noharmony-shipping");
   SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
-  SetV8FlagIfFeature(features::kModuleScriptsDynamicImport,
-                     "--harmony-dynamic-import");
-  SetV8FlagIfFeature(features::kModuleScriptsImportMetaUrl,
-                     "--harmony-import-meta");
-  SetV8FlagIfFeature(features::kAsmJsToWebAssembly, "--validate-asm");
-  SetV8FlagIfNotFeature(features::kAsmJsToWebAssembly, "--no-validate-asm");
+
+  constexpr char kModuleFlags[] =
+      "--harmony-dynamic-import --harmony-import-meta";
+  v8::V8::SetFlagsFromString(kModuleFlags, sizeof(kModuleFlags));
 
   SetV8FlagIfFeature(features::kV8Orinoco, "--no-single-threaded-gc");
   SetV8FlagIfNotFeature(features::kV8Orinoco, "--single-threaded-gc");
@@ -164,6 +162,11 @@ RenderProcessImpl::RenderProcessImpl(
     SetV8FlagIfNotFeature(features::kSharedArrayBuffer,
                           "--no-harmony-sharedarraybuffer");
   }
+
+  SetV8FlagIfFeature(features::kAwaitOptimization,
+                     "--harmony-await-optimization");
+  SetV8FlagIfNotFeature(features::kAwaitOptimization,
+                        "--no-harmony-await-optimization");
 
   SetV8FlagIfNotFeature(features::kWebAssemblyTrapHandler,
                         "--no-wasm-trap-handler");

@@ -18,40 +18,15 @@
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
 
 namespace extensions {
 
 namespace {
-
-class ConnectorImpl : public chromeos::media_perception::mojom::Connector {
- public:
-  // delegate is owned by the ExtensionsAPIClient.
-  explicit ConnectorImpl(MediaPerceptionAPIDelegate* delegate)
-      : delegate_(delegate) {}
-  ~ConnectorImpl() override = default;
-
-  // media_perception::mojom::Connector override.
-  void ConnectToVideoCaptureService(
-      video_capture::mojom::DeviceFactoryRequest request) override {
-    DCHECK(delegate_) << "Delegate not set.";
-    delegate_->BindDeviceFactoryProviderToVideoCaptureService(
-        &device_factory_provider_);
-    device_factory_provider_->ConnectToDeviceFactory(std::move(request));
-  }
-
- private:
-  // Provides access to methods for talking to core Chrome code.
-  MediaPerceptionAPIDelegate* delegate_;
-
-  // Bound to the VideoCaptureService to establish the connection to the
-  // media analytics process.
-  video_capture::mojom::DeviceFactoryProviderPtr device_factory_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectorImpl);
-};
 
 extensions::api::media_perception_private::State GetStateForServiceError(
     const extensions::api::media_perception_private::ServiceError
@@ -102,6 +77,46 @@ std::unique_ptr<std::string> ExtractVersionFromMountPoint(
 
 }  // namespace
 
+class MediaPerceptionAPIManager::MediaPerceptionControllerClient
+    : public chromeos::media_perception::mojom::
+          MediaPerceptionControllerClient {
+ public:
+  // delegate is owned by the ExtensionsAPIClient.
+  MediaPerceptionControllerClient(
+      MediaPerceptionAPIDelegate* delegate,
+      chromeos::media_perception::mojom::MediaPerceptionControllerClientRequest
+          request)
+      : delegate_(delegate), binding_(this, std::move(request)) {
+    DCHECK(delegate_) << "Delegate not set.";
+  }
+
+  ~MediaPerceptionControllerClient() override = default;
+
+  // media_perception::mojom::MediaPerceptionControllerClient:
+  void ConnectToVideoCaptureService(
+      video_capture::mojom::DeviceFactoryRequest request) override {
+    DCHECK(delegate_) << "Delegate not set.";
+    delegate_->BindDeviceFactoryProviderToVideoCaptureService(
+        &device_factory_provider_);
+    device_factory_provider_->ConnectToDeviceFactory(std::move(request));
+  }
+
+ private:
+  // Provides access to methods for talking to core Chrome code.
+  MediaPerceptionAPIDelegate* delegate_;
+
+  // Binding of the MediaPerceptionControllerClient to the message pipe.
+  mojo::Binding<
+      chromeos::media_perception::mojom::MediaPerceptionControllerClient>
+      binding_;
+
+  // Bound to the VideoCaptureService to establish the connection to the
+  // media analytics process.
+  video_capture::mojom::DeviceFactoryProviderPtr device_factory_provider_;
+
+  DISALLOW_COPY_AND_ASSIGN(MediaPerceptionControllerClient);
+};
+
 // static
 MediaPerceptionAPIManager* MediaPerceptionAPIManager::Get(
     content::BrowserContext* context) {
@@ -133,6 +148,12 @@ MediaPerceptionAPIManager::~MediaPerceptionAPIManager() {
   chromeos::UpstartClient* upstart_client =
       chromeos::DBusThreadManager::Get()->GetUpstartClient();
   upstart_client->StopMediaAnalytics();
+}
+
+void MediaPerceptionAPIManager::ActivateMediaPerception(
+    chromeos::media_perception::mojom::MediaPerceptionRequest request) {
+  if (media_perception_controller_.is_bound())
+    media_perception_controller_->ActivateMediaPerception(std::move(request));
 }
 
 void MediaPerceptionAPIManager::SetMountPointNonEmptyForTesting() {
@@ -390,7 +411,7 @@ void MediaPerceptionAPIManager::SendMojoInvitation(
   MediaPerceptionAPIDelegate* delegate =
       ExtensionsAPIClient::Get()->GetMediaPerceptionAPIDelegate();
   if (!delegate) {
-    LOG(WARNING) << "Could not get MediaPerceptionAPIDelegate.";
+    DLOG(WARNING) << "Could not get MediaPerceptionAPIDelegate.";
     std::move(callback).Run(GetProcessStateForServiceError(
         extensions::api::media_perception_private::
             SERVICE_ERROR_MOJO_CONNECTION_FAILURE));
@@ -405,10 +426,10 @@ void MediaPerceptionAPIManager::SendMojoInvitation(
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());
 
-  auto connector = std::make_unique<ConnectorImpl>(delegate);
-  mojo::MakeStrongBinding(std::move(connector),
-                          chromeos::media_perception::mojom::ConnectorRequest(
-                              std::move(server_pipe)));
+  media_perception_service_ =
+      chromeos::media_perception::mojom::MediaPerceptionServicePtr(
+          chromeos::media_perception::mojom::MediaPerceptionServicePtrInfo(
+              std::move(server_pipe), 0));
 
   base::ScopedFD fd =
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD();
@@ -435,6 +456,46 @@ void MediaPerceptionAPIManager::OnBootstrapMojoConnection(
   extensions::api::media_perception_private::ProcessState state_started;
   state_started.status =
       extensions::api::media_perception_private::PROCESS_STATUS_STARTED;
+
+  // Check if the extensions api client is available in this context. Code path
+  // used for testing.
+  if (!ExtensionsAPIClient::Get()) {
+    DLOG(ERROR) << "Could not get ExtensionsAPIClient.";
+    std::move(callback).Run(std::move(state_started));
+    return;
+  }
+
+  MediaPerceptionAPIDelegate* delegate =
+      ExtensionsAPIClient::Get()->GetMediaPerceptionAPIDelegate();
+  if (!delegate) {
+    DLOG(WARNING) << "Could not get MediaPerceptionAPIDelegate.";
+    std::move(callback).Run(GetProcessStateForServiceError(
+        extensions::api::media_perception_private::
+            SERVICE_ERROR_MOJO_CONNECTION_FAILURE));
+    return;
+  }
+
+  if (!media_perception_service_.is_bound()) {
+    DLOG(WARNING) << "MediaPerceptionService interface not bound.";
+    std::move(callback).Run(GetProcessStateForServiceError(
+        extensions::api::media_perception_private::
+            SERVICE_ERROR_MOJO_CONNECTION_FAILURE));
+    return;
+  }
+
+  auto controller_request = mojo::MakeRequest(&media_perception_controller_);
+
+  chromeos::media_perception::mojom::MediaPerceptionControllerClientPtr
+      client_ptr;
+  media_perception_controller_client_ =
+      std::make_unique<MediaPerceptionControllerClient>(
+          delegate, mojo::MakeRequest(&client_ptr));
+  delegate->SetMediaPerceptionRequestHandler(
+      base::BindRepeating(&MediaPerceptionAPIManager::ActivateMediaPerception,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  media_perception_service_->GetController(std::move(controller_request),
+                                           std::move(client_ptr));
   std::move(callback).Run(std::move(state_started));
 }
 

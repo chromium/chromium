@@ -42,15 +42,17 @@ bool FakePaintImageGenerator::GetPixels(const SkImageInfo& info,
   return true;
 }
 
-bool FakePaintImageGenerator::QueryYUV8(SkYUVSizeInfo* info,
-                                        SkYUVColorSpace* color_space) const {
+bool FakePaintImageGenerator::QueryYUVA8(SkYUVASizeInfo* info,
+                                         SkYUVAIndex indices[],
+                                         SkYUVColorSpace* color_space) const {
   return false;
 }
 
-bool FakePaintImageGenerator::GetYUV8Planes(const SkYUVSizeInfo& info,
-                                            void* planes[3],
-                                            size_t frame_index,
-                                            uint32_t lazy_pixel_ref) {
+bool FakePaintImageGenerator::GetYUVA8Planes(const SkYUVASizeInfo& info,
+                                             const SkYUVAIndex indices[],
+                                             void* planes[4],
+                                             size_t frame_index,
+                                             uint32_t lazy_pixel_ref) {
   NOTREACHED();
   return false;
 }

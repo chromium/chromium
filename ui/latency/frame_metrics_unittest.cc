@@ -5,6 +5,7 @@
 #include "ui/latency/frame_metrics.h"
 
 #include "base/bind.h"
+#include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "ui/latency/frame_metrics_test_common.h"
@@ -240,15 +241,13 @@ TEST_F(FrameMetricsTest, PerfectLatencyScores) {
 
   TestStreamAnalysis r = LatencyAnalysis();
   EXPECT_DOUBLE_EQ(latency.InSecondsF(), r.mean);
-  EXPECT_DOUBLE_EQ(latency.InSecondsF(), r.rms);
-  EXPECT_NEAR_SMR(r.smr, latency.InSecondsF(), produced.InMicroseconds());
+  EXPECT_NEAR_SQRT_APPROX(latency.InSecondsF(), r.rms);
+  EXPECT_NEAR_SQRT_APPROX(r.smr, latency.InSecondsF());
   EXPECT_EQ(0, r.std_dev);
-  EXPECT_NEAR_VARIANCE_OF_ROOT(0, r.variance_of_roots, 0,
-                               produced.InMicroseconds());
+  EXPECT_NEAR_SQRT_APPROX(0, r.variance_of_roots);
   EXPECT_DOUBLE_EQ(latency.InSecondsF(), r.worst_mean.value);
-  EXPECT_DOUBLE_EQ(latency.InSecondsF(), r.worst_rms.value);
-  EXPECT_NEAR_SMR(r.worst_smr.value, latency.InSecondsF(),
-                  produced.InMicroseconds());
+  EXPECT_NEAR_SQRT_APPROX(latency.InSecondsF(), r.worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(r.worst_smr.value, latency.InSecondsF());
 }
 
 // Apply a saw tooth pattern to the frame skips with values that are easy to
@@ -276,8 +275,8 @@ TEST_F(FrameMetricsTest, SawToothShapedSkips) {
   const double expected_skip_to_produce_rms =
       std::sqrt(expected_skip_to_produce_mean_square);
   const double expected_skip_rms = SkipTransform(expected_skip_to_produce_rms);
-  EXPECT_EQ(expected_skip_rms, r.rms);
-  EXPECT_EQ(expected_skip_rms, r.worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_rms, r.rms);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_rms, r.worst_rms.value);
 
   const double expected_expected_skip_to_produce_mean_root = (0 + 1.0) / 2;
   const double expected_expected_skip_to_produce_smr =
@@ -285,13 +284,13 @@ TEST_F(FrameMetricsTest, SawToothShapedSkips) {
       expected_expected_skip_to_produce_mean_root;
   const double expected_skip_smr =
       SkipTransform(expected_expected_skip_to_produce_smr);
-  EXPECT_EQ(expected_skip_smr, r.smr);
-  EXPECT_EQ(expected_skip_smr, r.worst_smr.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_smr, r.smr);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_smr, r.worst_smr.value);
 
   const double expected_skip_to_produce_std_dev = (0.5 + 0.5) / 2;
   const double expected_skip_std_dev =
       SkipTransform(expected_skip_to_produce_std_dev);
-  EXPECT_EQ(expected_skip_std_dev, r.std_dev);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_std_dev, r.std_dev);
 
   const double expected_skip_to_produce_std_dev_of_roots = (0.5 + 0.5) / 2;
   const double expected_skip_to_produce_variance_of_roots =
@@ -299,7 +298,7 @@ TEST_F(FrameMetricsTest, SawToothShapedSkips) {
       expected_skip_to_produce_std_dev_of_roots;
   const double expected_skip_variance_of_roots =
       SkipTransform(expected_skip_to_produce_variance_of_roots);
-  EXPECT_EQ(expected_skip_variance_of_roots, r.variance_of_roots);
+  EXPECT_NEAR_SQRT_APPROX(expected_skip_variance_of_roots, r.variance_of_roots);
 }
 
 // Apply a saw tooth pattern to the latency with values that are easy to
@@ -322,34 +321,35 @@ TEST_F(FrameMetricsTest, SawToothShapedLatency) {
 
   const double expected_latency_mean_square = (100.0 * 100 + 36 * 36) / 2;
   const double expected_latency_rms = std::sqrt(expected_latency_mean_square);
-  EXPECT_DOUBLE_EQ(expected_latency_rms, r.rms);
-  EXPECT_DOUBLE_EQ(expected_latency_rms, r.worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_rms, r.rms);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_rms, r.worst_rms.value);
 
   const double expected_latency_mean_root = (10.0 + 6) / 2;
   const double expected_latency_smr =
       expected_latency_mean_root * expected_latency_mean_root;
-  EXPECT_DOUBLE_EQ(expected_latency_smr, r.smr);
-  EXPECT_DOUBLE_EQ(expected_latency_smr, r.worst_smr.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_smr, r.smr);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_smr, r.worst_smr.value);
 
   const double expected_latency_std_dev = (100.0 - 36) / 2;
-  EXPECT_DOUBLE_EQ(expected_latency_std_dev, r.std_dev);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_std_dev, r.std_dev);
 
   const double expected_latency_std_dev_of_roots = (10.0 - 6) / 2;
   const double expected_latency_variance_of_roots =
       expected_latency_std_dev_of_roots * expected_latency_std_dev_of_roots;
-  EXPECT_DOUBLE_EQ(expected_latency_variance_of_roots, r.variance_of_roots);
+  EXPECT_NEAR_SQRT_APPROX(expected_latency_variance_of_roots,
+                          r.variance_of_roots);
 
   // Verify latency speed, where mean, RMS, SMR, etc. should be equal.
   r = SpeedAnalysis();
   const double expected_speed = 64;
   EXPECT_DOUBLE_EQ(expected_speed, r.mean);
-  EXPECT_DOUBLE_EQ(expected_speed, r.rms);
-  EXPECT_DOUBLE_EQ(expected_speed, r.smr);
+  EXPECT_NEAR_SQRT_APPROX(expected_speed, r.rms);
+  EXPECT_NEAR_SQRT_APPROX(expected_speed, r.smr);
   EXPECT_DOUBLE_EQ(0, r.std_dev);
-  EXPECT_DOUBLE_EQ(0, r.variance_of_roots);
+  EXPECT_NEAR_SQRT_APPROX(0, r.variance_of_roots);
   EXPECT_DOUBLE_EQ(expected_speed, r.worst_mean.value);
-  EXPECT_DOUBLE_EQ(expected_speed, r.worst_rms.value);
-  EXPECT_DOUBLE_EQ(expected_speed, r.worst_smr.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_speed, r.worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_speed, r.worst_smr.value);
 
   // Verify latency accelleration, where mean, RMS, SMR, etc. should be equal.
   // The slack is relatively large since the frame durations are so long, which
@@ -842,9 +842,9 @@ void FrameMetricsTest::StartNewReportPeriodAvoidsOverflowTest(
 TEST_F(FrameMetricsTest, StartNewReportPeriodAvoidsOverflowForSkips) {
   base::TimeDelta produced = base::TimeDelta::FromMicroseconds(1);
   base::TimeDelta latency = base::TimeDelta::FromMilliseconds(1);
-  base::TimeDelta skipped = base::TimeDelta::FromSeconds(66);
+  base::TimeDelta skipped = base::TimeDelta::FromSeconds(2);
 
-  frame_metrics->UseDefaultReportPeriodScaled(4);
+  frame_metrics->UseDefaultReportPeriodScaled(7);
   StartNewReportPeriodAvoidsOverflowTest(produced, skipped, latency, latency,
                                          kSkipSaturationMin,
                                          &FrameMetricsTest::SkipAnalysis);
@@ -887,6 +887,30 @@ TEST_F(FrameMetricsTest, StartNewReportPeriodAvoidsOverflowForAcceleration) {
   StartNewReportPeriodAvoidsOverflowTest(
       produced, skipped, latency0, latency1, kAccelerationSaturationMin,
       &FrameMetricsTest::AccelerationAnalysis);
+}
+
+// Test the accuracy of the Newton's approximate square root calculation.
+// Since suqare_rooot is always used on small numbers in cc, this test only test
+// accuracy of small |x| value. A random number |x| between (0 - 100) is
+// generated, Test if the difference of square roots obtained from
+// FastApproximateSqrt and std::sqrt is less than |error_rage| (0.0001);
+TEST_F(FrameMetricsTest, SquareRootApproximation) {
+  const double slack = 0.001;
+  for (int i = 0; i < 3; i++) {
+    int x = base::RandInt(0, 100);
+    double sol1 = std::sqrt(x);
+    double sol2 = FrameMetrics::FastApproximateSqrt(x);
+    EXPECT_NEAR(sol1, sol2, slack)
+        << "failed to give a good approximate square root of " << x;
+  }
+
+  for (int i = 0; i < 3; i++) {
+    double x = double{base::RandUint64()} / base::RandomBitGenerator::max();
+    double sol1 = std::sqrt(x);
+    double sol2 = FrameMetrics::FastApproximateSqrt(x);
+    EXPECT_NEAR(sol1, sol2, slack)
+        << "failed to give a good approximate square root of " << x;
+  }
 }
 
 }  // namespace

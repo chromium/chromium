@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 tests; 58 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 63 tests; 60 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS The WorkerGlobalScope interface object should be exposed.
 PASS The DedicatedWorkerGlobalScope interface object should be exposed.
 PASS The Worker interface object should be exposed.
@@ -11,6 +11,8 @@ PASS The MessageChannel interface object should be exposed.
 PASS The WorkerLocation interface object should be exposed.
 PASS The ImageData interface object should be exposed.
 PASS The ImageBitmap interface object should be exposed.
+PASS The CanvasGradient interface object should be exposed.
+PASS The CanvasPattern interface object should be exposed.
 FAIL The CanvasPath interface object should be exposed. assert_own_property: expected property "CanvasPath" missing
 PASS The Path2D interface object should be exposed.
 PASS The PromiseRejectionEvent interface object should be exposed.

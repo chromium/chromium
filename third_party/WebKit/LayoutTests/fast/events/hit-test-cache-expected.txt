@@ -10,9 +10,11 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Hit test main div
 ---------------------
 PASS document.elementFromPoint(60,60) is internals.clearHitTestCache(document); internals.elementFromPoint(document, 60, 60, false, false)
@@ -67,4 +69,5 @@ PASS internals.elementFromPoint(document, 15, 40, false, true) is internals.clea
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

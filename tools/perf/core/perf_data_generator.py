@@ -42,12 +42,16 @@ from py_utils import discover
 # bisecting Chrome builds with their web tests. For questions or to report
 # issues, please contact johnchen@chromium.org.
 BUILDER_ADDITIONAL_COMPILE_TARGETS = {
-    'Android Compile Perf': ['microdump_stackwalk', 'angle_perftests'],
-    'Android arm64 Compile Perf': ['microdump_stackwalk', 'angle_perftests'],
-    'Linux Builder Perf': ['chromedriver'],
-    'Mac Builder Perf': ['chromedriver'],
-    'Win Builder Perf': ['chromedriver'],
-    'Win x64 Builder Perf': ['chromedriver'],
+    'android-builder-perf': [
+        'microdump_stackwalk', 'angle_perftests', 'chrome_apk'
+    ],
+    'android_arm64-builder-perf': [
+        'microdump_stackwalk', 'angle_perftests', 'chrome_apk'
+    ],
+    'linux-builder-perf': ['chromedriver'],
+    'mac-builder-perf': ['chromedriver'],
+    'win32-builder-perf': ['chromedriver'],
+    'win64-builder-perf': ['chromedriver'],
 }
 
 
@@ -119,7 +123,7 @@ NEW_PERF_RECIPE_FYI_TESTERS = {
           'num_shards': 7
         }
       ],
-      'platform': 'android',
+      'platform': 'android-chrome',
       'dimension': {
         'pool': 'chrome.tests.perf-fyi',
         'os': 'Android',
@@ -293,7 +297,7 @@ NEW_PERF_RECIPE_MIGRATED_TESTERS = {
       'tests': [
         {
           'isolate': 'performance_webview_test_suite',
-          'num_shards': 16,
+          'num_shards': 8,
           'extra_args': [
               '--test-shard-map-filename=android_nexus6_webview_perf_map.json',
               '--assert-gpu-compositing',
@@ -571,8 +575,7 @@ def current_benchmarks():
   for b in discover.DiscoverClasses(
       benchmarks_dir, top_level_dir, benchmark_module.Benchmark,
       index_by_class_name=True).values():
-    if not b.Name() in bot_platforms.UNSCHEDULED_TELEMETRY_BENCHMARKS:
-      all_benchmarks.append(b)
+    all_benchmarks.append(b)
 
   return sorted(all_benchmarks, key=lambda b: b.Name())
 
@@ -644,8 +647,11 @@ NON_TELEMETRY_BENCHMARKS = {
 NON_WATERFALL_BENCHMARKS = {
     'sizes (mac)':
         BenchmarkMetadata('tapted@chromium.org'),
-    'sizes (win)': BenchmarkMetadata('grt@chromium.org'),
-    'sizes (linux)': BenchmarkMetadata('thestig@chromium.org'),
+    'sizes (win)': BenchmarkMetadata('grt@chromium.org',
+                                     'Internals>PlatformIntegration'),
+    'sizes (linux)': BenchmarkMetadata(
+        'thestig@chromium.org', 'thomasanderson@chromium.org',
+        'Internals>PlatformIntegration'),
     'resource_sizes': BenchmarkMetadata(
         'agrieve@chromium.org, rnephew@chromium.org, perezju@chromium.org'),
     'supersize_archive': BenchmarkMetadata('agrieve@chromium.org'),
@@ -790,7 +796,7 @@ def update_benchmark_csv(file_path):
                      ub_module.UNDOCUMENTED_BENCHMARKS)))
     if ub_module.UNDOCUMENTED_BENCHMARKS - undocumented_benchmarks:
       error_message += (
-          'These benchmarks are already documented. Please remove them from'
+          'These benchmarks are already documented. Please remove them from '
           'the UNDOCUMENTED_BENCHMARKS list in undocumented_benchmarks.py: %s' %
           (','.join(b for b in ub_module.UNDOCUMENTED_BENCHMARKS -
                     undocumented_benchmarks)))
@@ -851,7 +857,7 @@ def validate_tests(waterfall, waterfall_file, benchmark_file, labs_docs_file):
 
   return up_to_date
 
-def add_common_test_properties(test_entry, tester_config):
+def add_common_test_properties(test_entry):
   test_entry['trigger_script'] = {
       'script': '//testing/trigger_scripts/perf_device_trigger.py',
       'args': [
@@ -860,19 +866,8 @@ def add_common_test_properties(test_entry, tester_config):
       ],
   }
 
-  if tester_config['platform'] == 'win':
-    service_account_path = (
-        'C:\\creds\\service_accounts\\'
-        'service-account-chromium-perf-histograms.json')
-  else:
-    service_account_path = (
-        '/creds/service_accounts/service-account-chromium-perf-histograms.json')
   test_entry['merge'] = {
       'script': '//tools/perf/process_perf_results.py',
-      'args': [
-        '--service-account-file',
-        service_account_path
-      ],
   }
 
 def generate_telemetry_args(tester_config):
@@ -883,6 +878,8 @@ def generate_telemetry_args(tester_config):
     browser_name = 'reference'
   elif tester_config['platform'] == 'android':
     browser_name = 'android-chromium'
+  elif tester_config['platform'] == 'android-chrome':
+    browser_name = 'android-chrome'
   elif tester_config['platform'] == 'android-webview':
     browser_name = 'android-webview'
   elif (tester_config['platform'] == 'win'
@@ -943,7 +940,7 @@ def generate_performance_test(tester_config, test):
   # For now we either get shards from the number of devices specified
   # or a test entry needs to specify the num shards if it supports
   # soft device affinity.
-  add_common_test_properties(result, tester_config)
+  add_common_test_properties(result)
   shards = test.get('num_shards')
   result['swarming'] = {
     # Always say this is true regardless of whether the tester

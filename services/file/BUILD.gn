@@ -15,6 +15,8 @@ source_set("lib") {
     "user_id_map.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/services/filesystem:lib",

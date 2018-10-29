@@ -189,9 +189,7 @@ void TranslateScript::OnScriptFetchComplete(bool success,
         expiration_delay_);
   }
 
-  for (RequestCallbackList::iterator it = callback_list_.begin();
-       it != callback_list_.end();
-       ++it) {
+  for (auto it = callback_list_.begin(); it != callback_list_.end(); ++it) {
     it->Run(success, data);
   }
   callback_list_.clear();

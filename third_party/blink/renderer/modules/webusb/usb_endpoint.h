@@ -19,13 +19,13 @@ class USBEndpoint : public ScriptWrappable {
 
  public:
   static USBEndpoint* Create(const USBAlternateInterface*,
-                             size_t endpoint_index);
+                             wtf_size_t endpoint_index);
   static USBEndpoint* Create(const USBAlternateInterface*,
-                             size_t endpoint_number,
+                             uint8_t endpoint_number,
                              const String& direction,
                              ExceptionState&);
 
-  USBEndpoint(const USBAlternateInterface*, size_t endpoint_index);
+  USBEndpoint(const USBAlternateInterface*, wtf_size_t endpoint_index);
 
   const device::mojom::blink::UsbEndpointInfo& Info() const;
 
@@ -38,7 +38,7 @@ class USBEndpoint : public ScriptWrappable {
 
  private:
   Member<const USBAlternateInterface> alternate_;
-  const size_t endpoint_index_;
+  const wtf_size_t endpoint_index_;
 };
 
 }  // namespace blink

@@ -18,6 +18,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageAdapter;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerView;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.TileGroup;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.chrome.browser.util.ViewUtils;
 import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
 
@@ -38,8 +38,6 @@ import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
 public class NewTabPageView extends FrameLayout {
     private static final String TAG = "NewTabPageView";
 
-    private final int mScrollToSuggestionsOffset;
-
     private NewTabPageRecyclerView mRecyclerView;
 
     private NewTabPageLayout mNewTabPageLayout;
@@ -48,7 +46,6 @@ public class NewTabPageView extends FrameLayout {
     private Tab mTab;
     private SnapScrollHelper mSnapScrollHelper;
     private UiConfig mUiConfig;
-    private Runnable mUpdateSearchBoxOnScrollRunnable;
 
     private boolean mNewTabPageRecyclerViewChanged;
     private int mSnapshotWidth;
@@ -92,9 +89,6 @@ public class NewTabPageView extends FrameLayout {
     public NewTabPageView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mScrollToSuggestionsOffset =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-
         mRecyclerView = new NewTabPageRecyclerView(getContext());
 
         // Don't attach now, the recyclerView itself will determine when to do it.
@@ -126,7 +120,8 @@ public class NewTabPageView extends FrameLayout {
         // is reparented.
         Runnable closeContextMenuCallback = () -> mTab.getActivity().closeContextMenu();
         mContextMenuManager = new ContextMenuManager(mManager.getNavigationDelegate(),
-                mRecyclerView::setTouchEnabled, closeContextMenuCallback, false);
+                mRecyclerView::setTouchEnabled, closeContextMenuCallback,
+                NewTabPage.CONTEXT_MENU_USER_ACTION_PREFIX);
         mTab.getWindowAndroid().addContextMenuCloseListener(mContextMenuManager);
 
         mNewTabPageLayout.initialize(manager, tab, tileGroupDelegate, searchProviderHasLogo,
@@ -148,7 +143,7 @@ public class NewTabPageView extends FrameLayout {
 
                 // Cancel any pending scroll update handling, a new one will be scheduled in
                 // onAnimationFinished().
-                mRecyclerView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
+                mSnapScrollHelper.resetSearchBoxOnScroll(false);
 
                 return super.animateMove(holder, fromX, fromY, toX, toY);
             }
@@ -167,16 +162,13 @@ public class NewTabPageView extends FrameLayout {
                 if (viewHolder.itemView == mNewTabPageLayout) {
                     mNewTabPageLayout.setIsViewMoving(false);
                 }
-                mRecyclerView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
-                mRecyclerView.post(mUpdateSearchBoxOnScrollRunnable);
+                mSnapScrollHelper.resetSearchBoxOnScroll(true);
             }
         });
 
         Profile profile = Profile.getLastUsedProfile();
         OfflinePageBridge offlinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
-
-        mUpdateSearchBoxOnScrollRunnable = mNewTabPageLayout::updateSearchBoxOnScroll;
 
         initializeLayoutChangeListener();
         mNewTabPageLayout.setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
@@ -284,11 +276,6 @@ public class NewTabPageView extends FrameLayout {
         // immediately attached to the window if the RecyclerView is scrolled when the NTP
         // is refocused.
         if (mManager.isLocationBarShownInNTP()) mNewTabPageLayout.updateSearchBoxOnScroll();
-
-        if (FeatureUtilities.isBottomToolbarEnabled()) {
-            ((MarginLayoutParams) getLayoutParams()).bottomMargin =
-                    getResources().getDimensionPixelSize(R.dimen.bottom_toolbar_height);
-        }
     }
 
     /**

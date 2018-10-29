@@ -38,8 +38,7 @@ bool SubtreeSet::IsDisjointWith(const base::FilePath& subtree_root) const {
   while (!storage::VirtualPath::IsRootPath(path)) {
     path = storage::VirtualPath::DirName(path);
 
-    Subtrees::const_iterator found =
-        inclusive_ancestors_of_subtree_roots_.find(path.value());
+    auto found = inclusive_ancestors_of_subtree_roots_.find(path.value());
     if (found != inclusive_ancestors_of_subtree_roots_.end())
       return !found->second.contained_as_subtree_root;
   }
@@ -73,7 +72,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
       storage::VirtualPath::GetNormalizedFilePath(subtree_root);
 
   {
-    Subtrees::iterator found =
+    auto found =
         inclusive_ancestors_of_subtree_roots_.find(normalized_subtree_root);
     if (found == inclusive_ancestors_of_subtree_roots_.end() ||
         !found->second.contained_as_subtree_root)
@@ -87,8 +86,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
   while (!storage::VirtualPath::IsRootPath(path)) {
     path = storage::VirtualPath::DirName(path);
 
-    Subtrees::iterator found =
-        inclusive_ancestors_of_subtree_roots_.find(path.value());
+    auto found = inclusive_ancestors_of_subtree_roots_.find(path.value());
     if (found == inclusive_ancestors_of_subtree_roots_.end()) {
       NOTREACHED();
       continue;
@@ -103,7 +101,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
 }
 
 size_t SubtreeSet::size() const {
-  Subtrees::const_iterator found =
+  auto found =
       inclusive_ancestors_of_subtree_roots_.find(storage::VirtualPath::kRoot);
   if (found == inclusive_ancestors_of_subtree_roots_.end())
     return 0;

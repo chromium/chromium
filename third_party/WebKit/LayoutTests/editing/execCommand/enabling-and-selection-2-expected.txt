@@ -2,7 +2,6 @@ This tests enabling of non-execCommand commands based on whether the selection i
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS whenEnabled('Print') is 'always'
 PASS whenEnabled('SelectAll') is 'always'
 PASS whenEnabled('Transpose') is 'caret'

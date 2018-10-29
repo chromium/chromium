@@ -72,8 +72,7 @@ void DedicatedWorkerGlobalScope::ImportModuleScript(
     network::mojom::FetchCredentialsMode credentials_mode) {
   // Step 12: "Let destination be "sharedworker" if is shared is true, and
   // "worker" otherwise."
-  WebURLRequest::RequestContext destination =
-      WebURLRequest::kRequestContextWorker;
+  mojom::RequestContextType destination = mojom::RequestContextType::WORKER;
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
 

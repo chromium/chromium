@@ -235,6 +235,7 @@ def main():
       '--test-launcher-summary-output',
       '--json-results-file',
       '--write-full-results-to',
+      '--isolated-script-test-output',
       dest='json_results_file', type=os.path.realpath,
       help='If set, will dump results in JSON form to the specified file. '
            'Note that this will also trigger saving per-test logcats to '

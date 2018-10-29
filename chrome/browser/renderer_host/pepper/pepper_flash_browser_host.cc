@@ -4,6 +4,7 @@
 
 #include "chrome/browser/renderer_host/pepper/pepper_flash_browser_host.h"
 
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -11,6 +12,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_ppapi_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/service_manager_connection.h"
@@ -134,14 +136,12 @@ int32_t PepperFlashBrowserHost::OnGetLocalDataRestrictions(
                              plugin_url,
                              cookie_settings_);
   } else {
-    BrowserThread::PostTaskAndReplyWithResult(
-        BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&GetCookieSettings, render_process_id_),
         base::Bind(&PepperFlashBrowserHost::GetLocalDataRestrictions,
                    weak_factory_.GetWeakPtr(),
-                   context->MakeReplyMessageContext(),
-                   document_url,
+                   context->MakeReplyMessageContext(), document_url,
                    plugin_url));
   }
   return PP_OK_COMPLETIONPENDING;
@@ -194,9 +194,9 @@ device::mojom::WakeLock* PepperFlashBrowserHost::GetWakeLock() {
   // The existing connector is bound to the UI thread, the current thread is
   // IO thread. So bind the ConnectorRequest of IO thread to the connector
   // in UI thread.
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&PepperBindConnectorRequest,
-                                         std::move(connector_request)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&PepperBindConnectorRequest,
+                                          std::move(connector_request)));
 
   device::mojom::WakeLockProviderPtr wake_lock_provider;
   connector->BindInterface(device::mojom::kServiceName,

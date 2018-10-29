@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
@@ -207,9 +208,7 @@ bool DragController::DragIsMove(FrameSelection& selection,
          !IsCopyKeyDown(drag_data);
 }
 
-// FIXME: This method is poorly named.  We're just clearing the selection from
-// the document this drag is exiting.
-void DragController::CancelDrag() {
+void DragController::ClearDragCaret() {
   page_->GetDragCaret().Clear();
 }
 
@@ -243,9 +242,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   DCHECK(drag_data);
   document_under_mouse_ =
       local_root.DocumentAtPoint(LayoutPoint(drag_data->ClientPosition()));
-  std::unique_ptr<UserGestureIndicator> gesture = Frame::NotifyUserActivation(
-      document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr,
-      UserGestureToken::kNewGesture);
+  std::unique_ptr<UserGestureIndicator> gesture =
+      LocalFrame::NotifyUserActivation(
+          document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr,
+          UserGestureToken::kNewGesture);
   if ((drag_destination_action_ & kDragDestinationActionDHTML) &&
       document_is_handling_drag_) {
     bool prevented_default = false;
@@ -276,7 +276,7 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
     }
     if (prevented_default) {
       document_under_mouse_ = nullptr;
-      CancelDrag();
+      ClearDragCaret();
       return;
     }
   }
@@ -296,9 +296,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
       // origin rather than the origin of the dragged data URL?
       resource_request.SetRequestorOrigin(
           SecurityOrigin::Create(KURL(drag_data->AsURL())));
-      resource_request.SetHasUserGesture(Frame::HasTransientUserActivation(
+      resource_request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(
           document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr));
-      page_->MainFrame()->Navigate(FrameLoadRequest(nullptr, resource_request));
+      page_->MainFrame()->Navigate(FrameLoadRequest(nullptr, resource_request),
+                                   WebFrameLoadType::kStandard);
     }
 
     // TODO(bokan): This case happens when we end a URL drag inside a guest
@@ -316,7 +317,7 @@ void DragController::MouseMovedIntoDocument(Document* new_document) {
 
   // If we were over another document clear the selection
   if (document_under_mouse_)
-    CancelDrag();
+    ClearDragCaret();
   document_under_mouse_ = new_document;
 }
 
@@ -1053,11 +1054,12 @@ static std::unique_ptr<DragImage> DragImageForImage(
     image = svg_image.get();
   }
 
-  InterpolationQuality interpolation_quality =
-      element->EnsureComputedStyle()->ImageRendering() ==
-              EImageRendering::kPixelated
-          ? kInterpolationNone
-          : kInterpolationDefault;
+  InterpolationQuality interpolation_quality = kInterpolationDefault;
+  if (const ComputedStyle* style = element->GetComputedStyle()) {
+    if (style->ImageRendering() == EImageRendering::kPixelated)
+      interpolation_quality = kInterpolationNone;
+  }
+
   RespectImageOrientationEnum should_respect_image_orientation =
       LayoutObject::ShouldRespectImageOrientation(element->GetLayoutObject());
   ImageOrientation orientation;

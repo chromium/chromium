@@ -105,10 +105,7 @@ void CertReportHelper::PopulateExtendedReportingOption(
 
   load_time_data->SetString(
       security_interstitials::kOptInLink,
-      l10n_util::GetStringFUTF16(safe_browsing::ChooseOptInTextResource(
-                                     *GetProfile(web_contents_)->GetPrefs(),
-                                     IDS_SAFE_BROWSING_MALWARE_REPORTING_AGREE,
-                                     IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE),
+      l10n_util::GetStringFUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE,
                                  base::UTF8ToUTF16(privacy_link)));
 }
 

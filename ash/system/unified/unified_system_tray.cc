@@ -5,13 +5,13 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/message_center/message_center_ui_controller.h"
-#include "ash/message_center/message_center_ui_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/date/date_view.h"
 #include "ash/system/date/tray_system_info.h"
 #include "ash/system/message_center/ash_popup_alignment_delegate.h"
+#include "ash/system/message_center/message_center_ui_controller.h"
+#include "ash/system/message_center/message_center_ui_delegate.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
@@ -27,6 +27,8 @@
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/network/network_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -44,7 +46,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   // MessageCenterUiDelegate:
   void OnMessageCenterContentsChanged() override;
   bool ShowPopups() override;
-  void HidePopups(bool animate) override;
+  void HidePopups() override;
   bool ShowMessageCenter(bool show_by_click) override;
   void HideMessageCenter() override;
 
@@ -65,6 +67,9 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   DISALLOW_COPY_AND_ASSIGN(UiDelegate);
 };
 
+const base::TimeDelta UnifiedSystemTray::kNotificationCountUpdateDelay =
+    base::TimeDelta::FromMilliseconds(100);
+
 UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
     : owner_(owner) {
   ui_controller_ = std::make_unique<MessageCenterUiController>(this);
@@ -74,6 +79,7 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
   message_popup_collection_ =
       std::make_unique<message_center::MessagePopupCollection>(
           popup_alignment_delegate_.get());
+  message_popup_collection_->set_inverse();
   display::Screen* screen = display::Screen::GetScreen();
   popup_alignment_delegate_->StartObserving(
       screen, screen->GetDisplayNearestWindow(
@@ -89,12 +95,10 @@ void UnifiedSystemTray::UiDelegate::OnMessageCenterContentsChanged() {
 bool UnifiedSystemTray::UiDelegate::ShowPopups() {
   if (owner_->IsBubbleShown())
     return false;
-  message_popup_collection_->Update();
   return true;
 }
 
-void UnifiedSystemTray::UiDelegate::HidePopups(bool animate) {
-  message_popup_collection_->MarkAllPopupsShown(animate);
+void UnifiedSystemTray::UiDelegate::HidePopups() {
   popup_alignment_delegate_->SetTrayBubbleHeight(0);
 }
 
@@ -295,8 +299,11 @@ base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
                                     time, battery);
 }
 
-void UnifiedSystemTray::HideBubbleWithView(
-    const views::TrayBubbleView* bubble_view) {}
+void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
+void UnifiedSystemTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 
 void UnifiedSystemTray::ClickedOutsideBubble() {
   CloseBubble();
@@ -308,6 +315,10 @@ void UnifiedSystemTray::UpdateAfterShelfAlignmentChange() {
 }
 
 void UnifiedSystemTray::ShowBubbleInternal(bool show_by_click) {
+  // Never show System Tray bubble in kiosk app mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+    return;
+
   // Hide volume/brightness slider popup.
   slider_bubble_controller_->CloseBubble();
 
@@ -321,6 +332,16 @@ void UnifiedSystemTray::HideBubbleInternal() {
 }
 
 void UnifiedSystemTray::UpdateNotificationInternal() {
+  // Limit update frequency in order to avoid flashing when 2 updates are
+  // incoming in a very short period of time. It happens when ARC++ apps
+  // creating bundled notifications.
+  if (!timer_.IsRunning()) {
+    timer_.Start(FROM_HERE, kNotificationCountUpdateDelay, this,
+                 &UnifiedSystemTray::UpdateNotificationAfterDelay);
+  }
+}
+
+void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   notification_counter_item_->Update();
   quiet_mode_view_->Update();
 }

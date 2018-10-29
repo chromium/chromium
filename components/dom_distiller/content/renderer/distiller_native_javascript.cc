@@ -54,10 +54,12 @@ void DistillerNativeJavaScript::BindFunctionToObject(
     v8::Local<v8::Object> javascript_object,
     const std::string& name,
     const base::Callback<Sig> callback) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   // Get the isolate associated with this object.
-  javascript_object->Set(
-      gin::StringToSymbol(isolate, name),
-      gin::CreateFunctionTemplate(isolate, callback)->GetFunction());
+  javascript_object->Set(gin::StringToSymbol(isolate, name),
+                         gin::CreateFunctionTemplate(isolate, callback)
+                             ->GetFunction(context)
+                             .ToLocalChecked());
 }
 
 void DistillerNativeJavaScript::EnsureServiceConnected() {

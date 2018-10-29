@@ -49,8 +49,8 @@ TEST_F(AppListShelfItemDelegateTest, OnlyMinimizeCycleListWindows) {
   std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
       ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
   delegate()->ItemSelected(
-      std::move(test_event),
-      /*display_id=*/0, ShelfLaunchSource::LAUNCH_FROM_UNKNOWN,
+      std::move(test_event), GetPrimaryDisplay().id(),
+      ShelfLaunchSource::LAUNCH_FROM_UNKNOWN,
       base::BindOnce(
           [](ash::ShelfAction, base::Optional<ash::MenuItemList>) {}));
   ASSERT_TRUE(wm::GetWindowState(w1.get())->IsMinimized());

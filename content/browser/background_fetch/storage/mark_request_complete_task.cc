@@ -14,6 +14,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/common/service_worker/service_worker_utils.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -62,28 +63,31 @@ void MarkRequestCompleteTask::Start() {
 void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
   auto response = blink::mojom::FetchAPIResponse::New();
   response->url_list = request_info_->GetURLChain();
-  // TODO(crbug.com/838837): fill error and cors_exposed_header_names in
-  // response.
   response->response_type = network::mojom::FetchResponseType::kDefault;
   response->response_time = request_info_->GetResponseTime();
+
+  if (request_info_->GetURLChain().empty()) {
+    // The URL chain was not provided, so this is a failed response.
+    DCHECK(!request_info_->IsResultSuccess());
+    failure_reason_ = proto::BackgroundFetchRegistration::FETCH_ERROR;
+    CreateAndStoreCompletedRequest(std::move(done_closure));
+    return;
+  }
 
   // TODO(crbug.com/884672): Move cross origin checks to when the response
   // headers are available.
   BackgroundFetchCrossOriginFilter filter(registration_id_.origin(),
                                           *request_info_);
-  if (filter.CanPopulateBody())
-    PopulateResponseBody(response.get());
-  else
-    is_response_successful_ = false;
-
-  if (!IsOK(*request_info_))
-    is_response_successful_ = false;
-
-  // A valid non-empty url is needed if we want to write to the cache.
-  if (!request_info_->fetch_request().url.is_valid()) {
+  if (!filter.CanPopulateBody()) {
+    failure_reason_ = proto::BackgroundFetchRegistration::FETCH_ERROR;
+    // No point writing the response to the cache since it won't be exposed.
     CreateAndStoreCompletedRequest(std::move(done_closure));
     return;
   }
+
+  PopulateResponseBody(response.get());
+  if (!IsOK(*request_info_))
+    failure_reason_ = proto::BackgroundFetchRegistration::BAD_STATUS;
 
   int64_t response_size = 0;
   if (service_worker_context()->is_incognito()) {
@@ -212,9 +216,10 @@ void MarkRequestCompleteTask::CreateAndStoreCompletedRequest(
   completed_request_.set_unique_id(registration_id_.unique_id());
   completed_request_.set_request_index(request_info_->request_index());
   completed_request_.set_serialized_request(
-      request_info_->fetch_request().Serialize());
+      ServiceWorkerUtils::SerializeFetchRequestToString(
+          request_info_->fetch_request()));
   completed_request_.set_download_guid(request_info_->download_guid());
-  completed_request_.set_succeeded(is_response_successful_);
+  completed_request_.set_failure_reason(failure_reason_);
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
@@ -279,8 +284,8 @@ void MarkRequestCompleteTask::DidGetMetadata(
     return;
   }
 
-  metadata->mutable_registration()->set_download_total(
-      metadata->registration().download_total() + request_info_->GetFileSize());
+  metadata->mutable_registration()->set_downloaded(
+      metadata->registration().downloaded() + request_info_->GetFileSize());
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
@@ -301,8 +306,11 @@ void MarkRequestCompleteTask::DidStoreMetadata(
 
 void MarkRequestCompleteTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  if (HasStorageError())
+  if (HasStorageError()) {
     error = blink::mojom::BackgroundFetchError::STORAGE_ERROR;
+    for (auto& observer : data_manager()->observers())
+      observer.OnFetchStorageError(registration_id_);
+  }
   ReportStorageError();
 
   std::move(callback_).Run(error);

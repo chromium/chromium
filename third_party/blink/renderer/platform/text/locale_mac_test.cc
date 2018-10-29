@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/date_components.h"
+#include "third_party/blink/renderer/platform/mac/version_util_mac.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -224,16 +225,26 @@ TEST_F(LocaleMacTest, formatDate) {
   // Do not test ja_JP locale. OS X 10.8 and 10.7 have different formats.
 }
 
-// http://crbug.com/811685 This test is flaky.
-TEST_F(LocaleMacTest, DISABLED_formatTime) {
+TEST_F(LocaleMacTest, formatTime) {
+  // On MacOS 10.13+, Arabic times (which contain spaces) use \xC2\xA0
+  // (which is a non-breaking space) instead of \x20 for those spaces. The
+  // 10.13+ behavior is probably more correct, but there does not appear to be a
+  // way to configure NSDateFormatter to behave that way on < 10.13.
+  bool expect_ar_nbsp = !IsOS10_10() && !IsOS10_11() && !IsOS10_12();
+
   EXPECT_STREQ("1:23 PM",
                FormatTime("en_US", 13, 23, 00, 000, true).Utf8().data());
   EXPECT_STREQ("13:23",
                FormatTime("fr_FR", 13, 23, 00, 000, true).Utf8().data());
   EXPECT_STREQ("13:23",
                FormatTime("ja_JP", 13, 23, 00, 000, true).Utf8().data());
-  EXPECT_STREQ("\xD9\xA1:\xD9\xA2\xD9\xA3 \xD9\x85",
-               FormatTime("ar", 13, 23, 00, 000, true).Utf8().data());
+  if (expect_ar_nbsp) {
+    EXPECT_STREQ("\xD9\xA1:\xD9\xA2\xD9\xA3\xC2\xA0\xD9\x85",
+                 FormatTime("ar", 13, 23, 00, 000, true).Utf8().data());
+  } else {
+    EXPECT_STREQ("\xD9\xA1:\xD9\xA2\xD9\xA3 \xD9\x85",
+                 FormatTime("ar", 13, 23, 00, 000, true).Utf8().data());
+  }
   EXPECT_STREQ("\xDB\xB1\xDB\xB3:\xDB\xB2\xDB\xB3",
                FormatTime("fa", 13, 23, 00, 000, true).Utf8().data());
 
@@ -243,8 +254,13 @@ TEST_F(LocaleMacTest, DISABLED_formatTime) {
                FormatTime("fr_FR", 00, 00, 00, 000, true).Utf8().data());
   EXPECT_STREQ("0:00",
                FormatTime("ja_JP", 00, 00, 00, 000, true).Utf8().data());
-  EXPECT_STREQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0 \xD8\xB5",
-               FormatTime("ar", 00, 00, 00, 000, true).Utf8().data());
+  if (expect_ar_nbsp) {
+    EXPECT_STREQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0\xC2\xA0\xD8\xB5",
+                 FormatTime("ar", 00, 00, 00, 000, true).Utf8().data());
+  } else {
+    EXPECT_STREQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0 \xD8\xB5",
+                 FormatTime("ar", 00, 00, 00, 000, true).Utf8().data());
+  }
   EXPECT_STREQ("\xDB\xB0:\xDB\xB0\xDB\xB0",
                FormatTime("fa", 00, 00, 00, 000, true).Utf8().data());
 
@@ -254,10 +270,17 @@ TEST_F(LocaleMacTest, DISABLED_formatTime) {
                FormatTime("fr_FR", 07, 07, 07, 007, false).Utf8().data());
   EXPECT_STREQ("7:07:07.007",
                FormatTime("ja_JP", 07, 07, 07, 007, false).Utf8().data());
-  EXPECT_STREQ(
-      "\xD9\xA7:\xD9\xA0\xD9\xA7:"
-      "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7 \xD8\xB5",
-      FormatTime("ar", 07, 07, 07, 007, false).Utf8().data());
+  if (expect_ar_nbsp) {
+    EXPECT_STREQ(
+        "\xD9\xA7:\xD9\xA0\xD9\xA7:"
+        "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7\xC2\xA0\xD8\xB5",
+        FormatTime("ar", 07, 07, 07, 007, false).Utf8().data());
+  } else {
+    EXPECT_STREQ(
+        "\xD9\xA7:\xD9\xA0\xD9\xA7:"
+        "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7 \xD8\xB5",
+        FormatTime("ar", 07, 07, 07, 007, false).Utf8().data());
+  }
   EXPECT_STREQ(
       "\xDB\xB7:\xDB\xB0\xDB\xB7:"
       "\xDB\xB0\xDB\xB7\xD9\xAB\xDB\xB0\xDB\xB0\xDB\xB7",

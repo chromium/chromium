@@ -34,13 +34,17 @@ public class FlushingReTrace {
             // Eagerly match logcat prefix to avoid conflicting with the patterns below.
             LOGCAT_PREFIX
             + "(?:"
-            // Based on default ReTrace regex, but with "at" changed to to allow :
-            // E.g.: 06-22 13:58:02.895  4674  4674 E THREAD_STATE:     bLA.a(PG:173)
+            // Based on default ReTrace regex, but with whitespaces allowed in file:line parentheses
+            // and "at" changed to to allow :
+            // E.g.: 06-22 13:58:02.895  4674  4674 E THREAD_STATE:     bLA.a( PG : 173 )
             // Normal stack trace lines look like:
             // \tat org.chromium.chrome.browser.tab.Tab.handleJavaCrash(Tab.java:682)
-            + "(?:.*?(?::|\\bat)\\s+%c\\.%m\\s*\\(%s(?::%l)?\\))|"
+            + "(?:.*?(?::|\\bat)\\s+%c\\.%m\\s*\\(\\s*%s(?:\\s*:\\s*%l\\s*)?\\))|"
             // E.g.: VFY: unable to resolve new-instance 3810 (LSome/Framework/Class;) in Lfoo/Bar;
             + "(?:.*L%C;.*)|"
+            // E.g.: Caused by: java.lang.NullPointerException: Attempt to read from field 'int bLA'
+            // on a null object reference
+            + "(?:.*NullPointerException.*[\"']%t\\s*%c\\.(?:%f|%m\\(%a\\))[\"'].*)|"
             // E.g.: END SomeTestClass#someMethod
             + "(?:.*?%c#%m.*?)|"
             // E.g.: The member "Foo.bar"

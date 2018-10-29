@@ -233,7 +233,7 @@ void BackgroundHTMLParser::PumpTokenizer() {
       // Break chunks before a script tag is inserted and flag the chunk as
       // starting a script so the main parser can decide if it should yield
       // before processing the chunk.
-      if (simulated_token == HTMLTreeBuilderSimulator::kScriptStart) {
+      if (simulated_token == HTMLTreeBuilderSimulator::kValidScriptStart) {
         EnqueueTokenizedChunk();
         starting_script_ = true;
       }

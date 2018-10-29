@@ -51,8 +51,8 @@ static inline void CollectElementIdentifierHashes(
         kIdAttributeSalt);
   if (element.IsStyledElement() && element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
-    size_t count = class_names.size();
-    for (size_t i = 0; i < count; ++i) {
+    wtf_size_t count = class_names.size();
+    for (wtf_size_t i = 0; i < count; ++i) {
       DCHECK(class_names[i].Impl());
       // Speculative fix for https://crbug.com/646026
       if (class_names[i].Impl())
@@ -72,8 +72,8 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
   CollectElementIdentifierHashes(parent, parent_frame.identifier_hashes);
-  size_t count = parent_frame.identifier_hashes.size();
-  for (size_t i = 0; i < count; ++i)
+  wtf_size_t count = parent_frame.identifier_hashes.size();
+  for (wtf_size_t i = 0; i < count; ++i)
     ancestor_identifier_filter_->Add(parent_frame.identifier_hashes[i]);
 }
 
@@ -81,8 +81,8 @@ void SelectorFilter::PopParentStackFrame() {
   DCHECK(!parent_stack_.IsEmpty());
   DCHECK(ancestor_identifier_filter_);
   const ParentStackFrame& parent_frame = parent_stack_.back();
-  size_t count = parent_frame.identifier_hashes.size();
-  for (size_t i = 0; i < count; ++i)
+  wtf_size_t count = parent_frame.identifier_hashes.size();
+  for (wtf_size_t i = 0; i < count; ++i)
     ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
   parent_stack_.pop_back();
   if (parent_stack_.IsEmpty()) {

@@ -120,6 +120,10 @@ void ScreenOrientationProvider::SetDelegate(
   delegate_ = delegate;
 }
 
+ScreenOrientationDelegate* ScreenOrientationProvider::GetDelegateForTesting() {
+  return delegate_;
+}
+
 void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
     bool entered_fullscreen,
     bool will_cause_resize) {

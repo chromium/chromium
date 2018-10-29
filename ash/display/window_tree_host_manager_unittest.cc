@@ -1704,7 +1704,8 @@ TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {
   dispatcher_api.set_target(
       Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
           GetSecondaryDisplay().id()));
-  Shell::Get()->window_tree_host_manager()->DispatchKeyEventPostIME(&key_event);
+  Shell::Get()->window_tree_host_manager()->DispatchKeyEventPostIME(
+      &key_event, base::NullCallback());
   // As long as nothing crashes, we're good.
 }
 

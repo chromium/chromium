@@ -40,8 +40,8 @@ sk_sp<PaintFilter> FEMerge::CreateImageFilter() {
 
   auto input_refs = std::make_unique<sk_sp<PaintFilter>[]>(size);
   for (unsigned i = 0; i < size; ++i) {
-    input_refs[i] = PaintFilterBuilder::Build(InputEffect(i),
-                                              OperatingInterpolationSpace());
+    input_refs[i] = paint_filter_builder::Build(InputEffect(i),
+                                                OperatingInterpolationSpace());
   }
   PaintFilter::CropRect rect = GetCropRect();
   return sk_make_sp<MergePaintFilter>(input_refs.get(), size, &rect);

@@ -12,11 +12,6 @@ namespace gfx {
 // The format needs to be taken into account when mapping a buffer into the
 // client's address space.
 enum class BufferFormat {
-  ATC,
-  ATCIA,
-  DXT1,
-  DXT5,
-  ETC1,
   R_8,
   R_16,
   RG_88,

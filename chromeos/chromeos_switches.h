@@ -85,8 +85,6 @@ CHROMEOS_EXPORT extern const char
     kDisableSystemTimezoneAutomaticDetectionPolicy[];
 CHROMEOS_EXPORT extern const char kDisableVolumeAdjustSound[];
 CHROMEOS_EXPORT extern const char kDisableWakeOnWifi[];
-CHROMEOS_EXPORT extern const char kDisableZipArchiverPacker[];
-CHROMEOS_EXPORT extern const char kDisableZipArchiverUnpacker[];
 CHROMEOS_EXPORT extern const char kEnableArc[];
 CHROMEOS_EXPORT extern const char kEnableArcOobeOptinNoSkip[];
 CHROMEOS_EXPORT extern const char kEnableCaptivePortalRandomUrl[];
@@ -94,11 +92,13 @@ CHROMEOS_EXPORT extern const char kEnableCastReceiver[];
 CHROMEOS_EXPORT extern const char kEnableChromevoxDeveloperOption[];
 CHROMEOS_EXPORT extern const char kEnableConsumerKiosk[];
 CHROMEOS_EXPORT extern const char kEnableDataSaverPrompt[];
+CHROMEOS_EXPORT extern const char kEnableDiscoverApp[];
 CHROMEOS_EXPORT extern const char kEnableEncryptionMigration[];
 CHROMEOS_EXPORT extern const char kEnableExperimentalAccessibilityFeatures[];
 CHROMEOS_EXPORT extern const char kEnableExtensionAssetsSharing[];
 CHROMEOS_EXPORT extern const char kEnableFileManagerTouchMode[];
 CHROMEOS_EXPORT extern const char kEnableFirstRunUITransitions[];
+CHROMEOS_EXPORT extern const char kEnableMarketingOptInScreen[];
 CHROMEOS_EXPORT extern const char kEnableNetworkPortalNotification[];
 CHROMEOS_EXPORT extern const char kEnableOfflineDemoMode[];
 CHROMEOS_EXPORT extern const char kEnablePhysicalKeyboardAutocorrect[];
@@ -108,8 +108,6 @@ CHROMEOS_EXPORT extern const char kEnableTouchCalibrationSetting[];
 CHROMEOS_EXPORT extern const char kEnableTouchpadThreeFingerClick[];
 CHROMEOS_EXPORT extern const char kEnableVideoPlayerChromecastSupport[];
 CHROMEOS_EXPORT extern const char kEnableVoiceInteraction[];
-CHROMEOS_EXPORT extern const char kEnableZipArchiverPacker[];
-CHROMEOS_EXPORT extern const char kEnableZipArchiverUnpacker[];
 CHROMEOS_EXPORT extern const char kEnterpriseDisableArc[];
 CHROMEOS_EXPORT extern const char kEnterpriseDisableLicenseTypeSelection[];
 CHROMEOS_EXPORT extern const char kEnterpriseEnableForcedReEnrollment[];
@@ -154,8 +152,8 @@ CHROMEOS_EXPORT extern const char kProfileRequiresPolicy[];
 CHROMEOS_EXPORT extern const char kRlzPingDelay[];
 CHROMEOS_EXPORT extern const char kShelfHoverPreviews[];
 CHROMEOS_EXPORT extern const char kShowAndroidFilesInFilesApp[];
-CHROMEOS_EXPORT extern const char kFilesAppDisableMyFilesNavigation[];
 CHROMEOS_EXPORT extern const char kShowLoginDevOverlay[];
+CHROMEOS_EXPORT extern const char kShowPlayInDemoMode[];
 CHROMEOS_EXPORT extern const char kStubCrosSettings[];
 CHROMEOS_EXPORT extern const char kTestEncryptionMigrationUI[];
 CHROMEOS_EXPORT extern const char kTetherStub[];
@@ -165,9 +163,6 @@ CHROMEOS_EXPORT extern const char kWakeOnWifiPacket[];
 
 // Controls whether to enable Chrome OS Account Manager.
 CHROMEOS_EXPORT extern const base::Feature kAccountManager;
-
-// Controls whether to enable the new shelf UI.
-CHROMEOS_EXPORT extern const base::Feature kEnableShelfNewUi;
 
 // Controls whether to enable Google Assistant feature.
 CHROMEOS_EXPORT extern const base::Feature kAssistantFeature;
@@ -207,12 +202,6 @@ CHROMEOS_EXPORT bool IsAssistantFlagsEnabled();
 // Returns true if Google Assistant is enabled.
 CHROMEOS_EXPORT bool IsAssistantEnabled();
 
-// Returns true if Zip Archiver is enabled for unpacking files.
-CHROMEOS_EXPORT bool IsZipArchiverUnpackerEnabled();
-
-// Returns true if Zip Archiver is enabled for packing files.
-CHROMEOS_EXPORT bool IsZipArchiverPackerEnabled();
-
 // Returns true if client certificate authentication for the sign-in frame on
 // the Chrome OS sign-in screen is enabled.
 CHROMEOS_EXPORT bool IsSigninFrameClientCertsEnabled();
@@ -231,12 +220,13 @@ CHROMEOS_EXPORT bool ShouldHideActiveAppsFromShelf();
 // on the shelf.
 CHROMEOS_EXPORT bool ShouldShowShelfHoverPreviews();
 
-// Returns true if the shelf should adopt the new UI from summer 2018.
-CHROMEOS_EXPORT bool ShouldUseShelfNewUi();
-
 // Returns true if Instant Tethering should support hosts which use the
 // background advertisement model
 CHROMEOS_EXPORT bool IsInstantTetheringBackgroundAdvertisingSupported();
+
+// Returns true if Play Store should be available in Demo Mode.
+// TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
+CHROMEOS_EXPORT bool ShouldShowPlayStoreInDemoMode();
 
 }  // namespace switches
 }  // namespace chromeos

@@ -123,8 +123,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
   const std::string scheme = request->url().scheme();
 
   {
-    HostnameInterceptorMap::const_iterator it =
-        hostname_interceptor_map_.find(make_pair(scheme, hostname));
+    auto it = hostname_interceptor_map_.find(make_pair(scheme, hostname));
     if (it != hostname_interceptor_map_.end())
       job = it->second->MaybeInterceptRequest(request, network_delegate);
   }
@@ -132,7 +131,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
   if (!job) {
     // Not in the hostname map, check the url map.
     const std::string& url = request->url().spec();
-    URLInterceptorMap::const_iterator it = url_interceptor_map_.find(url);
+    auto it = url_interceptor_map_.find(url);
     if (it != url_interceptor_map_.end())
       job = it->second->MaybeInterceptRequest(request, network_delegate);
   }

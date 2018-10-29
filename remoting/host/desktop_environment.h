@@ -21,6 +21,7 @@ class MouseCursorMonitor;
 
 namespace remoting {
 
+class ActionExecutor;
 class AudioCapturer;
 class ClientSessionControl;
 class FileProxyWrapper;
@@ -35,6 +36,7 @@ class DesktopEnvironment {
 
   // Factory methods used to create audio/video capturers, event executor, and
   // screen controls object for a particular desktop environment.
+  virtual std::unique_ptr<ActionExecutor> CreateActionExecutor() = 0;
   virtual std::unique_ptr<AudioCapturer> CreateAudioCapturer() = 0;
   virtual std::unique_ptr<InputInjector> CreateInputInjector() = 0;
   virtual std::unique_ptr<ScreenControls> CreateScreenControls() = 0;

@@ -42,7 +42,7 @@ bool InvokeShellExecute(const base::string16 path,
                         const base::string16 args,
                         const base::string16 verb,
                         DWORD mask) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   SHELLEXECUTEINFO sei = {sizeof(sei)};
   sei.fMask = mask;
   sei.nShow = SW_SHOWNORMAL;

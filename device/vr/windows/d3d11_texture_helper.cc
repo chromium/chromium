@@ -78,6 +78,56 @@ void D3D11TextureHelper::CleanupLayerData(LayerData& layer) {
   layer.submitted_this_frame_ = false;
 }
 
+bool D3D11TextureHelper::EnsureOverlayBlendState() {
+  if (!render_state_.overlay_blend_state_) {
+    D3D11_BLEND_DESC blenddesc = {};
+    blenddesc.RenderTarget[0].BlendEnable = true;
+    blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blenddesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blenddesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blenddesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blenddesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blenddesc.RenderTarget[0].RenderTargetWriteMask =
+        D3D11_COLOR_WRITE_ENABLE_ALL;
+    HRESULT hr = render_state_.d3d11_device_->CreateBlendState(
+        &blenddesc,
+        render_state_.overlay_blend_state_.ReleaseAndGetAddressOf());
+    if (FAILED(hr))
+      return false;
+  }
+
+  if (render_state_.overlay_blend_state_ !=
+      render_state_.current_blend_state_) {
+    render_state_.d3d11_device_context_->OMSetBlendState(
+        render_state_.overlay_blend_state_.Get(), 0, -1);
+    render_state_.current_blend_state_ = render_state_.overlay_blend_state_;
+  }
+  return true;
+}
+
+bool D3D11TextureHelper::EnsureContentBlendState() {
+  if (!render_state_.content_blend_state_) {
+    D3D11_BLEND_DESC blenddesc = {};
+    blenddesc.RenderTarget[0].BlendEnable = false;
+    blenddesc.RenderTarget[0].RenderTargetWriteMask =
+        D3D11_COLOR_WRITE_ENABLE_ALL;
+    HRESULT hr = render_state_.d3d11_device_->CreateBlendState(
+        &blenddesc,
+        render_state_.content_blend_state_.ReleaseAndGetAddressOf());
+    if (FAILED(hr))
+      return false;
+  }
+
+  if (render_state_.content_blend_state_ !=
+      render_state_.current_blend_state_) {
+    render_state_.d3d11_device_context_->OMSetBlendState(
+        render_state_.content_blend_state_.Get(), 0, -1);
+    render_state_.current_blend_state_ = render_state_.content_blend_state_;
+  }
+  return true;
+}
+
 bool D3D11TextureHelper::CompositeToBackBuffer() {
   if (!EnsureInitialized())
     return false;
@@ -130,9 +180,11 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
 
   bool success = true;
   if (render_state_.source_.source_texture_)
-    success = success && CompositeLayer(render_state_.source_);
+    success = success && EnsureContentBlendState() &&
+              CompositeLayer(render_state_.source_);
   if (render_state_.overlay_.source_texture_)
-    success = success && CompositeLayer(render_state_.overlay_);
+    success = success && EnsureOverlayBlendState() &&
+              CompositeLayer(render_state_.overlay_);
 
   if (render_state_.source_.keyed_mutex_)
     render_state_.source_.keyed_mutex_->ReleaseSync(0);

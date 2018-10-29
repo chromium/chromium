@@ -55,7 +55,7 @@ class StubPrefetchBackgroundTaskHandler : public PrefetchBackgroundTaskHandler {
 
 }  // namespace
 
-PrefetchServiceTestTaco::PrefetchServiceTestTaco() {
+PrefetchServiceTestTaco::PrefetchServiceTestTaco(SuggestionSource source) {
   dispatcher_ = std::make_unique<TestPrefetchDispatcher>();
   metrics_collector_ = std::make_unique<TestOfflineMetricsCollector>(nullptr);
   gcm_handler_ = std::make_unique<TestPrefetchGCMHandler>();
@@ -63,7 +63,7 @@ PrefetchServiceTestTaco::PrefetchServiceTestTaco() {
       std::make_unique<TestPrefetchNetworkRequestFactory>();
   prefetch_store_ =
       std::make_unique<PrefetchStore>(base::ThreadTaskRunnerHandle::Get());
-  suggested_articles_observer_ = std::make_unique<SuggestedArticlesObserver>();
+
   download_service_ = std::make_unique<TestDownloadService>();
   prefetch_downloader_ = base::WrapUnique(
       new PrefetchDownloaderImpl(download_service_.get(), kTestChannel));
@@ -71,13 +71,19 @@ PrefetchServiceTestTaco::PrefetchServiceTestTaco() {
       std::make_unique<TestDownloadClient>(prefetch_downloader_.get());
   download_service_->SetClient(download_client_.get());
   prefetch_importer_ = std::make_unique<TestPrefetchImporter>();
-  // This sets up the testing articles as an empty vector, we can ignore the
-  // result here.  This allows us to not create a ContentSuggestionsService.
-  suggested_articles_observer_->GetTestingArticles();
+
+  if (source == kContentSuggestions) {
+    suggested_articles_observer_ =
+        std::make_unique<SuggestedArticlesObserver>();
+    // This sets up the testing articles as an empty vector, we can ignore the
+    // result here.  This allows us to not create a ContentSuggestionsService.
+    suggested_articles_observer_->GetTestingArticles();
+    thumbnail_fetcher_ = std::make_unique<MockThumbnailFetcher>();
+  }
+
   prefetch_background_task_handler_ =
       std::make_unique<StubPrefetchBackgroundTaskHandler>();
   offline_page_model_ = std::make_unique<StubOfflinePageModel>();
-  thumbnail_fetcher_ = std::make_unique<MockThumbnailFetcher>();
 }
 
 PrefetchServiceTestTaco::~PrefetchServiceTestTaco() = default;

@@ -15,7 +15,8 @@ void JNI_AnimationFrameTimeHistogram_SaveHistogram(
     const JavaParamRef<jstring>& j_histogram_name,
     const JavaParamRef<jlongArray>& j_frame_times_ms,
     jint j_count) {
-  jlong *frame_times_ms = env->GetLongArrayElements(j_frame_times_ms, NULL);
+  jlong* frame_times_ms =
+      env->GetLongArrayElements(j_frame_times_ms.obj(), nullptr);
   std::string histogram_name = base::android::ConvertJavaStringToUTF8(
       env, j_histogram_name);
 
@@ -23,4 +24,6 @@ void JNI_AnimationFrameTimeHistogram_SaveHistogram(
     UMA_HISTOGRAM_TIMES(histogram_name.c_str(),
                         base::TimeDelta::FromMilliseconds(frame_times_ms[i]));
   }
+  env->ReleaseLongArrayElements(j_frame_times_ms.obj(), frame_times_ms,
+                                JNI_ABORT);
 }

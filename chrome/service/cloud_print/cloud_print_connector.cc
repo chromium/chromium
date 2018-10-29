@@ -137,7 +137,7 @@ void CloudPrintConnector::CheckForJobs(const std::string& reason,
     return;
   }
 
-  JobHandlerMap::iterator printer_it = job_handler_map_.find(printer_id);
+  auto printer_it = job_handler_map_.find(printer_id);
   if (printer_it == job_handler_map_.end()) {
     std::string status_message =
         l10n_util::GetStringUTF8(IDS_CLOUD_PRINT_ZOMBIE_PRINTER);
@@ -381,8 +381,7 @@ void CloudPrintConnector::ReportUserMessage(const std::string& message_id,
 bool CloudPrintConnector::RemovePrinterFromList(
     const std::string& printer_name,
     printing::PrinterList* printer_list) {
-  for (printing::PrinterList::iterator it = printer_list->begin();
-       it != printer_list->end(); ++it) {
+  for (auto it = printer_list->begin(); it != printer_list->end(); ++it) {
     if (IsSamePrinter(it->printer_name, printer_name)) {
       printer_list->erase(it);
       return true;
@@ -566,7 +565,7 @@ void CloudPrintConnector::OnPrinterRegister(
 
 void CloudPrintConnector::OnPrinterDelete(const std::string& printer_id) {
   // Remove corresponding printer job handler.
-  JobHandlerMap::iterator it = job_handler_map_.find(printer_id);
+  auto it = job_handler_map_.find(printer_id);
   if (it != job_handler_map_.end()) {
     it->second->Shutdown();
     job_handler_map_.erase(it);

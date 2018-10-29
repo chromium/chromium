@@ -1,5 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGRect {rect} at (0,0) size 1000x400 [fill={[type=SOLID] [color=#008000]}] [x=0.00] [y=0.00] [width=1000.00] [height=400.00]

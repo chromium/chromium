@@ -30,7 +30,6 @@ class ImmersiveModeControllerStub : public ImmersiveModeController {
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
-  views::Widget* GetRevealWidget() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
  private:

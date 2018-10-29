@@ -32,7 +32,7 @@ namespace extensions {
 
 namespace {
 
-scoped_refptr<Extension> CreateExtensionWithBookmarksPermission(
+scoped_refptr<const Extension> CreateExtensionWithBookmarksPermission(
     bool include_bookmarks) {
   ListBuilder permissions;
   permissions.Append("declarativeContent");
@@ -150,7 +150,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
   Delegate delegate_;
   bookmarks::BookmarkModel* bookmark_model_;
   std::unique_ptr<DeclarativeContentIsBookmarkedConditionTracker> tracker_;
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>
       is_bookmarked_predicate_;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>
@@ -164,7 +164,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
 // Tests that condition with isBookmarked requires "bookmarks" permission.
 TEST(DeclarativeContentIsBookmarkedPredicateTest,
      IsBookmarkedPredicateRequiresBookmarkPermissionPermission) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       CreateExtensionWithBookmarksPermission(false);
   std::string error;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
@@ -177,7 +177,7 @@ TEST(DeclarativeContentIsBookmarkedPredicateTest,
 // Tests an invalid isBookmarked value type.
 TEST(DeclarativeContentIsBookmarkedPredicateTest,
      WrongIsBookmarkedPredicateDatatype) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       CreateExtensionWithBookmarksPermission(true);
   std::string error;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
@@ -189,7 +189,7 @@ TEST(DeclarativeContentIsBookmarkedPredicateTest,
 
 // Tests isBookmark: true. Predicate state is checked in CreatePredicate().
 TEST(DeclarativeContentIsBookmarkedPredicateTest, IsBookmarkedPredicateTrue) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       CreateExtensionWithBookmarksPermission(true);
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
       CreatePredicate(nullptr, extension.get(), true);
@@ -197,7 +197,7 @@ TEST(DeclarativeContentIsBookmarkedPredicateTest, IsBookmarkedPredicateTrue) {
 
 // Tests isBookmark: false. Predicate state is checked in CreatePredicate().
 TEST(DeclarativeContentIsBookmarkedPredicateTest, IsBookmarkedPredicateFalse) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       CreateExtensionWithBookmarksPermission(true);
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
       CreatePredicate(nullptr, extension.get(), false);

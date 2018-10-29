@@ -60,6 +60,10 @@ Polymer({
    * @private
    */
   onSkipTap_: function() {
+    if (this.buttonsDisabled) {
+      return;
+    }
+    this.buttonsDisabled = true;
     chrome.send('login.AssistantOptInFlowScreen.flowFinished');
   },
 
@@ -98,8 +102,8 @@ Polymer({
       this.addClass_('loading-animation');
     }.bind(this), 500);
     this.loadingTimeout_ = window.setTimeout(function() {
-      this.onErrorOccurred();
-    }.bind(this), 10000);
+      this.onLoadingTimeout();
+    }.bind(this), 15000);
   },
 
   /**
@@ -128,6 +132,14 @@ Polymer({
     this.removeClass_('loading');
     this.removeClass_('error');
     this.addClass_('loaded');
+  },
+
+  /**
+   * Called when the loading timeout is triggered.
+   */
+  onLoadingTimeout: function() {
+    chrome.send('login.AssistantOptInFlowScreen.LoadingScreen.timeout');
+    this.onErrorOccurred();
   },
 
   /**

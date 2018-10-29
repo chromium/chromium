@@ -179,9 +179,6 @@ class ChromeArcUtilTest : public testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<FakeUserManagerWithLocalState>(
             profile_manager_.get()));
-    // Used by FakeChromeUserManager.
-    chromeos::DeviceSettingsService::Initialize();
-    chromeos::CrosSettings::Initialize();
 
     profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
   }
@@ -191,8 +188,6 @@ class ChromeArcUtilTest : public testing::Test {
     ResetArcAllowedCheckForTesting(profile_);
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
-    chromeos::CrosSettings::Shutdown();
-    chromeos::DeviceSettingsService::Shutdown();
     user_manager_enabler_.reset();
     profile_manager_.reset();
     command_line_.reset();
@@ -215,7 +210,7 @@ class ChromeArcUtilTest : public testing::Test {
  private:
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::TestBrowserThreadBundle thread_bundle_;
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
@@ -450,7 +445,7 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
   // New FS (User notified) + Old ARC
   user_manager::known_user::SetIntegerPref(
       id, prefs::kArcCompatibleFilesystemChosen,
-      kFileSystemCompatibleAndNotified);
+      kFileSystemCompatibleAndNotifiedDeprecated);
   base::SysInfo::SetChromeOSVersionInfoForTest(
       "CHROMEOS_ARC_ANDROID_SDK_VERSION=23", base::Time::Now());
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
@@ -841,6 +836,52 @@ TEST_F(ChromeArcUtilTest, IsArcStatsReportingEnabled_PublicAccount) {
                     AccountId::FromUserEmail("public_user@gmail.com"),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   EXPECT_FALSE(IsArcStatsReportingEnabled());
+}
+
+TEST_F(ChromeArcUtilTest, ArcStartModeDefault) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-availability=installed"});
+  EXPECT_TRUE(IsPlayStoreAvailable());
+}
+
+TEST_F(ChromeArcUtilTest, ArcStartModeDefaultPublicSession) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-availability=installed"});
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmail("public_user@gmail.com"),
+                    user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  EXPECT_FALSE(IsPlayStoreAvailable());
+}
+
+TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoMode) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-availability=installed"});
+  chromeos::DemoSession::SetDemoConfigForTesting(
+      chromeos::DemoSession::DemoModeConfig::kOnline);
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmail("public_user@gmail.com"),
+                    user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  EXPECT_FALSE(IsPlayStoreAvailable());
+}
+
+TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoModeWithPlayStore) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv(
+      {"", "--arc-availability=installed", "--show-play-in-demo-mode"});
+  chromeos::DemoSession::SetDemoConfigForTesting(
+      chromeos::DemoSession::DemoModeConfig::kOnline);
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmail("public_user@gmail.com"),
+                    user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  EXPECT_TRUE(IsPlayStoreAvailable());
+}
+
+TEST_F(ChromeArcUtilTest, ArcStartModeWithoutPlayStore) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv(
+      {"", "--arc-availability=installed",
+       "--arc-start-mode=always-start-with-no-play-store"});
+  EXPECT_FALSE(IsPlayStoreAvailable());
 }
 
 using ArcMigrationTest = ChromeArcUtilTest;

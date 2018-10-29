@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
+import android.support.annotation.IntDef;
 import android.util.SparseArray;
 
 import org.chromium.base.BaseSwitches;
@@ -25,6 +26,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -86,6 +88,29 @@ public abstract class ChildProcessService extends Service {
     private boolean mServiceBound;
 
     private final Semaphore mActivitySemaphore = new Semaphore(1);
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({SplitApkWorkaroundResult.NOT_RUN, SplitApkWorkaroundResult.NO_ENTRIES,
+            SplitApkWorkaroundResult.ONE_ENTRY, SplitApkWorkaroundResult.MULTIPLE_ENTRIES,
+            SplitApkWorkaroundResult.TOPLEVEL_EXCEPTION, SplitApkWorkaroundResult.LOOP_EXCEPTION})
+    public @interface SplitApkWorkaroundResult {
+        int NOT_RUN = 0;
+        int NO_ENTRIES = 1;
+        int ONE_ENTRY = 2;
+        int MULTIPLE_ENTRIES = 3;
+        int TOPLEVEL_EXCEPTION = 4;
+        int LOOP_EXCEPTION = 5;
+        // Keep this one at the end and increment appropriately when adding new results.
+        int SPLIT_APK_WORKAROUND_RESULT_COUNT = 6;
+    }
+
+    private static @SplitApkWorkaroundResult int sSplitApkWorkaroundResult =
+            SplitApkWorkaroundResult.NOT_RUN;
+
+    public static void setSplitApkWorkaroundResult(@SplitApkWorkaroundResult int result) {
+        sSplitApkWorkaroundResult = result;
+    }
 
     public ChildProcessService(ChildProcessServiceDelegate delegate) {
         mDelegate = delegate;
@@ -239,6 +264,12 @@ public abstract class ChildProcessService extends Service {
                     nativeRegisterFileDescriptors(keys, fileIds, fds, regionOffsets, regionSizes);
 
                     mDelegate.onBeforeMain();
+                    if (ContextUtils.isIsolatedProcess()) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Android.WebView.SplitApkWorkaroundResult",
+                                sSplitApkWorkaroundResult,
+                                SplitApkWorkaroundResult.SPLIT_APK_WORKAROUND_RESULT_COUNT);
+                    }
                     if (mActivitySemaphore.tryAcquire()) {
                         mDelegate.runMain();
                         nativeExitChildProcess();

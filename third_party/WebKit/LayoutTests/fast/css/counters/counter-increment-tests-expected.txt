@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS internals.counterValue(document.getElementById('test3')) is '-2147483648'
 PASS internals.counterValue(document.getElementById('test4')) is '-2147483647'
 PASS internals.counterValue(document.getElementById('test5')) is '0'
@@ -58,4 +59,3 @@ PASS internals.counterValue(document.getElementById('wrapper54')) is '5'
 PASS internals.counterValue(document.getElementById('test54')) is '10'
 PASS internals.counterValue(document.getElementById('test55')) is '1'
 PASS internals.counterValue(document.getElementById('test56')) is '-2147483648'
-

@@ -77,7 +77,7 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
       ChromeBlobStorageContext* blob_storage_context);
 
   // CacheStorageContext
-  void GetAllOriginsInfo(const GetUsageInfoCallback& callback) override;
+  void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForOrigin(const GURL& origin) override;
 
   // Only callable on the IO thread.

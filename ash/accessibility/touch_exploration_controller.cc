@@ -101,10 +101,7 @@ ui::EventRewriteStatus TouchExplorationController::RewriteEvent(
   if (event.type() == ui::ET_TOUCH_PRESSED)
     seen_press_ = true;
 
-  // Touch events come through in screen pixels, but untransformed. This is the
-  // raw coordinate not yet mapped to the root window's coordinate system or the
-  // screen. Convert it into the root window's coordinate system, in DIP which
-  // is what the rest of this class expects.
+  // Touch events come through in screen pixels.
   gfx::Point location = touch_event.location();
   gfx::Point root_location = touch_event.root_location();
   root_window_->GetHost()->ConvertPixelsToDIP(&location);
@@ -473,7 +470,7 @@ ui::EventRewriteStatus TouchExplorationController::InTouchExploration(
   // Rewrite as a mouse-move event.
   // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
   // |screen coords.
-  gfx::PointF location_f(ConvertDIPToScreenInPixels(event.location_f()));
+  gfx::PointF location_f(ConvertDIPToPixels(event.location_f()));
   *rewritten_event = CreateMouseMoveEvent(location_f, event.flags());
   last_touch_exploration_ = std::make_unique<ui::TouchEvent>(event);
   if (anchor_point_state_ != ANCHOR_POINT_EXPLICITLY_SET)
@@ -507,7 +504,7 @@ ui::EventRewriteStatus TouchExplorationController::InOneFingerPassthrough(
   // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
   // screen coordinates.
   gfx::PointF location_f(
-      ConvertDIPToScreenInPixels(event.location_f() - passthrough_offset_));
+      ConvertDIPToPixels(event.location_f() - passthrough_offset_));
   std::unique_ptr<ui::TouchEvent> new_event(new ui::TouchEvent(
       event.type(), gfx::Point(), event.time_stamp(), event.pointer_details()));
   new_event->set_location_f(location_f);
@@ -535,7 +532,7 @@ ui::EventRewriteStatus TouchExplorationController::InTouchExploreSecondPress(
     // TODO(dmazzoni): fix for multiple displays. http://crbug.com/616793
     // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
     // screen coordinates.
-    gfx::PointF location_f(ConvertDIPToScreenInPixels(anchor_point_dip_));
+    gfx::PointF location_f(ConvertDIPToPixels(anchor_point_dip_));
     new_event->set_location_f(location_f);
     new_event->set_root_location_f(location_f);
     new_event->set_flags(event.flags());
@@ -786,8 +783,7 @@ void TouchExplorationController::DispatchEvent(ui::Event* event) {
   SetTouchAccessibilityFlag(event);
   if (event->IsLocatedEvent()) {
     ui::LocatedEvent* located_event = event->AsLocatedEvent();
-    gfx::PointF screen_point(
-        ConvertDIPToScreenInPixels(located_event->location_f()));
+    gfx::PointF screen_point(ConvertDIPToPixels(located_event->location_f()));
     located_event->set_location_f(screen_point);
     located_event->set_root_location_f(screen_point);
   }
@@ -1148,10 +1144,10 @@ float TouchExplorationController::GetSplitTapTouchSlop() {
   return gesture_detector_config_.touch_slop * 3;
 }
 
-gfx::PointF TouchExplorationController::ConvertDIPToScreenInPixels(
+gfx::PointF TouchExplorationController::ConvertDIPToPixels(
     const gfx::PointF& location_f) {
   gfx::Point location(gfx::ToFlooredPoint(location_f));
-  root_window_->GetHost()->ConvertDIPToScreenInPixels(&location);
+  root_window_->GetHost()->ConvertDIPToPixels(&location);
   return gfx::PointF(location);
 }
 

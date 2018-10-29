@@ -30,10 +30,13 @@ G_BEGIN_DECLS
 
 typedef struct _AXPlatformAtkHyperlink AXPlatformAtkHyperlink;
 typedef struct _AXPlatformAtkHyperlinkClass AXPlatformAtkHyperlinkClass;
+typedef struct _AXPlatformAtkHyperlinkPrivate AXPlatformAtkHyperlinkPrivate;
 
 struct _AXPlatformAtkHyperlink {
   AtkHyperlink parent;
-  AXPlatformNodeAuraLinux* m_object;
+
+  /*< private >*/
+  AXPlatformAtkHyperlinkPrivate* priv;
 };
 
 struct _AXPlatformAtkHyperlinkClass {
@@ -43,6 +46,10 @@ struct _AXPlatformAtkHyperlinkClass {
 GType ax_platform_atk_hyperlink_get_type(void) G_GNUC_CONST;
 void ax_platform_atk_hyperlink_set_object(AXPlatformAtkHyperlink* hyperlink,
                                           AXPlatformNodeAuraLinux* obj);
+void ax_platform_atk_hyperlink_set_indices(
+    AXPlatformAtkHyperlink* atk_hyperlink,
+    int start_index,
+    int end_index);
 
 G_END_DECLS
 

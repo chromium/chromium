@@ -70,8 +70,7 @@ void GCMDriver::Register(const std::string& app_id,
   // finishes. We don't want to throw ASYNC_OPERATION_PENDING when the user
   // uninstalls an app (ungistering) and then reinstalls the app again
   // (registering).
-  std::map<std::string, UnregisterCallback>::iterator unregister_iter =
-      unregister_callbacks_.find(app_id);
+  auto unregister_iter = unregister_callbacks_.find(app_id);
   if (unregister_iter != unregister_callbacks_.end()) {
     // Replace the original unregister callback with an intermediate callback
     // that will invoke the original unregister callback and trigger the pending
@@ -172,8 +171,7 @@ void GCMDriver::UnregisterWithSenderIdImpl(const std::string& app_id,
 void GCMDriver::RegisterFinished(const std::string& app_id,
                                  const std::string& registration_id,
                                  GCMClient::Result result) {
-  std::map<std::string, RegisterCallback>::iterator callback_iter =
-      register_callbacks_.find(app_id);
+  auto callback_iter = register_callbacks_.find(app_id);
   if (callback_iter == register_callbacks_.end()) {
     // The callback could have been removed when the app is uninstalled.
     return;
@@ -194,8 +192,7 @@ void GCMDriver::RemoveEncryptionInfoAfterUnregister(const std::string& app_id,
 
 void GCMDriver::UnregisterFinished(const std::string& app_id,
                                    GCMClient::Result result) {
-  std::map<std::string, UnregisterCallback>::iterator callback_iter =
-      unregister_callbacks_.find(app_id);
+  auto callback_iter = unregister_callbacks_.find(app_id);
   if (callback_iter == unregister_callbacks_.end())
     return;
 
@@ -207,9 +204,8 @@ void GCMDriver::UnregisterFinished(const std::string& app_id,
 void GCMDriver::SendFinished(const std::string& app_id,
                              const std::string& message_id,
                              GCMClient::Result result) {
-  std::map<std::pair<std::string, std::string>, SendCallback>::iterator
-      callback_iter = send_callbacks_.find(
-          std::pair<std::string, std::string>(app_id, message_id));
+  auto callback_iter = send_callbacks_.find(
+      std::pair<std::string, std::string>(app_id, message_id));
   if (callback_iter == send_callbacks_.end()) {
     // The callback could have been removed when the app is uninstalled.
     return;

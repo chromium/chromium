@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/forced_extensions/installation_failures.h"
 #include "chrome/browser/extensions/permissions_based_management_policy_provider.h"
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -41,11 +42,13 @@
 
 namespace extensions {
 
-ExtensionManagement::ExtensionManagement(PrefService* pref_service,
-                                         bool is_signin_profile)
-    : pref_service_(pref_service), is_signin_profile_(is_signin_profile) {
+ExtensionManagement::ExtensionManagement(Profile* profile)
+    : profile_(profile), pref_service_(profile_->GetPrefs()) {
   TRACE_EVENT0("browser,startup",
                "ExtensionManagement::ExtensionManagement::ctor");
+#if defined(OS_CHROMEOS)
+  is_signin_profile_ = chromeos::ProfileHelper::IsSigninProfile(profile);
+#endif
   pref_change_registrar_.Init(pref_service_);
   base::Closure pref_change_callback = base::Bind(
       &ExtensionManagement::OnExtensionPrefChanged, base::Unretained(this));
@@ -340,16 +343,16 @@ void ExtensionManagement::Refresh() {
   ExtensionId id;
 
   if (allowed_list_pref) {
-    for (base::ListValue::const_iterator it = allowed_list_pref->begin();
-         it != allowed_list_pref->end(); ++it) {
+    for (auto it = allowed_list_pref->begin(); it != allowed_list_pref->end();
+         ++it) {
       if (it->GetAsString(&id) && crx_file::id_util::IdIsValid(id))
         AccessById(id)->installation_mode = INSTALLATION_ALLOWED;
     }
   }
 
   if (denied_list_pref) {
-    for (base::ListValue::const_iterator it = denied_list_pref->begin();
-         it != denied_list_pref->end(); ++it) {
+    for (auto it = denied_list_pref->begin(); it != denied_list_pref->end();
+         ++it) {
       if (it->GetAsString(&id) && crx_file::id_util::IdIsValid(id))
         AccessById(id)->installation_mode = INSTALLATION_BLOCKED;
     }
@@ -360,7 +363,7 @@ void ExtensionManagement::Refresh() {
 
   if (install_sources_pref) {
     global_settings_->has_restricted_install_sources = true;
-    for (base::ListValue::const_iterator it = install_sources_pref->begin();
+    for (auto it = install_sources_pref->begin();
          it != install_sources_pref->end(); ++it) {
       std::string url_pattern;
       if (it->GetAsString(&url_pattern)) {
@@ -378,8 +381,8 @@ void ExtensionManagement::Refresh() {
 
   if (allowed_types_pref) {
     global_settings_->has_restricted_allowed_types = true;
-    for (base::ListValue::const_iterator it = allowed_types_pref->begin();
-         it != allowed_types_pref->end(); ++it) {
+    for (auto it = allowed_types_pref->begin(); it != allowed_types_pref->end();
+         ++it) {
       int int_value;
       std::string string_value;
       if (it->GetAsInteger(&int_value) && int_value >= 0 &&
@@ -429,6 +432,9 @@ void ExtensionManagement::Refresh() {
         if (!by_id->Parse(subdict,
                           internal::IndividualSettings::SCOPE_INDIVIDUAL)) {
           settings_by_id_.erase(extension_id);
+          InstallationFailures::ReportFailure(
+              profile_, extension_id,
+              InstallationFailures::Reason::MALFORMED_EXTENSION_SETTINGS);
           LOG(WARNING) << "Malformed Extension Management settings for "
                        << extension_id << ".";
         }
@@ -485,8 +491,11 @@ void ExtensionManagement::UpdateForcedExtensions(
   std::string update_url;
   for (base::DictionaryValue::Iterator it(*extension_dict); !it.IsAtEnd();
        it.Advance()) {
-    if (!crx_file::id_util::IdIsValid(it.key()))
+    if (!crx_file::id_util::IdIsValid(it.key())) {
+      InstallationFailures::ReportFailure(
+          profile_, it.key(), InstallationFailures::Reason::INVALID_ID);
       continue;
+    }
     const base::DictionaryValue* dict_value = nullptr;
     if (it.value().GetAsDictionary(&dict_value) &&
         dict_value->GetStringWithoutPathExpansion(
@@ -544,12 +553,7 @@ KeyedService* ExtensionManagementFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   TRACE_EVENT0("browser,startup",
                "ExtensionManagementFactory::BuildServiceInstanceFor");
-  Profile* profile = Profile::FromBrowserContext(context);
-  bool is_signin_profile = false;
-#if defined(OS_CHROMEOS)
-  is_signin_profile = chromeos::ProfileHelper::IsSigninProfile(profile);
-#endif
-  return new ExtensionManagement(profile->GetPrefs(), is_signin_profile);
+  return new ExtensionManagement(Profile::FromBrowserContext(context));
 }
 
 content::BrowserContext* ExtensionManagementFactory::GetBrowserContextToUse(

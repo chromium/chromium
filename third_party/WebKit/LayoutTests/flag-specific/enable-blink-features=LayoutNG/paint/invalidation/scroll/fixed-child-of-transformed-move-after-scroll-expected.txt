@@ -18,24 +18,19 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "NGPhysicalTextFragment 'You should see a yellow rect on the left, and a green one on the right. No red pixels.'",
-          "rect": [8, 234, 529, 19],
-          "reason": "subtree"
-        },
-        {
           "object": "LayoutNGBlockFlow (positioned) DIV id='toMove'",
           "rect": [158, 278, 100, 100],
-          "reason": "subtree"
+          "reason": "background"
         },
         {
           "object": "LayoutNGBlockFlow (positioned) DIV",
           "rect": [18, 278, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (positioned) DIV id='toMove'",
           "rect": [18, 278, 100, 100],
-          "reason": "subtree"
+          "reason": "background"
         }
       ],
       "transform": 1

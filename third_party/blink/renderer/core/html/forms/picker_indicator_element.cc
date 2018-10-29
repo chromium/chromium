@@ -161,8 +161,8 @@ Node::InsertionNotificationRequest PickerIndicatorElement::InsertedInto(
 void PickerIndicatorElement::DidNotifySubtreeInsertionsToDocument() {
   if (!GetDocument().ExistingAXObjectCache())
     return;
-  // Don't make this focusable if we are in layout tests in order to avoid to
-  // break existing tests.
+  // Don't make this focusable if we are in layout tests in order to avoid
+  // breaking existing tests.
   // FIXME: We should have a way to disable accessibility in layout tests.
   if (LayoutTestSupport::IsRunningLayoutTest())
     return;

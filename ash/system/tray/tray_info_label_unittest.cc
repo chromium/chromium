@@ -107,18 +107,18 @@ class TrayInfoLabelTest : public AshTestBase {
 TEST_F(TrayInfoLabelTest, NoDelegate) {
   CreateLabel(false /* use_delegate */, IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED),
-            label_->accessible_name());
+            label_->GetAccessibleName());
   VerifyClickability(false /* expected_clickable */);
 
   label_->Update(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED),
-            label_->accessible_name());
+            label_->GetAccessibleName());
   VerifyClickability(false /* expected_clickable */);
 
   label_->Update(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING),
-      label_->accessible_name());
+      label_->GetAccessibleName());
   VerifyClickability(false /* expected_clickable */);
 }
 
@@ -134,7 +134,7 @@ TEST_F(TrayInfoLabelTest, PerformAction) {
   VerifyNoClicks();
 
   EXPECT_EQ(l10n_util::GetStringUTF16(kClickableMessageId1),
-            label_->accessible_name());
+            label_->GetAccessibleName());
   VerifyClickability(true /* expected_clickable */);
   ClickOnLabel(true /* expect_click_was_handled */);
   VerifyClicks(std::vector<int>{kClickableMessageId1});
@@ -144,14 +144,14 @@ TEST_F(TrayInfoLabelTest, PerformAction) {
 
   label_->Update(kNonClickableMessageId);
   EXPECT_EQ(l10n_util::GetStringUTF16(kNonClickableMessageId),
-            label_->accessible_name());
+            label_->GetAccessibleName());
   VerifyClickability(false /* expected_clickable */);
   ClickOnLabel(false /* expect_click_was_handled */);
   VerifyClicks(std::vector<int>{kClickableMessageId1, kClickableMessageId1});
 
   label_->Update(kClickableMessageId2);
   EXPECT_EQ(l10n_util::GetStringUTF16(kClickableMessageId2),
-            label_->accessible_name());
+            label_->GetAccessibleName());
   VerifyClickability(true /* expected_clickable */);
   ClickOnLabel(true /* expect_click_was_handled */);
   VerifyClicks(std::vector<int>{kClickableMessageId1, kClickableMessageId1,

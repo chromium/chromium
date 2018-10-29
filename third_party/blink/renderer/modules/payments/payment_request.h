@@ -71,6 +71,7 @@ class MODULES_EXPORT PaymentRequest final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(shippingaddresschange);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(shippingoptionchange);
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(paymentmethodchange);
 
   ScriptPromise canMakePayment(ScriptState*);
 

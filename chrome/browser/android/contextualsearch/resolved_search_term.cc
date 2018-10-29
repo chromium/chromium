@@ -20,7 +20,9 @@ ResolvedSearchTerm::ResolvedSearchTerm(int response_code)
       thumbnail_url(""),
       caption(""),
       quick_action_uri(""),
-      quick_action_category(QUICK_ACTION_CATEGORY_NONE) {}
+      quick_action_category(QUICK_ACTION_CATEGORY_NONE),
+      doc_id(0),
+      snippet_hash(0) {}
 
 ResolvedSearchTerm::ResolvedSearchTerm(
     bool is_invalid,
@@ -36,7 +38,9 @@ ResolvedSearchTerm::ResolvedSearchTerm(
     const std::string& thumbnail_url,
     const std::string& caption,
     const std::string& quick_action_uri,
-    const QuickActionCategory& quick_action_category)
+    const QuickActionCategory& quick_action_category,
+    long long doc_id,
+    long long snippet_hash)
     : is_invalid(is_invalid),
       response_code(response_code),
       search_term(search_term),
@@ -50,6 +54,8 @@ ResolvedSearchTerm::ResolvedSearchTerm(
       thumbnail_url(thumbnail_url),
       caption(caption),
       quick_action_uri(quick_action_uri),
-      quick_action_category(quick_action_category) {}
+      quick_action_category(quick_action_category),
+      doc_id(doc_id),
+      snippet_hash(snippet_hash) {}
 
 ResolvedSearchTerm::~ResolvedSearchTerm() {}

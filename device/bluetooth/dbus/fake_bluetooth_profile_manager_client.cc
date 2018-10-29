@@ -52,12 +52,12 @@ void FakeBluetoothProfileManagerClient::RegisterProfile(
 
   // TODO(jamuraa): check options for channel & psm
 
-  ServiceProviderMap::iterator iter = service_provider_map_.find(profile_path);
+  auto iter = service_provider_map_.find(profile_path);
   if (iter == service_provider_map_.end()) {
     error_callback.Run(bluetooth_profile_manager::kErrorInvalidArguments,
                        "No profile created");
   } else {
-    ProfileMap::iterator piter = profile_map_.find(uuid);
+    auto piter = profile_map_.find(uuid);
     if (piter != profile_map_.end()) {
       error_callback.Run(bluetooth_profile_manager::kErrorAlreadyExists,
                          "Profile already registered");
@@ -74,13 +74,13 @@ void FakeBluetoothProfileManagerClient::UnregisterProfile(
     const ErrorCallback& error_callback) {
   VLOG(1) << "UnregisterProfile: " << profile_path.value();
 
-  ServiceProviderMap::iterator iter = service_provider_map_.find(profile_path);
+  auto iter = service_provider_map_.find(profile_path);
   if (iter == service_provider_map_.end()) {
     error_callback.Run(bluetooth_profile_manager::kErrorInvalidArguments,
                        "Profile not registered");
   } else {
-    for (ProfileMap::iterator piter = profile_map_.begin();
-         piter != profile_map_.end(); ++piter) {
+    for (auto piter = profile_map_.begin(); piter != profile_map_.end();
+         ++piter) {
       if (piter->second == profile_path) {
         profile_map_.erase(piter);
         break;
@@ -98,8 +98,7 @@ void FakeBluetoothProfileManagerClient::RegisterProfileServiceProvider(
 
 void FakeBluetoothProfileManagerClient::UnregisterProfileServiceProvider(
     FakeBluetoothProfileServiceProvider* service_provider) {
-  ServiceProviderMap::iterator iter =
-      service_provider_map_.find(service_provider->object_path_);
+  auto iter = service_provider_map_.find(service_provider->object_path_);
   if (iter != service_provider_map_.end() && iter->second == service_provider)
     service_provider_map_.erase(iter);
 }
@@ -107,7 +106,7 @@ void FakeBluetoothProfileManagerClient::UnregisterProfileServiceProvider(
 FakeBluetoothProfileServiceProvider*
 FakeBluetoothProfileManagerClient::GetProfileServiceProvider(
     const std::string& uuid) {
-  ProfileMap::iterator iter = profile_map_.find(uuid);
+  auto iter = profile_map_.find(uuid);
   if (iter == profile_map_.end())
     return nullptr;
   return service_provider_map_[iter->second];

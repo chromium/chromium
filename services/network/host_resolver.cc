@@ -12,6 +12,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_source.h"
 #include "net/log/net_log.h"
 #include "services/network/resolve_host_request.h"
 
@@ -68,6 +69,13 @@ void HostResolver::ResolveHost(
     const net::HostPortPair& host,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojom::ResolveHostClientPtr response_client) {
+#if !BUILDFLAG(ENABLE_MDNS)
+  // TODO(crbug.com/821021): Handle without crashing if we create restricted
+  // HostResolvers for passing to untrusted processes.
+  DCHECK(!optional_parameters ||
+         optional_parameters->source != net::HostResolverSource::MULTICAST_DNS);
+#endif  // !BUILDFLAG(ENABLE_MDNS)
+
   if (resolve_host_callback.Get())
     resolve_host_callback.Get().Run(host.host());
 

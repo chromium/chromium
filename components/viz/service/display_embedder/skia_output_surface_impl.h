@@ -26,8 +26,6 @@ class GpuServiceImpl;
 class SkiaOutputSurfaceImplOnGpu;
 class SyntheticBeginFrameSource;
 
-class YUVResourceMetadata;
-
 // The SkiaOutputSurface implementation. It is the output surface for
 // SkiaRenderer. It lives on the compositor thread, but it will post tasks
 // to the GPU thread for initializing. Currently, SkiaOutputSurfaceImpl
@@ -74,17 +72,17 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   // SkiaOutputSurface implementation:
   SkCanvas* BeginPaintCurrentFrame() override;
-  gpu::SyncToken FinishPaintCurrentFrame() override;
   sk_sp<SkImage> MakePromiseSkImage(ResourceMetadata metadata) override;
   sk_sp<SkImage> MakePromiseSkImageFromYUV(
       std::vector<ResourceMetadata> metadatas,
-      SkYUVColorSpace yuv_color_space) override;
+      SkYUVColorSpace yuv_color_space,
+      bool has_alpha) override;
   void SkiaSwapBuffers(OutputSurfaceFrame frame) override;
   SkCanvas* BeginPaintRenderPass(const RenderPassId& id,
                                  const gfx::Size& surface_size,
                                  ResourceFormat format,
                                  bool mipmap) override;
-  gpu::SyncToken FinishPaintRenderPass() override;
+  gpu::SyncToken SubmitPaint() override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(const RenderPassId& id,
                                                   const gfx::Size& size,
                                                   ResourceFormat format,
@@ -97,6 +95,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  private:
   template <class T>
   class PromiseTextureHelper;
+  class YUVAPromiseTextureHelper;
   void InitializeOnGpuThread(base::WaitableEvent* event);
   void RecreateRecorder();
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
@@ -122,12 +121,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   // Sync tokens for resources which are used for the current frame.
   std::vector<gpu::SyncToken> resource_sync_tokens_;
-
-  // YUV resource metadatas for the current frame or the current render pass.
-  // They should be preprocessed for playing recorded frame into a surface.
-  // TODO(penghuang): Remove it when Skia supports drawing YUV textures
-  // directly.
-  std::vector<YUVResourceMetadata*> yuv_resource_metadatas_;
 
   // The task runner for running task on the client (compositor) thread.
   scoped_refptr<base::SingleThreadTaskRunner> client_thread_task_runner_;

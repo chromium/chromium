@@ -385,6 +385,13 @@ WebArea
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "expanded",
       "value": {
         "type": "booleanOrUndefined",
@@ -430,6 +437,13 @@ WebArea
     ]
   },
   "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
     {
       "name": "selected",
       "value": {

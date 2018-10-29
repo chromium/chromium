@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCacheStorageHelperTest,
   std::list<content::CacheStorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(2U, result.size());
-  std::list<content::CacheStorageUsageInfo>::iterator info = result.begin();
+  auto info = result.begin();
   EXPECT_EQ(origin1, info->origin);
   info++;
   EXPECT_EQ(origin2, info->origin);

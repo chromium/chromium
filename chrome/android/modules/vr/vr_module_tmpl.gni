@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 assert(enable_vr)
+assert(modularize_vr)
 
 template("vr_module_tmpl") {
   assert(defined(invoker.manifest_package))

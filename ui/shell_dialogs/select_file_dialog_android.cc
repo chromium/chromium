@@ -92,6 +92,15 @@ void SelectFileDialogImpl::OnFileNotSelected(
     listener_->FileSelectionCanceled(NULL);
 }
 
+void SelectFileDialogImpl::OnContactsSelected(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_object,
+    const JavaParamRef<jstring>& java_contacts) {
+  std::string data = ConvertJavaStringToUTF8(env, java_contacts.obj());
+  listener_->FileSelectedWithExtraInfo(ui::SelectedFileInfo(), 0,
+                                       (void*)data.c_str());
+}
+
 bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
   return listener_;
 }

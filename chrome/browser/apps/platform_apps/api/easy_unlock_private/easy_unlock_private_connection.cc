@@ -7,7 +7,8 @@
 #include "base/lazy_instance.h"
 #include "components/cryptauth/connection.h"
 
-namespace apps {
+namespace chrome_apps {
+namespace api {
 
 static base::LazyInstance<EasyUnlockPrivateConnectionResourceManagerFactory>::
     DestructorAtExit g_easy_unlock_private_connection_factory =
@@ -31,10 +32,11 @@ bool EasyUnlockPrivateConnection::IsPersistent() const {
   return persistent_;
 }
 
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps
 
 template <>
 EasyUnlockPrivateConnectionResourceManagerFactory*
 EasyUnlockPrivateConnectionResourceManager::GetFactoryInstance() {
-  return apps::g_easy_unlock_private_connection_factory.Pointer();
+  return chrome_apps::api::g_easy_unlock_private_connection_factory.Pointer();
 }

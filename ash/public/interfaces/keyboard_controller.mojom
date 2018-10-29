@@ -1,0 +1,52 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/keyboard/public/keyboard_config.mojom";
+import "ui/keyboard/public/keyboard_enable_flag.mojom";
+
+interface KeyboardControllerObserver {
+  // Called when the keyboard is enabled or disabled. If ReloadKeyboard() is
+  // called or other code enables the keyboard while already enabled, this will
+  // be called twice, once when the keyboard is disabled and again when it is
+  // re-enabled.
+  OnKeyboardEnabledChanged(bool is_enabled);
+
+  // Called when the virtual keyboard configuration changes.
+  OnKeyboardConfigChanged(keyboard.mojom.KeyboardConfig config);
+
+  // Called when the visibility of the virtual keyboard changes, e.g. an input
+  // field is focused or blurred, or the user hides the keyboard.
+  OnKeyboardVisibilityChanged(bool visible);
+
+  // Called when the keyboard bounds change.
+  OnKeyboardVisibleBoundsChanged(gfx.mojom.Rect new_bounds);
+};
+
+interface KeyboardController {
+  // Retrieves the current keyboard configuration.
+  GetKeyboardConfig() => (keyboard.mojom.KeyboardConfig config);
+
+  // Sets the current keyboard configuration.
+  SetKeyboardConfig(keyboard.mojom.KeyboardConfig config);
+
+  // Returns whether the virtual keyboard has been enabled.
+  IsKeyboardEnabled() => (bool enabled);
+
+  // Sets the provided keyboard enable flag. If the computed enabled state
+  // changes, enables or disables the keyboard to match the new state.
+  SetEnableFlag(keyboard.mojom.KeyboardEnableFlag flag);
+
+  // Clears the privided keyboard enable flag. If the computed enabled state
+  // changes, enables or disables the keyboard to match the new state.
+  ClearEnableFlag(keyboard.mojom.KeyboardEnableFlag flag);
+
+  // Reloads the virtual keyboard if it is enabled.
+  ReloadKeyboard();
+
+  // Adds a KeyboardControllerObserver.
+  AddObserver(associated KeyboardControllerObserver observer);
+};

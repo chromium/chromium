@@ -218,6 +218,7 @@ suite('<history-list>', function() {
     app.historyResult(createHistoryInfo(), ADDITIONAL_RESULTS);
 
     return PolymerTest.flushTasks().then(function() {
+      Polymer.dom.flush();
       const items = polymerSelectAll(element, 'history-item');
       assertTrue(items[3].isCardStart);
       assertTrue(items[5].isCardEnd);
@@ -241,6 +242,7 @@ suite('<history-list>', function() {
           return PolymerTest.flushTasks();
         })
         .then(function() {
+          Polymer.dom.flush();
           const items = polymerSelectAll(element, 'history-item');
 
           assertEquals(element.historyData_.length, 5);

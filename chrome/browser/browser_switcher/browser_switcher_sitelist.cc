@@ -4,9 +4,11 @@
 
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 
+#include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
@@ -15,6 +17,13 @@
 namespace browser_switcher {
 
 namespace {
+
+// This type is cheap and lives on the stack, which can be faster compared to
+// calling |GURL::host()| multiple times.
+struct NoCopyUrl {
+  base::StringPiece host;
+  base::StringPiece spec;
+};
 
 // Returns true if |input| contains |token|, ignoring case for ASCII
 // characters.
@@ -36,65 +45,75 @@ bool IsValidPrefix(base::StringPiece prefix) {
   return (prefix.empty() || re2::RE2::FullMatch(converted_prefix, *re));
 }
 
-// URL is passed as a (url_spec, url_host) to avoid heap-allocating a string for
-// the host every time this is called.
-bool UrlMatches(base::StringPiece url_spec,
-                base::StringPiece url_host,
-                base::StringPiece pattern) {
+bool IsInverted(base::StringPiece pattern) {
+  return (!pattern.empty() && pattern[0] == '!');
+}
+
+bool UrlMatchesPattern(const NoCopyUrl& url, base::StringPiece pattern) {
   if (pattern == "*") {
     // Wildcard, always match.
     return true;
   }
   if (pattern.find('/') != base::StringPiece::npos) {
     // Check prefix using the normalized URL, case sensitive.
-    size_t pos = url_spec.find(pattern);
-    if (pos == std::string::npos)
+    size_t pos = url.spec.find(pattern);
+    if (pos == base::StringPiece::npos)
       return false;
-    return IsValidPrefix(base::StringPiece(url_spec.data(), pos));
+    return IsValidPrefix(base::StringPiece(url.spec.data(), pos));
   }
   // Compare hosts, case-insensitive.
-  return StringContainsInsensitiveASCII(url_host, pattern);
+  return StringContainsInsensitiveASCII(url.host, pattern);
 }
 
-// Checks whether |patterns| contains a pattern that matches |url|, and puts the
-// longest matching pattern in |*reason|.
+// Checks whether |patterns| contains a pattern that matches |url|, and returns
+// the longest matching pattern. If there are no matches, an empty pattern is
+// returned.
 //
 // If |contains_inverted_matches| is true, treat patterns that start with "!" as
-// inverted matches (which return false if matched).
-bool UrlListMatches(const GURL& url,
-                    const base::ListValue* patterns,
-                    bool contains_inverted_matches,
-                    base::StringPiece* reason) {
-  const std::string url_host = url.host();
-  const std::string& url_spec = url.spec();
-  *reason = "";
-  bool matched = false;
-  for (const base::Value& pattern_value : *patterns) {
-    if (!pattern_value.is_string())
+// inverted matches.
+base::StringPiece MatchUrlToList(const NoCopyUrl& url,
+                                 const std::vector<std::string>& patterns,
+                                 bool contains_inverted_matches) {
+  base::StringPiece reason;
+  for (const std::string& pattern : patterns) {
+    if (pattern.size() <= reason.size())
       continue;
-    base::StringPiece pattern = pattern_value.GetString();
-    if (pattern.size() <= reason->size())
-      continue;
-    bool inverted =
-        base::StartsWith(pattern, "!", base::CompareCase::SENSITIVE);
+    bool inverted = IsInverted(pattern);
     if (inverted && !contains_inverted_matches)
       continue;
-    if (UrlMatches(url_spec, url_host,
-                   (inverted ? pattern.substr(1) : pattern))) {
-      matched = !inverted;
-      *reason = pattern;
+    if (UrlMatchesPattern(url, (inverted ? pattern.substr(1) : pattern))) {
+      reason = pattern;
     }
   }
-  return matched;
+  return reason;
+}
+
+bool StringSizeCompare(const base::StringPiece& a, const base::StringPiece& b) {
+  return a.size() < b.size();
 }
 
 }  // namespace
 
-BrowserSwitcherSitelist::~BrowserSwitcherSitelist() {}
+BrowserSwitcherSitelistImpl::RuleSet::RuleSet() = default;
+BrowserSwitcherSitelistImpl::RuleSet::~RuleSet() = default;
+
+BrowserSwitcherSitelist::~BrowserSwitcherSitelist() = default;
 
 BrowserSwitcherSitelistImpl::BrowserSwitcherSitelistImpl(PrefService* prefs)
     : prefs_(prefs) {
   DCHECK(prefs_);
+  change_registrar_.Init(prefs);
+  change_registrar_.Add(
+      prefs::kUrlList,
+      base::BindRepeating(&BrowserSwitcherSitelistImpl::OnUrlListChanged,
+                          base::Unretained(this)));
+  change_registrar_.Add(
+      prefs::kUrlGreylist,
+      base::BindRepeating(&BrowserSwitcherSitelistImpl::OnGreylistChanged,
+                          base::Unretained(this)));
+  // Ensure |chrome_policies_| is initialized.
+  OnUrlListChanged();
+  OnGreylistChanged();
 }
 
 BrowserSwitcherSitelistImpl::~BrowserSwitcherSitelistImpl() {}
@@ -106,22 +125,57 @@ bool BrowserSwitcherSitelistImpl::ShouldSwitch(const GURL& url) const {
     return false;
   }
 
-  const base::ListValue* url_list = prefs_->GetList(prefs::kUrlList);
-  base::StringPiece reason_to_go;
-  bool should_go = UrlListMatches(url, url_list, true, &reason_to_go);
+  std::string url_host = url.host();
+  NoCopyUrl no_copy_url = {url_host, url.spec()};
 
-  const base::ListValue* url_greylist = prefs_->GetList(prefs::kUrlGreylist);
-  base::StringPiece reason_to_stay;
-  bool should_stay = UrlListMatches(url, url_greylist, false, &reason_to_stay);
+  base::StringPiece reason_to_go = std::max(
+      {
+          MatchUrlToList(no_copy_url, chrome_policies_.sitelist, true),
+          MatchUrlToList(no_copy_url, ieem_sitelist_.sitelist, true),
+          MatchUrlToList(no_copy_url, external_sitelist_.sitelist, true),
+      },
+      StringSizeCompare);
 
-  // Always prefer the more specific entry of the two lists.
-  if (should_stay) {
-    if (reason_to_go == "*")
-      return false;
-    if (!reason_to_go.empty() && reason_to_go.size() < reason_to_stay.size())
-      return false;
+  // If sitelists don't match, no need to check the greylists.
+  if (reason_to_go.empty() || IsInverted(reason_to_go)) {
+    return false;
   }
-  return should_go;
+
+  base::StringPiece reason_to_stay = std::max(
+      {
+          MatchUrlToList(no_copy_url, chrome_policies_.greylist, false),
+          MatchUrlToList(no_copy_url, ieem_sitelist_.greylist, false),
+          MatchUrlToList(no_copy_url, external_sitelist_.greylist, false),
+      },
+      StringSizeCompare);
+
+  if (reason_to_go == "*" && !reason_to_stay.empty())
+    return false;
+  return reason_to_go.size() >= reason_to_stay.size();
+}
+
+void BrowserSwitcherSitelistImpl::SetIeemSitelist(ParsedXml&& parsed_xml) {
+  DCHECK(!parsed_xml.error);
+  ieem_sitelist_.sitelist = std::move(parsed_xml.sitelist);
+  ieem_sitelist_.greylist = std::move(parsed_xml.greylist);
+}
+
+void BrowserSwitcherSitelistImpl::SetExternalSitelist(ParsedXml&& parsed_xml) {
+  DCHECK(!parsed_xml.error);
+  external_sitelist_.sitelist = std::move(parsed_xml.sitelist);
+  external_sitelist_.greylist = std::move(parsed_xml.greylist);
+}
+
+void BrowserSwitcherSitelistImpl::OnUrlListChanged() {
+  chrome_policies_.sitelist.clear();
+  for (const auto& url : *prefs_->GetList(prefs::kUrlList))
+    chrome_policies_.sitelist.push_back(url.GetString());
+}
+
+void BrowserSwitcherSitelistImpl::OnGreylistChanged() {
+  chrome_policies_.greylist.clear();
+  for (const auto& url : *prefs_->GetList(prefs::kUrlGreylist))
+    chrome_policies_.greylist.push_back(url.GetString());
 }
 
 }  // namespace browser_switcher

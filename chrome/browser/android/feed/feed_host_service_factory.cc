@@ -11,7 +11,9 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/android/feed/history/feed_history_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +25,7 @@
 #include "components/feed/core/feed_content_database.h"
 #include "components/feed/core/feed_image_manager.h"
 #include "components/feed/core/feed_journal_database.h"
+#include "components/feed/core/feed_logging_metrics.h"
 #include "components/feed/core/feed_networking_host.h"
 #include "components/feed/core/feed_scheduler_host.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -32,6 +35,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
 #include "net/url_request/url_request_context_getter.h"
+
+namespace history {
+class HistoryService;
+}
 
 namespace feed {
 
@@ -58,6 +65,7 @@ FeedHostServiceFactory::FeedHostServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(offline_pages::OfflinePageModelFactory::GetInstance());
   DependsOn(offline_pages::PrefetchServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 FeedHostServiceFactory::~FeedHostServiceFactory() = default;
@@ -114,10 +122,19 @@ KeyedService* FeedHostServiceFactory::BuildServiceInstanceFor(
       base::BindRepeating(&FeedSchedulerHost::OnSuggestionsShown,
                           base::Unretained(scheduler_host.get())));
 
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  auto history_helper = std::make_unique<FeedHistoryHelper>(history_service);
+  auto logging_metrics =
+      std::make_unique<FeedLoggingMetrics>(base::BindRepeating(
+          &FeedHistoryHelper::CheckURL, std::move(history_helper)));
+
   return new FeedHostService(
-      std::move(image_manager), std::move(networking_host),
-      std::move(scheduler_host), std::move(content_database),
-      std::move(journal_database), std::move(offline_host));
+      std::move(logging_metrics), std::move(image_manager),
+      std::move(networking_host), std::move(scheduler_host),
+      std::move(content_database), std::move(journal_database),
+      std::move(offline_host));
 }
 
 content::BrowserContext* FeedHostServiceFactory::GetBrowserContextToUse(

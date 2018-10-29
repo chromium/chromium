@@ -1,7 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-inky-focus-behavior.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
@@ -105,7 +104,8 @@
         width: 100%;
       }
 
-      .markers {
+      .active-marker,
+      .inactive-marker {
         background-color: rgba(255, 255, 255, 0.54);
         border-radius: 50%;
         display: block;
@@ -115,6 +115,10 @@
         position: absolute;
         width: 2PX;
         z-index: 2;
+      }
+
+      .inactive-marker {
+        background-color: rgba(26, 115, 232, 0.54);
       }
 
       #legendContainer {
@@ -159,13 +163,11 @@
         <div id="markersContainer">
         </div>
         <div id="startKnob" class="knob" tabindex="1" on-down="startDrag_"
-            on-up="endDrag_" on-track="continueDrag_" on-focus="onFocus_"
-            on-blur="onBlur_">
+            on-up="endDrag_" on-track="continueDrag_">
           <div class="knob-inner" tabindex="-1"></div>
         </div>
         <div id="endKnob" class="knob" tabindex="2" on-down="startDrag_"
-            on-up="endDrag_" on-track="continueDrag_" on-focus="onFocus_"
-            on-blur="onBlur_">
+            on-up="endDrag_" on-track="continueDrag_">
           <div class="knob-inner" tabindex="-1"></div>
         </div>
       </div>

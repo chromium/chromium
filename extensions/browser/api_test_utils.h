@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/common/manifest.h"
 
 namespace base {
 class DictionaryValue;
@@ -24,7 +23,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class Extension;
 class ExtensionFunctionDispatcher;
 
 // TODO(yoz): crbug.com/394840: Remove duplicate functionality in
@@ -73,21 +71,6 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(const std::string& data);
 bool GetBoolean(const base::DictionaryValue* val, const std::string& key);
 int GetInteger(const base::DictionaryValue* val, const std::string& key);
 std::string GetString(const base::DictionaryValue* val, const std::string& key);
-
-// Creates an extension instance with a specified extension value that can be
-// attached to an ExtensionFunction before running.
-scoped_refptr<extensions::Extension> CreateExtension(
-    base::DictionaryValue* test_extension_value);
-
-scoped_refptr<extensions::Extension> CreateExtension(
-    extensions::Manifest::Location location,
-    base::DictionaryValue* test_extension_value,
-    const std::string& id_input);
-
-// Creates an extension instance with a specified location that can be attached
-// to an ExtensionFunction before running.
-scoped_refptr<extensions::Extension> CreateEmptyExtensionWithLocation(
-    extensions::Manifest::Location location);
 
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of

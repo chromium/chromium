@@ -6,10 +6,10 @@
 
 #include "base/message_loop/message_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_task_environment.h"
 #include "ios/web/public/test/test_web_thread.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -47,7 +47,7 @@ NSString* const kFakeResponseString = @"Something interesting here.";
 @end
 
 @interface TestFailingURLFetcherDelegate : NSObject<RetryableURLFetcherDelegate>
-@property(nonatomic, assign) BOOL responsesProcessed;
+@property(nonatomic, assign) NSUInteger responsesProcessed;
 @end
 
 @implementation TestFailingURLFetcherDelegate
@@ -59,7 +59,7 @@ NSString* const kFakeResponseString = @"Something interesting here.";
 
 - (void)processSuccessResponse:(NSString*)response {
   EXPECT_FALSE(response);
-  responsesProcessed = YES;
+  ++responsesProcessed;
 }
 
 @end
@@ -67,80 +67,76 @@ NSString* const kFakeResponseString = @"Something interesting here.";
 namespace {
 
 class RetryableURLFetcherTest : public PlatformTest {
+ public:
+  RetryableURLFetcherTest()
+      : test_shared_url_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
+
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
     test_delegate_ = [[TestRetryableURLFetcherDelegate alloc] init];
-    io_thread_.reset(
-        new web::TestWebThread(web::WebThread::IO, &message_loop_));
   }
 
-  net::TestURLFetcherFactory factory_;
-  std::unique_ptr<web::TestWebThread> io_thread_;
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
   TestRetryableURLFetcherDelegate* test_delegate_;
 };
 
 TEST_F(RetryableURLFetcherTest, TestResponse200) {
-  scoped_refptr<net::URLRequestContextGetter> request_context_getter =
-      new net::TestURLRequestContextGetter(message_loop_.task_runner());
   RetryableURLFetcher* retryableFetcher = [[RetryableURLFetcher alloc]
-      initWithRequestContextGetter:request_context_getter.get()
-                          delegate:test_delegate_
-                     backoffPolicy:nil];
-  [retryableFetcher startFetch];
+      initWithURLLoaderFactory:test_shared_url_loader_factory_
+                      delegate:test_delegate_
+                 backoffPolicy:nil];
 
-  // Manually calls the delegate.
-  net::TestURLFetcher* fetcher = factory_.GetFetcherByID(0);
-  DCHECK(fetcher);
-  DCHECK(fetcher->delegate());
   [test_delegate_ setResponsesProcessed:0U];
-  fetcher->set_response_code(200);
-  fetcher->SetResponseString(base::SysNSStringToUTF8(kFakeResponseString));
-  fetcher->delegate()->OnURLFetchComplete(fetcher);
+  std::string url = base::SysNSStringToUTF8([test_delegate_ urlToFetch]);
+  test_url_loader_factory_.AddResponse(
+      url, base::SysNSStringToUTF8(kFakeResponseString), net::HTTP_OK);
+
+  [retryableFetcher startFetch];
+  scoped_task_environment_.RunUntilIdle();
+
   EXPECT_EQ(1U, [test_delegate_ responsesProcessed]);
 }
 
 TEST_F(RetryableURLFetcherTest, TestResponse404) {
-  scoped_refptr<net::URLRequestContextGetter> request_context_getter =
-      new net::TestURLRequestContextGetter(message_loop_.task_runner());
   RetryableURLFetcher* retryableFetcher = [[RetryableURLFetcher alloc]
-      initWithRequestContextGetter:request_context_getter.get()
-                          delegate:test_delegate_
-                     backoffPolicy:nil];
-  [retryableFetcher startFetch];
+      initWithURLLoaderFactory:test_shared_url_loader_factory_
+                      delegate:test_delegate_
+                 backoffPolicy:nil];
 
-  // Manually calls the delegate.
-  net::TestURLFetcher* fetcher = factory_.GetFetcherByID(0);
-  DCHECK(fetcher);
-  DCHECK(fetcher->delegate());
   [test_delegate_ setResponsesProcessed:0U];
-  fetcher->set_response_code(404);
-  fetcher->SetResponseString("");
-  fetcher->delegate()->OnURLFetchComplete(fetcher);
+  std::string url = base::SysNSStringToUTF8([test_delegate_ urlToFetch]);
+  test_url_loader_factory_.AddResponse(url, "", net::HTTP_NOT_FOUND);
+
+  [retryableFetcher startFetch];
+  scoped_task_environment_.RunUntilIdle();
+
   EXPECT_EQ(0U, [test_delegate_ responsesProcessed]);
 }
 
 // Tests that response callback method is called if delegate returns an
 // invalid URL.
 TEST_F(RetryableURLFetcherTest, TestFailingURLNoRetry) {
-  scoped_refptr<net::URLRequestContextGetter> request_context_getter =
-      new net::TestURLRequestContextGetter(message_loop_.task_runner());
   TestFailingURLFetcherDelegate* failing_delegate =
       [[TestFailingURLFetcherDelegate alloc] init];
-  RetryableURLFetcher* retryable_fetcher = [[RetryableURLFetcher alloc]
-      initWithRequestContextGetter:request_context_getter.get()
-                          delegate:failing_delegate
-                     backoffPolicy:nil];
-  [retryable_fetcher startFetch];
+  RetryableURLFetcher* retryableFetcher = [[RetryableURLFetcher alloc]
+      initWithURLLoaderFactory:test_shared_url_loader_factory_
+                      delegate:failing_delegate
+                 backoffPolicy:nil];
 
-  // |failing_delegate| does not have URL to fetch, so a fetcher should never
-  // be created.
-  net::TestURLFetcher* fetcher = factory_.GetFetcherByID(0);
-  EXPECT_FALSE(fetcher);
+  [failing_delegate setResponsesProcessed:0U];
 
-  // Verify that response has been called.
-  EXPECT_TRUE([failing_delegate responsesProcessed]);
+  [retryableFetcher startFetch];
+  scoped_task_environment_.RunUntilIdle();
+
+  // Verify that a response has been received, even if the failing delegate
+  // received a nil in processSuccessResponse to indicate the failure.
+  EXPECT_EQ(1U, [failing_delegate responsesProcessed]);
 }
 
 }  // namespace

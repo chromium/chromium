@@ -7,9 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace ash {
 
@@ -19,7 +19,7 @@ class UnifiedSliderListener;
 // Controller class for independent slider bubbles e.g. volume slider and
 // brightness slider that can be triggered from hardware buttons.
 class ASH_EXPORT UnifiedSliderBubbleController
-    : public views::TrayBubbleView::Delegate,
+    : public TrayBubbleView::Delegate,
       public chromeos::CrasAudioHandler::AudioObserver,
       public UnifiedSystemTrayModel::Observer,
       public UnifiedVolumeSliderController::Delegate {
@@ -42,7 +42,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // True if a slider bubble is shown.
   bool IsBubbleShown() const;
 
-  // views::TrayBubbleView::Delegate:
+  // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
@@ -72,7 +72,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   base::OneShotTimer autoclose_;
 
-  views::TrayBubbleView* bubble_view_ = nullptr;
+  TrayBubbleView* bubble_view_ = nullptr;
   views::Widget* bubble_widget_ = nullptr;
 
   // Type of the currently shown slider.

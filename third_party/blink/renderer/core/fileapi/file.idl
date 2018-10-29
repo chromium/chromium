@@ -23,13 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/FileAPI/#file
+// https://w3c.github.io/FileAPI/#file-section
 
 [
     Constructor(sequence<BlobPart> fileBits, USVString fileName, optional FilePropertyBag options),
     ConstructorCallWith=ExecutionContext,
     RaisesException=Constructor,
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker),
+    Serializable
 ] interface File : Blob {
     readonly attribute DOMString name;
     readonly attribute long long lastModified;

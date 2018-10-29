@@ -4,7 +4,6 @@
 
 module network.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -12,9 +11,12 @@ import "mojo/public/mojom/base/values.mojom";
 import "net/interfaces/address_list.mojom";
 import "net/interfaces/ip_endpoint.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/ct_log_info.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/p2p.mojom";
 import "services/network/public/mojom/p2p_trusted.mojom";
@@ -32,6 +34,44 @@ import "services/network/public/mojom/websocket.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+
+// Config for setting a custom proxy config that will be used if a request
+// matches the proxy rules and would otherwise be direct. This config allows
+// headers to be set on requests to the proxies from the config before and/or
+// after the caching layer. Currently only supports proxying http requests.
+struct CustomProxyConfig {
+  // The custom proxy rules to use. Right now this is limited to proxies for
+  // http requests.
+  ProxyRules rules;
+
+  // List of proxies that will be used if
+  // ResourceRequest::custom_proxy_use_alternate_proxy_list is set.
+  ProxyList alternate_proxy_list;
+
+  // The custom proxy can set these headers in this config which will be added
+  // to all requests using the proxy. This allows setting headers that may be
+  // privacy/security sensitive which we don't want to send to the renderer.
+  // Headers that require per-request logic can be added through the
+  // |custom_proxy_pre_cache_headers| and |custom_proxy_post_cache_headers|
+  // fields in ResourceRequest.
+  //
+  // Headers that will be set before the cache for http requests. If the request
+  // does not use a custom proxy, these headers will be removed before sending
+  // to the network. If a request already has one of these headers set, it may
+  // be overwritten if a custom proxy is used, or removed if a custom proxy is
+  // not used.
+  HttpRequestHeaders pre_cache_headers;
+
+  // Headers that will be set after the cache for requests that are issued
+  // through a custom proxy. Headers here will overwrite matching headers on the
+  // request if a custom proxy is used.
+  HttpRequestHeaders post_cache_headers;
+};
+
+// Client to update the custom proxy config.
+interface CustomProxyConfigClient {
+  OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config);
+};
 
 // Parameters for constructing a network context.
 struct NetworkContextParams {
@@ -140,6 +180,13 @@ struct NetworkContextParams {
   ProxyConfigWithAnnotation? initial_proxy_config;
   ProxyConfigClient&? proxy_config_client_request;
 
+  // If |custom_proxy_config_client_request| is set, this context will listen
+  // for updates to the custom proxy config, and use it if applicable for
+  // requests which would otherwise be made direct.
+  // |initial_custom_proxy_config| is the initial config settings.
+  CustomProxyConfig? initial_custom_proxy_config;
+  CustomProxyConfigClient&? custom_proxy_config_client_request;
+
   // If |proxy_config_client_request| is non-null, this is called during
   // periods of network activity, and can be used as a signal for polling-based
   // logic to determine the proxy config.
@@ -177,6 +224,19 @@ struct NetworkContextParams {
   // unrecognized.
   array<CTLogInfo> ct_logs;
 
+  // Specifies the path to the directory where NSS will store its database.
+  [EnableIf=is_chromeos]
+  mojo_base.mojom.FilePath? nss_path;
+
+  // This is used in combination with nss_path, to ensure that the NSS database
+  // isn't opened multiple times for NetworkContexts in the same profie.
+  [EnableIf=is_chromeos]
+  string username_hash;
+
+  // Initial list of additional trust anchors.
+  [EnableIf=is_chromeos]
+  array<X509Certificate> initial_trust_anchors;
+
   // Parameters for constructing the cookie manager.
   CookieManagerParams? cookie_manager_params;
 
@@ -207,10 +267,12 @@ struct NetworkConditions {
   // response received.
   mojo_base.mojom.TimeDelta latency;
 
-  // Maximal aggregated download throughput (bytes/sec). 0 disables download throttling.
+  // Maximal aggregated download throughput (bytes/sec). 0 disables download
+  // throttling.
   double download_throughput;
 
-  // Maximal aggregated upload throughput (bytes/sec). 0 disables upload throttling.
+  // Maximal aggregated upload throughput (bytes/sec). 0 disables upload
+  // throttling.
   double upload_throughput;
 };
 
@@ -247,52 +309,6 @@ struct NetworkUsage {
 
   // Raw bytes sent to the network since the start/restart of the service.
   int64 total_bytes_sent;
-};
-
-// Manages export of ongoing NetLog events to a file.
-// Both Start and Stop must succeed, in that order, for the export to
-// be complete and have a well-formed file. You may call Start again after
-// Stop's callback has been invoked, but doing things like calling Start twice
-// without intervening successful stops will result in an error.
-interface NetLogExporter {
-
-  enum CaptureMode {
-    // Log all events, but do not include the actual transferred bytes, and
-    // remove cookies and HTTP credentials and HTTP/2 GOAWAY frame debug data.
-    DEFAULT,
-
-    // Log all events, but do not include the actual transferred bytes as
-    // parameters for bytes sent/received events.
-    INCLUDE_COOKIES_AND_CREDENTIALS,
-
-    // Log everything possible, even if it is slow and memory expensive.
-    // Includes logging of transferred bytes.
-    INCLUDE_SOCKET_BYTES
-  };
-
-  const uint64 kUnlimitedFileSize = 0xFFFFFFFFFFFFFFFF;
-
-  // Starts logging to |destination|, including definitions of |extra_constants|
-  // in the log in addition to the standard constants required by the log.
-  // Contents in |destination| might not be complete until Stop() is called
-  // successfully.
-  //
-  // If |max_file_size| is kUnlimitedFileSize log size will not be limited.
-  //
-  // Returns network error code.
-  Start(
-    mojo_base.mojom.File destination,
-    mojo_base.mojom.DictionaryValue extra_constants,
-    CaptureMode capture_mode,
-    uint64 max_file_size) => (int32 net_error);
-
-  // Finalizes the log file. If |polled_values| is provided, it will be
-  // included alongside net configuration info inside the 'polledData' field
-  // of the log object.
-  //
-  // Returns network error code; if successful this will occur only after
-  // the file has been fully written.
-  Stop(mojo_base.mojom.DictionaryValue polled_values) => (int32 net_error);
 };
 
 const uint32 kBrowserProcessId = 0;
@@ -444,6 +460,10 @@ interface NetworkContext {
   // Closes all open connections within this context.
   CloseAllConnections() => ();
 
+  // Close all idle connections for the HTTP network session used by
+  // this context.
+  CloseIdleConnections() => ();
+
   // Configures network conditions for the specified throttling profile.
   // The throttling will be applied only to requests that have matching
   // throttling_profile_id.
@@ -465,6 +485,22 @@ interface NetworkContext {
               array<string> excluded_hosts,
               array<string> excluded_spkis,
               array<string> excluded_legacy_spkis);
+
+  // Updates the additional trust anchors for certificate verification.
+  [EnableIf=is_chromeos]
+  UpdateTrustAnchors(array<X509Certificate> trust_anchors);
+
+  // Adds explicitly-specified data as if it was processed from an Expect-CT
+  // header.
+  AddExpectCT(string host, mojo_base.mojom.Time expiry,
+              bool enforce, url.mojom.Url report_uri) => (bool success);
+
+  // Send a test CT report with dummy data for test purposes.
+  SetExpectCTTestReport(url.mojom.Url report_uri) => (bool success);
+
+  // Retrieves the expect CT state from the associated network context
+  // transport security state.
+  GetExpectCTState(string domain) => (mojo_base.mojom.DictionaryValue state);
 
   // Creates a UDP socket. Caller can supply a |receiver| interface pointer
   // to listen for incoming datagrams. A null |receiver| is acceptable if caller
@@ -554,6 +590,12 @@ interface NetworkContext {
   LookUpProxyForURL(url.mojom.Url url,
                     ProxyLookupClient proxy_lookup_client);
 
+  // Forces refetching the proxy configuration, and applying it.
+  ForceReloadProxyConfig() => ();
+
+  // Clears the list of bad proxy servers that has been cached.
+  ClearBadProxiesCache() => ();
+
   // Create a NetLogExporter, which helps export NetLog to an existing file.
   // Note that the log is generally global, including all NetworkContexts
   // managed by the same NetworkService. The particular NetworkContext this is
@@ -599,6 +641,10 @@ interface NetworkContext {
   // Creates a HostResolver interface that can be passed to code/processes
   // without direct access to NetworkContext to make ResolveHost requests.
   //
+  // If set, |config_overrides| will override configuration read from the system
+  // DNS configuration when resolution is performed using the built-in resolver
+  // (which can be forced using ResolveHostParameters::source = Source.DNS).
+  //
   // If this NetworkContext is destroyed, all outstanding requests from child
   // HostResolvers will be cancelled. Such requests will receive ERR_FAILED via
   // |response_client|.
@@ -606,7 +652,8 @@ interface NetworkContext {
   // TODO(crbug.com/821021): If necessary as usage and functionality is added to
   // the contained ResolveHost method, consider adding the ability for this to
   // be a restricted resolver with some functionality disabled (eg maybe MDNS).
-  CreateHostResolver(HostResolver& host_resolver);
+  CreateHostResolver(DnsConfigOverrides? config_overrides,
+                     HostResolver& host_resolver);
 
   // Caches |data| associated with |url| and |expected_response_time| in the
   // HttpCache related to this NetworkContext.
@@ -628,14 +675,41 @@ interface NetworkContext {
   // accessed via HTTPS.
   IsHSTSActiveForHost(string host) => (bool result);
 
-  [Sync]
+  // Sets allowed and blocked origins respectively for the URLLoaderFactory
+  // consumers to access beyond the same-origin policy. The list is managed per
+  // each |source_origin|, and each call will flash old set lists for the
+  // |source_origin|. The passed |patterns| will be set instead. If an empty
+  // array is given for |allow_patterns| and/or |block_patterns|, the
+  // |source_origin|'s origin list for each is set to empty respectively.
+  SetCorsOriginAccessListsForOrigin(
+      url.mojom.Origin source_origin, array<CorsOriginPattern> allow_patterns,
+      array<CorsOriginPattern> block_patterns) => ();
+
   // Adds explicitly-specified data as if it was processed from an
-  // HSTS header.
-  AddHSTSForTesting(string host,
-                    mojo_base.mojom.Time expiry,
-                    bool include_subdomains) => ();
+  // HSTS header. Used by tests and implementation of chrome://net-internals.
+  AddHSTS(string host, mojo_base.mojom.Time expiry,
+          bool include_subdomains) => ();
+
+  // Retrieve values from the HSTS state from the associated contexts
+  // transport security state.
+  GetHSTSState(string domain) => (mojo_base.mojom.DictionaryValue state);
+
+  // Deletes any dynamic data stored for |host| from the transport
+  // security state. Returns true iff an entry was deleted.
+  // See net::TransportSecurityState::DeleteDynamicDataForHost for more detail.
+  DeleteDynamicDataForHost(string host) => (bool result);
+
+  [Sync]
+  // Enables the checking of static PKP records.
+  EnableStaticKeyPinningForTesting() => ();
 
   [Sync]
   // Will force the transaction to fail with the given error code.
   SetFailingHttpTransactionForTesting(int32 rv) => ();
+
+  [Sync]
+  // Verifies the given certificate using the context's CertVerifier.
+  VerifyCertificateForTesting(X509Certificate certificate,
+                              string hostname,
+                              string ocsp_response) => (int32 error_code);
 };

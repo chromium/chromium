@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/first_run/desktop_cleaner.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller.h"
 #include "ash/shelf/app_list_button.h"
@@ -17,8 +16,6 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/tray/system_tray.h"
-#include "ash/system/tray/system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect.h"
@@ -57,46 +54,24 @@ void FirstRunHelper::GetAppListButtonBounds(GetAppListButtonBoundsCallback cb) {
 }
 
 void FirstRunHelper::OpenTrayBubble(OpenTrayBubbleCallback cb) {
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    UnifiedSystemTray* tray = Shell::Get()
-                                  ->GetPrimaryRootWindowController()
-                                  ->GetStatusAreaWidget()
-                                  ->unified_system_tray();
-    tray->ShowBubble(false /* show_by_click */);
-    std::move(cb).Run(tray->GetBubbleBoundsInScreen());
-  } else {
-    SystemTray* tray = Shell::Get()->GetPrimarySystemTray();
-    tray->ShowPersistentDefaultView();
-    views::View* bubble = tray->GetSystemBubble()->bubble_view();
-    std::move(cb).Run(bubble->GetBoundsInScreen());
-  }
+  UnifiedSystemTray* tray = Shell::Get()
+                                ->GetPrimaryRootWindowController()
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  tray->ShowBubble(false /* show_by_click */);
+  std::move(cb).Run(tray->GetBubbleBoundsInScreen());
 }
 
 void FirstRunHelper::CloseTrayBubble() {
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    Shell::Get()
-        ->GetPrimaryRootWindowController()
-        ->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->CloseBubble();
-  } else {
-    Shell::Get()->GetPrimarySystemTray()->CloseBubble();
-  }
+  Shell::Get()
+      ->GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->unified_system_tray()
+      ->CloseBubble();
 }
 
 void FirstRunHelper::GetHelpButtonBounds(GetHelpButtonBoundsCallback cb) {
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    std::move(cb).Run(gfx::Rect());
-    return;
-  }
-  SystemTray* tray = Shell::Get()->GetPrimarySystemTray();
-  views::View* help_button = tray->GetHelpButtonView();
-  // |help_button| could be null if the tray isn't open.
-  if (!help_button) {
-    std::move(cb).Run(gfx::Rect());
-    return;
-  }
-  std::move(cb).Run(help_button->GetBoundsInScreen());
+  std::move(cb).Run(gfx::Rect());
 }
 
 void FirstRunHelper::OnLockStateChanged(bool locked) {

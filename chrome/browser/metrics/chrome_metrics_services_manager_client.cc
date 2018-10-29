@@ -120,11 +120,13 @@ base::string16 GetRegistryBackupKey() {
 class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
     : public metrics::EnabledStateProvider {
  public:
-  ChromeEnabledStateProvider() {}
+  explicit ChromeEnabledStateProvider(PrefService* local_state)
+      : local_state_(local_state) {}
   ~ChromeEnabledStateProvider() override {}
 
   bool IsConsentGiven() const override {
-    return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+    return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
+        local_state_);
   }
 
   bool IsReportingEnabled() const override {
@@ -132,12 +134,16 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
            ChromeMetricsServicesManagerClient::IsClientInSample();
   }
 
+ private:
+  PrefService* const local_state_;
+
   DISALLOW_COPY_AND_ASSIGN(ChromeEnabledStateProvider);
 };
 
 ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
     PrefService* local_state)
-    : enabled_state_provider_(std::make_unique<ChromeEnabledStateProvider>()),
+    : enabled_state_provider_(
+          std::make_unique<ChromeEnabledStateProvider>(local_state)),
       local_state_(local_state) {
   DCHECK(local_state);
 }

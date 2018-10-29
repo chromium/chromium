@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -60,7 +60,7 @@ class NGLineBreakerTest : public NGBaseLayoutAlgorithmTest {
       if (line_info.Results().IsEmpty())
         break;
 
-      break_token = line_breaker.CreateBreakToken(line_info, nullptr);
+      break_token = line_breaker.CreateBreakToken(line_info);
       lines.push_back(std::move(line_info.Results()));
     }
 

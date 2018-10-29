@@ -379,8 +379,7 @@ TestNetworkDelegate::TestNetworkDelegate()
       add_header_to_first_response_(false) {}
 
 TestNetworkDelegate::~TestNetworkDelegate() {
-  for (std::map<int, int>::iterator i = next_states_.begin();
-       i != next_states_.end(); ++i) {
+  for (auto i = next_states_.begin(); i != next_states_.end(); ++i) {
     event_order_[i->first] += "~TestNetworkDelegate\n";
     EXPECT_TRUE(i->second & kStageDestruction) << event_order_[i->first];
   }
@@ -687,10 +686,6 @@ bool TestNetworkDelegate::OnCanAccessFile(
     const base::FilePath& original_path,
     const base::FilePath& absolute_path) const {
   return can_access_files_;
-}
-
-bool TestNetworkDelegate::OnAreExperimentalCookieFeaturesEnabled() const {
-  return experimental_cookie_features_enabled_;
 }
 
 bool TestNetworkDelegate::OnCancelURLRequestWithPolicyViolatingReferrerHeader(

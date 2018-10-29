@@ -65,4 +65,8 @@ uint64_t FakeRasterBufferProviderImpl::SetReadyToDrawCallback(
 
 void FakeRasterBufferProviderImpl::Shutdown() {}
 
+bool FakeRasterBufferProviderImpl::CheckRasterFinishedQueries() {
+  return false;
+}
+
 }  // namespace cc

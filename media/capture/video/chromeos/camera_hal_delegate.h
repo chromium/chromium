@@ -126,13 +126,18 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // OnGotCameraInfoOnIpcThread.
   base::WaitableEvent builtin_camera_info_updated_;
 
+  // Signaled/Reset when |camera_info_.empty()| is changed.
+  base::WaitableEvent has_camera_connected_;
+
   // |num_builtin_cameras_| stores the number of built-in camera devices
   // reported by the camera HAL, and |camera_info_| stores the camera info of
   // each camera device. They are modified only on |ipc_task_runner_|. They
   // are also read in GetSupportedFormats and GetDeviceDescriptors, in which the
   // access is protected by |camera_info_lock_| and sequenced through
   // UpdateBuiltInCameraInfo and |builtin_camera_info_updated_| to avoid race
-  // conditions.
+  // conditions. For external cameras, the |camera_info_| would be read nad
+  // updated in CameraDeviceStatusChange, which is also protected by
+  // |camera_info_lock|.
   size_t num_builtin_cameras_;
   base::Lock camera_info_lock_;
   std::unordered_map<std::string, cros::mojom::CameraInfoPtr> camera_info_;

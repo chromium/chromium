@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/picture_debug_util.h"
 #include "cc/paint/solid_color_analyzer.h"
@@ -51,7 +51,8 @@ void DisplayItemList::Raster(SkCanvas* canvas,
   if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
     return;
 
-  std::vector<size_t> offsets = rtree_.Search(canvas_playback_rect);
+  std::vector<size_t> offsets;
+  rtree_.Search(canvas_playback_rect, &offsets);
   paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider), &offsets);
 }
 
@@ -196,7 +197,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
   if (!rect.Contains(rtree_.GetBounds())) {
-    offsets = rtree_.Search(rect);
+    rtree_.Search(rect, &offsets);
     offsets_to_use = &offsets;
   }
 

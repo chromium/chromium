@@ -43,12 +43,11 @@ class GPU_EXPORT GpuControl {
 
   virtual const Capabilities& GetCapabilities() const = 0;
 
-  // Create an image for a client buffer with the given dimensions and
-  // format. Returns its ID or -1 on error.
+  // Create an image for a client buffer with the given dimensions. Returns its
+  // ID or -1 on error.
   virtual int32_t CreateImage(ClientBuffer buffer,
                               size_t width,
-                              size_t height,
-                              unsigned internalformat) = 0;
+                              size_t height) = 0;
 
   // Destroy an image. The ID must be positive.
   virtual void DestroyImage(int32_t id) = 0;

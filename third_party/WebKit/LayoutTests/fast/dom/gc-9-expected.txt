@@ -98,4 +98,3 @@ DOM EVENT BEFORE GARBAGE COLLECTION
 PASS: event.myCustomProperty should be 1 and is.
 DOM EVENT AFTER GARBAGE COLLECTION
 PASS: event.myCustomProperty should be 1 and is.
-

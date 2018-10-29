@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1분 전}other{#분 전}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1분}other{#분}}</translation>
 <translation id="1243314992276662751">업로드</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">추천 앱</translation>
 <translation id="1368832886055348810">왼쪽에서 오른쪽으로</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">페이지 아래로</translation>
 <translation id="8245914219290430011">탭</translation>
+<translation id="8259556432390118667">16진수 색상 값</translation>
 <translation id="8328145009876646418">왼쪽 모서리</translation>
 <translation id="8331626408530291785">위로 스크롤</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1년}other{#년}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> 폴더</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
+<translation id="8841375032071747811">뒤로 버튼</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" />KB</translation>
 <translation id="9002566407876343676">열기</translation>
 <translation id="9038489124413477075">이름이 없는 폴더</translation>

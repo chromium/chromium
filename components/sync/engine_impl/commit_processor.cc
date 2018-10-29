@@ -29,7 +29,7 @@ void CommitProcessor::GatherCommitContributions(
     Commit::ContributionMap* contributions) {
   size_t num_entries = 0;
   for (ModelType type : commit_types) {
-    CommitContributorMap::iterator cm_it = commit_contributor_map_->find(type);
+    auto cm_it = commit_contributor_map_->find(type);
     if (cm_it == commit_contributor_map_->end()) {
       DLOG(ERROR) << "Could not find requested type " << ModelTypeToString(type)
                   << " in contributor map.";

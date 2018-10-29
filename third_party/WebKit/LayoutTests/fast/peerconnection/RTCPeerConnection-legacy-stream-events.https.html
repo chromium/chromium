@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+['plan-b', 'unified-plan'].forEach(sdpSemantics => {
+  promise_test(async t => {
+    console.log(sdpSemantics + ': onaddstream fires for new remote streams.');
+    const pc1 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc1.close(); });
+    const pc2 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc2.close(); });
+
+    const localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const [localTrack] = localStream.getTracks();
+    pc1.addTrack(localTrack, localStream);
+
+    const streamWatcher = new EventWatcher(t, pc2, ['addstream']);
+    const addstreamEvent = streamWatcher.wait_for('addstream');
+    await performOfferAnswer(pc1, pc2);
+    const remoteStream = (await addstreamEvent).stream;
+    assert_equals(remoteStream.getTracks().length, 1,
+                  'The stream should contain a track.');
+  }, sdpSemantics + ': onaddstream fires for new remote streams.');
+
+  promise_test(async t => {
+    console.log(sdpSemantics + ': onremovestream for removed remote streams.');
+    const pc1 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc1.close(); });
+    const pc2 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc2.close(); });
+
+    const localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const [localTrack] = localStream.getTracks();
+    const sender = pc1.addTrack(localTrack, localStream);
+
+    const streamWatcher = new EventWatcher(t, pc2, ['addstream',
+                                                    'removestream']);
+    const addstreamEvent = streamWatcher.wait_for('addstream');
+    await performOfferAnswer(pc1, pc2);
+    const remoteStream = (await addstreamEvent).stream;
+    const removestreamEvent = streamWatcher.wait_for('removestream');
+
+    pc1.removeTrack(sender);
+    await performOfferAnswer(pc1, pc2);
+    const removedRemoteStream = (await removestreamEvent).stream;
+    assert_equals(removedRemoteStream, remoteStream);
+  }, sdpSemantics + ': onremovestream for removed remote streams.');
+
+  promise_test(async t => {
+    console.log(sdpSemantics + ': onaddstream for a re-added remote stream.');
+    const pc1 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc1.close(); });
+    const pc2 = new RTCPeerConnection({sdpSemantics:sdpSemantics});
+    t.add_cleanup(() => { pc2.close(); });
+
+    const localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const [localTrack] = localStream.getTracks();
+    const sender = pc1.addTrack(localTrack, localStream);
+
+    const streamWatcher = new EventWatcher(t, pc2, ['addstream']);
+    let addstreamEvent = streamWatcher.wait_for('addstream');
+    await performOfferAnswer(pc1, pc2);
+    const remoteStream = (await addstreamEvent).stream;
+
+    pc1.removeTrack(sender);
+    await performOfferAnswer(pc1, pc2);
+
+    pc1.addTrack(localTrack, localStream);
+    addstreamEvent = streamWatcher.wait_for('addstream');
+    await performOfferAnswer(pc1, pc2);
+    const readdedRemoteStream = (await addstreamEvent).stream;
+    assert_equals(readdedRemoteStream.id, remoteStream.id);
+  }, sdpSemantics + ': onaddstream for a re-added remote stream.');
+});
+
+async function performOfferAnswer(pc1, pc2) {
+  const offer = await pc1.createOffer();
+  await pc1.setLocalDescription(offer);
+  await pc2.setRemoteDescription(offer);
+  const answer = await pc2.createAnswer();
+  await pc2.setLocalDescription(answer);
+  await pc1.setRemoteDescription(answer);
+}
+</script>

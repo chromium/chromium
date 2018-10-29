@@ -16,7 +16,7 @@ var wentBack = false;
 description('Tests that we trigger same-document navigation when history entries are generated via fragment changes, even if the frames present in the document change between history entries.');
 
 if (window.testRunner) {
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
     testRunner.clearBackForwardList();
     testRunner.dumpBackForwardList();
 }

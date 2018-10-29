@@ -31,10 +31,8 @@
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/heap_linked_stack.h"
-#include "third_party/blink/renderer/platform/heap/heap_terminated_array.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/terminated_array.h"
 
 namespace blink {
 
@@ -54,7 +52,7 @@ class MediaQueryEvaluator;
 class StyleSheetContents;
 
 class MinimalRuleData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   MinimalRuleData(StyleRule* rule, unsigned selector_index, AddRuleFlags flags)
@@ -79,14 +77,12 @@ namespace blink {
 // selectors from a single rule match the same element we can see that as one
 // match for the rule. It computes some information about the wrapped selector
 // and makes it accessible cheaply.
-class CORE_EXPORT RuleData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
-
+class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
  public:
-  RuleData(StyleRule*,
-           unsigned selector_index,
-           unsigned position,
-           AddRuleFlags);
+  static RuleData* MaybeCreate(StyleRule*,
+                               unsigned selector_index,
+                               unsigned position,
+                               AddRuleFlags);
 
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_; }
@@ -94,9 +90,6 @@ class CORE_EXPORT RuleData {
     return rule_->SelectorList().SelectorAt(selector_index_);
   }
   unsigned SelectorIndex() const { return selector_index_; }
-
-  bool IsLastInArray() const { return is_last_in_array_; }
-  void SetLastInArray(bool flag) { is_last_in_array_ = flag; }
 
   bool ContainsUncommonAttributeSelector() const {
     return contains_uncommon_attribute_selector_;
@@ -121,25 +114,32 @@ class CORE_EXPORT RuleData {
 
   void Trace(blink::Visitor*);
 
- private:
-  Member<StyleRule> rule_;
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
   // exceeding the number of simple selectors to fit in this bitfield.
   // See https://crbug.com/312913 and https://crbug.com/704562
-  unsigned selector_index_ : 13;
-  // We store an array of RuleData objects in a primitive array.
-  unsigned is_last_in_array_ : 1;
+  static constexpr size_t kSelectorIndexBits = 13;
+
   // This number was picked fairly arbitrarily. We can probably lower it if we
   // need to. Some simple testing showed <100,000 RuleData's on large sites.
-  unsigned position_ : 18;
+  static constexpr size_t kPositionBits = 18;
+
+ private:
+  RuleData(StyleRule*,
+           unsigned selector_index,
+           unsigned position,
+           AddRuleFlags);
+
+  Member<StyleRule> rule_;
+  unsigned selector_index_ : kSelectorIndexBits;
+  unsigned position_ : kPositionBits;
+  unsigned contains_uncommon_attribute_selector_ : 1;
   // 32 bits above
   unsigned specificity_ : 24;
-  unsigned contains_uncommon_attribute_selector_ : 1;
   unsigned link_match_type_ : 2;  //  CSSSelector::LinkMatchMask
   unsigned has_document_security_origin_ : 1;
   unsigned property_whitelist_ : 2;
-  // 30 bits above
+  // 29 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
 };
@@ -180,45 +180,47 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
 
   const RuleFeatureSet& Features() const { return features_; }
 
-  const HeapTerminatedArray<RuleData>* IdRules(const AtomicString& key) const {
+  const HeapVector<Member<const RuleData>>* IdRules(
+      const AtomicString& key) const {
     DCHECK(!pending_rules_);
     return id_rules_.at(key);
   }
-  const HeapTerminatedArray<RuleData>* ClassRules(
+  const HeapVector<Member<const RuleData>>* ClassRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
     return class_rules_.at(key);
   }
-  const HeapTerminatedArray<RuleData>* TagRules(const AtomicString& key) const {
+  const HeapVector<Member<const RuleData>>* TagRules(
+      const AtomicString& key) const {
     DCHECK(!pending_rules_);
     return tag_rules_.at(key);
   }
-  const HeapTerminatedArray<RuleData>* ShadowPseudoElementRules(
+  const HeapVector<Member<const RuleData>>* ShadowPseudoElementRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
     return shadow_pseudo_element_rules_.at(key);
   }
-  const HeapVector<RuleData>* LinkPseudoClassRules() const {
+  const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
     DCHECK(!pending_rules_);
     return &link_pseudo_class_rules_;
   }
-  const HeapVector<RuleData>* CuePseudoRules() const {
+  const HeapVector<Member<const RuleData>>* CuePseudoRules() const {
     DCHECK(!pending_rules_);
     return &cue_pseudo_rules_;
   }
-  const HeapVector<RuleData>* FocusPseudoClassRules() const {
+  const HeapVector<Member<const RuleData>>* FocusPseudoClassRules() const {
     DCHECK(!pending_rules_);
     return &focus_pseudo_class_rules_;
   }
-  const HeapVector<RuleData>* UniversalRules() const {
+  const HeapVector<Member<const RuleData>>* UniversalRules() const {
     DCHECK(!pending_rules_);
     return &universal_rules_;
   }
-  const HeapVector<RuleData>* ShadowHostRules() const {
+  const HeapVector<Member<const RuleData>>* ShadowHostRules() const {
     DCHECK(!pending_rules_);
     return &shadow_host_rules_;
   }
-  const HeapVector<RuleData>* PartPseudoRules() const {
+  const HeapVector<Member<const RuleData>>* PartPseudoRules() const {
     DCHECK(!pending_rules_);
     return &part_pseudo_rules_;
   }
@@ -272,13 +274,14 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
 
  private:
   using PendingRuleMap =
-      HeapHashMap<AtomicString, Member<HeapLinkedStack<RuleData>>>;
+      HeapHashMap<AtomicString,
+                  Member<HeapLinkedStack<Member<const RuleData>>>>;
   using CompactRuleMap =
-      HeapHashMap<AtomicString, Member<HeapTerminatedArray<RuleData>>>;
+      HeapHashMap<AtomicString, Member<HeapVector<Member<const RuleData>>>>;
 
   RuleSet() : rule_count_(0) {}
 
-  void AddToRuleSet(const AtomicString& key, PendingRuleMap&, const RuleData&);
+  void AddToRuleSet(const AtomicString& key, PendingRuleMap&, const RuleData*);
   void AddPageRule(StyleRulePage*);
   void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);
@@ -287,7 +290,7 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   void AddChildRules(const HeapVector<Member<StyleRuleBase>>&,
                      const MediaQueryEvaluator& medium,
                      AddRuleFlags);
-  bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData&);
+  bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
 
   void CompactRules();
   static void CompactPendingRules(PendingRuleMap&, CompactRuleMap&);
@@ -317,12 +320,12 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   CompactRuleMap class_rules_;
   CompactRuleMap tag_rules_;
   CompactRuleMap shadow_pseudo_element_rules_;
-  HeapVector<RuleData> link_pseudo_class_rules_;
-  HeapVector<RuleData> cue_pseudo_rules_;
-  HeapVector<RuleData> focus_pseudo_class_rules_;
-  HeapVector<RuleData> universal_rules_;
-  HeapVector<RuleData> shadow_host_rules_;
-  HeapVector<RuleData> part_pseudo_rules_;
+  HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
+  HeapVector<Member<const RuleData>> cue_pseudo_rules_;
+  HeapVector<Member<const RuleData>> focus_pseudo_class_rules_;
+  HeapVector<Member<const RuleData>> universal_rules_;
+  HeapVector<Member<const RuleData>> shadow_host_rules_;
+  HeapVector<Member<const RuleData>> part_pseudo_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
@@ -335,7 +338,7 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   Member<PendingRuleMaps> pending_rules_;
 
 #ifndef NDEBUG
-  HeapVector<RuleData> all_rules_;
+  HeapVector<Member<const RuleData>> all_rules_;
 #endif
   DISALLOW_COPY_AND_ASSIGN(RuleSet);
 };

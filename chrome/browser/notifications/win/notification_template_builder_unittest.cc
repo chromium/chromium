@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_task_environment.h"
 #include "chrome/browser/notifications/win/mock_notification_image_retainer.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/grit/chromium_strings.h"
@@ -31,7 +32,6 @@ const char kNotificationId[] = "notification_id";
 const char kNotificationTitle[] = "My Title";
 const char kNotificationMessage[] = "My Message";
 const char kNotificationOrigin[] = "https://example.com";
-const char kProfileId[] = "Default";
 
 bool FixedTime(base::Time* time) {
   base::Time::Exploded exploded = {0};
@@ -85,15 +85,16 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
     MockNotificationImageRetainer image_retainer;
     NotificationLaunchId launch_id(kEncodedId);
     template_ = NotificationTemplateBuilder::Build(&image_retainer, launch_id,
-                                                   kProfileId, notification);
+                                                   notification);
 
     ASSERT_TRUE(template_);
 
     EXPECT_EQ(template_->GetNotificationTemplate(), xml_template);
   }
 
- protected:
   std::unique_ptr<NotificationTemplateBuilder> template_;
+
+  base::test::ScopedTaskEnvironment scoped_task_environment_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NotificationTemplateBuilderTest);

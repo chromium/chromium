@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "components/password_manager/core/browser/keychain_migration_status_mac.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_default.h"
 #include "components/prefs/pref_member.h"
 
@@ -35,7 +36,7 @@ class PasswordStoreMac : public password_manager::PasswordStoreDefault {
   ~PasswordStoreMac() override;
 
   // PasswordStore:
-  void InitOnBackgroundSequence(
+  bool InitOnBackgroundSequence(
       const syncer::SyncableService::StartSyncFlare& flare) override;
 
   // Writes status to the prefs.

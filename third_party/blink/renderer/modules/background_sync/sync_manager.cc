@@ -44,8 +44,7 @@ ScriptPromise SyncManager::registerFunction(ScriptState* script_state,
       blink::mojom::BackgroundSyncNetworkState::ONLINE;
 
   GetBackgroundSyncServicePtr()->Register(
-      std::move(sync_registration),
-      registration_->WebRegistration()->RegistrationId(),
+      std::move(sync_registration), registration_->RegistrationId(),
       WTF::Bind(SyncManager::RegisterCallback, WrapPersistent(resolver)));
 
   return promise;
@@ -56,7 +55,7 @@ ScriptPromise SyncManager::getTags(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   GetBackgroundSyncServicePtr()->GetRegistrations(
-      registration_->WebRegistration()->RegistrationId(),
+      registration_->RegistrationId(),
       WTF::Bind(&SyncManager::GetRegistrationsCallback,
                 WrapPersistent(resolver)));
 

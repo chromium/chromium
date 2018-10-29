@@ -32,7 +32,6 @@ using ash::ArcNotificationSurfaceManager;
 namespace {
 
 constexpr int32_t kNoTaskId = -1;
-constexpr int32_t kInvalidTreeId = -1;
 
 exo::Surface* GetArcSurface(const aura::Window* window) {
   if (!window)
@@ -191,7 +190,7 @@ void ArcAccessibilityHelperBridge::OnSetNativeChromeVoxArcSupportProcessed(
     if (surface) {
       views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
       static_cast<exo::ShellSurfaceBase*>(widget->widget_delegate())
-          ->SetChildAxTreeId(kInvalidTreeId);
+          ->SetChildAxTreeId(ui::AXTreeIDUnknown());
     }
   }
 
@@ -221,6 +220,7 @@ void ArcAccessibilityHelperBridge::OnConnectionReady() {
         accessibility_manager->RegisterCallback(base::BindRepeating(
             &ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged,
             base::Unretained(this)));
+    SetExploreByTouchEnabled(accessibility_manager->IsSpokenFeedbackEnabled());
   }
 
   auto* surface_manager = ArcNotificationSurfaceManager::Get();
@@ -349,7 +349,8 @@ void ArcAccessibilityHelperBridge::OnNotificationStateChanged(
     }
     case arc::mojom::AccessibilityNotificationStateType::SURFACE_REMOVED:
       notification_key_to_tree_.erase(notification_key);
-      UpdateTreeIdOfNotificationSurface(notification_key, kInvalidTreeId);
+      UpdateTreeIdOfNotificationSurface(notification_key,
+                                        ui::AXTreeIDUnknown());
       break;
   }
 }
@@ -385,7 +386,7 @@ AXTreeSourceArc* ArcAccessibilityHelperBridge::GetFromNotificationKey(
 
 void ArcAccessibilityHelperBridge::UpdateTreeIdOfNotificationSurface(
     const std::string& notification_key,
-    uint32_t tree_id) {
+    ui::AXTreeID tree_id) {
   auto* surface_manager = ArcNotificationSurfaceManager::Get();
   if (!surface_manager)
     return;
@@ -406,7 +407,7 @@ void ArcAccessibilityHelperBridge::UpdateTreeIdOfNotificationSurface(
 }
 
 AXTreeSourceArc* ArcAccessibilityHelperBridge::GetFromTreeId(
-    int32_t tree_id) const {
+    ui::AXTreeID tree_id) const {
   for (auto it = task_id_to_tree_.begin(); it != task_id_to_tree_.end(); ++it) {
     ui::AXTreeData tree_data;
     it->second->GetTreeData(&tree_data);
@@ -519,6 +520,11 @@ void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
 
   UpdateFilterType();
   UpdateWindowProperties(GetActiveWindow());
+
+  if (event_details.notification_type ==
+      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+    SetExploreByTouchEnabled(event_details.enabled);
+  }
 }
 
 arc::mojom::AccessibilityFilterType
@@ -573,10 +579,13 @@ void ArcAccessibilityHelperBridge::UpdateFilterType() {
   if (!wm_helper)
     return;
 
-  if (add_activation_observer)
+  if (add_activation_observer) {
     wm_helper->AddActivationObserver(this);
-  else
+    activation_observer_added_ = true;
+  } else {
+    activation_observer_added_ = false;
     wm_helper->RemoveActivationObserver(this);
+  }
 }
 
 void ArcAccessibilityHelperBridge::UpdateWindowProperties(
@@ -602,6 +611,13 @@ void ArcAccessibilityHelperBridge::UpdateWindowProperties(
   window->SetProperty(ash::kSearchKeyAcceleratorReservedKey, use_talkback);
   window->SetProperty(aura::client::kAccessibilityFocusFallsbackToWidgetKey,
                       !use_talkback);
+}
+
+void ArcAccessibilityHelperBridge::SetExploreByTouchEnabled(bool enabled) {
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->accessibility_helper(), SetExploreByTouchEnabled);
+  if (instance)
+    instance->SetExploreByTouchEnabled(enabled);
 }
 
 aura::Window* ArcAccessibilityHelperBridge::GetActiveWindow() {

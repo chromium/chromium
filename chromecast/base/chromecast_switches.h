@@ -19,6 +19,9 @@ extern const char kSwitchValueFalse[];
 // Url to upload crash data to.
 extern const char kCrashServerUrl[];
 
+// Disable Crash Reporting
+extern const char kDisableCrashReporter[];
+
 // Content-implementation switches
 extern const char kEnableLocalFileAccesses[];
 
@@ -81,6 +84,7 @@ extern const char kEnableTopDragGesture[];
 // Background color used when Chromium hasn't rendered anything yet.
 extern const char kCastAppBackgroundColor[];
 
+extern const char kMixerServiceEndpoint[];
 extern const char kCastMemoryPressureCriticalFraction[];
 extern const char kCastMemoryPressureModerateFraction[];
 

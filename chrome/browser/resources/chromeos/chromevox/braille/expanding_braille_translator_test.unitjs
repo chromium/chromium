@@ -11,9 +11,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js',
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxExpandingBrailleTranslatorUnitTest() {}
+function ChromeVoxExpandingBrailleTranslatorUnitTest() {}
 
-CvoxExpandingBrailleTranslatorUnitTest.prototype = {
+ChromeVoxExpandingBrailleTranslatorUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -78,7 +78,7 @@ function assertArrayBufferMatches(expected, actual) {
   }
 }
 
-TEST_F('CvoxExpandingBrailleTranslatorUnitTest', 'TranslationError',
+TEST_F('ChromeVoxExpandingBrailleTranslatorUnitTest', 'TranslationError',
     function() {
   var text = new Spannable('error ok', new cvox.ValueSpan());
   text.setSpan(new cvox.ValueSelectionSpan, 0, 0);
@@ -255,7 +255,7 @@ function createText(text, opt_selectionStart, opt_selectionEnd, opt_style) {
 
 var TEXT = 'Hello, world!';
 
-TEST_F('CvoxExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
+TEST_F('ChromeVoxExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
        function() {
   /**
    * Dictionary of test strings, keyed on a descriptive name for the
@@ -313,7 +313,7 @@ TEST_F('CvoxExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
   assertEquals(totalExpectedTranslationTests, totalRunTranslationTests);
 });
 
-TEST_F('CvoxExpandingBrailleTranslatorUnitTest', 'StyleTranslations',
+TEST_F('ChromeVoxExpandingBrailleTranslatorUnitTest', 'StyleTranslations',
        function() {
   var formTypeMap = {};
   formTypeMap[cvox.LibLouis.FormType.BOLD] = 'b';

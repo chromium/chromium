@@ -26,10 +26,10 @@ GLuint CompileShader(GLenum shader_type,
     // Compile the shader.
     glCompileShader(shader_handle);
     // Get the compilation status.
-    GLint status;
+    GLint status = GL_FALSE;
     glGetShaderiv(shader_handle, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
-      GLint info_log_length;
+      GLint info_log_length = 0;
       glGetShaderiv(shader_handle, GL_INFO_LOG_LENGTH, &info_log_length);
       GLchar* str_info_log = new GLchar[info_log_length + 1];
       glGetShaderInfoLog(shader_handle, info_log_length, nullptr, str_info_log);
@@ -62,12 +62,12 @@ GLuint CreateAndLinkProgram(GLuint vertext_shader_handle,
     glLinkProgram(program_handle);
 
     // Get the link status.
-    GLint link_status;
+    GLint link_status = GL_FALSE;
     glGetProgramiv(program_handle, GL_LINK_STATUS, &link_status);
 
     // If the link failed, delete the program.
     if (link_status == GL_FALSE) {
-      GLint info_log_length;
+      GLint info_log_length = 0;
       glGetProgramiv(program_handle, GL_INFO_LOG_LENGTH, &info_log_length);
 
       GLchar* str_info_log = new GLchar[info_log_length + 1];

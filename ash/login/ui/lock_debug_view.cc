@@ -44,7 +44,7 @@ enum {
   kGlobalToggleBlur,
   kGlobalToggleNoteAction,
   kGlobalToggleCapsLock,
-  kGlobalAddDevChannelInfo,
+  kGlobalAddSystemInfo,
   kGlobalToggleAuth,
   kGlobalAddKioskApp,
   kGlobalRemoveKioskApp,
@@ -58,6 +58,8 @@ enum {
   kPerUserToggleTap,
   kPerUserCycleEasyUnlockState,
   kPerUserCycleFingerprintState,
+  kPerUserAuthFingerprintSuccessState,
+  kPerUserAuthFingerprintFailState,
   kPerUserForceOnlineSignIn,
   kPerUserToggleAuthEnabled,
   kPerUserUseDetachableBase,
@@ -103,8 +105,8 @@ struct UserMetadata {
   bool enable_auth = true;
   user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
   mojom::EasyUnlockIconId easy_unlock_id = mojom::EasyUnlockIconId::NONE;
-  mojom::FingerprintUnlockState fingerprint_state =
-      mojom::FingerprintUnlockState::UNAVAILABLE;
+  mojom::FingerprintState fingerprint_state =
+      mojom::FingerprintState::UNAVAILABLE;
 };
 
 std::string DetachableBasePairingStatusToString(
@@ -319,30 +321,21 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   // Enables fingerprint auth for the user at |user_index|.
-  void CycleFingerprintUnlockForUserIndex(size_t user_index) {
+  void CycleFingerprintStateForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
 
-    // FingerprintUnlockState transition.
-    auto get_next_state = [](mojom::FingerprintUnlockState state) {
-      switch (state) {
-        case mojom::FingerprintUnlockState::UNAVAILABLE:
-          return mojom::FingerprintUnlockState::AVAILABLE;
-        case mojom::FingerprintUnlockState::AVAILABLE:
-          return mojom::FingerprintUnlockState::AUTH_SUCCESS;
-        case mojom::FingerprintUnlockState::AUTH_SUCCESS:
-          return mojom::FingerprintUnlockState::AUTH_FAILED;
-        case mojom::FingerprintUnlockState::AUTH_FAILED:
-          return mojom::FingerprintUnlockState::AUTH_DISABLED;
-        case mojom::FingerprintUnlockState::AUTH_DISABLED:
-          return mojom::FingerprintUnlockState::UNAVAILABLE;
-      }
-    };
-
-    debug_user->fingerprint_state =
-        get_next_state(debug_user->fingerprint_state);
-    debug_dispatcher_.SetFingerprintUnlockState(debug_user->account_id,
-                                                debug_user->fingerprint_state);
+    debug_user->fingerprint_state = static_cast<mojom::FingerprintState>(
+        (static_cast<int>(debug_user->fingerprint_state) + 1) %
+        (static_cast<int>(mojom::FingerprintState::kMaxValue) + 1));
+    debug_dispatcher_.SetFingerprintState(debug_user->account_id,
+                                          debug_user->fingerprint_state);
+  }
+  void AuthenticateFingerprintForUserIndex(size_t user_index, bool success) {
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    UserMetadata* debug_user = &debug_users_[user_index];
+    debug_dispatcher_.NotifyFingerprintAuthResult(debug_user->account_id,
+                                                  success);
   }
 
   // Force online sign-in for the user at |user_index|.
@@ -406,11 +399,11 @@ class LockDebugView::DebugDataDispatcherTransformer
     shelf_widget->login_shelf_view()->SetKioskApps(mojo::Clone(kiosk_apps_));
   }
 
-  void AddLockScreenDevChannelInfo(const std::string& os_version,
-                                   const std::string& enterprise_info,
-                                   const std::string& bluetooth_name) {
-    debug_dispatcher_.SetDevChannelInfo(os_version, enterprise_info,
-                                        bluetooth_name);
+  void AddSystemInfo(const std::string& os_version,
+                     const std::string& enterprise_info,
+                     const std::string& bluetooth_name) {
+    debug_dispatcher_.SetSystemInfo(true /*show_if_hidden*/, os_version,
+                                    enterprise_info, bluetooth_name);
   }
 
   void ShowWarningBanner(const base::string16& message) {
@@ -679,7 +672,7 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
             toggle_container);
   AddButton("Toggle caps lock", ButtonId::kGlobalToggleCapsLock,
             toggle_container);
-  AddButton("Add dev channel info", ButtonId::kGlobalAddDevChannelInfo,
+  AddButton("Add system info", ButtonId::kGlobalAddSystemInfo,
             toggle_container);
   global_action_toggle_auth_ = AddButton(
       "Auth (allowed)", ButtonId::kGlobalToggleAuth, toggle_container);
@@ -817,22 +810,21 @@ void LockDebugView::ButtonPressed(views::Button* sender,
     return;
   }
 
-  // Iteratively adds more info to the dev channel labels to test 7 permutations
+  // Iteratively adds more info to the system info labels to test 7 permutations
   // and then disables the button.
-  if (sender->id() == ButtonId::kGlobalAddDevChannelInfo) {
-    DCHECK_LT(num_dev_channel_info_clicks_, 7u);
-    ++num_dev_channel_info_clicks_;
-    if (num_dev_channel_info_clicks_ == 7u)
+  if (sender->id() == ButtonId::kGlobalAddSystemInfo) {
+    DCHECK_LT(num_system_info_clicks_, 7u);
+    ++num_system_info_clicks_;
+    if (num_system_info_clicks_ == 7u)
       sender->SetEnabled(false);
 
-    std::string os_version =
-        num_dev_channel_info_clicks_ / 4 ? kDebugOsVersion : "";
+    std::string os_version = num_system_info_clicks_ / 4 ? kDebugOsVersion : "";
     std::string enterprise_info =
-        (num_dev_channel_info_clicks_ % 4) / 2 ? kDebugEnterpriseInfo : "";
+        (num_system_info_clicks_ % 4) / 2 ? kDebugEnterpriseInfo : "";
     std::string bluetooth_name =
-        num_dev_channel_info_clicks_ % 2 ? kDebugBluetoothName : "";
-    debug_data_dispatcher_->AddLockScreenDevChannelInfo(
-        os_version, enterprise_info, bluetooth_name);
+        num_system_info_clicks_ % 2 ? kDebugBluetoothName : "";
+    debug_data_dispatcher_->AddSystemInfo(os_version, enterprise_info,
+                                          bluetooth_name);
     return;
   }
 
@@ -955,7 +947,15 @@ void LockDebugView::ButtonPressed(views::Button* sender,
 
   // Cycle fingerprint unlock state.
   if (sender->id() == ButtonId::kPerUserCycleFingerprintState)
-    debug_data_dispatcher_->CycleFingerprintUnlockForUserIndex(sender->tag());
+    debug_data_dispatcher_->CycleFingerprintStateForUserIndex(sender->tag());
+  if (sender->id() == ButtonId::kPerUserAuthFingerprintSuccessState) {
+    debug_data_dispatcher_->AuthenticateFingerprintForUserIndex(sender->tag(),
+                                                                true);
+  }
+  if (sender->id() == ButtonId::kPerUserAuthFingerprintFailState) {
+    debug_data_dispatcher_->AuthenticateFingerprintForUserIndex(sender->tag(),
+                                                                false);
+  }
 
   // Force online sign-in.
   if (sender->id() == ButtonId::kPerUserForceOnlineSignIn)
@@ -1001,8 +1001,14 @@ void LockDebugView::UpdatePerUserActionContainer() {
     AddButton("Toggle Tap", ButtonId::kPerUserToggleTap, row)->set_tag(i);
     AddButton("Cycle easy unlock", ButtonId::kPerUserCycleEasyUnlockState, row)
         ->set_tag(i);
-    AddButton("Cycle fingerprint unlock",
+    AddButton("Cycle fingerprint state",
               ButtonId::kPerUserCycleFingerprintState, row)
+        ->set_tag(i);
+    AddButton("Send fingerprint auth success",
+              ButtonId::kPerUserAuthFingerprintSuccessState, row)
+        ->set_tag(i);
+    AddButton("Send fingerprint auth fail",
+              ButtonId::kPerUserAuthFingerprintFailState, row)
         ->set_tag(i);
     AddButton("Force online sign-in", ButtonId::kPerUserForceOnlineSignIn, row)
         ->set_tag(i);

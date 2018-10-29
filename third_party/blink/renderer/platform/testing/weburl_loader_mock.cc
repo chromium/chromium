@@ -93,8 +93,9 @@ WebURL WebURLLoaderMock::ServeRedirect(
 
   bool report_raw_headers = false;
   bool follow = client_->WillFollowRedirect(
-      redirect_url, redirect_url, WebString(), kWebReferrerPolicyDefault,
-      request.HttpMethod(), redirect_response, report_raw_headers);
+      redirect_url, redirect_url, WebString(),
+      network::mojom::ReferrerPolicy::kDefault, request.HttpMethod(),
+      redirect_response, report_raw_headers);
   // |this| might be deleted in willFollowRedirect().
   if (!self)
     return redirect_url;

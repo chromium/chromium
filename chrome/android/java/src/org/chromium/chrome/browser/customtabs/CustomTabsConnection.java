@@ -23,6 +23,7 @@ import android.support.customtabs.CustomTabsCallback;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsService;
 import android.support.customtabs.CustomTabsSessionToken;
+import android.support.customtabs.PostMessageServiceConnection;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
@@ -37,12 +38,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.blink_public.web.WebReferrerPolicy;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeApplication;
@@ -72,6 +73,7 @@ import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.network.mojom.ReferrerPolicy;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -96,6 +98,7 @@ public class CustomTabsConnection {
     private static final String TAG = "ChromeConnection";
     private static final String LOG_SERVICE_REQUESTS = "custom-tabs-log-service-requests";
 
+    // Callback names for |extraCallback()|.
     @VisibleForTesting
     static final String PAGE_LOAD_METRICS_CALLBACK = "NavigationMetrics";
     static final String BOTTOM_BAR_SCROLL_STATE_CALLBACK = "onBottomBarScrollStateChanged";
@@ -103,6 +106,10 @@ public class CustomTabsConnection {
     static final String OPEN_IN_BROWSER_CALLBACK = "onOpenInBrowser";
     @VisibleForTesting
     static final String ON_WARMUP_COMPLETED = "onWarmupCompleted";
+    @VisibleForTesting
+    static final String ON_DETACHED_REQUEST_REQUESTED = "onDetachedRequestRequested";
+    @VisibleForTesting
+    static final String ON_DETACHED_REQUEST_COMPLETED = "onDetachedRequestCompleted";
 
     // For CustomTabs.SpeculationStatusOnStart, see tools/metrics/enums.xml. Append only.
     private static final int SPECULATION_STATUS_ON_START_ALLOWED = 0;
@@ -219,7 +226,7 @@ public class CustomTabsConnection {
         }
 
         @Override
-        public void onCrash(Tab tab, boolean sadTabShown) {
+        public void onCrash(Tab tab) {
             final CustomTabsConnection connection = mCustomTabsConnection;
             ThreadUtils.postOnUiThread(() -> { connection.cancelSpeculation(null /* session */); });
         }
@@ -241,7 +248,7 @@ public class CustomTabsConnection {
 
     private volatile ChainedTasks mWarmupTasks;
 
-    private ModuleLoader mModuleLoader;
+    private @Nullable ModuleLoader mModuleLoader;
     /**
      * <strong>DO NOT CALL</strong>
      * Public to be instanciable from {@link ChromeApplication}. This is however
@@ -353,8 +360,10 @@ public class CustomTabsConnection {
                 cancelSpeculation(session);
             }
         };
-        PostMessageHandler handler = new PostMessageHandler(session);
-        return mClientManager.newSession(session, Binder.getCallingUid(), onDisconnect, handler);
+        PostMessageServiceConnection serviceConnection = new PostMessageServiceConnection(session);
+        PostMessageHandler handler = new PostMessageHandler(serviceConnection);
+        return mClientManager.newSession(
+                session, Binder.getCallingUid(), onDisconnect, handler, serviceConnection);
     }
 
     /**
@@ -363,7 +372,7 @@ public class CustomTabsConnection {
      * @param session The session for which the package name should be overridden.
      * @param packageName The new package name to set.
      */
-    void overridePackageNameForSessionForTesting(
+    public void overridePackageNameForSessionForTesting(
             CustomTabsSessionToken session, String packageName) {
         String originalPackage = getClientPackageNameForSession(session);
         String selfPackage = ContextUtils.getApplicationContext().getPackageName();
@@ -876,6 +885,19 @@ public class CustomTabsConnection {
         if (mLogRequests) {
             Log.w(TAG, "handleParallelRequest() = " + PARALLEL_REQUEST_MESSAGES[status]);
         }
+
+        if ((status != ParallelRequestStatus.NO_REQUEST)
+                && (status != ParallelRequestStatus.FAILURE_NOT_INITIALIZED)
+                && (status != ParallelRequestStatus.FAILURE_NOT_AUTHORIZED)
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)) {
+            Bundle args = new Bundle();
+            Uri url = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
+            args.putParcelable("url", url);
+            args.putInt("status", status);
+            safeExtraCallback(session, ON_DETACHED_REQUEST_REQUESTED, args);
+        }
+
         return status;
     }
 
@@ -901,10 +923,10 @@ public class CustomTabsConnection {
         Uri referrer = intent.getParcelableExtra(PARALLEL_REQUEST_REFERRER_KEY);
         Uri url = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
         int policy =
-                intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, WebReferrerPolicy.DEFAULT);
+                intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, ReferrerPolicy.DEFAULT);
         if (url == null) return ParallelRequestStatus.FAILURE_INVALID_URL;
         if (referrer == null) return ParallelRequestStatus.FAILURE_INVALID_REFERRER;
-        if (policy < 0 || policy > WebReferrerPolicy.LAST) policy = WebReferrerPolicy.DEFAULT;
+        if (policy < 0 || policy > ReferrerPolicy.LAST) policy = ReferrerPolicy.DEFAULT;
 
         if (url.toString().equals("") || !isValid(url))
             return ParallelRequestStatus.FAILURE_INVALID_URL;
@@ -914,11 +936,13 @@ public class CustomTabsConnection {
 
         String urlString = url.toString();
         String referrerString = referrer.toString();
-        nativeCreateAndStartDetachedResourceRequest(Profile.getLastUsedProfile(), urlString,
-                referrerString, policy, DetachedResourceRequestMotivation.PARALLEL_REQUEST);
+        nativeCreateAndStartDetachedResourceRequest(Profile.getLastUsedProfile(), session,
+                urlString, referrerString, policy,
+                DetachedResourceRequestMotivation.PARALLEL_REQUEST);
         if (mLogRequests) {
             Log.w(TAG, "startParallelRequest(%s, %s, %d)", urlString, referrerString, policy);
         }
+
         return ParallelRequestStatus.SUCCESS;
     }
 
@@ -939,10 +963,10 @@ public class CustomTabsConnection {
                 intent.getParcelableArrayListExtra(RESOURCE_PREFETCH_URL_LIST_KEY);
         Uri referrer = intent.getParcelableExtra(PARALLEL_REQUEST_REFERRER_KEY);
         int policy =
-                intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, WebReferrerPolicy.DEFAULT);
+                intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, ReferrerPolicy.DEFAULT);
 
         if (resourceList == null || referrer == null) return 0;
-        if (policy < 0 || policy > WebReferrerPolicy.LAST) policy = WebReferrerPolicy.DEFAULT;
+        if (policy < 0 || policy > ReferrerPolicy.LAST) policy = ReferrerPolicy.DEFAULT;
         if (!mClientManager.isFirstPartyOriginForSession(session, new Origin(referrer))) return 0;
 
         String referrerString = referrer.toString();
@@ -951,8 +975,10 @@ public class CustomTabsConnection {
             String urlString = url.toString();
             if (urlString.isEmpty() || !isValid(url)) continue;
 
-            nativeCreateAndStartDetachedResourceRequest(Profile.getLastUsedProfile(), urlString,
-                    referrerString, policy, DetachedResourceRequestMotivation.RESOURCE_PREFETCH);
+            // Session is null because we don't need completion notifications.
+            nativeCreateAndStartDetachedResourceRequest(Profile.getLastUsedProfile(), null,
+                    urlString, referrerString, policy,
+                    DetachedResourceRequestMotivation.RESOURCE_PREFETCH);
             ++requestsSent;
 
             if (mLogRequests) {
@@ -1332,10 +1358,16 @@ public class CustomTabsConnection {
     }
 
     /**
-     * Clean up unused sessions, i.e sessions without callback.
+     * Discards substantial objects that are not currently in use.
+     * @param level The type of signal as defined in {@link android.content.ComponentCallbacks2}.
      */
-    public static void cleanUpUnusedSessions() {
-        if (hasInstance()) getInstance().mClientManager.cleanupUnusedSessions();
+    public static void onTrimMemory(int level) {
+        if (!hasInstance()) return;
+
+        if (ChromeApplication.isSevereMemorySignal(level)) {
+            getInstance().mClientManager.cleanupUnusedSessions();
+        }
+        if (getInstance().mModuleLoader != null) getInstance().mModuleLoader.onTrimMemory(level);
     }
 
     @VisibleForTesting
@@ -1423,8 +1455,7 @@ public class CustomTabsConnection {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         String referrer = getReferrer(session, extrasIntent);
         if (referrer != null && !referrer.isEmpty()) {
-            loadParams.setReferrer(
-                    new Referrer(referrer, WebReferrerPolicy.DEFAULT));
+            loadParams.setReferrer(new Referrer(referrer, ReferrerPolicy.DEFAULT));
         }
         mSpeculation = new SpeculationParams(session, url, tab, observer, referrer, extras);
         mSpeculation.tab.loadUrl(loadParams);
@@ -1483,7 +1514,7 @@ public class CustomTabsConnection {
     }
 
     private static native void nativeCreateAndStartDetachedResourceRequest(Profile profile,
-            String url, String origin, @WebReferrerPolicy int referrerPolicy,
+            CustomTabsSessionToken session, String url, String origin, int referrerPolicy,
             @DetachedResourceRequestMotivation int motivation);
 
     public ModuleLoader getModuleLoader(ComponentName componentName) {
@@ -1499,5 +1530,17 @@ public class CustomTabsConnection {
     public void setActivityDelegateForSession(CustomTabsSessionToken sessionToken,
             ActivityDelegate activityDelegate, int moduleVersion) {
         mClientManager.setActivityDelegateForSession(sessionToken, activityDelegate, moduleVersion);
+    }
+
+    @CalledByNative
+    public static void notifyClientOfDetachedRequestCompletion(
+            CustomTabsSessionToken session, String url, int status) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putParcelable("url", Uri.parse(url));
+        args.putInt("net_error", status);
+        getInstance().safeExtraCallback(session, ON_DETACHED_REQUEST_COMPLETED, args);
     }
 }

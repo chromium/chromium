@@ -63,11 +63,7 @@ ProcessorEntityTracker::ProcessorEntityTracker(
 ProcessorEntityTracker::~ProcessorEntityTracker() {}
 
 void ProcessorEntityTracker::SetStorageKey(const std::string& storage_key) {
-  // TODO(crbug.com/872360): Restore the below DCHECK once we've figured out
-  // (and fixed) why it fired.
-  DCHECK(storage_key_.empty() || storage_key_ == storage_key);
-  // Should be just:
-  // DCHECK(storage_key_.empty());
+  DCHECK(storage_key_.empty());
   DCHECK(!storage_key.empty());
   storage_key_ = storage_key;
 }
@@ -142,6 +138,12 @@ void ProcessorEntityTracker::RecordIgnoredUpdate(
   // Either these already matched, acked was just bumped to squash a pending
   // commit and this should follow, or the pending commit needs to be requeued.
   commit_requested_sequence_number_ = metadata_.acked_sequence_number();
+  // If local change was made while server assigned a new id to the entity,
+  // update id in cached commit data.
+  if (HasCommitData() && commit_data_->id != metadata_.server_id()) {
+    DCHECK(commit_data_->id.empty());
+    commit_data_ = commit_data_->UpdateId(metadata_.server_id());
+  }
 }
 
 void ProcessorEntityTracker::RecordAcceptedUpdate(

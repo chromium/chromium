@@ -10,12 +10,15 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/browser_sync/profile_sync_service.h"
+#include "components/invalidation/impl/invalidation_switches.h"
+#include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/signin/core/browser/device_id_helper.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
 #include "components/sync/driver/startup_controller.h"
 #include "components/sync/driver/sync_util.h"
+#include "components/unified_consent/feature.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -24,6 +27,7 @@
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/invalidation/ios_chrome_deprecated_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -34,6 +38,7 @@
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/ios_chrome_sync_client.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
@@ -111,8 +116,11 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeProfileInvalidationProviderFactory::GetInstance());
+  DependsOn(
+      IOSChromeDeprecatedProfileInvalidationProviderFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
 ProfileSyncServiceFactory::~ProfileSyncServiceFactory() {}
@@ -146,6 +154,31 @@ ProfileSyncServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.debug_identifier = browser_state->GetDebugName();
   init_params.channel = ::GetChannel();
+  init_params.user_events_separate_pref_group =
+      unified_consent::IsUnifiedConsentFeatureEnabled();
+
+  bool use_fcm_invalidations =
+      base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations);
+  if (use_fcm_invalidations) {
+    auto* fcm_invalidation_provider =
+        IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
+            browser_state);
+    if (fcm_invalidation_provider) {
+      init_params.invalidations_identity_providers.push_back(
+          fcm_invalidation_provider->GetIdentityProvider());
+    }
+  }
+  // This code should stay here until all invalidation client are
+  // migrated from deprecated invalidation  infructructure.
+  // Since invalidations will work only if ProfileSyncService calls
+  // SetActiveAccountId for all identity providers.
+  auto* deprecated_invalidation_provider =
+      IOSChromeDeprecatedProfileInvalidationProviderFactory::GetForBrowserState(
+          browser_state);
+  if (deprecated_invalidation_provider) {
+    init_params.invalidations_identity_providers.push_back(
+        deprecated_invalidation_provider->GetIdentityProvider());
+  }
 
   auto pss = std::make_unique<ProfileSyncService>(std::move(init_params));
   pss->Initialize();

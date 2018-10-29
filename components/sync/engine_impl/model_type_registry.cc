@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -108,7 +109,7 @@ void ModelTypeRegistry::ConnectNonBlockingType(
 
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state, trigger_initial_sync,
-      std::move(cryptographer_copy), nudge_handler_,
+      std::move(cryptographer_copy), passphrase_type_, nudge_handler_,
       std::move(activation_response->type_processor), emitter,
       cancelation_signal_);
 
@@ -126,7 +127,9 @@ void ModelTypeRegistry::ConnectNonBlockingType(
   if (do_migration) {
     // TODO(crbug.com/658002): Store a pref before attempting migration
     // indicating that it was attempted so we can avoid failure loops.
-    if (uss_migrator_.Run(type, user_share_, worker_ptr)) {
+    int migrated_entity_count = 0;
+    if (uss_migrator_.Run(type, user_share_, worker_ptr,
+                          &migrated_entity_count)) {
       // TODO(wychen): enum uma should be strongly typed. crbug.com/661401
       UMA_HISTOGRAM_ENUMERATION("Sync.USSMigrationSuccess",
                                 ModelTypeToHistogramInt(type),
@@ -141,6 +144,12 @@ void ModelTypeRegistry::ConnectNonBlockingType(
                                 ModelTypeToHistogramInt(type),
                                 static_cast<int>(MODEL_TYPE_COUNT));
     }
+
+    // Note that a partial failure may still contribute to the counts histogram.
+    base::UmaHistogramCounts100000(
+        std::string("Sync.USSMigrationEntityCount.") +
+            ModelTypeToHistogramSuffix(type),
+        migrated_entity_count);
   }
 
   // We want to check that we haven't accidentally enabled both the non-blocking
@@ -255,7 +264,7 @@ ModelTypeSet ModelTypeRegistry::GetInitialSyncDoneNonBlockingTypes() const {
 }
 
 const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {
-  UpdateHandlerMap::const_iterator it = update_handler_map_.find(type);
+  auto it = update_handler_map_.find(type);
   return it == update_handler_map_.end() ? nullptr : it->second;
 }
 
@@ -347,7 +356,14 @@ void ModelTypeRegistry::OnCryptographerStateChanged(
 }
 
 void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
-                                                base::Time passphrase_time) {}
+                                                base::Time passphrase_time) {
+  passphrase_type_ = type;
+  for (const auto& worker : model_type_workers_) {
+    if (encrypted_types_.Has(worker->GetModelType())) {
+      worker->UpdatePassphraseType(type);
+    }
+  }
+}
 
 void ModelTypeRegistry::OnLocalSetPassphraseEncryption(
     const SyncEncryptionHandler::NigoriState& nigori_state) {}

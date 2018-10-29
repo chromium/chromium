@@ -67,6 +67,9 @@ void FakeArcBridgeHost::OnKioskInstanceReady(
 void FakeArcBridgeHost::OnLockScreenInstanceReady(
     mojom::LockScreenInstancePtr lock_screen_ptr) {}
 
+void FakeArcBridgeHost::OnMediaSessionInstanceReady(
+    mojom::MediaSessionInstancePtr media_sesssion_ptr) {}
+
 void FakeArcBridgeHost::OnMetricsInstanceReady(
     mojom::MetricsInstancePtr metrics_ptr) {}
 

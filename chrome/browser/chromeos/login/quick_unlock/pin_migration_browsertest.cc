@@ -24,7 +24,9 @@ constexpr char kTestUserGaiaId[] = "1234567890";
 
 class PinMigrationTest : public LoginManagerTest {
  public:
-  PinMigrationTest() : LoginManagerTest(false /*should_launch_browser*/) {}
+  PinMigrationTest()
+      : LoginManagerTest(false /*should_launch_browser*/,
+                         true /* should_initialize_webui */) {}
   ~PinMigrationTest() override = default;
 
   void SetUp() override {

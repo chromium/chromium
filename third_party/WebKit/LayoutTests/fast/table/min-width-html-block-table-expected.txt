@@ -15,11 +15,8 @@ Most importantly, note that each table has:
 
 The function signature of computeLogicalWidth is:
 function computeLogicalWidth(writingMode, direction, tableStyle)
-
 ======== Test horizontal writing mode ========
-
 ==== Test ltr direction ====
-
 PASS computeLogicalWidth('horizontal', 'ltr', 'min-width: 500px;') is '470px'
 PASS computeLogicalWidth('horizontal', 'ltr', 'min-width: 150px;') is '250px'
 PASS computeLogicalWidth('horizontal', 'ltr', 'min-width: 50px;') is '250px'
@@ -37,7 +34,6 @@ PASS computeLogicalWidth('horizontal', 'ltr', 'width: 40%; min-width: 50%;') is 
 PASS computeLogicalWidth('horizontal', 'ltr', 'min-width: auto;') is '250px'
 
 ==== Test rtl direction ====
-
 PASS computeLogicalWidth('horizontal', 'rtl', 'min-width: 500px;') is '470px'
 PASS computeLogicalWidth('horizontal', 'rtl', 'min-width: 150px;') is '250px'
 PASS computeLogicalWidth('horizontal', 'rtl', 'min-width: 50px;') is '250px'
@@ -55,9 +51,7 @@ PASS computeLogicalWidth('horizontal', 'rtl', 'width: 40%; min-width: 50%;') is 
 PASS computeLogicalWidth('horizontal', 'rtl', 'min-width: auto;') is '250px'
 
 ======== Test vertical writing mode ========
-
 ==== Test ltr direction ====
-
 PASS computeLogicalWidth('vertical', 'ltr', 'min-height: 500px;') is '470px'
 PASS computeLogicalWidth('vertical', 'ltr', 'min-height: 150px;') is '250px'
 PASS computeLogicalWidth('vertical', 'ltr', 'min-height: 50px;') is '250px'
@@ -75,7 +69,6 @@ PASS computeLogicalWidth('vertical', 'ltr', 'height: 40%; min-height: 50%;') is 
 PASS computeLogicalWidth('vertical', 'ltr', 'min-height: auto;') is '250px'
 
 ==== Test rtl direction ====
-
 PASS computeLogicalWidth('vertical', 'rtl', 'min-height: 500px;') is '470px'
 PASS computeLogicalWidth('vertical', 'rtl', 'min-height: 150px;') is '250px'
 PASS computeLogicalWidth('vertical', 'rtl', 'min-height: 50px;') is '250px'

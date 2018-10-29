@@ -38,14 +38,14 @@ class CORE_EXPORT CSSTransformValue final : public CSSStyleValue {
 
   StyleValueType GetType() const override { return kTransformType; }
 
-  CSSTransformComponent* AnonymousIndexedGetter(uint32_t index) {
+  CSSTransformComponent* AnonymousIndexedGetter(wtf_size_t index) {
     return transform_components_.at(index);
   }
   bool AnonymousIndexedSetter(unsigned,
                               const Member<CSSTransformComponent>,
                               ExceptionState&);
 
-  size_t length() const { return transform_components_.size(); }
+  wtf_size_t length() const { return transform_components_.size(); }
 
   void Trace(blink::Visitor* visitor) override {
     visitor->Trace(transform_components_);

@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x46
-  LayoutBlockFlow {HTML} at (0,0) size 800x45.59
-    LayoutBlockFlow {BODY} at (8,8) size 784x29.59
-layer at (10,8) size 780x30 transparent
-  LayoutFieldset {FIELDSET} at (2,0) size 780x29.59 [border: (2px groove #C0C0C0)]
-    LayoutBlockFlow {LEGEND} at (14,0) size 50x12 [bgcolor=#0000FF]

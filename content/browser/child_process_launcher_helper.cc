@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
@@ -87,9 +88,13 @@ void ChildProcessLauncherHelper::StartLaunchOnClientThread() {
 
   BeforeLaunchOnClientThread();
 
+#if defined(OS_FUCHSIA)
+  mojo_channel_.emplace();
+#else   // !defined(OS_FUCHSIA)
   mojo_named_channel_ = CreateNamedPlatformChannelOnClientThread();
   if (!mojo_named_channel_)
     mojo_channel_.emplace();
+#endif  //  !defined(OS_FUCHSIA)
 
   GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE,
@@ -137,22 +142,26 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
   // we go out of scope regardless of the outcome below.
   mojo::OutgoingInvitation invitation = std::move(mojo_invitation_);
   if (process.process.IsValid()) {
+#if !defined(OS_FUCHSIA)
+    if (mojo_named_channel_) {
+      DCHECK(!mojo_channel_);
+      mojo::OutgoingInvitation::Send(
+          std::move(invitation), process.process.Handle(),
+          mojo_named_channel_->TakeServerEndpoint(), process_error_callback_);
+    } else
+#endif
     // Set up Mojo IPC to the new process.
-    if (mojo_channel_) {
+    {
+      DCHECK(mojo_channel_);
       DCHECK(mojo_channel_->local_endpoint().is_valid());
       mojo::OutgoingInvitation::Send(
           std::move(invitation), process.process.Handle(),
           mojo_channel_->TakeLocalEndpoint(), process_error_callback_);
-    } else {
-      DCHECK(mojo_named_channel_);
-      mojo::OutgoingInvitation::Send(
-          std::move(invitation), process.process.Handle(),
-          mojo_named_channel_->TakeServerEndpoint(), process_error_callback_);
     }
   }
 
-  BrowserThread::PostTask(
-      client_thread_id_, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {client_thread_id_},
       base::BindOnce(&ChildProcessLauncherHelper::PostLaunchOnClientThread,
                      this, std::move(process), launch_result));
 }

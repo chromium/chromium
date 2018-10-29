@@ -43,7 +43,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ipc/ipc_message.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -269,12 +268,6 @@ void BrowserTabStripController::CloseTab(int model_index,
   model_->CloseWebContentsAt(model_index,
                              TabStripModel::CLOSE_USER_GESTURE |
                              TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
-}
-
-void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
-  content::WebContents* const contents = model_->GetWebContentsAt(model_index);
-  chrome::SetTabAudioMuted(contents, !contents->IsAudioMuted(),
-                           TabMutedReason::AUDIO_INDICATOR, std::string());
 }
 
 void BrowserTabStripController::ShowContextMenuForTab(
@@ -533,7 +526,6 @@ TabRendererData BrowserTabStripController::TabRendererDataFromModel(
   data.pinned = model_->IsTabPinned(model_index);
   data.show_icon = data.pinned || favicon::ShouldDisplayFavicon(contents);
   data.blocked = model_->IsTabBlocked(model_index);
-  data.app = extensions::TabHelper::FromWebContents(contents)->is_app();
   data.alert_state = chrome::GetTabAlertStateForContents(contents);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   return data;

@@ -43,10 +43,6 @@ ChromeVariationsServiceClient::ChromeVariationsServiceClient() {}
 
 ChromeVariationsServiceClient::~ChromeVariationsServiceClient() {}
 
-std::string ChromeVariationsServiceClient::GetApplicationLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
-
 base::Callback<base::Version(void)>
 ChromeVariationsServiceClient::GetVersionForSimulationCallback() {
   return base::Bind(&GetVersionForSimulation);

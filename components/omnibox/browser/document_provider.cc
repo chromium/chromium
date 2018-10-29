@@ -58,6 +58,7 @@ void LogOmniboxDocumentRequest(DocumentRequestsHistogramValue request_value) {
 
 // MIME types sent by the server for different document types.
 const char kDocumentMimetype[] = "application/vnd.google-apps.document";
+const char kFormMimetype[] = "application/vnd.google-apps.form";
 const char kSpreadsheetMimetype[] = "application/vnd.google-apps.spreadsheet";
 const char kPresentationMimetype[] = "application/vnd.google-apps.presentation";
 
@@ -332,6 +333,8 @@ base::string16 DocumentProvider::GenerateLastModifiedString(
 base::string16 GetProductDescriptionString(const std::string& mimetype) {
   if (mimetype == kDocumentMimetype)
     return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_DOCUMENT);
+  if (mimetype == kFormMimetype)
+    return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_FORM);
   if (mimetype == kSpreadsheetMimetype)
     return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_SPREADSHEET);
   if (mimetype == kPresentationMimetype)
@@ -426,6 +429,8 @@ bool DocumentProvider::ParseDocumentSearchResults(const base::Value& root_val,
       if (metadata->GetString("mimeType", &mimetype)) {
         if (mimetype == kDocumentMimetype) {
           match.document_type = AutocompleteMatch::DocumentType::DRIVE_DOCS;
+        } else if (mimetype == kFormMimetype) {
+          match.document_type = AutocompleteMatch::DocumentType::DRIVE_FORMS;
         } else if (mimetype == kSpreadsheetMimetype) {
           match.document_type = AutocompleteMatch::DocumentType::DRIVE_SHEETS;
         } else if (mimetype == kPresentationMimetype) {

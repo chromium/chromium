@@ -30,8 +30,8 @@ CGFloat centeredTilesMarginForWidth(CGFloat width);
 CGFloat doodleHeight(BOOL logoIsShowing);
 // Returns the proper margin to the top of the header for the doodle.
 // If |toolbarPresent| is true, the top margin include a space to display the
-// toolbar.
-CGFloat doodleTopMargin(BOOL toolbarPresent);
+// toolbar.  Adds |topInset| to non-RxR displays.
+CGFloat doodleTopMargin(BOOL toolbarPresent, CGFloat topInset);
 // Returns the proper margin to the bottom of the doodle for the search field.
 CGFloat searchFieldTopMargin();
 // Returns the proper width for the search field inside a view with a |width|.
@@ -44,7 +44,8 @@ CGFloat searchFieldWidth(CGFloat superviewWidth);
 // take into account a space to show the toolbar.
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL promoCanShow,
-                            BOOL toolbarPresent);
+                            BOOL toolbarPresent,
+                            CGFloat topInset);
 // Configure the |searchHintLabel| for the fake omnibox.  |hintLabelContainer|
 // is added to the |searchTapTarget| with autolayout and |searchHintLabel| is
 // added to |hintLabelContainer| with autoresizing.  This is done due to the
@@ -58,10 +59,6 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
 
 // Returns the nearest ancestor of |view| that is kind of |aClass|.
 UIView* nearestAncestor(UIView* view, Class aClass);
-
-// Helper methods to support RxR for UIRefreshPhase1 and IpadIdiom pre-Refresh.
-BOOL IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
-BOOL IsRegularXRegularSizeClass();
 
 }  // namespace content_suggestions
 

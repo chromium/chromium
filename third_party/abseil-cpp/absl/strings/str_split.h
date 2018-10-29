@@ -19,13 +19,13 @@
 //
 // This file contains functions for splitting strings. It defines the main
 // `StrSplit()` function, several delimiters for determining the boundaries on
-// which to split the std::string, and predicates for filtering delimited results.
+// which to split the string, and predicates for filtering delimited results.
 // `StrSplit()` adapts the returned collection to the type specified by the
 // caller.
 //
 // Example:
 //
-//   // Splits the given std::string on commas. Returns the results in a
+//   // Splits the given string on commas. Returns the results in a
 //   // vector of strings.
 //   std::vector<std::string> v = absl::StrSplit("a,b,c", ',');
 //   // Can also use ","
@@ -55,7 +55,7 @@ namespace absl {
 //------------------------------------------------------------------------------
 //
 // `StrSplit()` uses delimiters to define the boundaries between elements in the
-// provided input. Several `Delimiter` types are defined below. If a std::string
+// provided input. Several `Delimiter` types are defined below. If a string
 // (`const char*`, `std::string`, or `absl::string_view`) is passed in place of
 // an explicit `Delimiter` object, `StrSplit()` treats it the same way as if it
 // were passed a `ByString` delimiter.
@@ -65,7 +65,7 @@ namespace absl {
 //
 // The following `Delimiter` types are available for use within `StrSplit()`:
 //
-//   - `ByString` (default for std::string arguments)
+//   - `ByString` (default for string arguments)
 //   - `ByChar` (default for a char argument)
 //   - `ByAnyChar`
 //   - `ByLength`
@@ -76,15 +76,15 @@ namespace absl {
 // be split and the position to begin searching for the next delimiter in the
 // input text. The returned absl::string_view should refer to the next
 // occurrence (after pos) of the represented delimiter; this returned
-// absl::string_view represents the next location where the input std::string should
+// absl::string_view represents the next location where the input string should
 // be broken. The returned absl::string_view may be zero-length if the Delimiter
-// does not represent a part of the std::string (e.g., a fixed-length delimiter). If
+// does not represent a part of the string (e.g., a fixed-length delimiter). If
 // no delimiter is found in the given text, a zero-length absl::string_view
 // referring to text.end() should be returned (e.g.,
 // absl::string_view(text.end(), 0)). It is important that the returned
 // absl::string_view always be within the bounds of input text given as an
-// argument--it must not refer to a std::string that is physically located outside of
-// the given std::string.
+// argument--it must not refer to a string that is physically located outside of
+// the given string.
 //
 // The following example is a simple Delimiter object that is created with a
 // single char and will look for that char in the text passed to the Find()
@@ -104,13 +104,13 @@ namespace absl {
 
 // ByString
 //
-// A sub-std::string delimiter. If `StrSplit()` is passed a std::string in place of a
-// `Delimiter` object, the std::string will be implicitly converted into a
+// A sub-string delimiter. If `StrSplit()` is passed a string in place of a
+// `Delimiter` object, the string will be implicitly converted into a
 // `ByString` delimiter.
 //
 // Example:
 //
-//   // Because a std::string literal is converted to an `absl::ByString`,
+//   // Because a string literal is converted to an `absl::ByString`,
 //   // the following two splits are equivalent.
 //
 //   std::vector<std::string> v1 = absl::StrSplit("a, b, c", ", ");
@@ -131,7 +131,7 @@ class ByString {
 // ByChar
 //
 // A single character delimiter. `ByChar` is functionally equivalent to a
-// 1-char std::string within a `ByString` delimiter, but slightly more
+// 1-char string within a `ByString` delimiter, but slightly more
 // efficient.
 //
 // Example:
@@ -164,9 +164,9 @@ class ByChar {
 // ByAnyChar
 //
 // A delimiter that will match any of the given byte-sized characters within
-// its provided std::string.
+// its provided string.
 //
-// Note: this delimiter works with single-byte std::string data, but does not work
+// Note: this delimiter works with single-byte string data, but does not work
 // with variable-width encodings, such as UTF-8.
 //
 // Example:
@@ -175,8 +175,8 @@ class ByChar {
 //   std::vector<std::string> v = absl::StrSplit("a,b=c", ByAnyChar(",="));
 //   // v[0] == "a", v[1] == "b", v[2] == "c"
 //
-// If `ByAnyChar` is given the empty std::string, it behaves exactly like
-// `ByString` and matches each individual character in the input std::string.
+// If `ByAnyChar` is given the empty string, it behaves exactly like
+// `ByString` and matches each individual character in the input string.
 //
 class ByAnyChar {
  public:
@@ -192,7 +192,7 @@ class ByAnyChar {
 // A delimiter for splitting into equal-length strings. The length argument to
 // the constructor must be greater than 0.
 //
-// Note: this delimiter works with single-byte std::string data, but does not work
+// Note: this delimiter works with single-byte string data, but does not work
 // with variable-width encodings, such as UTF-8.
 //
 // Example:
@@ -202,7 +202,7 @@ class ByAnyChar {
 
 //   // v[0] == "123", v[1] == "456", v[2] == "789"
 //
-// Note that the std::string does not have to be a multiple of the fixed split
+// Note that the string does not have to be a multiple of the fixed split
 // length. In such a case, the last substring will be shorter.
 //
 //   using absl::ByLength;
@@ -223,9 +223,9 @@ namespace strings_internal {
 // A traits-like metafunction for selecting the default Delimiter object type
 // for a particular Delimiter type. The base case simply exposes type Delimiter
 // itself as the delimiter's Type. However, there are specializations for
-// std::string-like objects that map them to the ByString delimiter object.
+// string-like objects that map them to the ByString delimiter object.
 // This allows functions like absl::StrSplit() and absl::MaxSplits() to accept
-// std::string-like objects (e.g., ',') as delimiter arguments but they will be
+// string-like objects (e.g., ',') as delimiter arguments but they will be
 // treated as if a ByString delimiter was given.
 template <typename Delimiter>
 struct SelectDelimiter {
@@ -261,7 +261,8 @@ class MaxSplitsImpl {
       : delimiter_(delimiter), limit_(limit), count_(0) {}
   absl::string_view Find(absl::string_view text, size_t pos) {
     if (count_++ == limit_) {
-      return absl::string_view(text.end(), 0);  // No more matches.
+      return absl::string_view(text.data() + text.size(),
+                               0);  // No more matches.
     }
     return delimiter_.Find(text, pos);
   }
@@ -331,7 +332,7 @@ struct AllowEmpty {
 // SkipEmpty()
 //
 // Returns `false` if the given `absl::string_view` is empty, indicating that
-// `StrSplit()` should omit the empty std::string.
+// `StrSplit()` should omit the empty string.
 //
 // Example:
 //
@@ -339,7 +340,7 @@ struct AllowEmpty {
 //
 //   // v[0] == "a", v[1] == "b"
 //
-// Note: `SkipEmpty()` does not consider a std::string containing only whitespace
+// Note: `SkipEmpty()` does not consider a string containing only whitespace
 // to be empty. To skip such whitespace as well, use the `SkipWhitespace()`
 // predicate.
 struct SkipEmpty {
@@ -349,7 +350,7 @@ struct SkipEmpty {
 // SkipWhitespace()
 //
 // Returns `false` if the given `absl::string_view` is empty *or* contains only
-// whitespace, indicating that `StrSplit()` should omit the std::string.
+// whitespace, indicating that `StrSplit()` should omit the string.
 //
 // Example:
 //
@@ -373,7 +374,7 @@ struct SkipWhitespace {
 
 // StrSplit()
 //
-// Splits a given std::string based on the provided `Delimiter` object, returning the
+// Splits a given string based on the provided `Delimiter` object, returning the
 // elements within the type specified by the caller. Optionally, you may pass a
 // `Predicate` to `StrSplit()` indicating whether to include or exclude the
 // resulting element within the final result set. (See the overviews for
@@ -412,7 +413,7 @@ struct SkipWhitespace {
 //
 // The `StrSplit()` function adapts the returned collection to the collection
 // specified by the caller (e.g. `std::vector` above). The returned collections
-// may contain `string`, `absl::string_view` (in which case the original std::string
+// may contain `string`, `absl::string_view` (in which case the original string
 // being split must ensure that it outlives the collection), or any object that
 // can be explicitly created from an `absl::string_view`. This behavior works
 // for:
@@ -424,7 +425,7 @@ struct SkipWhitespace {
 // Example:
 //
 //   // The results are returned as `absl::string_view` objects. Note that we
-//   // have to ensure that the input std::string outlives any results.
+//   // have to ensure that the input string outlives any results.
 //   std::vector<absl::string_view> v = absl::StrSplit("a,b,c", ',');
 //
 //   // Stores results in a std::set<std::string>, which also performs
@@ -444,7 +445,7 @@ struct SkipWhitespace {
 //   // is provided as a series of key/value pairs. For example, the 0th element
 //   // resulting from the split will be stored as a key to the 1st element. If
 //   // an odd number of elements are resolved, the last element is paired with
-//   // a default-constructed value (e.g., empty std::string).
+//   // a default-constructed value (e.g., empty string).
 //   std::map<std::string, std::string> m = absl::StrSplit("a,b,c", ',');
 //   // m["a"] == "b", m["c"] == ""     // last component value equals ""
 //
@@ -452,14 +453,14 @@ struct SkipWhitespace {
 // elements and is not a collection type. When splitting to a `std::pair` the
 // first two split strings become the `std::pair` `.first` and `.second`
 // members, respectively. The remaining split substrings are discarded. If there
-// are less than two split substrings, the empty std::string is used for the
+// are less than two split substrings, the empty string is used for the
 // corresponding
 // `std::pair` member.
 //
 // Example:
 //
 //   // Stores first two split strings as the members in a std::pair.
-//   std::pair<std::string, std::string> p = absl::StrSplit("a,b,c", ',');
+//   std::pair<string, string> p = absl::StrSplit("a,b,c", ',');
 //   // p.first == "a", p.second == "b"       // "c" is omitted.
 //
 // The `StrSplit()` function can be used multiple times to perform more
@@ -467,9 +468,9 @@ struct SkipWhitespace {
 //
 // Example:
 //
-//   // The input std::string "a=b=c,d=e,f=,g" becomes
+//   // The input string "a=b=c,d=e,f=,g" becomes
 //   // { "a" => "b=c", "d" => "e", "f" => "", "g" => "" }
-//   std::map<std::string, std::string> m;
+//   std::map<string, string> m;
 //   for (absl::string_view sp : absl::StrSplit("a=b=c,d=e,f=,g", ',')) {
 //     m.insert(absl::StrSplit(sp, absl::MaxSplits('=', 1)));
 //   }

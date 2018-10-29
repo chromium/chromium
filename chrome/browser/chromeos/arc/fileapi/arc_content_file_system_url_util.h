@@ -19,6 +19,12 @@ namespace arc {
 // The name of the ARC content file system mount point.
 extern const char kContentFileSystemMountPointName[];
 
+// ARC FileProvider URLs.
+// TODO(niwa): Remove kIntentHelperFileproviderUrl once we completely move
+// ARC FileProvider to arc.file_system (b/111816608).
+extern const char kIntentHelperFileproviderUrl[];
+extern const char kFileSystemFileproviderUrl[];
+
 // The path of the ARC content file system mount point.
 extern const base::FilePath::CharType kContentFileSystemMountPointPath[];
 

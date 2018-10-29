@@ -122,6 +122,7 @@ component("gpu") {
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
+    "//third_party/libyuv",
     "//ui/base",
     "//ui/display/types",
     "//ui/gl",
@@ -154,11 +155,10 @@ component("gpu") {
       "android/android_video_decode_accelerator.h",
       "android/android_video_encode_accelerator.cc",
       "android/android_video_encode_accelerator.h",
+      "android/android_video_surface_chooser.cc",
       "android/android_video_surface_chooser.h",
       "android/android_video_surface_chooser_impl.cc",
       "android/android_video_surface_chooser_impl.h",
-      "android/avda_codec_allocator.cc",
-      "android/avda_codec_allocator.h",
       "android/avda_codec_image.cc",
       "android/avda_codec_image.h",
       "android/avda_picture_buffer_manager.cc",
@@ -168,6 +168,8 @@ component("gpu") {
       "android/avda_state_provider.h",
       "android/avda_surface_bundle.cc",
       "android/avda_surface_bundle.h",
+      "android/codec_allocator.cc",
+      "android/codec_allocator.h",
       "android/codec_image.cc",
       "android/codec_image.h",
       "android/codec_image_group.cc",
@@ -201,7 +203,6 @@ component("gpu") {
       "//gpu/ipc/common:ipc_common_sources",
       "//media/mojo:buildflags",
       "//services/service_manager/public/cpp:cpp",
-      "//third_party/libyuv",
       "//ui/gl:gl_jni_headers",
     ]
 
@@ -213,16 +214,21 @@ component("gpu") {
     }
   }
 
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/fuchsia_video_decoder.cc",
+      "fuchsia/fuchsia_video_decoder.h",
+    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk:mediacodec" ]
+  }
+
   if (use_v4lplugin) {
     sources += get_target_outputs(":libv4l2_generate_stubs")
     deps += [ ":libv4l2_generate_stubs" ]
   }
 
   if (use_v4l2_codec) {
-    deps += [
-      "//third_party/libyuv",
-      "//ui/ozone",
-    ]
+    deps += [ "//ui/ozone" ]
     sources += [
       "v4l2/generic_v4l2_device.cc",
       "v4l2/generic_v4l2_device.h",
@@ -287,7 +293,6 @@ component("gpu") {
     public_deps += [ "//media/base/win" ]
     deps += [
       "//third_party/angle:includes",
-      "//third_party/libyuv",
       "//ui/display",
     ]
     libs += [
@@ -326,6 +331,8 @@ source_set("common") {
     "format_utils.cc",
     "format_utils.h",
     "gpu_video_decode_accelerator_helpers.h",
+    "gpu_video_encode_accelerator_helpers.cc",
+    "gpu_video_encode_accelerator_helpers.h",
     "h264_decoder.cc",
     "h264_decoder.h",
     "h264_dpb.cc",
@@ -393,10 +400,16 @@ if (is_win || is_android || use_v4l2_codec || use_vaapi) {
         "test/rendering_helper.h",
         "test/video_decode_accelerator_unittest_helpers.cc",
         "test/video_decode_accelerator_unittest_helpers.h",
+        "test/video_frame_mapper.h",
+        "test/video_frame_mapper_factory.cc",
+        "test/video_frame_mapper_factory.h",
+        "test/video_frame_validator.cc",
+        "test/video_frame_validator.h",
         "video_decode_accelerator_unittest.cc",
       ]
       deps += [
         "//mojo/core/embedder",
+        "//third_party/libyuv",
         "//ui/display",
         "//ui/display/types",
         "//ui/platform_window",
@@ -421,6 +434,19 @@ if (is_win || is_android || use_v4l2_codec || use_vaapi) {
       ]
     }
 
+    if (is_chromeos) {
+      sources += [
+        "test/generic_dmabuf_video_frame_mapper.cc",
+        "test/generic_dmabuf_video_frame_mapper.h",
+      ]
+      if (use_vaapi) {
+        sources += [
+          "test/vaapi_dmabuf_video_frame_mapper.cc",
+          "test/vaapi_dmabuf_video_frame_mapper.h",
+        ]
+      }
+    }
+
     if (use_x11) {
       configs += [ "//build/config/linux:x11" ]
       deps += [ "//ui/gfx/x" ]
@@ -438,7 +464,7 @@ source_set("android_video_decode_accelerator_unittests") {
     sources = [
       "android/android_video_decode_accelerator_unittest.cc",
       "android/android_video_surface_chooser_impl_unittest.cc",
-      "android/avda_codec_allocator_unittest.cc",
+      "android/codec_allocator_unittest.cc",
       "android/codec_image_group_unittest.cc",
       "android/codec_image_unittest.cc",
       "android/codec_wrapper_unittest.cc",
@@ -618,6 +644,9 @@ source_set("unit_tests") {
   }
   if (use_v4l2_codec || use_vaapi) {
     sources += [ "vp8_decoder_unittest.cc" ]
+  }
+  if (is_fuchsia) {
+    sources += [ "fuchsia/fuchsia_video_decoder_unittest.cc" ]
   }
   if (is_win && enable_library_cdms) {
     sources += [

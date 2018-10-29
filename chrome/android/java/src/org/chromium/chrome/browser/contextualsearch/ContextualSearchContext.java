@@ -227,6 +227,15 @@ public abstract class ContextualSearchContext {
         onSelectionChanged();
     }
 
+    /** @return the current selection, or an empty string if data is invalid or nothing selected. */
+    String getSelection() {
+        if (TextUtils.isEmpty(mSurroundingText) || mSelectionEndOffset < mSelectionStartOffset
+                || mSelectionStartOffset < 0 || mSelectionEndOffset > mSurroundingText.length()) {
+            return "";
+        }
+        return mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
+    }
+
     /**
      * Notifies this instance that the selection has been changed.
      */

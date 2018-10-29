@@ -20,8 +20,8 @@ class ExceptionState;
 class ExecutionContext;
 class ScriptState;
 
-class MODULES_EXPORT PaymentRequestUpdateEvent final : public Event,
-                                                       public PaymentUpdater {
+class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
+                                                 public PaymentUpdater {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(PaymentRequestUpdateEvent)
 
@@ -47,11 +47,12 @@ class MODULES_EXPORT PaymentRequestUpdateEvent final : public Event,
 
   void OnUpdateEventTimeoutForTesting();
 
- private:
+ protected:
   PaymentRequestUpdateEvent(ExecutionContext*,
                             const AtomicString& type,
                             const PaymentRequestUpdateEventInit&);
 
+ private:
   void OnUpdateEventTimeout(TimerBase*);
 
   // True after event.updateWith() was called.

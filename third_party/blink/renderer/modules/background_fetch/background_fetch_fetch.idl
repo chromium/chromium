@@ -6,7 +6,7 @@
 
 [
     Exposed=(Window,Worker),
-    RuntimeEnabled=BackgroundFetch
+    OriginTrialEnabled=BackgroundFetch
 ] interface BackgroundFetchFetch {
     readonly attribute Request request;
 };

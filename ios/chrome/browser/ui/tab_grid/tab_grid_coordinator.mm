@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/recent_tabs/recent_tabs_handset_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_adaptor.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_mediator.h"
@@ -33,9 +33,9 @@
 
 @interface TabGridCoordinator ()<TabPresentationDelegate,
                                  HistoryPresentationDelegate,
-                                 RecentTabsHandsetViewControllerCommand>
+                                 RecentTabsPresentationDelegate>
 // Superclass property specialized for the class that this coordinator uses.
-@property(nonatomic, weak) TabGridViewController* mainViewController;
+@property(nonatomic, weak) TabGridViewController* baseViewController;
 // Pointer to the masking view used to prevent the main view controller from
 // being shown at launch.
 @property(nonatomic, strong) UIView* launchMaskView;
@@ -64,7 +64,7 @@
 
 @implementation TabGridCoordinator
 // Superclass property.
-@synthesize mainViewController = _mainViewController;
+@synthesize baseViewController = _baseViewController;
 // Public properties.
 @synthesize animationsDisabledForTesting = _animationsDisabledForTesting;
 @synthesize regularTabModel = _regularTabModel;
@@ -138,7 +138,7 @@
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // Recent tabs context menu may be presented on top of the tab grid.
-  [self.mainViewController.remoteTabsViewController dismissModals];
+  [self.baseViewController.remoteTabsViewController dismissModals];
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {
     [self.historyCoordinator stopWithCompletion:completion];
@@ -147,35 +147,29 @@
   }
 }
 
-#pragma mark - MainCoordinator properties
-
-- (id<ViewControllerSwapping>)viewControllerSwapper {
-  return self;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  TabGridViewController* mainViewController =
+  TabGridViewController* baseViewController =
       [[TabGridViewController alloc] init];
-  mainViewController.dispatcher =
+  baseViewController.dispatcher =
       static_cast<id<ApplicationCommands>>(self.dispatcher);
   self.transitionHandler = [[TabGridTransitionHandler alloc] init];
-  self.transitionHandler.provider = mainViewController;
-  mainViewController.modalPresentationStyle = UIModalPresentationCustom;
-  mainViewController.transitioningDelegate = self.transitionHandler;
-  mainViewController.tabPresentationDelegate = self;
-  _mainViewController = mainViewController;
+  self.transitionHandler.provider = baseViewController;
+  baseViewController.modalPresentationStyle = UIModalPresentationCustom;
+  baseViewController.transitioningDelegate = self.transitionHandler;
+  baseViewController.tabPresentationDelegate = self;
+  _baseViewController = baseViewController;
 
   self.adaptor = [[TabGridAdaptor alloc] init];
-  self.adaptor.tabGridViewController = self.mainViewController;
+  self.adaptor.tabGridViewController = self.baseViewController;
   self.adaptor.adaptedDispatcher =
       static_cast<id<ApplicationCommands, OmniboxFocuser, ToolbarCommands>>(
           self.dispatcher);
-  self.adaptor.tabGridPager = mainViewController;
+  self.adaptor.tabGridPager = baseViewController;
 
   self.regularTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:mainViewController.regularTabsConsumer];
+      initWithConsumer:baseViewController.regularTabsConsumer];
   self.regularTabsMediator.tabModel = _regularTabModel;
   if (_regularTabModel.browserState) {
     self.regularTabsMediator.tabRestoreService =
@@ -183,29 +177,29 @@
             _regularTabModel.browserState);
   }
   self.incognitoTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:mainViewController.incognitoTabsConsumer];
+      initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.tabModel = _incognitoTabModel;
   self.adaptor.incognitoMediator = self.incognitoTabsMediator;
-  mainViewController.regularTabsDelegate = self.regularTabsMediator;
-  mainViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
-  mainViewController.regularTabsImageDataSource = self.regularTabsMediator;
-  mainViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
+  baseViewController.regularTabsDelegate = self.regularTabsMediator;
+  baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
+  baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
+  baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
-  mainViewController.remoteTabsViewController.browserState =
+  baseViewController.remoteTabsViewController.browserState =
       _regularTabModel.browserState;
   self.remoteTabsMediator = [[RecentTabsMediator alloc] init];
   self.remoteTabsMediator.browserState = _regularTabModel.browserState;
-  self.remoteTabsMediator.consumer = mainViewController.remoteTabsConsumer;
+  self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   // TODO(crbug.com/845636) : Currently, the image data source must be set
   // before the mediator starts updating its consumer. Fix this so that order of
   // calls does not matter.
-  mainViewController.remoteTabsViewController.imageDataSource =
+  baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
-  mainViewController.remoteTabsViewController.delegate =
+  baseViewController.remoteTabsViewController.delegate =
       self.remoteTabsMediator;
-  mainViewController.remoteTabsViewController.dispatcher =
+  baseViewController.remoteTabsViewController.dispatcher =
       static_cast<id<ApplicationCommands>>(self.dispatcher);
   self.URLLoader = [[TabGridURLLoader alloc]
       initWithRegularWebStateList:self.regularTabModel.webStateList
@@ -213,11 +207,11 @@
               regularBrowserState:self.regularTabModel.browserState
             incognitoBrowserState:self.incognitoTabModel.browserState];
   self.adaptor.loader = self.URLLoader;
-  mainViewController.remoteTabsViewController.loader = self.URLLoader;
-  mainViewController.remoteTabsViewController.presentationDelegate = self;
+  baseViewController.remoteTabsViewController.loader = self.URLLoader;
+  baseViewController.remoteTabsViewController.presentationDelegate = self;
 
   // Insert the launch screen view in front of this view to hide it until after
-  // launch. This should happen before |mainViewController| is made the window's
+  // launch. This should happen before |baseViewController| is made the window's
   // root view controller.
   NSBundle* mainBundle = base::mac::FrameworkBundle();
   NSArray* topObjects =
@@ -225,14 +219,14 @@
   UIViewController* launchScreenController =
       base::mac::ObjCCastStrict<UIViewController>([topObjects lastObject]);
   self.launchMaskView = launchScreenController.view;
-  [mainViewController.view addSubview:self.launchMaskView];
+  [baseViewController.view addSubview:self.launchMaskView];
 
   // TODO(crbug.com/850387) : Currently, consumer calls from the mediator
   // prematurely loads the view in |RecentTabsTableViewController|. Fix this so
   // that the view is loaded only by an explicit placement in the view
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
   // before |RecentTabsMediator| updates are started.
-  self.window.rootViewController = self.mainViewController;
+  self.window.rootViewController = self.baseViewController;
   if (self.remoteTabsMediator.browserState) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];
@@ -252,7 +246,7 @@
 
   // TODO(crbug.com/845192) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.
-  [self.mainViewController.remoteTabsViewController dismissModals];
+  [self.baseViewController.remoteTabsViewController dismissModals];
   [self.remoteTabsMediator disconnect];
   self.remoteTabsMediator = nil;
 }
@@ -262,31 +256,31 @@
 - (UIViewController*)activeViewController {
   if (self.bvcContainer) {
     DCHECK_EQ(self.bvcContainer,
-              self.mainViewController.presentedViewController);
+              self.baseViewController.presentedViewController);
     DCHECK(self.bvcContainer.currentBVC);
     return self.bvcContainer.currentBVC;
   }
-  return self.mainViewController;
+  return self.baseViewController;
 }
 
 - (UIViewController*)viewController {
-  return self.mainViewController;
+  return self.baseViewController;
 }
 
 - (void)prepareToShowTabSwitcher:(id<TabSwitcher>)tabSwitcher {
   DCHECK(tabSwitcher);
-  DCHECK_EQ([tabSwitcher viewController], self.mainViewController);
+  DCHECK_EQ([tabSwitcher viewController], self.baseViewController);
   // No-op if the BVC isn't being presented.
   if (!self.bvcContainer)
     return;
-  [base::mac::ObjCCast<TabGridViewController>(self.mainViewController)
+  [base::mac::ObjCCast<TabGridViewController>(self.baseViewController)
       prepareForAppearance];
 }
 
 - (void)showTabSwitcher:(id<TabSwitcher>)tabSwitcher
              completion:(ProceduralBlock)completion {
   DCHECK(tabSwitcher);
-  DCHECK_EQ([tabSwitcher viewController], self.mainViewController);
+  DCHECK_EQ([tabSwitcher viewController], self.baseViewController);
   // It's also expected that |tabSwitcher| will be |self.tabSwitcher|, but that
   // may not be worth a DCHECK?
 
@@ -296,7 +290,7 @@
     self.bvcContainer.transitioningDelegate = self.transitionHandler;
     self.bvcContainer = nil;
     BOOL animated = !self.animationsDisabledForTesting;
-    [self.mainViewController dismissViewControllerAnimated:animated
+    [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:completion];
   } else {
     if (completion) {
@@ -348,7 +342,7 @@
     self.launchMaskView = nil;
   };
 
-  [self.mainViewController presentViewController:self.bvcContainer
+  [self.baseViewController presentViewController:self.bvcContainer
                                         animated:animated
                                       completion:extendedCompletion];
 }
@@ -378,7 +372,7 @@
                             focusOmnibox:focusOmnibox];
 }
 
-#pragma mark - RecentTabsHandsetViewControllerCommand
+#pragma mark - RecentTabsPresentationDelegate
 
 - (void)dismissRecentTabs {
   // It is valid for tab grid to ignore this since recent tabs is embedded and
@@ -390,7 +384,7 @@
   // tab grid. Using a local coordinator works better when hooked up with a
   // specialized URL loader and tab presentation delegate.
   self.historyCoordinator = [[HistoryCoordinator alloc]
-      initWithBaseViewController:self.mainViewController
+      initWithBaseViewController:self.baseViewController
                     browserState:self.regularTabModel.browserState];
   self.historyCoordinator.loader = self.URLLoader;
   self.historyCoordinator.presentationDelegate = self;

@@ -31,7 +31,8 @@ import logging
 
 _log = logging.getLogger(__name__)
 
-_JSON_PREFIX = "ADD_RESULTS("
+JSON_CALLBACK = "ADD_RESULTS"
+_JSON_PREFIX = JSON_CALLBACK + "("
 _JSON_SUFFIX = ");"
 
 

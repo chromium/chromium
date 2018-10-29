@@ -25,10 +25,6 @@ CreateChromeContentSuggestionsServiceWithProviders(
 std::unique_ptr<KeyedService> CreateChromeContentSuggestionsService(
     web::BrowserState* browser_state);
 
-// Registers the Reading List provider.
-void RegisterReadingListProvider(ContentSuggestionsService* service,
-                                 web::BrowserState* browser_state);
-
 // Registers the RemoteSuggestionsProvider (articles provider).
 void RegisterRemoteSuggestionsProvider(ContentSuggestionsService* service,
                                        web::BrowserState* browser_state);

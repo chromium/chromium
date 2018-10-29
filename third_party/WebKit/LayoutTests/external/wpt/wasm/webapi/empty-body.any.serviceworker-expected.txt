@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL compileStreaming: no body assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'compile' on 'WebAssembly': Response object has a null body." ("TypeError") expected object "CompileError" ("CompileError")
+FAIL compileStreaming: no body in a promise assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'compile' on 'WebAssembly': Response object has a null body." ("TypeError") expected object "CompileError" ("CompileError")
+PASS compileStreaming: empty body
+PASS compileStreaming: empty body in a promise
+FAIL instantiateStreaming: no body assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'compile' on 'WebAssembly': Response object has a null body." ("TypeError") expected object "CompileError" ("CompileError")
+FAIL instantiateStreaming: no body in a promise assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'compile' on 'WebAssembly': Response object has a null body." ("TypeError") expected object "CompileError" ("CompileError")
+PASS instantiateStreaming: empty body
+PASS instantiateStreaming: empty body in a promise
+Harness: the test ran to completion.
+

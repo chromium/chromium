@@ -1,7 +1,0 @@
-Click Here Click Here Too
-PASS win is non-null.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-PASS win is non-null.
-

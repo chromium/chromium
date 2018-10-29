@@ -103,12 +103,6 @@ enum class DOMExceptionCode : ExceptionCode {
   // https://github.com/WICG/BackgroundSync/issues/124
   kPermissionDeniedError,
 
-  // Pointer Events
-  // https://w3c.github.io/pointerevents/
-  // Pointer Events introduced a new DOMException outside Web IDL.
-  // The name "InvalidPointerId" does not end with the suffix "Error".
-  kInvalidPointerId,
-
   kNumOfCodes,
 };
 

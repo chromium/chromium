@@ -20,11 +20,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -88,7 +88,9 @@ public class CustomTabTabPersistencePolicyTest {
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i).get();
             if (activity == null) continue;
-            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> ApplicationStatus.onStateChangeForTesting(
+                            activity, ActivityState.DESTROYED));
         }
     }
 

@@ -23,69 +23,71 @@
     <link rel="stylesheet" href="foreground/css/file_status.css">
     <link rel="stylesheet" href="foreground/css/file_types.css">
     <link rel="stylesheet" href="foreground/css/common.css">
-    <link rel="stylesheet" href="chrome-extension://fbjakikfhfdajcamjleinfciajelkpek/cws_widget/cws_widget_container.css">
-
-    <style is="custom-style">
-      #search-box cr-input {
-        --cr-input-color: white;
-        --cr-input-focus-color: white;
-        --cr-input-container: {
-          border-radius: 0;
-        }
-        --cr-input-error-display: none;
-        --cr-input-input: {
-          background-color: transparent;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        --cr-input-padding-end: 20px;
-        --cr-input-padding-start: 0;
-        --cr-input-placeholder-color: rgba(255, 255, 255, 0.5);
-        display: inline-block;
-        transition: width 200ms ease;
-        vertical-align: middle;
-        width: 0;
-      }
-
-      .dialog-footer cr-input {
-        --cr-input-container: {
-          border-radius: 0;
-        }
-        --cr-input-error-display: none;
-        --cr-input-input: {
-          background-color: transparent;
-          border-bottom: 1px solid var(--paper-grey-800);
-        }
-        --cr-input-padding-end: 0;
-        --cr-input-padding-start: 0;
-        --cr-input-padding-bottom: 2px;
-        width: 100%;
-      }
-
-      paper-progress {
-        --paper-progress-active-color: rgb(26, 194, 34);
-      }
-
-      body.check-select .dialog-header files-toggle-ripple {
-        --files-toggle-ripple: {
-          background-color: black;
-        };
-        --files-toggle-ripple-activated: {
-          opacity: 0.08;
-        };
-      }
-
-      body.check-select .dialog-header files-ripple {
-        --files-ripple: {
-          background-color: black;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="cws_widget/cws_widget_container.css">
 
     <script src="foreground/js/elements_importer.js"></script>
     <script src="foreground/js/main_scripts.js" defer></script>
   </head>
 
   <body tabindex="-1">
+    <custom-style>
+      <style is="custom-style">
+        #search-box cr-input {
+          --cr-input-background-color: transparent;
+          --cr-input-color: white;
+          --cr-input-focus-color: white;
+          --cr-input-container: {
+            border-radius: 0;
+          }
+          --cr-input-error-display: none;
+          --cr-input-input: {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+          }
+          --cr-input-padding-end: 20px;
+          --cr-input-padding-start: 0;
+          --cr-input-placeholder-color: rgba(255, 255, 255, 0.5);
+          display: inline-block;
+          transition: width 200ms ease;
+          vertical-align: middle;
+          width: 0;
+        }
+
+        .dialog-footer cr-input {
+          --cr-input-container: {
+            border-radius: 0;
+          }
+          --cr-input-error-display: none;
+          --cr-input-input: {
+            background-color: transparent;
+            border-bottom: 1px solid var(--paper-grey-800);
+          }
+          --cr-input-padding-end: 0;
+          --cr-input-padding-start: 0;
+          --cr-input-padding-bottom: 2px;
+          width: 100%;
+        }
+
+        paper-progress {
+          --paper-progress-active-color: rgb(26, 194, 34);
+        }
+
+        body.check-select .dialog-header files-toggle-ripple {
+          --files-toggle-ripple: {
+            background-color: black;
+          };
+          --files-toggle-ripple-activated: {
+            opacity: 0.08;
+          };
+        }
+
+        body.check-select .dialog-header files-ripple {
+          --files-ripple: {
+            background-color: black;
+          }
+        }
+      </style>
+    </custom-style>
+
     <commands>
       <command id="cut" i18n-values="label:CUT_BUTTON_LABEL"
                shortcut="x|Ctrl">
@@ -168,6 +170,7 @@
       <command id="manage-in-drive"
                i18n-values="label:MANAGE_IN_DRIVE_BUTTON_LABEL" disabled hidden>
       <command id="share-with-linux" i18n-values="label:SHARE_WITH_LINUX_BUTTON_LABEL" disabled hidden>
+      <command id="manage-linux-sharing" i18n-values="label:MANAGE_LINUX_SHARING_BUTTON_LABEL" disabled hidden>
 
       <command id="zoom-in" shortcut="=|Ctrl">
       <command id="zoom-out" shortcut="-|Ctrl">
@@ -266,6 +269,8 @@
                     command="#toggle-hidden-files"></cr-menu-item>
       <cr-menu-item id="gear-menu-toggle-hidden-android-folders"
                     command="#toggle-hidden-android-folders"></cr-menu-item>
+      <cr-menu-item id="gear-menu-manage-linux-sharing"
+                    command="#manage-linux-sharing"></cr-menu-item>
       <cr-menu-item id="gear-menu-drive-sync-settings"
                     command="#drive-sync-settings"></cr-menu-item>
       <cr-menu-item id="gear-menu-drive-hosted-settings"

@@ -34,6 +34,7 @@
 #include "components/signin/core/browser/signin_pref_names.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -60,6 +61,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+const char kReverseAutologinEnabled[] = "reverse_autologin.enabled";
+}
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
@@ -116,6 +121,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   payments::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
+  sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
@@ -140,8 +146,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kDefaultCharset,
                                l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterInt64Pref(prefs::kRateThisAppDialogLastShownTime, 0,
-                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kNetworkPredictionEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -162,6 +166,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register prefs used by Clear Browsing Data UI.
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
+
+  registry->RegisterBooleanPref(kReverseAutologinEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -170,15 +176,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
-  // Added 07/2014.
-  translate::TranslatePrefs::MigrateUserPrefs(prefs, prefs::kAcceptLanguages);
-
-  // Added 08/2015.
-  prefs->ClearPref(::prefs::kSigninSharedAuthenticationUserId);
-
   // Added 01/2018.
   prefs->ClearPref(::prefs::kNtpShownPage);
 
   // Added 8/2018.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
+
+  // Added 10/2018.
+  prefs->ClearPref(kReverseAutologinEnabled);
 }

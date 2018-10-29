@@ -32,6 +32,7 @@ void ProcessDownloadedUpdates(syncable::Directory* dir,
                               syncable::ModelNeutralWriteTransaction* trans,
                               ModelType type,
                               const SyncEntityList& applicable_updates,
+                              bool is_initial_sync,
                               StatusController* status,
                               UpdateCounters* counters);
 

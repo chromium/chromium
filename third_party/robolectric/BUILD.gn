@@ -47,6 +47,10 @@ java_prebuilt("android-all-8.1.0-robolectric-r4402310_java") {
 
 java_library("robolectric_java") {
   testonly = true
+
+  # Skip platform checks since we must depend on shadows_core_java here which
+  # depends on targets that requires_android.
+  bypass_platform_checks = true
   deps = [
     ":android-all-8.1.0-robolectric-r4402310_java",
     ":robolectric_annotations_java",
@@ -353,6 +357,10 @@ java_library("robolectric_shadowapi_java") {
 
 java_library("shadows_core_java") {
   output_name = "shadows-core-3.2"
+
+  # Skip platform checks since we must depend on accessibility_test_framework_java
+  # here which requires_android.
+  bypass_platform_checks = true
 
   # TODO(mikecase): Remove this once crbug.com/638875 is fixed.
   enable_incremental_javac_override = false

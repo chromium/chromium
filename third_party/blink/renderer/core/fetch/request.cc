@@ -662,56 +662,56 @@ KURL Request::url() const {
 String Request::destination() const {
   // "The destination attribute’s getter must return request’s destination."
   switch (request_->Context()) {
-    case WebURLRequest::kRequestContextUnspecified:
-    case WebURLRequest::kRequestContextBeacon:
-    case WebURLRequest::kRequestContextDownload:
-    case WebURLRequest::kRequestContextEventSource:
-    case WebURLRequest::kRequestContextFetch:
-    case WebURLRequest::kRequestContextPing:
-    case WebURLRequest::kRequestContextXMLHttpRequest:
-    case WebURLRequest::kRequestContextSubresource:
-    case WebURLRequest::kRequestContextPrefetch:
+    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::RequestContextType::BEACON:
+    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::RequestContextType::EVENT_SOURCE:
+    case mojom::RequestContextType::FETCH:
+    case mojom::RequestContextType::PING:
+    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::RequestContextType::PREFETCH:
       return "";
-    case WebURLRequest::kRequestContextCSPReport:
+    case mojom::RequestContextType::CSP_REPORT:
       return "report";
-    case WebURLRequest::kRequestContextAudio:
+    case mojom::RequestContextType::AUDIO:
       return "audio";
-    case WebURLRequest::kRequestContextEmbed:
+    case mojom::RequestContextType::EMBED:
       return "embed";
-    case WebURLRequest::kRequestContextFont:
+    case mojom::RequestContextType::FONT:
       return "font";
-    case WebURLRequest::kRequestContextFrame:
-    case WebURLRequest::kRequestContextHyperlink:
-    case WebURLRequest::kRequestContextIframe:
-    case WebURLRequest::kRequestContextLocation:
-    case WebURLRequest::kRequestContextForm:
+    case mojom::RequestContextType::FRAME:
+    case mojom::RequestContextType::HYPERLINK:
+    case mojom::RequestContextType::IFRAME:
+    case mojom::RequestContextType::LOCATION:
+    case mojom::RequestContextType::FORM:
       return "document";
-    case WebURLRequest::kRequestContextImage:
-    case WebURLRequest::kRequestContextFavicon:
-    case WebURLRequest::kRequestContextImageSet:
+    case mojom::RequestContextType::IMAGE:
+    case mojom::RequestContextType::FAVICON:
+    case mojom::RequestContextType::IMAGE_SET:
       return "image";
-    case WebURLRequest::kRequestContextManifest:
+    case mojom::RequestContextType::MANIFEST:
       return "manifest";
-    case WebURLRequest::kRequestContextObject:
+    case mojom::RequestContextType::OBJECT:
       return "object";
-    case WebURLRequest::kRequestContextScript:
+    case mojom::RequestContextType::SCRIPT:
       return "script";
-    case WebURLRequest::kRequestContextSharedWorker:
+    case mojom::RequestContextType::SHARED_WORKER:
       return "sharedworker";
-    case WebURLRequest::kRequestContextStyle:
+    case mojom::RequestContextType::STYLE:
       return "style";
-    case WebURLRequest::kRequestContextTrack:
+    case mojom::RequestContextType::TRACK:
       return "track";
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::VIDEO:
       return "video";
-    case WebURLRequest::kRequestContextWorker:
+    case mojom::RequestContextType::WORKER:
       return "worker";
-    case WebURLRequest::kRequestContextXSLT:
+    case mojom::RequestContextType::XSLT:
       return "xslt";
-    case WebURLRequest::kRequestContextImport:
-    case WebURLRequest::kRequestContextInternal:
-    case WebURLRequest::kRequestContextPlugin:
-    case WebURLRequest::kRequestContextServiceWorker:
+    case mojom::RequestContextType::IMPORT:
+    case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::PLUGIN:
+    case mojom::RequestContextType::SERVICE_WORKER:
       return "unknown";
   }
   NOTREACHED();
@@ -896,9 +896,9 @@ void Request::PopulateWebServiceWorkerRequest(
     web_request.AppendHeader(header.first, header.second);
   }
 
-  web_request.SetReferrer(
-      request_->ReferrerString(),
-      static_cast<WebReferrerPolicy>(request_->GetReferrerPolicy()));
+  web_request.SetReferrer(request_->ReferrerString(),
+                          static_cast<network::mojom::ReferrerPolicy>(
+                              request_->GetReferrerPolicy()));
   // FIXME: How can we set isReload properly? What is the correct place to load
   // it in to the Request object? We should investigate the right way to plumb
   // this information in to here.

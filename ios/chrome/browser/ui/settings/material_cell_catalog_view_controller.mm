@@ -36,15 +36,16 @@
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/browser/ui/settings/cells/encryption_item.h"
 #import "ios/chrome/browser/ui/settings/cells/import_data_multiline_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
 #import "ios/chrome/browser/ui/settings/cells/password_details_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_search_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/text_and_error_item.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
@@ -115,6 +116,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSyncEncryptionChecked,
   ItemTypeSyncPassphraseError,
   ItemTypeContentSuggestions,
+  ItemTypeImageDetailTextItem,
 };
 
 // Image fixed horizontal size.
@@ -185,27 +187,27 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
 
   // Detail cells.
   [model addSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailBasic =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailBasic];
+  LegacySettingsDetailItem* detailBasic =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailBasic];
   detailBasic.text = @"Preload Webpages";
   detailBasic.detailText = @"Only on Wi-Fi";
   detailBasic.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
   [model addItem:detailBasic
       toSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailMediumLeft =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailLeftMedium];
+  LegacySettingsDetailItem* detailMediumLeft =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailLeftMedium];
   detailMediumLeft.text = @"A long string but it should fit";
   detailMediumLeft.detailText = @"Detail";
   [model addItem:detailMediumLeft
       toSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailMediumRight =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailRightMedium];
+  LegacySettingsDetailItem* detailMediumRight =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailRightMedium];
   detailMediumRight.text = @"Main";
   detailMediumRight.detailText = @"A long string but it should fit";
   [model addItem:detailMediumRight
       toSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailLongLeft =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailLeftLong];
+  LegacySettingsDetailItem* detailLongLeft =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailLeftLong];
   detailLongLeft.text =
       @"This is a very long main text that is intended to overflow "
       @"except maybe on landscape but now it's longer so it won't fit.";
@@ -213,8 +215,8 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
   detailLongLeft.iconImageName = @"ntp_history_icon";
   [model addItem:detailLongLeft
       toSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailLongRight =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailRightLong];
+  LegacySettingsDetailItem* detailLongRight =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailRightLong];
   detailLongRight.text = @"Main Text";
   detailLongRight.detailText =
       @"This is a very long detail text that is intended to overflow "
@@ -222,8 +224,8 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
   detailLongRight.iconImageName = @"ntp_history_icon";
   [model addItem:detailLongRight
       toSectionWithIdentifier:SectionIdentifierDetailCell];
-  SettingsDetailItem* detailLongBoth =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeDetailBothLong];
+  LegacySettingsDetailItem* detailLongBoth =
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeDetailBothLong];
   detailLongBoth.text =
       @"This is a very long main text that is intended to overflow "
       @"except maybe on landscape but now it's longer so it won't fit.";
@@ -256,6 +258,25 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
       @"adipiscing elit, sed do eiusmod tempor "
       @"incididunt ut labore et dolore magna aliqua.";
   [model addItem:multilineDetailItem
+      toSectionWithIdentifier:SectionIdentifierMultilineCell];
+  [model addItem:[self settingsImageDetailTextItem]
+      toSectionWithIdentifier:SectionIdentifierMultilineCell];
+  SettingsImageDetailTextItem* settingsImageDetailTextItem =
+      [self settingsImageDetailTextItem];
+  settingsImageDetailTextItem.text = @"Short title";
+  [model addItem:settingsImageDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierMultilineCell];
+  settingsImageDetailTextItem = [self settingsImageDetailTextItem];
+  settingsImageDetailTextItem.detailText = @"Short detail text";
+  [model addItem:settingsImageDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierMultilineCell];
+  settingsImageDetailTextItem = [self settingsImageDetailTextItem];
+  settingsImageDetailTextItem.detailText =
+      @"Text multiline that works nice with a very very very very very long "
+      @"text Text multiline that works nice with a very very very very very "
+      @"long text Text multiline that works nice with a very very very very "
+      @"very long text";
+  [model addItem:settingsImageDetailTextItem
       toSectionWithIdentifier:SectionIdentifierMultilineCell];
 
   // Switch cells.
@@ -402,7 +423,7 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
 
   // Content Suggestions cells.
   [model addSectionWithIdentifier:SectionIdentifierContentSuggestionsCell];
-  [model addItem:[self ContentSuggestionsItem]
+  [model addItem:[self contentSuggestionsItem]
       toSectionWithIdentifier:SectionIdentifierContentSuggestionsCell];
   [model addItem:[self contentSuggestionsFooterItem]
       toSectionWithIdentifier:SectionIdentifierContentSuggestionsCell];
@@ -427,6 +448,7 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
   switch (item.type) {
+    case ItemTypeImageDetailTextItem:
     case ItemTypeContentSuggestions:
     case ItemTypeFooter:
     case ItemTypeSwitchDynamicHeight:
@@ -609,16 +631,16 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
 #pragma mark Private
 
 - (CollectionViewItem*)basicSwitchItem {
-  SettingsSwitchItem* item =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSwitchBasic];
+  LegacySettingsSwitchItem* item =
+      [[LegacySettingsSwitchItem alloc] initWithType:ItemTypeSwitchBasic];
   item.text = @"Enable awesomeness.";
   item.on = YES;
   return item;
 }
 
 - (CollectionViewItem*)longTextSwitchItem {
-  SettingsSwitchItem* item =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSwitchDynamicHeight];
+  LegacySettingsSwitchItem* item = [[LegacySettingsSwitchItem alloc]
+      initWithType:ItemTypeSwitchDynamicHeight];
   item.text = @"Enable awesomeness. This is a very long text that is intended "
               @"to overflow.";
   item.on = YES;
@@ -794,13 +816,25 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
   return footerItem;
 }
 
-- (ContentSuggestionsItem*)ContentSuggestionsItem {
+- (ContentSuggestionsItem*)contentSuggestionsItem {
   ContentSuggestionsItem* articleItem = [[ContentSuggestionsItem alloc]
       initWithType:ItemTypeContentSuggestions
              title:@"This is an incredible article, you should read it!"
                url:GURL()];
   articleItem.publisher = @"Top Publisher.com";
   return articleItem;
+}
+
+- (SettingsImageDetailTextItem*)settingsImageDetailTextItem {
+  SettingsImageDetailTextItem* settingsImageDetailTextItem =
+      [[SettingsImageDetailTextItem alloc]
+          initWithType:ItemTypeImageDetailTextItem];
+  settingsImageDetailTextItem.image =
+      [UIImage imageNamed:@"ios_default_avatar"];
+  settingsImageDetailTextItem.text =
+      @"Text multiline that works nice with a very very very very very long "
+      @"text";
+  return settingsImageDetailTextItem;
 }
 
 - (ContentSuggestionsFooterItem*)contentSuggestionsFooterItem {

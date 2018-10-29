@@ -29,13 +29,14 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/elements/chrome_activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_manager.h"
 #import "ios/chrome/browser/ui/settings/time_range_selector_collection_view_controller.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
@@ -103,6 +104,11 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
 
 // Coordinator that managers an action sheet to clear browsing data.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+
+// Coordinator for displaying a modal overlay with native activity indicator to
+// prevent the user from interacting with the page.
+@property(nonatomic, strong)
+    ChromeActivityOverlayCoordinator* chromeActivityOverlayCoordinator;
 
 // Restarts the counters for data types specified in the mask.
 - (void)restartCounters:(BrowsingDataRemoveMask)mask;
@@ -236,10 +242,40 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
                           completionBlock:(ProceduralBlock)completionBlock {
   base::RecordAction(
       base::UserMetricsAction("MobileClearBrowsingDataTriggeredFromLegacyUI"));
-  [self.dispatcher removeBrowsingDataForBrowserState:browserState
-                                          timePeriod:timePeriod
-                                          removeMask:removeMask
-                                     completionBlock:completionBlock];
+
+  // Show activity indicator modal while removal is happening.
+  self.chromeActivityOverlayCoordinator =
+      [[ChromeActivityOverlayCoordinator alloc]
+          initWithBaseViewController:self.navigationController];
+  self.chromeActivityOverlayCoordinator.messageText =
+      l10n_util::GetNSStringWithFixup(
+          IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG);
+  [self.chromeActivityOverlayCoordinator start];
+
+  __weak ClearBrowsingDataCollectionViewController* weakSelf = self;
+  dispatch_time_t timeOneSecondLater =
+      dispatch_time(DISPATCH_TIME_NOW, (1 * NSEC_PER_SEC));
+  void (^removeBrowsingDidFinishCompletionBlock)(void) = ^void() {
+    ClearBrowsingDataCollectionViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    // Sometimes clear browsing data is really short
+    // (<1sec), so ensure that overlay displays for at
+    // least 1 second instead of looking like a glitch.
+    dispatch_after(timeOneSecondLater, dispatch_get_main_queue(), ^{
+      [self.chromeActivityOverlayCoordinator stop];
+      if (completionBlock)
+        completionBlock();
+    });
+
+  };
+  [self.dispatcher
+      removeBrowsingDataForBrowserState:browserState
+                             timePeriod:timePeriod
+                             removeMask:removeMask
+                        completionBlock:removeBrowsingDidFinishCompletionBlock];
 }
 
 #pragma mark UICollectionViewDelegate

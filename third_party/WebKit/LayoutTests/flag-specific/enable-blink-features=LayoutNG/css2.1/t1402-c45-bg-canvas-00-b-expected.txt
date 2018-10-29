@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x70
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x70
-    LayoutNGBlockFlow {BODY} at (25,25) size 750x20 [color=#FFFFFF] [bgcolor=#000080]
-      LayoutNGBlockFlow {P} at (0,0) size 750x20
-        LayoutText {#text} at (0,0) size 664x19
-          text run at (0,0) width 664: "This paragraph should be in a blue block near the top of the page. Around it on all sides should be purple."

@@ -38,14 +38,18 @@ namespace blink {
 
 namespace {
 
+bool AffectsTransformRelatedProperty(const KeyframeEffect& effect) {
+  return effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
+         effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
+         effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
+         effect.Affects(PropertyHandle(GetCSSPropertyTranslate()));
+}
+
 void UpdateAnimationFlagsForEffect(const KeyframeEffect& effect,
                                    ComputedStyle& style) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
     style.SetHasCurrentOpacityAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
+  if (AffectsTransformRelatedProperty(effect))
     style.SetHasCurrentTransformAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
     style.SetHasCurrentFilterAnimation(true);
@@ -89,6 +93,13 @@ void ElementAnimations::UpdateAnimationFlags(ComputedStyle& style) {
     // FIXME: Needs to consider AnimationGroup once added.
     DCHECK(animation.effect()->IsKeyframeEffect());
     const KeyframeEffect& effect = *ToKeyframeEffect(animation.effect());
+    if (AffectsTransformRelatedProperty(effect)) {
+      CompositorKeyframeModel::FillMode mode =
+          animation.effect()->SpecifiedTiming().fill_mode;
+      if (mode == CompositorKeyframeModel::FillMode::FORWARDS ||
+          mode == CompositorKeyframeModel::FillMode::BOTH)
+        style.SetHasTransformAnimationWithForwardsOrBothFillMode(true);
+    }
     if (!effect.IsCurrent())
       continue;
     UpdateAnimationFlagsForEffect(effect, style);

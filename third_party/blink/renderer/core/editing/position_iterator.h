@@ -78,14 +78,14 @@ class PositionIteratorAlgorithm {
   }
 
   Member<Node> anchor_node_;
-  // If this is non-null, Strategy::parent(*m_nodeAfterPositionInAnchor) ==
-  // m_anchorNode;
+  // If this is non-null, Strategy::Parent(*node_after_position_in_anchor_) ==
+  // anchor_node_;
   Member<Node> node_after_position_in_anchor_;
   int offset_in_anchor_;
   wtf_size_t depth_to_anchor_node_;
-  // If |m_nodeAfterPositionInAnchor| is not null,
-  // m_offsetsInAnchorNode[m_depthToAnchorNode] ==
-  //    Strategy::index(m_nodeAfterPositionInAnchor).
+  // If |node_after_position_in_anchor_| is not null,
+  // offsets_in_anchor_node_[depth_to_anchor_node_] ==
+  //    Strategy::Index(node_after_position_in_anchor_).
   Vector<int> offsets_in_anchor_node_;
   uint64_t dom_tree_version_;
 };

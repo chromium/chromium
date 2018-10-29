@@ -47,7 +47,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
 
   // Unregisters the test Service Worker and verifies that the unregistration
   // succeeded.
-  void UnregisterServiceWorker();
+  void UnregisterServiceWorker(int64_t service_worker_registration_id);
 
   // Creates a ServiceWorkerFetchRequest instance for the given details and
   // provides a faked |response|.
@@ -92,6 +92,8 @@ class BackgroundFetchTestBase : public ::testing::Test {
   url::Origin origin_;
 
   StoragePartition* storage_partition_;
+
+  int next_pattern_id_ = 0;
 
   // Vector of ServiceWorkerRegistration instances that have to be kept alive
   // for the lifetime of this test.

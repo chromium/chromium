@@ -52,6 +52,10 @@ Polymer({
    * @private
    */
   onNextTap_: function() {
+    if (this.buttonsDisabled) {
+      return;
+    }
+    this.buttonsDisabled = true;
     var hotword = this.$$('#toggle0').hasAttribute('checked');
     var screenContext = this.$$('#toggle1').hasAttribute('checked');
     var toggle2 = this.$$('#toggle2');

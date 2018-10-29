@@ -256,7 +256,7 @@ Computing baselines in LayoutNG goes the following process.
 Algorithms are responsible
 for checking [NGConstraintSpace]`::BaselineRequests()`,
 computing requested baselines, and
-calling [NGFragmentBuilder]`::AddBaseline()`
+calling [NGBoxFragmentBuilder]`::AddBaseline()`
 to add them to [NGPhysicalBoxFragment].
 
 [NGBaselineRequest] consists of [NGBaselineAlgorithmType] and [FontBaseline].
@@ -314,9 +314,9 @@ In a bird's‐eye view, it consists of two parts:
 [NGBidiParagraph]: ng_bidi_paragraph.h
 [NGBlockNode]: ../ng_block_node.h
 [NGBoxFragment]: ../ng_box_fragment.h
+[NGBoxFragmentBuilder]: ../ng_box_fragment_builder.h
 [NGConstraintSpace]: ../ng_constraint_space_builder.h
 [NGConstraintSpaceBuilder]: ../ng_constraint_space_builder.h
-[NGFragmentBuilder]: ../ng_fragment_builder.h
 [NGInlineBoxState]: ng_inline_box_state.h
 [NGInlineItem]: ng_inline_item.h
 [NGInlineItemResult]: ng_inline_item_result.h

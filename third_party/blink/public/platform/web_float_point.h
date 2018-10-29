@@ -34,7 +34,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "third_party/blink/renderer/platform/geometry/float_point.h"  // nogncheck
 #else
 #include <ui/gfx/geometry/point_f.h>
 #endif

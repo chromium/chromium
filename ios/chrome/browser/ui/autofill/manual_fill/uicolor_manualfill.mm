@@ -16,4 +16,12 @@
   return color;
 }
 
++ (UIColor*)cr_manualFillSeparatorColor {
+  static UIColor* color = [UIColor colorWithRed:188 / 255.0
+                                          green:187 / 255.0
+                                           blue:193 / 255.0
+                                          alpha:1 / 1.0];
+  return color;
+}
+
 @end

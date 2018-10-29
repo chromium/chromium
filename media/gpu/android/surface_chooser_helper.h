@@ -29,10 +29,13 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // |is_overlay_required| tells us to require overlays(!).
   // |promote_aggressively| causes us to use overlays whenever they're power-
   // efficient, which lets us catch fullscreen-div cases.
+  // |always_use_texture_owner| forces us to always use a texture owner,
+  // completely ignoring all other conditions.
   SurfaceChooserHelper(
       std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
       bool is_overlay_required,
       bool promote_aggressively,
+      bool always_use_texture_owner,
       std::unique_ptr<PromotionHintAggregator> promotion_hint_aggregator =
           nullptr,
       const base::TickClock* tick_clock = nullptr);

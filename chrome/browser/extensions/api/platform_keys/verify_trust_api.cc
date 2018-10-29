@@ -10,8 +10,10 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
@@ -109,8 +111,8 @@ void VerifyTrustAPI::Verify(std::unique_ptr<Params> params,
       &CallBackOnUI, base::Bind(&VerifyTrustAPI::FinishedVerificationOnUI,
                                 weak_factory_.GetWeakPtr(), ui_callback)));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&IOPart::Verify, base::Unretained(io_part_.get()),
                      base::Passed(&params), extension_id, finish_callback));
 }
@@ -119,8 +121,8 @@ void VerifyTrustAPI::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&IOPart::OnExtensionUnloaded,
                      base::Unretained(io_part_.get()), extension->id()));
 }
@@ -139,8 +141,8 @@ void VerifyTrustAPI::CallBackOnUI(const VerifyCallback& ui_callback,
                                   const std::string& error,
                                   int return_value,
                                   int cert_status) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(ui_callback, error, return_value, cert_status));
 }
 

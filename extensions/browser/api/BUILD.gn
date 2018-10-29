@@ -145,6 +145,7 @@ source_set("api") {
       "//chromeos",
       "//chromeos:media_perception_proto",
       "//chromeos/services/media_perception/public/mojom",
+      "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
     ]
   }
 }

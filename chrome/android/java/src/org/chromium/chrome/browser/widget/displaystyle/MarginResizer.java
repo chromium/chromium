@@ -43,10 +43,14 @@ public class MarginResizer implements DisplayStyleObserver {
      * @param config The UiConfig object to subscribe to.
      * @param defaultMarginPixels Margin size to use in {@link HorizontalDisplayStyle#REGULAR}.
      * @param wideMarginPixels Margin size to use in {@link HorizontalDisplayStyle#WIDE}.
+     * @return The {@link MarginResizer} that is created and attached.
      */
-    public static void createAndAttach(
+    public static MarginResizer createAndAttach(
             View view, UiConfig config, int defaultMarginPixels, int wideMarginPixels) {
-        new MarginResizer(view, config, defaultMarginPixels, wideMarginPixels).attach();
+        MarginResizer marginResizer =
+                new MarginResizer(view, config, defaultMarginPixels, wideMarginPixels);
+        marginResizer.attach();
+        return marginResizer;
     }
 
     /**

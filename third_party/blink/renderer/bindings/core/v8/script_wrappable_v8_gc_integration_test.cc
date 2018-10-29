@@ -18,12 +18,19 @@ void PreciselyCollectGarbage() {
   ThreadState::Current()->CollectAllGarbage();
 }
 
-void RunV8Scavenger(v8::Isolate* isolate) {
-  V8GCController::CollectGarbage(isolate, true);
+// The following directly calls testing GCs in V8 to avoid cluttering a globally
+// visible interface with calls that have to be carefully staged.
+
+void RunV8MinorGC(v8::Isolate* isolate) {
+  CHECK(isolate);
+  isolate->RequestGarbageCollectionForTesting(
+      v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
 }
 
-void RunV8FullGc(v8::Isolate* isolate) {
-  V8GCController::CollectGarbage(isolate, false);
+void RunV8FullGCWithoutScanningOilpanStack(v8::Isolate* isolate) {
+  CHECK(isolate);
+  V8GCController::CollectAllGarbageForTesting(
+      isolate, v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
 }
 
 }  // namespace v8_gc_integration_test
@@ -47,7 +54,7 @@ TEST(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
     holder.Reset(isolate, ToV8(object, scope.GetContext()->Global(), isolate));
   }
 
-  v8_gc_integration_test::RunV8FullGc(isolate);
+  v8_gc_integration_test::RunV8MinorGC(isolate);
   v8_gc_integration_test::PreciselyCollectGarbage();
   EXPECT_FALSE(observer.WasCollected());
   holder.Reset();
@@ -78,7 +85,7 @@ TEST(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringScavenger) {
 
   // Scavenger should not collect JavaScript wrappers that are modified, even if
   // they are otherwise unreachable.
-  v8_gc_integration_test::RunV8Scavenger(isolate);
+  v8_gc_integration_test::RunV8MinorGC(isolate);
   v8_gc_integration_test::PreciselyCollectGarbage();
 
   EXPECT_FALSE(observer.WasCollected());
@@ -100,8 +107,8 @@ TEST(ScriptWrappableV8GCIntegrationTest,
     holder.Reset(isolate, ToV8(object, scope.GetContext()->Global(), isolate));
   }
 
-  v8_gc_integration_test::RunV8Scavenger(isolate);
-  v8_gc_integration_test::RunV8FullGc(isolate);
+  v8_gc_integration_test::RunV8MinorGC(isolate);
+  v8_gc_integration_test::RunV8FullGCWithoutScanningOilpanStack(isolate);
   v8_gc_integration_test::PreciselyCollectGarbage();
 
   EXPECT_FALSE(observer.WasCollected());
@@ -123,8 +130,8 @@ TEST(ScriptWrappableV8GCIntegrationTest,
     ToV8(object, scope.GetContext()->Global(), isolate);
   }
 
-  v8_gc_integration_test::RunV8Scavenger(isolate);
-  v8_gc_integration_test::RunV8FullGc(isolate);
+  v8_gc_integration_test::RunV8MinorGC(isolate);
+  v8_gc_integration_test::RunV8FullGCWithoutScanningOilpanStack(isolate);
   v8_gc_integration_test::PreciselyCollectGarbage();
 
   EXPECT_TRUE(observer.WasCollected());

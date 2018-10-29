@@ -9,7 +9,9 @@ import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("resources") {
@@ -128,6 +130,7 @@ jumbo_static_library("renderer") {
     "//components/autofill/content/renderer",
     "//components/cdm/renderer",
     "//components/contextual_search/content:renderer",
+    "//components/data_reduction_proxy/content/common",
     "//components/data_reduction_proxy/content/renderer",
     "//components/data_reduction_proxy/core/common",
     "//components/dom_distiller/content/renderer",
@@ -171,7 +174,7 @@ jumbo_static_library("renderer") {
     "//third_party/blink/public:scaled_resources",
     "//third_party/icu",
     "//third_party/re2",
-    "//third_party/widevine/cdm:headers",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/surface",
     "//v8:v8",
   ]
@@ -229,6 +232,10 @@ jumbo_static_library("renderer") {
     if (is_linux) {
       deps += [ "//components/services/font/public/cpp" ]
     }
+  }
+
+  if (enable_widevine_cdm_component) {
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -303,8 +310,6 @@ jumbo_static_library("renderer") {
       "extensions/sync_file_system_custom_bindings.h",
       "extensions/tabs_hooks_delegate.cc",
       "extensions/tabs_hooks_delegate.h",
-      "extensions/webstore_bindings.cc",
-      "extensions/webstore_bindings.h",
       "media/cast_ipc_dispatcher.cc",
       "media/cast_ipc_dispatcher.h",
       "media/cast_receiver_audio_valve.cc",

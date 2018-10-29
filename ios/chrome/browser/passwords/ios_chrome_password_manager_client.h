@@ -9,8 +9,9 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
-#include "components/password_manager/sync/browser/sync_credentials_filter.h"
+#include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "components/prefs/pref_member.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ios {
 class ChromeBrowserState;
@@ -41,6 +42,8 @@ class PasswordFormManagerForUI;
 
 @property(readonly, nonatomic) const GURL& lastCommittedURL;
 
+@property(readonly, nonatomic) ukm::SourceId ukmSourceId;
+
 @end
 
 // An iOS implementation of password_manager::PasswordManagerClient.
@@ -55,7 +58,6 @@ class IOSChromePasswordManagerClient
 
   // password_manager::PasswordManagerClient implementation.
   password_manager::SyncState GetPasswordSyncState() const override;
-  password_manager::SyncState GetHistorySyncState() const override;
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       bool update_password) override;
@@ -106,14 +108,6 @@ class IOSChromePasswordManagerClient
   const password_manager::SyncCredentialsFilter credentials_filter_;
 
   std::unique_ptr<password_manager::LogManager> log_manager_;
-
-  // The URL to which the ukm_source_id_ was bound.
-  GURL ukm_source_url_;
-
-  // If ukm_source_url_ == delegate_.lastCommittedURL, this stores a
-  // ukm::SourceId that is bound to the last committed navigation of the tab
-  // owning this ChromePasswordManagerClient.
-  ukm::SourceId ukm_source_id_;
 
   // Recorder of metrics that is associated with the last committed navigation
   // of the tab owning this ChromePasswordManagerClient. May be unset at

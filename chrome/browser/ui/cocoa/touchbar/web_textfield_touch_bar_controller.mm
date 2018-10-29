@@ -8,8 +8,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#import "chrome/browser/ui/cocoa/browser_window_controller.h"
-#import "chrome/browser/ui/cocoa/tab_contents/tab_contents_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/text_suggestions_touch_bar_controller.h"
@@ -23,12 +21,6 @@
 @implementation WebTextfieldTouchBarController
 
 + (WebTextfieldTouchBarController*)controllerForWindow:(NSWindow*)window {
-  if (features::IsViewsBrowserCocoa()) {
-    BrowserWindowController* bwc =
-        [BrowserWindowController browserWindowControllerForWindow:window];
-    return [[bwc browserWindowTouchBarController] webTextfieldTouchBar];
-  }
-
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
   if (!browser_view)

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -45,6 +46,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
@@ -376,8 +378,8 @@ class DNSErrorPageTest : public ErrorPageTest {
               if (google_util::LinkDoctorBaseURL() == params->url_request.url) {
                 // Send RequestCreated so that anyone blocking on
                 // WaitForRequests can continue.
-                BrowserThread::PostTask(
-                    BrowserThread::UI, FROM_HERE,
+                base::PostTaskWithTraits(
+                    FROM_HERE, {BrowserThread::UI},
                     base::BindOnce(&DNSErrorPageTest::RequestCreated,
                                    base::Unretained(owner)));
                 return chrome_browser_net::WriteFileToURLLoader(

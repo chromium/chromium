@@ -1,0 +1,53 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+enum NetLogCaptureMode {
+  // Log all events, but do not include the actual transferred bytes, and
+  // remove cookies and HTTP credentials and HTTP/2 GOAWAY frame debug data.
+  DEFAULT,
+
+  // Log all events, but do not include the actual transferred bytes as
+  // parameters for bytes sent/received events.
+  INCLUDE_COOKIES_AND_CREDENTIALS,
+
+  // Log everything possible, even if it is slow and memory expensive.
+  // Includes logging of transferred bytes.
+  INCLUDE_SOCKET_BYTES
+};
+
+// Manages export of ongoing NetLog events to a file.
+// Both Start and Stop must succeed, in that order, for the export to
+// be complete and have a well-formed file. You may call Start again after
+// Stop's callback has been invoked, but doing things like calling Start twice
+// without intervening successful stops will result in an error.
+interface NetLogExporter {
+  const uint64 kUnlimitedFileSize = 0xFFFFFFFFFFFFFFFF;
+
+  // Starts logging to |destination|, including definitions of |extra_constants|
+  // in the log in addition to the standard constants required by the log.
+  // Contents in |destination| might not be complete until Stop() is called
+  // successfully.
+  //
+  // If |max_file_size| is kUnlimitedFileSize log size will not be limited.
+  //
+  // Returns network error code.
+  Start(
+    mojo_base.mojom.File destination,
+    mojo_base.mojom.DictionaryValue extra_constants,
+    NetLogCaptureMode capture_mode,
+    uint64 max_file_size) => (int32 net_error);
+
+  // Finalizes the log file. If |polled_values| is provided, it will be
+  // included alongside net configuration info inside the 'polledData' field
+  // of the log object.
+  //
+  // Returns network error code; if successful this will occur only after
+  // the file has been fully written.
+  Stop(mojo_base.mojom.DictionaryValue polled_values) => (int32 net_error);
+};

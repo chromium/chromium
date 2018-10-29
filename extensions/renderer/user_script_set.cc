@@ -212,13 +212,11 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
     injection_host.reset(new WebUIInjectionHost(host_id));
   }
 
-  if (web_frame->Parent() && !script->match_all_frames())
-    return injection;  // Only match subframes if the script declared it.
-
   GURL effective_document_url = ScriptContext::GetEffectiveDocumentURL(
       web_frame, document_url, script->match_about_blank());
 
-  if (!script->MatchesURL(effective_document_url))
+  bool is_subframe = web_frame->Parent();
+  if (!script->MatchesDocument(effective_document_url, is_subframe))
     return injection;
 
   std::unique_ptr<ScriptInjector> injector(
@@ -244,7 +242,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
 blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
                                             bool emulate_greasemonkey) {
   const GURL& url = file.url();
-  std::map<GURL, blink::WebString>::iterator iter = script_sources_.find(url);
+  auto iter = script_sources_.find(url);
   if (iter != script_sources_.end())
     return iter->second;
 
@@ -271,7 +269,7 @@ blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
 
 blink::WebString UserScriptSet::GetCssSource(const UserScript::File& file) {
   const GURL& url = file.url();
-  std::map<GURL, blink::WebString>::iterator iter = script_sources_.find(url);
+  auto iter = script_sources_.find(url);
   if (iter != script_sources_.end())
     return iter->second;
 

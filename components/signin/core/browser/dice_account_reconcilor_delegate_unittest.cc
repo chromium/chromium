@@ -105,4 +105,21 @@ TEST(DiceAccountReconcilorDelegateTest, OnReconcileFinished) {
   }
 }
 
+TEST(DiceAccountReconcilorDelegateTest, ShouldRevokeTokensOnCookieDeleted) {
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  TestSigninClient client(&pref_service);
+  {
+    // Dice is enabled, revoke tokens when Gaia cookie is deleted.
+    DiceAccountReconcilorDelegate delegate(&client,
+                                           AccountConsistencyMethod::kDice);
+    EXPECT_EQ(true, delegate.ShouldRevokeTokensOnCookieDeleted());
+  }
+  {
+    // Dice is not enabled, do not revoke tokens when Gaia cookie is deleted.
+    DiceAccountReconcilorDelegate delegate(
+        &client, AccountConsistencyMethod::kDiceMigration);
+    EXPECT_EQ(false, delegate.ShouldRevokeTokensOnCookieDeleted());
+  }
+}
+
 }  // namespace signin

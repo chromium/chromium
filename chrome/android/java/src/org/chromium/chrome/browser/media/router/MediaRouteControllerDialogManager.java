@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.media.router;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.MediaRouteControllerDialog;
 import android.support.v7.app.MediaRouteControllerDialogFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -56,6 +59,15 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
         public Fragment(BaseMediaRouteDialogManager manager, MediaRouter.Callback callback) {
             mManager = manager;
             mCallback = callback;
+        }
+
+        @Override
+        public MediaRouteControllerDialog onCreateControllerDialog(
+                Context context, Bundle savedInstanceState) {
+            MediaRouteControllerDialog dialog =
+                    super.onCreateControllerDialog(context, savedInstanceState);
+            dialog.setCanceledOnTouchOutside(true);
+            return dialog;
         }
 
         @Override

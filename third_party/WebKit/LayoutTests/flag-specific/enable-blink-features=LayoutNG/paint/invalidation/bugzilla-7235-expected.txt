@@ -25,12 +25,7 @@
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [8, 156, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [8, 156, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

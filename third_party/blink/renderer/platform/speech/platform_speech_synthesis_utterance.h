@@ -84,9 +84,9 @@ class PLATFORM_EXPORT PlatformSpeechSynthesisUtterance final
   String text_;
   String lang_;
   scoped_refptr<PlatformSpeechSynthesisVoice> voice_;
-  float volume_ = SpeechSynthesisConstants::kDoublePrefNotSet;
-  float rate_ = SpeechSynthesisConstants::kDoublePrefNotSet;
-  float pitch_ = SpeechSynthesisConstants::kDoublePrefNotSet;
+  float volume_ = kWebSpeechSynthesisDoublePrefNotSet;
+  float rate_ = kWebSpeechSynthesisDoublePrefNotSet;
+  float pitch_ = kWebSpeechSynthesisDoublePrefNotSet;
   double start_time_;
 };
 

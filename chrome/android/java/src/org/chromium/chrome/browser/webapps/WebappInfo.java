@@ -29,7 +29,7 @@ public class WebappInfo {
     private static final String TAG = "WebappInfo";
 
     /**
-     * Parameter for {@link WebappInfo#create()} method which allows either a Bitmap or a PNG
+     * Parameter for {@link WebappInfo#create} method which allows either a Bitmap or a PNG
      * encoded string to be passed as a parameter.
      */
     public static class Icon {
@@ -361,6 +361,11 @@ public class WebappInfo {
      */
     public boolean isIconGenerated() {
         return mIsIconGenerated;
+    }
+
+    /** Returns whether the WebappActivity should be transparent while the page is loading. */
+    public boolean useTransparentSplash() {
+        return false;
     }
 
     /**

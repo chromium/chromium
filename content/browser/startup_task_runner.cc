@@ -37,9 +37,7 @@ void StartupTaskRunner::StartRunningTasksAsync() {
 
 void StartupTaskRunner::RunAllTasksNow() {
   int result = 0;
-  for (std::list<StartupTask>::iterator it = task_list_.begin();
-       it != task_list_.end();
-       it++) {
+  for (auto it = task_list_.begin(); it != task_list_.end(); it++) {
     result = it->Run();
     if (result > 0) break;
   }

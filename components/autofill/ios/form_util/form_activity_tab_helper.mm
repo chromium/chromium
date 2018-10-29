@@ -91,7 +91,6 @@ bool FormActivityTabHelper::HandleFormActivity(
     web::WebFrame* sender_frame) {
   FormActivityParams params;
   if (!message.GetString("formName", &params.form_name) ||
-      !message.GetString("fieldName", &params.field_name) ||
       !message.GetString("fieldIdentifier", &params.field_identifier) ||
       !message.GetString("fieldType", &params.field_type) ||
       !message.GetString("type", &params.type) ||
@@ -125,6 +124,9 @@ bool FormActivityTabHelper::FormSubmissionHandler(
   }
   std::string form_name;
   message.GetString("formName", &form_name);
+
+  std::string form_data;
+  message.GetString("formData", &form_data);
   // We decide the form is user-submitted if the user has interacted with
   // the main page (using logic from the popup blocker), or if the keyboard
   // is visible.
@@ -132,7 +134,7 @@ bool FormActivityTabHelper::FormSubmissionHandler(
       has_user_gesture || [web_state_->GetWebViewProxy() keyboardAccessory];
 
   for (auto& observer : observers_)
-    observer.DocumentSubmitted(web_state_, sender_frame, form_name,
+    observer.DocumentSubmitted(web_state_, sender_frame, form_name, form_data,
                                submitted_by_user, form_in_main_frame);
   return true;
 }

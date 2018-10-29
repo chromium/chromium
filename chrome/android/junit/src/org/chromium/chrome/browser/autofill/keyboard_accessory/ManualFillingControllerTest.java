@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType.FRO
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeActivity;
@@ -54,7 +56,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.modelutil.FakeViewProvider;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -68,9 +70,11 @@ import java.util.Map;
 @DisableFeatures(ChromeFeatureList.EXPERIMENTAL_UI)
 public class ManualFillingControllerTest {
     @Mock
-    private WindowAndroid mMockWindow;
+    private ActivityWindowAndroid mMockWindow;
     @Mock
     private ChromeActivity mMockActivity;
+    @Mock
+    private View mMockContentView;
     @Mock
     private KeyboardAccessoryView mMockKeyboardAccessoryView;
     @Mock
@@ -91,6 +95,8 @@ public class ManualFillingControllerTest {
 
     private ManualFillingCoordinator mController = new ManualFillingCoordinator();
 
+    private final UserDataHost mUserDataHost = new UserDataHost();
+
     @Before
     public void setUp() {
         ShadowRecordHistogram.reset();
@@ -100,6 +106,7 @@ public class ManualFillingControllerTest {
         ChromeFullscreenManager fullscreenManager = new ChromeFullscreenManager(mMockActivity, 0);
         when(mMockActivity.getFullscreenManager()).thenReturn(fullscreenManager);
         when(mMockActivity.getResources()).thenReturn(mMockResources);
+        when(mMockActivity.findViewById(android.R.id.content)).thenReturn(mMockContentView);
         when(mMockResources.getDimensionPixelSize(anyInt())).thenReturn(48);
         PasswordAccessorySheetCoordinator.IconProvider.getInstance().setIconForTesting(mMockIcon);
         mController.initialize(mMockWindow,
@@ -489,6 +496,7 @@ public class ManualFillingControllerTest {
         }
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(id);
+        when(tab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
         mediator.getTabModelObserverForTesting().didAddTab(tab, FROM_BROWSER_ACTIONS);
         mediator.getTabObserverForTesting().onShown(tab, FROM_NEW);

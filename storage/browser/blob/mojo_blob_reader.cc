@@ -123,8 +123,9 @@ void MojoBlobReader::DidCalculateSize(int result) {
     if (!blob_reader_->has_side_data()) {
       DidReadSideData(BlobReader::Status::DONE);
     } else {
-      BlobReader::Status read_status = blob_reader_->ReadSideData(
-          base::Bind(&MojoBlobReader::DidReadSideData, base::Unretained(this)));
+      BlobReader::Status read_status =
+          blob_reader_->ReadSideData(base::BindOnce(
+              &MojoBlobReader::DidReadSideData, base::Unretained(this)));
       if (read_status != BlobReader::Status::IO_PENDING)
         DidReadSideData(BlobReader::Status::DONE);
     }
@@ -151,14 +152,16 @@ void MojoBlobReader::StartReading() {
   response_body_stream_ = delegate_->PassDataPipe();
   peer_closed_handle_watcher_.Watch(
       response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::Bind(&MojoBlobReader::OnResponseBodyStreamClosed,
-                 base::Unretained(this)));
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(&MojoBlobReader::OnResponseBodyStreamClosed,
+                          base::Unretained(this)));
   peer_closed_handle_watcher_.ArmOrNotify();
 
   writable_handle_watcher_.Watch(
       response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      base::Bind(&MojoBlobReader::OnResponseBodyStreamReady,
-                 base::Unretained(this)));
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(&MojoBlobReader::OnResponseBodyStreamReady,
+                          base::Unretained(this)));
 
   // Start reading...
   ReadMore();
@@ -242,7 +245,9 @@ void MojoBlobReader::DidRead(bool completed_synchronously, int num_bytes) {
   }
 }
 
-void MojoBlobReader::OnResponseBodyStreamClosed(MojoResult result) {
+void MojoBlobReader::OnResponseBodyStreamClosed(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   response_body_stream_.reset();
@@ -250,11 +255,13 @@ void MojoBlobReader::OnResponseBodyStreamClosed(MojoResult result) {
   NotifyCompletedAndDeleteIfNeeded(net::ERR_ABORTED);
 }
 
-void MojoBlobReader::OnResponseBodyStreamReady(MojoResult result) {
+void MojoBlobReader::OnResponseBodyStreamReady(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-    OnResponseBodyStreamClosed(MOJO_RESULT_OK);
+    OnResponseBodyStreamClosed(MOJO_RESULT_OK, state);
     return;
   }
   DCHECK_EQ(result, MOJO_RESULT_OK);

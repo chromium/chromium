@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/wm/core/base_focus_rules.h"
 #include "url/gurl.h"
 #include "webrunner/browser/context_impl.h"
 
@@ -66,8 +67,10 @@ chromium::web::NavigationEntry ConvertContentNavigationEntry(
     content::NavigationEntry* entry) {
   DCHECK(entry);
   chromium::web::NavigationEntry converted;
-  converted.title = base::UTF16ToUTF8(entry->GetTitle());
+  converted.title = base::UTF16ToUTF8(entry->GetTitleForDisplay());
   converted.url = entry->GetURL().spec();
+  converted.is_error =
+      entry->GetPageType() == content::PageType::PAGE_TYPE_ERROR;
   return converted;
 }
 
@@ -91,7 +94,29 @@ bool ComputeNavigationEvent(const chromium::web::NavigationEntry& old_entry,
     computed_event->url = new_entry.url;
   }
 
+  computed_event->is_error = new_entry.is_error;
+  if (old_entry.is_error != new_entry.is_error)
+    is_changed = true;
+
   return is_changed;
+}
+
+class FrameFocusRules : public wm::BaseFocusRules {
+ public:
+  FrameFocusRules() = default;
+  ~FrameFocusRules() override = default;
+
+  // wm::BaseFocusRules implementation.
+  bool SupportsChildActivation(aura::Window*) const override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(FrameFocusRules);
+};
+
+bool FrameFocusRules::SupportsChildActivation(aura::Window*) const {
+  // TODO(crbug.com/878439): Return a result based on window properties such as
+  // visibility.
+  return true;
 }
 
 }  // namespace
@@ -100,9 +125,11 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                      ContextImpl* context,
                      fidl::InterfaceRequest<chromium::web::Frame> frame_request)
     : web_contents_(std::move(web_contents)),
-      focus_controller_(std::make_unique<wm::FocusController>(this)),
+      focus_controller_(
+          std::make_unique<wm::FocusController>(new FrameFocusRules)),
       context_(context),
       binding_(this, std::move(frame_request)) {
+  web_contents_->SetDelegate(this);
   binding_.set_error_handler([this]() { context_->DestroyFrame(this); });
 }
 
@@ -110,7 +137,7 @@ FrameImpl::~FrameImpl() {
   if (window_tree_host_) {
     aura::client::SetFocusClient(root_window(), nullptr);
     wm::SetActivationClient(root_window(), nullptr);
-
+    web_contents_->ClosePage();
     window_tree_host_->Hide();
     window_tree_host_->compositor()->SetVisible(false);
 
@@ -123,6 +150,29 @@ FrameImpl::~FrameImpl() {
 
 zx::unowned_channel FrameImpl::GetBindingChannelForTest() const {
   return zx::unowned_channel(binding_.channel());
+}
+
+bool FrameImpl::ShouldCreateWebContents(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* opener,
+    content::SiteInstance* source_site_instance,
+    int32_t route_id,
+    int32_t main_frame_route_id,
+    int32_t main_frame_widget_route_id,
+    content::mojom::WindowContainerType window_container_type,
+    const GURL& opener_url,
+    const std::string& frame_name,
+    const GURL& target_url,
+    const std::string& partition_id,
+    content::SessionStorageNamespace* session_storage_namespace) {
+  DCHECK_EQ(web_contents, web_contents_.get());
+
+  // Prevent any child WebContents (popup windows, tabs, etc.) from spawning.
+  // TODO(crbug.com/888131): Implement support for popup windows.
+  NOTIMPLEMENTED() << "Ignored popup window request for URL: "
+                   << target_url.spec();
+
+  return false;
 }
 
 void FrameImpl::CreateView(
@@ -240,11 +290,9 @@ void FrameImpl::DidFinishLoad(content::RenderFrameHost* render_frame_host,
     return;
   }
 
-  // TODO(kmarshall): Get NavigationEntry from NavigationController.
-  chromium::web::NavigationEntry current_navigation_state;
-  current_navigation_state.url = validated_url.spec();
-  current_navigation_state.title = base::UTF16ToUTF8(web_contents_->GetTitle());
-
+  chromium::web::NavigationEntry current_navigation_state =
+      ConvertContentNavigationEntry(
+          web_contents_->GetController().GetVisibleEntry());
   pending_navigation_event_is_dirty_ |=
       ComputeNavigationEvent(cached_navigation_state_, current_navigation_state,
                              &pending_navigation_event_);
@@ -271,12 +319,6 @@ void FrameImpl::MaybeSendNavigationEvent() {
     // No more changes to report.
     waiting_for_navigation_event_ack_ = false;
   }
-}
-
-bool FrameImpl::SupportsChildActivation(aura::Window*) const {
-  // TODO(crbug.com/878439): Return a result based on window properties such as
-  // visibility.
-  return true;
 }
 
 }  // namespace webrunner

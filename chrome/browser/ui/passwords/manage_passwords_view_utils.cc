@@ -24,7 +24,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,11 +55,8 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
 std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
     const autofill::PasswordForm& form) {
   base::string16 federation;
-  if (!form.federation_origin.unique()) {
-    federation = l10n_util::GetStringFUTF16(
-        IDS_PASSWORDS_VIA_FEDERATION,
-        base::UTF8ToUTF16(form.federation_origin.host()));
-  }
+  if (!form.federation_origin.opaque())
+    federation = base::UTF8ToUTF16(form.federation_origin.host());
 
   if (form.display_name.empty())
     return std::make_pair(form.username_value, std::move(federation));
@@ -74,13 +70,10 @@ std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
       form.username_value + base::ASCIIToUTF16("\n") + federation);
 }
 
-void GetSavePasswordDialogTitleTextAndLinkRange(
-    const GURL& user_visible_url,
-    const GURL& form_origin_url,
-    bool is_smartlock_branding_enabled,
-    PasswordTitleType dialog_type,
-    base::string16* title,
-    gfx::Range* title_link_range) {
+void GetSavePasswordDialogTitleTextAndLinkRange(const GURL& user_visible_url,
+                                                const GURL& form_origin_url,
+                                                PasswordTitleType dialog_type,
+                                                base::string16* title) {
   DCHECK(!password_manager::IsValidAndroidFacetURI(form_origin_url.spec()));
   std::vector<size_t> offsets;
   std::vector<base::string16> replacements;
@@ -109,24 +102,8 @@ void GetSavePasswordDialogTitleTextAndLinkRange(
     replacements.push_back(url_formatter::FormatUrlForSecurityDisplay(
         form_origin_url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
-  base::string16 title_link;
-  if (title_id == IDS_SAVE_ACCOUNT) {
-    title_link =
-        is_smartlock_branding_enabled
-            ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SMART_LOCK)
-            : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TITLE_BRAND);
-    replacements.insert(replacements.begin(), title_link);
-  }
 
   *title = l10n_util::GetStringFUTF16(title_id, replacements, &offsets);
-  if (title_id == IDS_SAVE_ACCOUNT && is_smartlock_branding_enabled &&
-      !offsets.empty()) {
-    // |offsets| can be empty when the localised string associated with
-    // |title_id| could not be found. While this situation is an error, it
-    // needs to be handled gracefully, see http://crbug.com/658902#c18.
-    *title_link_range =
-        gfx::Range(offsets[0], offsets[0] + title_link.length());
-  }
 }
 
 void GetManagePasswordsDialogTitleText(const GURL& user_visible_url,
@@ -149,39 +126,6 @@ void GetManagePasswordsDialogTitleText(const GURL& user_visible_url,
     *title = l10n_util::GetStringUTF16(
         has_credentials ? IDS_MANAGE_PASSWORDS_TITLE
                         : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
-  }
-}
-
-void GetAccountChooserDialogTitleTextAndLinkRange(
-    bool is_smartlock_branding_enabled,
-    bool many_accounts,
-    base::string16* title,
-    gfx::Range* title_link_range) {
-  int string_id = many_accounts
-      ? IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE_MANY_ACCOUNTS
-      : IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE_ONE_ACCOUNT;
-  GetBrandedTextAndLinkRange(is_smartlock_branding_enabled,
-                             string_id, string_id,
-                             title, title_link_range);
-}
-
-void GetBrandedTextAndLinkRange(bool is_smartlock_branding_enabled,
-                                int smartlock_string_id,
-                                int default_string_id,
-                                base::string16* out_string,
-                                gfx::Range* link_range) {
-  if (is_smartlock_branding_enabled) {
-    size_t offset;
-    base::string16 brand_name =
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SMART_LOCK);
-    *out_string = l10n_util::GetStringFUTF16(smartlock_string_id, brand_name,
-                                             &offset);
-    *link_range = gfx::Range(offset, offset + brand_name.length());
-  } else {
-    *out_string = l10n_util::GetStringFUTF16(
-        default_string_id,
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TITLE_BRAND));
-    *link_range = gfx::Range();
   }
 }
 

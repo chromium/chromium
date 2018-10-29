@@ -415,10 +415,10 @@ component("bluetooth") {
       ]
       if (is_linux) {
         sources += [
+          "dbus/bluez_dbus_thread_manager.cc",
+          "dbus/bluez_dbus_thread_manager.h",
           "dbus/dbus_bluez_manager_wrapper_linux.cc",
           "dbus/dbus_bluez_manager_wrapper_linux.h",
-          "dbus/dbus_thread_manager_linux.cc",
-          "dbus/dbus_thread_manager_linux.h",
         ]
       }
       if (is_chromeos) {

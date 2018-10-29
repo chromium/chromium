@@ -203,7 +203,7 @@ std::unique_ptr<SVGPathByteStream> PathInterpolationFunctions::AppliedValue(
           *ToInterpolableList(interpolable_value).Get(kPathArgsIndex)),
       ToSVGPathNonInterpolableValue(non_interpolable_value)->PathSegTypes());
   SVGPathByteStreamBuilder builder(*path_byte_stream);
-  SVGPathParser::ParsePath(source, builder);
+  svg_path_parser::ParsePath(source, builder);
   return path_byte_stream;
 }
 

@@ -16,13 +16,17 @@ namespace chromeos {
 // partner. Returns empty string if the information is not available.
 std::string GetBrand();
 
+// Returns a variation of the brand code based on enrollment type.
+// TODO(crbug.com/888725): Rename this to GetBrand and replace the current one.
+std::string GetRlzBrand();
+
 // Clears brand code for the current session (not persisted through browser
 // restart). Future calls to GetBrand() will return an empty string.
 void ClearBrandForCurrentSession();
 
 // Reads the brand code from a board-specific data file and stores it to
-// Local State.
-// |callback| is invoked on the calling thread after that.
+// Local State. |callback| is invoked on the calling thread upon success, and
+// is not invoked if the brand code is not found or is empty.
 void InitBrand(const base::Closure& callback);
 
 }  // namespace chromeos

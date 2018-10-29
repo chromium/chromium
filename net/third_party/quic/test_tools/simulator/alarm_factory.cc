@@ -6,8 +6,6 @@
 #include "net/third_party/quic/core/quic_alarm.h"
 #include "net/third_party/quic/platform/api/quic_str_cat.h"
 
-using std::string;
-
 namespace quic {
 namespace simulator {
 
@@ -16,7 +14,7 @@ namespace simulator {
 class Alarm : public QuicAlarm {
  public:
   Alarm(Simulator* simulator,
-        string name,
+        QuicString name,
         QuicArenaScopedPtr<QuicAlarm::Delegate> delegate)
       : QuicAlarm(std::move(delegate)), adapter_(simulator, name, this) {}
   ~Alarm() override {}
@@ -34,7 +32,7 @@ class Alarm : public QuicAlarm {
   // interfaces.
   class Adapter : public Actor {
    public:
-    Adapter(Simulator* simulator, string name, Alarm* parent)
+    Adapter(Simulator* simulator, QuicString name, Alarm* parent)
         : Actor(simulator, name), parent_(parent) {}
     ~Adapter() override {}
 
@@ -52,12 +50,12 @@ class Alarm : public QuicAlarm {
   Adapter adapter_;
 };
 
-AlarmFactory::AlarmFactory(Simulator* simulator, string name)
+AlarmFactory::AlarmFactory(Simulator* simulator, QuicString name)
     : simulator_(simulator), name_(std::move(name)), counter_(0) {}
 
 AlarmFactory::~AlarmFactory() {}
 
-string AlarmFactory::GetNewAlarmName() {
+QuicString AlarmFactory::GetNewAlarmName() {
   ++counter_;
   return QuicStringPrintf("%s (alarm %i)", name_.c_str(), counter_);
 }

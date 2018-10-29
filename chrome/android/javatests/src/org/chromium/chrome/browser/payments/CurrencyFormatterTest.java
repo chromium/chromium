@@ -31,7 +31,8 @@ public class CurrencyFormatterTest {
     /**
      * Unicode non-breaking space.
      */
-    private static final String SPACE = "\u00A0";
+    private static final String NBSP = "\u00A0";
+    private static final String NarrowNBSP = "\u202F";
 
     @Before
     public void setUp() throws Exception {
@@ -109,12 +110,13 @@ public class CurrencyFormatterTest {
 
             CurrencyFormatter formatter =
                     new CurrencyFormatter(currency, LocaleUtils.forLanguageTag(locale));
-
-            String formattedAmount = formatter.format(amount).replace(SPACE, " ");
+            // To make tests robust against the CLDR data change in terms of space (ASCII
+            // space, NBSP and Narrow NBSP), fold NBSP and NarrowNBSP into U+0020.
+            String formattedAmount = formatter.format(amount).replace(NBSP, " ");
             Assert.assertEquals("\"" + currency + "\" \"" + amount + "\" (\"" + locale
                             + "\" locale) should be formatted into \"" + expectedAmountFormatting
                             + "\"",
-                    expectedAmountFormatting, formattedAmount);
+                    expectedAmountFormatting, formattedAmount.replace(NarrowNBSP, " "));
             Assert.assertEquals("\"" + currency + "\""
                             + " should be formatted into \"" + expectedCurrencyFormatting + "\"",
                     expectedCurrencyFormatting, formatter.getFormattedCurrencyCode());

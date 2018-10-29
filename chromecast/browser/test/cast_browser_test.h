@@ -44,8 +44,9 @@ class CastBrowserTest : public content::BrowserTestBase, CastWebView::Delegate {
 
  private:
   // CastWebView::Delegate implementation:
-  void OnPageStopped(int error_code) override;
-  void OnLoadingStateChanged(bool loading) override;
+  void OnPageStateChanged(CastWebContents* cast_web_contents) override;
+  void OnPageStopped(CastWebContents* cast_web_contents,
+                     int error_code) override;
   void OnWindowDestroyed() override;
   void OnKeyEvent(const ui::KeyEvent& key_event) override;
   bool OnAddMessageToConsoleReceived(content::WebContents* source,

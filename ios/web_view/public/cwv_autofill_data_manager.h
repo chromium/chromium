@@ -13,16 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVAutofillProfile;
 @class CWVCreditCard;
-@protocol CWVAutofillDataManagerDelegate;
+@protocol CWVAutofillDataManagerObserver;
 
 CWV_EXPORT
 // Exposes saved autofill data such as address profiles and credit cards.
 @interface CWVAutofillDataManager : NSObject
 
-// Delegate for CWVAutofillDataManagerDelegate.
-@property(nonatomic, weak) id<CWVAutofillDataManagerDelegate> delegate;
-
 - (instancetype)init NS_UNAVAILABLE;
+
+// Adds |observer| for data changes.
+- (void)addObserver:(__weak id<CWVAutofillDataManagerObserver>)observer;
+
+// Removes |observer| that was previously added with |addObserver|.
+- (void)removeObserver:(__weak id<CWVAutofillDataManagerObserver>)observer;
 
 // Returns all saved profiles for address autofill in |completionHandler|.
 - (void)fetchProfilesWithCompletionHandler:

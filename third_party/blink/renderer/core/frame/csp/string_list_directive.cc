@@ -14,21 +14,38 @@ namespace blink {
 StringListDirective::StringListDirective(const String& name,
                                          const String& value,
                                          ContentSecurityPolicy* policy)
-    : CSPDirective(name, value, policy) {
-  // TODO(orsibatiz): After policy naming rules are estabilished, do a more
-  // complex parsing according to that.
-  value.Split(' ', false, list_);
+    : CSPDirective(name, value, policy), allow_any_(false) {
+  // Turn whitespace-y characters into ' ' and then split on ' ' into list_.
+  value.SimplifyWhiteSpace().Split(' ', false, list_);
+
+  // A single entry "*" means all values are allowed.
+  if (list_.size() == 1 && list_.at(0) == "*") {
+    allow_any_ = true;
+    list_.clear();
+  }
+
+  // There appears to be no wtf::Vector equivalent to STLs erase(from, to)
+  // method, so we can't do the canonical .erase(remove_if(..), end) and have
+  // to emulate this:
+  list_.Shrink(
+      std::remove_if(list_.begin(), list_.end(), &IsInvalidStringValue) -
+      list_.begin());
+}
+
+// TODO(vogelheim): If StringListDirective will be used in contexts other than
+//                  TrustedTypes, this needs to be made configurable or
+//                  over-rideable.
+bool StringListDirective::IsInvalidStringValue(const String& str) {
+  // TODO(vogelheim): Update this as the Trusted Type spec evolves.
+
+  // Currently, Trusted Type demands that quoted strings are treated as
+  // placeholders (and thus cannot be policy names). We'll just disallow any
+  // string with quote marks in them.
+  return str.Contains('\'') || str.Contains('"');
 }
 
 bool StringListDirective::Allows(const String& string_piece) {
-  if (list_.IsEmpty())
-    return true;
-  for (String p : list_) {
-    if (p == string_piece) {
-      return true;
-    }
-  }
-  return false;
+  return allow_any_ || list_.Contains(string_piece);
 }
 
 void StringListDirective::Trace(blink::Visitor* visitor) {

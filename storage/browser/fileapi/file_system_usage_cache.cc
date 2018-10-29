@@ -282,8 +282,8 @@ void FileSystemUsageCache::ScheduleCloseTimer() {
   }
 
   timer_.Start(FROM_HERE, kCloseDelay,
-               base::Bind(&FileSystemUsageCache::CloseCacheFiles,
-                          weak_factory_.GetWeakPtr()));
+               base::BindOnce(&FileSystemUsageCache::CloseCacheFiles,
+                              weak_factory_.GetWeakPtr()));
 }
 
 bool FileSystemUsageCache::HasCacheFileHandle(const base::FilePath& file_path) {

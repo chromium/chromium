@@ -2,7 +2,6 @@ Tests whether explicitly set caret style is retained on performing text selectio
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Try selecting this text by dragging the cursor. Progress cursor should be displayed while doing so.
 PASS currentCursorType is "Progress"
 PASS successfullyParsed is true

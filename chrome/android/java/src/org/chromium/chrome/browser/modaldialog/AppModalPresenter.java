@@ -26,7 +26,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     @Override
     protected void addDialogView(View dialogView) {
         mDialog = new Dialog(mContext, R.style.ModalDialogTheme);
-        mDialog.setOnCancelListener(dialogInterface -> cancelCurrentDialog());
+        mDialog.setOnCancelListener(dialogInterface
+                -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
         ViewGroup container = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.modal_dialog_container, null);
         // We use the Android Dialog dim for app modal dialog, so a custom scrim is not needed.

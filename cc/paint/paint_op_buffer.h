@@ -22,6 +22,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -82,6 +83,7 @@ enum class PaintOpType : uint8_t {
   DrawRecord,
   DrawRect,
   DrawRRect,
+  DrawSkottie,
   DrawTextBlob,
   Noop,
   Restore,
@@ -162,6 +164,9 @@ class CC_PAINT_EXPORT PaintOp {
     SkColorSpace* color_space = nullptr;
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
+    // If true, will calculate a fixed scale for PaintRecord-backed PaintShaders
+    // based on the current canvas scale.  May be turned off for tests.
+    bool scale_paint_record_shaders = true;
     int max_texture_size = 0;
     size_t max_texture_bytes = 0.f;
     SkMatrix original_ctm = SkMatrix::I();
@@ -695,11 +700,34 @@ class CC_PAINT_EXPORT DrawRRectOp final : public PaintOpWithFlags {
   DrawRRectOp() : PaintOpWithFlags(kType) {}
 };
 
+class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::DrawSkottie;
+  static constexpr bool kIsDrawOp = true;
+  DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie, SkRect dst, float t);
+  ~DrawSkottieOp();
+  static void Raster(const DrawSkottieOp* op,
+                     SkCanvas* canvas,
+                     const PlaybackParams& params);
+  bool IsValid() const {
+    return !!skottie && !dst.isEmpty() && t >= 0 && t <= 1.f;
+  }
+  static bool AreEqual(const PaintOp* left, const PaintOp* right);
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  scoped_refptr<SkottieWrapper> skottie;
+  SkRect dst;
+  float t;
+
+ private:
+  DrawSkottieOp();
+};
+
 class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawTextBlob;
   static constexpr bool kIsDrawOp = true;
-  DrawTextBlobOp(scoped_refptr<PaintTextBlob> blob,
+  DrawTextBlobOp(sk_sp<SkTextBlob> blob,
                  SkScalar x,
                  SkScalar y,
                  const PaintFlags& flags);
@@ -712,7 +740,7 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   HAS_SERIALIZATION_FUNCTIONS();
 
-  scoped_refptr<PaintTextBlob> blob;
+  sk_sp<SkTextBlob> blob;
   SkScalar x;
   SkScalar y;
 

@@ -103,6 +103,9 @@ TEST_F(WebFrameUtilTest, GetWebFrameWithId) {
   EXPECT_EQ(nullptr, GetWebFrameWithId(&test_web_state, "iframe"));
   EXPECT_EQ(nullptr, GetWebFrameWithId(&test_web_state, "main_frame"));
   EXPECT_EQ(nullptr, GetWebFrameWithId(&test_web_state, "unused"));
+
+  // Test that GetWebFrameWithId returns nullptr for the empty string.
+  EXPECT_EQ(nullptr, GetWebFrameWithId(&test_web_state, ""));
 }
 
 // Tests the GetWebFrameId GetWebFrameId function.

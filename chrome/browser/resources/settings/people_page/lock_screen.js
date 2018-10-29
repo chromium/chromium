@@ -135,6 +135,29 @@ Polymer({
     },
 
     /**
+     * True if Easy Unlock is in legacy host mode.
+     *
+     * TODO(crbug.com/894585): Remove this legacy special case after M71.
+     */
+    easyUnlockInLegacyHostMode_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('easyUnlockInLegacyHostMode');
+      },
+    },
+
+    /**
+     * True if Multidevice Setup is enabled.
+     * @private {boolean}
+     */
+    multideviceSettingsEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('enableMultideviceSettings');
+      },
+    },
+
+    /**
      * Returns the proximity threshold mapping to be displayed in the
      * threshold selector dropdown menu.
      */
@@ -436,5 +459,16 @@ Polymer({
     if (hasPinLogin)
       return this.i18n('lockScreenOptionsLoginLock');
     return this.i18n('lockScreenOptionsLock');
+  },
+
+  /**
+   * @return {boolean} Whether Easy Unlock is available.
+   * @private
+   */
+  easyUnlockAvailable_: function(
+      multiDeviceEnabled, easyUnlockAllowed, easyUnlockInLegacyHostMode) {
+    return (
+        (!multiDeviceEnabled || easyUnlockInLegacyHostMode) &&
+        easyUnlockAllowed);
   },
 });

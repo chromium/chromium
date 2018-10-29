@@ -179,7 +179,7 @@ void MockSimplePersistentCookieStore::UpdateCookieAccessTime(
 void MockSimplePersistentCookieStore::DeleteCookie(
     const CanonicalCookie& cookie) {
   int64_t creation_time = cookie.CreationDate().ToInternalValue();
-  CanonicalCookieMap::iterator it = cookies_.find(creation_time);
+  auto it = cookies_.find(creation_time);
   ASSERT_TRUE(it != cookies_.end());
   cookies_.erase(it);
 }

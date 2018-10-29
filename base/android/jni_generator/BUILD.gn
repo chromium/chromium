@@ -21,6 +21,14 @@ android_library("jni_sample_java") {
   ]
 }
 
+android_library("jni_annotation_sample_java") {
+  java_files = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
+  deps = [
+    "//base:jni_processor_annotations_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
 source_set("jni_sample_native_side") {
   deps = [
     ":jni_sample_header",
@@ -63,6 +71,22 @@ generate_jni_registration("sample_jni_registration") {
 # Serves to test that generated bindings compile properly.
 group("jni_generator_tests") {
   deps = [
+    ":jni_annotation_sample_java",
     ":sample_jni_apk",
+  ]
+}
+
+java_annotation_processor("jni_processor") {
+  java_files = [ "java/src/org/chromium/jni_generator/JniProcessor.java" ]
+
+  main_class = "org.chromium.jni_generator.JniProcessor"
+
+  annotation_processor_deps = [ "//third_party/auto:auto_service_processor" ]
+
+  deps = [
+    "//base:jni_processor_annotations_java",
+    "//third_party/android_deps:com_squareup_javapoet_java",
+    "//third_party/auto:auto_service_java",
+    "//third_party/guava:guava_java",
   ]
 }

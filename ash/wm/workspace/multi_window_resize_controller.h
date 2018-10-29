@@ -45,13 +45,11 @@ class ASH_EXPORT MultiWindowResizeController
   // is over, |component| the edge and |point| the location of the mouse.
   void Show(aura::Window* window, int component, const gfx::Point& point);
 
-  // Hides the resize widget.
-  void Hide();
-
   // MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
   // WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   // wm::WindowStateObserver:
@@ -131,6 +129,12 @@ class ASH_EXPORT MultiWindowResizeController
 
   // Returns true if the widget is showing.
   bool IsShowing() const;
+
+  // Hides the resize widget.
+  void Hide();
+
+  // Resets the window resizer and hides the resize widget.
+  void ResetResizer();
 
   // Initiates a resize.
   void StartResize(const gfx::Point& location_in_screen);

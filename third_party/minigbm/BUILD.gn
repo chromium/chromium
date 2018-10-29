@@ -94,12 +94,12 @@ if (!use_system_minigbm) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
     deps = [
-      "//third_party/libdrm",
+      "//build/config/linux/libdrm",
     ]
     public_configs = [ ":minigbm_config" ]
 
     if (use_exynos_minigbm) {
-      configs += [ "//third_party/libdrm:libdrm_exynos_include_config" ]
+      configs += [ "//build/config/linux/libdrm:libdrm_exynos_include_config" ]
     }
 
     # Clients need this to pick up the shared library correctly.

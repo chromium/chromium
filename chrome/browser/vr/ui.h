@@ -74,6 +74,8 @@ class VR_UI_EXPORT Ui : public UiInterface,
   ContentInputDelegate* GetContentInputDelegateForTest() {
     return content_input_delegate_.get();
   }
+  bool GetElementVisibilityForTesting(
+      UserFriendlyElementName element_name) override;
 
   void Dump(bool include_bindings);
   // TODO(crbug.com/767957): Refactor to hide these behind the UI interface.
@@ -119,6 +121,8 @@ class VR_UI_EXPORT Ui : public UiInterface,
                       const base::string16& title) override;
   void RemoveTab(int id, bool incognito) override;
   void RemoveAllTabs() override;
+  void PerformKeyboardInputForTesting(
+      KeyboardTestInput keyboard_input) override;
 
   // UiInterface
   base::WeakPtr<BrowserUiInterface> GetBrowserUiWeakPtr() override;
@@ -135,9 +139,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
                                            PlatformUiInputDelegate* delegate,
                                            float width_percentage,
                                            float height_percentage) override;
-  void SetAlertDialogSize(float width, float height) override;
-  void SetContentOverlayAlertDialogSize(float width_percentage,
-                                        float height_percentage) override;
   void SetDialogLocation(float x, float y) override;
   void SetDialogFloating(bool floating) override;
   void ShowPlatformToast(const base::string16& text) override;
@@ -196,6 +197,9 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnKeyboardHidden() override;
 
  private:
+  void SetAlertDialogSize(float width, float height);
+  void SetContentOverlayAlertDialogSize(float width_percentage,
+                                        float height_percentage);
   void RequestFocus(int element_id);
   void RequestUnfocus(int element_id);
   void OnMenuButtonClicked();
@@ -223,6 +227,8 @@ class VR_UI_EXPORT Ui : public UiInterface,
   ContentElement* content_element_ = nullptr;
 
   std::unique_ptr<KeyboardDelegate> keyboard_delegate_;
+  std::unique_ptr<KeyboardDelegate> keyboard_delegate_for_testing_;
+  bool using_keyboard_delegate_for_testing_ = false;
   std::unique_ptr<TextInputDelegate> text_input_delegate_;
   std::unique_ptr<AudioDelegate> audio_delegate_;
 

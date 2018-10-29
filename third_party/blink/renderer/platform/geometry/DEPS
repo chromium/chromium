@@ -8,9 +8,7 @@ include_rules = [
     # Dependencies.
     "+cc/base/region.h",
     "+third_party/blink/renderer/platform/json",
-    "+third_party/blink/renderer/platform/layout_unit.h",
     "+third_party/blink/renderer/platform/platform_export.h",
-    "+third_party/blink/renderer/platform/pod_interval_tree.h",
     "+third_party/blink/renderer/platform/wtf",
     "+ui/gfx/geometry",
 ]

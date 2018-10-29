@@ -103,7 +103,6 @@ BlobDataBuilder::~BlobDataBuilder() = default;
 
 void BlobDataBuilder::AppendIPCDataElement(
     const network::DataElement& ipc_data,
-    const scoped_refptr<FileSystemContext>& file_system_context,
     const BlobStorageRegistry& blob_registry) {
   uint64_t length = ipc_data.length();
   switch (ipc_data.type()) {
@@ -400,22 +399,23 @@ void BlobDataBuilder::AppendFileSystemFile(
 }
 
 void BlobDataBuilder::AppendDiskCacheEntry(
-    const scoped_refptr<DataHandle>& data_handle,
+    scoped_refptr<DataHandle> data_handle,
     disk_cache::Entry* disk_cache_entry,
     int disk_cache_stream_index) {
-  AppendDiskCacheEntryWithSideData(data_handle, disk_cache_entry,
+  AppendDiskCacheEntryWithSideData(std::move(data_handle), disk_cache_entry,
                                    disk_cache_stream_index,
                                    kInvalidDiskCacheSideStreamIndex);
 }
 
 void BlobDataBuilder::AppendDiskCacheEntryWithSideData(
-    const scoped_refptr<DataHandle>& data_handle,
+    scoped_refptr<DataHandle> data_handle,
     disk_cache::Entry* disk_cache_entry,
     int disk_cache_stream_index,
     int disk_cache_side_stream_index) {
   auto item = BlobDataItem::CreateDiskCacheEntry(
-      0u, disk_cache_entry->GetDataSize(disk_cache_stream_index), data_handle,
-      disk_cache_entry, disk_cache_stream_index, disk_cache_side_stream_index);
+      0u, disk_cache_entry->GetDataSize(disk_cache_stream_index),
+      std::move(data_handle), disk_cache_entry, disk_cache_stream_index,
+      disk_cache_side_stream_index);
 
   total_size_ += item->length();
   UMA_HISTOGRAM_COUNTS_1M("Storage.BlobItemSize.CacheEntry",

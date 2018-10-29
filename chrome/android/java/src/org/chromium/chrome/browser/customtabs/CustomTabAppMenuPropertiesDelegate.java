@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,7 +68,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             forwardMenuItem.setEnabled(currentTab.canGoForward());
 
             mReloadMenuItem = menu.findItem(R.id.reload_menu_id);
-            mReloadMenuItem.setIcon(R.drawable.btn_reload_stop);
+            Drawable icon = AppCompatResources.getDrawable(mActivity, R.drawable.btn_reload_stop);
+            DrawableCompat.setTintList(
+                    icon, AppCompatResources.getColorStateList(mActivity, R.color.dark_mode_tint));
+            mReloadMenuItem.setIcon(icon);
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem shareItem = menu.findItem(R.id.share_row_menu_id);

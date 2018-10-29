@@ -7,6 +7,7 @@
 suite('SiteListEntry', function() {
   let testElement;
   setup(function() {
+    PolymerTest.clearBody();
     testElement = document.createElement('site-list-entry');
     document.body.appendChild(testElement);
   });
@@ -27,10 +28,26 @@ suite('SiteListEntry', function() {
     assertEquals('none', tooltip.computedStyleMap().get('display').value);
     assertFalse(paperTooltip._showing);
     const wait = test_util.eventToPromise('show-tooltip', document);
-    icon.$.indicator.dispatchEvent(new MouseEvent('mouseenter'));
+    icon.$.indicator.dispatchEvent(
+        new MouseEvent('mouseenter', {bubbles: true, composed: true}));
     return wait.then(() => {
       assertTrue(paperTooltip._showing);
       assertEquals('none', tooltip.computedStyleMap().get('display').value);
     });
   });
+
+  if (cr.isChromeOS) {
+    test('shows androidSms note', function() {
+      testElement.model = {
+        origin: 'http://example.com',
+        showAndroidSmsNote: true,
+        category: settings.ContentSettingsTypes.NOTIFICATIONS
+      };
+      Polymer.dom.flush();
+      const siteDescription = testElement.$$('#siteDescription');
+      assertEquals(
+          loadTimeData.getString('androidSmsNote'),
+          siteDescription.textContent);
+    });
+  }
 });

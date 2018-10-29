@@ -271,8 +271,9 @@ void AppCacheUpdateJob::StartUpdate(AppCacheHost* host,
                      weak_factory_.GetWeakPtr(), true));
 }
 
-AppCacheResponseWriter* AppCacheUpdateJob::CreateResponseWriter() {
-  AppCacheResponseWriter* writer =
+std::unique_ptr<AppCacheResponseWriter>
+AppCacheUpdateJob::CreateResponseWriter() {
+  std::unique_ptr<AppCacheResponseWriter> writer =
       storage_->CreateResponseWriter(manifest_url_);
   stored_response_ids_.push_back(writer->response_id());
   return writer;
@@ -318,7 +319,7 @@ void AppCacheUpdateJob::HandleCacheFailure(
     group_->SetUpdateAppCacheStatus(AppCacheGroup::IDLE);
     group_ = nullptr;
     service_->DeleteAppCacheGroup(manifest_url_,
-                                  base::Bind(EmptyCompletionCallback));
+                                  base::BindOnce(EmptyCompletionCallback));
   }
 
   DeleteSoon();  // To unwind the stack prior to deletion.
@@ -598,7 +599,7 @@ void AppCacheUpdateJob::HandleMasterEntryFetchCompleted(URLFetcher* fetcher,
 
   int response_code = net_error == net::OK ? request->GetResponseCode() : -1;
 
-  PendingMasters::iterator found = pending_master_entries_.find(url);
+  auto found = pending_master_entries_.find(url);
   DCHECK(found != pending_master_entries_.end());
   PendingHosts& hosts = found->second;
 
@@ -687,7 +688,7 @@ void AppCacheUpdateJob::HandleManifestRefetchCompleted(URLFetcher* fetcher,
       entry->add_types(AppCacheEntry::MANIFEST);
       StoreGroupAndCache();
     } else {
-      manifest_response_writer_.reset(CreateResponseWriter());
+      manifest_response_writer_ = CreateResponseWriter();
       scoped_refptr<HttpResponseInfoIOBuffer> io_buffer =
           base::MakeRefCounted<HttpResponseInfoIOBuffer>(
               std::move(manifest_response_info_));
@@ -860,11 +861,10 @@ void AppCacheUpdateJob::AddAllAssociatedHostsToNotifier(
 
 void AppCacheUpdateJob::OnDestructionImminent(AppCacheHost* host) {
   // The host is about to be deleted; remove from our collection.
-  PendingMasters::iterator found =
-      pending_master_entries_.find(host->pending_master_entry_url());
+  auto found = pending_master_entries_.find(host->pending_master_entry_url());
   CHECK(found != pending_master_entries_.end());
   PendingHosts& hosts = found->second;
-  PendingHosts::iterator it = std::find(hosts.begin(), hosts.end(), host);
+  auto it = std::find(hosts.begin(), hosts.end(), host);
   CHECK(it != hosts.end());
   hosts.erase(it);
 }
@@ -901,9 +901,8 @@ void AppCacheUpdateJob::CheckIfManifestChanged() {
   }
 
   // Load manifest data from storage to compare against fetched manifest.
-  manifest_response_reader_.reset(
-      storage_->CreateResponseReader(manifest_url_,
-                                     entry->response_id()));
+  manifest_response_reader_ =
+      storage_->CreateResponseReader(manifest_url_, entry->response_id());
   read_manifest_buffer_ =
       base::MakeRefCounted<net::IOBuffer>(kAppCacheFetchBufferSize);
   manifest_response_reader_->ReadData(
@@ -968,7 +967,7 @@ void AppCacheUpdateJob::FetchUrls() {
     UrlToFetch url_to_fetch = urls_to_fetch_.front();
     urls_to_fetch_.pop_front();
 
-    AppCache::EntryMap::iterator it = url_file_list_.find(url_to_fetch.url);
+    auto it = url_file_list_.find(url_to_fetch.url);
     DCHECK(it != url_file_list_.end());
     AppCacheEntry& entry = it->second;
     if (ShouldSkipUrlFetch(entry)) {
@@ -1094,7 +1093,7 @@ void AppCacheUpdateJob::FetchMasterEntries() {
         // TODO(michaeln): defer until the updated cache has been stored.
         DCHECK(!inprogress_cache_.get());
         AppCache* cache = group_->newest_complete_cache();
-        PendingMasters::iterator found = pending_master_entries_.find(url);
+        auto found = pending_master_entries_.find(url);
         DCHECK(found != pending_master_entries_.end());
         PendingHosts& hosts = found->second;
         for (AppCacheHost* host : hosts)
@@ -1133,7 +1132,7 @@ void AppCacheUpdateJob::CancelAllMasterEntryFetches(
   HostNotifier host_notifier;
   while (!master_entries_to_fetch_.empty()) {
     const GURL& url = *master_entries_to_fetch_.begin();
-    PendingMasters::iterator found = pending_master_entries_.find(url);
+    auto found = pending_master_entries_.find(url);
     DCHECK(found != pending_master_entries_.end());
     PendingHosts& hosts = found->second;
     for (AppCacheHost* host : hosts) {
@@ -1181,7 +1180,7 @@ void AppCacheUpdateJob::OnResponseInfoLoaded(
     return;
   }
 
-  LoadingResponses::iterator found = loading_responses_.find(response_id);
+  auto found = loading_responses_.find(response_id);
   DCHECK(found != loading_responses_.end());
   const GURL& url = found->second;
 
@@ -1195,7 +1194,7 @@ void AppCacheUpdateJob::OnResponseInfoLoaded(
     DCHECK(copy_me);
     DCHECK_EQ(copy_me->response_id(), response_id);
 
-    AppCache::EntryMap::iterator it = url_file_list_.find(url);
+    auto it = url_file_list_.find(url);
     DCHECK(it != url_file_list_.end());
     AppCacheEntry& entry = it->second;
     entry.set_response_id(response_id);

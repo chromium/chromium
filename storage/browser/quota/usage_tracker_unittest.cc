@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -19,7 +21,6 @@
 using blink::mojom::QuotaStatusCode;
 using blink::mojom::StorageType;
 using storage::QuotaClient;
-using storage::QuotaClientList;
 using storage::SpecialStoragePolicy;
 using storage::UsageTracker;
 
@@ -71,7 +72,7 @@ class MockQuotaClient : public QuotaClient {
                       StorageType type,
                       GetUsageCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    int64_t usage = GetUsage(origin.GetURL());
+    int64_t usage = GetUsage(origin);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
@@ -81,7 +82,7 @@ class MockQuotaClient : public QuotaClient {
     EXPECT_EQ(StorageType::kTemporary, type);
     std::set<url::Origin> origins;
     for (const auto& origin_usage_pair : origin_usage_map_)
-      origins.insert(url::Origin::Create(origin_usage_pair.first));
+      origins.insert(origin_usage_pair.first);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), origins));
   }
@@ -92,8 +93,8 @@ class MockQuotaClient : public QuotaClient {
     EXPECT_EQ(StorageType::kTemporary, type);
     std::set<url::Origin> origins;
     for (const auto& origin_usage_pair : origin_usage_map_) {
-      if (net::GetHostOrSpecFromURL(origin_usage_pair.first) == host)
-        origins.insert(url::Origin::Create(origin_usage_pair.first));
+      if (net::GetHostOrSpecFromURL(origin_usage_pair.first.GetURL()) == host)
+        origins.insert(origin_usage_pair.first);
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), origins));
@@ -103,7 +104,7 @@ class MockQuotaClient : public QuotaClient {
                         StorageType type,
                         DeletionCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    origin_usage_map_.erase(origin.GetURL());
+    origin_usage_map_.erase(origin);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
@@ -112,23 +113,23 @@ class MockQuotaClient : public QuotaClient {
     return type == StorageType::kTemporary;
   }
 
-  int64_t GetUsage(const GURL& origin) {
+  int64_t GetUsage(const url::Origin& origin) {
     auto found = origin_usage_map_.find(origin);
     if (found == origin_usage_map_.end())
       return 0;
     return found->second;
   }
 
-  void SetUsage(const GURL& origin, int64_t usage) {
+  void SetUsage(const url::Origin& origin, int64_t usage) {
     origin_usage_map_[origin] = usage;
   }
 
-  int64_t UpdateUsage(const GURL& origin, int64_t delta) {
+  int64_t UpdateUsage(const url::Origin& origin, int64_t delta) {
     return origin_usage_map_[origin] += delta;
   }
 
  private:
-  std::map<GURL, int64_t> origin_usage_map_;
+  std::map<url::Origin, int64_t> origin_usage_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaClient);
 };
@@ -148,13 +149,14 @@ class UsageTrackerTest : public testing::Test {
     return &usage_tracker_;
   }
 
-  void UpdateUsage(const GURL& origin, int64_t delta) {
+  void UpdateUsage(const url::Origin& origin, int64_t delta) {
     quota_client_.UpdateUsage(origin, delta);
     usage_tracker_.UpdateUsageCache(quota_client_.id(), origin, delta);
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdateUsageWithoutNotification(const GURL& origin, int64_t delta) {
+  void UpdateUsageWithoutNotification(const url::Origin& origin,
+                                      int64_t delta) {
     quota_client_.UpdateUsage(origin, delta);
   }
 
@@ -198,30 +200,30 @@ class UsageTrackerTest : public testing::Test {
     EXPECT_TRUE(done);
   }
 
-  void GrantUnlimitedStoragePolicy(const GURL& origin) {
-    if (!storage_policy_->IsStorageUnlimited(origin)) {
-      storage_policy_->AddUnlimited(origin);
-      storage_policy_->NotifyGranted(
-          origin, SpecialStoragePolicy::STORAGE_UNLIMITED);
+  void GrantUnlimitedStoragePolicy(const url::Origin& origin) {
+    if (!storage_policy_->IsStorageUnlimited(origin.GetURL())) {
+      storage_policy_->AddUnlimited(origin.GetURL());
+      storage_policy_->NotifyGranted(origin.GetURL(),
+                                     SpecialStoragePolicy::STORAGE_UNLIMITED);
     }
   }
 
-  void RevokeUnlimitedStoragePolicy(const GURL& origin) {
-    if (storage_policy_->IsStorageUnlimited(origin)) {
-      storage_policy_->RemoveUnlimited(origin);
-      storage_policy_->NotifyRevoked(
-          origin, SpecialStoragePolicy::STORAGE_UNLIMITED);
+  void RevokeUnlimitedStoragePolicy(const url::Origin& origin) {
+    if (storage_policy_->IsStorageUnlimited(origin.GetURL())) {
+      storage_policy_->RemoveUnlimited(origin.GetURL());
+      storage_policy_->NotifyRevoked(origin.GetURL(),
+                                     SpecialStoragePolicy::STORAGE_UNLIMITED);
     }
   }
 
-  void SetUsageCacheEnabled(const GURL& origin, bool enabled) {
+  void SetUsageCacheEnabled(const url::Origin& origin, bool enabled) {
     usage_tracker_.SetUsageCacheEnabled(
         quota_client_.id(), origin, enabled);
   }
 
  private:
-  QuotaClientList GetUsageTrackerList() {
-    QuotaClientList client_list;
+  std::vector<QuotaClient*> GetUsageTrackerList() {
+    std::vector<QuotaClient*> client_list;
     client_list.push_back(&quota_client_);
     return client_list;
   }
@@ -245,8 +247,9 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   EXPECT_EQ(0, usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  const GURL origin("http://example.com");
-  const std::string host(net::GetHostOrSpecFromURL(origin));
+  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+  const url::Origin origin = url::Origin::Create(GURL("http://example.com"));
+  const std::string host(net::GetHostOrSpecFromURL(origin.GetURL()));
 
   UpdateUsage(origin, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
@@ -284,8 +287,8 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   base::flat_map<QuotaClient::ID, int64_t> host_usage_breakdown;
   base::flat_map<QuotaClient::ID, int64_t> host_usage_breakdown_expected;
 
-  const GURL origin("http://example.com");
-  const std::string host(net::GetHostOrSpecFromURL(origin));
+  const url::Origin origin = url::Origin::Create(GURL("http://example.com"));
+  const std::string host(net::GetHostOrSpecFromURL(origin.GetURL()));
 
   UpdateUsage(origin, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
@@ -343,10 +346,11 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
 }
 
 TEST_F(UsageTrackerTest, LimitedGlobalUsageTest) {
-  const GURL kNormal("http://normal");
-  const GURL kUnlimited("http://unlimited");
-  const GURL kNonCached("http://non_cached");
-  const GURL kNonCachedUnlimited("http://non_cached-unlimited");
+  const url::Origin kNormal = url::Origin::Create(GURL("http://normal"));
+  const url::Origin kUnlimited = url::Origin::Create(GURL("http://unlimited"));
+  const url::Origin kNonCached = url::Origin::Create(GURL("http://non_cached"));
+  const url::Origin kNonCachedUnlimited =
+      url::Origin::Create(GURL("http://non_cached-unlimited"));
 
   GrantUnlimitedStoragePolicy(kUnlimited);
   GrantUnlimitedStoragePolicy(kNonCachedUnlimited);

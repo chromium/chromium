@@ -58,12 +58,12 @@ class BrowsingDataQuotaHelper
     int64_t syncable_usage = 0;
   };
 
-  typedef std::list<QuotaInfo> QuotaInfoArray;
-  typedef base::Callback<void(const QuotaInfoArray&)> FetchResultCallback;
+  using QuotaInfoArray = std::list<QuotaInfo>;
+  using FetchResultCallback = base::OnceCallback<void(const QuotaInfoArray&)>;
 
   static BrowsingDataQuotaHelper* Create(Profile* profile);
 
-  virtual void StartFetching(const FetchResultCallback& callback) = 0;
+  virtual void StartFetching(FetchResultCallback callback) = 0;
 
   virtual void RevokeHostQuota(const std::string& host) = 0;
 

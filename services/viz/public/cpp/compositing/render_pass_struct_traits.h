@@ -45,9 +45,9 @@ struct StructTraits<viz::mojom::RenderPassDataView,
     return input->filters;
   }
 
-  static const cc::FilterOperations& background_filters(
+  static const cc::FilterOperations& backdrop_filters(
       const std::unique_ptr<viz::RenderPass>& input) {
-    return input->background_filters;
+    return input->backdrop_filters;
   }
 
   static const gfx::ColorSpace& color_space(

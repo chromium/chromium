@@ -38,22 +38,19 @@ enum EasyUnlockIconId {
   SPINNER,
 };
 
-// Fingerprint unlock state in the views lock screen.
-enum FingerprintUnlockState {
-  // Fingerprint unlock is not available.
+// The status of fingerprint availability.
+enum FingerprintState {
+  // The user cannot use fingerprint. This may be because:
+  //  - they are not the primary user
+  //  - they never registered fingerprint
+  //  - the device does not have a fingerprint sensor
   UNAVAILABLE,
-  // Fingerprint unlock is available.
+  // Fingerprint can be used to unlock the device.
   AVAILABLE,
-  // The unlock attempt is successful, the fingerprint is matched.
-  AUTH_SUCCESS,
-  // The unlock attempt is unsuccessful; the fingerprint is not
-  // recognized; however, the user can make another fingerprint auth
-  // attempt.
-  AUTH_FAILED,
-  // The unlock attempt is unsuccessful; the fingerprint is not
-  // recognized.  There have been too many unlock attempts and fingerprint
-  // is now disabled.
-  AUTH_DISABLED,
+  // There have been too many attempts, so now fingerprint is disabled.
+  DISABLED_FROM_ATTEMPTS,
+  // It has been too long since the device was last used.
+  DISABLED_FROM_TIMEOUT,
 };
 
 // Information about the custom icon in the user pod.
@@ -150,8 +147,9 @@ struct LoginUserInfo {
   // True if this user is the device owner.
   bool is_device_owner;
 
-  // True if fingerprint unlock is allowed for this user.
-  bool allow_fingerprint_unlock;
+  // The initial fingerprint state. There are other mojom methods (ie,
+  // login_screen.mojom::SetFingerprintState) which update the current state.
+  FingerprintState fingerprint_state;
 
   // True if multi-profiles sign in is allowed for this user.
   bool is_multiprofile_allowed;

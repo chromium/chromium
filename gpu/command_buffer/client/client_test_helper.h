@@ -106,11 +106,8 @@ class MockClientGpuControl : public GpuControl {
 
   MOCK_METHOD1(SetGpuControlClient, void(GpuControlClient*));
   MOCK_CONST_METHOD0(GetCapabilities, const Capabilities&());
-  MOCK_METHOD4(CreateImage,
-               int32_t(ClientBuffer buffer,
-                       size_t width,
-                       size_t height,
-                       unsigned internalformat));
+  MOCK_METHOD3(CreateImage,
+               int32_t(ClientBuffer buffer, size_t width, size_t height));
   MOCK_METHOD1(DestroyImage, void(int32_t id));
 
   // Workaround for move-only args in GMock.

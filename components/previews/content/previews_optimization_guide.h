@@ -19,10 +19,6 @@
 #include "components/previews/core/previews_experiments.h"
 #include "url/gurl.h"
 
-namespace net {
-class URLRequest;
-}  // namespace net
-
 namespace optimization_guide {
 namespace proto {
 class Configuration;
@@ -32,6 +28,7 @@ class Configuration;
 namespace previews {
 
 class PreviewsHints;
+class PreviewsUserData;
 
 using ResourceLoadingHintsCallback = base::OnceCallback<void(
     const GURL& document_gurl,
@@ -49,22 +46,30 @@ class PreviewsOptimizationGuide
 
   ~PreviewsOptimizationGuide() override;
 
-  // Returns whether |type| is whitelisted for |request|.
+  // Returns whether |type| is whitelisted for |url|.|previews_data| can be
+  // modified.
   // Virtual so it can be mocked in tests.
-  virtual bool IsWhitelisted(const net::URLRequest& request,
+  virtual bool IsWhitelisted(PreviewsUserData* previews_data,
+                             const GURL& url,
                              PreviewsType type) const;
 
-  // Returns whether |type| is blacklisted for |request|.
+  // Returns whether |type| is blacklisted for |url|.
   // Virtual so it can be mocked in tests.
-  virtual bool IsBlacklisted(const net::URLRequest& request,
-                             PreviewsType type) const;
+  virtual bool IsBlacklisted(const GURL& url, PreviewsType type) const;
 
   // Returns whether |request| may have associated optimization hints
   // (specifically, PageHints). If so, but the hints are not available
   // synchronously, this method will request that they be loaded (from disk or
   // network).
-  bool MaybeLoadOptimizationHints(const net::URLRequest& request,
+  bool MaybeLoadOptimizationHints(const GURL& url,
                                   ResourceLoadingHintsCallback callback);
+
+  // Logs UMA for whether the OptimizationGuide HintCache has a matching Hint
+  // guidance for |url|. This is useful for measuring the effectiveness of the
+  // page hints provided by Cacao.
+  void LogHintCacheMatch(const GURL& url,
+                         bool is_committed,
+                         net::EffectiveConnectionType ect) const;
 
   // optimization_guide::OptimizationGuideServiceObserver implementation:
   void OnHintsProcessed(

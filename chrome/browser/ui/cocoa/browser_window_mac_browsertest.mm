@@ -14,46 +14,25 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 
-namespace {
-
-enum class BrowserType { VIEWS, COCOA };
-
-std::string PrintBrowserType(const testing::TestParamInfo<BrowserType>& info) {
-  switch (info.param) {
-    case BrowserType::VIEWS:
-      return "Views";
-    case BrowserType::COCOA:
-      return "Cocoa";
-  }
-  NOTREACHED();
-  return std::string();
-}
-
-}  // namespace
-
-// Test harness for Mac-specific behaviors of BrowserWindow, whether it is
-// Cocoa- or Views-based.
-class BrowserWindowMacTest : public InProcessBrowserTest,
-                             public ::testing::WithParamInterface<BrowserType> {
+// Test harness for Mac-specific behaviors of BrowserWindow.
+class BrowserWindowMacTest : public InProcessBrowserTest {
  public:
-  BrowserWindowMacTest() : mode_(GetParam() == BrowserType::VIEWS) {}
+  BrowserWindowMacTest() {}
 
  private:
-  test::ScopedMacViewsBrowserMode mode_;
-
   DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacTest);
 };
 
 // Test that mainMenu commands do not attempt to validate against a Browser*
 // that is destroyed.
-IN_PROC_BROWSER_TEST_P(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
+IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   // Simulate AppKit (e.g. NSMenu) retaining an NSWindow.
-  base::scoped_nsobject<NSWindow> window(browser()->window()->GetNativeWindow(),
-                                         base::scoped_policy::RETAIN);
+  base::scoped_nsobject<NSWindow> window(
+      browser()->window()->GetNativeWindow().GetNativeNSWindow(),
+      base::scoped_policy::RETAIN);
   base::scoped_nsobject<NSMenuItem> bookmark_menu_item(
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
           itemWithTag:IDC_BOOKMARK_PAGE],
@@ -82,9 +61,3 @@ IN_PROC_BROWSER_TEST_P(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   // which currently asks |super|. That is, NSWindow. Which says YES.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_menu_item]);
 }
-
-INSTANTIATE_TEST_CASE_P(,
-                        BrowserWindowMacTest,
-                        ::testing::Values(BrowserType::VIEWS,
-                                          BrowserType::COCOA),
-                        &PrintBrowserType);

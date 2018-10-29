@@ -2,12 +2,12 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById('test1').offsetWidth is document.getElementById('ref').offsetWidth
 PASS document.getElementById('test2').offsetWidth is document.getElementById('ref').offsetWidth
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 m
 m
 m

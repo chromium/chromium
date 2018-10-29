@@ -1,0 +1,9 @@
+<html>
+  <script>
+    window.result = "bad result";
+    var observer = new ReportingObserver(function(reports) {
+        window.result = reports[0];
+    }, {buffered:true});
+    observer.observe();
+  </script>
+</html>

@@ -7,14 +7,13 @@ module tracing.mojom;
 const string kTraceEventDataSourceName = "org.chromium.trace_event";
 const string kMetaDataSourceName = "org.chromium.trace_metadata";
 
-// Brief description of the flow: There's a per-process ProducerClient
-// which connects to the central PerfettoService and establishes a two-way
-// connection with a ProducerHost. The latter will then pass a
-// SharedMemoryBuffer to the ProducerClient and tell it to start logging
-// events of a given type into it. As chunks of the buffer gets filled
-// up, the client will communicate this to the ProducerHost which will
-// tell Perfetto to copy the finished chunks into its central storage
-// and pass to any consumers.
+// Brief description of the flow: There's a per-process ProducerClient which
+// connects to the central PerfettoService and establishes a two-way connection
+// with a ProducerHost. The latter will then pass a SharedMemoryBuffer to the
+// ProducerClient and tell it to start logging events of a given type into it.
+// As chunks of the buffer get filled up, the client will communicate this to
+// the ProducerHost, which will tell Perfetto to copy the finished chunks into
+// its central storage and pass them on to its consumers.
 
 // For a more complete explanation of a Perfetto tracing session, see
 // https://android.googlesource.com/platform/external/perfetto/+/master/docs/life-of-a-tracing-session.md
@@ -22,22 +21,22 @@ const string kMetaDataSourceName = "org.chromium.trace_metadata";
 // See https://android.googlesource.com/platform/external/perfetto/
 // for the full documentation of Perfetto concepts and its shared memory ABI.
 
-// Used by the CommitDataRequest() method (client process->service) to signal when
-// a chunk is (segment/page of the shared memory buffer which is
-// owned by a per-thread TraceWriter) the central Perfetto service that it's
-// ready for consumption (flushed or fully written).
+// Passed by the client process as part of CommitDataRequest() to the central
+// Perfetto service. Signals that a chunk (segment/page of the shared memory
+// buffer which is owned by a per-thread TraceWriter) is ready for consumption
+// (flushed or fully written).
 struct ChunksToMove {
   // The page index within the producer:service shared memory buffer.
   uint32 page;
   // The chunk index within the given page.
   uint32 chunk;
-  // The target ring-buffer in the service where the chunk should be copied into.
+  // The target ring-buffer in the service that the chunk should be copied into.
   uint32 target_buffer;
 };
 
-// Used by the CommitDataRequest method (client process -> service) to
-// patch previously written chunks (to fill in size fields when protos
-// span multiple chunks, for example).
+// Passed by the client process as part of CommitDataRequest() to the central
+// Perfetto service. Used to patch previously written chunks (for example, to
+// fill in size fields when protos span multiple chunks).
 struct ChunkPatch {
   // Offset relative to the chunk defined in ChunksToPatch.
   uint32 offset;
@@ -45,8 +44,9 @@ struct ChunkPatch {
 };
 
 struct ChunksToPatch {
-  // The triplet {target_buffer, writer_id, chunk_id} uniquely identified a chunk that has
-  // been copied over into the main, non-shared, trace buffer owned by the service.
+  // The triplet {target_buffer, writer_id, chunk_id} uniquely identifies a
+  // chunk that has been copied over into the main, non-shared, trace buffer
+  // owned by the service.
   uint32 target_buffer;
   uint32 writer_id;
   uint32 chunk_id;
@@ -73,7 +73,7 @@ struct DataSourceRegistration {
 };
 
 interface ProducerHost {
-  // Called by a ProducerClient to asks the service to:
+  // Called by a ProducerClient to ask the service to:
   // 1) Move data from the shared memory buffer into the final tracing buffer
   //    owned by the service (through the |chunks_to_move|).
   // 2) Patch data (i.e. apply diff) that has been previously copied into the
@@ -82,8 +82,8 @@ interface ProducerHost {
   // requests.
   CommitData(CommitDataRequest data_request);
 
-  // Called by a ProducerClient to let the Host know it can provide a
-  // specific datasource.
+  // Called by a ProducerClient to let the Host know it can provide a specific
+  // datasource.
   RegisterDataSource(DataSourceRegistration registration_info);
 
   // Called to let the Service know that a flush is complete.
@@ -96,13 +96,14 @@ interface ProducerClient {
     // TODO(oysteine): Make a TypeTrait for sending the full DataSourceConfig.
     // Called by Perfetto (via ProducerHost) to request a data source to start
     // logging.
-    CreateDataSourceInstance(uint64 id, DataSourceConfig data_source_config);
+    StartDataSource(uint64 id, DataSourceConfig data_source_config);
     // Requesting a data source to stop logging again, with the id previously
-    // sent in the CreateDataSourceInstance call.
-    TearDownDataSourceInstance(uint64 id) => ();
+    // sent in the StartDataSource call.
+    StopDataSource(uint64 id) => ();
     Flush(uint64 flush_request_id, array<uint64> data_source_ids);
 };
 
 interface PerfettoService {
-  ConnectToProducerHost(ProducerClient producer_client, ProducerHost& producer_host);
+  ConnectToProducerHost(ProducerClient producer_client,
+                        ProducerHost& producer_host);
 };

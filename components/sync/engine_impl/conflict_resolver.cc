@@ -173,6 +173,9 @@ void ConflictResolver::ProcessSimpleConflict(syncable::WriteTransaction* trans,
                << "for: " << entry;
       UMA_HISTOGRAM_ENUMERATION("Sync.ResolveSimpleConflict", OVERWRITE_SERVER,
                                 CONFLICT_RESOLUTION_SIZE);
+      // TODO(crbug.com/890746): It seems like local deletion can override a
+      // remote update, which goes against the usual spirit of undeletion-wins,
+      // and differs from the USS logic.
     } else {
       DVLOG(1) << "Resolving simple conflict, ignoring local changes for: "
                << entry;

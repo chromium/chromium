@@ -90,9 +90,6 @@ class DrmThread : public base::Thread,
                         std::vector<DrmOverlayPlane> planes,
                         SwapCompletionOnceCallback submission_callback,
                         PresentationOnceCallback presentation_callback);
-  void GetVSyncParameters(
-      gfx::AcceleratedWidget widget,
-      const gfx::VSyncProvider::UpdateVSyncCallback& callback);
 
   void IsDeviceAtomic(gfx::AcceleratedWidget widget, bool* is_atomic);
 

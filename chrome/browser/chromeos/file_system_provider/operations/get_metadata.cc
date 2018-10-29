@@ -142,7 +142,9 @@ GetMetadata::GetMetadata(
     : Operation(event_router, file_system_info),
       entry_path_(entry_path),
       fields_(fields),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  DCHECK_NE(0, fields_);
+}
 
 GetMetadata::~GetMetadata() {
 }

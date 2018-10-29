@@ -1,0 +1,14 @@
+Name: GLFW
+Short Name: GLFW
+URL: https://github.com/glfw/glfw
+Version: 3.3-dev
+Revision: 096efdf798896cff80a0b2db08d7398b703406fe
+Security Critical: no
+License: Zlib
+License File: NOT_SHIPPED
+
+Description:
+GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and
+Vulkan application development. It provides a simple, platform-independent API
+for creating windows, contexts and surfaces, reading input, handling events,
+etc.

@@ -36,6 +36,12 @@ Polymer({
     },
 
     /**
+     * The current sync status, supplied by SyncBrowserProxy.
+     * @type {?settings.SyncStatus}
+     */
+    syncStatus: Object,
+
+    /**
      * Dictionary defining page visibility.
      * @type {!PrivacyPageVisibility}
      */
@@ -156,17 +162,13 @@ Polymer({
       },
     },
 
+    // <if expr="not chromeos">
     /** @private */
-    enableEphemeralFlashPermission_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('enableEphemeralFlashPermission');
-      },
-    },
-  },
+    showRestart_: Boolean,
+    // </if>
 
-  listeners: {
-    'doNotTrackDialogIf.dom-change': 'onDoNotTrackDomChange_',
+    /** @private */
+    showSignoutDialog_: Boolean,
   },
 
   /** @override */
@@ -183,6 +185,20 @@ Polymer({
     this.addWebUIListener(
         'onBlockAutoplayStatusChanged',
         this.onBlockAutoplayStatusChanged_.bind(this));
+
+    settings.SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
+        this.handleSyncStatus_.bind(this));
+    this.addWebUIListener(
+        'sync-status-changed', this.handleSyncStatus_.bind(this));
+  },
+
+  /**
+   * Handler for when the sync state is pushed from the browser.
+   * @param {?settings.SyncStatus} syncStatus
+   * @private
+   */
+  handleSyncStatus_: function(syncStatus) {
+    this.syncStatus = syncStatus;
   },
 
   /** @protected */
@@ -351,6 +367,41 @@ Polymer({
   getProtectedContentIdentifiersLabel_: function(value) {
     return value ? this.i18n('siteSettingsProtectedContentEnableIdentifiers') :
                    this.i18n('siteSettingsBlocked');
+  },
+
+  /** @private */
+  onSigninAllowedChange_: function() {
+    if (this.syncStatus.signedIn && !this.$.signinAllowedToggle.checked) {
+      // Switch the toggle back on and show the signout dialog.
+      this.$.signinAllowedToggle.checked = true;
+      this.showSignoutDialog_ = true;
+    } else {
+      /** @type {!SettingsToggleButtonElement} */ (this.$.signinAllowedToggle)
+          .sendPrefChange();
+      this.showRestart_ = true;
+    }
+  },
+
+  /** @private */
+  onSignoutDialogClosed_: function() {
+    if (/** @type {!SettingsSignoutDialogElement} */ (
+            this.$$('settings-signout-dialog'))
+            .wasConfirmed()) {
+      this.$.signinAllowedToggle.checked = false;
+      /** @type {!SettingsToggleButtonElement} */ (this.$.signinAllowedToggle)
+          .sendPrefChange();
+      this.showRestart_ = true;
+    }
+    this.showSignoutDialog_ = false;
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onRestartTap_: function(e) {
+    e.stopPropagation();
+    settings.LifetimeBrowserProxyImpl.getInstance().restart();
   },
 });
 })();

@@ -324,7 +324,7 @@ std::set<int32_t> AXTree::GetReverseRelations(ax::mojom::IntListAttribute attr,
 }
 
 std::set<int32_t> AXTree::GetNodeIdsForChildTreeId(
-    int32_t child_tree_id) const {
+    AXTreeID child_tree_id) const {
   // Conceptually, this is the "const" version of:
   //   return child_tree_id_reverse_map_[child_tree_id];
   const auto& result = child_tree_id_reverse_map_.find(child_tree_id);
@@ -461,7 +461,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   return true;
 }
 
-AXTableInfo* AXTree::GetTableInfo(AXNode* table_node) {
+AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
+  // Note: the const_casts are here because we want this function to be able
+  // to be called from a const virtual function on AXNode. AXTableInfo is
+  // computed on demand and cached, but that's an implementation detail
+  // we want to hide from users of this API.
+  AXNode* table_node = const_cast<AXNode*>(const_table_node);
+  AXTree* tree = const_cast<AXTree*>(this);
+
   DCHECK(table_node);
   const auto& cached = table_info_map_.find(table_node->id());
   if (cached != table_info_map_.end()) {
@@ -476,19 +483,20 @@ AXTableInfo* AXTree::GetTableInfo(AXNode* table_node) {
         delete table_info;
         table_info_map_.erase(table_node->id());
       }
+      // See note about const_cast, above.
       if (delegate_)
-        delegate_->OnNodeChanged(this, table_node);
+        delegate_->OnNodeChanged(tree, table_node);
     }
     return table_info;
   }
 
-  AXTableInfo* table_info = AXTableInfo::Create(this, table_node);
+  AXTableInfo* table_info = AXTableInfo::Create(tree, table_node);
   if (!table_info)
     return nullptr;
 
   table_info_map_[table_node->id()] = table_info;
   if (delegate_)
-    delegate_->OnNodeChanged(this, table_node);
+    delegate_->OnNodeChanged(tree, table_node);
 
   return table_info;
 }
@@ -501,7 +509,7 @@ AXNode* AXTree::CreateNode(AXNode* parent,
                            int32_t id,
                            int32_t index_in_parent,
                            AXTreeUpdateState* update_state) {
-  AXNode* new_node = new AXNode(parent, id, index_in_parent);
+  AXNode* new_node = new AXNode(this, parent, id, index_in_parent);
   id_map_[new_node->id()] = new_node;
   if (delegate_) {
     if (update_state->HasChangedNode(new_node) &&
@@ -672,24 +680,8 @@ void AXTree::CallNodeChangeCallbacks(AXNode* node, const AXNodeData& new_data) {
 void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
   const AXNodeData& old_data = node->data();
   int id = new_data.id;
-  auto int_callback = [this, node, id](ax::mojom::IntAttribute attr,
-                                       const int& old_id, const int& new_id) {
-    if (attr == ax::mojom::IntAttribute::kChildTreeId) {
-      // Remove old_id -> id from the map, and clear map keys if
-      // their values are now empty.
-      if (child_tree_id_reverse_map_.find(old_id) !=
-          child_tree_id_reverse_map_.end()) {
-        child_tree_id_reverse_map_[old_id].erase(id);
-        if (child_tree_id_reverse_map_[old_id].empty())
-          child_tree_id_reverse_map_.erase(old_id);
-      }
-
-      // Add new_id -> id to the map, unless new_id is zero indicating that
-      // we're only removing a relation.
-      if (new_id)
-        child_tree_id_reverse_map_[new_id].insert(id);
-    }
-
+  auto int_callback = [this, id](ax::mojom::IntAttribute attr,
+                                 const int& old_id, const int& new_id) {
     if (!IsNodeIdIntAttribute(attr))
       return;
 
@@ -710,10 +702,9 @@ void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
   CallIfAttributeValuesChanged(old_data.int_attributes, new_data.int_attributes,
                                0, int_callback);
 
-  auto intlist_callback = [this, node, id](
-                              ax::mojom::IntListAttribute attr,
-                              const std::vector<int32_t>& old_idlist,
-                              const std::vector<int32_t>& new_idlist) {
+  auto intlist_callback = [this, id](ax::mojom::IntListAttribute attr,
+                                     const std::vector<int32_t>& old_idlist,
+                                     const std::vector<int32_t>& new_idlist) {
     if (!IsNodeIdIntListAttribute(attr))
       return;
 
@@ -731,6 +722,33 @@ void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
   CallIfAttributeValuesChanged(old_data.intlist_attributes,
                                new_data.intlist_attributes,
                                std::vector<int32_t>(), intlist_callback);
+
+  auto string_callback = [this, id](ax::mojom::StringAttribute attr,
+                                    const std::string& old_string,
+                                    const std::string& new_string) {
+    if (attr == ax::mojom::StringAttribute::kChildTreeId) {
+      // Remove old_string -> id from the map, and clear map keys if
+      // their values are now empty.
+      AXTreeID old_ax_tree_id = AXTreeID::FromString(old_string);
+      if (child_tree_id_reverse_map_.find(old_ax_tree_id) !=
+          child_tree_id_reverse_map_.end()) {
+        child_tree_id_reverse_map_[old_ax_tree_id].erase(id);
+        if (child_tree_id_reverse_map_[old_ax_tree_id].empty())
+          child_tree_id_reverse_map_.erase(old_ax_tree_id);
+      }
+
+      // Add new_string -> id to the map, unless new_id is zero indicating that
+      // we're only removing a relation.
+      if (!new_string.empty()) {
+        AXTreeID new_ax_tree_id = AXTreeID::FromString(new_string);
+        child_tree_id_reverse_map_[new_ax_tree_id].insert(id);
+      }
+    }
+  };
+
+  CallIfAttributeValuesChanged(old_data.string_attributes,
+                               new_data.string_attributes, std::string(),
+                               string_callback);
 }
 
 void AXTree::DestroySubtree(AXNode* node,

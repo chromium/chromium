@@ -40,8 +40,9 @@ void WorkerSchedulerProxy::OnWorkerSchedulerCreated(
   DCHECK(!worker_scheduler_) << "OnWorkerSchedulerCreated is called twice";
   DCHECK(worker_scheduler) << "WorkerScheduler is expected to exist";
   worker_scheduler_ = std::move(worker_scheduler);
-  worker_thread_task_runner_ =
-      worker_scheduler_->GetWorkerThreadScheduler()->ControlTaskQueue();
+  worker_thread_task_runner_ = worker_scheduler_->GetWorkerThreadScheduler()
+                                   ->ControlTaskQueue()
+                                   ->task_runner();
   initialized_ = true;
 }
 

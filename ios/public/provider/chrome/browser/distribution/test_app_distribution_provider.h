@@ -5,8 +5,14 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_DISTRIBUTION_TEST_APP_DISTRIBUTION_PROVIDER_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_DISTRIBUTION_TEST_APP_DISTRIBUTION_PROVIDER_H_
 
-#include "base/macros.h"
 #import "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
+
+#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 class TestAppDistributionProvider : public AppDistributionProvider {
  public:
@@ -15,9 +21,11 @@ class TestAppDistributionProvider : public AppDistributionProvider {
 
   // AppDistributionProvider.
   std::string GetDistributionBrandCode() override;
-  void ScheduleDistributionNotifications(net::URLRequestContextGetter* context,
-                                         bool is_first_run) override;
+  void ScheduleDistributionNotifications(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      bool is_first_run) override;
   void CancelDistributionNotifications() override;
+  bool IsPreFirebaseLegacyUser(int64_t install_date) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestAppDistributionProvider);

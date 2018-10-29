@@ -11,6 +11,7 @@
     "ios_enable_code_signing=false",
     "is_component_build=false",
     "is_debug=false",
+    "symbol_level=0",
     "target_cpu=\"arm\"",
     "target_os=\"ios\"",
     "use_goma=true"

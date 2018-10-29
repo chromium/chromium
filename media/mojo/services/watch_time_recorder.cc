@@ -245,7 +245,9 @@ void WatchTimeRecorder::UpdateSecondaryProperties(
       return;
 
     // If a property just changes from an unknown to a known value, allow the
-    // update without creating a whole new record.
+    // update without creating a whole new record. Not checking
+    // audio_encryption_scheme and video_encryption_scheme as we want to
+    // capture changes in encryption schemes.
     if (last_record.secondary_properties->audio_codec == kUnknownAudioCodec ||
         last_record.secondary_properties->video_codec == kUnknownVideoCodec ||
         last_record.secondary_properties->audio_decoder_name.empty() ||
@@ -440,6 +442,10 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
         static_cast<int64_t>(ConvertVideoDecoderNameToEnum(
             ukm_record.secondary_properties->video_decoder_name)));
 
+    builder.SetAudioEncryptionScheme(static_cast<int64_t>(
+        ukm_record.secondary_properties->audio_encryption_scheme));
+    builder.SetVideoEncryptionScheme(static_cast<int64_t>(
+        ukm_record.secondary_properties->video_encryption_scheme));
     builder.SetIsEME(properties_->is_eme);
     builder.SetIsMSE(properties_->is_mse);
     builder.SetLastPipelineStatus(pipeline_status_);

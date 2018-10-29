@@ -62,6 +62,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher> {
   friend class base::RefCounted<Watcher>;
   FRIEND_TEST_ALL_PREFIXES(ResponsivenessWatcherTest, TaskForwarding);
   FRIEND_TEST_ALL_PREFIXES(ResponsivenessWatcherTest, TaskNesting);
+  FRIEND_TEST_ALL_PREFIXES(ResponsivenessWatcherTest, NativeEvents);
 
   // Metadata for currently running tasks and events is needed to track whether
   // or not they caused reentrancy.
@@ -79,7 +80,12 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher> {
     // difference between these is not interesting for computing responsiveness.
     // Instead of measuring the duration between |queue_time| and |finish_time|,
     // we measure the duration of execution itself.
-    base::TimeTicks delayed_task_start;
+    //
+    // We have evidence on Windows, macOS and Linux that the timestamp on native
+    // events is not reliable. For native events, we also measure execution
+    // duration instead of queue time + execution duration. See
+    // https://crbug.com/859155#c39.
+    base::TimeTicks execution_start_time;
   };
 
   void SetUpOnIOThread(Calculator*);
@@ -111,8 +117,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher> {
   // These methods are called by the NativeEventObserver of the UI thread to
   // allow Watcher to collect metadata about the events being run.
   void WillRunEventOnUIThread(const void* opaque_identifier);
-  void DidRunEventOnUIThread(const void* opaque_identifier,
-                             base::TimeTicks creation_time);
+  void DidRunEventOnUIThread(const void* opaque_identifier);
 
   // The following members are all affine to the UI thread.
   std::unique_ptr<Calculator> calculator_;

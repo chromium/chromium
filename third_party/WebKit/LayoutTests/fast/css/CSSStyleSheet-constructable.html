@@ -397,4 +397,38 @@ test(() => {
   assert_throws('NotAllowedError', () => { document.adoptedStyleSheets = new StyleSheetList([iframeStyleSheet]); });
   assert_equals(getComputedStyle(iframeDiv).color, "rgb(0, 0, 0)");
 }, 'Adding non-constructed stylesheet to AdoptedStyleSheets is not allowed when the owner document of the stylesheet and the AdoptedStyleSheets are in different document trees');
+
+
+test(() => {
+  const sheet = document.createCSSStyleSheetSync(redStyleTexts[0], {title: "Red", disabled: true, media: "screen, print"});
+  assert_equals(sheet.title, "Red");
+  assert_equals(sheet.ownerNode, null);
+  assert_equals(sheet.ownerRule, null);
+  assert_equals(sheet.media.length, 2);
+  assert_equals(sheet.media.item(0), "screen");
+  assert_equals(sheet.media.item(1), "print");
+  assert_true(sheet.disabled);
+  assert_equals(sheet.cssRules.length, 1);
+  assert_equals(sheet.cssRules[0].cssText, redStyleTexts[0]);
+
+  sheet.insertRule(redStyleTexts[1]);
+  assert_equals(sheet.cssRules.length, 2);
+  assert_equals(sheet.cssRules[0].cssText, redStyleTexts[1]);
+}, "Document.createCSSStyleSheetSync creates stylesheets synchronously");
+
+const import_text = '@import url("constructable-import.css");';
+test(() => {
+  assert_throws("NotAllowedError", () => { document.createCSSStyleSheetSync(import_text) });
+}, "Document.createCSSStyleSheetSync throws exception when there is import rule inside");
+
+
+promise_test(() => {
+  const sheet_promise = document.createCSSStyleSheet(import_text);
+  return sheet_promise.then(function(sheet) {
+    assert_equals(sheet.cssRules.length, 1);
+    assert_equals(sheet.cssRules[0].cssText, import_text);
+  });
+}, "Document.createCSSStyleSheet throws allows import rule inside");
+
 </script>
+

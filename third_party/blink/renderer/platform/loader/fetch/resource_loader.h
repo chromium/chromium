@@ -106,7 +106,7 @@ class PLATFORM_EXPORT ResourceLoader final
   bool WillFollowRedirect(const WebURL& new_url,
                           const WebURL& new_site_for_cookies,
                           const WebString& new_referrer,
-                          WebReferrerPolicy new_referrer_policy,
+                          network::mojom::ReferrerPolicy new_referrer_policy,
                           const WebString& new_method,
                           const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers) override;
@@ -120,17 +120,21 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
-  void DidFinishLoading(TimeTicks finish_time,
-                        int64_t encoded_data_length,
-                        int64_t encoded_body_length,
-                        int64_t decoded_body_length,
-                        bool should_report_corb_blocking) override;
+  void DidFinishLoading(
+      TimeTicks finish_time,
+      int64_t encoded_data_length,
+      int64_t encoded_body_length,
+      int64_t decoded_body_length,
+      bool should_report_corb_blocking,
+      const std::vector<network::cors::PreflightTimingInfo>&) override;
   void DidFail(const WebURLError&,
                int64_t encoded_data_length,
                int64_t encoded_body_length,
                int64_t decoded_body_length) override;
 
+  blink::mojom::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(const char* data, int size);
+  void ClearCachedCode();
 
   void HandleError(const ResourceError&);
 
@@ -163,7 +167,6 @@ class PLATFORM_EXPORT ResourceLoader final
   void Restart(const ResourceRequest&);
 
   FetchContext& Context() const;
-  scoped_refptr<const SecurityOrigin> GetSourceOrigin() const;
 
   void CancelForRedirectAccessCheckError(const KURL&,
                                          ResourceRequestBlockedReason);
@@ -178,7 +181,7 @@ class PLATFORM_EXPORT ResourceLoader final
   bool GetCORSFlag() const { return resource_->Options().cors_flag; }
 
   base::Optional<ResourceRequestBlockedReason> CheckResponseNosniff(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       const ResourceResponse&) const;
 
   bool ShouldCheckCORSInResourceLoader() const;
@@ -198,6 +201,7 @@ class PLATFORM_EXPORT ResourceLoader final
   uint32_t inflight_keepalive_bytes_;
   bool is_cache_aware_loading_activated_;
 
+  bool should_use_isolated_code_cache_ = false;
   bool is_downloading_to_blob_ = false;
   mojo::AssociatedBinding<mojom::blink::ProgressClient> progress_binding_;
   bool blob_finished_ = false;

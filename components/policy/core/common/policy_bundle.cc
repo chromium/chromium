@@ -24,7 +24,7 @@ PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) {
 
 const PolicyMap& PolicyBundle::Get(const PolicyNamespace& ns) const {
   DCHECK(ns.domain != POLICY_DOMAIN_CHROME || ns.component_id.empty());
-  const_iterator it = policy_bundle_.find(ns);
+  auto it = policy_bundle_.find(ns);
   return it == end() ? kEmpty_ : *it->second;
 }
 
@@ -42,10 +42,10 @@ void PolicyBundle::CopyFrom(const PolicyBundle& other) {
 void PolicyBundle::MergeFrom(const PolicyBundle& other) {
   // Iterate over both |this| and |other| in order; skip what's extra in |this|,
   // add what's missing, and merge the namespaces in common.
-  MapType::iterator it_this = policy_bundle_.begin();
-  MapType::iterator end_this = policy_bundle_.end();
-  const_iterator it_other = other.begin();
-  const_iterator end_other = other.end();
+  auto it_this = policy_bundle_.begin();
+  auto end_this = policy_bundle_.end();
+  auto it_other = other.begin();
+  auto end_other = other.end();
 
   while (it_this != end_this && it_other != end_other) {
     if (it_this->first == it_other->first) {
@@ -76,8 +76,8 @@ bool PolicyBundle::Equals(const PolicyBundle& other) const {
   // Equals() has the peculiarity that an entry with an empty PolicyMap equals
   // an non-existent entry. This handles usage of non-const Get() that doesn't
   // insert any policies.
-  const_iterator it_this = begin();
-  const_iterator it_other = other.begin();
+  auto it_this = begin();
+  auto it_other = other.begin();
 
   while (true) {
     // Skip empty PolicyMaps.

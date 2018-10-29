@@ -64,7 +64,7 @@ void DamageTracker::UpdateDamageTracking(
   //
   // - This algorithm requires that descendant surfaces compute their damage
   //   before ancestor surfaces. Further, since contributing surfaces with
-  //   background filters can expand the damage caused by contributors
+  //   backdrop filters can expand the damage caused by contributors
   //   underneath them (that is, before them in draw order), the exact damage
   //   caused by these contributors must be computed before computing the damage
   //   caused by the contributing surface. This is implemented by visiting
@@ -213,8 +213,8 @@ DamageTracker::LayerRectMapData& DamageTracker::RectDataForLayer(
     bool* layer_is_new) {
   LayerRectMapData data(layer_id);
 
-  SortedRectMapForLayers::iterator it = std::lower_bound(
-      rect_history_for_layers_.begin(), rect_history_for_layers_.end(), data);
+  auto it = std::lower_bound(rect_history_for_layers_.begin(),
+                             rect_history_for_layers_.end(), data);
 
   if (it == rect_history_for_layers_.end() || it->layer_id_ != layer_id) {
     *layer_is_new = true;
@@ -229,9 +229,8 @@ DamageTracker::SurfaceRectMapData& DamageTracker::RectDataForSurface(
     bool* surface_is_new) {
   SurfaceRectMapData data(surface_id);
 
-  SortedRectMapForSurfaces::iterator it =
-      std::lower_bound(rect_history_for_surfaces_.begin(),
-                       rect_history_for_surfaces_.end(), data);
+  auto it = std::lower_bound(rect_history_for_surfaces_.begin(),
+                             rect_history_for_surfaces_.end(), data);
 
   if (it == rect_history_for_surfaces_.end() || it->surface_id_ != surface_id) {
     *surface_is_new = true;
@@ -271,12 +270,10 @@ DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
   // So, these regions are now exposed on the target surface.
 
   DamageAccumulator damage;
-  SortedRectMapForLayers::iterator layer_cur_pos =
-      rect_history_for_layers_.begin();
-  SortedRectMapForLayers::iterator layer_copy_pos = layer_cur_pos;
-  SortedRectMapForSurfaces::iterator surface_cur_pos =
-      rect_history_for_surfaces_.begin();
-  SortedRectMapForSurfaces::iterator surface_copy_pos = surface_cur_pos;
+  auto layer_cur_pos = rect_history_for_layers_.begin();
+  auto layer_copy_pos = layer_cur_pos;
+  auto surface_cur_pos = rect_history_for_surfaces_.begin();
+  auto surface_copy_pos = surface_cur_pos;
 
   // Loop below basically implements std::remove_if loop with and extra
   // processing (adding deleted rect to damage) for deleted items.
@@ -341,11 +338,11 @@ void DamageTracker::ExpandDamageInsideRectWithFilters(
   if (!is_valid_rect || damage_rect.IsEmpty())
     return;
 
-  // Compute the pixels in the background of the surface that could be affected
+  // Compute the pixels in the backdrop of the surface that could be affected
   // by the damage in the content below.
   gfx::Rect expanded_damage_rect = filters.MapRect(damage_rect, SkMatrix::I());
 
-  // Restrict it to the rectangle in which the background filter is shown.
+  // Restrict it to the rectangle in which the backdrop filter is shown.
   expanded_damage_rect.Intersect(pre_filter_rect);
 
   damage_for_this_update_.Union(expanded_damage_rect);
@@ -455,17 +452,16 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
     }
   }
 
-  // If the layer has a background filter, this may cause pixels in our surface
+  // If the layer has a backdrop filter, this may cause pixels in our surface
   // to be expanded, so we will need to expand any damage at or below this
   // layer. We expand the damage from this layer too, as we need to readback
   // those pixels from the surface with only the contents of layers below this
   // one in them. This means we need to redraw any pixels in the surface being
   // used for the blur in this layer this frame.
-  const FilterOperations& background_filters =
-      render_surface->BackgroundFilters();
-  if (background_filters.HasFilterThatMovesPixels()) {
+  const FilterOperations& backdrop_filters = render_surface->BackdropFilters();
+  if (backdrop_filters.HasFilterThatMovesPixels()) {
     ExpandDamageInsideRectWithFilters(surface_rect_in_target_space,
-                                      background_filters);
+                                      backdrop_filters);
   }
 
   // True if any changes from contributing render surface.

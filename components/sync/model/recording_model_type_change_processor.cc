@@ -57,6 +57,10 @@ bool RecordingModelTypeChangeProcessor::IsTrackingMetadata() {
   return is_tracking_metadata_;
 }
 
+std::string RecordingModelTypeChangeProcessor::TrackedAccountId() {
+  return "";
+}
+
 void RecordingModelTypeChangeProcessor::SetIsTrackingMetadata(
     bool is_tracking) {
   is_tracking_metadata_ = is_tracking;
@@ -65,12 +69,9 @@ void RecordingModelTypeChangeProcessor::SetIsTrackingMetadata(
 // static
 std::unique_ptr<ModelTypeChangeProcessor>
 RecordingModelTypeChangeProcessor::CreateProcessorAndAssignRawPointer(
-    RecordingModelTypeChangeProcessor** processor_address,
-    bool expect_error) {
+    RecordingModelTypeChangeProcessor** processor_address) {
   auto processor = std::make_unique<RecordingModelTypeChangeProcessor>();
   *processor_address = processor.get();
-  if (expect_error)
-    processor->ExpectError();
   // Not all compilers are smart enough to up cast during copy elision, so we
   // explicitly create a correctly typed unique_ptr.
   return base::WrapUnique(processor.release());

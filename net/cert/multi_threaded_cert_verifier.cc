@@ -102,10 +102,8 @@ std::unique_ptr<base::Value> CertVerifyResultCallback(
                                              capture_mode));
 
   std::unique_ptr<base::ListValue> hashes(new base::ListValue());
-  for (std::vector<HashValue>::const_iterator it =
-           verify_result.public_key_hashes.begin();
-       it != verify_result.public_key_hashes.end();
-       ++it) {
+  for (auto it = verify_result.public_key_hashes.begin();
+       it != verify_result.public_key_hashes.end(); ++it) {
     hashes->AppendString(it->ToString());
   }
   results->Set("public_key_hashes", std::move(hashes));

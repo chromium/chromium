@@ -43,19 +43,31 @@ DataReductionProxyMutableConfigValues::FindConfiguredDataReductionProxy(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   base::Optional<DataReductionProxyTypeInfo> info =
-      DataReductionProxyParams::FindConfiguredProxyInVector(proxies_for_http(),
-                                                            proxy_server);
+      params::FindConfiguredProxyInVector(proxies_for_http(), proxy_server);
   if (info)
     return info;
 
   for (const auto& recent_proxies : recently_configured_proxy_lists_) {
     base::Optional<DataReductionProxyTypeInfo> recent_info =
-        DataReductionProxyParams::FindConfiguredProxyInVector(recent_proxies,
-                                                              proxy_server);
+        params::FindConfiguredProxyInVector(recent_proxies, proxy_server);
     if (recent_info)
       return recent_info;
   }
   return base::nullopt;
+}
+
+net::ProxyList DataReductionProxyMutableConfigValues::GetAllConfiguredProxies()
+    const {
+  net::ProxyList proxies;
+  for (const auto& proxy : proxies_for_http())
+    proxies.AddProxyServer(proxy.proxy_server());
+
+  for (const auto& recent_proxies : recently_configured_proxy_lists_) {
+    for (const auto& proxy : recent_proxies)
+      proxies.AddProxyServer(proxy.proxy_server());
+  }
+
+  return proxies;
 }
 
 void DataReductionProxyMutableConfigValues::UpdateValues(

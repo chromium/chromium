@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace url {
 class Origin;
@@ -46,9 +47,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
   // will match all domains in the specified protocol.
   // IPv6 addresses must include brackets (e.g.
   // '[2001:db8:85a3::8a2e:370:7334]', not '2001:db8:85a3::8a2e:370:7334').
-  OriginAccessEntry(const std::string& protocol,
-                    const std::string& host,
-                    MatchMode match_mode);
+  // The priority argument is used to break ties when multiple entries
+  // match.
+  OriginAccessEntry(
+      const std::string& protocol,
+      const std::string& host,
+      MatchMode match_mode,
+      const network::mojom::CORSOriginAccessMatchPriority priority =
+          network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   OriginAccessEntry(OriginAccessEntry&& from);
 
   // 'matchesOrigin' requires a protocol match (e.g. 'http' != 'https').
@@ -57,6 +63,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
   MatchResult MatchesDomain(const url::Origin& domain) const;
 
   bool host_is_ip_address() const { return host_is_ip_address_; }
+  network::mojom::CORSOriginAccessMatchPriority priority() const {
+    return priority_;
+  }
   const std::string& registerable_domain() const {
     return registerable_domain_;
   }
@@ -65,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
   const std::string protocol_;
   const std::string host_;
   const MatchMode match_mode_;
+  network::mojom::CORSOriginAccessMatchPriority priority_;
   const bool host_is_ip_address_;
 
   std::string registerable_domain_;

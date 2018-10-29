@@ -87,6 +87,12 @@ class CSSAgentTest : public testing::Test {
     auto edits = protocol::Array<protocol::CSS::StyleDeclarationEdit>::create();
     auto edit = protocol::CSS::StyleDeclarationEdit::create()
                     .setStyleSheetId(base::IntToString(node_id))
+                    .setRange(protocol::CSS::SourceRange::create()
+                                  .setStartLine(0)
+                                  .setStartColumn(0)
+                                  .setEndLine(0)
+                                  .setEndColumn(0)
+                                  .build())
                     .setText(style_text)
                     .build();
     edits->addItem(std::move(edit));

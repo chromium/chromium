@@ -29,7 +29,7 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD2(UpdateLoginWithPrimaryKey,
                void(const autofill::PasswordForm&,
                     const autofill::PasswordForm&));
-  MOCK_METHOD2(ReportMetrics, void(const std::string&, bool));
+  MOCK_METHOD3(ReportMetrics, void(const std::string&, bool, bool));
   MOCK_METHOD2(ReportMetricsImpl, void(const std::string&, bool));
   MOCK_METHOD1(AddLoginImpl,
                PasswordStoreChangeList(const autofill::PasswordForm&));
@@ -71,6 +71,7 @@ class MockPasswordStore : public PasswordStore {
                std::vector<InteractionsStats>(const GURL& origin_domain));
   MOCK_METHOD1(AddSiteStatsImpl, void(const InteractionsStats&));
   MOCK_METHOD1(RemoveSiteStatsImpl, void(const GURL&));
+  MOCK_CONST_METHOD0(IsAbleToSavePasswords, bool());
 // TODO(crbug.com/706392): Fix password reuse detection for Android.
 #if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
   MOCK_METHOD3(CheckReuse,
@@ -97,7 +98,7 @@ class MockPasswordStore : public PasswordStore {
   // PasswordStore:
   scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const override;
-  void InitOnBackgroundSequence(
+  bool InitOnBackgroundSequence(
       const syncer::SyncableService::StartSyncFlare& flare) override;
 };
 

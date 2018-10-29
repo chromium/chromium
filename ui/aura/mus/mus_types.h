@@ -20,16 +20,8 @@ enum class WindowMusType {
   // The window is an embed root in the embedded client. That is, the client
   // received this window by way of another client calling Embed(). In other
   // words, this is the embedded side of an embedding.
-  // NOTE: in the client that called Embed() the window type is LOCAL (or
-  // EMBED_IN_OWNER).
-  // TODO(sky): ensure when Embed() is called type is always set to
-  // EMBED_IN_OWNER, and if the embedding is removed it goes back to LOCAL.
-  // https://crbug.com/834487
+  // NOTE: in the client that called Embed() the window type is LOCAL.
   EMBED,
-
-  // Embed() was called on the window by the local client. In other words, this
-  // is the embedder side of an embedding.
-  EMBED_IN_OWNER,
 
   // The window was created by requesting a top level
   // (WindowTree::NewTopLevel()).

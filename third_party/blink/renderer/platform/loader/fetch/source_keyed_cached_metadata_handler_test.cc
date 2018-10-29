@@ -88,7 +88,8 @@ class SourceKeyedCachedMetadataHandlerMockPlatform final
 
   WebCrypto* Crypto() override { return &mock_web_crypto_; }
 
-  void CacheMetadata(const WebURL& url,
+  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
+                     const WebURL& url,
                      base::Time response_time,
                      const char* data,
                      size_t data_size) override {
@@ -125,7 +126,8 @@ class MockCachedMetadataSender final : public CachedMetadataSender {
   MockCachedMetadataSender(KURL response_url) : response_url_(response_url) {}
 
   void Send(const char* data, size_t size) override {
-    Platform::Current()->CacheMetadata(response_url_, response_time_, data,
+    Platform::Current()->CacheMetadata(blink::mojom::CodeCacheType::kJavascript,
+                                       response_url_, response_time_, data,
                                        size);
   }
 

@@ -36,7 +36,7 @@
 
 namespace blink {
 
-using namespace AudioUtilities;
+using namespace audio_utilities;
 
 // Metering hits peaks instantly, but releases this fast (in seconds).
 const float kMeteringReleaseTimeConstant = 0.325f;

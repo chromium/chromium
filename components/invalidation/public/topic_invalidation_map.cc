@@ -37,7 +37,7 @@ TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
     const TopicSet& topics) const {
   TopicToListMap new_map;
   for (const auto& topic : topics) {
-    TopicToListMap::const_iterator lookup = map_.find(topic);
+    auto lookup = map_.find(topic);
     if (lookup != map_.end()) {
       new_map[topic] = lookup->second;
     }
@@ -47,7 +47,7 @@ TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
 
 const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
     Topic topic) const {
-  TopicToListMap::const_iterator lookup = map_.find(topic);
+  auto lookup = map_.find(topic);
   DCHECK(lookup != map_.end());
   DCHECK(!lookup->second.IsEmpty());
   return lookup->second;
@@ -55,17 +55,14 @@ const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
 
 void TopicInvalidationMap::GetAllInvalidations(
     std::vector<syncer::Invalidation>* out) const {
-  for (TopicToListMap::const_iterator it = map_.begin(); it != map_.end();
-       ++it) {
+  for (auto it = map_.begin(); it != map_.end(); ++it) {
     out->insert(out->begin(), it->second.begin(), it->second.end());
   }
 }
 
 void TopicInvalidationMap::AcknowledgeAll() const {
-  for (TopicToListMap::const_iterator it1 = map_.begin(); it1 != map_.end();
-       ++it1) {
-    for (SingleObjectInvalidationSet::const_iterator it2 = it1->second.begin();
-         it2 != it1->second.end(); ++it2) {
+  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
+    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
       it2->Acknowledge();
     }
   }
@@ -77,10 +74,8 @@ bool TopicInvalidationMap::operator==(const TopicInvalidationMap& other) const {
 
 std::unique_ptr<base::ListValue> TopicInvalidationMap::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
-  for (TopicToListMap::const_iterator it1 = map_.begin(); it1 != map_.end();
-       ++it1) {
-    for (SingleObjectInvalidationSet::const_iterator it2 = it1->second.begin();
-         it2 != it1->second.end(); ++it2) {
+  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
+    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
       value->Append(it2->ToValue());
     }
   }

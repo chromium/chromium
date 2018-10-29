@@ -2,7 +2,6 @@ Tests margin-start and margin-end
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("ltr", "margin-inline-start", "10px", "width") is "90px"
 PASS test("ltr", "margin-inline-end", "20px", "width") is "80px"
 PASS test("ltr", "margin-inline-start", "10px", "margin-left") is "10px"

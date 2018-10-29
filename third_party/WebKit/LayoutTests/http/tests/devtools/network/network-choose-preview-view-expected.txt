@@ -114,9 +114,9 @@ Binary Blank Image File
 Testing with MimeType: image/png, and StatusCode: 200
 Content: 
 
-ResourceType(xhr): widget vbox empty-view-scroller
-ResourceType(fetch): widget vbox empty-view-scroller
-ResourceType(document): widget vbox empty-view-scroller
-ResourceType(other): widget vbox empty-view-scroller
+ResourceType(xhr): widget vbox image-view
+ResourceType(fetch): widget vbox image-view
+ResourceType(document): widget vbox image-view
+ResourceType(other): widget vbox image-view
 
 

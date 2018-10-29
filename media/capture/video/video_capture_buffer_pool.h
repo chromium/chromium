@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/gfx/geometry/size.h"
@@ -59,9 +60,9 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
       int buffer_id) = 0;
 
   // Reserve or allocate a buffer to support a packed frame of |dimensions| of
-  // pixel |format| and return its id. This will fail (returning kInvalidId) if
-  // the pool already is at its |count| limit of the number of allocations, and
-  // all allocated buffers are in use by the producer and/or consumers.
+  // pixel |format| and return its id. If the pool is already at maximum
+  // capacity, this will return kMaxBufferCountExceeded and set |buffer_id| to
+  // |kInvalidId|.
   //
   // If successful, the reserved buffer remains reserved (and writable by the
   // producer) until ownership is transferred either to the consumer via
@@ -71,11 +72,13 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   // On occasion, this call will decide to free an old buffer to make room for a
   // new allocation at a larger size. If so, the ID of the destroyed buffer is
   // returned via |buffer_id_to_drop|.
-  virtual int ReserveForProducer(const gfx::Size& dimensions,
-                                 VideoPixelFormat format,
-                                 const mojom::PlaneStridesPtr& strides,
-                                 int frame_feedback_id,
-                                 int* buffer_id_to_drop) = 0;
+  virtual VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      const mojom::PlaneStridesPtr& strides,
+      int frame_feedback_id,
+      int* buffer_id,
+      int* buffer_id_to_drop) = 0;
 
   // Indicate that a buffer held for the producer should be returned back to the
   // pool without passing on to the consumer. This effectively is the opposite

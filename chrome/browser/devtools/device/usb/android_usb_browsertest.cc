@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "device/base/device_client.h"
@@ -533,7 +535,7 @@ class AndroidUsbDiscoveryTest : public InProcessBrowserTest {
   void ScheduleDeviceCountRequest(const base::Closure& request) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     scheduler_invoked_++;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, request);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, request);
   }
 
   virtual std::unique_ptr<MockUsbService> CreateMockService() {

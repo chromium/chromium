@@ -185,12 +185,6 @@ var DomainSecurityPolicyView = (function() {
         'dynamic_sts_include_subdomains',
         'dynamic_sts_observed',
         'dynamic_sts_expiry',
-        // TODO(crbug.com/779166): Remove these:
-        'dynamic_pkp_domain',
-        'dynamic_pkp_include_subdomains',
-        'dynamic_pkp_observed',
-        'dynamic_pkp_expiry',
-        'dynamic_spki_hashes',
       ];
 
       var kStaticHashKeys =

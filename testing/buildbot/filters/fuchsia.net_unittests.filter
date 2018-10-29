@@ -26,3 +26,7 @@
 
 # Flaky, https://crbug.com/814811.
 -URLRequestTest.NetworkDelegateProxyError
+
+# SocketPosix::IsConnected has a different behavior on Fuchsia.
+# https://crbug.com/887587.
+-TCPSocketTest.BeforeConnectCallback

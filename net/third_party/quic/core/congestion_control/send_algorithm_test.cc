@@ -171,6 +171,7 @@ class SendAlgorithmTest : public QuicTestWithParam<TestParams> {
                 quic_sender_.connection())),
         GetParam().congestion_control_type, &random_, &stats_,
         kInitialCongestionWindowPackets);
+    quic_sender_.RecordTrace();
 
     QuicConnectionPeer::SetSendAlgorithm(quic_sender_.connection(), sender_);
     clock_ = simulator_.GetClock();

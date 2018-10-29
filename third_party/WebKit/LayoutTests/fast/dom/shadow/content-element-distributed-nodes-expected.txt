@@ -3,7 +3,6 @@ Tests for content element's getDistributedNodes().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS nodeList.length is expectedNodes.length
 PASS nodeList.item(0) is expectedNodes[0]
 PASS nodeList.length is expectedNodes.length
@@ -17,4 +16,5 @@ PASS nodeList.length is expectedNodes.length
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

@@ -7,7 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/message_loop/message_loop.h"
 #include "base/test/trace_event_analyzer.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

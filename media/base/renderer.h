@@ -56,6 +56,8 @@ class MEDIA_EXPORT Renderer {
   virtual void SetVolume(float volume) = 0;
 
   // Returns the current media time.
+  //
+  // This method must be safe to call from any thread.
   virtual base::TimeDelta GetMediaTime() = 0;
 
   // Provides a list of DemuxerStreams correlating to the tracks which should

@@ -13,18 +13,20 @@
     <style include="print-preview-shared paper-button-style">
       paper-button {
         --button-margin: 2px;
+        height: unset;
         margin: var(--button-margin);
+        margin-inline-start: 0;
         min-height: 32px;
         text-align: center;
-        width: calc(100% - 2 * var(--button-margin) - 15px);
+        width: calc(100% - var(--button-margin) - 15px);
       }
     </style>
     <print-preview-settings-section>
-      <span slot="title">$i18n{advancedOptionsLabel}</span>
+      <span slot="title"></span>
       <div slot="controls">
         <paper-button id="button" disabled$="[[disabled]]"
             on-click="onButtonClick_">
-          $i18n{showAdvancedOptions}
+          $i18n{newShowAdvancedOptions}
         </paper-button>
       </div>
     </print-preview-settings-section>

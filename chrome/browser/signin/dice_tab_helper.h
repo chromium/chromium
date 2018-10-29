@@ -31,12 +31,15 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   signin_metrics::Reason signin_reason() { return signin_reason_; }
 
+  GURL redirect_url() { return redirect_url_; }
+
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
   void InitializeSigninFlow(const GURL& signin_url,
                             signin_metrics::AccessPoint access_point,
                             signin_metrics::Reason reason,
-                            signin_metrics::PromoAction promo_action);
+                            signin_metrics::PromoAction promo_action,
+                            const GURL& redirect_url);
 
   // Returns true if this the tab is a re-usable chrome sign-in page (the signin
   // page is loading or loaded in the tab).
@@ -57,6 +60,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   bool IsSigninPageNavigation(
       content::NavigationHandle* navigation_handle) const;
 
+  GURL redirect_url_;
   GURL signin_url_;
   signin_metrics::AccessPoint signin_access_point_ =
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;

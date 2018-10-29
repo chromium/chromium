@@ -155,9 +155,19 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("options_page"));
 
+    content::RenderFrameDeletedObserver before_webui_obs(
+        content::ConvertToRenderFrameHost(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+
     // Change the first tab to be the omnibox page (WebUI).
     GURL omnibox(chrome::kChromeUIOmniboxURL);
     ui_test_utils::NavigateToURL(browser(), omnibox);
+
+    // The host objects from the page before the WebUI navigation stick around
+    // until the old renderer cleans up and ACKs, which may happen later than
+    // the navigation in the WebUI's renderer. So wait for that.
+    before_webui_obs.WaitUntilDeleted();
+
     EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
     tab1 = browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1);
     rph1 = tab1->GetMainFrame()->GetProcess();
@@ -201,7 +211,8 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     else
       EXPECT_EQ(tab2->GetMainFrame()->GetProcess(), rph2);
 
-    // Create another WebUI tab.  It should share the process with omnibox.
+    // Create another WebUI tab.  Each WebUI tab should get a separate process
+    // because of origin locking.
     // Note: intentionally create this tab after the normal tabs to exercise bug
     // 43448 where extension and WebUI tabs could get combined into normal
     // renderers.
@@ -211,11 +222,12 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     ::ShowSingletonTab(browser(), history);
     observer3.Wait();
     tab_count++;
+    host_count++;
     EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
     tab2 = browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1);
     EXPECT_EQ(tab2->GetURL(), GURL(history));
     EXPECT_EQ(host_count, RenderProcessHostCount());
-    EXPECT_EQ(tab2->GetMainFrame()->GetProcess(), rph1);
+    EXPECT_NE(tab2->GetMainFrame()->GetProcess(), rph1);
 
     // Create an extension tab.  It should be in its own process.
     GURL extension_url("chrome-extension://" + extension->id());
@@ -255,14 +267,7 @@ class ChromeRenderProcessHostTestWithCommandLine
   DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostTestWithCommandLine);
 };
 
-// Disable on Windows and Mac due to ongoing flakiness. (crbug.com/442785)
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_ProcessPerTab DISABLED_ProcessPerTab
-#else
-#define MAYBE_ProcessPerTab ProcessPerTab
-#endif
-
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
@@ -273,9 +278,20 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
   int tab_count = 1;
   int host_count = 1;
 
+  content::RenderFrameDeletedObserver before_webui_obs(
+      content::ConvertToRenderFrameHost(
+          browser()->tab_strip_model()->GetActiveWebContents()));
+
   // Change the first tab to be a WebUI page.
   GURL omnibox(chrome::kChromeUIOmniboxURL);
   ui_test_utils::NavigateToURL(browser(), omnibox);
+
+  // The host objects from the page before the WebUI navigation stick around
+  // until the old renderer cleans up and ACKs, which may happen later than the
+  // navigation in the WebUI's renderer. So wait for that.
+  before_webui_obs.WaitUntilDeleted();
+
+  // Expect just the WebUI tab's process to be around.
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
 
@@ -385,7 +401,14 @@ class ChromeRenderProcessHostBackgroundingTest
     VerifyProcessIsForegrounded(process_or_tab);                             \
   } while (0);
 
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTest, MultipleTabs) {
+// Flaky on Mac: https://crbug.com/888308
+#if defined(OS_MACOSX)
+#define MAYBE_MultipleTabs DISABLED_MultipleTabs
+#else
+#define MAYBE_MultipleTabs MultipleTabs
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTest,
+                       MAYBE_MultipleTabs) {
   // Change the first tab to be the omnibox page (TYPE_WEBUI).
   GURL omnibox(chrome::kChromeUIOmniboxURL);
   ui_test_utils::NavigateToURL(browser(), omnibox);
@@ -446,31 +469,16 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTest, MultipleTabs) {
   }
 }
 
-// TODO(nasko): crbug.com/173137
-// Disable on Windows and Mac due to ongoing flakiness. (crbug.com/442785)
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_ProcessOverflow DISABLED_ProcessOverflow
-#else
-#define MAYBE_ProcessOverflow ProcessOverflow
-#endif
-
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessOverflow) {
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessOverflow) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
   TestProcessOverflow();
 }
 
-// Disable on Windows and Mac due to ongoing flakiness. (crbug.com/442785)
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_ProcessOverflowCommandLine DISABLED_ProcessOverflowCommandLine
-#else
-#define MAYBE_ProcessOverflowCommandLine ProcessOverflowCommandLine
-#endif
-
 // Variation of the ProcessOverflow test, which is driven through command line
 // parameter instead of direct function call into the class.
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTestWithCommandLine,
-                       MAYBE_ProcessOverflowCommandLine) {
+                       ProcessOverflowCommandLine) {
   TestProcessOverflow();
 }
 

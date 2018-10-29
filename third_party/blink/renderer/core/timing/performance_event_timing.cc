@@ -19,7 +19,7 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(start_time, processing_start);
   DCHECK_LE(processing_start, processing_end);
-  return new PerformanceEventTiming(event_type, PerformanceEntryNames::event,
+  return new PerformanceEventTiming(event_type, performance_entry_names::kEvent,
                                     start_time, processing_start,
                                     processing_end, cancelable);
 }
@@ -28,7 +28,7 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
 PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
     PerformanceEventTiming* entry) {
   PerformanceEventTiming* first_input = new PerformanceEventTiming(
-      entry->name(), PerformanceEntryNames::firstInput, entry->startTime(),
+      entry->name(), performance_entry_names::kFirstInput, entry->startTime(),
       entry->processingStart(), entry->processingEnd(), entry->cancelable());
   first_input->SetDuration(entry->duration());
   return first_input;
@@ -50,7 +50,7 @@ PerformanceEventTiming::PerformanceEventTiming(
 PerformanceEventTiming::~PerformanceEventTiming() = default;
 
 PerformanceEntryType PerformanceEventTiming::EntryTypeEnum() const {
-  return entry_type_ == PerformanceEntryNames::event
+  return entry_type_ == performance_entry_names::kEvent
              ? PerformanceEntry::EntryType::kEvent
              : PerformanceEntry::EntryType::kFirstInput;
 }

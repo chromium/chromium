@@ -77,22 +77,6 @@ var expectedDownloadsVolume = {
   iconSet: {}
 };
 
-var expectedDriveVolume = {
-  volumeId: /^drive:drive[^\/]*$/,
-  volumeLabel: '',
-  sourcePath: /^\/special\/drive[^\/]*$/,
-  volumeType: 'drive',
-  isReadOnly: false,
-  isReadOnlyRemovableDevice: false,
-  hasMedia: false,
-  configurable: false,
-  watchable: true,
-  source: 'network',
-  profile: {profileId: '', displayName: '', isCurrentProfile: true},
-  diskFileSystemType: '',
-  iconSet: {}
-};
-
 var expectedArchiveVolume = {
   volumeId: 'archive:archive_mount_path',
   volumeLabel: 'archive_mount_path',
@@ -136,7 +120,6 @@ var expectedProvidedVolume = {
 var expectedVolumeList = [
   expectedArchiveVolume,
   expectedDownloadsVolume,
-  expectedDriveVolume,
   expectedProvidedVolume,
   expectedVolume1,
   expectedVolume2,

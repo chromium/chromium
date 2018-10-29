@@ -157,19 +157,18 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
 TEST_F(PaintOpPerfTest, TextOps) {
   PaintOpBuffer buffer;
 
-  auto typeface = PaintTypeface::TestTypeface();
+  auto typeface = SkTypeface::MakeDefault();
 
   SkPaint font;
   font.setTextEncoding(SkPaint::kGlyphID_TextEncoding);
-  font.setTypeface(typeface.ToSkTypeface());
+  font.setTypeface(typeface);
 
   SkTextBlobBuilder builder;
   int glyph_count = 5;
   SkRect rect = SkRect::MakeXYWH(1, 1, 1, 1);
   const auto& run = builder.allocRun(font, glyph_count, 1.2f, 2.3f, &rect);
   std::fill(run.glyphs, run.glyphs + glyph_count, 0);
-  std::vector<PaintTypeface> typefaces = {typeface};
-  auto blob = base::MakeRefCounted<PaintTextBlob>(builder.make(), typefaces);
+  auto blob = builder.make();
 
   PaintFlags flags;
   for (size_t i = 0; i < 100; ++i)

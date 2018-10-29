@@ -107,9 +107,8 @@ bool WebRequestCondition::IsFulfilled(
     return false;
 
   // All condition attributes must be fulfilled for a fulfilled condition.
-  for (WebRequestConditionAttributes::const_iterator i =
-           condition_attributes_.begin();
-       i != condition_attributes_.end(); ++i) {
+  for (auto i = condition_attributes_.cbegin();
+       i != condition_attributes_.cend(); ++i) {
     if (!(*i)->IsFulfilled(*(request_data.data)))
       return false;
   }

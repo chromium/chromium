@@ -15,6 +15,7 @@
 #include "base/sys_byteorder.h"
 #include "base/test/test_timeouts.h"
 #include "net/dns/dns_client.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_util.h"

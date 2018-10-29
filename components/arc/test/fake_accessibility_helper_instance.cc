@@ -51,4 +51,8 @@ void FakeAccessibilityHelperInstance::
         bool enabled,
         SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) {}
 
+void FakeAccessibilityHelperInstance::SetExploreByTouchEnabled(bool enabled) {
+  explore_by_touch_enabled_ = enabled;
+}
+
 }  // namespace arc

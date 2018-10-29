@@ -26,7 +26,8 @@ class RulesetDistributionListener {
   }
 
   ~RulesetDistributionListener() {
-    content_service_->SetRulesetPublishedCallbackForTesting(base::Closure());
+    content_service_->SetRulesetPublishedCallbackForTesting(
+        base::OnceClosure());
   }
 
   void AwaitDistribution() { run_loop_.Run(); }

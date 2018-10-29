@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x438
-  LayoutBlockFlow {HTML} at (0,0) size 800x438.39
-    LayoutBlockFlow {BODY} at (8,16) size 784x414.39
-      LayoutBlockFlow {P} at (0,0) size 784x20
-        LayoutText {#text} at (0,0) size 518x19
-          text run at (0,0) width 518: "Test passes if green is visible on the page and there is no red is visible on the page."
-      LayoutBlockFlow {DIV} at (0,36) size 378.39x378.39 [border: (25px double #000000)]

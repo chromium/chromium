@@ -45,7 +45,7 @@ public class BrowserSessionDataProvider {
     public BrowserSessionDataProvider(Intent intent) {
         if (intent == null) assert false;
         mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        mIsTrustedIntent = IntentHandler.isIntentChromeOrFirstParty(intent);
+        mIsTrustedIntent = IntentHandler.notSecureIsIntentChromeOrFirstParty(intent);
 
         mAnimationBundle = IntentUtils.safeGetBundleExtra(
                 intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);

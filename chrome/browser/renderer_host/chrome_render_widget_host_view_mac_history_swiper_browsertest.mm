@@ -198,7 +198,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
                        ->GetRenderViewHost()
                        ->GetWidget()
                        ->GetView()
-                       ->GetNativeView();
+                       ->GetNativeView()
+                       .GetNativeNSView();
     NSWindow* window = [view window];
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(window)] window];
 
@@ -330,7 +331,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
                          ->GetRenderViewHost()
                          ->GetWidget()
                          ->GetView()
-                         ->GetNativeView();
+                         ->GetNativeView()
+                         .GetNativeNSView();
       BOOL run_loop = queued_event.runMessageLoop;
       switch (queued_event.deployment) {
         case DEPLOYMENT_GESTURE_BEGIN:

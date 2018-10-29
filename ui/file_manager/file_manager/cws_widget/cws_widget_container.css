@@ -1,0 +1,91 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.cws-widget-container-root {
+  position: relative;
+}
+
+.cws-widget-webview-container {
+  border-bottom: solid 1px #bbb;
+  border-top: solid 1px #bbb;
+  position: relative;
+}
+
+.cws-widget-webview-container webview {
+  outline: none;
+}
+
+.cws-widget-spinner-layer {
+  background: url(chrome://resources/images/throbber_medium.svg) center/32px
+      no-repeat;
+  background-color: rgba(255, 255, 255, 0.7);
+  bottom: 0;
+  left: 0;
+  outline: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity 500ms;
+  z-index: 525;
+}
+
+.cws-widget-spinner-layer:not(.cws-widget-show-spinner) {
+  background: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cws-widget-spinner-layer.cws-widget-hiding-spinner {
+  /* Transition end event would not fire if opacity was set to 0. */
+  opacity: 0.01;
+}
+
+.cws-widget-buttons {
+  background: #eee;
+  width: 100%;
+}
+
+.cws-widget-webstore-button {
+  color: rgb(0, 0, 255);
+  cursor: pointer;
+  display: flex;
+  height: 16px;
+  padding-bottom: 10px;
+  padding-inline-end: 10px;
+  padding-inline-start: 12px;
+  padding-top: 10px;
+}
+
+.cws-widget-webstore-button-icon {
+  background-image: -webkit-image-set(
+    url(chrome://theme/IDR_WEBSTORE_ICON_16) 1x,
+    url(chrome://theme/IDR_WEBSTORE_ICON_16@2x) 2x);
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  margin-inline-end: 8px;
+  width: 16px;
+}
+
+.cws-widget-webstore-button-label {
+  flex: 1;
+  line-height: 16px;
+}
+
+.cr-dialog-frame.cws-widget-error-dialog-frame {
+  width: 300px;
+}
+
+.cws-widget-error-dialog-frame .cws-widget-error-dialog-img {
+  background-image: -webkit-image-set(
+    url(chrome://theme/IDR_ERROR_NETWORK_GENERIC) 1x,
+    url(chrome://theme/IDR_ERROR_NETWORK_GENERIC@2x) 2x);
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 40px;
+}
+
+.cws-widget-error-dialog-text {
+  text-align: center;
+}

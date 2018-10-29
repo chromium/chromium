@@ -199,7 +199,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 
   std::unique_ptr<UserGestureIndicator> gesture_indicator;
   if (!is_modifier)
-    gesture_indicator = Frame::NotifyUserActivation(frame_);
+    gesture_indicator = LocalFrame::NotifyUserActivation(frame_);
 
   // In IE, access keys are special, they are handled after default keydown
   // processing, but cannot be canceled - this is hard to match.  On Mac OS X,
@@ -221,7 +221,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     KeyboardEvent* dom_event = KeyboardEvent::Create(
         initial_key_event, frame_->GetDocument()->domWindow());
 
-    return EventHandlingUtil::ToWebInputEventResult(
+    return event_handling_util::ToWebInputEventResult(
         node->DispatchEvent(*dom_event));
   }
 
@@ -236,7 +236,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 
   DispatchEventResult dispatch_result = node->DispatchEvent(*keydown);
   if (dispatch_result != DispatchEventResult::kNotCanceled)
-    return EventHandlingUtil::ToWebInputEventResult(dispatch_result);
+    return event_handling_util::ToWebInputEventResult(dispatch_result);
   // If frame changed as a result of keydown dispatch, then return early to
   // avoid sending a subsequent keypress message to the new frame.
   bool changed_focused_frame =
@@ -273,7 +273,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   KeyboardEvent* keypress = KeyboardEvent::Create(
       key_press_event, frame_->GetDocument()->domWindow());
   keypress->SetTarget(node);
-  return EventHandlingUtil::ToWebInputEventResult(
+  return event_handling_util::ToWebInputEventResult(
       node->DispatchEvent(*keypress));
 }
 

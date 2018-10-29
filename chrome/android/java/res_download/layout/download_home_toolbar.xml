@@ -17,7 +17,7 @@
             android:id="@+id/title_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/BlackHeadline2"
+            style="@style/BlackHeadline"
             android:text="@string/menu_downloads"/>
 
     </org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar>

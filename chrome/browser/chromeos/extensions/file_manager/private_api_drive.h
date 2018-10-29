@@ -141,6 +141,8 @@ class FileManagerPrivateSearchDriveFunction
       const GURL& next_link,
       std::unique_ptr<std::vector<drive::SearchResultInfo>> result_paths);
 
+  void OnSearchDriveFs(std::unique_ptr<base::ListValue> results);
+
   // Called when |result_paths| in OnSearch() are converted to a list of
   // entry definitions.
   void OnEntryDefinitionList(
@@ -148,6 +150,9 @@ class FileManagerPrivateSearchDriveFunction
       std::unique_ptr<SearchResultInfoList> search_result_info_list,
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
+
+  base::TimeTicks operation_start_;
+  bool is_offline_;
 };
 
 // Similar to FileManagerPrivateSearchDriveFunction but this one is used for
@@ -155,6 +160,12 @@ class FileManagerPrivateSearchDriveFunction
 class FileManagerPrivateSearchDriveMetadataFunction
     : public LoggedAsyncExtensionFunction {
  public:
+  enum class SearchType {
+    kText,
+    kSharedWithMe,
+    kOffline,
+  };
+
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.searchDriveMetadata",
                              FILEMANAGERPRIVATE_SEARCHDRIVEMETADATA)
 
@@ -169,6 +180,9 @@ class FileManagerPrivateSearchDriveMetadataFunction
       drive::FileError error,
       std::unique_ptr<drive::MetadataSearchResultVector> results);
 
+  void OnSearchDriveFs(const std::string& query_text,
+                       std::unique_ptr<base::ListValue> results);
+
   // Called when |results| in OnSearchMetadata() are converted to a list of
   // entry definitions.
   void OnEntryDefinitionList(
@@ -176,6 +190,10 @@ class FileManagerPrivateSearchDriveMetadataFunction
           search_result_info_list,
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
+
+  base::TimeTicks operation_start_;
+  SearchType search_type_;
+  bool is_offline_;
 };
 
 // Implements the chrome.fileManagerPrivate.getDriveConnectionState method.

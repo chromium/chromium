@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <set>
 #include <string>
 
@@ -18,10 +17,12 @@
 
 namespace storage {
 
-// An abstract interface for quota manager clients.
-// Each storage API must provide an implementation of this interface and
-// register it to the quota manager.
-// All the methods are assumed to be called on the IO thread in the browser.
+// Interface between each storage API and the quota manager.
+//
+// Each storage API must register an implementation of this interface with
+// the quota manager, by calling QuotaManager::RegisterClient().
+//
+// All the methods will be called on the IO thread in the browser.
 class STORAGE_EXPORT QuotaClient {
  public:
   using GetUsageCallback = base::OnceCallback<void(int64_t usage)>;
@@ -30,7 +31,7 @@ class STORAGE_EXPORT QuotaClient {
   using DeletionCallback =
       base::OnceCallback<void(blink::mojom::QuotaStatusCode status)>;
 
-  virtual ~QuotaClient() {}
+  virtual ~QuotaClient() = default;
 
   enum ID {
     kUnknown = 1 << 0,
@@ -46,7 +47,7 @@ class STORAGE_EXPORT QuotaClient {
 
   virtual ID id() const = 0;
 
-  // Called when the quota manager is destroyed.
+  // Called when the QuotaManager is destroyed.
   virtual void OnQuotaManagerDestroyed() = 0;
 
   // Called by the QuotaManager.
@@ -78,9 +79,6 @@ class STORAGE_EXPORT QuotaClient {
 
   virtual bool DoesSupport(blink::mojom::StorageType type) const = 0;
 };
-
-// TODO(dmikurube): Replace it to std::vector for efficiency.
-using QuotaClientList = std::list<QuotaClient*>;
 
 }  // namespace storage
 

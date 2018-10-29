@@ -21,7 +21,7 @@ class GvrDelegateProvider;
 class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
                                    public mojom::XRSessionController {
  public:
-  static std::unique_ptr<GvrDevice> Create();
+  GvrDevice();
   ~GvrDevice() override;
 
   // VRDeviceBase
@@ -30,6 +30,7 @@ class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
       mojom::XRRuntime::RequestSessionCallback callback) override;
   void PauseTracking() override;
   void ResumeTracking() override;
+  void EnsureInitialized(EnsureInitializedCallback callback) override;
 
   void OnDisplayConfigurationChanged(
       JNIEnv* env,
@@ -52,12 +53,13 @@ class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
 
   void OnPresentingControllerMojoConnectionError();
   void StopPresenting();
-
-  GvrDevice();
+  void EnsureGvrReady();
   GvrDelegateProvider* GetGvrDelegateProvider();
 
   base::android::ScopedJavaGlobalRef<jobject> non_presenting_context_;
   std::unique_ptr<gvr::GvrApi> gvr_api_;
+
+  bool paused_ = true;
 
   mojo::Binding<mojom::XRSessionController> exclusive_controller_binding_;
 

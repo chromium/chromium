@@ -3,7 +3,6 @@ Tests for Composed Shadow DOM Tree Traversal APIs. Can only run within DRT
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 ShadowRoot should be used.
 Flat Tree:
 #a
@@ -307,4 +306,5 @@ Traverse in backward.
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

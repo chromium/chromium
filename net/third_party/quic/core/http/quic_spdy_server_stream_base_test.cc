@@ -17,8 +17,10 @@ namespace {
 
 class TestQuicSpdyServerStream : public QuicSpdyServerStreamBase {
  public:
-  TestQuicSpdyServerStream(QuicStreamId id, QuicSpdySession* session)
-      : QuicSpdyServerStreamBase(id, session) {}
+  TestQuicSpdyServerStream(QuicStreamId id,
+                           QuicSpdySession* session,
+                           StreamType type)
+      : QuicSpdyServerStreamBase(id, session, type) {}
 
   void OnDataAvailable() override {}
 };
@@ -31,8 +33,9 @@ class QuicSpdyServerStreamBaseTest : public QuicTest {
                                         Perspective::IS_SERVER)) {
     stream_ = new TestQuicSpdyServerStream(
         QuicSpdySessionPeer::GetNthClientInitiatedStreamId(session_, 0),
-        &session_);
+        &session_, BIDIRECTIONAL);
     session_.ActivateStream(QuicWrapUnique(stream_));
+    helper_.AdvanceTime(QuicTime::Delta::FromSeconds(1));
   }
 
   QuicSpdyServerStreamBase* stream_ = nullptr;

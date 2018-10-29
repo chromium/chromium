@@ -101,8 +101,7 @@ class HpackHeaderTableTest : public ::testing::Test {
   // Adds the given vector of entries to the given header table,
   // expecting no eviction to happen.
   void AddEntriesExpectNoEviction(const HpackEntryVector& entries) {
-    for (HpackEntryVector::const_iterator it = entries.begin();
-         it != entries.end(); ++it) {
+    for (auto it = entries.begin(); it != entries.end(); ++it) {
       HpackHeaderTable::EntryTable::iterator begin, end;
 
       table_.EvictionSet(it->name(), it->value(), &begin, &end);
@@ -338,8 +337,7 @@ TEST_F(HpackHeaderTableTest, SetMaxSize) {
       MakeEntriesOfTotalSize(kDefaultHeaderTableSizeSetting / 2);
   AddEntriesExpectNoEviction(entries);
 
-  for (HpackEntryVector::iterator it = entries.begin(); it != entries.end();
-       ++it) {
+  for (auto it = entries.begin(); it != entries.end(); ++it) {
     size_t expected_count = distance(it, entries.end());
     EXPECT_EQ(expected_count, peer_.dynamic_entries().size());
 

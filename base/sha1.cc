@@ -110,8 +110,8 @@ void SecureHashAlgorithm::Final() {
   Pad();
   Process();
 
-  for (int t = 0; t < 5; ++t)
-    H[t] = ByteSwap(H[t]);
+  for (auto& t : H)
+    t = ByteSwap(t);
 }
 
 void SecureHashAlgorithm::Update(const void* data, size_t nbytes) {

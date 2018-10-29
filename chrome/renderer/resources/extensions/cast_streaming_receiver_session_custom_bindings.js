@@ -14,8 +14,6 @@ binding.registerCustomHook(function(bindingsAPI, extensionId) {
   apiFunctions.setHandleRequest(
       'createAndBind',
       function(ap, vp, local, weidgth, height, fr, url, cb, op) {
-        natives.StartCastRtpReceiver(
-            ap, vp, local, weidgth, height, fr, url, cb, op);
   });
 });
 

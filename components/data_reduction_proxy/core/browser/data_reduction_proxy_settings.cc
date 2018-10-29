@@ -96,6 +96,9 @@ void DataReductionProxySettings::InitDataReductionProxySettings(
         ->SetDataUsageReportingEnabled(true);
   }
 #endif  // defined(OS_ANDROID)
+
+  for (auto& observer : observers_)
+    observer.OnSettingsInitialized();
 }
 
 void DataReductionProxySettings::OnServiceInitialized() {
@@ -106,6 +109,10 @@ void DataReductionProxySettings::OnServiceInitialized() {
   // Technically, this is not "at startup", but this is the first chance that
   // IO data objects can be called.
   UpdateIOData(true);
+  if (proxy_config_client_) {
+    data_reduction_proxy_service_->SetCustomProxyConfigClient(
+        std::move(proxy_config_client_));
+  }
 }
 
 void DataReductionProxySettings::SetCallbackToRegisterSyntheticFieldTrial(
@@ -116,9 +123,10 @@ void DataReductionProxySettings::SetCallbackToRegisterSyntheticFieldTrial(
 }
 
 bool DataReductionProxySettings::IsDataReductionProxyEnabled() const {
-  // TODO(crbug.com/721403): Make DRP work with network service.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
+  if (base::FeatureList::IsEnabled(network::features::kNetworkService) &&
+      !params::IsEnabledWithNetworkService()) {
     return false;
+  }
 
   if (spdy_proxy_auth_enabled_.GetPrefName().empty())
     return false;
@@ -286,28 +294,44 @@ void DataReductionProxySettings::SetProxyRequestHeaders(
     const net::HttpRequestHeaders& headers) {
   DCHECK(thread_checker_.CalledOnValidThread());
   proxy_request_headers_ = headers;
-  for (auto& observer : proxy_request_headers_observers_)
+  for (auto& observer : observers_)
     observer.OnProxyRequestHeadersChanged(headers);
 }
 
-void DataReductionProxySettings::AddProxyRequestHeadersObserver(
-    ProxyRequestHeadersObserver* observer) {
+void DataReductionProxySettings::SetConfiguredProxies(
+    const net::ProxyList& proxies) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  proxy_request_headers_observers_.AddObserver(observer);
+  configured_proxies_ = proxies;
 }
 
-void DataReductionProxySettings::RemoveProxyRequestHeadersObserver(
-    ProxyRequestHeadersObserver* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  proxy_request_headers_observers_.RemoveObserver(observer);
+bool DataReductionProxySettings::IsConfiguredDataReductionProxy(
+    const net::ProxyServer& proxy_server) const {
+  if (proxy_server.is_direct() || !proxy_server.is_valid())
+    return false;
+
+  for (const auto& drp_proxy : configured_proxies_.GetAll()) {
+    if (drp_proxy.host_port_pair().Equals(proxy_server.host_port_pair()))
+      return true;
+  }
+  return false;
 }
 
-DataReductionProxyEventStore* DataReductionProxySettings::GetEventStore()
-    const {
-  if (data_reduction_proxy_service_)
-    return data_reduction_proxy_service_->event_store();
+void DataReductionProxySettings::AddDataReductionProxySettingsObserver(
+    DataReductionProxySettingsObserver* observer) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  observers_.AddObserver(observer);
+}
 
-  return nullptr;
+void DataReductionProxySettings::RemoveDataReductionProxySettingsObserver(
+    DataReductionProxySettingsObserver* observer) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  observers_.RemoveObserver(observer);
+}
+
+void DataReductionProxySettings::SetCustomProxyConfigClient(
+    network::mojom::CustomProxyConfigClientPtrInfo proxy_config_client) {
+  DCHECK(!data_reduction_proxy_service_);
+  proxy_config_client_ = std::move(proxy_config_client);
 }
 
 // Metrics methods

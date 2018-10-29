@@ -46,7 +46,7 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
             builder.setStyle(new Notification.BigTextStyle().bigText(mBody));
         }
         builder.setLargeIcon(getNormalizedLargeIcon());
-        setSmallIconOnBuilder(builder, mSmallIconId, mSmallIconBitmap);
+        setStatusBarIcon(builder, mSmallIconId, mSmallIconBitmapForStatusBar);
         builder.setContentIntent(mContentIntent);
         builder.setDeleteIntent(mDeleteIntent);
         for (Action action : mActions) {

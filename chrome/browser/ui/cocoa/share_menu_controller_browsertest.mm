@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, SharingDelegate) {
                    MakeMockSharingService();
 
                NSWindow* browser_window =
-                   browser()->window()->GetNativeWindow();
+                   browser()->window()->GetNativeWindow().GetNativeNSWindow();
                EXPECT_NSNE([controller_ sharingService:mockService
                                sourceFrameOnScreenForShareItem:url],
                            NSZeroRect);

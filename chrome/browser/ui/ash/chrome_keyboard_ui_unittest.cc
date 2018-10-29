@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,23 +23,30 @@ class ChromeKeyboardUITest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    chrome_keyboard_controller_client_ =
+        std::make_unique<ChromeKeyboardControllerClient>(
+            nullptr /* connector */);
     chrome_keyboard_ui_ = std::make_unique<ChromeKeyboardUI>(profile());
   }
 
   void TearDown() override {
     chrome_keyboard_ui_.reset();
+    chrome_keyboard_controller_client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
+  std::unique_ptr<ChromeKeyboardControllerClient>
+      chrome_keyboard_controller_client_;
   std::unique_ptr<ChromeKeyboardUI> chrome_keyboard_ui_;
 };
 
 }  // namespace
 
 // Ensure ChromeKeyboardContentsDelegate is successfully constructed and has
-// a valid aura::Window when GetKeyboardWindow() is called.
+// a valid aura::Window after calling LoadKeyboardWindow().
 TEST_F(ChromeKeyboardUITest, ChromeKeyboardContentsDelegate) {
-  aura::Window* window = chrome_keyboard_ui_->GetKeyboardWindow();
-  ASSERT_TRUE(window);
+  aura::Window* window =
+      chrome_keyboard_ui_->LoadKeyboardWindow(base::DoNothing());
+  EXPECT_TRUE(window);
 }

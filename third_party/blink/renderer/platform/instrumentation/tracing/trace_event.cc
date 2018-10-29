@@ -30,5 +30,14 @@ void RemoveAsyncEnabledStateObserver(AsyncEnabledStateObserver* observer) {
       observer);
 }
 
+void AddEnabledStateObserver(EnabledStateObserver* observer) {
+  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(observer);
+}
+
+void RemoveEnabledStateObserver(EnabledStateObserver* observer) {
+  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(
+      observer);
+}
+
 }  // namespace TraceEvent
 }  // namespace blink

@@ -163,7 +163,7 @@ void LevelDBWrapper::Delete(const std::string& key) {
 
 leveldb::Status LevelDBWrapper::Get(const std::string& key,
                                     std::string* value) {
-  PendingOperationMap::iterator itr = pending_.find(key);
+  auto itr = pending_.find(key);
   if (itr == pending_.end())
     return db_->Get(leveldb::ReadOptions(), key, value);
 
@@ -185,8 +185,7 @@ std::unique_ptr<LevelDBWrapper::Iterator> LevelDBWrapper::NewIterator() {
 
 leveldb::Status LevelDBWrapper::Commit() {
   leveldb::WriteBatch batch;
-  for (PendingOperationMap::iterator itr = pending_.begin();
-       itr != pending_.end(); ++itr) {
+  for (auto itr = pending_.begin(); itr != pending_.end(); ++itr) {
     const leveldb::Slice key(itr->first);
     const Transaction& transaction = itr->second;
     switch (transaction.first) {

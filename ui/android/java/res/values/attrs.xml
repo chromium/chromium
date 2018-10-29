@@ -13,23 +13,29 @@
             <enum name="apart" value="2" />
         </attr>
     </declare-styleable>
+
     <declare-styleable name="ButtonCompat">
-        <attr name="buttonColor" format="reference|color"/>
+        <attr name="buttonColor" format="color"/>
+        <attr name="rippleColor" format="color"/>
         <attr name="buttonRaised" format="boolean"/>
     </declare-styleable>
+
     <declare-styleable name="TextViewWithLeading">
         <attr name="leading" format="reference|dimension"/>
     </declare-styleable>
+
     <declare-styleable name="AsyncViewStub">
         <!-- Supply an identifier for the layout resource to inflate when the AsyncViewStub
              becomes visible or when forced to do so. The layout resource must be a
              valid reference to a layout. -->
         <attr name="layout" format="reference" />
     </declare-styleable>
+
     <declare-styleable name="RoundedCornerImageView">
         <attr name="cornerRadiusTopStart" format="dimension" />
         <attr name="cornerRadiusTopEnd" format="dimension" />
         <attr name="cornerRadiusBottomStart" format="dimension" />
         <attr name="cornerRadiusBottomEnd" format="dimension" />
+        <attr name="roundedfillColor" format="reference|color" />
     </declare-styleable>
 </resources>

@@ -21,7 +21,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_binding_set.h"
 #include "mojo/public/cpp/bindings/strong_associated_binding_set.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace base {
@@ -45,7 +44,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost
   // Only call the constructor from the UI thread.
   IndexedDBDispatcherHost(
       int ipc_process_id,
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
       scoped_refptr<IndexedDBContextImpl> indexed_db_context,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
 
@@ -84,6 +82,9 @@ class CONTENT_EXPORT IndexedDBDispatcherHost
   ~IndexedDBDispatcherHost() override;
 
   // blink::mojom::IDBFactory implementation:
+  void GetDatabaseInfo(
+      blink::mojom::IDBCallbacksAssociatedPtrInfo callbacks_info,
+      const url::Origin& origin) override;
   void GetDatabaseNames(
       blink::mojom::IDBCallbacksAssociatedPtrInfo callbacks_info,
       const url::Origin& origin) override;

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -259,6 +260,8 @@ RoleMap BuildSubroleMap() {
 
 EventMap BuildEventMap() {
   const EventMap::value_type events[] = {
+      {ax::mojom::Event::kCheckedStateChanged,
+       NSAccessibilityValueChangedNotification},
       {ax::mojom::Event::kFocus,
        NSAccessibilityFocusedUIElementChangedNotification},
       {ax::mojom::Event::kFocusContext,
@@ -287,8 +290,8 @@ ActionList BuildActionList() {
 }
 
 const ActionList& GetActionList() {
-  CR_DEFINE_STATIC_LOCAL(const ActionList, action_map, (BuildActionList()));
-  return action_map;
+  static const base::NoDestructor<ActionList> action_map(BuildActionList());
+  return *action_map;
 }
 
 void PostAnnouncementNotification(NSString* announcement) {
@@ -313,8 +316,7 @@ void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
 
 // Returns true if |action| should be added implicitly for |data|.
 bool HasImplicitAction(const ui::AXNodeData& data, ax::mojom::Action action) {
-  return action == ax::mojom::Action::kDoDefault &&
-         ui::IsRoleClickable(data.role);
+  return action == ax::mojom::Action::kDoDefault && ui::IsClickable(data.role);
 }
 
 // For roles that show a menu for the default action, ensure "show menu" also
@@ -335,21 +337,21 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
 @synthesize node = node_;
 
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
-  CR_DEFINE_STATIC_LOCAL(const RoleMap, role_map, (BuildRoleMap()));
-  RoleMap::const_iterator it = role_map.find(role);
-  return it != role_map.end() ? it->second : NSAccessibilityUnknownRole;
+  static const base::NoDestructor<RoleMap> role_map(BuildRoleMap());
+  RoleMap::const_iterator it = role_map->find(role);
+  return it != role_map->end() ? it->second : NSAccessibilityUnknownRole;
 }
 
 + (NSString*)nativeSubroleFromAXRole:(ax::mojom::Role)role {
-  CR_DEFINE_STATIC_LOCAL(const RoleMap, subrole_map, (BuildSubroleMap()));
-  RoleMap::const_iterator it = subrole_map.find(role);
-  return it != subrole_map.end() ? it->second : nil;
+  static const base::NoDestructor<RoleMap> subrole_map(BuildSubroleMap());
+  RoleMap::const_iterator it = subrole_map->find(role);
+  return it != subrole_map->end() ? it->second : nil;
 }
 
 + (NSString*)nativeNotificationFromAXEvent:(ax::mojom::Event)event {
-  CR_DEFINE_STATIC_LOCAL(const EventMap, event_map, (BuildEventMap()));
-  EventMap::const_iterator it = event_map.find(event);
-  return it != event_map.end() ? it->second : nil;
+  static const base::NoDestructor<EventMap> event_map(BuildEventMap());
+  EventMap::const_iterator it = event_map->find(event);
+  return it != event_map->end() ? it->second : nil;
 }
 
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node {
@@ -560,6 +562,10 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
     [axAttributes addObjectsFromArray:@[ NSAccessibilitySelectedAttribute ]];
   }
 
+  if (ui::IsMenuItem(node_->GetData().role)) {
+    [axAttributes addObjectsFromArray:@[ @"AXMenuItemMarkChar" ]];
+  }
+
   return axAttributes.autorelease();
 }
 
@@ -759,6 +765,13 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
   if (ui::IsNameExposedInAXValueForRole(role))
     return [self getStringAttribute:ax::mojom::StringAttribute::kName];
 
+  if (node_->HasIntAttribute(ax::mojom::IntAttribute::kCheckedState)) {
+    // Mixed checkbox state not currently supported in views, but could be.
+    // See browser_accessibility_cocoa.mm for details.
+    const auto checkedState = static_cast<ax::mojom::CheckedState>(
+        node_->GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
+    return checkedState == ax::mojom::CheckedState::kTrue ? @1 : @0;
+  }
   return [self getStringAttribute:ax::mojom::StringAttribute::kValue];
 }
 
@@ -792,7 +805,7 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
 }
 
 - (id)AXWindow {
-  return node_->GetDelegate()->GetTopLevelWidget();
+  return node_->GetDelegate()->GetTopLevelWidget().GetNativeNSWindow();
 }
 
 - (id)AXTopLevelUIElement {
@@ -823,6 +836,19 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
 
 - (NSString*)AXPlaceholderValue {
   return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
+}
+
+- (NSString*)AXMenuItemMarkChar {
+  if (!ui::IsMenuItem(node_->GetData().role))
+    return nil;
+
+  const auto checkedState = static_cast<ax::mojom::CheckedState>(
+      node_->GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
+  if (checkedState == ax::mojom::CheckedState::kTrue) {
+    return @"\xE2\x9C\x93";  // UTF-8 for unicode 0x2713, "check mark"
+  }
+
+  return @"";
 }
 
 // Text-specific attributes.
@@ -976,7 +1002,7 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
       break;
     case ax::mojom::Event::kSelection:
       // On Mac, map menu item selection to a focus event.
-      if (GetData().role == ax::mojom::Role::kMenuItem) {
+      if (ui::IsMenuItem(GetData().role)) {
         NotifyMacEvent(native_node_, ax::mojom::Event::kFocus);
         return;
       }

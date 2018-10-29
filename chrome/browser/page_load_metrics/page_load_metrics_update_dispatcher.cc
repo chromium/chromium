@@ -419,11 +419,46 @@ PageLoadMetricsUpdateDispatcher::~PageLoadMetricsUpdateDispatcher() {
 }
 
 void PageLoadMetricsUpdateDispatcher::ShutDown() {
+  bool should_dispatch = false;
   if (timer_ && timer_->IsRunning()) {
     timer_->Stop();
-    DispatchTimingUpdates();
+    should_dispatch = true;
   }
   timer_ = nullptr;
+
+  if (largest_image_paint_) {
+    pending_merged_page_timing_->paint_timing->largest_image_paint.swap(
+        largest_image_paint_);
+    // Reset it so multiple shutdowns will have only one dispatch.
+    largest_image_paint_.reset();
+    should_dispatch = true;
+  }
+  if (last_image_paint_) {
+    pending_merged_page_timing_->paint_timing->last_image_paint.swap(
+        last_image_paint_);
+    // Reset it so multiple shutdowns will have only one dispatch.
+    last_image_paint_.reset();
+    should_dispatch = true;
+  }
+
+  if (largest_text_paint_) {
+    pending_merged_page_timing_->paint_timing->largest_text_paint.swap(
+        largest_text_paint_);
+    // Reset it so multiple shutdowns will have only one dispatch.
+    largest_text_paint_.reset();
+    should_dispatch = true;
+  }
+  if (last_text_paint_) {
+    pending_merged_page_timing_->paint_timing->last_text_paint.swap(
+        last_text_paint_);
+    // Reset it so multiple shutdowns will have only one dispatch.
+    last_text_paint_.reset();
+    should_dispatch = true;
+  }
+
+  if (should_dispatch) {
+    DispatchTimingUpdates();
+  }
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
@@ -546,6 +581,18 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameTiming(
   mojom::InteractiveTimingPtr last_interactive_timing =
       std::move(pending_merged_page_timing_->interactive_timing);
 
+  // Update the latest candidate to the corresponding buffers. We will dispatch
+  // the last candidate at the page load end. Because we don't want to dispatch
+  // the non-last candidate here, we clear it from |new_timing|.
+  largest_image_paint_.swap(new_timing.paint_timing->largest_image_paint);
+  new_timing.paint_timing->largest_image_paint.reset();
+  last_image_paint_.swap(new_timing.paint_timing->last_image_paint);
+  new_timing.paint_timing->last_image_paint.reset();
+  largest_text_paint_.swap(new_timing.paint_timing->largest_text_paint);
+  new_timing.paint_timing->largest_text_paint.reset();
+  last_text_paint_.swap(new_timing.paint_timing->last_text_paint);
+  new_timing.paint_timing->last_text_paint.reset();
+
   // Update the pending_merged_page_timing_, making sure to merge the previously
   // observed |paint_timing| and |interactive_timing|, which are tracked across
   // all frames in the page.
@@ -593,8 +640,6 @@ void PageLoadMetricsUpdateDispatcher::MaybeDispatchTimingUpdates(
 }
 
 void PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates() {
-  DCHECK(!timer_->IsRunning());
-
   if (pending_merged_page_timing_->paint_timing->first_paint) {
     if (!pending_merged_page_timing_->parse_timing->parse_start ||
         !pending_merged_page_timing_->document_timing->first_layout) {

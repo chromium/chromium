@@ -55,7 +55,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
       QuadList::ConstIterator quad_list_begin,
       QuadList::ConstIterator quad_list_end,
       const base::flat_map<RenderPassId, cc::FilterOperations*>&
-          render_pass_background_filters);
+          render_pass_backdrop_filters);
 
   OverlayCandidate();
   OverlayCandidate(const OverlayCandidate& other);

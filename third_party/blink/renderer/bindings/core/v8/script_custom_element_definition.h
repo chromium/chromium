@@ -17,6 +17,8 @@ namespace blink {
 
 class CustomElementDescriptor;
 class CustomElementRegistry;
+class V8CustomElementConstructor;
+class V8Function;
 
 class CORE_EXPORT ScriptCustomElementDefinition final
     : public CustomElementDefinition {
@@ -26,20 +28,19 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   static ScriptCustomElementDefinition* ForConstructor(
       ScriptState*,
       CustomElementRegistry*,
-      const v8::Local<v8::Value>& constructor);
+      v8::Local<v8::Value> constructor);
 
   static ScriptCustomElementDefinition* Create(
       ScriptState*,
       CustomElementRegistry*,
       const CustomElementDescriptor&,
       CustomElementDefinition::Id,
-      const v8::Local<v8::Object>& constructor,
-      const v8::Local<v8::Function>& connected_callback,
-      const v8::Local<v8::Function>& disconnected_callback,
-      const v8::Local<v8::Function>& adopted_callback,
-      const v8::Local<v8::Function>& attribute_changed_callback,
-      HashSet<AtomicString>&& observed_attributes,
-      CSSStyleSheet*);
+      V8CustomElementConstructor* constructor,
+      V8Function* connected_callback,
+      V8Function* disconnected_callback,
+      V8Function* adopted_callback,
+      V8Function* attribute_changed_callback,
+      HashSet<AtomicString>&& observed_attributes);
 
   ~ScriptCustomElementDefinition() override = default;
 
@@ -65,16 +66,14 @@ class CORE_EXPORT ScriptCustomElementDefinition final
                                    const AtomicString& new_value) override;
 
  private:
-  ScriptCustomElementDefinition(
-      ScriptState*,
-      const CustomElementDescriptor&,
-      const v8::Local<v8::Object>& constructor,
-      const v8::Local<v8::Function>& connected_callback,
-      const v8::Local<v8::Function>& disconnected_callback,
-      const v8::Local<v8::Function>& adopted_callback,
-      const v8::Local<v8::Function>& attribute_changed_callback,
-      HashSet<AtomicString>&& observed_attributes,
-      CSSStyleSheet*);
+  ScriptCustomElementDefinition(ScriptState*,
+                                const CustomElementDescriptor&,
+                                V8CustomElementConstructor* constructor,
+                                V8Function* connected_callback,
+                                V8Function* disconnected_callback,
+                                V8Function* adopted_callback,
+                                V8Function* attribute_changed_callback,
+                                HashSet<AtomicString>&& observed_attributes);
 
   // Implementations of |CustomElementDefinition|
   ScriptValue GetConstructorForScript() final;
@@ -83,22 +82,17 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   // Calls the constructor. The script scope, etc. must already be set up.
   Element* CallConstructor();
 
-  void RunCallback(v8::Local<v8::Function>,
-                   Element*,
-                   int argc = 0,
-                   v8::Local<v8::Value> argv[] = nullptr);
-
   HTMLElement* HandleCreateElementSyncException(Document&,
                                                 const QualifiedName& tag_name,
                                                 v8::Isolate*,
                                                 ExceptionState&);
 
   Member<ScriptState> script_state_;
-  TraceWrapperV8Reference<v8::Object> constructor_;
-  TraceWrapperV8Reference<v8::Function> connected_callback_;
-  TraceWrapperV8Reference<v8::Function> disconnected_callback_;
-  TraceWrapperV8Reference<v8::Function> adopted_callback_;
-  TraceWrapperV8Reference<v8::Function> attribute_changed_callback_;
+  TraceWrapperMember<V8CustomElementConstructor> constructor_;
+  TraceWrapperMember<V8Function> connected_callback_;
+  TraceWrapperMember<V8Function> disconnected_callback_;
+  TraceWrapperMember<V8Function> adopted_callback_;
+  TraceWrapperMember<V8Function> attribute_changed_callback_;
 };
 
 }  // namespace blink

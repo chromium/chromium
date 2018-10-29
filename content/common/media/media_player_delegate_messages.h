@@ -124,20 +124,22 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMediaSizeChanged,
                     int /* delegate_id, distinguishes instances */,
                     gfx::Size /* new size of video */)
 
-IPC_MESSAGE_ROUTED4(MediaPlayerDelegateHostMsg_OnPictureInPictureModeStarted,
+IPC_MESSAGE_ROUTED5(MediaPlayerDelegateHostMsg_OnPictureInPictureModeStarted,
                     int /* delegate id */,
                     viz::SurfaceId /* surface_id */,
                     gfx::Size /* natural_size */,
-                    int /* request_id */)
+                    int /* request_id */,
+                    bool /* show_play_pause_button */)
 
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnPictureInPictureModeEnded,
                     int /* delegate id */,
                     int /* request_id */)
 
-IPC_MESSAGE_ROUTED3(MediaPlayerDelegateHostMsg_OnPictureInPictureSurfaceChanged,
+IPC_MESSAGE_ROUTED4(MediaPlayerDelegateHostMsg_OnPictureInPictureSurfaceChanged,
                     int /* delegate id */,
                     viz::SurfaceId /* surface_id */,
-                    gfx::Size /* natural_size */)
+                    gfx::Size /* natural_size */,
+                    bool /* show_play_pause_button */)
 
 IPC_MESSAGE_ROUTED2(
     MediaPlayerDelegateHostMsg_OnSetPictureInPictureCustomControls,

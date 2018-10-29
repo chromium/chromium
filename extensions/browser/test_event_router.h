@@ -77,10 +77,10 @@ T* CreateAndUseTestEventRouter(content::BrowserContext* context) {
                 "T must be derived from EventRouter");
   return static_cast<T*>(
       extensions::EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-          context, [](content::BrowserContext* context) {
+          context, base::BindRepeating([](content::BrowserContext* context) {
             return static_cast<std::unique_ptr<KeyedService>>(
                 std::make_unique<T>(context));
-          }));
+          })));
 }
 
 }  // namespace extensions

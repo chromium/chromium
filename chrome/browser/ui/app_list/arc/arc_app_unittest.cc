@@ -520,7 +520,7 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
   // ArcAppModelBuilderTest:
   void OnBeforeArcTestSetup() override {
     arc::ArcPackageSyncableServiceFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), nullptr);
+        profile_.get(), BrowserContextKeyedServiceFactory::TestingFactory());
   }
 
  private:
@@ -1653,8 +1653,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
   // referenced app icon.
   content::RunAllTasksUntilIdle();
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.0f).sk_bitmap(),
-      delegate.image().GetRepresentation(1.0f).sk_bitmap()));
+      app_icon.GetRepresentation(1.0f).GetBitmap(),
+      delegate.image().GetRepresentation(1.0f).GetBitmap()));
 
   content::RunAllTasksUntilIdle();
   const size_t shortcut_request_count =
@@ -1679,8 +1679,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
   // Validate that fetched shortcut icon for absent shortcut contains referenced
   // app icon.
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.0f).sk_bitmap(),
-      delegate.image().GetRepresentation(1.0f).sk_bitmap()));
+      app_icon.GetRepresentation(1.0f).GetBitmap(),
+      delegate.image().GetRepresentation(1.0f).GetBitmap()));
 }
 
 // Test that icon is correctly updated for suspended/non-suspended app.
@@ -1717,8 +1717,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
 
   // We should have different icons.
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_normal_icon.GetRepresentation(1.0f).sk_bitmap(),
-      delegate.image().GetRepresentation(1.0f).sk_bitmap()));
+      app_normal_icon.GetRepresentation(1.0f).GetBitmap(),
+      delegate.image().GetRepresentation(1.0f).GetBitmap()));
 
   // Now switch back to normal mode.
   app.suspended = false;
@@ -1729,8 +1729,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
 
   // Icon should be restored to normal
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      app_normal_icon.GetRepresentation(1.0f).sk_bitmap(),
-      delegate.image().GetRepresentation(1.0f).sk_bitmap()));
+      app_normal_icon.GetRepresentation(1.0f).GetBitmap(),
+      delegate.image().GetRepresentation(1.0f).GetBitmap()));
 }
 
 // If the cached icon file is corrupted, we expect send request to ARC for a new
@@ -1961,33 +1961,33 @@ TEST_P(ArcAppModelBuilderTest, IconLoadNonSupportedScales) {
   EXPECT_TRUE(app_icon.HasRepresentation(1.25f));
 
   // Keep default images for reference.
-  const SkBitmap bitmap_1_0 = app_icon.GetRepresentation(1.0f).sk_bitmap();
-  const SkBitmap bitmap_1_15 = app_icon.GetRepresentation(1.15f).sk_bitmap();
-  const SkBitmap bitmap_1_25 = app_icon.GetRepresentation(1.25f).sk_bitmap();
-  const SkBitmap bitmap_2_0 = app_icon.GetRepresentation(2.0f).sk_bitmap();
+  const SkBitmap bitmap_1_0 = app_icon.GetRepresentation(1.0f).GetBitmap();
+  const SkBitmap bitmap_1_15 = app_icon.GetRepresentation(1.15f).GetBitmap();
+  const SkBitmap bitmap_1_25 = app_icon.GetRepresentation(1.25f).GetBitmap();
+  const SkBitmap bitmap_2_0 = app_icon.GetRepresentation(2.0f).GetBitmap();
 
   delegate.WaitForIconUpdates(1);
 
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.0f).sk_bitmap(), bitmap_1_0));
+      app_icon.GetRepresentation(1.0f).GetBitmap(), bitmap_1_0));
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.15f).sk_bitmap(), bitmap_1_15));
+      app_icon.GetRepresentation(1.15f).GetBitmap(), bitmap_1_15));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.25f).sk_bitmap(), bitmap_1_25));
+      app_icon.GetRepresentation(1.25f).GetBitmap(), bitmap_1_25));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(2.0f).sk_bitmap(), bitmap_2_0));
+      app_icon.GetRepresentation(2.0f).GetBitmap(), bitmap_2_0));
 
   // Send icon image for 200P. 2.0 and 1.25 should be updated.
   delegate.WaitForIconUpdates(1);
 
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.0f).sk_bitmap(), bitmap_1_0));
+      app_icon.GetRepresentation(1.0f).GetBitmap(), bitmap_1_0));
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.15f).sk_bitmap(), bitmap_1_15));
+      app_icon.GetRepresentation(1.15f).GetBitmap(), bitmap_1_15));
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(1.25f).sk_bitmap(), bitmap_1_25));
+      app_icon.GetRepresentation(1.25f).GetBitmap(), bitmap_1_25));
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
-      app_icon.GetRepresentation(2.0f).sk_bitmap(), bitmap_2_0));
+      app_icon.GetRepresentation(2.0f).GetBitmap(), bitmap_2_0));
 }
 
 TEST_P(ArcAppModelBuilderTest, AppLauncher) {
@@ -2315,6 +2315,28 @@ TEST_P(ArcAppLauncherForDefaulAppTest, AppIconUpdated) {
                    ->MaybeGetIconPathForDefaultApp(
                        app_id, GetAppListIconDescriptor(ui::SCALE_FACTOR_100P))
                    .empty());
+  icon_loader.reset();
+}
+
+// Validates that default app icon can be loaded for non-default dips, that do
+// not exist in Chrome image.
+TEST_P(ArcAppLauncherForDefaulAppTest, AppIconNonDefaultDip) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+
+  ASSERT_FALSE(fake_default_apps().empty());
+  const arc::mojom::AppInfo& app = fake_default_apps()[0];
+  const std::string app_id = ArcAppTest::GetAppId(app);
+
+  // Icon can be only fetched after app is registered in the system.
+  arc_test()->WaitForDefaultApps();
+
+  FakeAppIconLoaderDelegate icon_delegate;
+  // 17 should never be a default dip size.
+  std::unique_ptr<ArcAppIconLoader> icon_loader =
+      std::make_unique<ArcAppIconLoader>(profile(), 17, &icon_delegate);
+  icon_loader->FetchImage(app_id);
+  icon_delegate.WaitForIconUpdates(ui::GetSupportedScaleFactors().size());
   icon_loader.reset();
 }
 

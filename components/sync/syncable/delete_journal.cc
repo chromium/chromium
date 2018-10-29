@@ -20,8 +20,7 @@ void DeleteJournal::GetBookmarkDeleteJournals(
   trans->GetDirectory()->delete_journal()->GetDeleteJournals(
       trans->GetWrappedTrans(), BOOKMARKS, &deleted_entries);
   std::set<int64_t> undecryptable_journal;
-  for (syncable::EntryKernelSet::const_iterator i = deleted_entries.begin();
-       i != deleted_entries.end(); ++i) {
+  for (auto i = deleted_entries.begin(); i != deleted_entries.end(); ++i) {
     delete_journal_list->push_back(BookmarkDeleteJournal());
     delete_journal_list->back().id = (*i)->ref(syncable::META_HANDLE);
     delete_journal_list->back().external_id =

@@ -63,7 +63,6 @@ namespace blink {
 // dependencies to core/.
 
 class DOMWindow;
-class ErrorEvent;
 class EventTarget;
 class ExceptionState;
 class ExecutionContext;
@@ -564,26 +563,6 @@ MaybeSharedType ToMaybeShared(v8::Isolate* isolate,
 CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,
                                                ExceptionState&);
-
-// Saves |exception| into given ErrorEvent.
-// Wrapper object for given ErrorEvent can be created in association with
-// |creation_context| on processing this method, so |creation_context| should
-// be the relevant realm of event target as defined in standard.
-// See: https://dom.spec.whatwg.org/#firing-events
-void StoreExceptionForInspector(ScriptState*,
-                                ErrorEvent*,
-                                v8::Local<v8::Value> exception,
-                                v8::Local<v8::Object> creation_context);
-
-// Returns stored exception which is related to given ErrorEvent.
-// Wrapper object for given ErrorEvent can be created in association with
-// |creation_context| on processing this method, so |creation_context| should
-// be the relevant realm of event target as defined in standard.
-// See: https://dom.spec.whatwg.org/#firing-events
-v8::Local<v8::Value> LoadExceptionForInspector(
-    ScriptState*,
-    ErrorEvent*,
-    v8::Local<v8::Object> creation_context);
 
 }  // namespace blink
 

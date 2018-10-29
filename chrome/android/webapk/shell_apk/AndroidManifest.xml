@@ -3,6 +3,18 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
+
+<!-- AndroidManifest.xml is generated in two mustache generation passes.
+     Pass #1 with square bracket delimiter to generate AndroidManifest.xml to
+             be uploaded to the WebAPK Minting Server. Fields which cannot be
+             customized by the WebAPK server on a per-site basis are filled in.
+     Pass #2 with curly bracket delimiter fills in the remaining fields. The
+             generated AndroidManifest.xml is for the test APK (WebApk.apk,
+             UnboundWebApk.apk ...). These APKs are for local testing and are
+             not uploaded to the WebAPK server.
+-->
+{{=[[ ]]=}}
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="{{{manifest_package}}}"
@@ -14,20 +26,16 @@
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="26" />
+        android:targetSdkVersion="28" />
 
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/short_name"
         android:allowBackup="false"
         android:supportsRtl="true">
-        <activity android:name="org.chromium.webapk.shell_apk.MainActivity"
+        <activity android:name="org.chromium.webapk.shell_apk.TransparentHostBrowserLauncherActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:excludeFromRecents="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             {{#intent_filters}}
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"></action>
@@ -37,12 +45,47 @@
             </intent-filter>
             {{/intent_filters}}
             {{{raw_intent_filters}}}
+         </activity>
+
+        [[#use_new_splash]]
+        <activity android:name="org.chromium.webapk.shell_apk.h2o.SplashActivity"
+                  android:theme="@style/SplashTheme"
+                  android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+        <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OMainActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        [[/use_new_splash]]
+        [[^use_new_splash]]
+        <activity android:name="org.chromium.webapk.shell_apk.MainActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        [[/use_new_splash]]
+
         {{#share_template}}
         <activity-alias android:name="org.chromium.webapk.shell_apk.ShareActivity{{{index}}}"
                   android:label="{{{title}}}"
-                  android:targetActivity="org.chromium.webapk.shell_apk.ShareActivity">
+                  android:targetActivity="org.chromium.webapk.shell_apk.TransparentHostBrowserLauncherActivity">
           <meta-data android:name="org.chromium.webapk.shell_apk.shareAction" android:value="{{{action}}}" />
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareMethod" android:value="{{{method}}}" />
+          {{#enctype}}
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareEnctype" android:value="{{{enctype}}}" />
+          {{/enctype}}
+          {{^is_file_upload}}
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamTitle" android:value="{{{param_title}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamText" android:value="{{{param_text}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamUrl" android:value="{{{param_url}}}" />
@@ -51,12 +94,22 @@
             <category android:name="android.intent.category.DEFAULT" />
             <data android:mimeType="text/plain" />
           </intent-filter>
+          {{/is_file_upload}}
+          {{#is_file_upload}}
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamNames" android:value="{{{param_names}}}" />
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamAccepts" android:value="{{{param_accepts}}}" />
+          <intent-filter>
+            <action android:name="android.intent.action.SEND" />
+            <action android:name="android.intent.action.SEND_MULTIPLE" />
+            <category android:name="android.intent.category.DEFAULT" />
+            {{#mime_types}}
+            <data android:mimeType="{{{mime_type}}}" />
+            {{/mime_types}}
+          </intent-filter>
+          {{/is_file_upload}}
         </activity-alias>
         {{/share_template}}
-        <activity android:name="org.chromium.webapk.shell_apk.ShareActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:excludeFromRecents="true"/>
-        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="{{{shell_apk_version}}}" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="[[{shell_apk_version}]]" />
         {{#bound_webapk}}
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHost" android:value="{{{runtime_host}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHostApplicationName" android:value="{{{runtime_host_application_name}}}" />

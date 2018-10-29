@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -81,6 +82,28 @@ class ToastOverlayLabel : public views::Label {
 };
 
 }  // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+//  ToastDisplayObserver
+class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
+ public:
+  ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {
+    display::Screen::GetScreen()->AddObserver(this);
+  }
+
+  ~ToastDisplayObserver() override {
+    display::Screen::GetScreen()->RemoveObserver(this);
+  }
+
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override {
+    overlay_->UpdateOverlayBounds();
+  }
+
+ private:
+  ToastOverlay* const overlay_;
+  DISALLOW_COPY_AND_ASSIGN(ToastDisplayObserver);
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlayButton
@@ -199,6 +222,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       dismiss_text_(dismiss_text),
       overlay_widget_(new views::Widget),
       overlay_view_(new ToastOverlayView(this, text, dismiss_text)),
+      display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       widget_size_(overlay_view_->GetPreferredSize()) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -216,7 +240,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   overlay_widget_->Init(params);
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(true);
   overlay_widget_->SetContentsView(overlay_view_.get());
-  overlay_widget_->SetBounds(CalculateOverlayBounds());
+  UpdateOverlayBounds();
 
   aura::Window* overlay_window = overlay_widget_->GetNativeWindow();
   ::wm::SetWindowVisibilityAnimationType(
@@ -236,13 +260,6 @@ void ToastOverlay::Show(bool visible) {
 
   ui::LayerAnimator* animator = overlay_widget_->GetLayer()->GetAnimator();
   DCHECK(animator);
-  if (animator->is_animating()) {
-    // Showing during hiding animation doesn't happen since, ToastOverlay should
-    // be one-time-use and not be reused.
-    DCHECK(!visible);
-
-    return;
-  }
 
   base::TimeDelta original_duration = animator->GetTransitionDuration();
   ui::ScopedLayerAnimationSettings animation_settings(animator);
@@ -260,6 +277,10 @@ void ToastOverlay::Show(bool visible) {
   } else {
     overlay_widget_->Hide();
   }
+}
+
+void ToastOverlay::UpdateOverlayBounds() {
+  overlay_widget_->SetBounds(CalculateOverlayBounds());
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {

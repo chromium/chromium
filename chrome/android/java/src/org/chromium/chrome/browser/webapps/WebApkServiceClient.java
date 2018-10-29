@@ -80,10 +80,8 @@ public class WebApkServiceClient {
         final ApiUseCallback connectionCallback = new ApiUseCallback() {
             @Override
             public void useApi(IWebApkApi api) throws RemoteException {
-                if (!notificationBuilder.hasSmallIconBitmap()) {
-                    notificationBuilder.setSmallIconForRemoteApp(
-                            api.getSmallIconId(), webApkPackage);
-                }
+                fallbackToWebApkIconIfNecessary(notificationBuilder, webApkPackage,
+                        api.getSmallIconId());
 
                 boolean notificationPermissionEnabled = api.notificationPermissionEnabled();
                 if (notificationPermissionEnabled) {
@@ -102,6 +100,16 @@ public class WebApkServiceClient {
 
         mConnectionManager.connect(
                 ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
+    }
+
+    private void fallbackToWebApkIconIfNecessary(NotificationBuilderBase builder,
+            String webApkPackage, int iconId) {
+        if (!builder.hasSmallIconForContent()) {
+            builder.setContentSmallIconForTrustedRemoteApp(iconId, webApkPackage);
+        }
+        if (!builder.hasStatusBarIconBitmap()) {
+            builder.setStatusBarIconForTrustedRemoteApp(iconId, webApkPackage);
+        }
     }
 
     /** Cancels notification previously shown by WebAPK. */

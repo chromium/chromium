@@ -6,12 +6,11 @@
 #define BASE_TASK_TASK_SCHEDULER_PRIORITY_QUEUE_H_
 
 #include <memory>
-#include <queue>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/common/intrusive_heap.h"
 #include "base/task/task_scheduler/scheduler_lock.h"
 #include "base/task/task_scheduler/sequence.h"
 #include "base/task/task_scheduler/sequence_sort_key.h"
@@ -88,7 +87,7 @@ class BASE_EXPORT PriorityQueue {
   // position in a PriorityQueue.
   class SequenceAndSortKey;
 
-  using ContainerType = std::priority_queue<SequenceAndSortKey>;
+  using ContainerType = IntrusiveHeap<SequenceAndSortKey>;
 
   // Synchronizes access to |container_|.
   SchedulerLock container_lock_;

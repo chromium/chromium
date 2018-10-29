@@ -5,41 +5,20 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overlay_play_button_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_source.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace {
 
 // The size of the inner circle button in pixels.
 constexpr int kInnerButtonSize = 56;
-
-// The touch padding of the inner circle button in pixels.
-constexpr int kInnerButtonTouchPaddingSize = 20;
-
-// Check if a point is based within the boundary of a DOMRect with a margin.
-bool IsPointInRect(blink::DOMRect& rect, int margin, int x, int y) {
-  return ((x >= (rect.left() - margin)) && (x <= (rect.right() + margin)) &&
-          (y >= (rect.top() - margin)) && (y <= (rect.bottom() + margin)));
-}
-
-// The delay between two taps to be recognized as a double tap gesture.
-constexpr WTF::TimeDelta kDoubleTapDelay = TimeDelta::FromMilliseconds(300);
-
-// The number of seconds to jump when double tapping.
-constexpr int kNumberOfSecondsToJump = 10;
 
 // The CSS class to add to hide the element.
 const char kHiddenClassName[] = "hidden";
@@ -58,9 +37,6 @@ namespace blink {
 MediaControlOverlayPlayButtonElement::MediaControlOverlayPlayButtonElement(
     MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls, kMediaPlayButton),
-      tap_timer_(GetDocument().GetTaskRunner(TaskType::kMediaElementEvent),
-                 this,
-                 &MediaControlOverlayPlayButtonElement::TapTimerFired),
       internal_button_(nullptr) {
   EnsureUserAgentShadowRoot();
   setType(InputTypeNames::button);
@@ -100,8 +76,7 @@ void MediaControlOverlayPlayButtonElement::MaybePlayPause() {
   // state. This allows potential recovery for transient network and decoder
   // resource issues.
   const String& url = MediaElement().currentSrc().GetString();
-  if (MediaElement().error() && !HTMLMediaElement::IsMediaStreamURL(url) &&
-      !HTMLMediaSource::Lookup(url)) {
+  if (MediaElement().error() && !HTMLMediaSource::Lookup(url)) {
     MediaElement().load();
   }
 
@@ -115,113 +90,17 @@ void MediaControlOverlayPlayButtonElement::MaybePlayPause() {
   UpdateDisplayType();
 }
 
-void MediaControlOverlayPlayButtonElement::MaybeJump(int seconds) {
-  double new_time = std::max(0.0, MediaElement().currentTime() + seconds);
-  new_time = std::min(new_time, MediaElement().duration());
-  MediaElement().setCurrentTime(new_time);
-
-  GetMediaControls().ShowArrowAnimation(seconds > 0);
-}
-
 void MediaControlOverlayPlayButtonElement::DefaultEventHandler(Event& event) {
-  if (ShouldCausePlayPause(event)) {
+  if (event.type() == EventTypeNames::click) {
     event.SetDefaultHandled();
     MaybePlayPause();
-  } else if (event.type() == EventTypeNames::click) {
-    event.SetDefaultHandled();
-
-    DCHECK(event.IsMouseEvent());
-    auto& mouse_event = ToMouseEvent(event);
-    DCHECK(mouse_event.HasPosition());
-
-    if (!tap_timer_.IsActive()) {
-      // If there was not a previous touch and this was outside of the button
-      // then we should toggle visibility with a small unnoticeable delay in
-      // case their is a second tap.
-      if (tap_timer_.IsActive())
-        return;
-      tap_was_touch_event_ = MediaControlsImpl::IsTouchEvent(&event);
-      tap_timer_.StartOneShot(kDoubleTapDelay, FROM_HERE);
-    } else {
-      // Cancel the play pause event.
-      tap_timer_.Stop();
-
-      // If both taps were touch events, then jump.
-      if (tap_was_touch_event_.value() &&
-          MediaControlsImpl::IsTouchEvent(&event)) {
-        // Jump forwards or backwards based on the position of the tap.
-        WebSize element_size =
-            MediaControlElementsHelper::GetSizeOrDefault(*this, WebSize(0, 0));
-
-        if (mouse_event.clientX() >= element_size.width / 2) {
-          MaybeJump(kNumberOfSecondsToJump);
-        } else {
-          MaybeJump(kNumberOfSecondsToJump * -1);
-        }
-      } else {
-        if (GetMediaControls().IsFullscreenEnabled()) {
-          // Enter or exit fullscreen.
-          if (MediaElement().IsFullscreen())
-            GetMediaControls().ExitFullscreen();
-          else
-            GetMediaControls().EnterFullscreen();
-        }
-      }
-
-      tap_was_touch_event_.reset();
-    }
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }
 
 bool MediaControlOverlayPlayButtonElement::KeepEventInNode(
     const Event& event) const {
-  // We only care about user interaction events.
-  if (!MediaControlElementsHelper::IsUserInteractionEvent(event))
-    return false;
-
-  // For mouse events, only keep in node if they're on the internal button.
-  if (event.IsMouseEvent() && MediaControlsImpl::IsModern())
-    return IsMouseEventOnInternalButton(ToMouseEvent(event));
-
-  return true;
-}
-
-bool MediaControlOverlayPlayButtonElement::ShouldCausePlayPause(
-    const Event& event) const {
-  // Only click events cause a play/pause.
-  if (event.type() != EventTypeNames::click)
-    return false;
-
-  // Double tap to navigate should only be available on modern controls.
-  if (!MediaControlsImpl::IsModern() || !event.IsMouseEvent())
-    return true;
-
-  // TODO(beccahughes): Move to PointerEvent.
-  return IsMouseEventOnInternalButton(ToMouseEvent(event));
-}
-
-bool MediaControlOverlayPlayButtonElement::IsMouseEventOnInternalButton(
-    const MouseEvent& mouse_event) const {
-  // If we don't have the necessary pieces to calculate whether the event is
-  // within the bounds of the button, default to yes.
-  if (!mouse_event.HasPosition() || !isConnected() ||
-      !GetDocument().GetLayoutView()) {
-    return true;
-  }
-
-  // Find the zoom-adjusted internal button bounding box.
-  DOMRect* box = internal_button_->getBoundingClientRect();
-  float zoom = ComputedStyleRef().EffectiveZoom() /
-               GetDocument().GetLayoutView()->ZoomFactor();
-  box->setX(box->x() * zoom);
-  box->setY(box->y() * zoom);
-  box->setWidth(box->width() * zoom);
-  box->setHeight(box->height() * zoom);
-
-  // Check the button and a margin around it.
-  return IsPointInRect(*box, kInnerButtonTouchPaddingSize,
-                       mouse_event.clientX(), mouse_event.clientY());
+  return MediaControlElementsHelper::IsUserInteractionEvent(event);
 }
 
 WebSize MediaControlOverlayPlayButtonElement::GetSizeOrDefault() const {
@@ -237,12 +116,6 @@ void MediaControlOverlayPlayButtonElement::SetIsDisplayed(bool displayed) {
 
   SetClass(kHiddenClassName, !displayed);
   displayed_ = displayed;
-}
-
-void MediaControlOverlayPlayButtonElement::TapTimerFired(TimerBase*) {
-  if (tap_was_touch_event_.value())
-    GetMediaControls().MaybeToggleControlsFromTap();
-  tap_was_touch_event_.reset();
 }
 
 void MediaControlOverlayPlayButtonElement::Trace(blink::Visitor* visitor) {

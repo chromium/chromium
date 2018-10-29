@@ -12,5 +12,4 @@ const CGFloat kIconSize = 56;
 const CGFloat kLabelTextColor = 0.314;
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
-const CGSize kCellSize = {73, 100};
 const CGFloat kTitleAlpha = 0.54;

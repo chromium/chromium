@@ -12,7 +12,8 @@ FakeConnectionEstablisher::FakeConnectionEstablisher() = default;
 FakeConnectionEstablisher::~FakeConnectionEstablisher() = default;
 
 void FakeConnectionEstablisher::EstablishConnection(
-    content::ServiceWorkerContext* service_worker_context_) {
+    content::ServiceWorkerContext* service_worker_context_,
+    ConnectionMode connection_mode) {
   establish_connection_calls_.push_back(service_worker_context_);
 }
 

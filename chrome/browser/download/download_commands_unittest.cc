@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/download/download_item_model.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,7 @@ const char kDefaultURL[] = "http://example.com/foo.bar";
 
 class DownloadCommandsTest : public testing::Test {
  public:
-  DownloadCommandsTest() : commands_(&item_) {}
+  DownloadCommandsTest() : model_(&item_), commands_(&model_) {}
 
   ~DownloadCommandsTest() override {}
 
@@ -74,6 +75,7 @@ class DownloadCommandsTest : public testing::Test {
 
  private:
   NiceMock<download::MockDownloadItem> item_;
+  DownloadItemModel model_;
   DownloadCommands commands_;
 };
 

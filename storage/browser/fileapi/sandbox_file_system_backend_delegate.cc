@@ -182,11 +182,11 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
     leveldb::Env* env_override)
     : file_task_runner_(file_task_runner),
       quota_manager_proxy_(quota_manager_proxy),
-      sandbox_file_util_(new AsyncFileUtilAdapter(
+      sandbox_file_util_(std::make_unique<AsyncFileUtilAdapter>(
           new ObfuscatedFileUtil(special_storage_policy,
                                  profile_path.Append(kFileSystemDirectory),
                                  env_override,
-                                 base::Bind(&GetTypeStringForURL),
+                                 base::BindRepeating(&GetTypeStringForURL),
                                  GetKnownTypeStrings(),
                                  this))),
       file_system_usage_cache_(std::make_unique<FileSystemUsageCache>()),
@@ -476,8 +476,7 @@ void SandboxFileSystemBackendDelegate::AddFileAccessObserver(
 
 const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(
     FileSystemType type) const {
-  std::map<FileSystemType, UpdateObserverList>::const_iterator iter =
-      update_observers_.find(type);
+  auto iter = update_observers_.find(type);
   if (iter == update_observers_.end())
     return nullptr;
   return &iter->second;
@@ -485,8 +484,7 @@ const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(
 
 const ChangeObserverList* SandboxFileSystemBackendDelegate::GetChangeObservers(
     FileSystemType type) const {
-  std::map<FileSystemType, ChangeObserverList>::const_iterator iter =
-      change_observers_.find(type);
+  auto iter = change_observers_.find(type);
   if (iter == change_observers_.end())
     return nullptr;
   return &iter->second;
@@ -494,8 +492,7 @@ const ChangeObserverList* SandboxFileSystemBackendDelegate::GetChangeObservers(
 
 const AccessObserverList* SandboxFileSystemBackendDelegate::GetAccessObservers(
     FileSystemType type) const {
-  std::map<FileSystemType, AccessObserverList>::const_iterator iter =
-      access_observers_.find(type);
+  auto iter = access_observers_.find(type);
   if (iter == access_observers_.end())
     return nullptr;
   return &iter->second;
@@ -705,7 +702,8 @@ ObfuscatedFileUtil* ObfuscatedFileUtil::CreateForTesting(
     const base::FilePath& file_system_directory,
     leveldb::Env* env_override) {
   return new ObfuscatedFileUtil(special_storage_policy, file_system_directory,
-                                env_override, base::Bind(&GetTypeStringForURL),
+                                env_override,
+                                base::BindRepeating(&GetTypeStringForURL),
                                 GetKnownTypeStrings(), nullptr);
 }
 

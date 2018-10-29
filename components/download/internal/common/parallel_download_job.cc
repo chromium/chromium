@@ -14,6 +14,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_url_loader_factory_getter.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/url_request_context_getter.h"
 
 namespace download {
 namespace {
@@ -273,7 +274,6 @@ void ParallelDownloadJob::CreateRequest(int64_t offset, int64_t length) {
   // The parallel requests only use GET method.
   std::unique_ptr<DownloadUrlParameters> download_params(
       new DownloadUrlParameters(download_item_->GetURL(),
-                                url_request_context_getter_.get(),
                                 traffic_annotation));
   download_params->set_file_path(download_item_->GetFullPath());
   download_params->set_last_modified(download_item_->GetLastModifiedTime());
@@ -293,7 +293,8 @@ void ParallelDownloadJob::CreateRequest(int64_t offset, int64_t length) {
   download_params->set_referrer_policy(net::URLRequest::NEVER_CLEAR_REFERRER);
 
   // Send the request.
-  worker->SendRequest(std::move(download_params), url_loader_factory_getter_);
+  worker->SendRequest(std::move(download_params), url_loader_factory_getter_,
+                      url_request_context_getter_);
   DCHECK(workers_.find(offset) == workers_.end());
   workers_[offset] = std::move(worker);
 }

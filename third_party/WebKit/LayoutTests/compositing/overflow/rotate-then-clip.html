@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<div style="margin: 100px; width: 240px; height: 240px; transform: rotate(45deg)">
+  <div style="overflow: hidden; width: 200px; height: 200px; border: 20px solid green">
+    <div style="will-change: transform; width: 400px; height: 400px; background: blue"></div>
+  </div>
+</div>
+<script>
+if (window.testRunner)
+  testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+</script>

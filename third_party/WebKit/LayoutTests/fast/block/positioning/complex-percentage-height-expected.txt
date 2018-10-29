@@ -7,10 +7,12 @@ it's height set to 100%
 the height of the yellow div now equals with the height of the blue div
 Red div is inserted into the yellow div, and it's height set to 100%
 Problem:
+
 The height of the red div should equals to the height of the blue (and yellow) div.
 It works right with Opera 9.2, Firefox 2, Camino 1.0.4 and Internet Explorer 7.
 
 Workaround:
+
 If you set position absolute to the red div, it's height will expands along with the blue div.
 
 Result:

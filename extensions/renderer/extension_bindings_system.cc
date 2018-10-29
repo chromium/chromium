@@ -33,7 +33,7 @@ bool ExtensionBindingsSystem::IsRuntimeAvailableToContext(
 
 // static
 const char* const ExtensionBindingsSystem::kWebAvailableFeatures[] = {
-    "app", "webstore", "dashboardPrivate",
+    "app", "dashboardPrivate",
 };
 
 void ExtensionBindingsSystem::LogUpdateBindingsForContextTime(

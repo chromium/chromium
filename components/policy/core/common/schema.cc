@@ -1051,8 +1051,8 @@ bool Schema::InternalStorage::ParseEnum(const base::DictionaryValue& schema,
   if (type == base::Value::Type::INTEGER) {
     offset_begin = static_cast<int>(int_enums_.size());
     int value;
-    for (base::ListValue::const_iterator it = possible_values->begin();
-         it != possible_values->end(); ++it) {
+    for (auto it = possible_values->begin(); it != possible_values->end();
+         ++it) {
       if (!it->GetAsInteger(&value)) {
         *error = "Invalid enumeration member type";
         return false;
@@ -1063,8 +1063,8 @@ bool Schema::InternalStorage::ParseEnum(const base::DictionaryValue& schema,
   } else if (type == base::Value::Type::STRING) {
     offset_begin = static_cast<int>(string_enums_.size());
     std::string value;
-    for (base::ListValue::const_iterator it = possible_values->begin();
-         it != possible_values->end(); ++it) {
+    for (auto it = possible_values->begin(); it != possible_values->end();
+         ++it) {
       if (!it->GetAsString(&value)) {
         *error = "Invalid enumeration member type";
         return false;
@@ -1136,9 +1136,8 @@ bool Schema::InternalStorage::ResolveReferences(
     const IdMap& id_map,
     const ReferenceList& reference_list,
     std::string* error) {
-  for (ReferenceList::const_iterator ref = reference_list.begin();
-       ref != reference_list.end(); ++ref) {
-    IdMap::const_iterator id = id_map.find(ref->first);
+  for (auto ref = reference_list.begin(); ref != reference_list.end(); ++ref) {
+    auto id = id_map.find(ref->first);
     if (id == id_map.end()) {
       *error = "Invalid $ref: " + ref->first;
       return false;
@@ -1244,7 +1243,7 @@ bool Schema::Validate(const base::Value& value,
           return false;
       } else {
         bool all_subschemas_are_valid = true;
-        for (SchemaList::iterator subschema = schema_list.begin();
+        for (auto subschema = schema_list.begin();
              subschema != schema_list.end(); ++subschema) {
           if (!subschema->Validate(it.value(),
                                    StrategyForNextLevel(strategy),
@@ -1272,8 +1271,7 @@ bool Schema::Validate(const base::Value& value,
       return false;
     }
   } else if (value.GetAsList(&list)) {
-    for (base::ListValue::const_iterator it = list->begin(); it != list->end();
-         ++it) {
+    for (auto it = list->begin(); it != list->end(); ++it) {
       if (!GetItems().Validate(*it, StrategyForNextLevel(strategy), error_path,
                                error)) {
         // Invalid list item was detected.
@@ -1338,7 +1336,7 @@ bool Schema::Normalize(base::Value* value,
           return false;
       } else {
         bool all_subschemas_are_valid = true;
-        for (SchemaList::iterator subschema = schema_list.begin();
+        for (auto subschema = schema_list.begin();
              subschema != schema_list.end(); ++subschema) {
           base::Value* sub_value = nullptr;
           dict->GetWithoutPathExpansion(it.key(), &sub_value);
@@ -1401,10 +1399,8 @@ bool Schema::Normalize(base::Value* value,
     }
     if (changed && !drop_list.empty())
       *changed = true;
-    for (std::vector<size_t>::reverse_iterator it = drop_list.rbegin();
-         it != drop_list.rend(); ++it) {
+    for (auto it = drop_list.rbegin(); it != drop_list.rend(); ++it)
       list->Remove(*it, nullptr);
-    }
     return true;
   }
 

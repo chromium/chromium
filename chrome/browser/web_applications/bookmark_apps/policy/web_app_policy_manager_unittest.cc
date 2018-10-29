@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/bookmark_apps/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/test_pending_app_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_ids_map.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -46,9 +47,8 @@ base::Value GetWindowedItem() {
 
 PendingAppManager::AppInfo GetWindowedAppInfo() {
   return PendingAppManager::AppInfo(
-      GURL(kWindowedUrl), PendingAppManager::LaunchContainer::kWindow,
-      PendingAppManager::InstallSource::kExternalPolicy,
-      false /* create_shortcuts */);
+      GURL(kWindowedUrl), LaunchContainer::kWindow,
+      InstallSource::kExternalPolicy, false /* create_shortcuts */);
 }
 
 base::Value GetTabbedItem() {
@@ -59,10 +59,9 @@ base::Value GetTabbedItem() {
 }
 
 PendingAppManager::AppInfo GetTabbedAppInfo() {
-  return PendingAppManager::AppInfo(
-      GURL(kTabbedUrl), PendingAppManager::LaunchContainer::kTab,
-      PendingAppManager::InstallSource::kExternalPolicy,
-      false /* create_shortcuts */);
+  return PendingAppManager::AppInfo(GURL(kTabbedUrl), LaunchContainer::kTab,
+                                    InstallSource::kExternalPolicy,
+                                    false /* create_shortcuts */);
 }
 
 base::Value GetDefaultContainerItem() {
@@ -73,9 +72,8 @@ base::Value GetDefaultContainerItem() {
 
 PendingAppManager::AppInfo GetDefaultContainerAppInfo() {
   return PendingAppManager::AppInfo(
-      GURL(kDefaultContainerUrl), PendingAppManager::LaunchContainer::kDefault,
-      PendingAppManager::InstallSource::kExternalPolicy,
-      false /* create_shortcuts */);
+      GURL(kDefaultContainerUrl), LaunchContainer::kDefault,
+      InstallSource::kExternalPolicy, false /* create_shortcuts */);
 }
 
 }  // namespace
@@ -99,7 +97,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   void SimulatePreviouslyInstalledApp(
       TestPendingAppManager* pending_app_manager,
       GURL url,
-      PendingAppManager::InstallSource install_source) {
+      InstallSource install_source) {
     std::string id = GenerateFakeExtensionId(url);
     extensions::ExtensionRegistry::Get(profile())->AddEnabled(
         extensions::ExtensionBuilder("Dummy Name").SetID(id).Build());
@@ -211,15 +209,13 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
 
   // Simulate two policy apps and a regular app that were installed in the
   // previous session.
-  SimulatePreviouslyInstalledApp(
-      pending_app_manager.get(), GURL(kWindowedUrl),
-      PendingAppManager::InstallSource::kExternalPolicy);
-  SimulatePreviouslyInstalledApp(
-      pending_app_manager.get(), GURL(kTabbedUrl),
-      PendingAppManager::InstallSource::kExternalPolicy);
+  SimulatePreviouslyInstalledApp(pending_app_manager.get(), GURL(kWindowedUrl),
+                                 InstallSource::kExternalPolicy);
+  SimulatePreviouslyInstalledApp(pending_app_manager.get(), GURL(kTabbedUrl),
+                                 InstallSource::kExternalPolicy);
   SimulatePreviouslyInstalledApp(pending_app_manager.get(),
                                  GURL(kDefaultContainerUrl),
-                                 PendingAppManager::InstallSource::kInternal);
+                                 InstallSource::kInternal);
 
   // Push a policy with only one of the apps.
   base::Value first_list(base::Value::Type::LIST);

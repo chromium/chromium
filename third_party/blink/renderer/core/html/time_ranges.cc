@@ -39,8 +39,8 @@ TimeRanges::TimeRanges(double start, double end) {
 TimeRanges* TimeRanges::Create(const blink::WebTimeRanges& web_ranges) {
   TimeRanges* ranges = TimeRanges::Create();
 
-  unsigned size = web_ranges.size();
-  for (unsigned i = 0; i < size; ++i)
+  wtf_size_t size = SafeCast<wtf_size_t>(web_ranges.size());
+  for (wtf_size_t i = 0; i < size; ++i)
     ranges->Add(web_ranges[i].start, web_ranges[i].end);
 
   return ranges;
@@ -49,8 +49,8 @@ TimeRanges* TimeRanges::Create(const blink::WebTimeRanges& web_ranges) {
 TimeRanges* TimeRanges::Copy() const {
   TimeRanges* new_session = TimeRanges::Create();
 
-  unsigned size = ranges_.size();
-  for (unsigned i = 0; i < size; i++)
+  wtf_size_t size = ranges_.size();
+  for (wtf_size_t i = 0; i < size; i++)
     new_session->Add(ranges_[i].start_, ranges_[i].end_);
 
   return new_session;
@@ -68,7 +68,7 @@ void TimeRanges::Invert() {
     if (start != neg_inf)
       inverted->Add(neg_inf, start);
 
-    for (size_t index = 0; index + 1 < ranges_.size(); ++index)
+    for (wtf_size_t index = 0; index + 1 < ranges_.size(); ++index)
       inverted->Add(ranges_[index].end_, ranges_[index + 1].start_);
 
     double end = ranges_.back().end_;
@@ -96,7 +96,7 @@ void TimeRanges::IntersectWith(const TimeRanges* other) {
 void TimeRanges::UnionWith(const TimeRanges* other) {
   DCHECK(other);
   TimeRanges* unioned = Copy();
-  for (size_t index = 0; index < other->ranges_.size(); ++index) {
+  for (wtf_size_t index = 0; index < other->ranges_.size(); ++index) {
     const Range& range = other->ranges_[index];
     unioned->Add(range.start_, range.end_);
   }

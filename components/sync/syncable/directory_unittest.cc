@@ -147,8 +147,7 @@ void SyncableDirectoryTest::CheckPurgeEntriesWithTypeInSucceeded(
     EXPECT_EQ(4U, all_set.size());
     if (before_reload)
       EXPECT_EQ(6U, dir_->kernel()->metahandles_to_purge.size());
-    for (MetahandleSet::iterator iter = all_set.begin(); iter != all_set.end();
-         ++iter) {
+    for (auto iter = all_set.begin(); iter != all_set.end(); ++iter) {
       Entry e(&trans, GET_BY_HANDLE, *iter);
       const ModelType local_type = e.GetModelType();
       const ModelType server_type = e.GetServerModelType();
@@ -1433,8 +1432,7 @@ TEST_F(SyncableDirectoryTest, General) {
     dir()->GetChildHandlesById(&rtrans, rtrans.root_id(), &child_handles);
     EXPECT_EQ(1u, child_handles.size());
 
-    for (Directory::Metahandles::iterator i = child_handles.begin();
-         i != child_handles.end(); ++i) {
+    for (auto i = child_handles.begin(); i != child_handles.end(); ++i) {
       EXPECT_EQ(*i, written_metahandle);
     }
   }

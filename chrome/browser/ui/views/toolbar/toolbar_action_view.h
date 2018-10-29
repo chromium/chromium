@@ -71,10 +71,9 @@ class ToolbarActionView : public views::MenuButton,
   SkColor GetInkDropBaseColor() const override;
   bool ShouldUseFloodFillInkDrop() const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // ToolbarActionViewDelegateViews:
   content::WebContents* GetCurrentWebContents() const override;

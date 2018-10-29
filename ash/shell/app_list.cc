@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/shell/example_factory.h"
 #include "ash/shell/toplevel_window.h"
+#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
@@ -119,7 +120,7 @@ class WindowTypeShelfItem : public app_list::AppListItem {
         break;
       }
       case EXAMPLES_WINDOW: {
-        views::examples::ShowExamplesWindow(views::examples::QUIT_ON_CLOSE);
+        views::examples::ShowExamplesWindow(base::DoNothing());
         break;
       }
       default:
@@ -272,6 +273,10 @@ class ExampleAppListViewDelegate : public app_list::AppListViewDelegate {
     // Nothing needs to be done.
   }
 
+  void ViewClosed() override {
+    // Nothing needs to be done.
+  }
+
   void GetWallpaperProminentColors(
       GetWallpaperProminentColorsCallback callback) override {
     NOTIMPLEMENTED();
@@ -313,15 +318,15 @@ class ExampleAppListViewDelegate : public app_list::AppListViewDelegate {
     NOTIMPLEMENTED();
   }
 
-  bool ProcessHomeLauncherGesture(ui::EventType type,
+  bool ProcessHomeLauncherGesture(ui::GestureEvent* event,
                                   const gfx::Point& screen_location) override {
     NOTIMPLEMENTED();
     return false;
   }
 
-  bool IsSwipingUpOnShelf() override {
+  bool CanProcessEventsOnApplistViews() override {
     NOTIMPLEMENTED();
-    return false;
+    return true;
   }
 
   ws::WindowService* GetWindowService() override {

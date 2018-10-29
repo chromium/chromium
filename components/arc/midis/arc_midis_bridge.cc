@@ -64,6 +64,10 @@ void ArcMidisBridge::OnBootstrapMojoConnection(
     midis_host_ptr_.reset();
     return;
   }
+  if (!midis_host_ptr_) {
+    VLOG(1) << "ArcMidisBridge was already lost.";
+    return;
+  }
   DVLOG(1) << "ArcMidisBridge succeeded with Mojo bootstrapping.";
   midis_host_ptr_->Connect(std::move(request), std::move(client_ptr));
 }
@@ -87,9 +91,9 @@ void ArcMidisBridge::Connect(mojom::MidisServerRequest request,
   midis_host_ptr_.Bind(
       mojo::InterfacePtrInfo<mojom::MidisHost>(std::move(server_pipe), 0u));
   DVLOG(1) << "Bound remote MidisHost interface to pipe.";
-  midis_host_ptr_.set_connection_error_handler(
-      base::BindOnce(&mojo::InterfacePtr<mojom::MidisHost>::reset,
-                     base::Unretained(&midis_host_ptr_)));
+
+  midis_host_ptr_.set_connection_error_handler(base::BindOnce(
+      &ArcMidisBridge::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
   chromeos::DBusThreadManager::Get()
       ->GetArcMidisClient()
       ->BootstrapMojoConnection(
@@ -97,6 +101,11 @@ void ArcMidisBridge::Connect(mojom::MidisServerRequest request,
           base::BindOnce(&ArcMidisBridge::OnBootstrapMojoConnection,
                          weak_factory_.GetWeakPtr(), std::move(request),
                          std::move(client_ptr)));
+}
+
+void ArcMidisBridge::OnMojoConnectionError() {
+  LOG(ERROR) << "ArcMidisBridge Mojo connection lost.";
+  midis_host_ptr_.reset();
 }
 
 }  // namespace arc

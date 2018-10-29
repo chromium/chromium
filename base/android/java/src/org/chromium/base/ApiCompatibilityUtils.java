@@ -13,14 +13,18 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +36,8 @@ import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.ImageViewCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -39,6 +45,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodSubtype;
 import android.view.textclassifier.TextClassifier;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.io.File;
@@ -319,6 +327,17 @@ public class ApiCompatibilityUtils {
     }
 
     /**
+     * Set elevation if supported.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static boolean setElevation(PopupWindow window, float elevationValue) {
+        if (!isElevationSupported()) return false;
+
+        window.setElevation(elevationValue);
+        return true;
+    }
+
+    /**
      *  Gets an intent to start the Android system notification settings activity for an app.
      *
      *  @param context Context of the app whose settings intent should be returned.
@@ -466,6 +485,17 @@ public class ApiCompatibilityUtils {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
+    }
+
+    public static void setImageTintList(
+            @NonNull ImageView view, @Nullable ColorStateList tintList) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            // Work around broken workaround in ImageViewCompat, see https://crbug.com/891609#c3.
+            if (tintList != null && view.getImageTintMode() == null) {
+                view.setImageTintMode(PorterDuff.Mode.SRC_IN);
+            }
+        }
+        ImageViewCompat.setImageTintList(view, tintList);
     }
 
     /**
@@ -709,6 +739,106 @@ public class ApiCompatibilityUtils {
     public static void setAccessibilityTraversalBefore(View view, int viewFocusedAfter) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             view.setAccessibilityTraversalBefore(viewFocusedAfter);
+        }
+    }
+
+    /**
+     * Creates regular LayerDrawable on Android L+. On older versions creates a helper class that
+     * fixes issues around {@link LayerDrawable#mutate()}. See https://crbug.com/890317 for details.
+     * See also {@link #createTransitionDrawable}.
+     * @param layers A list of drawables to use as layers in this new drawable.
+     */
+    public static LayerDrawable createLayerDrawable(@NonNull Drawable[] layers) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            return new LayerDrawableCompat(layers);
+        }
+        return new LayerDrawable(layers);
+    }
+
+    /**
+     * Creates regular TransitionDrawable on Android L+. On older versions creates a helper class
+     * that fixes issues around {@link TransitionDrawable#mutate()}. See https://crbug.com/892061
+     * for details. See also {@link #createLayerDrawable}.
+     * @param layers A list of drawables to use as layers in this new drawable.
+     */
+    public static TransitionDrawable createTransitionDrawable(@NonNull Drawable[] layers) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            return new TransitionDrawableCompat(layers);
+        }
+        return new TransitionDrawable(layers);
+    }
+
+    private static class LayerDrawableCompat extends LayerDrawable {
+        private boolean mMutated;
+
+        LayerDrawableCompat(@NonNull Drawable[] layers) {
+            super(layers);
+        }
+
+        @NonNull
+        @Override
+        public Drawable mutate() {
+            // LayerDrawable in Android K loses bounds of layers, so this method works around that.
+            if (mMutated) {
+                // This object has already been mutated and shouldn't have any shared state.
+                return this;
+            }
+
+            Rect[] oldBounds = getLayersBounds(this);
+            Drawable superResult = super.mutate();
+            // LayerDrawable.mutate() always returns this, bail out if this isn't the case.
+            if (superResult != this) return superResult;
+            restoreLayersBounds(this, oldBounds);
+            mMutated = true;
+            return this;
+        }
+    }
+
+    private static class TransitionDrawableCompat extends TransitionDrawable {
+        private boolean mMutated;
+
+        TransitionDrawableCompat(@NonNull Drawable[] layers) {
+            super(layers);
+        }
+
+        @NonNull
+        @Override
+        public Drawable mutate() {
+            // LayerDrawable in Android K loses bounds of layers, so this method works around that.
+            if (mMutated) {
+                // This object has already been mutated and shouldn't have any shared state.
+                return this;
+            }
+            Rect[] oldBounds = getLayersBounds(this);
+            Drawable superResult = super.mutate();
+            // TransitionDrawable.mutate() always returns this, bail out if this isn't the case.
+            if (superResult != this) return superResult;
+            restoreLayersBounds(this, oldBounds);
+            mMutated = true;
+            return this;
+        }
+    }
+
+    /**
+     * Helper for {@link LayerDrawableCompat#mutate} and {@link TransitionDrawableCompat#mutate}.
+     * Obtains the bounds of layers so they can be restored after a mutation.
+     */
+    private static Rect[] getLayersBounds(LayerDrawable layerDrawable) {
+        Rect[] result = new Rect[layerDrawable.getNumberOfLayers()];
+        for (int i = 0; i < layerDrawable.getNumberOfLayers(); i++) {
+            result[i] = layerDrawable.getDrawable(i).getBounds();
+        }
+        return result;
+    }
+
+    /**
+     * Helper for {@link LayerDrawableCompat#mutate} and {@link TransitionDrawableCompat#mutate}.
+     * Restores the bounds of layers after a mutation.
+     */
+    private static void restoreLayersBounds(LayerDrawable layerDrawable, Rect[] oldBounds) {
+        assert layerDrawable.getNumberOfLayers() == oldBounds.length;
+        for (int i = 0; i < layerDrawable.getNumberOfLayers(); i++) {
+            layerDrawable.getDrawable(i).setBounds(oldBounds[i]);
         }
     }
 }

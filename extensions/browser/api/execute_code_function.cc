@@ -8,7 +8,7 @@
 #include "extensions/browser/api/execute_code_function.h"
 
 #include "base/task/post_task.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -52,7 +52,8 @@ void ExecuteCodeFunction::GetFileURLAndMaybeLocalizeInBackground(
     const std::string& extension_default_locale,
     bool might_require_localization,
     std::string* data) {
-  base::AssertBlockingAllowed();
+  // TODO(karandeepb): Limit scope of ScopedBlockingCall.
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   // TODO(devlin): FilePathToFileURL() doesn't need to be done on a blocking
   // task runner, so we could do that on the UI thread and then avoid the hop
@@ -83,7 +84,6 @@ ExecuteCodeFunction::GetFileURLAndLocalizeComponentResourceInBackground(
     const base::FilePath& extension_path,
     const std::string& extension_default_locale,
     bool might_require_localization) {
-  base::AssertBlockingAllowed();
   GetFileURLAndMaybeLocalizeInBackground(
       extension_id, extension_path, extension_default_locale,
       might_require_localization, data.get());

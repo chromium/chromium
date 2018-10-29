@@ -124,12 +124,11 @@ class CORE_EXPORT ObjectPaintProperties {
   //         or InlineBox's PhysicalLocation()) in this space, we should add
   //         ScrollOrigin() to the offset.
   //
-  // ... +-[ TransformIsolationNode ]     This serves as a parent to subtree
-  //                                      transforms on an element with paint
-  //                                      containment. It induces a
-  //                                      paintOffsetTranslationNode and is the
-  //                                      deepest child of any transform tree on
-  //                                      the contain: paint element.
+  // ... +-[ TransformIsolationNode ]
+  //         This serves as a parent to subtree transforms on an element with
+  //         paint containment. It induces a PaintOffsetTranslation node and
+  //         is the deepest child of any transform tree on the contain: paint
+  //         element.
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);
   ADD_TRANSFORM(Transform, transform_);
@@ -234,6 +233,12 @@ class CORE_EXPORT ObjectPaintProperties {
            "scroll translation and a replaced content transform.";
     DCHECK(!ClipPathClip() || !ClipPath())
         << "ClipPathClip and ClipPathshould be mutually exclusive.";
+    DCHECK((!TransformIsolationNode() && !ClipIsolationNode() &&
+            !EffectIsolationNode()) ||
+           (TransformIsolationNode() && ClipIsolationNode() &&
+            EffectIsolationNode()))
+        << "Isolation nodes have to be created for all of transform, clip, and "
+           "effect trees.";
   }
 #endif
 

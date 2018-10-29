@@ -1,5 +1,0 @@
-CONSOLE MESSAGE: line 5: iframe/iframe_animator constructor called.
-CONSOLE MESSAGE: line 12: iframe/iframe_animator animate called.
-CONSOLE MESSAGE: line 5: mainframe/duplicate_animator constructor called.
-CONSOLE MESSAGE: line 12: mainframe/duplicate_animator animate called.
-

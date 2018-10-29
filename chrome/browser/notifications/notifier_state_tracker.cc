@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/permissions/permission_manager.h"
@@ -18,6 +19,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -184,8 +186,8 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   // has changed.
   extensions::InfoMap* extension_info_map =
       extensions::ExtensionSystem::Get(profile_)->info_map();
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&extensions::InfoMap::SetNotificationsDisabled,
                      extension_info_map, notifier_id.id, !enabled));
 }

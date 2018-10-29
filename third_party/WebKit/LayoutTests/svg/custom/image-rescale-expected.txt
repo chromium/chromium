@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 700x400
-  LayoutSVGRoot {svg} at (0,0) size 700x400
-    LayoutSVGImage {image} at (0,0) size 320x210
-    LayoutSVGImage {image} at (350,0) size 32x21 [transform={m=((10.00,0.00)(0.00,10.00)) t=(-3150.00,0.00)}]

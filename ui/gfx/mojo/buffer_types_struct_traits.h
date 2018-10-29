@@ -15,16 +15,6 @@ template <>
 struct EnumTraits<gfx::mojom::BufferFormat, gfx::BufferFormat> {
   static gfx::mojom::BufferFormat ToMojom(gfx::BufferFormat format) {
     switch (format) {
-      case gfx::BufferFormat::ATC:
-        return gfx::mojom::BufferFormat::ATC;
-      case gfx::BufferFormat::ATCIA:
-        return gfx::mojom::BufferFormat::ATCIA;
-      case gfx::BufferFormat::DXT1:
-        return gfx::mojom::BufferFormat::DXT1;
-      case gfx::BufferFormat::DXT5:
-        return gfx::mojom::BufferFormat::DXT5;
-      case gfx::BufferFormat::ETC1:
-        return gfx::mojom::BufferFormat::ETC1;
       case gfx::BufferFormat::R_8:
         return gfx::mojom::BufferFormat::R_8;
       case gfx::BufferFormat::R_16:
@@ -63,21 +53,6 @@ struct EnumTraits<gfx::mojom::BufferFormat, gfx::BufferFormat> {
   static bool FromMojom(gfx::mojom::BufferFormat input,
                         gfx::BufferFormat* out) {
     switch (input) {
-      case gfx::mojom::BufferFormat::ATC:
-        *out = gfx::BufferFormat::ATC;
-        return true;
-      case gfx::mojom::BufferFormat::ATCIA:
-        *out = gfx::BufferFormat::ATCIA;
-        return true;
-      case gfx::mojom::BufferFormat::DXT1:
-        *out = gfx::BufferFormat::DXT1;
-        return true;
-      case gfx::mojom::BufferFormat::DXT5:
-        *out = gfx::BufferFormat::DXT5;
-        return true;
-      case gfx::mojom::BufferFormat::ETC1:
-        *out = gfx::BufferFormat::ETC1;
-        return true;
       case gfx::mojom::BufferFormat::R_8:
         *out = gfx::BufferFormat::R_8;
         return true;
@@ -202,54 +177,6 @@ struct StructTraits<gfx::mojom::BufferUsageAndFormatDataView,
 };
 
 template <>
-struct EnumTraits<gfx::mojom::GpuMemoryBufferType, gfx::GpuMemoryBufferType> {
-  static gfx::mojom::GpuMemoryBufferType ToMojom(
-      gfx::GpuMemoryBufferType type) {
-    switch (type) {
-      case gfx::GpuMemoryBufferType::EMPTY_BUFFER:
-        return gfx::mojom::GpuMemoryBufferType::EMPTY_BUFFER;
-      case gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER:
-        return gfx::mojom::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-      case gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER:
-        return gfx::mojom::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-      case gfx::GpuMemoryBufferType::NATIVE_PIXMAP:
-        return gfx::mojom::GpuMemoryBufferType::NATIVE_PIXMAP;
-      case gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE:
-        return gfx::mojom::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-      case gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER:
-        return gfx::mojom::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER;
-    }
-    NOTREACHED();
-    return gfx::mojom::GpuMemoryBufferType::EMPTY_BUFFER;
-  }
-
-  static bool FromMojom(gfx::mojom::GpuMemoryBufferType input,
-                        gfx::GpuMemoryBufferType* out) {
-    switch (input) {
-      case gfx::mojom::GpuMemoryBufferType::EMPTY_BUFFER:
-        *out = gfx::GpuMemoryBufferType::EMPTY_BUFFER;
-        return true;
-      case gfx::mojom::GpuMemoryBufferType::SHARED_MEMORY_BUFFER:
-        *out = gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-        return true;
-      case gfx::mojom::GpuMemoryBufferType::IO_SURFACE_BUFFER:
-        *out = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-        return true;
-      case gfx::mojom::GpuMemoryBufferType::NATIVE_PIXMAP:
-        *out = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-        return true;
-      case gfx::mojom::GpuMemoryBufferType::DXGI_SHARED_HANDLE:
-        *out = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-        return true;
-      case gfx::mojom::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER:
-        *out = gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER;
-        return true;
-    }
-    return false;
-  }
-};
-
-template <>
 struct StructTraits<gfx::mojom::GpuMemoryBufferIdDataView,
                     gfx::GpuMemoryBufferId> {
   static int32_t id(const gfx::GpuMemoryBufferId& buffer_id) {
@@ -313,34 +240,17 @@ struct StructTraits<gfx::mojom::NativePixmapHandleDataView,
 template <>
 struct StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
                     gfx::GpuMemoryBufferHandle> {
-  static gfx::GpuMemoryBufferType type(
-      const gfx::GpuMemoryBufferHandle& handle) {
-    return handle.type;
-  }
   static gfx::GpuMemoryBufferId id(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.id;
   }
-  static mojo::ScopedSharedBufferHandle shared_memory_handle(
-      const gfx::GpuMemoryBufferHandle& handle);
   static uint32_t offset(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.offset;
   }
   static uint32_t stride(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.stride;
   }
-  static const gfx::NativePixmapHandle& native_pixmap_handle(
-      const gfx::GpuMemoryBufferHandle& handle);
-  static mojo::ScopedHandle mach_port(const gfx::GpuMemoryBufferHandle& handle);
-
-#if defined(OS_WIN)
-  static mojo::ScopedHandle dxgi_handle(
-      const gfx::GpuMemoryBufferHandle& handle);
-#endif
-
-#if defined(OS_ANDROID)
-  static gfx::mojom::AHardwareBufferHandlePtr android_hardware_buffer_handle(
+  static gfx::mojom::GpuMemoryBufferPlatformHandlePtr platform_handle(
       gfx::GpuMemoryBufferHandle& handle);
-#endif
 
   static bool Read(gfx::mojom::GpuMemoryBufferHandleDataView data,
                    gfx::GpuMemoryBufferHandle* handle);

@@ -97,7 +97,7 @@ class PresentationAvailabilityStateTest : public testing::Test {
     state_.RequestAvailability(
         urls,
         std::unique_ptr<MockPresentationAvailabilityCallbacks>(mock_callback));
-    for (size_t i = 0; i < urls.size(); i++)
+    for (wtf_size_t i = 0; i < urls.size(); i++)
       ChangeURLState(urls[i], states[i]);
   }
 

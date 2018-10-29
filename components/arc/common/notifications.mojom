@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 21
+// Next MinVersion: 23
 
 module arc.mojom;
 
@@ -78,7 +78,7 @@ enum ArcNotificationShownContents {
 };
 
 // Flag for various feature of ARC notifications.
-[Extensible, MinVersion=17]
+[MinVersion=17]
 struct ArcNotificationFlags {
   // Bits for features.
   const uint32 SUPPORT_SNOOZE = 1;  // 1 << 0
@@ -154,14 +154,47 @@ struct ArcNotificationData {
   string? package_name;
   [MinVersion=17]
   ArcNotificationFlags? flags;
+  [MinVersion=21]
+  bool hidden_on_lock_screen;
+  [MinVersion=21]
+  ArcBitmap? snapshot_image_public;
 };
 
-[Extensible, MinVersion=18]
+[MinVersion=18]
 struct ArcDoNotDisturbStatus {
   bool enabled;
 };
 
-// Next Method ID: 9
+[MinVersion=21]
+struct ArcNotificationUserActionData {
+  // Unique action id for this user action.
+  uint32 action_id;
+  // Notification key of top-level notification which contains the notification
+  // which is initiating this action.
+  string top_level_notification_key;
+  // True if the task should be executed on the unlocked state.
+  bool defer_until_unlock;
+  // True if the notification view should be focused after unlock. This is
+  // effective only when |defer_until_unlock| is true.
+  bool to_be_focused_after_unlock;
+};
+
+[MinVersion=21]
+struct ArcLockScreenNotificationSetting {
+  // Flag whether to show the notifications on the lock screen.
+  bool show_notification;
+  // Flag whether to show the private content on the lock screen.
+  bool show_private_notification;
+};
+
+[MinVersion=22]
+struct NotificationConfiguration {
+  // Flag to enable notification expansion animations on arc.
+  // See b/35786193.
+  bool expansion_animation;
+};
+
+// Next Method ID: 11
 interface NotificationsHost {
   // Set the Do-Not-Disturb status on Chrome side from Android side.
   [MinVersion=18]
@@ -188,9 +221,18 @@ interface NotificationsHost {
   [MinVersion=20]
   // Closes the Chrome OS message center.
   CloseMessageCenter@8();
+
+  [MinVersion=21]
+  // Processes the user action initiated from Android side on Chrome side.
+  ProcessUserAction@9(ArcNotificationUserActionData data);
+
+  [MinVersion=21]
+  // Sets the lock screen setting on Chrome side from Android side. Usually
+  // invoked when the setting on Android side is chagned.
+  OnLockScreenSettingUpdated@10(ArcLockScreenNotificationSetting setting);
 };
 
-// Next Method ID: 9
+// Next Method ID: 13
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 interface NotificationsInstance {
   // DEPRECATED: Please use Init@5 instead.
@@ -236,4 +278,20 @@ interface NotificationsInstance {
   // event but as a scroll event, and the on-going touch should be cancelled.
   [MinVersion=19]
   CancelLongPress@8(string key);
+
+  // Performs the user action being deferred in Android.
+  [MinVersion=21]
+  PerformDeferredUserAction@9(uint32 action_id);
+
+  // Cancels the user action being deferred in Android.
+  [MinVersion=21]
+  CancelDeferredUserAction@10(uint32 action_id);
+
+  // Sets the lock screen notification setting on Android side from Chrome side.
+  [MinVersion=21]
+  SetLockScreenSettingOnAndroid@11(ArcLockScreenNotificationSetting setting);
+
+  // Set configuration variables for notifications.
+  [MinVersion=22]
+  SetNotificationConfiguration@12(NotificationConfiguration configuration);
 };

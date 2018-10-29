@@ -37,7 +37,7 @@ the confidence that their improvement on the suite matters to real users.
 
 To achieve this goal, just simulating user’s activities on the web is not
 enough. We also partner with
-[chrome-speed-metrics](https://groups.google.com/a/chromium.org/forum/#!forum/progressive-web-metrics)
+[chrome-speed-metrics](https://groups.google.com/a/chromium.org/forum/#!forum/speed-metrics-dev)
 team to track key user metrics on our user stories.
 
 

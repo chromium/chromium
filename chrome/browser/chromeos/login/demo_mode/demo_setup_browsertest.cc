@@ -169,7 +169,8 @@ class JsConditionWaiter {
 // Basic tests for demo mode setup flow.
 class DemoSetupTest : public LoginManagerTest {
  public:
-  DemoSetupTest() : LoginManagerTest(false) {}
+  DemoSetupTest()
+      : LoginManagerTest(false, true /* should_initialize_webui */) {}
   ~DemoSetupTest() override = default;
 
   // LoginTestManager:
@@ -239,6 +240,22 @@ class DemoSetupTest : public LoginManagerTest {
         base::StrCat({"!!", element_selector, " && ", element_selector,
                       ".item.customItemName == '", custom_item_name, "' && !",
                       element_selector, ".hidden"});
+    return js_checker().GetBool(query);
+  }
+
+  // Returns whether error message is shown on demo setup error screen and
+  // contains text consisting of strings identified by |error_message_id| and
+  // |recovery_message_id|.
+  bool IsErrorMessageShown(int error_message_id, int recovery_message_id) {
+    const std::string element_selector =
+        base::StrCat({ScreenToContentQuery(OobeScreen::SCREEN_OOBE_DEMO_SETUP),
+                      ".$.", DialogToStringId(DemoSetupDialog::kError),
+                      ".querySelector('div[slot=subtitle]')"});
+    const std::string query = base::StrCat(
+        {"!!", element_selector, " && ", element_selector, ".innerHTML == '",
+         l10n_util::GetStringUTF8(error_message_id), " ",
+         l10n_util::GetStringUTF8(recovery_message_id), "' && !",
+         element_selector, ".hidden"});
     return js_checker().GetBool(query);
   }
 
@@ -349,11 +366,10 @@ class DemoSetupTest : public LoginManagerTest {
     EnterpriseEnrollmentHelper::SetupEnrollmentHelperMock(
         &MockDemoModeOnlineEnrollmentHelperCreator<DemoModeSetupResult::ERROR>);
 
-    auto* const wizard_controller = WizardController::default_controller();
-    wizard_controller->SimulateDemoModeSetupForTesting();
     // Enrollment type is set in the part of the flow that is skipped, That is
     // why we need to set it here.
-    wizard_controller->demo_setup_controller()->set_demo_config(
+    auto* const wizard_controller = WizardController::default_controller();
+    wizard_controller->SimulateDemoModeSetupForTesting(
         DemoSession::DemoModeConfig::kOnline);
     wizard_controller->AdvanceToScreen(OobeScreen::SCREEN_OOBE_DEMO_SETUP);
 
@@ -482,7 +498,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupTest, ShowConfirmationDialogAndProceed) {
   EXPECT_TRUE(IsScreenShown(OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES));
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupTest, ShowConfirmationDialogAndCancel) {
+#if defined(OS_CHROMEOS)
+// Flaky on ChromeOS. crbug.com/895120
+#define MAYBE_ShowConfirmationDialogAndCancel \
+  DISABLED_ShowConfirmationDialogAndCancel
+#else
+#define MAYBE_ShowConfirmationDialogAndCancel ShowConfirmationDialogAndCancel
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupTest, MAYBE_ShowConfirmationDialogAndCancel) {
   EXPECT_FALSE(IsConfirmationDialogShown());
 
   InvokeDemoModeWithAccelerator();
@@ -617,6 +640,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupTest, OnlineSetupFlowError) {
   // needed to be able to check it reliably.
   WaitForScreenDialog(OobeScreen::SCREEN_OOBE_DEMO_SETUP,
                       DemoSetupDialog::kError);
+  // Default error returned by MockDemoModeOnlineEnrollmentHelperCreator.
+  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_TEMPORARY_ERROR,
+                                  IDS_DEMO_SETUP_RECOVERY_RETRY));
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
@@ -673,6 +699,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupTest, OnlineSetupFlowCrosComponentFailure) {
   // needed to be able to check it reliably.
   WaitForScreenDialog(OobeScreen::SCREEN_OOBE_DEMO_SETUP,
                       DemoSetupDialog::kError);
+  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_COMPONENT_ERROR,
+                                  IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK));
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
@@ -780,6 +808,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupTest, OfflineSetupFlowError) {
   // needed to be able to check it reliably.
   WaitForScreenDialog(OobeScreen::SCREEN_OOBE_DEMO_SETUP,
                       DemoSetupDialog::kError);
+  // Default error returned by MockDemoModeOfflineEnrollmentHelperCreator.
+  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_LOCK_ERROR,
+                                  IDS_DEMO_SETUP_RECOVERY_POWERWASH));
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());

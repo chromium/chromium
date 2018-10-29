@@ -29,10 +29,27 @@ from slave import build_directory
 SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..', '..'))
 
+# If something adds a static initializer, revert it, don't increase these
+# numbers. We don't accept regressions in static initializers.
+#
+# Note: Counts for chrome and nacl_helper are one higher in branded builds
+# compared to release builds.  This is due to a static initializer in
+# WelsThreadPool.cpp (https://crbug.com/893594).
+EXPECTED_LINUX_SI_COUNTS = {
+  'chrome': 5,
+  'nacl_helper': 5,
+  'nacl_helper_bootstrap': 0,
+}
+
+# If something adds a static initializer, revert it, don't increase these
+# numbers. We don't accept regressions in static initializers.
+EXPECTED_MAC_SI_COUNT = 1  # https://crbug.com/893594
+
 
 class ResultsCollector(object):
   def __init__(self):
     self.results = {}
+    self.failures = []
 
   def add_result(self, name, identifier, value, units):
     assert name not in self.results
@@ -44,6 +61,9 @@ class ResultsCollector(object):
 
     # Legacy printing, previously used for parsing the text logs.
     print 'RESULT %s: %s= %s %s' % (name, identifier, value, units)
+
+  def add_failure(self, failure):
+    self.failures.append(failure)
 
 
 def get_size(filename):
@@ -164,7 +184,11 @@ def main_mac(options, args, results_collector):
 
       # For Release builds only, use dump-static-initializers.py to print the
       # list of static initializers.
-      if si_count > 0 and options.target == 'Release':
+      if si_count > EXPECTED_MAC_SI_COUNT and options.target == 'Release':
+        result = 125
+        results_collector.add_failure(
+            'Expected 0 static initializers in %s, but found %d' %
+            (chromium_framework_executable, si_count))
         print '\n# Static initializers in %s:' % chromium_framework_executable
 
         # First look for a dSYM to get information about the initializers. If
@@ -230,7 +254,7 @@ def main_mac(options, args, results_collector):
   return 66
 
 
-def check_linux_binary(target_dir, binary_name, options):
+def check_linux_binary(target_dir, binary_name, options, results_collector):
   """Collect appropriate size information about the built Linux binary given.
 
   Returns a tuple (result, sizes).  result is the first non-zero exit
@@ -302,16 +326,23 @@ def check_linux_binary(target_dir, binary_name, options):
 
   # For Release builds only, use dump-static-initializers.py to print the list
   # of static initializers.
-  if si_count > 0 and options.target == 'Release':
-    build_dir = os.path.dirname(target_dir)
-    dump_static_initializers = os.path.join(os.path.dirname(build_dir),
-                                            'tools', 'linux',
-                                            'dump-static-initializers.py')
-    result, stdout = run_process(result, [dump_static_initializers,
-                                          '-d', binary_file])
-    print '\n# Static initializers in %s:' % binary_file
-    print_si_fail_hint('tools/linux/dump-static-initializers.py')
-    print stdout
+  if options.target == 'Release':
+    if (binary_name in EXPECTED_LINUX_SI_COUNTS and
+        si_count > EXPECTED_LINUX_SI_COUNTS[binary_name]):
+      result = 125
+      results_collector.add_failure(
+          'Expected <= %d static initializers in %s, but found %d' %
+          (EXPECTED_LINUX_SI_COUNTS[binary_name], binary_name, si_count))
+    if si_count > 0:
+      build_dir = os.path.dirname(target_dir)
+      dump_static_initializers = os.path.join(os.path.dirname(build_dir),
+                                              'tools', 'linux',
+                                              'dump-static-initializers.py')
+      result, stdout = run_process(result, [dump_static_initializers,
+                                            '-d', binary_file])
+      print '\n# Static initializers in %s:' % binary_file
+      print_si_fail_hint('tools/linux/dump-static-initializers.py')
+      print stdout
 
   # Determine if the binary has the DT_TEXTREL marker.
   result, stdout = run_process(result, ['readelf', '-Wd', binary_file])
@@ -350,7 +381,8 @@ def main_linux(options, args, results_collector):
   totals = {}
 
   for binary in binaries:
-    this_result, this_sizes = check_linux_binary(target_dir, binary, options)
+    this_result, this_sizes = check_linux_binary(target_dir, binary, options,
+                                                 results_collector)
     if result == 0:
       result = this_result
     for name, identifier, totals_id, value, units in this_sizes:
@@ -399,7 +431,8 @@ def check_android_binaries(binaries, target_dir, options, results_collector,
     binaries_to_print = binaries
 
   for (binary, binary_to_print) in zip(binaries, binaries_to_print):
-    this_result, this_sizes = check_linux_binary(target_dir, binary, options)
+    this_result, this_sizes = check_linux_binary(target_dir, binary, options,
+                                                 results_collector)
     if result == 0:
       result = this_result
     for name, identifier, _, value, units in this_sizes:
@@ -534,6 +567,8 @@ def main():
                            help='specify platform (%s) [default: %%default]'
                                 % ', '.join(platforms))
   option_parser.add_option('--json', help='Path to JSON output file')
+  option_parser.add_option('--failures',
+                           help='Path to JSON output file for failures')
 
   options, args = option_parser.parse_args()
 
@@ -553,6 +588,10 @@ def main():
   if options.json:
     with open(options.json, 'w') as f:
       json.dump(results_collector.results, f)
+
+  if options.failures:
+    with open(options.failures, 'w') as f:
+      json.dump(results_collector.failures, f)
 
   return rc
 

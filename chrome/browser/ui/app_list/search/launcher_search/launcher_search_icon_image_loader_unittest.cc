@@ -121,8 +121,8 @@ scoped_refptr<extensions::Extension> CreateTestExtension(
 bool IsEqual(const gfx::ImageSkia& expected_image,
              const gfx::ImageSkia& result_image) {
   return gfx::test::AreBitmapsEqual(
-      expected_image.GetRepresentation(1.0).sk_bitmap(),
-      result_image.GetRepresentation(1.0).sk_bitmap());
+      expected_image.GetRepresentation(1.0).GetBitmap(),
+      result_image.GetRepresentation(1.0).GetBitmap());
 }
 
 }  // namespace

@@ -32,11 +32,11 @@ namespace blink {
 
 TextTrackCueList::TextTrackCueList() : first_invalid_index_(0) {}
 
-unsigned long TextTrackCueList::length() const {
+wtf_size_t TextTrackCueList::length() const {
   return list_.size();
 }
 
-TextTrackCue* TextTrackCueList::AnonymousIndexedGetter(unsigned index) const {
+TextTrackCue* TextTrackCueList::AnonymousIndexedGetter(wtf_size_t index) const {
   if (index < list_.size())
     return list_[index].Get();
   return nullptr;
@@ -61,7 +61,7 @@ void TextTrackCueList::CollectActiveCues(TextTrackCueList& active_cues) const {
 bool TextTrackCueList::Add(TextTrackCue* cue) {
   // Maintain text track cue order:
   // https://html.spec.whatwg.org/#text-track-cue-order
-  size_t index = FindInsertionIndex(cue);
+  wtf_size_t index = FindInsertionIndex(cue);
 
   // FIXME: The cue should not exist in the list in the first place.
   if (!list_.IsEmpty() && (index > 0) && (list_[index - 1].Get() == cue))
@@ -80,17 +80,17 @@ static bool CueIsBefore(const TextTrackCue* cue, TextTrackCue* other_cue) {
          cue->endTime() > other_cue->endTime();
 }
 
-size_t TextTrackCueList::FindInsertionIndex(
+wtf_size_t TextTrackCueList::FindInsertionIndex(
     const TextTrackCue* cue_to_insert) const {
   auto* it =
       std::upper_bound(list_.begin(), list_.end(), cue_to_insert, CueIsBefore);
-  size_t index = SafeCast<size_t>(it - list_.begin());
+  wtf_size_t index = SafeCast<wtf_size_t>(it - list_.begin());
   SECURITY_DCHECK(index <= list_.size());
   return index;
 }
 
 bool TextTrackCueList::Remove(TextTrackCue* cue) {
-  size_t index = list_.Find(cue);
+  wtf_size_t index = list_.Find(cue);
   if (index == kNotFound)
     return false;
 
@@ -120,22 +120,22 @@ void TextTrackCueList::Clear() {
   list_.clear();
 }
 
-void TextTrackCueList::InvalidateCueIndex(size_t index) {
+void TextTrackCueList::InvalidateCueIndex(wtf_size_t index) {
   // Store the smallest (first) index that we know has a cue that does not
   // meet the criteria:
   //   cueIndex(list[index-1]) + 1 == cueIndex(list[index]) [index > 0]
   // This is a stronger requirement than we need, but it's easier to maintain.
   // We can then check if a cue's index is valid by comparing it with
-  // |m_firstInvalidIndex| - if it's strictly less it is valid.
+  // |first_invalid_index_| - if it's strictly less it is valid.
   first_invalid_index_ = std::min(first_invalid_index_, index);
 }
 
 void TextTrackCueList::ValidateCueIndexes() {
   // Compute new index values for the cues starting at
-  // |m_firstInvalidIndex|. If said index is beyond the end of the list, no
+  // |first_invalid_index_|. If said index is beyond the end of the list, no
   // cues will need to be updated.
-  for (size_t i = first_invalid_index_; i < list_.size(); ++i)
-    list_[i]->UpdateCueIndex(SafeCast<unsigned>(i));
+  for (wtf_size_t i = first_invalid_index_; i < list_.size(); ++i)
+    list_[i]->UpdateCueIndex(i);
   first_invalid_index_ = list_.size();
 }
 

@@ -41,6 +41,15 @@ constexpr int kArrowButtonFadeAnimationDurationMs = 180;
 
 }  // namespace
 
+LoginPublicAccountUserView::TestApi::TestApi(LoginPublicAccountUserView* view)
+    : view_(view) {}
+
+LoginPublicAccountUserView::TestApi::~TestApi() = default;
+
+views::View* LoginPublicAccountUserView::TestApi::arrow_button() const {
+  return view_->arrow_button_;
+}
+
 LoginPublicAccountUserView::Callbacks::Callbacks() = default;
 
 LoginPublicAccountUserView::Callbacks::Callbacks(const Callbacks& other) =

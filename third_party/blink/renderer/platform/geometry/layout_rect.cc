@@ -34,7 +34,7 @@
 #include <algorithm>
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -141,29 +141,22 @@ void LayoutRect::Scale(float x_axis_scale, float y_axis_scale) {
 LayoutRect UnionRect(const Vector<LayoutRect>& rects) {
   LayoutRect result;
 
-  size_t count = rects.size();
-  for (size_t i = 0; i < count; ++i)
-    result.Unite(rects[i]);
+  for (const LayoutRect& rect : rects)
+    result.Unite(rect);
 
   return result;
 }
 
 LayoutRect UnionRectEvenIfEmpty(const Vector<LayoutRect>& rects) {
-  size_t count = rects.size();
+  wtf_size_t count = rects.size();
   if (!count)
     return LayoutRect();
 
   LayoutRect result = rects[0];
-  for (size_t i = 1; i < count; ++i)
+  for (wtf_size_t i = 1; i < count; ++i)
     result.UniteEvenIfEmpty(rects[i]);
 
   return result;
-}
-
-LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
-  LayoutPoint location = FlooredLayoutPoint(rect.MinXMinYCorner());
-  LayoutPoint max_point = CeiledLayoutPoint(rect.MaxXMaxYCorner());
-  return LayoutRect(location, max_point - location);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const LayoutRect& rect) {

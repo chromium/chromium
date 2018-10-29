@@ -59,3 +59,19 @@ async function createFileWithContents(test, name, contents, parent) {
     await writer.write(0, new Blob([contents]));
     return handle;
 }
+
+function garbageCollect() {
+    if (self.gc) {
+        // Use --expose_gc for V8 (and Node.js)
+        // Exposed in SpiderMonkey shell as well
+        self.gc();
+    } else if (self.GCController) {
+        // Present in some WebKit development environments
+        GCController.collect();
+    } else {
+        /* eslint-disable no-console */
+        console.warn('Tests are running without the ability to do manual garbage collection. They will still work, but ' +
+            'coverage will be suboptimal.');
+        /* eslint-enable no-console */
+    }
+};

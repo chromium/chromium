@@ -2,7 +2,6 @@ Tests ArrayBuffer / ArrayBufferView constructors of FontFace.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS face1.status is "loaded"
 PASS face2.status is "loaded"
 PASS rejectionValue.name is "TypeError"
@@ -13,6 +12,7 @@ PASS document.getElementById('FontFromArrayBufferView').offsetWidth is document.
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 abc
 abc
 abc

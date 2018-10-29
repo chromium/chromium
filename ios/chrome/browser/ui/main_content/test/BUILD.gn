@@ -17,9 +17,9 @@ source_set("test") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/main_content:main_content_ui",
+    "//ios/chrome/browser/ui/util",
     "//testing/gtest",
   ]
 }

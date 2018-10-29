@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
 <translation id="3282568296779691940">Prijava v Google Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
-<translation id="3678774398092457402">Ali želite, da Chrome shrani vaše geslo za to spletno mesto?</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne more uporabljati fotoaparata</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> je mogoče kadar koli prilagoditi. Google lahko vsebino na spletnih mestih, ki jih obiščete, interakcije z brskalnikom in dejavnost v brskalniku uporabi za prilagajanje Chroma in Googlovih storitev, kot so Prevajalnik, Iskanje Google in oglasi.</translation>
 <translation id="5639704535586432836">Odprite Settings &gt; Privacy &gt; Camera &gt; Google Chrome in vklopite fotoaparat.</translation>
 <translation id="5642200033778930880">Google Chrome ne more uporabljati fotoaparata v načinu razdeljenega pogleda</translation>
-<translation id="5703130498371792817">Enjoying Chrome? <ph name="BEGIN_LINK" />Rate this app<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Nasvet za Chrome. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="6036420186814142909">Google Chrome ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Pogoji storitve za Google Chrome</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
 <translation id="7172660552945675509">Nasvet: <ph name="BEGIN_LINK" />premaknite Chrome v vrstico z aplikacijami<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="7265369419224458312">Do zavihkov, odprtih v računalniku, lahko dostopate tukaj. V računalniku odprite Chrome, nato meni in izberite »Prijava v Chrome …«.</translation>
 <translation id="728488472449859922">Vklop bralnika kod QR Google Chroma</translation>
 <translation id="7400722733683201933">O brskalniku Google Chrome</translation>

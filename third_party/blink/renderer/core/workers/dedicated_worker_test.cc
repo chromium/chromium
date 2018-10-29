@@ -35,7 +35,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
                               nullptr /* parent_execution_context*/,
                               worker_object_proxy) {
     worker_backing_thread_ = WorkerBackingThread::Create(
-        WebThreadCreationParams(WebThreadType::kTestThread));
+        ThreadCreationParams(WebThreadType::kTestThread));
   }
 
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
@@ -130,7 +130,7 @@ class DedicatedWorkerMessagingProxyForTest
     Vector<CSPHeaderAndType> headers{
         {"contentSecurityPolicy", kContentSecurityPolicyHeaderTypeReport}};
     auto worker_settings = std::make_unique<WorkerSettings>(
-        ToDocument(GetExecutionContext())->GetSettings());
+        To<Document>(GetExecutionContext())->GetSettings());
     InitializeWorkerThread(
         std::make_unique<GlobalScopeCreationParams>(
             script_url, ScriptType::kClassic, "fake user agent", headers,

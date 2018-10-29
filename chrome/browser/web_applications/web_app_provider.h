@@ -17,14 +17,26 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace web_app {
 
+// Forward declarations of generalized interfaces.
 class PendingAppManager;
+class InstallManager;
+
+// Forward declarations for new extension-independent subsystems.
+class WebAppRegistrar;
+
+// Forward declarations for legacy extension-based subsystems.
 class WebAppPolicyManager;
+class SystemWebAppManager;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -33,6 +45,8 @@ class WebAppProvider : public KeyedService,
                        public content::NotificationObserver {
  public:
   static WebAppProvider* Get(Profile* profile);
+  static WebAppProvider* GetForWebContents(
+      const content::WebContents* web_contents);
 
   explicit WebAppProvider(Profile* profile);
 
@@ -44,6 +58,13 @@ class WebAppProvider : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Returns true if a bookmark can be installed for a given |web_contents|.
+  static bool CanInstallWebApp(const content::WebContents* web_contents);
+
+  // Starts a bookmark installation process for a given |web_contents|.
+  static void InstallWebApp(content::WebContents* web_contents,
+                            bool force_shortcut_app);
+
   void Reset();
 
   // content::NotificationObserver
@@ -52,13 +73,26 @@ class WebAppProvider : public KeyedService,
                const content::NotificationDetails& details) override;
 
  private:
+  // Create extension-independent subsystems.
+  void CreateWebAppsSubsystems(Profile* profile);
+  // ... or create legacy extension-based subsystems.
+  void CreateBookmarkAppsSubsystems(Profile* profile);
+
   void OnScanForExternalWebApps(
       std::vector<web_app::PendingAppManager::AppInfo>);
 
-  std::unique_ptr<PendingAppManager> pending_app_manager_;
-  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
+  // New extension-independent subsystems:
+  std::unique_ptr<WebAppRegistrar> registrar_;
 
-  content::NotificationRegistrar registrar_;
+  // New generalized subsystems:
+  std::unique_ptr<InstallManager> install_manager_;
+  std::unique_ptr<PendingAppManager> pending_app_manager_;
+
+  // Legacy extension-based subsystems:
+  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
+  std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
+
+  content::NotificationRegistrar notification_registrar_;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
 

@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.ntp.cards;
 
 import android.support.annotation.Nullable;
 
+import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ProfileDataCache;
@@ -65,12 +66,14 @@ public class PersonalizedPromoViewHolder extends CardViewHolder {
      * @param profileData The profile data which will be used to configure the personalized
      *         signin promo.
      */
+    @VisibleForTesting
     public void bindAndConfigureViewForTests(@Nullable DisplayableProfileData profileData) {
         super.onBindViewHolder();
         PersonalizedSigninPromoView view = (PersonalizedSigninPromoView) itemView;
         mSigninPromoController.setupPromoView(view.getContext(), view, profileData, null);
     }
 
+    @VisibleForTesting
     public void setSigninPromoControllerForTests(@Nullable SigninPromoController controller) {
         mSigninPromoController = controller;
     }

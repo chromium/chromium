@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/win/iunknown_impl.h"
 #include "base/win/propvarutil.h"
 #include "base/win/scoped_propvariant.h"
@@ -189,7 +190,12 @@ class MockISensorDataReport : public MockCOMInterface<ISensorDataReport> {
 //                         data in OnDataUpdated event.
 class PlatformSensorAndProviderTestWin : public ::testing::Test {
  public:
+  PlatformSensorAndProviderTestWin()
+      : scoped_task_environment_(
+            base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+
   void SetUp() override {
+    EXPECT_EQ(S_OK, CoInitialize(nullptr));
     sensor_ = new NiceMock<MockISensor>();
     sensor_collection_ = new NiceMock<MockISensorCollection>();
     sensor_manager_ = new NiceMock<MockISensorManager>();
@@ -244,8 +250,8 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
 
   void SetUnsupportedSensor(REFSENSOR_TYPE_ID sensor) {
     EXPECT_CALL(*sensor_manager_, GetSensorsByType(sensor, _))
-        .WillOnce(Invoke(
-            [this](REFSENSOR_TYPE_ID type, ISensorCollection** collection) {
+        .WillRepeatedly(
+            Invoke([](REFSENSOR_TYPE_ID type, ISensorCollection** collection) {
               return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
             }));
   }
@@ -288,7 +294,7 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
           events->AddRef();
           sensor_events_.Attach(events);
           if (this->run_loop_) {
-            message_loop_.task_runner()->PostTask(
+            scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
                 FROM_HERE,
                 base::Bind(&PlatformSensorAndProviderTestWin::QuitInnerLoop,
                            base::Unretained(this)));
@@ -302,7 +308,7 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
         .WillByDefault(Invoke([this](ISensorEvents* events) {
           sensor_events_.Reset();
           if (this->run_loop_) {
-            message_loop_.task_runner()->PostTask(
+            scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
                 FROM_HERE,
                 base::Bind(&PlatformSensorAndProviderTestWin::QuitInnerLoop,
                            base::Unretained(this)));
@@ -382,11 +388,11 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
     sensor_events_->OnDataUpdated(sensor_.get(), data_report.Get());
   }
 
+  base::test::ScopedTaskEnvironment scoped_task_environment_;
   scoped_refptr<MockISensorManager> sensor_manager_;
   scoped_refptr<MockISensorCollection> sensor_collection_;
   scoped_refptr<MockISensor> sensor_;
   Microsoft::WRL::ComPtr<ISensorEvents> sensor_events_;
-  base::MessageLoop message_loop_;
   scoped_refptr<PlatformSensor> platform_sensor_;
   // Inner run loop used to wait for async sensor creation callback.
   std::unique_ptr<base::RunLoop> run_loop_;

@@ -34,6 +34,9 @@ def AddCommonArgs(arg_parser):
                                  'are located (must include build type).'))
   common_args.add_argument('--target-cpu', required=True,
                            help='GN target_cpu setting for the build.')
+  common_args.add_argument('--target-staging-path',
+                           help='target path under which to stage packages '
+                           'during deployment.', default='/data')
   common_args.add_argument('--device', '-d', action='store_true', default=False,
                            help='Run on hardware device instead of QEMU.')
   common_args.add_argument('--host', help='The IP of the target device. ' +

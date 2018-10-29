@@ -57,7 +57,7 @@ class LayoutRect;
 class LayoutSize;
 
 class PLATFORM_EXPORT FloatRect {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum ContainsMode { kInsideOrOnStroke, kInsideButNotOnStroke };

@@ -52,12 +52,12 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   // DownloadUIModel::Observer overrides.
   void OnDownloadDestroyed() override;
 
-  ui::SimpleMenuModel* GetInProgressMenuModel();
-  ui::SimpleMenuModel* GetInProgressPausedMenuModel();
-  ui::SimpleMenuModel* GetFinishedMenuModel();
-  ui::SimpleMenuModel* GetInterruptedMenuModel();
-  ui::SimpleMenuModel* GetMaybeMaliciousMenuModel();
-  ui::SimpleMenuModel* GetMaliciousMenuModel();
+  ui::SimpleMenuModel* GetInProgressMenuModel(bool is_download);
+  ui::SimpleMenuModel* GetInProgressPausedMenuModel(bool is_download);
+  ui::SimpleMenuModel* GetFinishedMenuModel(bool is_download);
+  ui::SimpleMenuModel* GetInterruptedMenuModel(bool is_download);
+  ui::SimpleMenuModel* GetMaybeMaliciousMenuModel(bool is_download);
+  ui::SimpleMenuModel* GetMaliciousMenuModel(bool is_download);
 
   // We show slightly different menus if the download is in progress vs. if the
   // download has finished.

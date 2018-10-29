@@ -20,6 +20,7 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class AppCacheHost;
+class ThrottlingURLLoader;
 class NavigationLoaderInterceptor;
 class ResourceContext;
 class ServiceWorkerProviderHost;
@@ -83,11 +84,24 @@ class SharedWorkerScriptLoader : public network::mojom::URLLoader,
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  // Returns a URLLoader client endpoint if an interceptor wants to handle the
+  // response, i.e. return a different response. For e.g. AppCache may have
+  // fallback content.
+  bool MaybeCreateLoaderForResponse(
+      const network::ResourceResponseHead& response,
+      network::mojom::URLLoaderPtr* response_url_loader,
+      network::mojom::URLLoaderClientRequest* response_client_request,
+      ThrottlingURLLoader* url_loader);
+
   base::Optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
     return std::move(subresource_loader_params_);
   }
 
   base::WeakPtr<SharedWorkerScriptLoader> GetWeakPtr();
+
+  // Set to true if the default URLLoader (network service) was used for the
+  // current request.
+  bool default_loader_used_ = false;
 
  private:
   void Start();

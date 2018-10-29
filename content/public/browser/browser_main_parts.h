@@ -54,11 +54,6 @@ class CONTENT_EXPORT BrowserMainParts {
   BrowserMainParts() {}
   virtual ~BrowserMainParts() {}
 
-  // Returns true if content should create a FeatureList. Default
-  // implementation returns true. Embedders that need to control when and/or
-  // how FeatureList should be created should override and return false.
-  virtual bool ShouldContentCreateFeatureList();
-
   // A return value other than RESULT_CODE_NORMAL_EXIT indicates error and is
   // used as the exit status.
   virtual int PreEarlyInitialization();

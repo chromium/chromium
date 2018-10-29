@@ -5,13 +5,19 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "components/sync/base/cryptographer.h"
+#include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
+#include "components/sync/test/fake_server/fake_server.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "url/gurl.h"
 
 class GURL;
 
@@ -223,6 +229,12 @@ std::string IndexedSubfolderName(int i);
 // Returns a subsubfolder name identifiable by |i|.
 std::string IndexedSubsubfolderName(int i);
 
+// Creates a server-side entity representing a bookmark with the given title and
+// URL.
+std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
+    const std::string& title,
+    const GURL& url);
+
 }  // namespace bookmarks_helper
 
 // Checker used to block until bookmarks match on all clients.
@@ -263,6 +275,37 @@ class BookmarksTitleChecker : public SingleClientStatusChangeChecker {
   const int profile_index_;
   const std::string title_;
   const int expected_count_;
+};
+
+// Checker used to block until the bookmarks on the server match a given set of
+// expected bookmarks.
+class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
+ public:
+  struct ExpectedBookmark {
+    std::string title;
+    GURL url;
+  };
+
+  // If a |cryptographer| is provided (i.e. is not nullptr), it is assumed that
+  // the server-side data should be encrypted, and the provided cryptographer
+  // will be used to decrypt the data prior to checking for equality.
+  ServerBookmarksEqualityChecker(
+      browser_sync::ProfileSyncService* service,
+      fake_server::FakeServer* fake_server,
+      const std::vector<ExpectedBookmark>& expected_bookmarks,
+      syncer::Cryptographer* cryptographer);
+
+  bool IsExitConditionSatisfied() override;
+  std::string GetDebugMessage() const override;
+
+  ~ServerBookmarksEqualityChecker() override;
+
+ private:
+  fake_server::FakeServer* fake_server_;
+  syncer::Cryptographer* cryptographer_;
+  const std::vector<ExpectedBookmark> expected_bookmarks_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServerBookmarksEqualityChecker);
 };
 
 // Checker used to block until the actual number of bookmarks with the given url

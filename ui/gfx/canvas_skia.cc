@@ -108,7 +108,7 @@ void Canvas::SizeStringFloat(const base::string16& text,
 
   if ((flags & MULTI_LINE) && *width != 0) {
     WordWrapBehavior wrap_behavior = TRUNCATE_LONG_WORDS;
-    if (flags & CHARACTER_BREAK)
+    if (flags & CHARACTER_BREAKABLE)
       wrap_behavior = WRAP_LONG_WORDS;
     else if (!(flags & NO_ELLIPSIS))
       wrap_behavior = ELIDE_LONG_WORDS;
@@ -169,7 +169,7 @@ void Canvas::DrawStringRectWithFlags(const base::string16& text,
 
   if (flags & MULTI_LINE) {
     WordWrapBehavior wrap_behavior = IGNORE_LONG_WORDS;
-    if (flags & CHARACTER_BREAK)
+    if (flags & CHARACTER_BREAKABLE)
       wrap_behavior = WRAP_LONG_WORDS;
     else if (!(flags & NO_ELLIPSIS))
       wrap_behavior = ELIDE_LONG_WORDS;

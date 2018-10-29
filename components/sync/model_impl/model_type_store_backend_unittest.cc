@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/protocol/model_type_store_schema_descriptor.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,7 @@ TEST(ModelTypeStoreBackendTest, WriteThenRead) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
   base::Optional<ModelError> error = backend->Init(temp_dir.GetPath());
   ASSERT_FALSE(error) << error->ToString();
@@ -64,7 +65,7 @@ TEST(ModelTypeStoreBackendTest, WriteThenRead) {
 
 // Test that ReadAllRecordsWithPrefix correclty filters records by prefix.
 TEST(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
@@ -85,7 +86,7 @@ TEST(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
 // Test that deleted records are correctly marked as milling in results of
 // ReadRecordsWithPrefix.
 TEST(ModelTypeStoreBackendTest, ReadDeletedRecord) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   // Create records, ensure they are returned by ReadRecordsWithPrefix.
@@ -127,7 +128,7 @@ TEST(ModelTypeStoreBackendTest, ReadDeletedRecord) {
 
 // Test that DeleteDataAndMetadataForPrefix correctly deletes records by prefix.
 TEST(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   auto write_batch = std::make_unique<leveldb::WriteBatch>();
@@ -166,7 +167,7 @@ TEST(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
 
 // Test that initializing the database migrates it to the latest schema version.
 TEST(ModelTypeStoreBackendTest, MigrateNoSchemaVersionToLatestVersionTest) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   ASSERT_EQ(ModelTypeStoreBackend::kLatestSchemaVersion,
@@ -175,7 +176,7 @@ TEST(ModelTypeStoreBackendTest, MigrateNoSchemaVersionToLatestVersionTest) {
 
 // Test that the 0 to 1 migration succeeds and sets the schema version to 1.
 TEST(ModelTypeStoreBackendTest, Migrate0To1Test) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
@@ -192,7 +193,7 @@ TEST(ModelTypeStoreBackendTest, Migrate0To1Test) {
 
 // Test that migration to an unknown version fails
 TEST(ModelTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateInMemoryForTest();
 
   base::Optional<ModelError> error =
@@ -216,7 +217,7 @@ TEST(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
   base::WriteFile(temp_dir.GetPath().Append(FILE_PATH_LITERAL("CURRENT")), "",
                   0);
 
-  std::unique_ptr<ModelTypeStoreBackend> backend =
+  scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
   base::Optional<ModelError> error = backend->Init(temp_dir.GetPath());
   ASSERT_FALSE(error) << error->ToString();

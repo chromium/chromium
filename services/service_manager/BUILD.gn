@@ -37,6 +37,8 @@ source_set("service_manager") {
     "switches.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base/third_party/dynamic_annotations",
   ]

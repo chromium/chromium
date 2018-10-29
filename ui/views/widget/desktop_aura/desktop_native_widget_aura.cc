@@ -315,6 +315,8 @@ void DesktopNativeWidgetAura::OnHostClosed() {
   wm::SetActivationClient(host_->window(), NULL);
   focus_client_.reset();
 
+  host_->window()->RemovePreTargetHandler(root_window_event_filter_.get());
+
   host_->RemoveObserver(this);
   host_.reset();
   // WindowEventDispatcher owns |desktop_window_tree_host_|.
@@ -595,11 +597,15 @@ const ui::Layer* DesktopNativeWidgetAura::GetLayer() const {
 }
 
 void DesktopNativeWidgetAura::ReorderNativeViews() {
+  if (!content_window_)
+    return;
+
   // Reordering native views causes multiple changes to the window tree.
-  // Instantiate a ScopedPauseOcclusionTracking to recompute occlusion once at
-  // the end of this scope rather than after each individual change.
+  // Instantiate a ScopedPause to recompute occlusion once at the end of this
+  // scope rather than after each individual change.
   // https://crbug.com/829918
-  aura::WindowOcclusionTracker::ScopedPauseOcclusionTracking pause_occlusion;
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion(
+      content_window_->env());
   window_reorderer_->ReorderChildWindows();
 }
 

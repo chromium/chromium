@@ -168,8 +168,8 @@ void GuestViewMessageFilter::AttachToEmbedderFrame(
         // frame |embedder_frame| hosts the inner WebContents.
         // NOTE: this must be called after WillAttach, because it could unblock
         // pending requests which depend on the WebViewGuest being initialized.
-        guest_web_contents->AttachToOuterWebContentsFrame(embedder_web_contents,
-                                                          embedder_frame);
+        guest_web_contents->AttachToOuterWebContentsFrame(
+            base::WrapUnique<WebContents>(guest_web_contents), embedder_frame);
 
         // We don't ACK until after AttachToOuterWebContentsFrame, so that
         // |embedder_frame| gets swapped before the AttachIframeGuest callback

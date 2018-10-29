@@ -1506,51 +1506,6 @@ class CppStyleTest(CppStyleTestBase):
         self.assert_lint('long int a : 30;', errmsg)
         self.assert_lint('int a = 1 ? 0 : 30;', '')
 
-    # A mixture of unsigned and bool bitfields in a class will generate a warning.
-    def test_mixing_unsigned_bool_bitfields(self):
-        def errmsg(bool_bitfields, unsigned_bitfields, name):
-            bool_list = ', '.join(bool_bitfields)
-            unsigned_list = ', '.join(unsigned_bitfields)
-            return ('The class %s contains mixed unsigned and bool bitfields, '
-                    'which will pack into separate words on the MSVC compiler.\n'
-                    'Bool bitfields are [%s].\nUnsigned bitfields are [%s].\n'
-                    'Consider converting bool bitfields to unsigned.  [runtime/bitfields] [5]'
-                    % (name, bool_list, unsigned_list))
-
-        def build_test_case(bitfields, name, will_warn, extra_warnings=None):
-            bool_bitfields = []
-            unsigned_bitfields = []
-            test_string = 'class %s {\n' % (name,)
-            line = 2
-            for bitfield in bitfields:
-                test_string += '    %s %s : %d;\n' % bitfield
-                if bitfield[0] == 'bool':
-                    bool_bitfields.append('%d: %s' % (line, bitfield[1]))
-                elif bitfield[0].startswith('unsigned'):
-                    unsigned_bitfields.append('%d: %s' % (line, bitfield[1]))
-                line += 1
-            test_string += '}\n'
-            error = ''
-            if will_warn:
-                error = errmsg(bool_bitfields, unsigned_bitfields, name)
-            if extra_warnings and error:
-                error = extra_warnings + [error]
-            self.assert_multi_line_lint(test_string, error)
-
-        build_test_case([('bool', 'm_boolMember', 4), ('unsigned', 'm_unsignedMember', 3)],
-                        'MyClass', True)
-        build_test_case([('bool', 'm_boolMember', 4), ('bool', 'm_anotherBool', 3)],
-                        'MyClass', False)
-        build_test_case([('unsigned', 'm_unsignedMember', 4), ('unsigned', 'm_anotherUnsigned', 3)],
-                        'MyClass', False)
-
-        self.assert_multi_line_lint('class NoProblemsHere {\n'
-                                    '  bool m_boolMember;\n'
-                                    '  unsigned m_unsignedMember;\n'
-                                    '  unsigned m_bitField1 : 1;\n'
-                                    '  unsigned m_bitField4 : 4;\n'
-                                    '}\n', '')
-
     # Bitfields which are not declared unsigned or bool will generate a warning.
     def test_unsigned_bool_bitfields(self):
         def errmsg(member, name, bit_type):

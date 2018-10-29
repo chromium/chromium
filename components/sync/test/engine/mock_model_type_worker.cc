@@ -160,7 +160,9 @@ UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
   data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
   data.modification_time =
       data.creation_time + base::TimeDelta::FromSeconds(version);
-  data.non_unique_name = data.specifics.preference().name();
+  data.non_unique_name = data.specifics.has_encrypted()
+                             ? "encrypted"
+                             : data.specifics.preference().name();
 
   UpdateResponseData response_data;
   response_data.entity = data.PassToPtr();

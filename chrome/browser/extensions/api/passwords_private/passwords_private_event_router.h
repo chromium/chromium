@@ -40,9 +40,9 @@ class PasswordsPrivateEventRouter : public KeyedService {
       const std::vector<api::passwords_private::ExceptionEntry>& exceptions);
 
   // Notifies listeners after fetching a plain-text password.
-  // |index| the index for the password entry being shown.
+  // |id| the id for the password entry being shown.
   // |plaintext_password| The human-readable password.
-  void OnPlaintextPasswordFetched(size_t index,
+  void OnPlaintextPasswordFetched(int id,
                                   const std::string& plaintext_password);
 
   // Notifies listeners after the passwords have been written to the export

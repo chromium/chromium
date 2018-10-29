@@ -2,8 +2,6 @@ Tests to ensure that accesskey works in iframes and other iframes don't effect c
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
-
 Accesskeys should work in an iframe. "iframe1" has both "inputG" and "inputH" (accesskey="c") elements.
 PASS iframe1.contentDocument.getElementById("inputG").focus(); pressAccessKey("c"); targetsOfFocusEvents is ["inputG", "inputH"]
 

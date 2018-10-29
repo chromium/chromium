@@ -4,9 +4,14 @@
 
 #include "ui/ozone/platform/scenic/ozone_platform_scenic.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/message_loop/message_loop_current.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/display/manager/fake_display_delegate.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -33,6 +38,7 @@ const OzonePlatform::PlatformProperties kScenicPlatformProperties(
     /*needs_view_owner_request=*/true,
     /*custom_frame_pref_default=*/false,
     /*use_system_title_bar=*/false,
+    /*requires_mojo=*/false,
     std::vector<gfx::BufferFormat>());
 
 class ScenicPlatformEventSource : public ui::PlatformEventSource {
@@ -45,12 +51,14 @@ class ScenicPlatformEventSource : public ui::PlatformEventSource {
 };
 
 // OzonePlatform for Scenic.
-class OzonePlatformScenic : public OzonePlatform {
+class OzonePlatformScenic
+    : public OzonePlatform,
+      public base::MessageLoopCurrent::DestructionObserver {
  public:
-  OzonePlatformScenic() : surface_factory_(&window_manager_) {}
+  OzonePlatformScenic()
+      : window_manager_(std::make_unique<ScenicWindowManager>()),
+        surface_factory_(window_manager_.get()) {}
   ~OzonePlatformScenic() override = default;
-
-  ScenicWindowManager* window_manager() { return &window_manager_; }
 
   // OzonePlatform implementation.
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -86,7 +94,8 @@ class OzonePlatformScenic : public OzonePlatform {
       return nullptr;
     }
     return std::make_unique<ScenicWindow>(
-        &window_manager_, delegate, std::move(properties.view_owner_request));
+        window_manager_.get(), delegate,
+        std::move(properties.view_owner_request));
   }
 
   const PlatformProperties& GetPlatformProperties() override {
@@ -100,7 +109,7 @@ class OzonePlatformScenic : public OzonePlatform {
   }
 
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    return window_manager_.CreateScreen();
+    return window_manager_->CreateScreen();
   }
 
   void InitializeUI(const InitParams& params) override {
@@ -113,12 +122,20 @@ class OzonePlatformScenic : public OzonePlatform {
     input_controller_ = CreateStubInputController();
     cursor_factory_ozone_ = std::make_unique<BitmapCursorFactoryOzone>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
+
+    base::MessageLoopCurrent::Get()->AddDestructionObserver(this);
   }
 
   void InitializeGPU(const InitParams& params) override {}
 
  private:
-  ScenicWindowManager window_manager_;
+  // Performs graceful cleanup tasks on main message loop teardown.
+  void Shutdown() { window_manager_.reset(); }
+
+  // base::MessageLoopCurrent::DestructionObserver implementation.
+  void WillDestroyCurrentMessageLoop() override { Shutdown(); }
+
+  std::unique_ptr<ScenicWindowManager> window_manager_;
   ScenicSurfaceFactory surface_factory_;
 
   std::unique_ptr<PlatformEventSource> platform_event_source_;

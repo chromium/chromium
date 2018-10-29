@@ -2,7 +2,6 @@ document.activeElement should return a valid and focusable element after changin
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 DOMFocusOut is called
 PASS document.activeElement is not willBeDisabled
 PASS document.activeElement.id is "body"

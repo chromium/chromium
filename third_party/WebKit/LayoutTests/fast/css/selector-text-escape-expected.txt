@@ -2,7 +2,6 @@ Test for Bug 34529 - [CSSOM] issues with cssText and selectorText
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 List items must be green. Otherwise some selectors are invalid.
 class="&#001;_class"
 class="&#031;_class"

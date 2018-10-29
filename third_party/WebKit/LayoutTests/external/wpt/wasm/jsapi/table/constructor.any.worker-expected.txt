@@ -22,6 +22,7 @@ FAIL Out-of-range maximum value in descriptor: 68719476736 assert_throws: functi
 PASS Initial value exceeds maximum
 PASS Basic (zero)
 PASS Basic (non-zero)
+PASS Stray argument
 FAIL Proxy descriptor assert_unreached: Should not call [[HasProperty]] with maximum Reached unreachable code
 PASS Type conversion for descriptor.element
 PASS Order of evaluation for descriptor

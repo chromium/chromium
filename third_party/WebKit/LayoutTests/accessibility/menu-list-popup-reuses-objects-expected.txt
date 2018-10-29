@@ -1,8 +1,10 @@
+Alicia
+Peter
+Kalinda
 
 This test makes sure menu lists fire events on both the option that lost selection and the one that gained selection.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS axMenuListPopup.role is "AXRole: AXMenuListPopup"
 PASS axMenuListOption.role is "AXRole: AXMenuListOption"

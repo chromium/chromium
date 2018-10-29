@@ -64,7 +64,8 @@ OfflinePageModel* StubPrefetchService::GetOfflinePageModel() {
   return nullptr;
 }
 
-SuggestedArticlesObserver* StubPrefetchService::GetSuggestedArticlesObserver() {
+SuggestedArticlesObserver*
+StubPrefetchService::GetSuggestedArticlesObserverForTesting() {
   return nullptr;
 }
 

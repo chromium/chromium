@@ -25,8 +25,11 @@ source_set("common_constants") {
     "//ui/base",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  configs += [
+    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    "//build/config/compiler:no_size_t_to_int_warning",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }
 
 if (enable_extensions) {
@@ -245,10 +248,6 @@ if (enable_extensions) {
       "permissions/manifest_permission.h",
       "permissions/manifest_permission_set.cc",
       "permissions/manifest_permission_set.h",
-      "permissions/media_galleries_permission.cc",
-      "permissions/media_galleries_permission.h",
-      "permissions/media_galleries_permission_data.cc",
-      "permissions/media_galleries_permission_data.h",
       "permissions/permission_message.cc",
       "permissions/permission_message.h",
       "permissions/permission_message_provider.cc",
@@ -297,6 +296,7 @@ if (enable_extensions) {
 
       # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
       "//build/config/compiler:no_size_t_to_int_warning",
+      "//build/config/compiler:wexit_time_destructors",
     ]
 
     public_deps = [
@@ -358,6 +358,7 @@ if (enable_extensions) {
       "core_extensions_api_provider.h",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = [
       ":common",
       "//extensions:extensions_resources",

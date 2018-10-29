@@ -39,7 +39,7 @@ class SPDY_EXPORT_PRIVATE HpackEncoder {
 
   // Callers may provide a HeaderListener to be informed of header name-value
   // pairs processed by this encoder.
-  typedef std::function<void(SpdyStringPiece, SpdyStringPiece)> HeaderListener;
+  using HeaderListener = std::function<void(SpdyStringPiece, SpdyStringPiece)>;
 
   // An indexing policy should return true if the provided header name-value
   // pair should be inserted into the HPACK dynamic table.

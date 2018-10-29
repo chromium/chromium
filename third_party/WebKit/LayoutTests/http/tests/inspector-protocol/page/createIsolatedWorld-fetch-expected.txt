@@ -1,0 +1,6 @@
+Verifies fetch() doesn't cause a crash in isolated world
+Got execution context id
+Response received
+  url: http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
+  type: Fetch
+

@@ -232,6 +232,11 @@ void TextSuggestionController::HandlePotentialSuggestionTap(
   if (!node_and_marker.first)
     return;
 
+  const SuggestionMarker* marker =
+      ToSuggestionMarkerOrNull(node_and_marker.second);
+  if (marker && marker->Suggestions().IsEmpty())
+    return;
+
   if (!text_suggestion_host_) {
     GetFrame().GetInterfaceProvider().GetInterface(
         mojo::MakeRequest(&text_suggestion_host_));
@@ -296,14 +301,14 @@ void TextSuggestionController::ApplyTextSuggestion(int32_t marker_tag,
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
 
-  const Node* marker_text_node = nullptr;
+  const Text* marker_text_node = nullptr;
   SuggestionMarker* marker = nullptr;
   for (const std::pair<Member<Node>, Member<DocumentMarker>>& node_marker_pair :
        node_marker_pairs) {
     SuggestionMarker* suggestion_marker =
         ToSuggestionMarker(node_marker_pair.second);
     if (suggestion_marker->Tag() == marker_tag) {
-      marker_text_node = node_marker_pair.first;
+      marker_text_node = ToText(node_marker_pair.first);
       marker = suggestion_marker;
       break;
     }
@@ -313,7 +318,7 @@ void TextSuggestionController::ApplyTextSuggestion(int32_t marker_tag,
     OnSuggestionMenuClosed();
     return;
   }
-
+  DCHECK(marker_text_node);
   const EphemeralRange& range_to_replace =
       EphemeralRange(Position(marker_text_node, marker->StartOffset()),
                      Position(marker_text_node, marker->EndOffset()));
@@ -328,7 +333,7 @@ void TextSuggestionController::ApplyTextSuggestion(int32_t marker_tag,
 
   if (marker->IsMisspelling()) {
     GetFrame().GetDocument()->Markers().RemoveSuggestionMarkerByTag(
-        marker_text_node, marker->Tag());
+        *marker_text_node, marker->Tag());
   } else {
     marker->SetSuggestion(suggestion_index, new_suggestion);
   }

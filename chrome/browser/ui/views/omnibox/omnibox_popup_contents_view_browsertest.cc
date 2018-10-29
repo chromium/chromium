@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
@@ -23,32 +21,20 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
-#include "ui/native_theme/native_theme_dark_aura.h"
 #include "ui/wm/core/window_properties.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/views/linux_ui/linux_ui.h"
-#endif
-
 namespace {
-
-enum PopupType { WIDE, ROUNDED };
 
 // A View that positions itself over another View to intercept clicks.
 class ClickTrackingOverlayView : public views::View {
@@ -89,42 +75,11 @@ class ThemeChangeWaiter {
   DISALLOW_COPY_AND_ASSIGN(ThemeChangeWaiter);
 };
 
-std::string PrintPopupType(const testing::TestParamInfo<PopupType>& info) {
-  switch (info.param) {
-    case WIDE:
-      return "Wide";
-    case ROUNDED:
-      return "Rounded";
-  }
-  NOTREACHED();
-  return std::string();
-}
-
 }  // namespace
 
-class OmniboxPopupContentsViewTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<PopupType> {
+class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
  public:
   OmniboxPopupContentsViewTest() {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    switch (GetParam()) {
-      case ROUNDED:
-        // Set --top-chrome-md=material-touch-optimized to enable the ROUNDED
-        // style (which is the only supported style in that mode).
-        command_line->AppendSwitchASCII(
-            switches::kTopChromeMD,
-            switches::kTopChromeMDMaterialTouchOptimized);
-        break;
-      default:
-        // Cater for the touch-optimized UI being enabled by default by always
-        // setting --top-chrome-md=material (the current default).
-        command_line->AppendSwitchASCII(switches::kTopChromeMD,
-                                        switches::kTopChromeMDMaterial);
-        break;
-    }
-  }
 
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
@@ -132,10 +87,11 @@ class OmniboxPopupContentsViewTest
     return popup_view()->result_view_at(index);
   }
 
-  ToolbarView* toolbar() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+  LocationBarView* location_bar() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->location_bar();
   }
-  LocationBarView* location_bar() { return toolbar()->location_bar(); }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
   OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
   OmniboxPopupModel* popup_model() { return edit_model()->popup_model(); }
@@ -144,14 +100,10 @@ class OmniboxPopupContentsViewTest
   }
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxPopupContentsViewTest);
 };
-
-// Create an alias to instantiate tests that only care about the rounded style.
-using RoundedOmniboxPopupContentsViewTest = OmniboxPopupContentsViewTest;
 
 views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
   EXPECT_TRUE(popup_model()->result().empty());
@@ -169,7 +121,7 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
 }
 
 // Tests widget alignment of the different popup types.
-IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, PopupAlignment) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, PopupAlignment) {
   views::Widget* popup = CreatePopupForTestQuery();
 
 #if defined(USE_AURA)
@@ -178,19 +130,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, PopupAlignment) {
       popup->GetNativeWindow()->GetProperty(wm::kSnapChildrenToPixelBoundary));
 #endif  // defined(USE_AURA)
 
-  if (GetParam() == WIDE) {
-    EXPECT_EQ(toolbar()->width(), popup->GetRestoredBounds().width());
-  } else {
-    gfx::Rect alignment_rect = location_bar()->GetBoundsInScreen();
-    alignment_rect.Inset(
-        -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-    alignment_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
-    // Top, left and right should align. Bottom depends on the results.
-    gfx::Rect popup_rect = popup->GetRestoredBounds();
-    EXPECT_EQ(popup_rect.y(), alignment_rect.y());
-    EXPECT_EQ(popup_rect.x(), alignment_rect.x());
-    EXPECT_EQ(popup_rect.right(), alignment_rect.right());
-  }
+  gfx::Rect alignment_rect = location_bar()->GetBoundsInScreen();
+  alignment_rect.Inset(
+      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  alignment_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+  // Top, left and right should align. Bottom depends on the results.
+  gfx::Rect popup_rect = popup->GetRestoredBounds();
+  EXPECT_EQ(popup_rect.y(), alignment_rect.y());
+  EXPECT_EQ(popup_rect.x(), alignment_rect.x());
+  EXPECT_EQ(popup_rect.right(), alignment_rect.right());
 }
 
 #if defined(OS_MACOSX)
@@ -204,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, PopupAlignment) {
 // Integration test for omnibox popup theming. This is a browser test since it
 // relies on initialization done in chrome_browser_main_extra_parts_views_linux
 // propagating through correctly to OmniboxPopupContentsView::GetTint().
-IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
   // Sanity check the bot: ensure the profile is configured to use the system
   // theme. On Linux, the default depends on a whitelist using the result of
   // base::nix::GetDesktopEnvironment(). E.g. KDE never uses the system theme.
@@ -234,53 +182,18 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
                            location_bar->tint(), OmniboxPartState::SELECTED);
   };
 
-  // Helper to ensure consistency of colors obtained via the ui::NativeTheme
-  // associated with |browser_under_test|. Technically, this should rely on the
-  // popup's Widget (not the browser's), but the popup inherits this theme
-  // whenever it is created. Correctness of this doesn't need to last forever:
-  // we should avoid getting all colors via NativeTheme, since they are not all
-  // native theme concepts (just sometimes derived from them).
-  auto get_selection_color_from_widget = [&]() {
-    return BrowserView::GetBrowserViewForBrowser(browser_under_test)
-        ->GetNativeTheme()
-        ->GetSystemColor(
-            ui::NativeTheme::kColorId_ResultsTableSelectedBackground);
-  };
-
-  // Selection is derived from the native theme, except on the new style. This
-  // gets a color from omnibox_theme with the style given by GetParam(), but it
-  // is only used in checks when GetParam() is ROUNDED.
-  const SkColor rounded_selection_color_light =
+  const SkColor selection_color_light =
       GetOmniboxColor(OmniboxPart::RESULTS_BACKGROUND, OmniboxTint::LIGHT,
                       OmniboxPartState::SELECTED);
-  const SkColor rounded_selection_color_dark =
+  const SkColor selection_color_dark =
       GetOmniboxColor(OmniboxPart::RESULTS_BACKGROUND, OmniboxTint::DARK,
                       OmniboxPartState::SELECTED);
 
   // Tests below are mainly interested just whether things change, so ensure
   // that can be detected.
-  EXPECT_NE(rounded_selection_color_dark, rounded_selection_color_light);
+  EXPECT_NE(selection_color_dark, selection_color_light);
 
-  const SkColor default_selection_color =
-      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-          ui::NativeTheme::kColorId_ResultsTableSelectedBackground);
-  SkColor system_selection_color = default_selection_color;
-#if defined(USE_X11)
-  // On Linux, ensure GTK is fully plumbed through by getting expectations
-  // directly from views::LinuxUI.
-  ASSERT_TRUE(views::LinuxUI::instance());
-  system_selection_color =
-      views::LinuxUI::instance()->GetActiveSelectionBgColor();
-#endif
-
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_light, get_selection_color());
-  } else {
-    EXPECT_EQ(system_selection_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
-
-  SkColor legacy_dark_color = system_selection_color;
+  EXPECT_EQ(selection_color_light, get_selection_color());
 
 #if defined(OS_MACOSX) || defined(USE_X11)
   // Mac and system-themed Desktop Linux continue to use light theming in
@@ -289,25 +202,13 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
 #else
   const bool dark_used_in_system_incognito_theme = true;
 #endif
-#if defined(USE_AURA)
-  legacy_dark_color = ui::NativeThemeDarkAura::instance()->GetSystemColor(
-      ui::NativeTheme::kColorId_ResultsTableSelectedBackground);
-#endif
 
   // Check unthemed incognito windows.
   Browser* incognito_browser = CreateIncognitoBrowser();
   browser_under_test = incognito_browser;
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(dark_used_in_system_incognito_theme
-                  ? rounded_selection_color_dark
-                  : rounded_selection_color_light,
-              get_selection_color());
-  } else {
-    EXPECT_EQ(dark_used_in_system_incognito_theme ? legacy_dark_color
-                                                  : system_selection_color,
-              get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
+  EXPECT_EQ(dark_used_in_system_incognito_theme ? selection_color_dark
+                                                : selection_color_light,
+            get_selection_color());
 
   // Install a theme (in both browsers, since it's the same profile).
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
@@ -319,36 +220,12 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
     loader.LoadExtension(path);
   }
 
-  // Check the incognito browser first. Everything should now be light and never
-  // GTK.
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_light, get_selection_color());
-  } else {
-    EXPECT_EQ(default_selection_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
+  // Check the incognito browser first. Everything should now be light.
+  EXPECT_EQ(selection_color_light, get_selection_color());
 
-  // Same in the non-incognito browser .
+  // Same in the non-incognito browser.
   browser_under_test = browser();
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_light, get_selection_color());
-  } else {
-    EXPECT_EQ(default_selection_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
-
-  // Undo the theme install. Check the regular browser goes back to native.
-  {
-    ThemeChangeWaiter wait(theme_service);
-    theme_service->UseSystemTheme();
-  }
-
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_light, get_selection_color());
-  } else {
-    EXPECT_EQ(system_selection_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
+  EXPECT_EQ(selection_color_light, get_selection_color());
 
   // Switch to the default theme without installing a custom theme. E.g. this is
   // what gets used on KDE or when switching to the "classic" theme in settings.
@@ -356,21 +233,11 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
     ThemeChangeWaiter wait(theme_service);
     theme_service->UseDefaultTheme();
   }
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_light, get_selection_color());
-  } else {
-    EXPECT_EQ(default_selection_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
+  EXPECT_EQ(selection_color_light, get_selection_color());
 
   // Check incognito again. It should now use a dark theme, even on Linux.
   browser_under_test = incognito_browser;
-  if (GetParam() == ROUNDED) {
-    EXPECT_EQ(rounded_selection_color_dark, get_selection_color());
-  } else {
-    EXPECT_EQ(legacy_dark_color, get_selection_color());
-    EXPECT_EQ(get_selection_color_from_widget(), get_selection_color());
-  }
+  EXPECT_EQ(selection_color_dark, get_selection_color());
 }
 
 // This is only enabled on ChromeOS for now, since it's hard to align an
@@ -382,8 +249,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewTest, MAYBE_ThemeIntegration) {
 #define MAYBE_ClickOmnibox DISABLED_ClickOmnibox
 #endif
 // Test that clicks over the omnibox do not hit the popup.
-IN_PROC_BROWSER_TEST_P(RoundedOmniboxPopupContentsViewTest,
-                       MAYBE_ClickOmnibox) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
   CreatePopupForTestQuery();
   ui::test::EventGenerator generator(browser()->window()->GetNativeWindow());
 
@@ -428,10 +294,10 @@ IN_PROC_BROWSER_TEST_P(RoundedOmniboxPopupContentsViewTest,
   EXPECT_TRUE(GetPopupWidget()->IsClosed());
 }
 
-// Check that, for the rounded popup, the location bar background (and the
-// background of the textfield it contains) changes when it receives focus, and
-// matches the popup background color.
-IN_PROC_BROWSER_TEST_P(RoundedOmniboxPopupContentsViewTest,
+// Check that the location bar background (and the background of the textfield
+// it contains) changes when it receives focus, and matches the popup background
+// color.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
                        PopupMatchesLocationBarBackground) {
   // Start with the Omnibox unfocused.
   omnibox_view()->GetFocusManager()->ClearFocus();
@@ -449,8 +315,7 @@ IN_PROC_BROWSER_TEST_P(RoundedOmniboxPopupContentsViewTest,
   EXPECT_NE(color_before_focus, color_after_focus);
   EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
 
-  // For the rounded popup, the background is hosted in the view that contains
-  // the results area.
+  // The background is hosted in the view that contains the results area.
   CreatePopupForTestQuery();
   views::View* background_host = popup_view()->parent();
   EXPECT_EQ(color_after_focus, background_host->background()->get_color());
@@ -460,13 +325,3 @@ IN_PROC_BROWSER_TEST_P(RoundedOmniboxPopupContentsViewTest,
   EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
   EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
 }
-
-INSTANTIATE_TEST_CASE_P(,
-                        OmniboxPopupContentsViewTest,
-                        ::testing::Values(WIDE, ROUNDED),
-                        &PrintPopupType);
-
-INSTANTIATE_TEST_CASE_P(,
-                        RoundedOmniboxPopupContentsViewTest,
-                        ::testing::Values(ROUNDED),
-                        &PrintPopupType);

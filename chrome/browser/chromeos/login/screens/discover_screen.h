@@ -28,6 +28,7 @@ class DiscoverScreen : public BaseScreen {
 
  private:
   DiscoverScreenView* const view_;
+  bool is_shown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DiscoverScreen);
 };

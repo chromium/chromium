@@ -66,13 +66,9 @@ class PresubmitTest(unittest.TestCase):
         """This verifies that CheckChangeOnUpload will skip calling
         check_blink_style.py if the affected file list is empty.
         """
-        diff_file_chromium1_h = ['some diff']
-        diff_file_chromium2_h = ['another diff']
         diff_file_layout_test_html = ['more diff']
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            MockAffectedFile('first_file_chromium.h', diff_file_chromium1_h),
-            MockAffectedFile('second_file_chromium.h', diff_file_chromium2_h),
             MockAffectedFile('LayoutTests/some_tests.html', diff_file_layout_test_html)
         ]
         # Access to a protected member _CheckStyle

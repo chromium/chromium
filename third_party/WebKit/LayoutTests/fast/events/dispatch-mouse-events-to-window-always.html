@@ -33,18 +33,15 @@ div#child {
     <div id='console'></div>
 </body>
 
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-jsTestIsAsync = true;
-setPrintTestResultsLazily();
-description('Test that wheel and mouse events are dispatched to document ' +
-            'and window even if they do not hit any element in the page.');
+const purpose =
+    'Test that wheel and mouse events are dispatched to document' +
+    'and window even if they do not hit any element in the page.';
 
-onload = function() {
-    if (!window.eventSender) {
-        testFailed('window.eventSender is required for this test.');
-        return;
-    }
+test(() => {
+    assert_own_property(window, 'eventSender', 'window.eventSender is required for this test.');
 
     window.receivers = new Map();
     var eventTypes = ['wheel', 'click', 'mousedown', 'mouseup'];
@@ -57,20 +54,19 @@ onload = function() {
         }
     }
 
-    debug('outside body, inside element'); // received by element, body, doc, window
-    generateEventsAndVerify(500, 500, [document.getElementById('child'), document.body, document, window]);
-    debug('inside body, outside element'); // received by body, doc, window
-    generateEventsAndVerify(10, 10, [document.body, document, window]);
-    debug('outside body, outside element, inside frame'); // received by doc, window
-    generateEventsAndVerify(10, 500, [document, window]);
-
-    finishJSTest();
+    // received by element, body, doc, window
+    generateEventsAndVerify(500, 500, [document.getElementById('child'), document.body, document, window], 'outside body, inside element.');
+    // received by body, doc, window
+    generateEventsAndVerify(10, 10, [document.body, document, window], 'inside body, outside element.');
+    // received by doc, window
+    generateEventsAndVerify(10, 500, [document, window], 'outside body, outside element, inside frame.');
 
     function registerEvent(e) {
         window.receivers[e.type].push(this);
     }
 
-    function generateEventsAndVerify(x, y, expectedReceivers) {
+    function generateEventsAndVerify(x, y, expectedReceivers, title) {
+      test(() => {
         eventSender.mouseMoveTo(x, y);
         eventSender.mouseDown();
         verifyReceivers('mousedown', expectedReceivers);
@@ -81,16 +77,16 @@ onload = function() {
 
         eventSender.mouseScrollBy(10, 10);
         verifyReceivers('wheel', expectedReceivers);
+      }, title + ' ' + purpose);
     }
 
     function verifyReceivers(eventType, expectedReceivers) {
-        debug('eventType: ' + eventType);
         window.actualReceivers = window.receivers[eventType];
-        shouldBeEqualToString('objectsToString(actualReceivers)', objectsToString(expectedReceivers));
+        assert_equals(objectsToString(actualReceivers), objectsToString(expectedReceivers), eventType);
 
         window.receivers[eventType] = [];
     }
-}
+});
 
 function objectsToString(objects) {
     return String(objects.map(function(o) {return o.constructor.name;}));

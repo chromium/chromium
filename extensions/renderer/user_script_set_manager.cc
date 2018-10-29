@@ -65,9 +65,8 @@ void UserScriptSetManager::GetAllInjections(
     UserScript::RunLocation run_location) {
   static_scripts_.GetInjections(injections, render_frame, tab_id, run_location,
                                 activity_logging_enabled_);
-  for (UserScriptSetMap::iterator it = programmatic_scripts_.begin();
-       it != programmatic_scripts_.end();
-       ++it) {
+  for (auto it = programmatic_scripts_.begin();
+       it != programmatic_scripts_.end(); ++it) {
     it->second->GetInjections(injections, render_frame, tab_id, run_location,
                               activity_logging_enabled_);
   }
@@ -77,9 +76,8 @@ void UserScriptSetManager::GetAllActiveExtensionIds(
     std::set<std::string>* ids) const {
   DCHECK(ids);
   static_scripts_.GetActiveExtensionIds(ids);
-  for (UserScriptSetMap::const_iterator it = programmatic_scripts_.begin();
-       it != programmatic_scripts_.end();
-       ++it) {
+  for (auto it = programmatic_scripts_.cbegin();
+       it != programmatic_scripts_.cend(); ++it) {
     it->second->GetActiveExtensionIds(ids);
   }
 }

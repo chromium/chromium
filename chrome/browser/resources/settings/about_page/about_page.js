@@ -41,7 +41,10 @@ Polymer({
     regulatoryInfo_: Object,
 
     /** @private */
-    hasEndOfLife_: Boolean,
+    hasEndOfLife_: {
+      type: Boolean,
+      value: false,
+    },
 
     /** @private */
     showCrostini: Boolean,
@@ -72,18 +75,25 @@ Polymer({
     // </if>
 
     /** @private */
-    showUpdateStatus_: Boolean,
+    showUpdateStatus_: {
+      type: Boolean,
+      value: false,
+    },
 
     /** @private */
     showButtonContainer_: Boolean,
 
     /** @private */
-    showRelaunch_: Boolean,
+    showRelaunch_: {
+      type: Boolean,
+      value: false,
+    },
 
     // <if expr="chromeos">
     /** @private */
     showRelaunchAndPowerwash_: {
       type: Boolean,
+      value: false,
       computed: 'computeShowRelaunchAndPowerwash_(' +
           'currentUpdateStatusEvent_, targetChannel_, currentChannel_)',
     },
@@ -547,8 +557,24 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  shouldShowSafetyInfo_: function() {
+    return loadTimeData.getBoolean('shouldShowSafetyInfo');
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   shouldShowRegulatoryInfo_: function() {
     return this.regulatoryInfo_ !== null;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowRegulatoryOrSafetyInfo_: function() {
+    return this.shouldShowSafetyInfo_() || this.shouldShowRegulatoryInfo_();
   },
 
   /** @private */
@@ -611,5 +637,9 @@ Polymer({
       return true;
     // </if>
     return this.showUpdateStatus_;
+  },
+
+  focusSection: function() {
+    this.$$('settings-section[section="about"]').show();
   },
 });

@@ -128,6 +128,13 @@ class MEDIA_EXPORT VideoDecoder {
   // Returns maximum number of parallel decode requests.
   virtual int GetMaxDecodeRequests() const;
 
+  // Returns the recommended number of threads for software video decoding. If
+  // the --video-threads command line option is specified and is valid, that
+  // value is returned. Otherwise |desired_threads| is clamped to the number of
+  // logical processors and then further clamped to
+  // [|limits::kMinVideoDecodeThreads|, |limits::kMaxVideoDecodeThreads|].
+  static int GetRecommendedThreadCount(int desired_threads);
+
  protected:
   // Deletion is only allowed via Destroy().
   virtual ~VideoDecoder();
@@ -135,7 +142,10 @@ class MEDIA_EXPORT VideoDecoder {
  private:
   friend struct std::default_delete<VideoDecoder>;
 
-  // Fires any pending callbacks, stops and destroys the decoder.
+  // Fires any pending callbacks, stops and destroys the decoder. After this
+  // call, external resources (e.g. raw pointers) |this| holds might be
+  // invalidated immediately. So if the decoder is destroyed asynchronously
+  // (e.g. DeleteSoon), external resources must be released in this call.
   virtual void Destroy();
 
   DISALLOW_COPY_AND_ASSIGN(VideoDecoder);

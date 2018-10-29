@@ -1,6 +1,6 @@
 {
   metadata: {
-    namespace: "MediaType",
+    namespace: "media_type_names",
     export: "CORE_EXPORT",
   },
 

@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "ipc/ipc_channel.h"
@@ -62,8 +64,8 @@ void DecodeImage(
   service_manager::mojom::ConnectorRequest connector_request;
   std::unique_ptr<service_manager::Connector> connector =
       service_manager::Connector::Create(&connector_request);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&BindToBrowserConnector, std::move(connector_request)));
 
   data_decoder::DecodeImage(
@@ -169,8 +171,8 @@ void ImageDecoder::StartWithOptionsImpl(
   // operation happening on a thread which always has a ThreadTaskRunnerHandle.
   // We arbitrarily use the IO thread here to match details of the legacy
   // implementation.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&DecodeImage, std::move(image_data), codec, shrink_to_fit,
                      desired_image_frame_size, callback,
                      base::WrapRefCounted(image_request->task_runner())));

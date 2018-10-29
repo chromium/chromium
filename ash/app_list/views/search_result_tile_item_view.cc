@@ -26,7 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -56,8 +56,8 @@ constexpr int kSearchPriceTextSizeDelta = 1;
 
 constexpr int kIconSelectedSize = 56;
 constexpr int kIconSelectedCornerRadius = 4;
-// Icon selected color, #000 8%.
-constexpr int kIconSelectedColor = SkColorSetARGB(0x14, 0x00, 0x00, 0x00);
+// Icon selected color, Google Grey 900 8%.
+constexpr int kIconSelectedColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
 
 constexpr SkColor kSearchTitleColor = SkColorSetARGB(0xDF, 0x00, 0x00, 0x00);
 constexpr SkColor kSearchAppRatingColor =
@@ -65,29 +65,6 @@ constexpr SkColor kSearchAppRatingColor =
 constexpr SkColor kSearchAppPriceColor = SkColorSetARGB(0xFF, 0x0F, 0x9D, 0x58);
 constexpr SkColor kSearchRatingStarColor =
     SkColorSetARGB(0x8F, 0x00, 0x00, 0x00);
-
-// The background image source for badge.
-class BadgeBackgroundImageSource : public gfx::CanvasImageSource {
- public:
-  explicit BadgeBackgroundImageSource(int size)
-      : CanvasImageSource(gfx::Size(size, size), false),
-        radius_(static_cast<float>(size / 2)) {}
-  ~BadgeBackgroundImageSource() override = default;
-
- private:
-  // gfx::CanvasImageSource overrides:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setColor(SK_ColorWHITE);
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawCircle(gfx::PointF(radius_, radius_), radius_, flags);
-  }
-
-  const float radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeBackgroundImageSource);
-};
 
 }  // namespace
 
@@ -98,7 +75,7 @@ SearchResultTileItemView::SearchResultTileItemView(
     : view_delegate_(view_delegate),
       pagination_model_(pagination_model),
       is_play_store_app_search_enabled_(
-          features::IsPlayStoreAppSearchEnabled()),
+          app_list_features::IsPlayStoreAppSearchEnabled()),
       show_in_apps_page_(show_in_apps_page),
       weak_ptr_factory_(this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -113,7 +90,8 @@ SearchResultTileItemView::SearchResultTileItemView(
   icon_->SetVerticalAlignment(views::ImageView::LEADING);
   AddChildView(icon_);
 
-  if (is_play_store_app_search_enabled_) {
+  if (is_play_store_app_search_enabled_ ||
+      app_list_features::IsAppShortcutSearchEnabled()) {
     badge_ = new views::ImageView;
     badge_->set_can_process_events_within_subtree(false);
     badge_->SetVerticalAlignment(views::ImageView::LEADING);
@@ -249,7 +227,12 @@ void SearchResultTileItemView::SetSearchResult(SearchResult* item) {
   if (!item->icon().isNull())
     OnMetadataChanged();
 
-  base::string16 accessible_name = title_->text();
+  base::string16 accessible_name;
+  if (!item_->accessible_name().empty())
+    accessible_name = item_->accessible_name();
+  else
+    accessible_name = title_->text();
+
   if (rating_ && rating_->visible()) {
     accessible_name +=
         base::UTF8ToUTF16(", ") +
@@ -452,13 +435,10 @@ void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
     return;
   }
 
-  const int size = app_list::AppListConfig::instance()
-                       .search_tile_badge_background_radius() *
-                   2;
-  gfx::ImageSkia background(std::make_unique<BadgeBackgroundImageSource>(size),
-                            gfx::Size(size, size));
-  gfx::ImageSkia icon_with_background =
-      gfx::ImageSkiaOperations::CreateSuperimposedImage(background, badge_icon);
+  gfx::ImageSkia resized_badge_icon(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          badge_icon, skia::ImageOperations::RESIZE_BEST,
+          AppListConfig::instance().search_tile_badge_icon_size()));
 
   gfx::ShadowValues shadow_values;
   shadow_values.push_back(
@@ -466,7 +446,7 @@ void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
   shadow_values.push_back(
       gfx::ShadowValue(gfx::Vector2d(0, 1), 2, SkColorSetARGB(0x33, 0, 0, 0)));
   badge_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      icon_with_background, shadow_values));
+      resized_badge_icon, shadow_values));
   badge_->SetVisible(true);
 }
 
@@ -563,26 +543,24 @@ void SearchResultTileItemView::Layout() {
     title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
         rect, title_->GetPreferredSize()));
   } else {
-    rect.Inset(0, kSearchTileTopPadding, 0, 0);
-    icon_->SetBoundsRect(rect);
+    gfx::Rect icon_rect(rect);
+    icon_rect.ClampToCenteredSize(icon_->GetImage().size());
+    icon_rect.set_y(kSearchTileTopPadding);
+    icon_->SetBoundsRect(icon_rect);
 
     if (badge_) {
-      gfx::Rect badge_rect(rect);
-      const gfx::Size icon_size = icon_->GetImage().size();
       const int badge_icon_dimension =
           AppListConfig::instance().search_tile_badge_icon_dimension();
-      const int badge_background_radius =
-          AppListConfig::instance().search_tile_badge_background_radius();
-      badge_rect.Offset((icon_size.width() - badge_icon_dimension) / 2,
-                        icon_size.height() - badge_background_radius -
-                            badge_icon_dimension / 2);
+      const int badge_icon_offset =
+          AppListConfig::instance().search_tile_badge_icon_offset();
+      const gfx::Rect badge_rect(
+          icon_rect.right() - badge_icon_dimension + badge_icon_offset,
+          icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
+          badge_icon_dimension, badge_icon_dimension);
       badge_->SetBoundsRect(badge_rect);
     }
 
-    rect.Inset(0,
-               AppListConfig::instance().search_tile_icon_dimension() +
-                   kSearchTitleSpacing,
-               0, 0);
+    rect.set_y(icon_rect.bottom() + kSearchTitleSpacing);
     rect.set_height(title_->GetPreferredSize().height());
     title_->SetBoundsRect(rect);
 

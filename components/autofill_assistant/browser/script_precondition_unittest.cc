@@ -5,8 +5,11 @@
 #include "components/autofill_assistant/browser/script_precondition.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
+#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/mock_run_once_callback.h"
 #include "components/autofill_assistant/browser/mock_web_controller.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -52,36 +55,44 @@ class DirectCallback {
 class ScriptPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementExists(ElementsAre("exists"), _))
-        .WillByDefault(RunOnceCallback<1>(true));
     ON_CALL(mock_web_controller_,
-            OnElementExists(ElementsAre("does_not_exist"), _))
-        .WillByDefault(RunOnceCallback<1>(false));
+            OnElementCheck(kExistenceCheck, ElementsAre("exists"), _))
+        .WillByDefault(RunOnceCallback<2>(true));
+    ON_CALL(mock_web_controller_,
+            OnElementCheck(kExistenceCheck, ElementsAre("does_not_exist"), _))
+        .WillByDefault(RunOnceCallback<2>(false));
 
     SetUrl("http://www.example.com/path");
-    ON_CALL(mock_web_controller_, GetUrl())
-        .WillByDefault(Invoke(this, &ScriptPreconditionTest::GetUrl));
+    ON_CALL(mock_web_controller_, OnGetFieldValue(ElementsAre("exists"), _))
+        .WillByDefault(RunOnceCallback<1>(true, "foo"));
+    ON_CALL(mock_web_controller_,
+            OnGetFieldValue(ElementsAre("does_not_exist"), _))
+        .WillByDefault(RunOnceCallback<1>(false, ""));
   }
 
  protected:
-  // Implements WebController::GetUrl
-  const GURL& GetUrl() { return url_; }
-
   void SetUrl(const std::string& url) { url_ = GURL(url); }
 
   // Runs the preconditions and returns the result.
   bool Check(const ScriptPreconditionProto& proto) {
-    auto precondition = ScriptPrecondition::FromProto(proto);
+    auto precondition = ScriptPrecondition::FromProto("unused", proto);
     if (!precondition)
       return false;
 
     DirectCallback callback;
-    precondition->Check(&mock_web_controller_, callback.Get());
+    BatchElementChecker batch_checks(&mock_web_controller_);
+    precondition->Check(url_, &batch_checks, parameters_, executed_scripts_,
+                        callback.Get());
+    batch_checks.Run(base::TimeDelta::FromSeconds(0),
+                     /* try_done=*/base::DoNothing(),
+                     /* all_done=*/base::DoNothing());
     return callback.GetResultOrDie();
   }
 
   GURL url_;
   MockWebController mock_web_controller_;
+  std::map<std::string, std::string> parameters_;
+  std::map<std::string, ScriptStatusProto> executed_scripts_;
 };
 
 TEST_F(ScriptPreconditionTest, NoConditions) {
@@ -90,17 +101,36 @@ TEST_F(ScriptPreconditionTest, NoConditions) {
 
 TEST_F(ScriptPreconditionTest, DomainMatch) {
   ScriptPreconditionProto proto;
-  proto.add_domain("match.example.com");
-  proto.add_domain("alsomatch.example.com");
+  proto.add_domain("http://match.example.com");
+  proto.add_domain("http://alsomatch.example.com");
 
   SetUrl("http://match.example.com/path");
   EXPECT_TRUE(Check(proto));
 
+  // Scheme must match.
+  SetUrl("https://match.example.com/path");
+  EXPECT_FALSE(Check(proto)) << "Scheme must match.";
+
+  // Port is ignored.
+  SetUrl("http://match.example.com:8080");
+  EXPECT_TRUE(Check(proto)) << "Port should be ignored";
+
   SetUrl("http://nomatch.example.com/path");
-  EXPECT_FALSE(Check(proto));
+  EXPECT_FALSE(Check(proto)) << "nomatch";
 
   SetUrl("http://alsomatch.example.com/path");
-  EXPECT_TRUE(Check(proto));
+  EXPECT_TRUE(Check(proto)) << "Path should be ignored";
+
+  SetUrl("http://alsomatch.example.com/path?a=b");
+  EXPECT_TRUE(Check(proto)) << "Query should be ignored.";
+}
+
+TEST_F(ScriptPreconditionTest, TrailingSlash) {
+  ScriptPreconditionProto proto;
+  proto.add_domain("http://example.com/");
+
+  SetUrl("http://example.com/path");
+  EXPECT_FALSE(Check(proto));
 }
 
 TEST_F(ScriptPreconditionTest, PathFullMatch) {
@@ -129,28 +159,167 @@ TEST_F(ScriptPreconditionTest, PathPartialMatch) {
   EXPECT_TRUE(Check(proto));
 }
 
+TEST_F(ScriptPreconditionTest, PathWithQueryAndRef) {
+  ScriptPreconditionProto proto;
+  proto.add_path_pattern("/hello.*world");
+
+  SetUrl("http://www.example.com/hello?q=world");
+  EXPECT_TRUE(Check(proto));
+
+  SetUrl("http://www.example.com/hello#world");
+  EXPECT_TRUE(Check(proto));
+}
+
 TEST_F(ScriptPreconditionTest, BadPathPattern) {
   ScriptPreconditionProto proto;
   proto.add_path_pattern("invalid[");
 
-  EXPECT_EQ(nullptr, ScriptPrecondition::FromProto(proto));
+  EXPECT_EQ(nullptr, ScriptPrecondition::FromProto("unused", proto));
+}
+
+TEST_F(ScriptPreconditionTest, IgnoreEmptyElementsExist) {
+  EXPECT_CALL(mock_web_controller_,
+              OnElementCheck(kExistenceCheck, ElementsAre("exists"), _))
+      .WillOnce(RunOnceCallback<2>(true));
+
+  ScriptPreconditionProto proto;
+  proto.add_elements_exist()->add_selectors("exists");
+  proto.add_elements_exist();
+
+  EXPECT_TRUE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, WrongScriptStatusEqualComparator) {
+  ScriptPreconditionProto proto;
+
+  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
+  script_status_match->set_script("previous_script_success");
+  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
+  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
+  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
+
+  EXPECT_FALSE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, WrongScriptStatusDifferentComparator) {
+  ScriptPreconditionProto proto;
+
+  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
+  script_status_match->set_script("previous_script_success");
+  script_status_match->set_comparator(ScriptStatusMatchProto::DIFFERENT);
+  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
+  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
+
+  EXPECT_TRUE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, WrongScriptStatusComparatorNotSet) {
+  ScriptPreconditionProto proto;
+
+  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
+  script_status_match->set_script("previous_script_success");
+  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
+  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
+  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
+
+  EXPECT_FALSE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, WrongScriptStatus) {
+  ScriptPreconditionProto proto;
+
+  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
+  script_status_match->set_script("previous_script_success");
+  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
+  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
+  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
+
+  EXPECT_FALSE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, MultipleScriptStatus) {
+  ScriptPreconditionProto proto;
+
+  ScriptStatusMatchProto* previous1 = proto.add_script_status_match();
+  previous1->set_script("previous1");
+  previous1->set_comparator(ScriptStatusMatchProto::EQUAL);
+  previous1->set_status(SCRIPT_STATUS_SUCCESS);
+
+  ScriptStatusMatchProto* previous2 = proto.add_script_status_match();
+  previous2->set_script("previous2");
+  previous2->set_comparator(ScriptStatusMatchProto::DIFFERENT);
+  previous2->set_status(SCRIPT_STATUS_NOT_RUN);
+
+  executed_scripts_["previous1"] = SCRIPT_STATUS_SUCCESS;
+
+  EXPECT_FALSE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, ParameterMustExist) {
+  ScriptPreconditionProto proto;
+  ScriptParameterMatchProto* match = proto.add_script_parameter_match();
+  match->set_name("param");
+  match->set_exists(true);
+
+  EXPECT_FALSE(Check(proto));
+
+  parameters_["param"] = "exists";
+
+  EXPECT_TRUE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, ParameterMustNotExist) {
+  ScriptPreconditionProto proto;
+  ScriptParameterMatchProto* match = proto.add_script_parameter_match();
+  match->set_name("param");
+  match->set_exists(false);
+
+  EXPECT_TRUE(Check(proto));
+
+  parameters_["param"] = "exists";
+
+  EXPECT_FALSE(Check(proto));
+}
+
+TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
+  ScriptPreconditionProto proto;
+  ScriptParameterMatchProto* match = proto.add_script_parameter_match();
+  match->set_name("param");
+  match->set_value_equals("value");
+
+  EXPECT_FALSE(Check(proto));
+
+  parameters_["param"] = "another value";
+
+  EXPECT_FALSE(Check(proto));
+
+  parameters_["param"] = "value";
+  EXPECT_TRUE(Check(proto));
 }
 
 TEST_F(ScriptPreconditionTest, MultipleConditions) {
   ScriptPreconditionProto proto;
-  proto.add_domain("match.example.com");
+  proto.add_domain("http://match.example.com");
   proto.add_path_pattern("/path");
   proto.add_elements_exist()->add_selectors("exists");
 
   // Domain and path don't match.
   EXPECT_FALSE(Check(proto));
 
-  // Domain, path and selector match.
   SetUrl("http://match.example.com/path");
+  EXPECT_TRUE(Check(proto)) << "Domain, path and selector must match.";
+
+  proto.mutable_elements_exist(0)->set_selectors(0, "does_not_exist");
+  EXPECT_FALSE(Check(proto)) << "Element can not match.";
+}
+
+TEST_F(ScriptPreconditionTest, FormValueMatch) {
+  ScriptPreconditionProto proto;
+  FormValueMatchProto* match = proto.add_form_value_match();
+  match->mutable_element()->add_selectors("exists");
   EXPECT_TRUE(Check(proto));
 
-  // Selector doesn't match.
-  proto.mutable_elements_exist(0)->set_selectors(0, "does_not_exist");
+  match->mutable_element()->set_selectors(0, "does_not_exist");
   EXPECT_FALSE(Check(proto));
 }
 

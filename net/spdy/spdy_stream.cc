@@ -754,12 +754,6 @@ bool SpdyStream::GetSSLInfo(SSLInfo* ssl_info) const {
   return session_->GetSSLInfo(ssl_info);
 }
 
-Error SpdyStream::GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                           TokenBindingType tb_type,
-                                           std::vector<uint8_t>* out) const {
-  return session_->GetTokenBindingSignature(key, tb_type, out);
-}
-
 bool SpdyStream::WasAlpnNegotiated() const {
   return session_->WasAlpnNegotiated();
 }

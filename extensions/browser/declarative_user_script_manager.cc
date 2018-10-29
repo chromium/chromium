@@ -30,8 +30,7 @@ DeclarativeUserScriptManager* DeclarativeUserScriptManager::Get(
 DeclarativeUserScriptMaster*
 DeclarativeUserScriptManager::GetDeclarativeUserScriptMasterByID(
     const HostID& host_id) {
-  UserScriptMasterMap::iterator it =
-      declarative_user_script_masters_.find(host_id);
+  auto it = declarative_user_script_masters_.find(host_id);
 
   if (it != declarative_user_script_masters_.end())
     return it->second.get();

@@ -1,5 +1,5 @@
-document.URL: LayoutTests/fast/dom/Window/resources/dom-access-from-closure-window-child.html
-window.document.URL: LayoutTests/fast/dom/Window/resources/notify-opener-done.html
+document.URL: fast/dom/Window/resources/dom-access-from-closure-window-child.html
+window.document.URL: fast/dom/Window/resources/notify-opener-done.html
 name: child
 window.name: child
 

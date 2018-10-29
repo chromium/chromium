@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
-#include "chrome/browser/ui/webui/settings/safe_browsing_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_cookies_view_handler.h"
@@ -71,6 +70,7 @@
 #endif  // defined(OS_WIN) || defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -98,7 +98,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/internet_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/smb_handler.h"
+#include "chrome/browser/web_applications/bookmark_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/browser_resources.h"
 #include "chromeos/account_manager/account_manager.h"
 #include "chromeos/account_manager/account_manager_factory.h"
 #include "chromeos/chromeos_features.h"
@@ -177,8 +179,6 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<PeopleHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ProfileInfoHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ProtocolHandlersHandler>());
-  AddSettingsPageUIHandler(
-      std::make_unique<SafeBrowsingHandler>(profile->GetPrefs()));
   AddSettingsPageUIHandler(std::make_unique<SearchEnginesHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SiteSettingsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<StartupPagesHandler>(web_ui));
@@ -204,9 +204,9 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
   }
   AddSettingsPageUIHandler(
       std::make_unique<chromeos::settings::ChangePictureHandler>());
-  if (IsCrostiniUIAllowedForProfile(profile)) {
+  if (crostini::IsCrostiniUIAllowedForProfile(profile)) {
     AddSettingsPageUIHandler(
-        std::make_unique<chromeos::settings::CrostiniHandler>());
+        std::make_unique<chromeos::settings::CrostiniHandler>(profile));
   }
   AddSettingsPageUIHandler(
       std::make_unique<chromeos::settings::CupsPrintersHandler>(web_ui));
@@ -219,13 +219,15 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
   }
   AddSettingsPageUIHandler(
       std::make_unique<chromeos::settings::KeyboardHandler>());
-  if (base::FeatureList::IsEnabled(
+  if (!profile->IsGuestSession() &&
+      base::FeatureList::IsEnabled(
           chromeos::features::kEnableUnifiedMultiDeviceSetup) &&
       base::FeatureList::IsEnabled(
           chromeos::features::kEnableUnifiedMultiDeviceSettings) &&
       base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi)) {
     AddSettingsPageUIHandler(
         std::make_unique<chromeos::settings::MultideviceHandler>(
+            profile->GetPrefs(),
             chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
                 GetForProfile(profile),
             std::make_unique<
@@ -244,7 +246,7 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
       std::make_unique<chromeos::settings::InternetHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<TtsHandler>());
 #else
-  AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>(web_ui));
+  AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>());
   AddSettingsPageUIHandler(std::make_unique<ManageProfileHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
 #endif
@@ -312,8 +314,9 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "quickUnlockDisabledByPolicy",
       chromeos::quick_unlock::IsPinDisabledByPolicy(profile->GetPrefs()));
-  html_source->AddBoolean("fingerprintUnlockEnabled",
-                          chromeos::quick_unlock::IsFingerprintEnabled());
+  html_source->AddBoolean(
+      "fingerprintUnlockEnabled",
+      chromeos::quick_unlock::IsFingerprintEnabled(profile));
   html_source->AddBoolean("lockScreenNotificationsEnabled",
                           ash::features::IsLockScreenNotificationsEnabled());
   html_source->AddBoolean(
@@ -323,11 +326,9 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
                           ash::stylus_utils::HasInternalStylus());
 
   html_source->AddBoolean("showCrostini",
-                          IsCrostiniUIAllowedForProfile(profile));
+                          crostini::IsCrostiniUIAllowedForProfile(profile));
 
-  // TODO(crbug.com/868747): Show an explanatory message instead of hiding the
-  // storage management info.
-  html_source->AddBoolean("hideStorageInfo",
+  html_source->AddBoolean("isDemoSession",
                           chromeos::DemoSession::IsDeviceInDemoMode());
 
   // We have 2 variants of Android apps settings. Default case, when the Play
@@ -376,6 +377,18 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
+#if defined(OS_CHROMEOS)
+  // Add the System Web App resources for Settings.
+  if (web_app::SystemWebAppManager::ShouldEnableForProfile(profile)) {
+    html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
+    html_source->AddResourcePath("pwa.html", IDR_PWA_HTML);
+#if BUILDFLAG(OPTIMIZE_WEBUI)
+    exclude_from_gzip.push_back("icon-192.png");
+    exclude_from_gzip.push_back("pwa.html");
+#endif  // BUILDFLAG(OPTIMIZE_WEBUI)
+  }
+#endif  // defined (OS_CHROMEOS)
+
 #if BUILDFLAG(OPTIMIZE_WEBUI)
   const bool use_polymer_2 =
       base::FeatureList::IsEnabled(features::kWebUIPolymer2);
@@ -390,6 +403,9 @@ MdSettingsUI::MdSettingsUI(content::WebUI* web_ui)
                                       ? IDR_MD_SETTINGS_VULCANIZED_P2_HTML
                                       : IDR_MD_SETTINGS_VULCANIZED_HTML);
   html_source->UseGzip(exclude_from_gzip);
+#if defined(OS_CHROMEOS)
+  html_source->AddResourcePath("manifest.json", IDR_MD_SETTINGS_MANIFEST);
+#endif  // defined (OS_CHROMEOS)
 #else
   // Add all settings resources.
   for (size_t i = 0; i < kSettingsResourcesSize; ++i) {

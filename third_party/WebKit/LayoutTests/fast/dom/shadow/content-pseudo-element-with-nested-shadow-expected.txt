@@ -3,9 +3,9 @@ Test for http://crbug.com/360679, ::content rules in nested ShadowDOM should mat
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.getComputedStyle(sandbox.querySelector('#host > .special')).backgroundColor is not "rgb(255, 0, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 I should not be red.

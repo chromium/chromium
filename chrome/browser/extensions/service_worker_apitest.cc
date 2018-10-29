@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
@@ -297,6 +298,47 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBasedBackgroundTest, Basic) {
   EXPECT_TRUE(newtab_listener.WaitUntilSatisfied());
 }
 
+// Tests chrome.runtime.onInstalled fires for extension service workers.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
+  ASSERT_TRUE(RunExtensionTest(
+      "service_worker/worker_based_background/events_on_installed"))
+      << message_;
+}
+
+// Listens for "runtime.onStartup" event early so that tests can wait for the
+// event on startup (and not miss it).
+class ServiceWorkerOnStartupTest : public ServiceWorkerBasedBackgroundTest {
+ public:
+  ServiceWorkerOnStartupTest() = default;
+  ~ServiceWorkerOnStartupTest() override = default;
+
+  bool WaitForOnStartupEvent() { return listener_->WaitUntilSatisfied(); }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
+    // At this point, the notification service is initialized but the profile
+    // and extensions have not.
+    listener_ = std::make_unique<ExtensionTestMessageListener>(
+        "onStartup event", false);
+    ServiceWorkerBasedBackgroundTest::CreatedBrowserMainParts(main_parts);
+  }
+
+ private:
+  std::unique_ptr<ExtensionTestMessageListener> listener_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerOnStartupTest);
+};
+
+// Tests "runtime.onStartup" for extension SW.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerOnStartupTest, PRE_Event) {
+  ASSERT_TRUE(RunExtensionTest(
+      "service_worker/worker_based_background/on_startup_event"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerOnStartupTest, Event) {
+  EXPECT_TRUE(WaitForOnStartupEvent());
+}
+
 // Class that dispatches an event to |extension_id| right after a
 // non-lazy listener to the event is added from the extension's Service Worker.
 class EarlyWorkerMessageSender : public EventRouter::Observer {
@@ -432,7 +474,11 @@ class ServiceWorkerBackgroundSyncTest : public ServiceWorkerTest {
 class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
  public:
   ServiceWorkerPushMessagingTest()
-      : gcm_driver_(nullptr), push_service_(nullptr) {}
+      : scoped_testing_factory_installer_(
+            base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
+        gcm_driver_(nullptr),
+        push_service_(nullptr) {}
+
   ~ServiceWorkerPushMessagingTest() override {}
 
   void GrantNotificationPermissionForTest(const GURL& url) {
@@ -458,15 +504,10 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
     ServiceWorkerTest::SetUpCommandLine(command_line);
   }
 
-  void SetUp() override {
-    gcm::GCMProfileServiceFactory::SetGlobalTestingFactory(
-        &gcm::FakeGCMProfileService::Build);
-    ServiceWorkerTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     NotificationDisplayServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), &StubNotificationDisplayService::FactoryForTests);
+        profile(),
+        base::BindRepeating(&StubNotificationDisplayService::FactoryForTests));
 
     gcm::FakeGCMProfileService* gcm_service =
         static_cast<gcm::FakeGCMProfileService*>(
@@ -478,17 +519,15 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
     ServiceWorkerTest::SetUpOnMainThread();
   }
 
-  void TearDown() override {
-    gcm::GCMProfileServiceFactory::SetGlobalTestingFactory(nullptr);
-    ServiceWorkerTest::TearDown();
-  }
-
   instance_id::FakeGCMDriverForInstanceID* gcm_driver() const {
     return gcm_driver_;
   }
   PushMessagingServiceImpl* push_service() const { return push_service_; }
 
  private:
+  gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
+      scoped_testing_factory_installer_;
+
   instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
   PushMessagingServiceImpl* push_service_;
 
@@ -948,7 +987,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerTest, EventsToStoppedWorker) {
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(
             browser()->profile());
-    content::StopServiceWorkerForPattern(
+    content::StopServiceWorkerForScope(
         storage_partition->GetServiceWorkerContext(),
         // The service worker is registered at the top level scope.
         extension->url(), run_loop.QuitClosure());
@@ -995,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerLazyBackgroundTest,
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(
             browser()->profile());
-    content::StopServiceWorkerForPattern(
+    content::StopServiceWorkerForScope(
         storage_partition->GetServiceWorkerContext(),
         // The service worker is registered at the top level scope.
         extension->url(), run_loop.QuitClosure());
@@ -1054,7 +1093,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerLazyBackgroundTest,
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(
             browser()->profile());
-    content::StopServiceWorkerForPattern(
+    content::StopServiceWorkerForScope(
         storage_partition->GetServiceWorkerContext(),
         // The service worker is registered at the top level scope.
         extension->url(), run_loop.QuitClosure());
@@ -1348,7 +1387,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerLazyBackgroundTest,
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(
             browser()->profile());
-    content::StopServiceWorkerForPattern(
+    content::StopServiceWorkerForScope(
         storage_partition->GetServiceWorkerContext(),
         // The service worker is registered at the top level scope.
         extension->url(), run_loop.QuitClosure());
@@ -1410,6 +1449,12 @@ INSTANTIATE_TEST_CASE_P(ServiceWorkerTestWithNativeBindings,
                         ::testing::Values(NATIVE_BINDINGS));
 INSTANTIATE_TEST_CASE_P(ServiceWorkerTestWithJSBindings,
                         ServiceWorkerBasedBackgroundTest,
+                        ::testing::Values(JAVASCRIPT_BINDINGS));
+INSTANTIATE_TEST_CASE_P(ServiceWorkerTestWithNativeBindings,
+                        ServiceWorkerOnStartupTest,
+                        ::testing::Values(NATIVE_BINDINGS));
+INSTANTIATE_TEST_CASE_P(ServiceWorkerTestWithJSBindings,
+                        ServiceWorkerOnStartupTest,
                         ::testing::Values(JAVASCRIPT_BINDINGS));
 
 }  // namespace extensions

@@ -38,15 +38,18 @@ class PLATFORM_EXPORT UnifiedHeapController final
   // v8::EmbedderHeapTracer implementation.
   void TracePrologue() final;
   void TraceEpilogue() final;
-  void AbortTracing() final;
   void EnterFinalPause(EmbedderStackState) final;
   void RegisterV8References(const std::vector<std::pair<void*, void*>>&) final;
   bool AdvanceTracing(double) final;
+  bool IsTracingDone() final;
 
   ThreadState* thread_state() const { return thread_state_; }
 
  private:
   ThreadState* const thread_state_;
+
+  // Returns whether the Blink heap has been fully processed.
+  bool is_tracing_done_ = false;
 };
 
 }  // namespace blink

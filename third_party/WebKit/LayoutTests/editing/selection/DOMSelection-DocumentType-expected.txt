@@ -2,7 +2,6 @@ Test to check if setBaseAndExtent guard node with null owner document (Bug 31680
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS sel.setBaseAndExtent(docType, 0, null, 0) threw exception InvalidNodeTypeError: Failed to execute 'setBaseAndExtent' on 'Selection': The node provided is of type 'c'..
 PASS sel.anchorNode is null
 PASS sel.anchorNode is null

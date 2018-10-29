@@ -60,13 +60,15 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
       std::vector<mojom::PageLoadTimingPtr>* complete_timings,
       std::vector<ExtraRequestCompleteInfo>* loaded_resources,
       std::vector<GURL>* observed_committed_urls,
+      std::vector<GURL>* observed_aborted_urls,
       std::vector<mojom::PageLoadFeatures>* observed_features)
       : updated_timings_(updated_timings),
         updated_subframe_timings_(updated_subframe_timings),
         complete_timings_(complete_timings),
         loaded_resources_(loaded_resources),
         observed_features_(observed_features),
-        observed_committed_urls_(observed_committed_urls) {}
+        observed_committed_urls_(observed_committed_urls),
+        observed_aborted_urls_(observed_aborted_urls) {}
 
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                const GURL& currently_committed_url,
@@ -107,6 +109,11 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
     observed_features_->push_back(features);
   }
 
+  void OnDidInternalNavigationAbort(
+      content::NavigationHandle* navigation_handle) override {
+    observed_aborted_urls_->push_back(navigation_handle->GetURL());
+  }
+
  private:
   std::vector<mojom::PageLoadTimingPtr>* const updated_timings_;
   std::vector<mojom::PageLoadTimingPtr>* const updated_subframe_timings_;
@@ -114,6 +121,7 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
   std::vector<ExtraRequestCompleteInfo>* const loaded_resources_;
   std::vector<mojom::PageLoadFeatures>* const observed_features_;
   std::vector<GURL>* const observed_committed_urls_;
+  std::vector<GURL>* const observed_aborted_urls_;
 };
 
 // Test PageLoadMetricsObserver that stops observing page loads with certain
@@ -159,7 +167,8 @@ class TestPageLoadMetricsEmbedderInterface
   void RegisterObservers(PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<TestPageLoadMetricsObserver>(
         &updated_timings_, &updated_subframe_timings_, &complete_timings_,
-        &loaded_resources_, &observed_committed_urls_, &observed_features_));
+        &loaded_resources_, &observed_committed_urls_, &observed_aborted_urls_,
+        &observed_features_));
     tracker->AddObserver(std::make_unique<FilteringPageLoadMetricsObserver>(
         &completed_filtered_urls_));
   }
@@ -184,6 +193,10 @@ class TestPageLoadMetricsEmbedderInterface
     return observed_committed_urls_;
   }
 
+  const std::vector<GURL>& observed_aborted_urls() const {
+    return observed_aborted_urls_;
+  }
+
   const std::vector<mojom::PageLoadFeatures>& observed_features() const {
     return observed_features_;
   }
@@ -202,6 +215,7 @@ class TestPageLoadMetricsEmbedderInterface
   std::vector<mojom::PageLoadTimingPtr> updated_subframe_timings_;
   std::vector<mojom::PageLoadTimingPtr> complete_timings_;
   std::vector<GURL> observed_committed_urls_;
+  std::vector<GURL> observed_aborted_urls_;
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;
   std::vector<GURL> completed_filtered_urls_;
   std::vector<mojom::PageLoadFeatures> observed_features_;
@@ -313,6 +327,10 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     return embedder_interface_->observed_committed_urls_from_on_start();
   }
 
+  const std::vector<GURL>& observed_aborted_urls() const {
+    return embedder_interface_->observed_aborted_urls();
+  }
+
   const std::vector<mojom::PageLoadFeatures>& observed_features() const {
     return embedder_interface_->observed_features();
   }
@@ -367,6 +385,16 @@ TEST_F(MetricsWebContentsObserverTest, SuccessfulMainFrameNavigation) {
   ASSERT_EQ(0, CountUpdatedSubFrameTimingReported());
 
   CheckNoErrorEvents();
+}
+
+TEST_F(MetricsWebContentsObserverTest, MainFrameNavigationInternalAbort) {
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents());
+  web_contents_tester->NavigateAndFail(
+      GURL(kDefaultTestUrl), net::ERR_ABORTED,
+      base::MakeRefCounted<net::HttpResponseHeaders>("some_headers"));
+  ASSERT_EQ(1u, observed_aborted_urls().size());
+  ASSERT_EQ(kDefaultTestUrl, observed_aborted_urls().front().spec());
 }
 
 TEST_F(MetricsWebContentsObserverTest, SubFrame) {

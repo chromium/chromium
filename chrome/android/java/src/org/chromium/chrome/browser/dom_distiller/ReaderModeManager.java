@@ -341,8 +341,8 @@ public class ReaderModeManager extends TabModelSelectorTabObserver {
             @Override
             public void didFinishNavigation(String url, boolean isInMainFrame, boolean isErrorPage,
                     boolean hasCommitted, boolean isSameDocument, boolean isFragmentNavigation,
-                    Integer pageTransition, int errorCode, String errorDescription,
-                    int httpStatusCode) {
+                    boolean isRendererInitiated, boolean isDownload, Integer pageTransition,
+                    int errorCode, String errorDescription, int httpStatusCode) {
                 // TODO(cjhopman): This should possibly ignore navigations that replace the entry
                 // (like those from history.replaceState()).
                 if (!hasCommitted || !isInMainFrame || isSameDocument) return;
@@ -361,8 +361,8 @@ public class ReaderModeManager extends TabModelSelectorTabObserver {
 
                 tabInfo.setStatus(POSSIBLE);
                 if (!TextUtils.equals(url,
-                        DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                                mReaderModePageUrl))) {
+                            DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
+                                    mReaderModePageUrl))) {
                     tabInfo.setStatus(NOT_POSSIBLE);
                     mIsUmaRecorded = false;
                 }

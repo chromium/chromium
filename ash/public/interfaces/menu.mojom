@@ -66,3 +66,9 @@ struct MenuItem {
   int64 radio_group_id;              // The radio group id.
   MenuSeparatorType separator_type;  // The separator type.
 };
+
+// An interface implemented by clients to handle interaction with menus run in
+// Ash.
+interface MenuDelegate {
+  MenuItemActivated(int32 command_id);
+};

@@ -14,11 +14,11 @@ GEN_INCLUDE(['../../testing/chromevox_unittest_base.js',
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxBrailleIntegrationUnitTest() {
+function ChromeVoxBrailleIntegrationUnitTest() {
   ChromeVoxUnitTestBase.call(this);
 }
 
-CvoxBrailleIntegrationUnitTest.prototype = {
+ChromeVoxBrailleIntegrationUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -163,14 +163,15 @@ FakeInputHandler.prototype = {
 
 /** @extends {cvox.BrailleTranslatorManager} */
 function FakeTranslatorManager() {
-}        
+}
 
-SYNC_TEST_F('CvoxBrailleIntegrationUnitTest', 'Write', function() {
+SYNC_TEST_F('ChromeVoxBrailleIntegrationUnitTest', 'Write', function() {
   this.braille.write(this.content1);
   assertEqualsJSON(this.content1, this.displayManager.content);
 });
 
-SYNC_TEST_F('CvoxBrailleIntegrationUnitTest', 'WriteWithSpans', function() {
+SYNC_TEST_F('ChromeVoxBrailleIntegrationUnitTest', 'WriteWithSpans',
+            function() {
   var selectionSpan = new cvox.ValueSelectionSpan();
   var valueSpan = new cvox.ValueSpan(20);
   var toSend = cvox.NavBraille.fromText(
@@ -185,7 +186,7 @@ SYNC_TEST_F('CvoxBrailleIntegrationUnitTest', 'WriteWithSpans', function() {
   assertEqualsJSON(expected, this.displayManager.content);
 });
 
-TEST_F('CvoxBrailleIntegrationUnitTest', 'CommandNoContent', function() {
+TEST_F('ChromeVoxBrailleIntegrationUnitTest', 'CommandNoContent', function() {
   // Commands are only delivered to the content script if the window has focus.
   this.awaitDocumentFocused(function() {
     this.sendCommand(this.command1, null);
@@ -194,7 +195,7 @@ TEST_F('CvoxBrailleIntegrationUnitTest', 'CommandNoContent', function() {
   });
 });
 
-TEST_F('CvoxBrailleIntegrationUnitTest',
+TEST_F('ChromeVoxBrailleIntegrationUnitTest',
        'InterleavedWritesAndCommands',
        function() {
   this.awaitDocumentFocused(function() {
@@ -215,7 +216,7 @@ TEST_F('CvoxBrailleIntegrationUnitTest',
   });
 });
 
-TEST_F('CvoxBrailleIntegrationUnitTest', 'CommandAfterBackgroundWrite',
+TEST_F('ChromeVoxBrailleIntegrationUnitTest', 'CommandAfterBackgroundWrite',
        function() {
   this.awaitDocumentFocused(function() {
     this.braille.write(this.content1);
@@ -231,7 +232,7 @@ TEST_F('CvoxBrailleIntegrationUnitTest', 'CommandAfterBackgroundWrite',
   });
 });
 
-TEST_F('CvoxBrailleIntegrationUnitTest', 'CommandAfterOtherTabWrite',
+TEST_F('ChromeVoxBrailleIntegrationUnitTest', 'CommandAfterOtherTabWrite',
        function() {
   this.awaitDocumentFocused(function() {
     // Ignore the listener of the braille from the second 'tab'.

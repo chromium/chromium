@@ -502,7 +502,7 @@ def write_gpu_series_list(entry_id, is_exception, exception_id, gpu_series_list,
     var_name = 'kGpuSeriesForEntry' + str(entry_id)
     if is_exception:
       var_name += 'Exception' + str(exception_id)
-    data_helper_file.write('const GpuControlList::GpuSeriesType %s[%d] = {\n' %
+    data_helper_file.write('const GpuSeriesType %s[%d] = {\n' %
                            (var_name, len(gpu_series_list)))
     gpu_series_map = {
       'intel_sandybridge': 'kIntelSandyBridge',
@@ -519,7 +519,7 @@ def write_gpu_series_list(entry_id, is_exception, exception_id, gpu_series_list,
     }
     for series in gpu_series_list:
       assert gpu_series_map.has_key(series)
-      data_helper_file.write('GpuControlList::GpuSeriesType::%s,\n' %
+      data_helper_file.write('GpuSeriesType::%s,\n' %
                              gpu_series_map[series])
     data_helper_file.write('};\n\n')
 

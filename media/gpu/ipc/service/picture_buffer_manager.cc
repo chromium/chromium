@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/video_util.h"
 
@@ -57,7 +58,9 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     // Predict that the VDA can output a picture if at least one picture buffer
     // is not in use as an output.
     for (const auto& it : picture_buffers_) {
-      if (it.second.state != PictureBufferState::OUTPUT)
+      const auto& state = it.second.state;
+      if (std::find(state.begin(), state.end(), PictureBufferState::OUTPUT) ==
+          state.end())
         return true;
     }
 
@@ -87,8 +90,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     std::vector<PictureBuffer> picture_buffers;
     for (uint32_t i = 0; i < count; i++) {
       PictureBuffer::TextureIds service_ids;
-      PictureBufferData picture_data = {PictureBufferState::AVAILABLE,
-                                        pixel_format, texture_size};
+      PictureBufferData picture_data = {pixel_format, texture_size};
 
       for (uint32_t j = 0; j < planes; j++) {
         // Create a texture for this plane.
@@ -145,12 +147,13 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       return false;
     }
 
-    bool is_available = it->second.state == PictureBufferState::AVAILABLE;
+    bool is_available = it->second.IsAvailable();
 
     // Destroy the picture buffer data.
     picture_buffers_.erase(it);
 
-    // If the picture was available, we can destroy its textures immediately.
+    // If the picture was not bound to any VideoFrame, we can destroy its
+    // textures immediately.
     if (is_available) {
       gpu_task_runner_->PostTask(
           FROM_HERE,
@@ -183,12 +186,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     }
 
     PictureBufferData& picture_buffer_data = it->second;
-    if (picture_buffer_data.state != PictureBufferState::AVAILABLE) {
-      DLOG(ERROR) << "Picture buffer " << picture_buffer_id
-                  << " is not available";
-      return nullptr;
-    }
-
     // Ensure that the picture buffer is large enough.
     if (!gfx::Rect(picture_buffer_data.texture_size).Contains(visible_rect)) {
       DLOG(WARNING) << "visible_rect " << visible_rect.ToString()
@@ -201,7 +198,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     }
 
     // Mark the picture as an output.
-    picture_buffer_data.state = PictureBufferState::OUTPUT;
+    picture_buffer_data.state.push_back(PictureBufferState::OUTPUT);
 
     // Create and return a VideoFrame for the picture buffer.
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
@@ -234,8 +231,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     // If the picture buffer is still assigned, mark it as unreleased.
     const auto& it = picture_buffers_.find(picture_buffer_id);
     if (it != picture_buffers_.end()) {
-      DCHECK_EQ(it->second.state, PictureBufferState::OUTPUT);
-      it->second.state = PictureBufferState::WAITING_FOR_SYNCTOKEN;
+      auto& state = it->second.state;
+      auto state_it =
+          std::find(state.begin(), state.end(), PictureBufferState::OUTPUT);
+      if (state_it != state.end())
+        state.erase(state_it);
+      state.push_back(PictureBufferState::WAITING_FOR_SYNCTOKEN);
     }
 
     // Wait for the SyncToken release.
@@ -259,8 +260,11 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       base::AutoLock lock(picture_buffers_lock_);
       const auto& it = picture_buffers_.find(picture_buffer_id);
       if (it != picture_buffers_.end()) {
-        DCHECK_EQ(it->second.state, PictureBufferState::WAITING_FOR_SYNCTOKEN);
-        it->second.state = PictureBufferState::AVAILABLE;
+        auto& state = it->second.state;
+        auto state_it = std::find(state.begin(), state.end(),
+                                  PictureBufferState::WAITING_FOR_SYNCTOKEN);
+        if (state_it != state.end())
+          state.erase(state_it);
         is_assigned = true;
       }
     }
@@ -302,21 +306,26 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
   base::Lock picture_buffers_lock_;
   enum class PictureBufferState {
-    // Available for use by the VDA.
-    AVAILABLE,
     // Output by the VDA, still bound to a VideoFrame.
     OUTPUT,
     // Waiting on a SyncToken before being reused.
     WAITING_FOR_SYNCTOKEN,
   };
   struct PictureBufferData {
-    PictureBufferState state;
     VideoPixelFormat pixel_format;
     gfx::Size texture_size;
+    // The picture buffer might be sent from VDA multiple times. Therefore we
+    // use vector to track the status. The state is empty when the picture
+    // buffer is not bound to any VideoFrame.
+    std::vector<PictureBufferState> state;
     gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+
+    // Available for use by the VDA.
+    bool IsAvailable() const { return state.empty(); }
   };
   // Pictures buffers that are assigned to the VDA.
-  std::map<int32_t, PictureBufferData> picture_buffers_;
+  std::map<int32_t, PictureBufferData> picture_buffers_
+      GUARDED_BY(picture_buffers_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(PictureBufferManagerImpl);
 };

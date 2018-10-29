@@ -84,13 +84,13 @@ _OBJECT_OUTPUTS = {
         '002a0010 t FooAlias()',
         '002b6bb8 t $t',
         '002a0010 t BarAlias()',
-        ''
-        'fft_fixed.o:'
+        '',
+        'fft_fixed.o:',
         '01010101 b ff_cos_131072_fixed',
     ],
     '../../third_party/gvr-android-sdk/libgvr_shim_static_arm.a': [
         '',
-        'libcontroller_api_impl.a_controller_api_impl.o:'
+        'libcontroller_api_impl.a_controller_api_impl.o:',
         '01010101 d .Lswitch.table.45',
         '',
         'libport_android_jni.a_jni_utils.o:',

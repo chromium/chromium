@@ -117,6 +117,13 @@ Polymer({
       displayName = loadTimeData.getString('embeddedOnAnyHost');
     }
 
+    // <if expr="chromeos">
+    if (this.model.category === settings.ContentSettingsTypes.NOTIFICATIONS &&
+        this.model.showAndroidSmsNote) {
+      displayName = loadTimeData.getString('androidSmsNote');
+    }
+    // </if>
+
     if (this.model.incognito) {
       if (displayName.length > 0)
         return loadTimeData.getStringF('embeddedIncognitoSite', displayName);

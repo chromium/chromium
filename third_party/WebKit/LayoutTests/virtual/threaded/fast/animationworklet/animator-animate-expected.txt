@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: line 4: test animator constructor called.
-CONSOLE MESSAGE: line 8: test animator animate called.
-

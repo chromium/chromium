@@ -1,7 +1,1 @@
 CONSOLE ERROR: line 4: Error: <polyline> attribute points: Expected number, "…100, 100 0, 100 INF INF".
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGRect {rect} at (0,0) size 100x100 [fill={[type=SOLID] [color=#FF0000]}] [x=0.00] [y=0.00] [width=100.00] [height=100.00]
-    LayoutSVGPath {polyline} at (0,0) size 100x100 [fill={[type=SOLID] [color=#008000]}] [points="0 0 100 0 100 100 0 100"]

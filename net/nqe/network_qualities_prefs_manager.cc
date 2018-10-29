@@ -11,7 +11,6 @@
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/nqe/network_quality_estimator.h"
 

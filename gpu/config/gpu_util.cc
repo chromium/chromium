@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
@@ -30,12 +31,32 @@
 #if defined(OS_ANDROID)
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "ui/gl/android/android_surface_composer_compat.h"
 #include "ui/gl/init/gl_factory.h"
 #endif  // OS_ANDROID
 
 namespace gpu {
 
 namespace {
+
+GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
+    const std::set<int>& blacklisted_features,
+    const GpuPreferences& gpu_preferences) {
+#if !defined(OS_ANDROID)
+  return kGpuFeatureStatusDisabled;
+#else
+  if (blacklisted_features.count(GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL))
+    return kGpuFeatureStatusBlacklisted;
+
+  if (!gpu_preferences.enable_android_surface_control)
+    return kGpuFeatureStatusDisabled;
+
+  if (!gl::SurfaceComposer::IsSupported())
+    return kGpuFeatureStatusDisabled;
+
+  return kGpuFeatureStatusEnabled;
+#endif
+}
 
 GpuFeatureStatus GetGpuRasterizationFeatureStatus(
     const std::set<int>& blacklisted_features,
@@ -208,7 +229,7 @@ void AppendWorkaroundsToCommandLine(const GpuFeatureInfo& gpu_feature_info,
     command_line->AppendSwitch(switches::kDisableES3GLContext);
   }
   if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_DIRECT_COMPOSITION)) {
-    command_line->AppendSwitch(switches::kDisableDirectComposition);
+    command_line->AppendSwitch(switches::kDisableDirectCompositionLayers);
   }
 }
 
@@ -217,6 +238,11 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info) {
   if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11) ||
       gpu_feature_info->IsWorkaroundEnabled(DISABLE_ES3_GL_CONTEXT)) {
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
+        kGpuFeatureStatusBlacklisted;
+  }
+
+  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_AIMAGEREADER)) {
+    gpu_feature_info->status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
         kGpuFeatureStatusBlacklisted;
   }
 }
@@ -250,6 +276,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithHardwareAccelerationDisabled() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -282,6 +310,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -313,6 +343,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_PROTECTED_VIDEO_DECODE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
+      kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
@@ -386,6 +418,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
       GetOopRasterizationFeatureStatus(blacklisted_features, *command_line,
                                        gpu_preferences, gpu_info);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+      GetAndroidSurfaceControlFeatureStatus(blacklisted_features,
+                                            gpu_preferences);
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -618,6 +653,61 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
 #else
   return false;
 #endif
+}
+
+GpuSeriesType GetGpuSeriesType(uint32_t vendor_id, uint32_t device_id) {
+  // Note that this function's output should only depend on vendor_id and
+  // device_id of a GPU. This is because we record a histogram on the output
+  // and we don't want to expose an extra bit other than the already recorded
+  // vendor_id and device_id.
+  if (vendor_id == 0x8086) {  // Intel
+    // https://en.wikipedia.org/wiki/List_of_Intel_graphics_processing_units
+    // We only identify Intel 6th gen or newer.
+    uint32_t masked_device_id = device_id & 0xFF00;
+    switch (masked_device_id) {
+      case 0x0100:
+        switch (device_id & 0xFFF0) {
+          case 0x0100:
+          case 0x0110:
+          case 0x0120:
+            return GpuSeriesType::kIntelSandyBridge;
+          case 0x0150:
+            if (device_id == 0x0155 || device_id == 0x0157)
+              return GpuSeriesType::kIntelValleyView;
+            if (device_id == 0x0152 || device_id == 0x015A)
+              return GpuSeriesType::kIntelIvyBridge;
+            break;
+          case 0x0160:
+            return GpuSeriesType::kIntelIvyBridge;
+          default:
+            break;
+        }
+        break;
+      case 0x0F00:
+        return GpuSeriesType::kIntelValleyView;
+      case 0x0400:
+      case 0x0A00:
+      case 0x0D00:
+        return GpuSeriesType::kIntelHaswell;
+      case 0x2200:
+        return GpuSeriesType::kIntelCherryView;
+      case 0x1600:
+        return GpuSeriesType::kIntelBroadwell;
+      case 0x5A00:
+        return GpuSeriesType::kIntelApolloLake;
+      case 0x1900:
+        return GpuSeriesType::kIntelSkyLake;
+      case 0x3100:
+        return GpuSeriesType::kIntelGeminiLake;
+      case 0x5900:
+        return GpuSeriesType::kIntelKabyLake;
+      case 0x3E00:
+        return GpuSeriesType::kIntelCoffeeLake;
+      default:
+        break;
+    }
+  }
+  return GpuSeriesType::kUnknown;
 }
 
 }  // namespace gpu

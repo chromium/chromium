@@ -125,6 +125,7 @@ source_set("unit_tests") {
     # TODO(hansberry): Remove this dependency once https://crbug.com/870123 is
     # fixed.
     "//chromeos/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/secure_channel/public/cpp/client:test_support",
     "//components/cryptauth:test_support",
     "//components/prefs:test_support",

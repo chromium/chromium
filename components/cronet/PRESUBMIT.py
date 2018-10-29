@@ -77,24 +77,6 @@ def _RunToolsUnittests(input_api, output_api):
       input_api, output_api, '.', [ r'^tools_unittest\.py$'])
 
 
-def _ChangeAffectsCronetForAndroid(change):
-  """ Returns |true| if the change may affect Cronet for Android. """
-
-  for path in change.LocalPaths():
-    if not path.startswith(os.path.join('components', 'cronet', 'ios')):
-      return True
-  return False
-
-
-def _ChangeAffectsCronetForIos(change):
-  """ Returns |true| if the change may affect Cronet for iOS. """
-
-  for path in change.LocalPaths():
-    if not path.startswith(os.path.join('components', 'cronet', 'android')):
-      return True
-  return False
-
-
 def _ChangeAffectsCronetTools(change):
   """ Returns |true| if the change may affect Cronet tools. """
 
@@ -115,20 +97,3 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
   return _RunToolsUnittests(input_api, output_api)
-
-
-def PostUploadHook(cl, change, output_api):
-  """git cl upload will call this hook after the issue is created/modified.
-
-  This hook adds an extra try bot to the CL description in order to run Cronet
-  tests in addition to CQ try bots.
-  """
-
-  try_bots = []
-  if _ChangeAffectsCronetForAndroid(change):
-    try_bots.append('master.tryserver.chromium.android:android_cronet_tester')
-  if _ChangeAffectsCronetForIos(change):
-    try_bots.append('luci.chromium.try:ios-simulator-cronet')
-
-  return output_api.EnsureCQIncludeTrybotsAreAdded(
-    cl, try_bots, 'Automatically added Cronet trybots to run tests on CQ.')

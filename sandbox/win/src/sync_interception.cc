@@ -80,7 +80,7 @@ NTSTATUS WINAPI TargetNtCreateEvent(NtCreateEventFunction orig_CreateEvent,
     // The RootDirectory points to BaseNamedObjects. We can ignore it.
     object_attribs_copy.RootDirectory = nullptr;
 
-    wchar_t* name = nullptr;
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     NTSTATUS ret =
         AllocAndCopyName(&object_attribs_copy, &name, &attributes, nullptr);
@@ -89,9 +89,8 @@ NTSTATUS WINAPI TargetNtCreateEvent(NtCreateEventFunction orig_CreateEvent,
 
     CrossCallReturn answer = {0};
     answer.nt_status = status;
-    ResultCode code =
-        ProxyCreateEvent(name, initial_state, event_type, memory, &answer);
-    operator delete(name, NT_ALLOC);
+    ResultCode code = ProxyCreateEvent(name.get(), initial_state, event_type,
+                                       memory, &answer);
 
     if (code != SBOX_ALL_OK) {
       status = answer.nt_status;
@@ -133,7 +132,7 @@ NTSTATUS WINAPI TargetNtOpenEvent(NtOpenEventFunction orig_OpenEvent,
     // The RootDirectory points to BaseNamedObjects. We can ignore it.
     object_attribs_copy.RootDirectory = nullptr;
 
-    wchar_t* name = nullptr;
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     NTSTATUS ret =
         AllocAndCopyName(&object_attribs_copy, &name, &attributes, nullptr);
@@ -142,8 +141,8 @@ NTSTATUS WINAPI TargetNtOpenEvent(NtOpenEventFunction orig_OpenEvent,
 
     CrossCallReturn answer = {0};
     answer.nt_status = status;
-    ResultCode code = ProxyOpenEvent(name, desired_access, memory, &answer);
-    operator delete(name, NT_ALLOC);
+    ResultCode code =
+        ProxyOpenEvent(name.get(), desired_access, memory, &answer);
 
     if (code != SBOX_ALL_OK) {
       status = answer.nt_status;

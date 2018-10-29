@@ -42,8 +42,8 @@ namespace blink {
 namespace {
 
 template <typename CharType>
-size_t RequiredSizeForCRLF(const CharType* data, size_t length) {
-  size_t new_len = 0;
+wtf_size_t RequiredSizeForCRLF(const CharType* data, wtf_size_t length) {
+  wtf_size_t new_len = 0;
   const CharType* p = data;
   while (p < data + length) {
     CharType c = *p++;
@@ -67,7 +67,7 @@ size_t RequiredSizeForCRLF(const CharType* data, size_t length) {
 }
 
 template <typename CharType>
-void NormalizeToCRLF(const CharType* src, size_t src_length, CharType* q) {
+void NormalizeToCRLF(const CharType* src, wtf_size_t src_length, CharType* q) {
   const CharType* p = src;
   while (p < src + src_length) {
     CharType c = *p++;
@@ -100,7 +100,7 @@ void InternalNormalizeLineEndingsToCRLF(const CString& from,
     return;
   }
 
-  size_t old_buffer_size = buffer.size();
+  wtf_size_t old_buffer_size = buffer.size();
   buffer.Grow(old_buffer_size + new_len);
   char* write_position = buffer.data() + old_buffer_size;
   NormalizeToCRLF(from.data(), from.length(), write_position);
@@ -111,7 +111,7 @@ void InternalNormalizeLineEndingsToCRLF(const CString& from,
 
 void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
   // Compute the new length.
-  size_t new_len = 0;
+  wtf_size_t new_len = 0;
   bool need_fix = false;
   const char* p = from.data();
   char from_ending_char = '\r';
@@ -131,7 +131,7 @@ void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
 
   // Grow the result buffer.
   p = from.data();
-  size_t old_result_size = result.size();
+  wtf_size_t old_result_size = result.size();
   result.Grow(old_result_size + new_len);
   char* q = result.data() + old_result_size;
 
@@ -159,18 +159,18 @@ void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
 }
 
 String NormalizeLineEndingsToCRLF(const String& src) {
-  size_t length = src.length();
+  wtf_size_t length = src.length();
   if (length == 0)
     return src;
   if (src.Is8Bit()) {
-    size_t new_length = RequiredSizeForCRLF(src.Characters8(), length);
+    wtf_size_t new_length = RequiredSizeForCRLF(src.Characters8(), length);
     if (new_length == length)
       return src;
     StringBuffer<LChar> buffer(new_length);
     NormalizeToCRLF(src.Characters8(), length, buffer.Characters());
     return String::Adopt(buffer);
   }
-  size_t new_length = RequiredSizeForCRLF(src.Characters16(), length);
+  wtf_size_t new_length = RequiredSizeForCRLF(src.Characters16(), length);
   if (new_length == length)
     return src;
   StringBuffer<UChar> buffer(new_length);

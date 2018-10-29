@@ -44,6 +44,7 @@ class PageTimingMetricsSender {
   void DidObserveLoadingBehavior(blink::WebLoadingBehaviorFlag behavior);
   void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature);
   void DidObserveNewCssPropertyUsage(int css_property, bool is_animated);
+  void DidObserveLayoutJank(double jank_fraction);
   void DidStartResponse(int resource_id,
                         const network::ResourceResponseHead& response_head);
   void DidReceiveTransferSizeUpdate(int resource_id, int received_data_length);
@@ -75,6 +76,7 @@ class PageTimingMetricsSender {
   // A list of newly observed features during page load, to be sent to the
   // browser.
   mojom::PageLoadFeaturesPtr new_features_;
+  mojom::PageRenderData render_data_;
 
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
       features_sent_;

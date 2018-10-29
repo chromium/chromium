@@ -5,4 +5,3 @@ usingNone.name: [Alpha]
 usingLabel.name: [Gamma]
 usingLabelledby.name: [Epsilon]
 usingLabeledby.name: [Theta]
-

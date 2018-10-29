@@ -49,7 +49,7 @@ static void ReportToUMA(VAJEAEncoderResult result) {
 
 VaapiJpegEncodeAccelerator::EncodeRequest::EncodeRequest(
     int32_t buffer_id,
-    scoped_refptr<media::VideoFrame> video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     std::unique_ptr<UnalignedSharedMemory> exif_shm,
     std::unique_ptr<UnalignedSharedMemory> output_shm,
     int quality)
@@ -266,11 +266,10 @@ size_t VaapiJpegEncodeAccelerator::GetMaxCodedBufferSize(
   return VaapiJpegEncoder::GetMaxCodedBufferSize(picture_size);
 }
 
-void VaapiJpegEncodeAccelerator::Encode(
-    scoped_refptr<media::VideoFrame> video_frame,
-    int quality,
-    const BitstreamBuffer* exif_buffer,
-    const BitstreamBuffer& output_buffer) {
+void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
+                                        int quality,
+                                        const BitstreamBuffer* exif_buffer,
+                                        const BitstreamBuffer& output_buffer) {
   DVLOGF(4);
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 

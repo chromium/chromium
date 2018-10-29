@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.document;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
 
@@ -43,6 +44,12 @@ public class DocumentWebContentsDelegate extends WebContentsDelegateAndroid {
 
     private DocumentWebContentsDelegate() {
         mNativePtr = nativeInitialize();
+    }
+
+    @Override
+    public boolean addMessageToConsole(int level, String message, int lineNumber, String sourceId) {
+        // Only output console.log messages on debug variants of Android OS. crbug/869804
+        return !BuildInfo.isDebugAndroid();
     }
 
     private native long nativeInitialize();

@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/linked_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -133,6 +134,21 @@ class CookieStoreIOS : public net::CookieStore,
   using CookieChangeCallbackList =
       base::CallbackList<void(const CanonicalCookie& cookie,
                               CookieChangeCause cause)>;
+
+  class Subscription : public base::LinkNode<Subscription>,
+                       public CookieChangeSubscription {
+   public:
+    explicit Subscription(
+        std::unique_ptr<CookieChangeCallbackList::Subscription> subscription);
+    ~Subscription() override;
+
+    void ResetSubscription();
+
+   private:
+    std::unique_ptr<CookieChangeCallbackList::Subscription> subscription_;
+
+    DISALLOW_COPY_AND_ASSIGN(Subscription);
+  };
 
   // CookieChangeDispatcher implementation that proxies into IOSCookieStore.
   class CookieChangeDispatcherIOS : public CookieChangeDispatcher {
@@ -269,6 +285,8 @@ class CookieStoreIOS : public net::CookieStore,
   std::map<std::pair<GURL, std::string>,
            std::unique_ptr<CookieChangeCallbackList>>
       hook_map_;
+
+  base::LinkedList<Subscription> all_subscriptions_;
 
   CookieChangeDispatcherIOS change_dispatcher_;
 

@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ICON_URL_H_
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/core/dom/icon_url.h"
+#include "third_party/blink/renderer/core/dom/icon_url.h"  // nogncheck
 #endif
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url.h"

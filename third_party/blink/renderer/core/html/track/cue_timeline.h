@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/pod_interval_tree.h"
+#include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ class TextTrackCueList;
 // safe because CueTimeline and TextTrackCue are guaranteed to die at the same
 // time when the owner HTMLMediaElement dies. Thus the raw TextTrackCue* cannot
 // become stale pointers.
-typedef PODIntervalTree<double, TextTrackCue*> CueIntervalTree;
+typedef WTF::PODIntervalTree<double, TextTrackCue*> CueIntervalTree;
 typedef CueIntervalTree::IntervalType CueInterval;
 typedef Vector<CueInterval> CueList;
 
@@ -82,19 +82,18 @@ class TrackDisplayUpdateScope {
   Member<CueTimeline> cue_timeline_;
 };
 
+}  // namespace blink
+
+namespace WTF {
 #ifndef NDEBUG
 // Template specializations required by PodIntervalTree in debug mode.
 template <>
-struct ValueToString<double> {
-  static String ToString(const double value) { return String::Number(value); }
-};
-
-template <>
-struct ValueToString<TextTrackCue*> {
-  static String ToString(TextTrackCue* const& cue) { return cue->ToString(); }
+struct ValueToString<blink::TextTrackCue*> {
+  static String ToString(blink::TextTrackCue* const& cue) {
+    return cue->ToString();
+  }
 };
 #endif
-
-}  // namespace blink
+}
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_CUE_TIMELINE_H_

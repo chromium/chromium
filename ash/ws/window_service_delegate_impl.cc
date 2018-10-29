@@ -31,6 +31,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/compound_event_filter.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -124,11 +125,15 @@ void WindowServiceDelegateImpl::RunWindowMoveLoop(
       source == ws::mojom::MoveLoopSource::MOUSE
           ? ::wm::WINDOW_MOVE_SOURCE_MOUSE
           : ::wm::WINDOW_MOVE_SOURCE_TOUCH;
+
+  gfx::Point location_in_parent = cursor;
+  ::wm::ConvertPointFromScreen(window->parent(), &location_in_parent);
+
   Shell::Get()
       ->toplevel_window_event_handler()
       ->wm_toplevel_window_event_handler()
       ->AttemptToStartDrag(
-          window, cursor, HTCAPTION, aura_source,
+          window, location_in_parent, HTCAPTION, aura_source,
           base::BindOnce(&OnMoveLoopCompleted, std::move(callback)));
 }
 

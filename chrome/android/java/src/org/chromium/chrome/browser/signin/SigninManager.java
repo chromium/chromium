@@ -568,10 +568,6 @@ public class SigninManager implements AccountTrackerService.OnSystemAccountsSeed
         nativeClearLastSignedInUser(mNativeSigninManagerAndroid);
     }
 
-    public void prohibitSignout(boolean prohibitSignout) {
-        nativeProhibitSignout(mNativeSigninManagerAndroid, prohibitSignout);
-    }
-
     /**
      * Aborts the current sign in.
      *
@@ -751,6 +747,4 @@ public class SigninManager implements AccountTrackerService.OnSystemAccountsSeed
     native void nativeLogInSignedInUser(long nativeSigninManagerAndroid);
     @VisibleForTesting
     native boolean nativeIsSignedInOnNative(long nativeSigninManagerAndroid);
-    @VisibleForTesting
-    native void nativeProhibitSignout(long nativeSigninManagerAndroid, boolean prohibitSignout);
 }

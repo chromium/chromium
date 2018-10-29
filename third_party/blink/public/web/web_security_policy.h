@@ -31,8 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SECURITY_POLICY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SECURITY_POLICY_H_
 
+#include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 
 namespace blink {
 
@@ -66,14 +67,32 @@ class WebSecurityPolicy {
 
   // Support for managing allow/block access lists to origins beyond the
   // same-origin policy. The block list takes priority over the allow list.
+  // When an origin matches an entry on both the allow list and block list
+  // the entry with the higher priority defines whether access is allowed.
+  // In the case where both an allowlist and blocklist rule of the same
+  // priority match a request the blocklist rule takes priority.
+  // Callers should use
+  // network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority as the
+  // default priority unless overriding existing entries is explicitly needed.
   BLINK_EXPORT static void AddOriginAccessAllowListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,
       const WebString& destination_host,
-      bool allow_destination_subdomains);
+      bool allow_destination_subdomains,
+      const network::mojom::CORSOriginAccessMatchPriority priority);
   BLINK_EXPORT static void ClearOriginAccessAllowListForOrigin(
       const WebURL& source_origin);
   BLINK_EXPORT static void ClearOriginAccessAllowList();
+  BLINK_EXPORT static void ClearOriginAccessListForOrigin(
+      const WebURL& source_origin);
+
+  BLINK_EXPORT static void AddOriginAccessBlockListEntry(
+      const WebURL& source_origin,
+      const WebString& destination_protocol,
+      const WebString& destination_host,
+      bool disallow_destination_subdomains,
+      const network::mojom::CORSOriginAccessMatchPriority priority);
+
   BLINK_EXPORT static void AddOriginAccessBlockListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,
@@ -93,7 +112,7 @@ class WebSecurityPolicy {
   // navigation to a given URL. If the referrer returned is empty, the
   // referrer header should be omitted.
   BLINK_EXPORT static WebString GenerateReferrerHeader(
-      WebReferrerPolicy,
+      network::mojom::ReferrerPolicy,
       const WebURL&,
       const WebString& referrer);
 

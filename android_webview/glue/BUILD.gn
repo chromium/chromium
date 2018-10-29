@@ -42,6 +42,8 @@ android_library("glue") {
     "java/src/com/android/webview/chromium/ServiceWorkerControllerAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerSettingsAdapter.java",
     "java/src/com/android/webview/chromium/SharedStatics.java",
+    "java/src/com/android/webview/chromium/SharedTracingControllerAdapter.java",
+    "java/src/com/android/webview/chromium/SplitApkWorkaround.java",
     "java/src/com/android/webview/chromium/TokenBindingManagerAdapter.java",
     "java/src/com/android/webview/chromium/TracingControllerAdapter.java",
     "java/src/com/android/webview/chromium/WebBackForwardListChromium.java",

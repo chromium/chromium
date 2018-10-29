@@ -59,8 +59,7 @@ void SurfaceTexture::GetTransformMatrix(float mtx[16]) {
   Java_SurfaceTexturePlatformWrapper_getTransformMatrix(env, j_surface_texture_,
                                                         jmatrix);
 
-  jboolean is_copy;
-  jfloat* elements = env->GetFloatArrayElements(jmatrix.obj(), &is_copy);
+  jfloat* elements = env->GetFloatArrayElements(jmatrix.obj(), nullptr);
   for (int i = 0; i < 16; ++i) {
     mtx[i] = static_cast<float>(elements[i]);
   }

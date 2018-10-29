@@ -38,10 +38,12 @@
       <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" flattenhtml="true" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_HTML" file="browser/resources/process/process_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/content/browser/process_internals/process_internals.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_PROCESS_INTERNALS_CSS" file="browser/resources/process/process_internals.css" flattenhtml="true" compress="gzip" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_JS" file="browser/resources/process/process_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" flattenhtml="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip" />
       <include name="IDR_WEBRTC_INTERNALS_HTML" file="browser/resources/media/webrtc_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_WEBRTC_INTERNALS_JS" file="browser/resources/media/webrtc_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
     </includes>

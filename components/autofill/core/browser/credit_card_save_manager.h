@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -74,6 +76,8 @@ class CreditCardSaveManager {
     virtual void OnDecideToRequestUploadSave() = 0;
     virtual void OnReceivedGetUploadDetailsResponse() = 0;
     virtual void OnSentUploadCardRequest() = 0;
+    virtual void OnReceivedUploadCardResponse() = 0;
+    virtual void OnCCSMStrikeChangeComplete() = 0;
   };
 
   // The parameters should outlive the CreditCardSaveManager.
@@ -83,8 +87,8 @@ class CreditCardSaveManager {
                         PersonalDataManager* personal_data_manager);
   virtual ~CreditCardSaveManager();
 
-  // Offers local credit card save to the user.
-  void OfferCardLocalSave(const CreditCard& card);
+  // Begins the process to offer local credit card save to the user.
+  void AttemptToOfferCardLocalSave(const CreditCard& card);
 
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.
@@ -106,8 +110,9 @@ class CreditCardSaveManager {
 
  protected:
   // Returns the result of an upload request. If |result| ==
-  // |AutofillClient::SUCCESS|, |server_id| may, optionally, contain the opaque
-  // identifier for the card on the server. Exposed for testing.
+  // |AutofillClient::SUCCESS|, clears strikes for the saved card. Additionally,
+  // |server_id| may, optionally, contain the opaque identifier for the card on
+  // the server. Exposed for testing.
   virtual void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
                                const std::string& server_id);
 
@@ -116,6 +121,14 @@ class CreditCardSaveManager {
   friend class CreditCardSaveManagerTestObserverBridge;
   friend class SaveCardBubbleViewsBrowserTestBase;
 
+  // Sets |show_save_prompt| and moves forward with offering credit card local
+  // save.
+  void OnDidGetStrikesForLocalSave(const int num_strikes);
+
+  // Sets |show_save_prompt| and moves forward with offering credit card upload
+  // if Payments has also returned a success response.
+  void OnDidGetStrikesForUploadSave(const int num_strikes);
+
   // Returns the legal message retrieved from Payments. On failure or not
   // meeting Payments's conditions for upload, |legal_message| will contain
   // nullptr.
@@ -123,6 +136,9 @@ class CreditCardSaveManager {
       AutofillClient::PaymentsRpcResult result,
       const base::string16& context_token,
       std::unique_ptr<base::DictionaryValue> legal_message);
+
+  // Logs the number of strikes that a card had when save succeeded.
+  void LogStrikesPresentWhenCardSaved(bool is_local, const int num_strikes);
 
   // Examines |card| and the stored profiles and if a candidate set of profiles
   // is found that matches the client-side validation rules, assigns the values
@@ -141,6 +157,18 @@ class CreditCardSaveManager {
   // uploadable data is actually available.
   int GetDetectedValues() const;
 
+  // Offers local credit card save once the Autofill StrikeSystem has made its
+  // decision.
+  void OfferCardLocalSave();
+
+  // Offers credit card upload if Payments has allowed offering to save and the
+  // Autofill StrikeSystem has made its decision.
+  void OfferCardUploadSave();
+
+  // Clears strikes for the to-be-saved card and has |personal_data_manager_|
+  // save the card.
+  void OnUserDidAcceptLocalSave();
+
   // Sets |user_did_accept_upload_prompt_| and calls SendUploadCardRequest if
   // the risk data is available. Sets the cardholder name on the upload request
   // if |cardholder_name| is set.
@@ -152,6 +180,10 @@ class CreditCardSaveManager {
 
   // Finalizes the upload request and calls PaymentsClient::UploadCard().
   void SendUploadCardRequest();
+
+  // Used for browsertests. Gives the |observer_for_testing_| a notification
+  // a strike change has been made.
+  void OnStrikeChangeComplete(const int num_strikes);
 
   // Returns metric relevant to the CVC field based on values in
   // |found_cvc_field_|, |found_value_in_cvc_field_| and
@@ -184,6 +216,9 @@ class CreditCardSaveManager {
   // May be NULL.  NULL indicates OTR.
   PersonalDataManager* personal_data_manager_;
 
+  // The credit card to be saved if local credit card save is accepted.
+  CreditCard local_card_save_candidate_;
+
   // Collected information about a pending upload request.
   payments::PaymentsClient::UploadRequestDetails upload_request_;
 
@@ -191,6 +226,10 @@ class CreditCardSaveManager {
   // decisions made when determining if credit card upload save should be
   // offered.
   int upload_decision_metrics_ = 0;
+
+  // |true| if the offer-to-save bubble/infobar should pop-up, |false| if not.
+  // Will be base::nullopt until data has been retrieved from the StrikeSystem.
+  base::Optional<bool> show_save_prompt_;
 
   // |true| if the card being offered for upload is already a local card on the
   // device; |false| otherwise.
@@ -216,6 +255,9 @@ class CreditCardSaveManager {
 
   // The origin of the top level frame from which a form is uploaded.
   url::Origin pending_upload_request_origin_;
+
+  // The returned legal message from a GetUploadDetails call to Google Payments.
+  std::unique_ptr<base::DictionaryValue> legal_message_;
 
   // May be null.
   ObserverForTest* observer_for_testing_ = nullptr;

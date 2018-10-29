@@ -15,8 +15,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -48,6 +46,22 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   net::CookieOptions options;
   options.set_include_httponly();
   return canonical_cookie.IncludeForRequestURL(url, options);
+}
+
+// Prioritizes queued WKHTTPCookieStore completion handlers to run as soon as
+// possible. This function is needed because some of WKHTTPCookieStore methods
+// completion handlers are not called until there is a WKWebView on the view
+// hierarchy.
+void PrioritizeWKHTTPCookieStoreCallbacks() {
+  // TODO(crbug.com/885218): Currently this hack is needed to fix
+  // crbug.com/885218. Remove when the behavior of
+  // [WKHTTPCookieStore getAllCookies:] changes.
+  NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
+  [[WKWebsiteDataStore defaultDataStore]
+      removeDataOfTypes:data_types
+          modifiedSince:[NSDate distantFuture]
+      completionHandler:^{
+      }];
 }
 
 }  // namespace
@@ -91,6 +105,7 @@ void WKHTTPSystemCookieStore::GetCookiesForURLAsync(
                 RunSystemCookieCallbackForCookies(std::move(shared_callback),
                                                   weak_time_manager, result);
               }];
+          PrioritizeWKHTTPCookieStoreCallbacks();
         } else {
           net::ReportGetCookiesForURLResult(
               net::SystemCookieStoreType::kWKHTTPSystemCookieStore, false);
@@ -117,6 +132,7 @@ void WKHTTPSystemCookieStore::GetAllCookiesAsync(
                 RunSystemCookieCallbackForCookies(std::move(shared_callback),
                                                   weak_time_manager, cookies);
               }];
+          PrioritizeWKHTTPCookieStoreCallbacks();
         } else {
           RunSystemCookieCallbackForCookies(std::move(shared_callback),
                                             weak_time_manager, @[]);
@@ -252,6 +268,3 @@ void WKHTTPSystemCookieStore::RunSystemCookieCallbackForCookies(
 }
 
 }  // namespace web
-
-#endif  // defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >=
-        //__IPHONE_11_0)

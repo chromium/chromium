@@ -12,7 +12,7 @@ namespace blink {
 
 class SimTest;
 
-class SimWebFrameClient final : public FrameTestHelpers::TestWebFrameClient {
+class SimWebFrameClient final : public frame_test_helpers::TestWebFrameClient {
  public:
   explicit SimWebFrameClient(SimTest&);
 

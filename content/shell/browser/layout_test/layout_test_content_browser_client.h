@@ -70,6 +70,7 @@ class LayoutTestContentBrowserClient : public ShellContentBrowserClient {
                        bool opener_suppressed,
                        bool* no_javascript_access) override;
   bool ShouldEnableStrictSiteIsolation() override;
+  bool CanIgnoreCertificateErrorIfNeeded() override;
 
   // ShellContentBrowserClient overrides.
   void ExposeInterfacesToFrame(

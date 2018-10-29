@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/default_clock.h"
 #include "components/drive/chromeos/change_list_loader_observer.h"
 #include "components/drive/chromeos/drive_operation_queue.h"
 #include "components/drive/chromeos/file_system/operation_delegate.h"
@@ -72,12 +73,14 @@ class FileSystem : public FileSystemInterface,
                    public internal::TeamDriveListObserver,
                    public file_system::OperationDelegate {
  public:
+  // |clock| can be mocked for testing.
   FileSystem(EventLogger* logger,
              internal::FileCache* cache,
              JobScheduler* scheduler,
              internal::ResourceMetadata* resource_metadata,
              base::SequencedTaskRunner* blocking_task_runner,
-             const base::FilePath& temporary_file_directory);
+             const base::FilePath& temporary_file_directory,
+             const base::Clock* clock = base::DefaultClock::GetInstance());
   ~FileSystem() override;
 
   // FileSystemInterface overrides.
@@ -300,6 +303,8 @@ class FileSystem : public FileSystemInterface,
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::FilePath temporary_file_directory_;
+
+  const base::Clock* clock_;  // Not owned.
 
   // Implementation of each file system operation.
   std::unique_ptr<file_system::CopyOperation> copy_operation_;

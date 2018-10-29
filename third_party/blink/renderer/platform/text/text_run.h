@@ -50,8 +50,6 @@ class PLATFORM_EXPORT TextRun final {
     kAllowLeadingExpansion = 1 << 1,
   };
 
-  enum TextCodePath { kAuto = 0, kForceSimple = 1, kForceComplex = 2 };
-
   typedef unsigned ExpansionBehavior;
 
   TextRun(const LChar* c,

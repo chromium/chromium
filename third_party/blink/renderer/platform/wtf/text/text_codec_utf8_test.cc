@@ -46,7 +46,7 @@ TEST(TextCodecUTF8, DecodeAscii) {
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
   const char kTestCase[] = "HelloWorld";
-  size_t test_case_size = sizeof(kTestCase) - 1;
+  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
 
   bool saw_error = false;
   const String& result =
@@ -54,7 +54,7 @@ TEST(TextCodecUTF8, DecodeAscii) {
                     false, saw_error);
   EXPECT_FALSE(saw_error);
   ASSERT_EQ(test_case_size, result.length());
-  for (size_t i = 0; i < test_case_size; ++i) {
+  for (wtf_size_t i = 0; i < test_case_size; ++i) {
     EXPECT_EQ(kTestCase[i], result[i]);
   }
 }
@@ -65,7 +65,7 @@ TEST(TextCodecUTF8, DecodeChineseCharacters) {
 
   // "Kanji" in Chinese characters.
   const char kTestCase[] = "\xe6\xbc\xa2\xe5\xad\x97";
-  size_t test_case_size = sizeof(kTestCase) - 1;
+  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
 
   bool saw_error = false;
   const String& result =

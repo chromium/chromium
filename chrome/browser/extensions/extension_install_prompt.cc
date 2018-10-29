@@ -53,9 +53,9 @@ using extensions::PermissionSet;
 namespace {
 
 bool AllowWebstoreData(ExtensionInstallPrompt::PromptType type) {
-  return type == ExtensionInstallPrompt::INLINE_INSTALL_PROMPT ||
-         type == ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT ||
-         type == ExtensionInstallPrompt::REPAIR_PROMPT;
+  return type == ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT ||
+         type == ExtensionInstallPrompt::REPAIR_PROMPT ||
+         type == ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT;
 }
 
 // Returns bitmap for the default icon with size equal to the default icon's
@@ -64,8 +64,8 @@ SkBitmap GetDefaultIconBitmapForMaxScaleFactor(bool is_app) {
   const gfx::ImageSkia& image = is_app ?
       extensions::util::GetDefaultAppIcon() :
       extensions::util::GetDefaultExtensionIcon();
-  return image.GetRepresentation(
-      gfx::ImageSkia::GetMaxSupportedScale()).sk_bitmap();
+  return image.GetRepresentation(gfx::ImageSkia::GetMaxSupportedScale())
+      .GetBitmap();
 }
 
 // If auto confirm is enabled then posts a task to proceed with or cancel the
@@ -179,7 +179,7 @@ base::string16 ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case INLINE_INSTALL_PROMPT:
+    case WEBSTORE_WIDGET_PROMPT:
       id = IDS_EXTENSION_INSTALL_PROMPT_TITLE;
       break;
     case RE_ENABLE_PROMPT:
@@ -234,7 +234,7 @@ base::string16 ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case INLINE_INSTALL_PROMPT:
+    case WEBSTORE_WIDGET_PROMPT:
       if (extension_->is_app())
         id = IDS_EXTENSION_INSTALL_PROMPT_ACCEPT_BUTTON_APP;
       else if (extension_->is_theme())
@@ -295,7 +295,7 @@ base::string16 ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case INLINE_INSTALL_PROMPT:
+    case WEBSTORE_WIDGET_PROMPT:
     case RE_ENABLE_PROMPT:
     case REMOTE_INSTALL_PROMPT:
     case REPAIR_PROMPT:
@@ -323,7 +323,7 @@ base::string16 ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case INLINE_INSTALL_PROMPT:
+    case WEBSTORE_WIDGET_PROMPT:
     case EXTERNAL_INSTALL_PROMPT:
     case REMOTE_INSTALL_PROMPT:
     case DELEGATED_PERMISSIONS_PROMPT:
@@ -359,13 +359,6 @@ base::string16 ExtensionInstallPrompt::Prompt::GetRetainedDevicesHeading()
 
 bool ExtensionInstallPrompt::Prompt::ShouldShowPermissions() const {
   return GetPermissionCount() > 0 || type_ == POST_INSTALL_PERMISSIONS_PROMPT;
-}
-
-bool ExtensionInstallPrompt::Prompt::ShouldUseTabModalDialog() const {
-  // For inline install, we want the install prompt to be tab modal so that the
-  // dialog is always clearly associated with the page that made the inline
-  // install request.
-  return type_ == INLINE_INSTALL_PROMPT;
 }
 
 void ExtensionInstallPrompt::Prompt::AppendRatingStars(

@@ -1,0 +1,9 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The ShellAPK version expected by Chrome. Chrome will try to update the WebAPK
+# if the WebAPK's ShellAPK version is less than
+# |request_update_for_shell_apk_version|. The version should be incremented
+# after a new ShellAPK has been uploaded to the WebAPK Minting Server.
+request_update_for_shell_apk_version = 63

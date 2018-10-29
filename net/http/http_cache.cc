@@ -77,10 +77,24 @@ int HttpCache::DefaultBackend::CreateBackend(
     std::unique_ptr<disk_cache::Backend>* backend,
     CompletionOnceCallback callback) {
   DCHECK_GE(max_bytes_, 0);
+#if defined(OS_ANDROID)
+  if (app_status_listener_) {
+    return disk_cache::CreateCacheBackend(
+        type_, backend_type_, path_, max_bytes_, true, net_log, backend,
+        std::move(callback), app_status_listener_);
+  }
+#endif
   return disk_cache::CreateCacheBackend(type_, backend_type_, path_, max_bytes_,
                                         true, net_log, backend,
                                         std::move(callback));
 }
+
+#if defined(OS_ANDROID)
+void HttpCache::DefaultBackend::SetAppStatusListener(
+    base::android::ApplicationStatusListener* app_status_listener) {
+  app_status_listener_ = app_status_listener;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 

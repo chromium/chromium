@@ -114,6 +114,11 @@
     },
     {
       name: "BackgroundFetch",
+      origin_trial_feature_name: "BackgroundFetch",
+      status: "experimental",
+    },
+    {
+      name: "BackgroundFetchUploads",
       status: "experimental",
     },
     {
@@ -121,7 +126,12 @@
       status: "stable",
     },
     {
+      name: "Badging",
+      status: "test",
+    },
+    {
       name: "BlinkGenPropertyTrees",
+      status: "experimental",
     },
     {
       name: "BlinkRuntimeCallStats",
@@ -151,7 +161,7 @@
     },
     {
       name: "CacheStorageAddAllRejectsDuplicates",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CacheStyleSheetWithMediaQueries",
@@ -256,6 +266,9 @@
       name: "CSSFragmentIdentifiers"
     },
     {
+      // This needs to be kept as a runtime flag as long as we need to forcibly
+      // disable it for WebView on Android versions older than P. See
+      // https://crrev.com/f311a84728272e30979432e8474089b3db3c67df
       name: "CSSHexAlphaColor",
       status: "stable",
     },
@@ -300,22 +313,17 @@
       name: "CSSOMSmoothScroll",
       status: "stable",
     },
-    // Do not ship CSSPaintAPIArguments without shipping CSSVariables2 first.
-    //
-    // CSSPaintAPIArguments depends on parts of the the 'CSS Properties and
-    // Values API Level 1', specification (section 'Supported syntax strings').
-    // That specification is implemented behind the runtime enabled feature
-    // CSSVariables2.
     {
       name: "CSSPaintAPIArguments",
       status: "experimental",
+      depends_on: ["CSSVariables2"],
     },
     {
       name: "CSSPartPseudoElement",
       status: "experimental",
     },
     {
-      name: "CSSPseudoIS",
+      name: "CSSPseudoWhere",
       status: "experimental",
     },
     {
@@ -329,6 +337,19 @@
     {
       name: "CSSVariables2",
       status: "experimental",
+    },
+    // Support for registered custom properties with <image> syntax.
+    {
+      name: "CSSVariables2ImageValues",
+      status: "test",
+      depends_on: ["CSSVariables2"],
+    },
+    // Support for registered custom properties with <transform-list> and
+    // <transform-function> syntax.
+    {
+      name: "CSSVariables2TransformValues",
+      status: "test",
+      depends_on: ["CSSVariables2"],
     },
     {
       name: "CSSViewport",
@@ -371,6 +392,9 @@
     {
       name: "DisplayCutoutAPI",
       settable_from_internals: true,
+    },
+    {
+      name: "DisplayLocking",
     },
     {
       name: "DisplayNoneIFrameCreatesNoLayoutObject",
@@ -459,7 +483,6 @@
     },
     {
       name: "ExtraWebGLVideoTextureMetadata",
-      status: "experimental",
     },
     {
       name: "FastMobileScrolling",
@@ -534,6 +557,7 @@
     },
     {
       name: "GamepadExtensions",
+      origin_trial_feature_name: "WebVR1.1M62",
       status: "experimental",
     },
     {
@@ -574,6 +598,10 @@
       status: "stable",
     },
     {
+      name: "IDBGetDatabases",
+      status: "experimental",
+    },
+    {
       name: "IDBObserver",
       status: "experimental",
     },
@@ -589,10 +617,6 @@
       name: "ImplicitRootScroller",
       status: "experimental",
       settable_from_internals: true,
-    },
-    {
-      name: "IncrementalShadowDOM",
-      status: "stable",
     },
     {
       name: "InertAttribute",
@@ -626,6 +650,7 @@
       // Tracks "jank" from layout objects changing their visual location
       // between animation frames (see crbug.com/581518).
       name: "JankTracking",
+      implied_by: ["LayoutJankAPI"],
       status: "experimental",
     },
     {
@@ -640,11 +665,20 @@
       implied_by: ["ExperimentalProductivityFeatures"],
     },
     {
+      // Exposes layout jank fractions to Javascript. See explainer:
+      // http://bit.ly/lsm-explainer.
+      name: "LayoutJankAPI",
+      status: "test",
+    },
+    {
       name: "LayoutNG",
-      implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFlexBox", "EditingNG"],
+      implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFieldset", "LayoutNGFlexBox", "EditingNG"],
     },
     {
       name: "LayoutNGBlockFragmentation",
+    },
+    {
+      name: "LayoutNGFieldset",
     },
     {
       name: "LayoutNGFlexBox",
@@ -652,6 +686,10 @@
     {
       name: "LayoutNGFragmentCaching",
       implied_by: ["LayoutNG"],
+    },
+    {
+      name: "LayoutViewIsolationNodes",
+      status: "stable",
     },
     {
       name: "LazyFrameLoading",
@@ -762,12 +800,6 @@
       status: "stable",
     },
     {
-      name: "ModuleScriptsDynamicImport",
-    },
-    {
-      name: "ModuleScriptsImportMetaUrl",
-    },
-    {
       name: "ModuleServiceWorker",
       status: "test",
     },
@@ -793,19 +825,7 @@
       status: "stable",
     },
     {
-      name: "NetInfoDownlinkHeader",
-      status: "stable",
-    },
-    {
       name: "NetInfoDownlinkMax",
-      status: "stable",
-    },
-    {
-      name: "NetInfoEffectiveTypeHeader",
-      status: "stable",
-    },
-    {
-      name: "NetInfoRttHeader",
       status: "stable",
     },
     {
@@ -817,6 +837,10 @@
     },
     {
       name: "NoHoverAfterLayoutChange",
+      settable_from_internals: true,
+    },
+    {
+      name: "NoHoverDuringScroll",
       settable_from_internals: true,
     },
     {
@@ -845,7 +869,7 @@
       status: "experimental",
     },
     {
-      name: "OffMainThreadWebSocket",
+      name: "OffMainThreadCSSPaint",
     },
     {
       name: "OffscreenCanvas",
@@ -933,6 +957,10 @@
       name: "PaymentApp",
       status: "experimental",
     },
+    {
+      name: "PaymentMethodChangeEvent",
+      status: "experimental",
+    },
     // PaymentRequest is enabled by default on Android
     {
       name: "PaymentRequest",
@@ -986,6 +1014,10 @@
     {
       name: "PreciseMemoryInfo",
     },
+    {
+      name: "PredictedEvents",
+      status: "experimental",
+    },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
     {
@@ -1014,9 +1046,6 @@
     {
       name: "PushMessaging",
       status: "stable",
-    },
-    {
-      name: "PWAFullCodeCache"
     },
     {
       name: "RasterInducingScroll",
@@ -1067,11 +1096,6 @@
       origin_trial_feature_name: "RtcPeerConnectionId",
       status: "experimental",
     },
-    // Enables the use of the RTCQuicStream object.
-    {
-      name: "RTCQuicStream",
-      status: "test",
-    },
     // Enables the use of the RTCQuicTransport object.
     {
       name: "RTCQuicTransport",
@@ -1102,6 +1126,7 @@
     // Serialize and restore scroll anchors.
     {
       name: "ScrollAnchorSerialization",
+      status: "test",
     },
     {
       name: "ScrollCustomization",
@@ -1134,11 +1159,8 @@
       status: "experimental",
     },
     {
-      name: "ServiceWorkerScriptFullCodeCache",
-    },
-    {
-      name: "ServiceWorkerUpdateViaCache",
-      status: "stable",
+      name: "Serial",
+      status: "experimental",
     },
     {
       name: "SetRootScroller",
@@ -1201,10 +1223,6 @@
       name: "StaleWhileRevalidate",
       origin_trial_feature_name: "StaleWhileRevalidate",
       status: "experimental",
-    },
-    {
-      name: "TestReporting",
-      status: "test",
     },
     {
       name: "TextUnderlinePositionLeftRight",
@@ -1298,10 +1316,6 @@
       status: "experimental",
     },
     {
-      name: "WebAssemblyStreaming",
-      status: "experimental",
-    },
-    {
       name: "WebAssemblyThreads",
       origin_trial_feature_name: "WebAssemblyThreads",
       status: "experimental",
@@ -1367,6 +1381,7 @@
     },
     {
       name: "WebVR",
+      origin_trial_feature_name: "WebVR1.1M62",
       status: "experimental",
     },
     {

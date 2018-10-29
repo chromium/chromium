@@ -165,8 +165,11 @@ base::FilePath GetCrxUnpackDir() {
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
+  // TODO(eseckler): The ExternalCacheImpl that uses this TaskRunner seems to be
+  // important during startup, which is why we cannot currently use the
+  // BEST_EFFORT TaskPriority here.
   return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
@@ -192,13 +195,7 @@ std::unique_ptr<AppSession> CreateAppSession() {
 }
 
 base::Version GetPlatformVersion() {
-  int32_t major_version;
-  int32_t minor_version;
-  int32_t bugfix_version;
-  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
-                                               &bugfix_version);
-  return base::Version(base::StringPrintf("%d.%d.%d", major_version,
-                                          minor_version, bugfix_version));
+  return base::Version(base::SysInfo::OperatingSystemVersion());
 }
 
 // Converts a flag constant to actual command line switch value.

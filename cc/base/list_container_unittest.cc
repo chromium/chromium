@@ -572,9 +572,8 @@ TEST(ListContainerTest, SimpleReverseInsertionNonDerivedElement) {
 
   {
     ListContainer<NonDerivedElement>::ReverseIterator iter = list.rbegin();
-    for (std::vector<NonDerivedElement*>::reverse_iterator nde_iter =
-             nde_list.rbegin();
-         nde_iter != nde_list.rend(); ++nde_iter) {
+    for (auto nde_iter = nde_list.rbegin(); nde_iter != nde_list.rend();
+         ++nde_iter) {
       EXPECT_EQ(*nde_iter, *iter);
       ++iter;
     }

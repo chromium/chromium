@@ -37,9 +37,11 @@
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/css_animatable_value_factory.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/animation/animation_utilities.h"
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -112,25 +114,19 @@ bool KeyframeEffectModelBase::SnapshotNeutralCompositorKeyframes(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
     const ComputedStyle* parent_style) const {
-  bool updated = false;
-  EnsureKeyframeGroups();
-  static const CSSProperty** compositable_properties = CompositableProperties();
-  for (size_t i = 0; i < num_compositable_properties; i++) {
-    const CSSProperty& property = *compositable_properties[i];
-    if (CSSPropertyEquality::PropertiesEqual(PropertyHandle(property),
-                                             old_style, new_style))
-      continue;
-    PropertySpecificKeyframeGroup* keyframe_group =
-        keyframe_groups_->at(PropertyHandle(property));
-    if (!keyframe_group)
-      continue;
-    for (auto& keyframe : keyframe_group->keyframes_) {
-      if (keyframe->IsNeutral())
-        updated |= keyframe->PopulateAnimatableValue(property, element,
-                                                     new_style, parent_style);
-    }
-  }
-  return updated;
+  ShouldSnapshotPropertyCallback should_snapshot_property_callback =
+      [&old_style, &new_style](const PropertyHandle& property) {
+        return !CSSPropertyEquality::PropertiesEqual(property, old_style,
+                                                     new_style);
+      };
+  ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback =
+      [](const PropertySpecificKeyframe& keyframe) {
+        return keyframe.IsNeutral();
+      };
+
+  return SnapshotCompositableProperties(element, new_style, parent_style,
+                                        should_snapshot_property_callback,
+                                        should_snapshot_keyframe_callback);
 }
 
 bool KeyframeEffectModelBase::SnapshotAllCompositorKeyframesIfNecessary(
@@ -140,25 +136,105 @@ bool KeyframeEffectModelBase::SnapshotAllCompositorKeyframesIfNecessary(
   if (!needs_compositor_keyframes_snapshot_)
     return false;
   needs_compositor_keyframes_snapshot_ = false;
-  bool updated = false;
+
   bool has_neutral_compositable_keyframe = false;
-  EnsureKeyframeGroups();
-  static const CSSProperty** compositable_properties = CompositableProperties();
-  for (size_t i = 0; i < num_compositable_properties; i++) {
-    const CSSProperty& property = *compositable_properties[i];
-    PropertySpecificKeyframeGroup* keyframe_group =
-        keyframe_groups_->at(PropertyHandle(property));
-    if (!keyframe_group)
-      continue;
-    for (auto& keyframe : keyframe_group->keyframes_) {
-      updated |= keyframe->PopulateAnimatableValue(property, element,
-                                                   base_style, parent_style);
-      has_neutral_compositable_keyframe |= keyframe->IsNeutral();
-    }
-  }
+  ShouldSnapshotPropertyCallback should_snapshot_property_callback =
+      [](const PropertyHandle& property) { return true; };
+  ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback =
+      [&has_neutral_compositable_keyframe](
+          const PropertySpecificKeyframe& keyframe) mutable {
+        has_neutral_compositable_keyframe |= keyframe.IsNeutral();
+        return true;
+      };
+
+  bool updated = SnapshotCompositableProperties(
+      element, base_style, parent_style, should_snapshot_property_callback,
+      should_snapshot_keyframe_callback);
+
   if (updated && has_neutral_compositable_keyframe) {
     UseCounter::Count(element.GetDocument(),
                       WebFeature::kSyntheticKeyframesInCompositedCSSAnimation);
+  }
+  return updated;
+}
+
+bool KeyframeEffectModelBase::SnapshotCompositableProperties(
+    Element& element,
+    const ComputedStyle& computed_style,
+    const ComputedStyle* parent_style,
+    ShouldSnapshotPropertyCallback should_snapshot_property_callback,
+    ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback) const {
+  EnsureKeyframeGroups();
+  bool updated = false;
+  static const CSSProperty** compositable_properties = CompositableProperties();
+  for (size_t i = 0; i < num_compositable_properties; i++) {
+    updated |= SnapshotCompositorKeyFrames(
+        PropertyHandle(*compositable_properties[i]), element, computed_style,
+        parent_style, should_snapshot_property_callback,
+        should_snapshot_keyframe_callback);
+  }
+
+  // Custom properties need to be handled separately, since not all values
+  // can be animated.  Need to resolve the value of each custom property to
+  // ensure that it can be animated.
+  const PropertyRegistry* property_registry =
+      element.GetDocument().GetPropertyRegistry();
+  if (!property_registry) {
+    // TODO(kevers): Change to DCHECK once CSSVariables2Enabled flag is removed.
+    return updated;
+  }
+
+  if (auto* inherited_variables = computed_style.InheritedVariables()) {
+    for (const auto& name : inherited_variables->GetCustomPropertyNames()) {
+      if (property_registry->WasReferenced(name)) {
+        // This variable has been referenced as a property value at least once
+        // during style resolution in the document. Animating this property on
+        // the compositor could introduce misalignment in frame synchronization.
+        continue;
+      }
+      updated |= SnapshotCompositorKeyFrames(
+          PropertyHandle(name), element, computed_style, parent_style,
+          should_snapshot_property_callback, should_snapshot_keyframe_callback);
+    }
+  }
+  if (auto* non_inherited_variables = computed_style.NonInheritedVariables()) {
+    for (const auto& name : non_inherited_variables->GetCustomPropertyNames()) {
+      // TODO(kevers): Check if referenced in computed style. References
+      // elsewhere in the document should not prevent compositing.
+      if (property_registry->WasReferenced(name)) {
+        // Avoid potential side-effect of animating on compositor.
+        continue;
+      }
+      updated |= SnapshotCompositorKeyFrames(
+          PropertyHandle(name), element, computed_style, parent_style,
+          should_snapshot_property_callback, should_snapshot_keyframe_callback);
+    }
+  }
+  return updated;
+}
+
+bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
+    const PropertyHandle& property,
+    Element& element,
+    const ComputedStyle& computed_style,
+    const ComputedStyle* parent_style,
+    ShouldSnapshotPropertyCallback should_snapshot_property_callback,
+    ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback) const {
+  if (!should_snapshot_property_callback(property))
+    return false;
+
+  PropertySpecificKeyframeGroup* keyframe_group =
+      keyframe_groups_->at(property);
+  if (!keyframe_group)
+    return false;
+
+  bool updated = false;
+  for (auto& keyframe : keyframe_group->keyframes_) {
+    if (!should_snapshot_keyframe_callback(*keyframe))
+      continue;
+
+    updated |= keyframe->PopulateAnimatableValue(property, element,
+                                                 computed_style, parent_style);
   }
   return updated;
 }

@@ -19,17 +19,22 @@ void FakeAndroidSmsAppHelperDelegate::InstallAndroidSmsApp() {
   has_installed_ = true;
 }
 
+void FakeAndroidSmsAppHelperDelegate::InstallAndLaunchAndroidSmsApp() {
+  InstallAndroidSmsApp();
+  has_launched_ = true;
+}
+
 bool FakeAndroidSmsAppHelperDelegate::HasInstalledApp() {
   return has_installed_;
 }
 
-bool FakeAndroidSmsAppHelperDelegate::LaunchAndroidSmsApp() {
-  has_launched_ = true;
-  return true;
-}
-
 bool FakeAndroidSmsAppHelperDelegate::HasLaunchedApp() {
   return has_launched_;
+}
+
+void FakeAndroidSmsAppHelperDelegate::Reset() {
+  has_installed_ = false;
+  has_launched_ = false;
 }
 
 }  // namespace multidevice_setup

@@ -15,4 +15,3 @@ PASS path does not contain point at (67, 206)
 PASS path does not contain point at (66, 205)
 PASS path does not contain point at (68, 207)
 
-

@@ -88,6 +88,7 @@ class CORE_EXPORT SerializedScriptValue
   // Version 17: Remove unnecessary byte swapping.
   // Version 18: Add a list of key-value pairs for ImageBitmap and ImageData to
   //             support color space information, compression, etc.
+  // Version 19: Add DetectedBarcode, DetectedFace, and DetectedText support.
   //
   // The following versions cannot be used, in order to be able to
   // deserialize version 0 SSVs. The class implementation has details.
@@ -100,7 +101,7 @@ class CORE_EXPORT SerializedScriptValue
   //
   // Recent changes are routinely reverted in preparation for branch, and this
   // has been the cause of at least one bug in the past.
-  static constexpr uint32_t kWireFormatVersion = 18;
+  static constexpr uint32_t kWireFormatVersion = 19;
 
   // This enumeration specifies whether we're serializing a value for storage;
   // e.g. when writing to IndexedDB. This corresponds to the forStorage flag of

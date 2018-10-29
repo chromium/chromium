@@ -2,7 +2,6 @@ Decrypting truncated AES-CBC ciphertext should fail
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS: Decryption succeeded
 error is: OperationError
 PASS: decrypting failed. ciphertext length: 0

@@ -1,12 +1,12 @@
 Before
 
 
+
 After
 
 Ensure that extending a selection beyond a textarea does not escape outside its shadow root.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS textareaSelection.focusOffset is 2
 PASS textareaSelection.focusNode is initialTextareaFocusNode

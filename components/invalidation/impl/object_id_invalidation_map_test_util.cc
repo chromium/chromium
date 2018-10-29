@@ -63,8 +63,7 @@ bool ObjectIdInvalidationMapEqMatcher::MatchAndExplain(
   std::vector<syncer::Invalidation> expected_only;
   std::vector<syncer::Invalidation> actual_only;
 
-  for (std::vector<syncer::Invalidation>::iterator it =
-       expected_invalidations.begin();
+  for (auto it = expected_invalidations.begin();
        it != expected_invalidations.end(); ++it) {
     if (std::find_if(actual_invalidations.begin(),
                      actual_invalidations.end(),
@@ -74,9 +73,8 @@ bool ObjectIdInvalidationMapEqMatcher::MatchAndExplain(
     }
   }
 
-  for (std::vector<syncer::Invalidation>::iterator it =
-       actual_invalidations.begin();
-       it != actual_invalidations.end(); ++it) {
+  for (auto it = actual_invalidations.begin(); it != actual_invalidations.end();
+       ++it) {
     if (std::find_if(expected_invalidations.begin(),
                      expected_invalidations.end(),
                      InvalidationEqPredicate(*it))

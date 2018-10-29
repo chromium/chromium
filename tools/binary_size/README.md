@@ -10,62 +10,39 @@ There is also a dedicated mailing-list for binary size discussions:
 
  * https://groups.google.com/a/chromium.org/forum/#!forum/binary-size
 
-Bugs are tracked here:
+Bugs and feature requests are tracked in crbug under:
 
  * [Tools > BinarySize](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools>BinarySize)
 
+Per-Milestone Binary Size Breakdowns:
+
+ * https://storage.googleapis.com/chrome-supersize/index.html
+
 [TOC]
 
-## diagnose_bloat.py
+## Binary Size Trybot (android-binary-size)
 
-Determine the cause of binary size bloat between two commits. Works for Android
-and Linux (although Linux symbol diffs have issues, as noted below).
+ * Introduced October 2018 as a mandatory CQ bot.
+ * Example builds: https://ci.chromium.org/p/chromium/builders/luci.chromium.try/android-binary-size
+ * Provides size per-patch size analysis via `resource_sizes.py` and SuperSize.
+ * Forces a `Binary-Size:` footer to be present for commits that are larger than
+   16KiB (autorollers exempted).
 
-### How it Works
+## resource_sizes.py
 
-1. Builds multiple revisions using release GN args.
-   * Default is to build just two revisions (before & after commit)
-   * Rather than building, can fetch build artifacts and `.size` files from perf
-     bots (`--cloud`)
-1. Measures all outputs using `resource_size.py` and `supersize`.
-1. Saves & displays a breakdown of the difference in binary sizes.
+ * [//build/android/resource_sizes.py](https://cs.chromium.org/chromium/src/build/android/resource_sizes.py)
+ * Able to run on an `.apk` without having the build directory available.
+ * Reports the size metrics captured by our perf builders. Viewable at
+   [chromeperf](https://chromeperf.appspot.com/report) under
+   `Test suite="resource_sizes ($APK)"`.
+ * Metrics reported by this tool are described in
+   [//docs/speed/binary_size/metrics.md](../../docs/speed/binary_size/metrics.md).
 
-### Example Usage
+## SuperSize
 
-``` bash
-# Build and diff monochrome_public_apk HEAD^ and HEAD.
-tools/binary_size/diagnose_bloat.py HEAD -v
-
-# Build and diff monochrome_apk HEAD^ and HEAD.
-tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal -v
-
-# Build and diff monochrome_public_apk HEAD^ and HEAD without is_official_build.
-tools/binary_size/diagnose_bloat.py HEAD --gn-args="is_official_build=false" -v
-
-# Diff BEFORE_REV and AFTER_REV using build artifacts downloaded from perf bots.
-tools/binary_size/diagnose_bloat.py AFTER_REV --reference-rev BEFORE_REV --cloud -v
-
-# Fetch a .size, libmonochrome.so, and MonochromePublic.apk from perf bots (Googlers only):
-tools/binary_size/diagnose_bloat.py AFTER_REV --cloud --unstripped --single
-
-# Build and diff all contiguous revs in range BEFORE_REV..AFTER_REV for src/v8.
-tools/binary_size/diagnose_bloat.py AFTER_REV --reference-rev BEFORE_REV --subrepo v8 --all -v
-
-# Display detailed usage info (there are many options).
-tools/binary_size/diagnose_bloat.py -h
-```
-
-## Super Size
-
-Collect, archive, and analyze Chrome's binary size.
+Collects, archives, and analyzes Chrome's binary size.
 Supports Android and Linux (although Linux
 [has issues](https://bugs.chromium.org/p/chromium/issues/detail?id=717550)).
-
-`.size` files are archived on perf builders so that regressions can be quickly
-analyzed (via `diagnose_bloat.py --cloud`).
-
-`.size` files are archived on official builders so that symbols can be diff'ed
-between milestones.
 
 ### Technical Details
 
@@ -82,9 +59,9 @@ between milestones.
 
 #### How are Symbols Collected?
 
-##### Native Symbols
+##### Native Symbols (.text, .rodata, .data, .data.rel.ro, .bss)
 
-1. Symbol list is Extracted from linker `.map` file.
+1. Symbol list is extracted from linker `.map` file.
    * Map files contain some unique pieces of information compared to `nm`
       output, such as `** merge strings` entries, and some unnamed symbols
       (which although unnamed, contain the `.o` path).
@@ -94,6 +71,8 @@ between milestones.
 1. `** merge strings` symbols are further broken down into individual string
    literal symbols. This is done by reading string literals from `.o` files, and
    then searching for them within the `** merge strings` sections.
+   * For LLD with [ThinLTO](https://clang.llvm.org/docs/ThinLTO.html),
+   `llvm-bcanalyzer` is used to extract string literals.
 1. Symbol aliases:
    * Aliases have the same address and size, but report their `.pss` as
       `.size / .num_aliases`.
@@ -102,13 +81,16 @@ between milestones.
    * Type 2: Same names, different paths. Caused by inline functions defined in
      `.h` files.
      * These are collected by running `nm` on each `.o` file.
+       * For LLD with ThinLTO, `llvm-bcanalyzer` is used to process `.o` files,
+         which are actually LLVM Bitcode files.
      * Normally represented using one alias per path, but are sometimes
        collapsed into a single symbol with a path of `{shared}/$SYMBOL_COUNT`.
-       This collapsing is done only for symbols owned by a large number of paths.
+       This collapsing is done only for symbols owned by a large number of
+       paths.
    * Type 3: String literals that are de-duped at link-time.
      * These are found as part of the string literal extraction process.
 
-##### Pak Symbols
+##### Pak Symbols (.pak.nontranslated and .pak.translations)
 
 1. Grit creates a mapping between numeric id and textual id for grd files.
    * A side effect of pak whitelist generation is a mapping of `.cc` to numeric
@@ -121,7 +103,7 @@ between milestones.
      * This is the case of pak files for translations.
    * The original grd file paths are stored in the full name of each symbol.
 
-##### Dex Symbols
+##### Dex Symbols (.dex and .dex.method)
 
 1. Java compile targets create a mapping between java fully qualified names
   (FQN) and source files.
@@ -138,15 +120,32 @@ between milestones.
   file to find associated source files for the dex entries found in all of the
   apk's `.dex` files.
 
-##### Common Symbols
+##### Other Symbols (.other)
 
-1. Shared bytes are stored in symbols with names starting with `Overhead: `.
-   * Elf file, dex file, pak files, apk files all have compression overhead.
-   * These are treated as padding-only symbols to de-emphasize them in diffs.
-   * It is expected that these symbols have minor fluctuations since they are
-     affected by changes in compressibility.
-1. All other files in an apk have one symbol each under the `.other` section
-  with their corresponding path in the apk as their associated path.
+All files in an apk that are not broken down into sub-entries are tracked by a
+symbol within the `.other` section.
+
+##### Overhead Symbols
+
+Overhead symbols track bytes that are generally unactionable. They are recorded
+as `size=0, padding=$size` (padding-only symbols) to de-emphasize them in diffs.
+
+* **\*\* symbol gap**: A gap between symbols that is larger than what could be
+  due to alignment.
+* **Overhead: ELF file**: `elf_file_size - sum(elf_sections)`.
+  * Captures bytes taken up by ELF headers and section alignment.
+* **Overhead: APK file**: `apk_file_size - sum(compressed_file_sizes)`
+  * Captures bytes taken up by `.zip` metadata and zipalign padding.
+* **Overhead: ${NAME}.pak**: `pak_file_size - sum(pak_entries)`
+* **Overhead: Pak compression artifacts**:
+  `compressed_size_of_paks - sum(pak_entries)`
+  * It would be possible to correctly attribute compressed size to pak symbols,
+    but doing so makes diffs very noisy (any change in compression ratio causes
+    every symbol to change by a small amount). Instead, SuperSize uses a
+    hard-coded compression ratio for compressed .pak symbols, and captures any
+    remainder in this overhead symbol.
+  * TODO([crbug/894320](https://crbug.com/894320)): Improve how compression is
+    tracked.
 
 #### What Other Processing Happens?
 
@@ -190,10 +189,9 @@ between milestones.
      * The constant is chosen so that it minimizes overall discrepancy with
        actual total compressed sizes.
 
-#### Is Super Size a Generic Tool?
+#### Is SuperSize a Generic Tool?
 
-No. Most of the logic is would could work for any ELF executable. However, being
-a generic tool is not a goal. Some examples of existing Chrome-specific logic:
+No. Some examples of why it's Chrome-specific:
 
  * Assumes `.ninja` build rules are available.
  * Heuristic for locating `.so` given `.apk`.
@@ -229,10 +227,9 @@ tools/binary_size/supersize archive chrome.size --elf-file out/Release/chrome -v
 
 ### Usage: html_report
 
-Creates an interactive size breakdown (by source path) as a stand-alone html
-report.
-
-Example output: https://notwoods.github.io/chrome-supersize-reports/
+Creates an `.ndjson` (newline-delimited JSON) file that the
+[SuperSize viewer](https://storage.googleapis.com/chrome-supersize/viewer.html)
+is able to load.
 
 Example Usage:
 
@@ -249,8 +246,8 @@ tools/binary_size/supersize html_report after.size --diff-with before.size --rep
 
 ### Usage: start_server
 
-Locally view the data file generated by `html_report`, by starting a web server
-that links to a data file.
+Locally view the `.ndjson` file generated by `html_report`, by starting a web
+server that links to the file.
 
 Example Usage:
 
@@ -264,7 +261,8 @@ tools/binary_size/supersize start_server report.ndjson -a localhost -p 8080
 
 ### Usage: diff
 
-A convenience command equivalent to: `console before.size after.size --query='Print(Diff(size_info1, size_info2))'`
+A convenience command equivalent to:
+`console before.size after.size --query='Print(Diff(size_info1, size_info2))'`
 
 Example Usage:
 
@@ -309,13 +307,47 @@ Example session:
 >>> Print((t[1] for t in ReadStringLiterals(syms)), to_file='strings.txt')
 ```
 
-### Roadmap
+## diagnose_bloat.py
 
-1. [Better Linux support](https://bugs.chromium.org/p/chromium/issues/detail?id=717550) (clang+lld+lto vs gcc+gold).
-1. More `console` features:
-   * Add `SplitByName()` - Like `GroupByName()`, but recursive.
-   * A canned query, that does what ShowGlobals does (as described in [Windows Binary Sizes](https://www.chromium.org/developers/windows-binary-sizes)).
-1. Integrate with `resource_sizes.py` so that it tracks size of major
-   components separately: chrome vs blink vs skia vs v8.
-1. Add dependency graph info, perhaps just on a per-file basis.
-   * No idea how to do this, but Windows can do it via `tools\win\linker_verbose_tracking.py`
+Determines the cause of binary size bloat between two commits. Works for Android
+and Linux (although Linux symbol diffs have issues, as noted below).
+
+### How it Works
+
+1. Builds multiple revisions using release GN args.
+   * Default is to build just two revisions (before & after commit)
+   * Rather than building, can fetch build artifacts and `.size` files from perf
+     bots (`--cloud`)
+1. Measures all outputs using `resource_size.py` and `supersize`.
+1. Saves & displays a breakdown of the difference in binary sizes.
+
+### Example Usage
+
+``` bash
+# Build and diff monochrome_public_apk HEAD^ and HEAD.
+tools/binary_size/diagnose_bloat.py HEAD -v
+
+# Build and diff monochrome_apk HEAD^ and HEAD.
+tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal -v
+
+# Build and diff monochrome_public_apk HEAD^ and HEAD without is_official_build.
+tools/binary_size/diagnose_bloat.py HEAD --gn-args="is_official_build=false" -v
+
+# Diff BEFORE_REV and AFTER_REV using build artifacts downloaded from perf bots.
+tools/binary_size/diagnose_bloat.py AFTER_REV --reference-rev BEFORE_REV --cloud -v
+
+# Fetch a .size, libmonochrome.so, and MonochromePublic.apk from perf bots (Googlers only):
+tools/binary_size/diagnose_bloat.py AFTER_REV --cloud --unstripped --single
+
+# Build and diff all contiguous revs in range BEFORE_REV..AFTER_REV for src/v8.
+tools/binary_size/diagnose_bloat.py AFTER_REV --reference-rev BEFORE_REV --subrepo v8 --all -v
+
+# Display detailed usage info (there are many options).
+tools/binary_size/diagnose_bloat.py -h
+```
+
+## Other Size Tools
+
+### Bloaty McBloatface
+ * https://github.com/google/bloaty
+ * Our usage tracked in [crbug/698733](https://crbug.com/698733)

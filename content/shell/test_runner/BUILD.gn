@@ -3,12 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-component("test_runner") {
+jumbo_component("test_runner") {
   testonly = true
 
   # See comment at the top of //content/BUILD.gn for why this is disabled in
@@ -119,6 +120,7 @@ component("test_runner") {
     "//services/device/public/mojom",
     "//skia",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public:test_support",
     "//ui/display",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",

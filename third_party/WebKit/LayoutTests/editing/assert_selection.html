@@ -359,25 +359,25 @@ test(() => {
 }, 'selection.setClipboardData');
 
 test(() => {
-    const sample1 = assert_selection('abc', '', 'abc',
+    const sample1 = assert_selection_and_return_sample('abc', '', 'abc',
         {removeSampleIfSucceeded: false});
     assert_equals(sample1.iframe_.parentNode, document.body,
         'removeSampleIfSucceeded: false');
 
-    const sample2 = assert_selection('abc', '', 'abc',
+    const sample2 = assert_selection_and_return_sample('abc', '', 'abc',
         {removeSampleIfSucceeded: true});
     assert_equals(sample2.iframe_.id, Sample.playgroundId,
         'removeSampleIfSucceeded: true: id');
     assert_equals(sample2.iframe_.style.display, 'none',
         'removeSampleIfSucceeded: true: style.display');
 
-    const sample3 = assert_selection('abc', '', 'abc');
+    const sample3 = assert_selection_and_return_sample('abc', '', 'abc');
     assert_equals(sample3.iframe_.id, Sample.playgroundId,
         'with default options: id');
     assert_equals(sample3.iframe_.style.display, 'none',
         'with default options: id');
 
-    const sample4 = assert_selection('abc', '', 'abc', 'description');
+    const sample4 = assert_selection_and_return_sample('abc', '', 'abc', 'description');
     assert_equals(sample4.iframe_.id, Sample.playgroundId,
         'with description: id');
     assert_equals(sample4.iframe_.style.display, 'none',
@@ -385,8 +385,8 @@ test(() => {
 }, 'removeSampleIfSucceeded');
 
 test(() => {
-    assert_exists(window, 'internals');
-    assert_exists(window, 'eventSender');
+    assert_own_property(window, 'internals');
+    assert_own_property(window, 'eventSender');
     assert_selection(
         'foo|bar',
         () => { assert_equals(internals.textAffinity, 'Downstream'); },
@@ -406,7 +406,7 @@ test(() => {
 }, 'Textaffinity');
 
 test(() => {
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'eventSender');
   assert_selection(
     [
       '<div id="first">one <span id="start"></span>two three</div>',

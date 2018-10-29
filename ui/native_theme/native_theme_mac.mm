@@ -25,6 +25,9 @@
 namespace {
 
 const SkColor kMenuPopupBackgroundColor = SK_ColorWHITE;
+// TODO(crbug.com/893598): Finalize dark mode color.
+const SkColor kMenuPopupBackgroundColorDarkMode =
+    SkColorSetRGB(0x2B, 0x2B, 0x2B);
 
 // Helper to make indexing an array by an enum class easier.
 template <class KEY, class VALUE>
@@ -99,8 +102,8 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
 
 // static
 NativeThemeMac* NativeThemeMac::instance() {
-  CR_DEFINE_STATIC_LOCAL(NativeThemeMac, s_native_theme, ());
-  return &s_native_theme;
+  static base::NoDestructor<NativeThemeMac> s_native_theme;
+  return s_native_theme.get();
 }
 
 // static
@@ -123,7 +126,10 @@ SkColor NativeThemeMac::GetSystemColor(ColorId color_id) const {
     case kColorId_FocusedMenuItemBackgroundColor:
       return UsesHighContrastColors() ? SK_ColorDKGRAY : gfx::kGoogleGrey200;
     case kColorId_MenuBackgroundColor:
-      return kMenuPopupBackgroundColor;
+    case kColorId_BubbleBackground:
+    case kColorId_DialogBackground:
+      return SystemDarkModeEnabled() ? kMenuPopupBackgroundColorDarkMode
+                                     : kMenuPopupBackgroundColor;
     case kColorId_MenuSeparatorColor:
       return UsesHighContrastColors() ? SK_ColorBLACK
                                       : SkColorSetA(SK_ColorBLACK, 0x26);
@@ -160,7 +166,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
     const MenuBackgroundExtraParams& menu_background) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(kMenuPopupBackgroundColor);
+  flags.setColor(GetSystemColor(kColorId_MenuBackgroundColor));
   const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
   SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
   canvas->drawRoundRect(rect, radius, radius, flags);
@@ -194,6 +200,17 @@ bool NativeThemeMac::UsesHighContrastColors() const {
     return workspace.accessibilityDisplayShouldIncreaseContrast;
   }
   return false;
+}
+
+bool NativeThemeMac::SystemDarkModeEnabled() const {
+  if (@available(macOS 10.14, *)) {
+    NSAppearanceName appearance =
+        [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
+          NSAppearanceNameAqua, NSAppearanceNameDarkAqua
+        ]];
+    return [appearance isEqual:NSAppearanceNameDarkAqua];
+  }
+  return NativeThemeBase::SystemDarkModeEnabled();
 }
 
 NativeThemeMac::NativeThemeMac() {

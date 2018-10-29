@@ -1,0 +1,23 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "sync.proto";
+
+// Sync proto to store entity data similar to what directory stores, used to
+// persist data locally and never sent through the wire.
+//
+// Because it's conceptually similar to SyncEntity (actual protocol) and it's
+// unclear how big this'll grow, we've kept compatibility with SyncEntity by
+// using the same field numbers.
+message PersistedEntityData {
+  // See corresponding fields in SyncEntity for details.
+  optional string non_unique_name = 8;
+  optional EntitySpecifics specifics = 21;
+}

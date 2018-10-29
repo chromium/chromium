@@ -2,7 +2,6 @@ This tests that Document implements the ParentNode interface.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS doc.children.length is 0
 PASS doc.childElementCount is 0
 PASS doc.firstElementChild is null

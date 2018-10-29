@@ -129,9 +129,7 @@ source_set("gtest") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//third_party/fuchsia-sdk:fdio",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
   }
 }
 
@@ -176,11 +174,11 @@ source_set("gmock") {
     "src/googlemock/src/gmock.cc",
   ]
 
-  public_deps = [ ":gtest" ]
-
-  public_configs = [
-    ":gmock_config",
+  public_deps = [
+    ":gtest",
   ]
+
+  public_configs = [ ":gmock_config" ]
 }
 
 # Do NOT depend on this directly. Use //testing/gmock:gmock_main instead.

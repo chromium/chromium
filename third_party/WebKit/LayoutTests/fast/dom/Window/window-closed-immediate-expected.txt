@@ -2,7 +2,6 @@ window.closed should return true after window.close().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS w.closed is true
 PASS w.closed is true
 PASS successfullyParsed is true

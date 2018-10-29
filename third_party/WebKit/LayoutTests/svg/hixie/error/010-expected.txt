@@ -1,0 +1,1 @@
+CONSOLE ERROR: line 1: Error: <svg> attribute viewBox: Trailing garbage, "0 0 1 1 1".

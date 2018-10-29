@@ -1,4 +1,4 @@
- PASS axButton1.x is 50
+PASS axButton1.x is 50
 PASS axButton1.y is 50
 PASS axButton1.width is 200
 PASS axButton1.height is 100

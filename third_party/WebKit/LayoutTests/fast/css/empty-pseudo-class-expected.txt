@@ -2,7 +2,6 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(testDivs[0]).color is green
 PASS getComputedStyle(testDivs[1]).color is green
 PASS getComputedStyle(testDivs[2]).color is green
@@ -12,5 +11,5 @@ PASS getComputedStyle(testDivs[5]).color is green
 PASS successfullyParsed is true
 
 TEST COMPLETE
-.
 
+.

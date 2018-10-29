@@ -16,6 +16,7 @@ include_rules = [
     "+mojo/public/mojom/base/string16.mojom-blink.h",
     "+services/network/public/mojom/fetch_api.mojom-blink.h",
     "+services/network/public/mojom/restricted_cookie_manager.mojom-blink.h",
+    "+services/network/public/mojom/referrer_policy.mojom-blink.h",
     "+skia/public/interfaces/bitmap_skbitmap_struct_traits.h",
 
     "+third_party/blink/renderer/platform/blob/blob_data.h",

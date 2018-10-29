@@ -1,0 +1,21 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("test_support") {
+  output_name = "media_session_test_support_cpp"
+
+  sources = [
+    "audio_focus_test_util.cc",
+    "audio_focus_test_util.h",
+    "test_media_controller.cc",
+    "test_media_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//services/media_session/public/mojom",
+  ]
+
+  defines = [ "IS_MEDIA_SESSION_TEST_SUPPORT_CPP_IMPL" ]
+}

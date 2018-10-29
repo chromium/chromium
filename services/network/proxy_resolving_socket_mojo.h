@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketMojo
   ProxyResolvingSocketMojo(
       std::unique_ptr<ProxyResolvingClientSocket> socket,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      mojom::SocketObserverPtr observer,
       TLSSocketFactory* tls_socket_factory);
   ~ProxyResolvingSocketMojo() override;
   void Connect(
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketMojo
   const net::StreamSocket* BorrowSocket() override;
   std::unique_ptr<net::StreamSocket> TakeSocket() override;
 
+  mojom::SocketObserverPtr observer_;
   TLSSocketFactory* tls_socket_factory_;
   std::unique_ptr<ProxyResolvingClientSocket> socket_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;

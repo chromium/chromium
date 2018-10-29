@@ -4,6 +4,7 @@
 
 #include "services/video_capture/service_impl.h"
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/service_context.h"
 #include "services/video_capture/device_factory_provider_impl.h"
@@ -13,9 +14,8 @@
 
 namespace video_capture {
 
-ServiceImpl::ServiceImpl(float shutdown_delay_in_seconds)
-    : shutdown_delay_in_seconds_(shutdown_delay_in_seconds),
-      weak_factory_(this) {}
+ServiceImpl::ServiceImpl(base::Optional<base::TimeDelta> shutdown_delay)
+    : shutdown_delay_(shutdown_delay), weak_factory_(this) {}
 
 ServiceImpl::~ServiceImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -25,7 +25,14 @@ ServiceImpl::~ServiceImpl() {
 
 // static
 std::unique_ptr<service_manager::Service> ServiceImpl::Create() {
-  return std::make_unique<ServiceImpl>();
+#if defined(OS_ANDROID)
+  // On Android, we do not use automatic service shutdown, because when shutting
+  // down the service, we lose caching of the supported formats, and re-querying
+  // these can take several seconds on certain Android devices.
+  return std::make_unique<ServiceImpl>(base::Optional<base::TimeDelta>());
+#else
+  return std::make_unique<ServiceImpl>(base::TimeDelta::FromSeconds(5));
+#endif
 }
 
 void ServiceImpl::SetDestructionObserver(base::OnceClosure observer_cb) {
@@ -66,8 +73,7 @@ void ServiceImpl::OnStart() {
   // SetServiceContextRefProviderForTesting().
   if (!ref_factory_) {
     ref_factory_ = std::make_unique<service_manager::ServiceKeepalive>(
-        context(), base::TimeDelta::FromSecondsD(shutdown_delay_in_seconds_),
-        this);
+        context(), shutdown_delay_, this);
   }
 
   registry_.AddInterface<mojom::DeviceFactoryProvider>(
@@ -79,6 +85,8 @@ void ServiceImpl::OnStart() {
       base::Bind(&ServiceImpl::OnTestingControlsRequest,
                  base::Unretained(this)));
 
+  // Unretained |this| is safe because |factory_provider_bindings_| is owned by
+  // |this|.
   factory_provider_bindings_.set_connection_error_handler(base::BindRepeating(
       &ServiceImpl::OnProviderClientDisconnected, base::Unretained(this)));
 }
@@ -112,6 +120,8 @@ void ServiceImpl::OnDeviceFactoryProviderRequest(
     mojom::DeviceFactoryProviderRequest request) {
   DCHECK(thread_checker_.CalledOnValidThread());
   LazyInitializeDeviceFactoryProvider();
+  if (factory_provider_bindings_.empty())
+    device_factory_provider_->SetServiceRef(ref_factory_->CreateRef());
   factory_provider_bindings_.AddBinding(device_factory_provider_.get(),
                                         std::move(request));
 
@@ -132,15 +142,17 @@ void ServiceImpl::LazyInitializeDeviceFactoryProvider() {
   if (device_factory_provider_)
     return;
 
-  device_factory_provider_ =
-      std::make_unique<DeviceFactoryProviderImpl>(ref_factory_->CreateRef());
+  device_factory_provider_ = std::make_unique<DeviceFactoryProviderImpl>();
 }
 
 void ServiceImpl::OnProviderClientDisconnected() {
-  // Reset factory provider if no client is connected.
-  if (factory_provider_bindings_.empty()) {
-    device_factory_provider_.reset();
-  }
+  // If last client has disconnected, release service ref so that service
+  // shutdown timeout starts if no other references are still alive.
+  // We keep the |device_factory_provider_| instance alive in order to avoid
+  // losing state that would be expensive to reinitialize, e.g. having
+  // already enumerated the available devices.
+  if (factory_provider_bindings_.empty())
+    device_factory_provider_->SetServiceRef(nullptr);
 
   if (!factory_provider_client_disconnected_cb_.is_null()) {
     factory_provider_client_disconnected_cb_.Run();

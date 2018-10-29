@@ -1,2 +1,2 @@
 PASS if no assert or crash in debug build.
-
+foo

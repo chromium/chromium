@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 FAIL PaymentRequest.show() aborts if the document is not active assert_throws: Inactive document, so must throw AbortError function "function() { throw e }" threw object "InvalidStateError: Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
-FAIL PaymentRequest.show() aborts if the document is active, but not fully active assert_throws: Active, but not fully active, so must throw AbortError function "function() { throw e }" threw object "InvalidStateError: Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
-FAIL If a payment request is showing, but its document is navigated away (so no longer fully active), the payment request aborts. assert_throws: The iframe was navigated away, so showPromise must reject with AbortError function "function() { throw e }" threw object "UnknownError: Request failed" that is not a DOMException AbortError: property "code" is equal to 0, expected 20
+FAIL PaymentRequest.show() aborts if the document is active, but not fully active promise_test: Unhandled rejection with value: object "InvalidStateError: Already called show() once"
+FAIL If a payment request is showing, but its document is navigated away (so no longer fully active), the payment request aborts. promise_test: Unhandled rejection with value: object "InvalidStateError: Already called show() once"
 Harness: the test ran to completion.
 

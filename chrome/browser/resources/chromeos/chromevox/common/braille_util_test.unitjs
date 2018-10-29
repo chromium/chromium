@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxBrailleUtilUnitTest() {}
+function ChromeVoxBrailleUtilUnitTest() {}
 
-CvoxBrailleUtilUnitTest.prototype = {
+ChromeVoxBrailleUtilUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -64,7 +64,7 @@ CvoxBrailleUtilUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxBrailleUtilUnitTest', 'BrailleName', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'BrailleName', function() {
   this.loadHtml(
       '<div id="navbar">' +
       '<a id="1" href="one.com">one</a>' +
@@ -111,7 +111,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'BrailleName', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'NameTemplate', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'NameTemplate', function() {
   this.loadHtml(
       '<button id="1">Submit</button>' +
       '<input id="2" type="text" aria-label="Search">'
@@ -146,7 +146,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'NameTemplate', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'TextField', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextField', function() {
   this.loadHtml(
       '<input id="1" type="text" aria-label="Search" value="larry">'
       );
@@ -175,7 +175,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'TextField', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'TextFieldEmpty', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextFieldEmpty', function() {
   this.loadHtml(
       '<input id="1" type="text">'
       );
@@ -200,7 +200,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'TextFieldEmpty', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'TextFieldSelection', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextFieldSelection', function() {
   this.loadHtml(
       '<input id="1" type="text" value="strawberry">'
       );
@@ -232,7 +232,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'TextFieldSelection', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'StateTemplate', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'StateTemplate', function() {
   this.loadHtml(
       '<input id="1" type="checkbox" aria-label="Save">');
 
@@ -257,7 +257,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'StateTemplate', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'AccessKey', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'AccessKey', function() {
   this.loadHtml(
       '<a href="http://www.google.com" id="1" accesskey="g">Google</a>');
 
@@ -274,7 +274,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'AccessKey', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'ContainerTemplate', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'ContainerTemplate', function() {
   this.loadHtml(
       '<h1>' +
       '<a id="1" href="#menu">Skip To Menu</a>' +
@@ -296,7 +296,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'ContainerTemplate', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'LinkSpans', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'LinkSpans', function() {
   this.loadHtml('<p><a id="1" href="#1">Hello</a> from' +
       ' <a id="2" href="//www.google.com/">ChromeVox</a>');
   var link1 = $('1');
@@ -314,7 +314,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'LinkSpans', function() {
 });
 
 
-TEST_F('CvoxBrailleUtilUnitTest', 'VisitedLink', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'VisitedLink', function() {
   this.loadHtml('<p><a id="1" href="http://visited.link">Hello</a> there.');
   var link = $('1');
   var navBraille = this.getBraille_(
@@ -336,7 +336,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'VisitedLink', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'NestedElements', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'NestedElements', function() {
   this.loadHtml('<h1 id="test-h1">Larry, ' +
       '<a href="#batman" id="batman-link">Sergey</a> and Eric</h1>');
   var h1 = $('test-h1');
@@ -355,7 +355,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'NestedElements', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'GetTemplatedOverride', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'GetTemplatedOverride', function() {
   assertEquals('Menu mnu',
                cvox.BrailleUtil.getTemplated(null, null,
                                              { 'name': 'Menu',
@@ -381,7 +381,7 @@ TEST_F('CvoxBrailleUtilUnitTest', 'GetTemplatedOverride', function() {
 /**
  * @export
  */
-TEST_F('CvoxBrailleUtilUnitTest', 'CreateValue', function() {
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'CreateValue', function() {
   var s;
   var valueSpan;
   var selectiponSpan;

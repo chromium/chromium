@@ -49,8 +49,8 @@ source_set("unit_tests") {
     "form_unittest.mm",
   ]
   deps = [
-    ":form_js",
     ":form_util",
+    ":form_util_js",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -65,10 +65,15 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_checked("form_js") {
+js_compile_bundle("form_util_js") {
   visibility = [ ":unit_tests" ]
   testonly = true
+
+  # Form_handlers depends on form and fill.
+  closure_entry_point = "__crWeb.formHandlers"
   sources = [
+    "resources/fill.js",
     "resources/form.js",
+    "resources/form_handlers.js",
   ]
 }

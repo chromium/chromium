@@ -4,10 +4,6 @@
 -MessagePipeTest.ClosePipesStressTest
 -MessageTest.ExtendMessagePayloadLarge
 
-# These tests require support for named channels. See crbug.com/754038.
--MultiprocessMessagePipeTestWithPeerSupport*/2
--MultiprocessMessagePipeTestWithPeerSupport*/3
-
 # crbug.com/780317 - These timeout under QEMU s/w emulation of ARM64.
 -MultiprocessMessagePipeTestWithPeerSupport.PingPongPipe*
 -MessagePipeTest.SharedBufferHandlePingPong

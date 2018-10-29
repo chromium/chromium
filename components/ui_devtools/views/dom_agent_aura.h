@@ -8,6 +8,7 @@
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/dom_agent.h"
 #include "ui/aura/env_observer.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -17,7 +18,9 @@ class Window;
 
 namespace ui_devtools {
 
-class DOMAgentAura : public DOMAgent, public aura::EnvObserver {
+class DOMAgentAura : public DOMAgent,
+                     public aura::EnvObserver,
+                     public aura::WindowObserver {
  public:
   DOMAgentAura();
   ~DOMAgentAura() override;
@@ -30,6 +33,9 @@ class DOMAgentAura : public DOMAgent, public aura::EnvObserver {
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override {}
   void OnHostInitialized(aura::WindowTreeHost* host) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   std::unique_ptr<protocol::DOM::Node> BuildTreeForWindow(
       UIElement* window_element_root,

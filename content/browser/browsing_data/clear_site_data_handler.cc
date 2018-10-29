@@ -290,7 +290,7 @@ bool ClearSiteDataHandler::Run() {
   }
 
   url::Origin origin = url::Origin::Create(url_);
-  if (origin.unique()) {
+  if (origin.opaque()) {
     delegate_->AddMessage(url_, "Not supported for unique origins.",
                           CONSOLE_MESSAGE_LEVEL_ERROR);
     return false;

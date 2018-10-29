@@ -16,6 +16,7 @@ java_library("errorprone_plugin_java") {
 
   # Necessary to avoid dependency cycle
   enable_errorprone = false
+  enable_bytecode_rewriter = false
 
   # So that we don't need to inject emma runtime into the compiler's classpath.
   emma_never_instrument = true

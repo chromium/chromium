@@ -59,7 +59,8 @@ _DEFAULT_TARGETS = [
     '//chrome/android:chrome_sync_shell_test_apk',
     '//content/public/android:content_junit_tests',
     '//content/shell/android:content_shell_apk',
-    # Needed even with --all since it's a library.
+    # Below must be included even with --all since they are libraries.
+    '//base/android/jni_generator:jni_processor',
     '//tools/android/errorprone_plugin:errorprone_plugin_java',
 ]
 
@@ -242,7 +243,12 @@ class _ProjectEntry(object):
 
   def IsValid(self):
     return self.GetType() in (
-        'android_apk', 'java_library', 'java_binary', 'junit_binary')
+      'android_apk',
+      'java_library',
+      "java_annotation_processor",
+      'java_binary',
+      'junit_binary',
+    )
 
   def ResZips(self):
     return self.DepsInfo().get('owned_resources_zips', [])
@@ -576,8 +582,10 @@ def _GenerateGradleFile(entry, generator, build_vars, source_properties,
 
   if deps_info['type'] == 'android_apk':
     target_type = 'android_apk'
-  elif deps_info['type'] == 'java_library':
-    if deps_info['is_prebuilt'] or deps_info['gradle_treat_as_prebuilt']:
+  elif deps_info['type'] in ('java_library', 'java_annotation_processor'):
+    is_prebuilt = deps_info.get('is_prebuilt', False)
+    gradle_treat_as_prebuilt = deps_info.get('gradle_treat_as_prebuilt', False)
+    if is_prebuilt or gradle_treat_as_prebuilt:
       return None
     elif deps_info['requires_android']:
       target_type = 'android_library'
@@ -945,10 +953,10 @@ def main():
     data = _GenerateGradleFile(
         entry, generator, build_vars, source_properties, jinja_processor)
     if data and not args.all:
-        project_entries.append((entry.ProjectName(), entry.GradleSubdir()))
-        _WriteFile(
-            os.path.join(generator.EntryOutputDir(entry), _GRADLE_BUILD_FILE),
-            data)
+      project_entries.append((entry.ProjectName(), entry.GradleSubdir()))
+      _WriteFile(
+          os.path.join(generator.EntryOutputDir(entry), _GRADLE_BUILD_FILE),
+          data)
   if args.all:
     project_entries.append((_MODULE_ALL, _MODULE_ALL))
     _GenerateModuleAll(

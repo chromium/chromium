@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
@@ -194,13 +195,9 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: "zoo" }
-  v8::Local<v8::Object> object = v8::Object::New(isolate);
-  ASSERT_TRUE(V8CallBoolean(object->Set(scope.GetContext(),
-                                        V8AtomicString(isolate, "foo"),
-                                        V8AtomicString(isolate, "zoo"))));
-
-  ScriptValue script_value(scope.GetScriptState(), object);
-
+  ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
+                                 .Add("foo", "zoo")
+                                 .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo", "zoo");
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
@@ -212,32 +209,23 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: 456 }
-  v8::Local<v8::Object> object = v8::Object::New(isolate);
-  ASSERT_TRUE(V8CallBoolean(object->Set(scope.GetContext(),
-                                        V8AtomicString(isolate, "foo"),
-                                        v8::Number::New(isolate, 456))));
-
-  ScriptValue script_value(scope.GetScriptState(), object);
-
+  ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
+                                 .AddNumber("foo", 456)
+                                 .GetScriptValue();
   CheckKeyPathNumberValue(isolate, script_value, "foo", 456);
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
   V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: { bar: "zee" } }
-  v8::Local<v8::Object> object = v8::Object::New(isolate);
-  v8::Local<v8::Object> sub_property = v8::Object::New(isolate);
-  ASSERT_TRUE(V8CallBoolean(sub_property->Set(scope.GetContext(),
-                                              V8AtomicString(isolate, "bar"),
-                                              V8AtomicString(isolate, "zee"))));
-  ASSERT_TRUE(V8CallBoolean(object->Set(
-      scope.GetContext(), V8AtomicString(isolate, "foo"), sub_property)));
-
-  ScriptValue script_value(scope.GetScriptState(), object);
-
+  ScriptValue script_value =
+      V8ObjectBuilder(script_state)
+          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo.bar", "zee");
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
@@ -263,15 +251,11 @@ TEST(InjectIDBKeyTest, ImplicitValues) {
 
 TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: "zoo" }
-  v8::Local<v8::Object> object = v8::Object::New(isolate);
-  ASSERT_TRUE(V8CallBoolean(object->Set(scope.GetContext(),
-                                        V8AtomicString(isolate, "foo"),
-                                        V8AtomicString(isolate, "zoo"))));
-
-  ScriptValue script_object(scope.GetScriptState(), object);
+  ScriptValue script_object = V8ObjectBuilder(scope.GetScriptState())
+                                  .Add("foo", "zoo")
+                                  .GetScriptValue();
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,
                  "bar");
@@ -284,18 +268,14 @@ TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
 
 TEST(InjectIDBKeyTest, SubProperty) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
+  ScriptState* script_state = scope.GetScriptState();
 
   // object = { foo: { bar: "zee" } }
-  v8::Local<v8::Object> object = v8::Object::New(isolate);
-  v8::Local<v8::Object> sub_property = v8::Object::New(isolate);
-  ASSERT_TRUE(V8CallBoolean(sub_property->Set(scope.GetContext(),
-                                              V8AtomicString(isolate, "bar"),
-                                              V8AtomicString(isolate, "zee"))));
-  ASSERT_TRUE(V8CallBoolean(object->Set(
-      scope.GetContext(), V8AtomicString(isolate, "foo"), sub_property)));
+  ScriptValue script_object =
+      V8ObjectBuilder(script_state)
+          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .GetScriptValue();
 
-  ScriptValue script_object(scope.GetScriptState(), object);
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,
                  "foo.baz");

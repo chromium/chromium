@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -212,7 +213,8 @@ void AffiliatedInvalidationServiceProviderImplTest::SetUp() {
       TestingBrowserProcess::GetGlobal()->local_state());
 
   invalidation::DeprecatedProfileInvalidationProviderFactory::GetInstance()
-      ->RegisterTestingFactory(BuildProfileInvalidationProvider);
+      ->RegisterTestingFactory(
+          base::BindRepeating(&BuildProfileInvalidationProvider));
 
   provider_ = std::make_unique<AffiliatedInvalidationServiceProviderImpl>();
 }
@@ -224,7 +226,8 @@ void AffiliatedInvalidationServiceProviderImplTest::TearDown() {
   test_shared_loader_factory_->Detach();
 
   invalidation::DeprecatedProfileInvalidationProviderFactory::GetInstance()
-      ->RegisterTestingFactory(nullptr);
+      ->RegisterTestingFactory(
+          BrowserContextKeyedServiceFactory::TestingFactory());
   chromeos::DeviceOAuth2TokenServiceFactory::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();

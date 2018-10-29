@@ -41,7 +41,10 @@ DownEventMetric FindCombination(DownEventSource input_type,
   return static_cast<DownEventMetric>(result);
 }
 
-void RecordUMA(ui::EventPointerType type, views::Widget* target) {
+void RecordUMA(ui::EventPointerType type, ui::EventTarget* event_target) {
+  DCHECK_NE(type, ui::EventPointerType::POINTER_TYPE_UNKNOWN);
+  views::Widget* target = views::Widget::GetTopLevelWidgetForNativeView(
+      static_cast<aura::Window*>(event_target));
   DownEventFormFactor form_factor = DownEventFormFactor::kClamshell;
   if (Shell::Get()
           ->tablet_mode_controller()
@@ -59,8 +62,7 @@ void RecordUMA(ui::EventPointerType type, views::Widget* target) {
   DownEventSource input_type = DownEventSource::kUnknown;
   switch (type) {
     case ui::EventPointerType::POINTER_TYPE_UNKNOWN:
-      input_type = DownEventSource::kUnknown;
-      break;
+      return;
     case ui::EventPointerType::POINTER_TYPE_MOUSE:
       input_type = DownEventSource::kMouse;
       break;
@@ -84,20 +86,21 @@ void RecordUMA(ui::EventPointerType type, views::Widget* target) {
 }  // namespace
 
 PointerMetricsRecorder::PointerMetricsRecorder() {
-  Shell::Get()->AddPointerWatcher(this, views::PointerWatcherEventTypes::BASIC);
+  Shell::Get()->AddPreTargetHandler(this);
 }
 
 PointerMetricsRecorder::~PointerMetricsRecorder() {
-  Shell::Get()->RemovePointerWatcher(this);
+  Shell::Get()->RemovePreTargetHandler(this);
 }
 
-void PointerMetricsRecorder::OnPointerEventObserved(
-    const ui::PointerEvent& event,
-    const gfx::Point& location_in_screen,
-    gfx::NativeView target) {
-  if (event.type() == ui::ET_POINTER_DOWN)
-    RecordUMA(event.pointer_details().pointer_type,
-              views::Widget::GetTopLevelWidgetForNativeView(target));
+void PointerMetricsRecorder::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED)
+    RecordUMA(event->pointer_details().pointer_type, event->target());
+}
+
+void PointerMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
+  if (event->type() == ui::ET_TOUCH_PRESSED)
+    RecordUMA(event->pointer_details().pointer_type, event->target());
 }
 
 }  // namespace ash

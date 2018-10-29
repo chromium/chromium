@@ -7,4 +7,3 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 PASS ImageBitmap is tainted. Threw error: SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data.
-

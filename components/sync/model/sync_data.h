@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -58,11 +59,10 @@ class SyncData {
                                   const sync_pb::EntitySpecifics& specifics);
 
   // Helper method for creating SyncData objects originating from the syncer.
-  static SyncData CreateRemoteData(
-      int64_t id,
-      const sync_pb::EntitySpecifics& specifics,
-      const base::Time& last_modified_time,
-      const std::string& client_tag_hash = std::string());
+  static SyncData CreateRemoteData(int64_t id,
+                                   sync_pb::EntitySpecifics specifics,
+                                   base::Time last_modified_time,
+                                   std::string client_tag_hash = std::string());
 
   // Whether this SyncData holds valid data. The only way to have a SyncData
   // without valid data is to use the default constructor.
@@ -109,21 +109,26 @@ class SyncData {
   using ImmutableSyncEntity =
       Immutable<sync_pb::SyncEntity, ImmutableSyncEntityTraits>;
 
-  // Equal to kInvalidId iff this is local.
   int64_t id_;
 
   // This may be null if the SyncData represents a deleted item.
+  // TODO(crbug.com/895455): Remove when directory-based sessions sync is
+  // removed, the only remaining reader.
   base::Time remote_modification_time_;
 
   // The actual shared sync entity being held.
   ImmutableSyncEntity immutable_entity_;
 
  private:
+  // Whether this SyncData represents a local change.
+  bool is_local_;
+
   // Whether this SyncData holds valid data.
   bool is_valid_;
 
   // Clears |entity|.
-  SyncData(int64_t id,
+  SyncData(bool is_local_,
+           int64_t id,
            sync_pb::SyncEntity* entity,
            const base::Time& remote_modification_time);
 };
@@ -153,13 +158,17 @@ class SyncDataRemote : public SyncData {
 
   // Return the last motification time according to the server. This may be null
   // if the SyncData represents a deleted item.
+  // TODO(crbug.com/895455): Remove when directory-based sessions sync is
+  // removed, the only remaining reader.
   const base::Time& GetModifiedTime() const;
-
-  int64_t GetId() const;
 
   // Returns the tag hash value. May not always be present, in which case an
   // empty string will be returned.
   const std::string& GetClientTagHash() const;
+
+  // Deprecated: might not be populated in SyncableService API.
+  // TODO(crbug.com/870624): Remove when directory is removed.
+  int64_t GetId() const;
 };
 
 // gmock printer helper.

@@ -38,7 +38,7 @@ class Node;
 class TouchEventContext;
 
 class CORE_EXPORT NodeEventContext {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // FIXME: Use ContainerNode instead of Node.

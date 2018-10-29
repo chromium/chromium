@@ -79,9 +79,12 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       blend_mode_set_(use_initial_values),
       mask_source_type_set_(use_initial_values),
       type_(static_cast<unsigned>(type)),
-      this_or_next_layers_clip_max_(0),
-      this_or_next_layers_use_content_box_(0),
-      this_or_next_layers_have_local_attachment_(0),
+      layers_clip_max_(0),
+      any_layer_uses_content_box_(false),
+      any_layer_has_image_(false),
+      any_layer_has_local_attachment_image_(false),
+      any_layer_has_fixed_attachment_image_(false),
+      any_layer_has_default_attachment_(false),
       cached_properties_computed_(false) {}
 
 FillLayer::FillLayer(const FillLayer& o)
@@ -115,9 +118,12 @@ FillLayer::FillLayer(const FillLayer& o)
       blend_mode_set_(o.blend_mode_set_),
       mask_source_type_set_(o.mask_source_type_set_),
       type_(o.type_),
-      this_or_next_layers_clip_max_(0),
-      this_or_next_layers_use_content_box_(0),
-      this_or_next_layers_have_local_attachment_(0),
+      layers_clip_max_(0),
+      any_layer_uses_content_box_(false),
+      any_layer_has_image_(false),
+      any_layer_has_local_attachment_image_(false),
+      any_layer_has_fixed_attachment_image_(false),
+      any_layer_has_default_attachment_(false),
       cached_properties_computed_(false) {}
 
 FillLayer::~FillLayer() {
@@ -189,6 +195,8 @@ bool FillLayer::VisuallyEqual(const FillLayer& o) const {
   if (image_ || o.image_) {
     if (!LayerPropertiesEqual(o))
       return false;
+  } else if (clip_ != o.clip_) {
+    return false;
   }
   if (next_ && o.next_)
     return next_->VisuallyEqual(*o.next_);
@@ -339,29 +347,38 @@ void FillLayer::CullEmptyLayers() {
   }
 }
 
-void FillLayer::ComputeCachedPropertiesIfNeeded() const {
-  if (cached_properties_computed_)
-    return;
-  this_or_next_layers_clip_max_ = static_cast<unsigned>(Clip());
-  this_or_next_layers_use_content_box_ =
+void FillLayer::ComputeCachedProperties() const {
+  DCHECK(!cached_properties_computed_);
+
+  layers_clip_max_ = static_cast<unsigned>(Clip());
+  any_layer_uses_content_box_ =
       Clip() == EFillBox::kContent || Origin() == EFillBox::kContent;
-  this_or_next_layers_have_local_attachment_ =
-      Attachment() == EFillAttachment::kLocal;
+  any_layer_has_image_ = !!GetImage();
+  any_layer_has_local_attachment_image_ =
+      any_layer_has_image_ && Attachment() == EFillAttachment::kLocal;
+  any_layer_has_fixed_attachment_image_ =
+      any_layer_has_image_ && Attachment() == EFillAttachment::kFixed;
+  any_layer_has_default_attachment_ = !any_layer_has_local_attachment_image_ &&
+                                      !any_layer_has_fixed_attachment_image_;
   cached_properties_computed_ = true;
 
   if (next_) {
     next_->ComputeCachedPropertiesIfNeeded();
-    this_or_next_layers_clip_max_ = static_cast<unsigned>(EnclosingFillBox(
-        ThisOrNextLayersClipMax(), next_->ThisOrNextLayersClipMax()));
-    this_or_next_layers_use_content_box_ |=
-        next_->this_or_next_layers_use_content_box_;
-    this_or_next_layers_have_local_attachment_ |=
-        next_->this_or_next_layers_have_local_attachment_;
+    layers_clip_max_ = static_cast<unsigned>(
+        EnclosingFillBox(LayersClipMax(), next_->LayersClipMax()));
+    any_layer_uses_content_box_ |= next_->any_layer_uses_content_box_;
+    any_layer_has_image_ |= next_->any_layer_has_image_;
+    any_layer_has_local_attachment_image_ |=
+        next_->any_layer_has_local_attachment_image_;
+    any_layer_has_fixed_attachment_image_ |=
+        next_->any_layer_has_fixed_attachment_image_;
+    any_layer_has_default_attachment_ |=
+        next_->any_layer_has_default_attachment_;
   }
 }
 
 bool FillLayer::ClipOccludesNextLayers() const {
-  return Clip() == ThisOrNextLayersClipMax();
+  return Clip() == LayersClipMax();
 }
 
 bool FillLayer::ImagesAreLoaded() const {

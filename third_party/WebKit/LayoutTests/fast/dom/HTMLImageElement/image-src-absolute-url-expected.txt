@@ -4,6 +4,7 @@ To match WinIE (but not FireFox), we resolve the image path in the getter, rathe
 
 SUCCESS (document.images[0].src = file:///does/not/exist/test.jpg)
 SUCCESS (IconImages['grey'].src = file:///does/not/exist/test.jpg)
+
 After changing the base URL:
 
 SUCCESS (document.images[0].src = file:///does/not/exist/test.jpg)

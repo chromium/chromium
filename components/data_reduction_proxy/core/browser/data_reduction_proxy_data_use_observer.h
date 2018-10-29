@@ -44,8 +44,6 @@ class DataReductionProxyDataUseObserver
   void OnNetworkBytesUpdate(const net::URLRequest& request,
                             data_use_measurement::DataUse* data_use) override {}
 
-  const void* GetDataUsePreviewsUserDataKeyForTesting();
-
   // |data_reduction_proxy_io_data_| owns |this| and is destroyed only after
   // |this| is destroyed in the IO thread.
   DataReductionProxyIOData* data_reduction_proxy_io_data_;

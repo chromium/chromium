@@ -97,6 +97,7 @@ class SVGInlineTextBox final : public InlineTextBox {
                                       const ComputedStyle&,
                                       const Font&) const final;
 
+  bool HitTestFragments(const HitTestLocation& location_in_container) const;
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation& location_in_container,
                    const LayoutPoint& accumulated_offset,

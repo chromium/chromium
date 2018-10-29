@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -19,9 +20,11 @@ static bool g_disable_animations_for_testing = false;
 namespace views {
 
 MenuClosureAnimationMac::MenuClosureAnimationMac(MenuItemView* item,
+                                                 SubmenuView* menu,
                                                  base::OnceClosure callback)
     : callback_(std::move(callback)),
       item_(item),
+      menu_(menu),
       step_(AnimationStep::kStart) {}
 
 MenuClosureAnimationMac::~MenuClosureAnimationMac() {}
@@ -42,12 +45,11 @@ void MenuClosureAnimationMac::Start() {
 }
 
 // static
-constexpr MenuClosureAnimationMac::AnimationStep
-MenuClosureAnimationMac::NextStepFor(
-    MenuClosureAnimationMac::AnimationStep step) {
+MenuClosureAnimationMac::AnimationStep MenuClosureAnimationMac::NextStepFor(
+    MenuClosureAnimationMac::AnimationStep step) const {
   switch (step) {
     case AnimationStep::kStart:
-      return AnimationStep::kUnselected;
+      return item_ ? AnimationStep::kUnselected : AnimationStep::kFading;
     case AnimationStep::kUnselected:
       return AnimationStep::kSelected;
     case AnimationStep::kSelected:
@@ -84,7 +86,7 @@ void MenuClosureAnimationMac::DisableAnimationsForTesting() {
 
 void MenuClosureAnimationMac::AnimationProgressed(
     const gfx::Animation* animation) {
-  NSWindow* window = item_->GetWidget()->GetNativeWindow();
+  NSWindow* window = menu_->GetWidget()->GetNativeWindow().GetNativeNSWindow();
   [window setAlphaValue:animation->CurrentValueBetween(1.0, 0.0)];
 }
 

@@ -200,7 +200,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
                       YES,
                       delegate);
 
-  NSView* parent_view = web_contents_->GetContentNativeView();
+  NSView* parent_view = web_contents_->GetContentNativeView().GetNativeNSView();
   NSEvent* currentEvent = [NSApp currentEvent];
   NSWindow* window = [parent_view window];
   NSPoint position = [window mouseLocationOutsideOfEventStream];

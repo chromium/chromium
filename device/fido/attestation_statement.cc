@@ -35,8 +35,8 @@ NoneAttestationStatement::GetLeafCertificate() const {
   return base::nullopt;
 }
 
-cbor::CBORValue::MapValue NoneAttestationStatement::GetAsCBORMap() const {
-  return cbor::CBORValue::MapValue();
+cbor::Value::MapValue NoneAttestationStatement::GetAsCBORMap() const {
+  return cbor::Value::MapValue();
 }
 
 }  // namespace device

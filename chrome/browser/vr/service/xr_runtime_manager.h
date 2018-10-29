@@ -46,6 +46,7 @@ class VR_EXPORT XRRuntimeManager {
   void AddService(VRServiceImpl* service);
   void RemoveService(VRServiceImpl* service);
 
+  BrowserXRRuntime* GetRuntime(device::mojom::XRDeviceId id);
   BrowserXRRuntime* GetRuntimeForOptions(
       device::mojom::XRSessionOptions* options);
   BrowserXRRuntime* GetImmersiveRuntime();
@@ -70,7 +71,7 @@ class VR_EXPORT XRRuntimeManager {
 
   // Used by tests to check on device state.
   // TODO: Use XRDeviceId as appropriate.
-  device::mojom::XRRuntime* GetRuntimeForTest(unsigned int id);
+  device::mojom::XRRuntime* GetRuntimeForTest(device::mojom::XRDeviceId id);
 
   size_t NumberOfConnectedServices();
 
@@ -83,8 +84,6 @@ class VR_EXPORT XRRuntimeManager {
                   device::mojom::VRDisplayInfoPtr info,
                   device::mojom::XRRuntimePtr runtime);
   void RemoveRuntime(device::mojom::XRDeviceId id);
-
-  BrowserXRRuntime* GetRuntime(device::mojom::XRDeviceId id);
 
   ProviderList providers_;
 

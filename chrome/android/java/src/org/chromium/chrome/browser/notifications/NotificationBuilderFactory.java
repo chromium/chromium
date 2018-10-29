@@ -19,7 +19,9 @@ public class NotificationBuilderFactory {
      * Creates either a Notification.Builder or NotificationCompat.Builder under the hood, wrapped
      * in our own common interface, and ensures the notification channel has been initialized.
      *
-     * @param preferCompat true if a NotificationCompat.Builder is preferred.
+     * @param preferCompat true if a NotificationCompat.Builder is preferred. You should pick true
+     *                     unless you know NotificationCompat.Builder doesn't support a feature you
+     *                     require.
      * @param channelId The ID of the channel the notification should be posted to. This channel
      *                  will be created if it did not already exist. Must be a known channel within
      *                  {@link ChannelsInitializer#ensureInitialized(String)}.

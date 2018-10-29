@@ -976,8 +976,10 @@ void CertificatesHandler::CertificateManagerModelReady() {
       certificate_manager_model_->is_user_db_available());
   base::Value tpm_available_value(
       certificate_manager_model_->is_tpm_available());
-  FireWebUIListener("certificates-model-ready", user_db_available_value,
-                    tpm_available_value);
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("certificates-model-ready", user_db_available_value,
+                      tpm_available_value);
+  }
   certificate_manager_model_->Refresh();
 }
 
@@ -1070,8 +1072,10 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
   }
   std::sort(nodes.GetList().begin(), nodes.GetList().end(), comparator);
 
-  FireWebUIListener("certificates-changed", base::Value(tab_name),
-                    std::move(nodes));
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("certificates-changed", base::Value(tab_name),
+                      std::move(nodes));
+  }
 }
 
 void CertificatesHandler::ResolveCallback(const base::Value& response) {

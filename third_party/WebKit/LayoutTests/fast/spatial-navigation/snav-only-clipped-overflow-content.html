@@ -1,76 +1,32 @@
-<html>
-  <!--
-    This test ensures the content overflow traversal correctness of spatial navigation:
-    if an element if clipped overflow in a scrollable container (e.g. <div>),
-    scroll-in-direction should happen in the container box, not on the outer view.
+<!DOCTYPE html>
+<style>
+  div#scroller {
+    height: 200px;
+    width: 300px;
+    overflow: auto;
+    border: 1px solid #666;
+    background-color: #ccc;
+    padding: 8px;
+  }
+</style>
 
-    * Pre-conditions:
-    1) DRT support for spatial navigation enable/disable.
+<p>That is is a normal <a id="start" href="a">link</a>.</p>
+<div id="scroller">
+  <a style="display: block; margin-top: 200px;" id="a1" href="a">A clipped link.</a>
+</div>
+<p>And this is another normal <a id="a2" href="a">link</a>.</p>
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Try to move focus down to the visible focusable element in
-       scrollable div.
+<p>Scroll until the scroller is fully scrolĺed. Focus revealed links on the way down.</p>
 
-    * Expected results: There should have to a scroll action in the container
-    (div) as an attempt to make the clipped overflow node visible and accessible
-    via spatial navigation. -->
-  <head>
-    <style type="text/css">
-      div.scroll {
-        height: 200px;
-        width: 300px;
-        overflow: auto;
-        border: 1px solid #666;
-        background-color: #ccc;
-        padding: 8px;
-      }
-    </style>
-
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
-
-    var resultMap = [
-      ["Down", "start"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      shouldBeTrue(String(document.getElementById("div").scrollTop != 0));
-
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <p>That is is a normal <a id="start" href="a">link</a>.</p>
-    <div class="scroll" id="div">
-      <p>This is a scrollable Div created with the CSS property overflow.</p>
-      <br><br><br><br><br><br><br><br>
-      <p> ... and here we have a clipped overflow <a id="1" href="a">link</a>.</p>
-    </div>
-    <p>And this is another normal <a id="2" href="a">link_2</a>.</p>
-    <div id="console"></div>
-  </body>
-</html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "start"],
+    ["Down", "a1"],
+    ["Down", "a1"],  // The div has padding so it can be scrolled a little further.
+    ["Down", "a2"],
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>

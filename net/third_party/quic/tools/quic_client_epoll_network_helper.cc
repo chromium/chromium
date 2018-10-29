@@ -31,7 +31,6 @@
 
 // TODO(rtenneti): Add support for MMSG_MORE.
 #define MMSG_MORE 0
-using std::string;
 
 namespace quic {
 
@@ -59,7 +58,7 @@ QuicClientEpollNetworkHelper::~QuicClientEpollNetworkHelper() {
   CleanUpAllUDPSockets();
 }
 
-string QuicClientEpollNetworkHelper::Name() const {
+QuicString QuicClientEpollNetworkHelper::Name() const {
   return "QuicClientEpollNetworkHelper";
 }
 

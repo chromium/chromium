@@ -10,11 +10,11 @@ GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function ISearchTest() {
+function ChromeVoxISearchTest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-ISearchTest.prototype = {
+ChromeVoxISearchTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** @override */
@@ -64,7 +64,7 @@ FakeISearchHandler.prototype = {
   }
 };
 
-TEST_F('ISearchTest', 'DISABLED_Simple', function() {
+TEST_F('ChromeVoxISearchTest', 'DISABLED_Simple', function() {
   this.runWithLoadedTree(this.linksAndHeadingsDoc, function(rootNode) {
     var handler = new FakeISearchHandler(this);
     var search = new ISearch(rootNode);

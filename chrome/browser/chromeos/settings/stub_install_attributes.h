@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
+#include "chromeos/settings/install_attributes.h"
 
 namespace chromeos {
 
@@ -48,6 +48,8 @@ class StubInstallAttributes : public InstallAttributes {
   // Setup as demo mode device with specified |device_id|. Clears existing
   // configuration.
   void SetDemoMode(const std::string& device_id);
+
+  void set_device_locked(bool is_locked) { device_locked_ = is_locked; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(StubInstallAttributes);

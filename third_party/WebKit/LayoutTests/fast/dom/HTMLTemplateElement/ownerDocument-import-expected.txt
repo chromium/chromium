@@ -3,7 +3,6 @@ HTMLTemplateElement content ownerDocument in HTML imports should differ from imp
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS template.ownerDocument is not template.content.ownerDocument
 PASS successfullyParsed is true
 

@@ -72,7 +72,7 @@ bool BrokerSimpleMessage::SendMsg(int fd, int send_fd) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
 
-  const unsigned control_len = CMSG_SPACE(sizeof(int));
+  const unsigned control_len = CMSG_SPACE(sizeof(send_fd));
   char control_buffer[control_len];
   if (send_fd >= 0) {
     struct cmsghdr* cmsg;
@@ -81,8 +81,8 @@ bool BrokerSimpleMessage::SendMsg(int fd, int send_fd) {
     cmsg = CMSG_FIRSTHDR(&msg);
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-    memcpy(CMSG_DATA(cmsg), &send_fd, sizeof(int));
+    cmsg->cmsg_len = CMSG_LEN(sizeof(send_fd));
+    memcpy(CMSG_DATA(cmsg), &send_fd, sizeof(send_fd));
     msg.msg_controllen = cmsg->cmsg_len;
   }
 
@@ -108,10 +108,10 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
 
 #if defined(OS_NACL_NONSFI)
   const size_t kControlBufferSize =
-      CMSG_SPACE(sizeof(int) * base::UnixDomainSocket::kMaxFileDescriptors);
+      CMSG_SPACE(sizeof(fd) * base::UnixDomainSocket::kMaxFileDescriptors);
 #else
   const size_t kControlBufferSize =
-      CMSG_SPACE(sizeof(int) * base::UnixDomainSocket::kMaxFileDescriptors) +
+      CMSG_SPACE(sizeof(fd) * base::UnixDomainSocket::kMaxFileDescriptors) +
       // The PNaCl toolchain for Non-SFI binary build does not support ucred.
       CMSG_SPACE(sizeof(struct ucred));
 #endif  // defined(OS_NACL_NONSFI)
@@ -133,10 +133,10 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlags(int fd,
     for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)) {
       const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
-        DCHECK_EQ(payload_len % sizeof(int), 0u);
+        DCHECK_EQ(payload_len % sizeof(fd), 0u);
         DCHECK_EQ(wire_fds, static_cast<void*>(nullptr));
         wire_fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
-        wire_fds_len = payload_len / sizeof(int);
+        wire_fds_len = payload_len / sizeof(fd);
       }
 #if !defined(OS_NACL_NONSFI)
       // The PNaCl toolchain for Non-SFI binary build does not support
@@ -222,7 +222,7 @@ bool BrokerSimpleMessage::AddIntToMessage(int data) {
   write_only_ = true;  // Message should only be written to going forward.
 
   base::CheckedNumeric<size_t> safe_length(length_);
-  safe_length += sizeof(int);
+  safe_length += sizeof(data);
   safe_length += sizeof(EntryType);
 
   if (!safe_length.IsValid() || safe_length.ValueOrDie() > kMaxMessageLength) {
@@ -234,8 +234,8 @@ bool BrokerSimpleMessage::AddIntToMessage(int data) {
 
   memcpy(write_next_, &type, sizeof(EntryType));
   write_next_ += sizeof(EntryType);
-  memcpy(write_next_, &data, sizeof(int));
-  write_next_ += sizeof(int);
+  memcpy(write_next_, &data, sizeof(data));
+  write_next_ += sizeof(data);
   length_ = write_next_ - message_;
 
   return true;
@@ -295,12 +295,12 @@ bool BrokerSimpleMessage::ReadInt(int* result) {
     return false;
   }
 
-  if ((read_next_ + sizeof(int)) > (message_ + length_)) {
+  if ((read_next_ + sizeof(*result)) > (message_ + length_)) {
     broken_ = true;
     return false;
   }
-  memcpy(result, read_next_, sizeof(int));
-  read_next_ = read_next_ + sizeof(int);
+  memcpy(result, read_next_, sizeof(*result));
+  read_next_ = read_next_ + sizeof(*result);
   return true;
 }
 

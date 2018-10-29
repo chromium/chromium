@@ -5,6 +5,7 @@
 #include "extensions/renderer/resource_bundle_source_map.h"
 
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -88,7 +89,7 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
 }
 
 bool ResourceBundleSourceMap::Contains(const std::string& name) const {
-  return !!resource_map_.count(name);
+  return base::ContainsKey(resource_map_, name);
 }
 
 }  // namespace extensions

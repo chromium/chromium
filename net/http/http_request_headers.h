@@ -86,7 +86,6 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kReferer[];
   static const char kSecOriginPolicy[];
   static const char kTransferEncoding[];
-  static const char kTokenBinding[];
   static const char kUserAgent[];
 
   HttpRequestHeaders();

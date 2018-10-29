@@ -33,8 +33,8 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -51,9 +51,14 @@ base::FilePath BlinkRootFilePath() {
       path.Append(FILE_PATH_LITERAL("third_party/blink")));
 }
 
+// TODO(tkent): Rename this function.  crbug.com/843412.
 base::FilePath LayoutTestsFilePath() {
   base::FilePath path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::FilePath web_tests_path = base::MakeAbsoluteFilePath(
+      path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests")));
+  if (base::PathExists(web_tests_path))
+    return web_tests_path;
   return base::MakeAbsoluteFilePath(
       path.Append(FILE_PATH_LITERAL("third_party/WebKit/LayoutTests")));
 }

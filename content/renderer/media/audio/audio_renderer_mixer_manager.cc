@@ -187,7 +187,7 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
                              latency_map_.to_ulong());
   }
 
-  AudioRendererMixerMap::iterator it = mixers_.find(key);
+  auto it = mixers_.find(key);
   if (it != mixers_.end()) {
     if (device_status)
       *device_status = media::OUTPUT_DEVICE_STATUS_OK;
@@ -223,7 +223,7 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
 
 void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
-  AudioRendererMixerMap::iterator it = std::find_if(
+  auto it = std::find_if(
       mixers_.begin(), mixers_.end(),
       [mixer](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
         return val.second.mixer == mixer;

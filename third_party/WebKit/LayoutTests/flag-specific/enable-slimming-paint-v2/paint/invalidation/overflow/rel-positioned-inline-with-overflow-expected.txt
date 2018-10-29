@@ -9,7 +9,7 @@
         {
           "object": "LayoutBlockFlow DIV id='target'",
           "rect": [8, 94, 100, 50],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

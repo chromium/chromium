@@ -9,6 +9,7 @@
 
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
 
@@ -16,8 +17,9 @@ namespace gpu {
 
 const base::UnsafeSharedMemoryRegion& BufferBacking::shared_memory_region()
     const {
-  static const base::UnsafeSharedMemoryRegion kInvalidRegion;
-  return kInvalidRegion;
+  static const base::NoDestructor<base::UnsafeSharedMemoryRegion>
+      kInvalidRegion;
+  return *kInvalidRegion;
 }
 
 base::UnguessableToken BufferBacking::GetGUID() const {

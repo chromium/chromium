@@ -40,7 +40,7 @@
 namespace blink {
 
 class SourceRange {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   SourceRange();
@@ -58,7 +58,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::SourceRange);
 namespace blink {
 
 class CSSPropertySourceData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   CSSPropertySourceData(const String& name,

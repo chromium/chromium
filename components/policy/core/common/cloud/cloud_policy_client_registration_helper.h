@@ -19,7 +19,9 @@
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-class OAuth2TokenService;
+namespace identity {
+class IdentityManager;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -41,13 +43,12 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   ~CloudPolicyClientRegistrationHelper() override;
 
   // Starts the client registration process. This version uses the
-  // supplied OAuth2TokenService to mint the new token for the userinfo
+  // supplied IdentityManager to mint the new token for the userinfo
   // and DM services, using the |account_id|.
   // |callback| is invoked when the registration is complete.
-  void StartRegistration(
-      OAuth2TokenService* token_service,
-      const std::string& account_id,
-      const base::Closure& callback);
+  void StartRegistration(identity::IdentityManager* identity_manager,
+                         const std::string& account_id,
+                         const base::Closure& callback);
 
   // Starts the device registration with an token enrollment process.
   // |callback| is invoked when the registration is complete.
@@ -67,7 +68,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
 #endif
 
  private:
-  class TokenServiceHelper;
+  class IdentityManagerHelper;
 #if !defined(OS_ANDROID)
   class LoginTokenHelper;
 #endif
@@ -86,11 +87,11 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   // Invoked when the registration request has been completed.
   void RequestCompleted();
 
-  // Internal helper class that uses OAuth2TokenService to fetch an OAuth
+  // Internal helper class that uses IdentityManager to fetch an OAuth
   // access token. On desktop, this is only used after the user has signed in -
   // desktop platforms use LoginTokenHelper for policy fetches performed before
   // signin is complete.
-  std::unique_ptr<TokenServiceHelper> token_service_helper_;
+  std::unique_ptr<IdentityManagerHelper> identity_manager_helper_;
 
 #if !defined(OS_ANDROID)
   // Special desktop-only helper to fetch an OAuth access token prior to

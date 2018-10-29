@@ -932,8 +932,6 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 TextView labelView = new TextView(context);
                 if (mRowType == OPTION_ROW_TYPE_OPTION) {
                     // Show the string representing the EditableOption.
-                    ApiCompatibilityUtils.setTextAppearance(labelView,
-                            isEnabled ? R.style.BlackTitle1 : R.style.BlackDisabledText1);
                     labelView.setText(convertOptionToString(mOption, false, /* excludeMainLabel */
                             mDelegate.isBoldLabelNeeded(OptionSection.this),
                             false /* singleLine */));

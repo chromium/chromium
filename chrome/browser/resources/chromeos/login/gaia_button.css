@@ -16,7 +16,7 @@ paper-button {
 :host([type='link']) paper-button,
 :host([type='dialog']) paper-button {
   background-color: transparent;
-  color: var(--google-blue-500);
+  color: var(--google-blue-600);
   margin: 0;
   min-width: 0;
 }

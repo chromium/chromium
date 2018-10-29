@@ -5,6 +5,17 @@
 cr.exportPath('settings');
 
 /**
+ * For each line in the item list, the text field will be shown in normal style
+ * at front of the line. The highlightSuffix will be appended to the end of line
+ * and emphasized with bold font.
+ * @typedef {{
+ *   text: string,
+ *   highlightSuffix: ?string,
+ * }}
+ */
+settings.ChromeCleanupRemovalListItem;
+
+/**
  * The default number of items to show for files, registry keys and extensions
  * on the detailed view when user-initiated cleanups are enabled.
  */
@@ -37,7 +48,7 @@ Polymer({
       value: '',
     },
 
-    /** @type {!Array<string>} */
+    /** @type {!Array<settings.ChromeCleanupRemovalListItem>} */
     itemsToShow: {
       type: Array,
       observer: 'updateVisibleState_',
@@ -55,7 +66,7 @@ Polymer({
     /**
      * The first |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items of |itemsToShow|
      * if the list is longer than |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|.
-     * @private {?Array<string>}
+     * @private {?Array<settings.ChromeCleanupRemovalListItem>}
      */
     initialItems_: Array,
 
@@ -63,7 +74,7 @@ Polymer({
      * The remaining items to be presented that are not included in
      * |initialItems_|. Items in this list are only shown to the user if
      * |expanded_| is true.
-     * @private {?Array<string>}
+     * @private {?Array<settings.ChromeCleanupRemovalListItem>}
      */
     remainingItems_: Array,
 
@@ -95,7 +106,7 @@ Polymer({
    *    the user will contain exactly |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|
    *    elements, and the last one will be the "show more" link.
    *
-   * @param {!Array<string>} itemsToShow
+   * @param {!Array<settings.ChromeCleanupRemovalListItem>} itemsToShow
    */
   updateVisibleState_: function(itemsToShow) {
     // Start expanded if there are less than
@@ -129,5 +140,14 @@ Polymer({
    */
   remainingItemsClass_: function(expanded) {
     return expanded ? 'visible-item' : 'hidden-item';
+  },
+
+  /**
+   * @param {settings.ChromeCleanupRemovalListItem} item
+   * @return {boolean} Whether a highlight suffix exists.
+   * @private
+   */
+  hasHighlightSuffix_: function(item) {
+    return item.highlightSuffix !== null;
   },
 });

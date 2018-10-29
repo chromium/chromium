@@ -33,6 +33,7 @@
 
 #include "base/macros.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
@@ -115,7 +116,11 @@ class CORE_EXPORT CoreInitializer {
   virtual void ProvideModulesToPage(Page&, WebViewClient*) const = 0;
   virtual void ForceNextWebGLContextCreationToFail() const = 0;
 
-  virtual void CollectAllGarbageForAnimationWorklet() const = 0;
+  virtual void CollectAllGarbageForAnimationAndPaintWorklet() const = 0;
+
+  virtual void CloneSessionStorage(
+      Page* clone_from_page,
+      const SessionStorageNamespaceId& clone_to_namespace) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

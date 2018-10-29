@@ -219,13 +219,11 @@ class SharedLibraryResolver : public ElfRelocations::SymbolResolver {
 
 }  // namespace
 
-SharedLibrary::SharedLibrary() { ::memset(this, 0, sizeof(*this)); }
-
-SharedLibrary::~SharedLibrary() {
-  // Ensure the library is unmapped on destruction.
-  if (view_.load_address())
-    munmap(reinterpret_cast<void*>(view_.load_address()), view_.load_size());
+SharedLibrary::SharedLibrary() {
+  full_path_[0] = '\0';
 }
+
+SharedLibrary::~SharedLibrary() = default;
 
 bool SharedLibrary::Load(const char* full_path,
                          size_t load_address,
@@ -254,15 +252,10 @@ bool SharedLibrary::Load(const char* full_path,
   LOG("Loading ELF segments for %s", base_name_);
 
   {
-    ElfLoader loader;
-    if (!loader.LoadAt(full_path_, file_offset, load_address, error)) {
-      return false;
-    }
-
-    if (!view_.InitUnmapped(loader.load_start(),
-                            loader.loaded_phdr(),
-                            loader.phdr_count(),
-                            error)) {
+    ElfLoader::Result ret =
+        ElfLoader::LoadAt(full_path_, file_offset, load_address, error);
+    if (!ret.IsValid() ||
+        !view_.InitUnmapped(ret.load_start, ret.phdr, ret.phdr_count, error)) {
       return false;
     }
 
@@ -270,6 +263,8 @@ bool SharedLibrary::Load(const char* full_path,
       *error = "Missing or malformed symbol table";
       return false;
     }
+
+    reserved_map_ = std::move(ret.reserved_mapping);
   }
 
   if (phdr_table_get_relro_info(view_.phdr(),

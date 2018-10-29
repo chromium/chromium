@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This tests deletion of a selection that spans multiple cells.  Just table content should be removed, not table structure.</p>
 <div id="test" contenteditable="true"><table border="1"><tr><td><div>These two pieces of text<span id="start">blah</span></div></td><td><div><span id="end">blah</span> should be in different cells.</div></td></tr></table>

@@ -43,7 +43,7 @@ from blinkpy.web_tests.views import printing
 _log = logging.getLogger(__name__)
 
 
-def main(argv, stdout, stderr):
+def main(argv, stderr):
     options, args = parse_args(argv)
 
     if options.platform and 'test' in options.platform and not 'browser_test' in options.platform:
@@ -55,27 +55,31 @@ def main(argv, stdout, stderr):
     else:
         host = Host()
 
+    printer = printing.Printer(host, options, stderr)
+
     try:
         port = host.port_factory.get(options.platform, options)
     except (NotImplementedError, ValueError) as error:
-        # FIXME: is this the best way to handle unsupported port names?
-        print >> stderr, str(error)
+        _log.error(error)
+        printer.cleanup()
         return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
     try:
-        return run(port, options, args, stderr, stdout).exit_code
+        return run(port, options, args, printer).exit_code
 
     # We need to still handle KeyboardInterrupt, at least for blinkpy unittest cases.
     except KeyboardInterrupt:
         return exit_codes.INTERRUPTED_EXIT_STATUS
     except test_run_results.TestRunException as error:
-        print >> stderr, error.msg
+        _log.error(error.msg)
         return error.code
     except BaseException as error:
         if isinstance(error, Exception):
-            print >> stderr, '\n%s raised: %s' % (error.__class__.__name__, error)
+            _log.error('\n%s raised: %s', error.__class__.__name__, error)
             traceback.print_exc(file=stderr)
         return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
+    finally:
+        printer.cleanup()
 
 
 def deprecate(option, opt_str, _, parser):
@@ -204,21 +208,6 @@ def parse_args(args):
                 default=True,
                 help="Don't launch a browser with results after the tests are done"),
             optparse.make_option(
-                '-p',
-                '--pixel',
-                '--pixel-tests',
-                dest='pixel_tests',
-                action='store_true',
-                default=True,
-                help='Enable pixel-to-pixel PNG comparisons (enabled by default)'),
-            optparse.make_option(
-                '--no-pixel',
-                '--no-pixel-tests',
-                dest='pixel_tests',
-                action='store_false',
-                default=True,
-                help='Disable pixel-to-pixel PNG comparisons'),
-            optparse.make_option(
                 '--reset-results',
                 action='store_true',
                 default=False,
@@ -238,15 +227,6 @@ def parse_args(args):
                 dest='smoke',
                 action='store_false',
                 help='Do not run just the SmokeTests'),
-            optparse.make_option(
-                '--image-first-tests',
-                action='append',
-                default=[],
-                dest='image_first_tests',
-                help=('A directory (or test) where the test result will only be compared with the '
-                      'image baseline if an image baseline is available, and fall back to comparison '
-                      'with the text baseline when image baselines are missing. Specify multiple times '
-                      'to add multiple directories/tests.')),
         ]))
 
     option_group_definitions.append(
@@ -318,6 +298,9 @@ def parse_args(args):
                       "'unexpected' == Ignore any tests that had unexpected results on the bot.")),
             optparse.make_option(
                 '--iterations',
+                '--isolated-script-test-repeat',
+                # TODO(crbug.com/893235): Remove the gtest alias when FindIt no longer uses it.
+                '--gtest_repeat',
                 type='int',
                 default=1,
                 help='Number of times to run the set of tests (e.g. ABCABCABC)'),
@@ -353,14 +336,33 @@ def parse_args(args):
                 action='store',
                 help='Output per-test profile information, using the specified profiler.'),
             optparse.make_option(
+                '--restart-shell-between-tests',
+                action='store_true',
+                default=False,
+                help='Restarting the shell between tests causes the tests to '
+                     'take twice as long to run on average, but provides more '
+                     'consistent results. This is automatically enabled if '
+                     '--repeat-each or --gtest_repeat is specified with '
+                     'iterations > 1. This is equivalent to setting '
+                     '--batch-size=1'),
+            optparse.make_option(
+                '--reuse-shell-between-tests',
+                action='store_true',
+                default=False,
+                help='Reusing the shell between tests causes tests to run more '
+                     'quickly but has less consistent results. This is '
+                     'primarily useful for debugging flakiness that only '
+                     'occurs when content shell is reused. This is equivalent '
+                     'to setting --batch-size=0.'),
+            optparse.make_option(
                 '--repeat-each',
-                '--gtest_repeat',
                 type='int',
                 default=1,
                 help='Number of times to run each test (e.g. AAABBBCCC)'),
             optparse.make_option(
                 '--num-retries',
                 '--test-launcher-retry-limit',
+                '--isolated-script-test-launcher-retry-limit',
                 type='int',
                 default=None,
                 help=('Number of times to retry failures. Default (when this '
@@ -401,11 +403,13 @@ def parse_args(args):
                       '"only" == only run the SKIP tests, '
                       '"always" == always skip, even if listed on the command line.')),
             optparse.make_option(
+                '--isolated-script-test-also-run-disabled-tests',
+                # TODO(crbug.com/893235): Remove the gtest alias when FindIt no longer uses it.
                 '--gtest_also_run_disabled_tests',
-                action='store_true',
-                default=False,  # Consistent with the default value of --skipped
-                help=('Equivalent to --skipped=ignore. This option overrides '
-                      '--skipped if both are given.')),
+                action='store_const',
+                const='ignore',
+                dest='skipped',
+                help=('Equivalent to --skipped=ignore.')),
             optparse.make_option(
                 '--skip-failing-tests',
                 action='store_true',
@@ -428,6 +432,12 @@ def parse_args(args):
                 action='append',
                 metavar='FILE',
                 help='read list of tests to run from file'),
+            optparse.make_option(
+                '--isolated-script-test-filter',
+                type='string',
+                help='A list of tests to run separated by TWO colons, e.g. fast::css/test.html, '
+                     'same as listing them as positional arguments'),
+            # TODO(crbug.com/893235): Remove gtest_filter when FindIt no longer uses it.
             optparse.make_option(
                 '--gtest_filter',
                 type='string',
@@ -514,8 +524,36 @@ def parse_args(args):
 
 def _set_up_derived_options(port, options, args):
     """Sets the options values that depend on other options values."""
-    if options.batch_size is None:
-        options.batch_size = port.default_batch_size()
+    if options.restart_shell_between_tests:
+        # --restart-shell-between-tests is identical to setting --batch-size=1.
+        assert not options.reuse_shell_between_tests, (
+            '--restart-shell-between-tests is not compatible with '
+            '--reuse-shell-between-tests.')
+        assert options.batch_size is None, (
+            '--restart-shell-between-tests is not compatible with --batch-size')
+        options.derived_batch_size = 1
+        options.must_use_derived_batch_size = True
+    elif options.reuse_shell_between_tests:
+        # --reuse-shell-between-tests is identical to setting --batch-size=0
+        assert options.batch_size is None, (
+            '--reuse-shell-between-tests is not compatible with --batch-size')
+        options.derived_batch_size = 0
+        options.must_use_derived_batch_size = True
+    elif options.batch_size is not None:
+        options.derived_batch_size = options.batch_size
+        options.must_use_derived_batch_size = True
+    else:
+        # No flag has explicitly set the batch size.
+        # If 'repeat_each' or 'iterations' has been set, then implicitly set the
+        # batch size to 1. If we're already repeating the tests more than once,
+        # then we're not particularly concerned with speed. Restarting content
+        # shell provides more consistent results.
+        if options.repeat_each > 1 or options.iterations > 1:
+            options.derived_batch_size = 1
+            options.must_use_derived_batch_size = True
+        else:
+            options.derived_batch_size = port.default_batch_size()
+            options.must_use_derived_batch_size = False
 
     if not options.child_processes:
         options.child_processes = port.host.environ.get(
@@ -553,10 +591,11 @@ def _set_up_derived_options(port, options, args):
         if not options.skipped:
             options.skipped = 'always'
 
-    if options.gtest_also_run_disabled_tests:
-        options.skipped = 'ignore'
-    elif not options.skipped:
+    if not options.skipped:
         options.skipped = 'default'
+
+    if options.isolated_script_test_filter:
+        args.extend(options.isolated_script_test_filter.split('::'))
 
     if options.gtest_filter:
         args.extend(options.gtest_filter.split(':'))
@@ -569,36 +608,17 @@ def _set_up_derived_options(port, options, args):
     if not options.seed:
         options.seed = port.host.time()
 
-    if not options.image_first_tests:
-        image_first_tests_path = port.host.filesystem.join(port.layout_tests_dir(), 'ImageFirstTests')
-        if port.host.filesystem.exists(image_first_tests_path):
-            contents = port.host.filesystem.read_text_file(image_first_tests_path)
-            options.image_first_tests.extend(line for line in contents.splitlines(False) if line)
 
-
-def _run_tests(port, options, args, printer):
+def run(port, options, args, printer):
     _set_up_derived_options(port, options, args)
     manager = Manager(port, options, printer)
-    printer.print_config(port.results_directory())
-    return manager.run(args)
-
-
-def run(port, options, args, logging_stream, stdout):
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG if options.debug_rwt_logging else logging.INFO)
-
-    printer = printing.Printer(port, options, logging_stream, logger=logger)
-    try:
-        run_details = _run_tests(port, options, args, printer)
-        printer.flush()
-
-        _log.debug('')
-        _log.debug('Testing completed. Exit status: %d', run_details.exit_code)
-        return run_details
-
-    finally:
-        printer.cleanup()
+    printer.print_config(port)
+    run_details = manager.run(args)
+    _log.debug('')
+    _log.debug('Testing completed. Exit status: %d', run_details.exit_code)
+    printer.flush()
+    return run_details
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:], sys.stdout, sys.stderr))
+    sys.exit(main(sys.argv[1:], sys.stderr))

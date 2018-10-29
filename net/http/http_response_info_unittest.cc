@@ -184,6 +184,17 @@ TEST_F(HttpResponseInfoTest, LegacyKeyExchangeInfoUnknown) {
   EXPECT_EQ(0, restored_response_info.ssl_info.key_exchange_group);
 }
 
+// Test that peer_signature_algorithm is preserved.
+TEST_F(HttpResponseInfoTest, PeerSignatureAlgorithm) {
+  response_info_.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  response_info_.ssl_info.peer_signature_algorithm =
+      0x0804;  // rsa_pss_rsae_sha256
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_EQ(0x0804, restored_response_info.ssl_info.peer_signature_algorithm);
+}
+
 // Tests that cache entries loaded over SSLv3 (no longer supported) are dropped.
 TEST_F(HttpResponseInfoTest, FailsInitFromPickleWithSSLV3) {
   // A valid certificate is needed for ssl_info.is_valid() to be true.

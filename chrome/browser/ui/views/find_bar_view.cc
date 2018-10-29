@@ -9,6 +9,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -321,7 +322,9 @@ void FindBarView::AddedToWidget() {
 
 void FindBarView::SetFocusAndSelection(bool select_all) {
   find_text_->RequestFocus();
+#if !defined(OS_WIN)
   GetWidget()->GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+#endif
   if (select_all && !find_text_->text().empty())
     find_text_->SelectAll(true);
 }
@@ -460,18 +463,19 @@ void FindBarView::OnNativeThemeChanged(const ui::NativeTheme* theme) {
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
 
-  match_count_text_->SetBackgroundColor(bg_color);
-  SkColor text_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_TextfieldDefaultColor);
-  match_count_text_->SetEnabledColor(SkColorSetA(text_color, 0x69));
-  separator_->SetColor(SkColorSetA(text_color, 0x26));
-
-  const SkColor base_icon_color = GetNativeTheme()->GetSystemColor(
+  const SkColor base_foreground_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_TextfieldDefaultColor);
+
+  match_count_text_->SetBackgroundColor(bg_color);
+  match_count_text_->SetEnabledColor(
+      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha700));
+  separator_->SetColor(
+      SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha300));
+
   views::SetImageFromVectorIcon(find_previous_button_, kCaretUpIcon,
-                                base_icon_color);
+                                base_foreground_color);
   views::SetImageFromVectorIcon(find_next_button_, kCaretDownIcon,
-                                base_icon_color);
+                                base_foreground_color);
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                                base_icon_color);
+                                base_foreground_color);
 }

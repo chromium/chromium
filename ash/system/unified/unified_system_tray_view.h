@@ -90,8 +90,6 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   // call SetTransform() to move this view in order to avoid resizing.
   bool IsTransformEnabled() const;
 
-  void ShowClearAllAnimation();
-
   // Update the top of the SystemTray part to imitate notification list
   // scrolling under SystemTray. |height_below_scroll| should not be negative.
   void SetNotificationHeightBelowScroll(int height_below_scroll);

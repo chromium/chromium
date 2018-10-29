@@ -30,7 +30,7 @@ class VirtualKeyboardTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   base::string16 GetAccessibleNameForTray() override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
 
@@ -40,16 +40,10 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   // keyboard::KeyboardControllerObserver:
   void OnKeyboardVisibilityStateChanged(bool is_visible) override;
 
-  // ShellObserver:
-  void OnKeyboardControllerCreated() override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
-  void ObserveKeyboardController();
-  void UnobserveKeyboardController();
-
   // Updates the icon UI.
   void UpdateIcon();
 

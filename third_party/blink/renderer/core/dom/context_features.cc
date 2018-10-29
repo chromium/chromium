@@ -41,9 +41,9 @@ const char ContextFeatures::kSupplementName[] = "ContextFeatures";
 
 ContextFeatures& ContextFeatures::DefaultSwitch() {
   DEFINE_STATIC_LOCAL(
-      ContextFeatures, instance,
+      Persistent<ContextFeatures>, instance,
       (ContextFeatures::Create(ContextFeaturesClient::Empty())));
-  return instance;
+  return *instance;
 }
 
 bool ContextFeatures::PagePopupEnabled(Document* document) {

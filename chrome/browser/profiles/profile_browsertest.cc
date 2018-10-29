@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/task/task_scheduler/task_scheduler.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +47,7 @@
 #include "components/bookmarks/browser/startup_task_runner_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_utils.h"
@@ -232,14 +234,14 @@ class ProfileBrowserTest : public InProcessBrowserTest {
   // content::BrowserTestBase implementation:
 
   void SetUpOnMainThread() override {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&chrome_browser_net::SetUrlRequestMocksEnabled, true));
   }
 
   void TearDownOnMainThread() override {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&chrome_browser_net::SetUrlRequestMocksEnabled, false));
   }
 
@@ -349,6 +351,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNewProfileSynchronous) {
         chromeos::ProfileHelper::Get()->GetUserByProfile(profile.get());
     EXPECT_TRUE(user->profile_ever_initialized());
 #endif
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
   }
 
   FlushIoTaskRunnerAndSpinThreads();
@@ -369,6 +376,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileSynchronous) {
     std::unique_ptr<Profile> profile(CreateProfile(
         temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
     CheckChromeVersion(profile.get(), false);
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
   }
 
   FlushIoTaskRunnerAndSpinThreads();
@@ -497,6 +509,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ExitType) {
     profile->SetExitType(Profile::EXIT_CRASHED);
     std::string final_value(prefs->GetString(prefs::kSessionExitType));
     EXPECT_EQ(crash_value, final_value);
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
   }
 
   FlushIoTaskRunnerAndSpinThreads();

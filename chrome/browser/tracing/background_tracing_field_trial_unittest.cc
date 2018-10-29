@@ -4,13 +4,17 @@
 
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
 
+#include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_task_environment.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/tracing/common/trace_startup.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "content/public/browser/background_tracing_config.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/test_browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +27,10 @@ class BackgroundTracingTest : public testing::Test {
                    base::ThreadTaskRunnerHandle::Get()) {}
   ~BackgroundTracingTest() override {}
 
+  void TearDown() override {
+    content::BackgroundTracingManager::GetInstance()->AbortScenario();
+  }
+
  private:
   base::test::ScopedTaskEnvironment scoped_task_environment_;
   content::TestBrowserThread ui_thread_;
@@ -32,6 +40,23 @@ namespace {
 
 const char kTestConfig[] = "test";
 bool g_test_config_loaded = false;
+
+const char kUploadUrl[] = "http://localhost:8080";
+const char kInvalidTracingConfig[] = "{][}";
+const char kValidTracingConfig[] = R"(
+  {
+    "scenario_name": "BrowserProcess",
+    "configs": [
+      {
+        "category": "BENCHMARK_NAVIGATION",
+        "rule": "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE",
+        "histogram_name": "Omnibox.CharTypedToRepaintLatency.ToPaint",
+        "histogram_lower_value": 1
+      }
+    ],
+    "mode": "REACTIVE_TRACING_MODE"
+  }
+)";
 
 void CheckConfig(std::string* config) {
   if (*config == kTestConfig)
@@ -59,4 +84,66 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFieldTrial) {
 
   tracing::SetupBackgroundTracingFieldTrial();
   EXPECT_TRUE(g_test_config_loaded);
+}
+
+TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromConfigFileFailed) {
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_FALSE(
+      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(switches::kTraceUploadURL, kUploadUrl);
+  command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing, "");
+
+  tracing::SetupBackgroundTracingFieldTrial();
+  EXPECT_FALSE(
+      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+}
+
+TEST_F(BackgroundTracingTest,
+       SetupBackgroundTracingFromConfigFileInvalidConfig) {
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+  ASSERT_FALSE(
+      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("config.json");
+  base::WriteFile(file_path, kInvalidTracingConfig,
+                  sizeof(kInvalidTracingConfig) - 1);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(switches::kTraceUploadURL, kUploadUrl);
+  command_line->AppendSwitchPath(switches::kEnableBackgroundTracing, file_path);
+
+  tracing::SetupBackgroundTracingFieldTrial();
+  EXPECT_FALSE(
+      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+}
+
+TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromConfigFile) {
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("config.json");
+  base::WriteFile(file_path, kValidTracingConfig,
+                  sizeof(kValidTracingConfig) - 1);
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(switches::kTraceUploadURL, kUploadUrl);
+  command_line->AppendSwitchPath(switches::kEnableBackgroundTracing, file_path);
+
+  tracing::SetupBackgroundTracingFieldTrial();
+  EXPECT_TRUE(
+      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
 }

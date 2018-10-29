@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_MEDIA_CAST_MIRRORING_SERVICE_HOST_H_
 #define CHROME_BROWSER_MEDIA_CAST_MIRRORING_SERVICE_HOST_H_
 
+#include <memory>
+#include <string>
+
 #include "base/macros.h"
-#include "build/build_config.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"

@@ -48,7 +48,10 @@ const CGFloat kSpotlightHeight = 38.0f;
   spotlightView.layer.cornerRadius = kSpotlightHeight / 2;
   spotlightView.backgroundColor =
       [self.configuration locationBarBackgroundColorWithVisibility:1];
-  [self addSubview:spotlightView];
+  // Make sure that the spotlightView is below the image to avoid changing the
+  // color of the image.
+  [self insertSubview:spotlightView belowSubview:self.imageView];
+
   AddSameCenterConstraints(self, spotlightView);
   [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightHeight]
       .active = YES;

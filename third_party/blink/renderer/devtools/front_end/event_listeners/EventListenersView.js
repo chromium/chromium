@@ -82,7 +82,7 @@ EventListeners.EventListenersView = class extends UI.VBox {
       if (!frameworkEventListenersObject.internalHandlers)
         return Promise.resolve(undefined);
       return frameworkEventListenersObject.internalHandlers.object()
-          .callFunctionJSONPromise(isInternalEventListener, eventListeners.map(handlerArgument))
+          .callFunctionJSON(isInternalEventListener, eventListeners.map(handlerArgument))
           .then(setIsInternal);
 
       /**

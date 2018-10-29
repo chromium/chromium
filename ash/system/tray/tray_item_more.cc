@@ -32,7 +32,7 @@ TrayItemMore::TrayItemMore(SystemTrayItem* owner)
   tri_view_->AddView(TriView::Container::CENTER, label_);
   tri_view_->AddView(TriView::Container::END, more_);
 
-  SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
 }
 
 TrayItemMore::~TrayItemMore() = default;
@@ -72,8 +72,7 @@ bool TrayItemMore::PerformAction(const ui::Event& event) {
 
 void TrayItemMore::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ActionableView::GetAccessibleNodeData(node_data);
-  if (!accessible_name().empty())
-    node_data->SetName(accessible_name());
+  node_data->SetName(GetAccessibleName());
 }
 
 void TrayItemMore::OnEnabledChanged() {

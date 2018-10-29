@@ -37,7 +37,7 @@ class BoxReflection;
 class FilterEffect;
 class FloatRect;
 
-namespace PaintFilterBuilder {
+namespace paint_filter_builder {
 
 PLATFORM_EXPORT sk_sp<PaintFilter> Build(
     FilterEffect*,
@@ -61,7 +61,7 @@ PLATFORM_EXPORT sk_sp<PaintFilter> BuildBoxReflectFilter(
     const BoxReflection&,
     sk_sp<PaintFilter> input);
 
-}  // namespace PaintFilterBuilder
+}  // namespace paint_filter_builder
 }  // namespace blink
 
 #endif

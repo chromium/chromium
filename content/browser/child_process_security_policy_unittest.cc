@@ -498,8 +498,8 @@ TEST_F(ChildProcessSecurityPolicyTest, GrantCommitURLToNonStandardScheme) {
   const GURL url("httpxml://awesome");
   const GURL url2("httpxml://also-awesome");
 
-  ASSERT_TRUE(url::Origin::Create(url).unique());
-  ASSERT_TRUE(url::Origin::Create(url2).unique());
+  ASSERT_TRUE(url::Origin::Create(url).opaque());
+  ASSERT_TRUE(url::Origin::Create(url2).opaque());
   RegisterTestScheme("httpxml");
 
   p->Add(kRendererID);

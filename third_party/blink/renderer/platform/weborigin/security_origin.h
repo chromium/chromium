@@ -39,6 +39,10 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "url/origin.h"
 
+namespace mojo {
+struct UrlOriginAdapter;
+}  // namespace mojo
+
 namespace blink {
 
 class KURL;
@@ -64,7 +68,19 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
     kDomainMismatch,
   };
 
-  static scoped_refptr<SecurityOrigin> Create(const KURL&);
+  // SecurityOrigin::Create() resolves |url| to its SecurityOrigin. When |url|
+  // contains a standard (scheme, host, port) tuple, |reference_origin| is
+  // ignored. If |reference_origin| is provided and an opaque origin is returned
+  // (for example, if |url| has the "data:" scheme), the opaque origin will be
+  // derived from |reference_origin|, retaining the precursor information.
+  static scoped_refptr<SecurityOrigin> CreateWithReferenceOrigin(
+      const KURL& url,
+      const SecurityOrigin* reference_origin);
+
+  // Equivalent to CreateWithReferenceOrigin without supplying value for
+  // |reference_origin|.
+  static scoped_refptr<SecurityOrigin> Create(const KURL& url);
+
   // Creates a new opaque SecurityOrigin that is guaranteed to be cross-origin
   // to all currently existing SecurityOrigins.
   static scoped_refptr<SecurityOrigin> CreateUniqueOpaque();
@@ -85,9 +101,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   //
   // We're supposed to use "http://example.com" as the origin.
   //
-  // Generally, we add URL schemes to this list when WebKit support them. For
+  // Generally, we add URL schemes to this list when Blink supports them. For
   // example, we don't include the "jar" scheme, even though Firefox
-  // understands that "jar" uses an inner URL for it's security origin.
+  // understands that "jar" uses an inner URL for its security origin.
   static bool ShouldUseInnerURL(const KURL&);
   static KURL ExtractInnerURL(const KURL&);
 
@@ -215,7 +231,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // variety of situations (see https://whatwg.org/C/origin.html#origin for more
   // details), such as for documents generated from data: URLs or documents
   // with the sandboxed origin browsing context flag set.
-  bool IsOpaque() const { return is_opaque_; }
+  bool IsOpaque() const { return !!nonce_if_opaque_; }
 
   // By default 'file:' URLs may access other 'file:' URLs. This method
   // denies access. If either SecurityOrigin sets this flag, the access
@@ -278,16 +294,34 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   void SetOpaqueOriginIsPotentiallyTrustworthy(
       bool is_opaque_origin_potentially_trustworthy);
 
+  // Creates a new opaque security origin derived from |this| (|this| becomes
+  // its precursor).
+  scoped_refptr<SecurityOrigin> DeriveNewOpaqueOrigin() const;
+
   // Only used for document.domain setting. The method should probably be moved
   // if we need it for something more general.
   static String CanonicalizeHost(const String& host, bool* success);
 
  private:
-  friend class SecurityOriginTest;
+  constexpr static const int kInvalidPort = 0;
 
-  SecurityOrigin();
-  explicit SecurityOrigin(const KURL&);
-  explicit SecurityOrigin(const SecurityOrigin*);
+  friend struct mojo::UrlOriginAdapter;
+
+  // Creates a new opaque SecurityOrigin using the supplied |precursor| origin
+  // and |nonce|.
+  static scoped_refptr<SecurityOrigin> CreateOpaque(
+      const url::Origin::Nonce& nonce,
+      const SecurityOrigin* precursor);
+
+  // Create an opaque SecurityOrigin.
+  SecurityOrigin(const url::Origin::Nonce& nonce,
+                 const SecurityOrigin* precursor_origin);
+
+  // Create a tuple SecurityOrigin, with parameters via KURL
+  explicit SecurityOrigin(const KURL& url);
+
+  // Clone a SecurityOrigin which is safe to use on other threads.
+  explicit SecurityOrigin(const SecurityOrigin* other);
 
   // FIXME: Rename this function to something more semantic.
   bool PassesFileCheck(const SecurityOrigin*) const;
@@ -295,17 +329,29 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   bool SerializesAsNull() const;
 
-  String protocol_;
-  String host_;
-  String domain_;
-  uint16_t port_;
-  uint16_t effective_port_;
-  const bool is_opaque_;
-  bool universal_access_;
-  bool domain_was_set_in_dom_;
-  bool can_load_local_resources_;
-  bool block_local_access_from_local_origin_;
-  bool is_opaque_origin_potentially_trustworthy_;
+  // Get the nonce associated with this origin, if it is unique. This should be
+  // used only when trying to send an Origin across an IPC pipe.
+  base::Optional<base::UnguessableToken> GetNonceForSerialization() const;
+
+  // If this is an opaque origin that was derived from a tuple origin, return
+  // the origin from which this was derived. Otherwise returns |this|.
+  const SecurityOrigin* GetOriginOrPrecursorOriginIfOpaque() const;
+
+  const String protocol_ = g_empty_string;
+  const String host_ = g_empty_string;
+  String domain_ = g_empty_string;
+  const uint16_t port_ = kInvalidPort;
+  const uint16_t effective_port_ = kInvalidPort;
+  const base::Optional<url::Origin::Nonce> nonce_if_opaque_;
+  bool universal_access_ = false;
+  bool domain_was_set_in_dom_ = false;
+  bool can_load_local_resources_ = false;
+  bool block_local_access_from_local_origin_ = false;
+  bool is_opaque_origin_potentially_trustworthy_ = false;
+
+  // For opaque origins, tracks the non-opaque origin from which the opaque
+  // origin is derived.
+  const scoped_refptr<const SecurityOrigin> precursor_origin_;
 };
 
 }  // namespace blink

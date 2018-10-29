@@ -18,25 +18,22 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/web_contents_tester.h"
-#include "device/base/mock_device_client.h"
-#include "device/usb/mock_usb_device.h"
-#include "device/usb/mock_usb_service.h"
-#include "device/usb/mojo/type_converters.h"
+#include "device/usb/public/cpp/fake_usb_device_info.h"
+#include "device/usb/public/cpp/fake_usb_device_manager.h"
 #include "device/usb/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using ::testing::_;
-using ::testing::AtMost;
 
 using blink::mojom::WebUsbServicePtr;
 using device::mojom::UsbDeviceInfo;
 using device::mojom::UsbDeviceInfoPtr;
 using device::mojom::UsbDeviceManagerClient;
 using device::mojom::UsbDeviceManagerClientAssociatedPtrInfo;
-using device::MockUsbDevice;
-using device::UsbDevice;
+using device::FakeUsbDeviceInfo;
 
 namespace {
 
@@ -61,7 +58,17 @@ class WebUsbServiceImplTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  void SimulateDeviceServiceCrash() { device_manager()->CloseAllBindings(); }
+
   void ConnectToService(blink::mojom::WebUsbServiceRequest request) {
+    // Set fake device manager for UsbChooserContext.
+    if (!device_manager()->IsBound()) {
+      device::mojom::UsbDeviceManagerPtr device_manager_ptr;
+      device_manager()->AddBinding(mojo::MakeRequest(&device_manager_ptr));
+      GetChooserContext()->SetDeviceManagerForTesting(
+          std::move(device_manager_ptr));
+    }
+
     if (!web_usb_service_)
       web_usb_service_.reset(new WebUsbServiceImpl(main_rfh(), nullptr));
 
@@ -72,9 +79,15 @@ class WebUsbServiceImplTest : public ChromeRenderViewHostTestHarness {
     return UsbChooserContextFactory::GetForProfile(profile());
   }
 
-  device::MockDeviceClient device_client_;
+  device::FakeUsbDeviceManager* device_manager() {
+    if (!device_manager_) {
+      device_manager_ = std::make_unique<device::FakeUsbDeviceManager>();
+    }
+    return device_manager_.get();
+  }
 
  private:
+  std::unique_ptr<device::FakeUsbDeviceManager> device_manager_;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
   DISALLOW_COPY_AND_ASSIGN(WebUsbServiceImplTest);
 };
@@ -128,21 +141,18 @@ void ExpectDevicesAndThen(const std::set<std::string>& expected_guids,
 TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
   GURL origin(kDefaultTestUrl);
 
-  scoped_refptr<UsbDevice> device0 =
-      new MockUsbDevice(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
-  scoped_refptr<UsbDevice> device1 =
-      new MockUsbDevice(0x1234, 0x5679, "ACME", "Frobinator+", "GHIJKL");
-  scoped_refptr<UsbDevice> no_permission_device1 =
-      new MockUsbDevice(0xffff, 0x567b, "ACME", "Frobinator II", "MNOPQR");
-  scoped_refptr<UsbDevice> no_permission_device2 =
-      new MockUsbDevice(0xffff, 0x567c, "ACME", "Frobinator Xtreme", "STUVWX");
+  auto device1 = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
+  auto device2 = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0x1234, 0x5679, "ACME", "Frobinator+", "GHIJKL");
+  auto no_permission_device1 = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0xffff, 0x567b, "ACME", "Frobinator II", "MNOPQR");
+  auto no_permission_device2 = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0xffff, 0x567c, "ACME", "Frobinator Xtreme", "STUVWX");
 
-  auto device_info_0 = device::mojom::UsbDeviceInfo::From(*device0);
-  auto device_info_1 = device::mojom::UsbDeviceInfo::From(*device1);
-
-  device_client_.usb_service()->AddDevice(device0);
-  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_0);
-  device_client_.usb_service()->AddDevice(no_permission_device1);
+  auto device_info_1 = device_manager()->AddDevice(device1);
+  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_1);
+  device_manager()->AddDevice(no_permission_device1);
 
   WebUsbServicePtr web_usb_service;
   ConnectToService(mojo::MakeRequest(&web_usb_service));
@@ -153,22 +163,22 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
     // Call GetDevices once to make sure the WebUsbService is up and running
     // and the client is set or else we could block forever waiting for calls.
     // The site has no permission to access |no_permission_device1|, so result
-    // of GetDevices() should only contain the |guid| of |device0|.
+    // of GetDevices() should only contain the |guid| of |device1|.
     std::set<std::string> guids;
-    guids.insert(device0->guid());
+    guids.insert(device1->guid());
     base::RunLoop loop;
     web_usb_service->GetDevices(
         base::BindOnce(&ExpectDevicesAndThen, guids, loop.QuitClosure()));
     loop.Run();
   }
 
-  device_client_.usb_service()->AddDevice(device1);
-  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_1);
-  device_client_.usb_service()->AddDevice(no_permission_device2);
-  device_client_.usb_service()->RemoveDevice(device0);
-  device_client_.usb_service()->RemoveDevice(device1);
-  device_client_.usb_service()->RemoveDevice(no_permission_device1);
-  device_client_.usb_service()->RemoveDevice(no_permission_device2);
+  auto device_info_2 = device_manager()->AddDevice(device2);
+  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_2);
+  device_manager()->AddDevice(no_permission_device2);
+  device_manager()->RemoveDevice(device1);
+  device_manager()->RemoveDevice(device2);
+  device_manager()->RemoveDevice(no_permission_device1);
+  device_manager()->RemoveDevice(no_permission_device2);
   {
     base::RunLoop loop;
     base::RepeatingClosure barrier =
@@ -176,15 +186,15 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
     testing::InSequence s;
 
     EXPECT_CALL(mock_client, DoOnDeviceRemoved(_))
-        .WillOnce(ExpectGuidAndThen(device0->guid(), barrier))
-        .WillOnce(ExpectGuidAndThen(device1->guid(), barrier));
+        .WillOnce(ExpectGuidAndThen(device1->guid(), barrier))
+        .WillOnce(ExpectGuidAndThen(device2->guid(), barrier));
     loop.Run();
   }
 
-  device_client_.usb_service()->AddDevice(device0);
-  device_client_.usb_service()->AddDevice(device1);
-  device_client_.usb_service()->AddDevice(no_permission_device1);
-  device_client_.usb_service()->AddDevice(no_permission_device2);
+  device_manager()->AddDevice(device1);
+  device_manager()->AddDevice(device2);
+  device_manager()->AddDevice(no_permission_device1);
+  device_manager()->AddDevice(no_permission_device2);
   {
     base::RunLoop loop;
     base::RepeatingClosure barrier =
@@ -192,8 +202,8 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
     testing::InSequence s;
 
     EXPECT_CALL(mock_client, DoOnDeviceAdded(_))
-        .WillOnce(ExpectGuidAndThen(device0->guid(), barrier))
-        .WillOnce(ExpectGuidAndThen(device1->guid(), barrier));
+        .WillOnce(ExpectGuidAndThen(device1->guid(), barrier))
+        .WillOnce(ExpectGuidAndThen(device2->guid(), barrier));
     loop.Run();
   }
 }
@@ -202,18 +212,14 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
   GURL origin(kDefaultTestUrl);
 
   auto* context = GetChooserContext();
-  scoped_refptr<UsbDevice> device =
-      new MockUsbDevice(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
-  scoped_refptr<UsbDevice> ephemeral_device =
-      new MockUsbDevice(0, 0, "ACME", "Frobinator II", "");
+  auto device = base::MakeRefCounted<FakeUsbDeviceInfo>(0x1234, 0x5678, "ACME",
+                                                        "Frobinator", "ABCDEF");
+  auto ephemeral_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0, 0, "ACME", "Frobinator II", "");
 
-  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-  auto ephemeral_device_info =
-      device::mojom::UsbDeviceInfo::From(*ephemeral_device);
-
-  device_client_.usb_service()->AddDevice(device);
+  auto device_info = device_manager()->AddDevice(device);
   context->GrantDevicePermission(origin, origin, *device_info);
-  device_client_.usb_service()->AddDevice(ephemeral_device);
+  auto ephemeral_device_info = device_manager()->AddDevice(ephemeral_device);
   context->GrantDevicePermission(origin, origin, *ephemeral_device_info);
 
   WebUsbServicePtr web_usb_service;
@@ -235,7 +241,7 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
   EXPECT_TRUE(
       context->HasDevicePermission(origin, origin, *ephemeral_device_info));
 
-  context->DestroyDeviceManagerForTesting();
+  SimulateDeviceServiceCrash();
   EXPECT_CALL(mock_client, ConnectionError()).Times(1);
   base::RunLoop().RunUntilIdle();
 
@@ -245,11 +251,9 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
 
   // Although a new device added, as the Device manager has been destroyed, no
   // event will be triggered.
-  scoped_refptr<UsbDevice> another_device =
-      new MockUsbDevice(0x1234, 0x5679, "ACME", "Frobinator+", "GHIJKL");
-  device_client_.usb_service()->AddDevice(another_device);
-  auto another_device_info =
-      device::mojom::UsbDeviceInfo::From(*another_device);
+  auto another_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
+      0x1234, 0x5679, "ACME", "Frobinator+", "GHIJKL");
+  auto another_device_info = device_manager()->AddDevice(another_device);
 
   EXPECT_CALL(mock_client, DoOnDeviceAdded(_)).Times(0);
   base::RunLoop().RunUntilIdle();
@@ -257,7 +261,7 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
   // Grant permission to the new device when service is off.
   context->GrantDevicePermission(origin, origin, *another_device_info);
 
-  device_client_.usb_service()->RemoveDevice(device);
+  device_manager()->RemoveDevice(device);
   EXPECT_CALL(mock_client, DoOnDeviceRemoved(_)).Times(0);
   base::RunLoop().RunUntilIdle();
 

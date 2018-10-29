@@ -142,6 +142,7 @@ libcrazy_linker_tests_libbar_with_relro.so \
 libcrazy_linker_tests_libbar_with_two_dlopens.so \
 libcrazy_linker_tests_libfoo.so \
 libcrazy_linker_tests_libfoo_with_relro.so \
+libcrazy_linker_tests_libfoo_with_relro_and_relr.so \
 libcrazy_linker_tests_libfoo_with_static_constructor.so \
 libcrazy_linker_tests_libfoo_with_gnu_hash_table.so \
 libcrazy_linker_tests_libfoo2.so \
@@ -163,6 +164,7 @@ crazy_linker_test_dl_wrappers_valid_handles \
 crazy_linker_test_load_library \
 crazy_linker_test_load_library_depends \
 crazy_linker_test_load_library_with_gnu_hash_table \
+crazy_linker_test_load_library_with_relr_relocations \
 crazy_linker_test_relocated_shared_relro \
 crazy_linker_test_search_path_list \
 crazy_linker_test_shared_relro \

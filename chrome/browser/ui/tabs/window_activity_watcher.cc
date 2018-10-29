@@ -140,15 +140,14 @@ class WindowActivityWatcher::BrowserWatcher : public TabStripModelObserver {
 
  private:
   // TabStripModelObserver:
-  void TabInsertedAt(TabStripModel* tab_strip_model,
-                     content::WebContents* contents,
-                     int index,
-                     bool foreground) override {
-    MaybeLogWindowMetricsUkmEntry();
-  }
-  void TabDetachedAt(content::WebContents* contents,
-                     int index,
-                     bool was_active) override {
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::kInserted &&
+        change.type() != TabStripModelChange::kRemoved)
+      return;
+
     MaybeLogWindowMetricsUkmEntry();
   }
 
@@ -168,8 +167,8 @@ class WindowActivityWatcher::BrowserWatcher : public TabStripModelObserver {
 
 // static
 WindowActivityWatcher* WindowActivityWatcher::GetInstance() {
-  CR_DEFINE_STATIC_LOCAL(WindowActivityWatcher, instance, ());
-  return &instance;
+  static base::NoDestructor<WindowActivityWatcher> instance;
+  return instance.get();
 }
 
 // static

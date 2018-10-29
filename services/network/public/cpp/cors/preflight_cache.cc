@@ -26,7 +26,8 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const GURL& url,
     mojom::FetchCredentialsMode credentials_mode,
     const std::string& method,
-    const net::HttpRequestHeaders& request_headers) {
+    const net::HttpRequestHeaders& request_headers,
+    bool is_revalidating) {
   // Either |origin| or |url| are not in cache.
   auto cache_per_origin = cache_.find(origin);
   if (cache_per_origin == cache_.end())
@@ -38,8 +39,8 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
 
   // Both |origin| and |url| are in cache. Check if the entry is still valid and
   // sufficient to skip CORS-preflight.
-  if (cache_entry->second->EnsureAllowedRequest(credentials_mode, method,
-                                                request_headers)) {
+  if (cache_entry->second->EnsureAllowedRequest(
+          credentials_mode, method, request_headers, is_revalidating)) {
     return true;
   }
 

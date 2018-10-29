@@ -12,6 +12,7 @@
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/base/dragdrop/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "url/gurl.h"
@@ -162,6 +163,30 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
   EXPECT_EQ(1, value);
   EXPECT_TRUE(iterator.ReadInt(&value));
   EXPECT_EQ(2, value);
+}
+
+TEST_F(OSExchangeDataTest, TestFilenames) {
+#if defined(OS_WIN)
+  const std::vector<FileInfo> kTestFilenames = {
+      {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file1")),
+       base::FilePath()},
+      {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file2")),
+       base::FilePath()},
+  };
+#else
+  const std::vector<FileInfo> kTestFilenames = {
+      {base::FilePath(FILE_PATH_LITERAL("/tmp/test_file1")), base::FilePath()},
+      {base::FilePath(FILE_PATH_LITERAL("/tmp/test_file2")), base::FilePath()},
+  };
+#endif
+  OSExchangeData data;
+  data.SetFilenames(kTestFilenames);
+
+  OSExchangeData copy(data.provider().Clone());
+  std::vector<FileInfo> dropped_filenames;
+
+  EXPECT_TRUE(copy.GetFilenames(&dropped_filenames));
+  EXPECT_EQ(kTestFilenames, dropped_filenames);
 }
 
 #if defined(USE_AURA)

@@ -1,10 +1,13 @@
 function waitForCompositorCommit() {
   return new Promise((resolve) => {
-    // For now, we just rAF twice. It would be nice to have a proper mechanism
-    // for this.
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(resolve);
-    });
+    if (window.testRunner) {
+      testRunner.capturePixelsAsyncThen(resolve);
+    } else {
+      // Fall back to just rAF twice.
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(resolve);
+      });
+    }
   });
 }
 
@@ -78,7 +81,16 @@ const GestureSourceType = {
   TOUCH_INPUT: 1,
   MOUSE_INPUT: 2,
   TOUCHPAD_INPUT:2,
-  PEN_INPUT: 3
+  PEN_INPUT: 3,
+  ToString: function(value) {
+    switch(value) {
+      case 0: return "DefaultInput";
+      case 1: return "Touchscreen";
+      case 2: return "MouseWheel/Touchpad";
+      case 3: return "Pen";
+      default: return "Invalid";
+    }
+  }
 };
 
 // Use this for speed to make gestures (effectively) instant. That is, finish
@@ -87,9 +99,10 @@ const GestureSourceType = {
 // TODO(bokan): This isn't really instant but high enough that it works for
 // current purposes. This should be replaced with the Infinity value and
 // the synthetic gesture code modified to guarantee the single update behavior.
-const SPEED_INSTANT = 200000;
+// https://crbug.com/893608
+const SPEED_INSTANT = 400000;
 
-function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type, direction, speed_in_pixels_s, precise_scrolling_deltas, scroll_by_page) {
+function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type, direction, speed_in_pixels_s, precise_scrolling_deltas, scroll_by_page, cursor_visible) {
   return new Promise((resolve, reject) => {
     if (chrome && chrome.gpuBenchmarking) {
       chrome.gpuBenchmarking.smoothScrollBy(pixels_to_scroll,
@@ -100,7 +113,8 @@ function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type, d
                                             direction,
                                             speed_in_pixels_s,
                                             precise_scrolling_deltas,
-                                            scroll_by_page);
+                                            scroll_by_page,
+                                            cursor_visible);
     } else {
       reject('This test requires chrome.gpuBenchmarking');
     }
@@ -242,7 +256,7 @@ function mousePressOn(x, y, t) {
 
 // Simulate a mouse drag and drop. mouse down at {start_x, start_y}, move to
 // {end_x, end_y} and release.
-function mouseDragAndDrop(start_x, start_y, end_x, end_y, button = 'left') {
+function mouseDragAndDrop(start_x, start_y, end_x, end_y, button = 'left', t = 0) {
   return new Promise((resolve, reject) => {
     if (chrome && chrome.gpuBenchmarking) {
       let pointerActions = [{
@@ -250,7 +264,9 @@ function mouseDragAndDrop(start_x, start_y, end_x, end_y, button = 'left') {
         actions: [
           { 'name': 'pointerMove', 'x': start_x, 'y': start_y },
           { 'name': 'pointerDown', 'x': start_x, 'y': start_y, 'button': button },
+          { 'name': 'pause', 'duration': t},
           { 'name': 'pointerMove', 'x': end_x, 'y': end_y },
+          { 'name': 'pause', 'duration': t},
           { 'name': 'pointerUp', 'button': button },
         ]
       }];

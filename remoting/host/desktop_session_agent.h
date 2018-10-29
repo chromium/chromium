@@ -35,6 +35,7 @@ class Message;
 
 namespace remoting {
 
+class ActionExecutor;
 class AudioCapturer;
 class AudioPacket;
 class AutoThreadTaskRunner;
@@ -47,6 +48,7 @@ class ScreenControls;
 class ScreenResolution;
 
 namespace protocol {
+class ActionRequest;
 class InputEventTracker;
 }  // namespace protocol
 
@@ -135,6 +137,7 @@ class DesktopSessionAgent
   void OnInjectTextEvent(const std::string& serialized_event);
   void OnInjectMouseEvent(const std::string& serialized_event);
   void OnInjectTouchEvent(const std::string& serialized_event);
+  void OnExecuteActionRequestEvent(const protocol::ActionRequest& request);
 
   // Handles ChromotingNetworkDesktopMsg_SetScreenResolution request from
   // the client.
@@ -179,6 +182,9 @@ class DesktopSessionAgent
 
   // The DesktopEnvironment instance used by this agent.
   std::unique_ptr<DesktopEnvironment> desktop_environment_;
+
+  // Executes action request events.
+  std::unique_ptr<ActionExecutor> action_executor_;
 
   // Executes keyboard, mouse and clipboard events.
   std::unique_ptr<InputInjector> input_injector_;

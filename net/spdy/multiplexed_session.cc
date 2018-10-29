@@ -33,13 +33,4 @@ void MultiplexedSessionHandle::SaveSSLInfo() {
   has_ssl_info_ = session_->GetSSLInfo(&ssl_info_);
 }
 
-Error MultiplexedSessionHandle::GetTokenBindingSignature(
-    crypto::ECPrivateKey* key,
-    TokenBindingType tb_type,
-    std::vector<uint8_t>* out) {
-  if (!session_)
-    return ERR_CONNECTION_CLOSED;
-  return session_->GetTokenBindingSignature(key, tb_type, out);
-}
-
 }  // namespace net

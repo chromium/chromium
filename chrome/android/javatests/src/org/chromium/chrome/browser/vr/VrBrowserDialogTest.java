@@ -40,8 +40,7 @@ import java.util.concurrent.TimeoutException;
  * End-to-End test for capturing and comparing screen images for VR Browsering Dialogs
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=VrBrowsingNativeAndroidUi"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
 public class VrBrowserDialogTest {
     // A long enough sleep after entering VR to ensure that the VR entry animations are complete.

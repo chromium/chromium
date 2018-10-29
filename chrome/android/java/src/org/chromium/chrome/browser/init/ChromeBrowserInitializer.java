@@ -10,12 +10,9 @@ import android.os.Build;
 import android.os.Process;
 import android.os.StrictMode;
 
-import com.squareup.leakcanary.LeakCanary;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -24,11 +21,11 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.memory.MemoryPressureUma;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.ChromeStrictMode;
@@ -105,14 +102,6 @@ public class ChromeBrowserInitializer {
 
     private ChromeBrowserInitializer() {
         mApplication = (ChromeApplication) ContextUtils.getApplicationContext();
-        initLeakCanary();
-    }
-
-    @RemovableInRelease
-    private void initLeakCanary() {
-        // Watch that Activity objects are not retained after their onDestroy() has been called.
-        // This is a no-op in release builds.
-        LeakCanary.install(mApplication);
     }
 
     /**
@@ -160,14 +149,21 @@ public class ChromeBrowserInitializer {
      */
     public void handlePreNativeStartup(final BrowserParts parts) {
         ThreadUtils.checkUiThread();
-
-        ProcessInitializationHandler.getInstance().initializePreNative();
-        preInflationStartup();
-        parts.preInflationStartup();
-        if (parts.isActivityFinishing()) return;
-
-        preInflationStartupDone();
-        parts.setContentViewAndLoadLibrary(() -> this.onInflationComplete(parts));
+        try (TraceEvent e1 =
+                        TraceEvent.scoped("ChromeBrowserInitializer.handlePreNativeStartup()")) {
+            ProcessInitializationHandler.getInstance().initializePreNative();
+            try (TraceEvent e2 =
+                            TraceEvent.scoped("ChromeBrowserInitializer.preInflationStartup")) {
+                preInflationStartup();
+                parts.preInflationStartup();
+            }
+            if (parts.isActivityFinishing()) return;
+            preInflationStartupDone();
+            try (TraceEvent e3 = TraceEvent.scoped(
+                         "ChromeBrowserInitializer.setContentViewAndLoadLibrary")) {
+                parts.setContentViewAndLoadLibrary(() -> this.onInflationComplete(parts));
+            }
+        }
     }
 
     /**
@@ -200,23 +196,25 @@ public class ChromeBrowserInitializer {
      * Running in an AsyncTask as pre-loading itself may cause I/O.
      */
     private void warmUpSharedPrefs() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            new AsyncTask<Void>() {
-                @Override
-                protected Void doInBackground() {
-                    ContextUtils.getAppSharedPreferences();
-                    DocumentTabModelImpl.warmUpSharedPrefs(mApplication);
-                    ActivityAssigner.warmUpSharedPrefs(mApplication);
-                    DownloadManagerService.warmUpSharedPrefs();
-                    return null;
+        try (TraceEvent e = TraceEvent.scoped("ChromeBrowserInitializer.warmUpSharedPrefs")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                new AsyncTask<Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        ContextUtils.getAppSharedPreferences();
+                        DocumentTabModelImpl.warmUpSharedPrefs(mApplication);
+                        ActivityAssigner.warmUpSharedPrefs(mApplication);
+                        DownloadManagerService.warmUpSharedPrefs();
+                        return null;
+                    }
                 }
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                ContextUtils.getAppSharedPreferences();
+                DocumentTabModelImpl.warmUpSharedPrefs(mApplication);
+                ActivityAssigner.warmUpSharedPrefs(mApplication);
+                DownloadManagerService.warmUpSharedPrefs();
             }
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            ContextUtils.getAppSharedPreferences();
-            DocumentTabModelImpl.warmUpSharedPrefs(mApplication);
-            ActivityAssigner.warmUpSharedPrefs(mApplication);
-            DownloadManagerService.warmUpSharedPrefs();
         }
     }
 
@@ -424,6 +422,7 @@ public class ChromeBrowserInitializer {
 
         mNativeInitializationComplete = true;
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        ServiceManagerStartupUtils.registerEnabledFeatures();
 
         // When a minidump is detected, extract and append a logcat to it, then upload it to the
         // crash server. Note that the logcat extraction might fail. This is ok; in that case, the

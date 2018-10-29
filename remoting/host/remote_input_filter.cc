@@ -38,8 +38,7 @@ void RemoteInputFilter::LocalMouseMoved(
   // input event that we've just injected), then ignore remote inputs for a
   // short time.
   if (expect_local_echo_) {
-    std::list<webrtc::DesktopVector>::iterator found_position =
-        injected_mouse_positions_.begin();
+    auto found_position = injected_mouse_positions_.begin();
     while (found_position != injected_mouse_positions_.end() &&
            !mouse_pos.equals(*found_position)) {
       ++found_position;

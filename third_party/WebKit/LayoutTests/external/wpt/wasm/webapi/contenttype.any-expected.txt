@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Response with Content-Type "": compileStreaming
+PASS Response with Content-Type "": instantiateStreaming
+PASS Response with Content-Type "application/javascript": compileStreaming
+PASS Response with Content-Type "application/javascript": instantiateStreaming
+PASS Response with Content-Type "application/octet-stream": compileStreaming
+PASS Response with Content-Type "application/octet-stream": instantiateStreaming
+PASS Response with Content-Type "text/wasm": compileStreaming
+PASS Response with Content-Type "text/wasm": instantiateStreaming
+FAIL Response with Content-Type "application/wasm;": compileStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Response with Content-Type "application/wasm;": instantiateStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Response with Content-Type "application/wasm;x": compileStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Response with Content-Type "application/wasm;x": instantiateStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Response with Content-Type "application/wasm;charset=UTF-8": compileStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Response with Content-Type "application/wasm;charset=UTF-8": instantiateStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS Response with Content-Type "application/wasm": compileStreaming
+PASS Response with Content-Type "application/wasm": instantiateStreaming
+PASS Response with Content-Type "APPLICATION/wasm": compileStreaming
+PASS Response with Content-Type "APPLICATION/wasm": instantiateStreaming
+PASS Response with Content-Type "APPLICATION/WASM": compileStreaming
+PASS Response with Content-Type "APPLICATION/WASM": instantiateStreaming
+Harness: the test ran to completion.
+

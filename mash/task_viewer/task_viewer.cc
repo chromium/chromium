@@ -293,7 +293,7 @@ void TaskViewer::RemoveWindow(views::Widget* widget) {
   DCHECK(it != windows_.end());
   windows_.erase(it);
   if (windows_.empty())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    context()->QuitNow();
 }
 
 void TaskViewer::OnStart() {

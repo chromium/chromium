@@ -22,13 +22,18 @@ class URLLoaderFactoryGetter;
 // Helper class to intercept URLLoaderFactory calls for tests.
 // This intercepts:
 //   -frame requests (which start from the browser, with PlzNavigate)
-//   -subresource requests
+//   -subresource requests from pages and dedicad workers and shared workers.
 //     -at ResourceMessageFilter for non network-service code path
 //     -by sending renderer an intermediate URLLoaderFactory for network-service
-//      codepath, as that normally routes directly to the network process
-//     -http(s)://mock.failed.request/foo URLs internally, copying the behavior
-//      of net::URLRequestFailedJob
+//      code path, as that normally routes directly to the network process
+//   -subresource requests from service workers and requests of non-installed
+//    service worker scripts
+//     -at ResourceMessageFilter for non network-service code path
+//     -at EmbeddedWorkerInstance for network-service code path.
 //   -requests by the browser
+//
+//   -http(s)://mock.failed.request/foo URLs internally, copying the behavior
+//    of net::URLRequestFailedJob
 //
 // Prefer not to use this class. In order of ease of use & simplicity:
 //  -if you need to serve static data, use net::test::EmbeddedTestServer and

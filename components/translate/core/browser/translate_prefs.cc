@@ -127,6 +127,9 @@ const base::Feature kTranslateRecentTarget{"TranslateRecentTarget",
 const base::Feature kTranslateUI{"TranslateUI",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kTranslateAndroidManualTrigger{
+    "TranslateAndroidManualTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
+
 DenialTimeUpdate::DenialTimeUpdate(PrefService* prefs,
                                    const std::string& language,
                                    size_t max_denial_count)
@@ -395,9 +398,9 @@ void TranslatePrefs::RearrangeLanguage(
   b = std::min(length, b);
   if (r > a && r < b) {
     // All cases can be achieved with a single rotation.
-    std::vector<std::string>::iterator first = languages.begin() + a;
-    std::vector<std::string>::iterator it = languages.begin() + r;
-    std::vector<std::string>::iterator last = languages.begin() + b;
+    auto first = languages.begin() + a;
+    auto it = languages.begin() + r;
+    auto last = languages.begin() + b;
     std::rotate(first, it, last);
 
     UpdateLanguageList(languages);
@@ -892,48 +895,6 @@ void TranslatePrefs::RegisterProfilePrefs(
       kPrefExplicitLanguageAskShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
-}
-
-// static
-void TranslatePrefs::MigrateUserPrefs(PrefService* user_prefs,
-                                      const char* accept_languages_pref) {
-  // Old format of kPrefTranslateWhitelists
-  // - original language -> list of target langs to auto-translate
-  // - list of langs is in order of being enabled i.e. last in list is the
-  //   most recent language that user enabled via
-  //   Always translate |source_lang| to |target_lang|"
-  // - this results in a one-to-n relationship between source lang and target
-  //   langs.
-  // New format:
-  // - original language -> one target language to auto-translate
-  // - each time that the user enables the "Always translate..." option, that
-  //   target lang overwrites the previous one.
-  // - this results in a one-to-one relationship between source lang and target
-  //   lang
-  // - we replace old list of target langs with the last target lang in list,
-  //   assuming the last (i.e. most recent) target lang is what user wants to
-  //   keep auto-translated.
-  DictionaryPrefUpdate update(user_prefs, kPrefTranslateWhitelists);
-  base::DictionaryValue* dict = update.Get();
-  if (dict && !dict->empty()) {
-    base::DictionaryValue::Iterator iter(*dict);
-    while (!iter.IsAtEnd()) {
-      const base::ListValue* list = nullptr;
-      if (!iter.value().GetAsList(&list) || !list)
-        break;  // Dictionary has either been migrated or new format.
-      std::string key = iter.key();
-      // Advance the iterator before removing the current element.
-      iter.Advance();
-      std::string target_lang;
-      if (list->empty() ||
-          !list->GetString(list->GetSize() - 1, &target_lang) ||
-          target_lang.empty()) {
-        dict->Remove(key, nullptr);
-      } else {
-        dict->SetString(key, target_lang);
-      }
-    }
-  }
 }
 
 void TranslatePrefs::MigrateSitesBlacklist() {

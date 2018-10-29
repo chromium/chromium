@@ -69,7 +69,7 @@ The benchmark output several different loading metrics. The keys one are:
 
 Besides those key metrics, there are also breakdown metrics that are meant to
 to make debugging regressions simpler. These metrics are updated often, for most
-up to date information, you can email progressive-web-metrics@chromium.org
+up to date information, you can email speed-metrics-dev@chromium.org
 or chrome-speed-metrics@google.com (Googlers only).
 
 ## Adding new loading test cases

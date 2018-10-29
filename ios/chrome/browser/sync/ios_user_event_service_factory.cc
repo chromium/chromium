@@ -17,10 +17,12 @@
 #include "components/sync/user_events/no_op_user_event_service.h"
 #include "components/sync/user_events/user_event_service_impl.h"
 #include "components/sync/user_events/user_event_sync_bridge.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/browser_state.h"
 
@@ -41,6 +43,7 @@ IOSUserEventServiceFactory::IOSUserEventServiceFactory()
           "UserEventService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
 IOSUserEventServiceFactory::~IOSUserEventServiceFactory() {}
@@ -66,7 +69,8 @@ IOSUserEventServiceFactory::BuildServiceInstanceFor(
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::USER_EVENTS, /*dump_stack=*/base::BindRepeating(
               &syncer::ReportUnrecoverableError, ::GetChannel())),
-      sync_service->GetGlobalIdMapper());
+      SessionSyncServiceFactory::GetForBrowserState(browser_state)
+          ->GetGlobalIdMapper());
   return std::make_unique<syncer::UserEventServiceImpl>(sync_service,
                                                         std::move(bridge));
 }

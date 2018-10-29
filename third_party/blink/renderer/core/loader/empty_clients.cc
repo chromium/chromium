@@ -34,7 +34,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_application_cache_host.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
@@ -46,9 +45,9 @@
 namespace blink {
 
 void FillWithEmptyClients(Page::PageClients& page_clients) {
-  DEFINE_STATIC_LOCAL(ChromeClient, dummy_chrome_client,
+  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, dummy_chrome_client,
                       (EmptyChromeClient::Create()));
-  page_clients.chrome_client = &dummy_chrome_client;
+  page_clients.chrome_client = dummy_chrome_client;
 }
 
 class EmptyPopupMenu : public PopupMenu {
@@ -103,6 +102,7 @@ NavigationPolicy EmptyLocalFrameClient::DecidePolicyForNavigation(
     NavigationPolicy,
     bool,
     bool,
+    bool,
     WebTriggeringEventInfo,
     HTMLFormElement*,
     ContentSecurityPolicyDisposition,
@@ -113,21 +113,22 @@ NavigationPolicy EmptyLocalFrameClient::DecidePolicyForNavigation(
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 
-void EmptyLocalFrameClient::DispatchWillSubmitForm(HTMLFormElement*) {}
-
 DocumentLoader* EmptyLocalFrameClient::CreateDocumentLoader(
     LocalFrame* frame,
     const ResourceRequest& request,
     const SubstituteData& substitute_data,
     ClientRedirectPolicy client_redirect_policy,
     const base::UnguessableToken& devtools_navigation_token,
+    WebFrameLoadType load_type,
+    WebNavigationType navigation_type,
     std::unique_ptr<WebNavigationParams> navigation_params,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(frame);
 
-  return DocumentLoader::Create(frame, request, substitute_data,
-                                client_redirect_policy,
-                                devtools_navigation_token);
+  return new DocumentLoader(frame, request, substitute_data,
+                            client_redirect_policy, devtools_navigation_token,
+                            load_type, navigation_type,
+                            std::move(navigation_params));
 }
 
 LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
@@ -174,10 +175,6 @@ Frame* EmptyLocalFrameClient::FindFrame(const AtomicString& name) const {
 std::unique_ptr<WebServiceWorkerProvider>
 EmptyLocalFrameClient::CreateServiceWorkerProvider() {
   return nullptr;
-}
-
-ContentSettingsClient& EmptyLocalFrameClient::GetContentSettingsClient() {
-  return content_settings_client_;
 }
 
 std::unique_ptr<WebApplicationCacheHost>

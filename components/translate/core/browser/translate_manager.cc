@@ -305,6 +305,58 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   }
 }
 
+// static
+std::string TranslateManager::GetManualTargetLanguage(
+    const std::string& source_code,
+    const LanguageState& language_state,
+    translate::TranslatePrefs* prefs,
+    language::LanguageModel* language_model) {
+  if (language_state.IsPageTranslated()) {
+    return language_state.current_language();
+  } else {
+    const std::set<std::string>& skipped_languages =
+        GetSkippedLanguagesForExperiments(source_code, prefs);
+    return GetTargetLanguage(prefs, language_model, skipped_languages);
+  }
+}
+
+bool TranslateManager::CanManuallyTranslate() {
+  std::unique_ptr<TranslatePrefs> translate_prefs(
+      translate_client_->GetTranslatePrefs());
+  const std::string source_code = TranslateDownloadManager::GetLanguageCode(
+      language_state_.original_language());
+  const std::string target_lang = GetManualTargetLanguage(
+      source_code, language_state_, translate_prefs.get(), language_model_);
+
+  return language_state_.page_needs_translation() &&
+         base::FeatureList::IsEnabled(translate::kTranslateUI) &&
+         !net::NetworkChangeNotifier::IsOffline() &&
+         (ignore_missing_key_for_testing_ ||
+          ::google_apis::HasAPIKeyConfigured()) &&
+         // MHTML pages currently cannot be translated (crbug.com/217945).
+         translate_driver_->GetContentsMimeType() != "multipart/related" &&
+         translate_client_->IsTranslatableURL(
+             translate_driver_->GetVisibleURL()) &&
+         !target_lang.empty();
+}
+
+void TranslateManager::InitiateManualTranslation() {
+  std::unique_ptr<TranslatePrefs> translate_prefs(
+      translate_client_->GetTranslatePrefs());
+  const std::string source_code = TranslateDownloadManager::GetLanguageCode(
+      language_state_.original_language());
+  const std::string target_lang = GetManualTargetLanguage(
+      source_code, language_state_, translate_prefs.get(), language_model_);
+
+  language_state_.SetTranslateEnabled(true);
+  const translate::TranslateStep step =
+      language_state_.IsPageTranslated()
+          ? translate::TRANSLATE_STEP_AFTER_TRANSLATE
+          : translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
+  translate_client_->ShowTranslateUI(step, source_code, target_lang,
+                                     TranslateErrors::NONE, false);
+}
+
 void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      const std::string& target_lang,
                                      bool triggered_from_menu) {

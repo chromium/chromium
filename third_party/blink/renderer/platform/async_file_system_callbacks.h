@@ -33,7 +33,6 @@
 
 #include <memory>
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
-#include "third_party/blink/public/platform/web_file_writer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
@@ -43,12 +42,12 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT AsyncFileSystemCallbacks {
+class AsyncFileSystemCallbacks {
   USING_FAST_MALLOC(AsyncFileSystemCallbacks);
   WTF_MAKE_NONCOPYABLE(AsyncFileSystemCallbacks);
 
  public:
-  AsyncFileSystemCallbacks() : block_until_completion_(false) {}
+  AsyncFileSystemCallbacks() = default;
 
   // Called when a requested operation is completed successfully.
   virtual void DidSucceed() { NOTREACHED(); }
@@ -87,28 +86,14 @@ class PLATFORM_EXPORT AsyncFileSystemCallbacks {
   virtual void DidReadDirectoryEntries(bool has_more) { NOTREACHED(); }
 
   // Called when an AsyncFileWrter has been created successfully.
-  virtual void DidCreateFileWriter(std::unique_ptr<WebFileWriter>,
-                                   long long length) {
+  virtual void DidCreateFileWriter(const KURL& path, long long length) {
     NOTREACHED();
   }
 
   // Called when there was an error.
-  virtual void DidFail(int code) = 0;
-
-  // Returns true if the caller expects that the calling thread blocks
-  // until completion.
-  virtual bool ShouldBlockUntilCompletion() const {
-    return block_until_completion_;
-  }
-
-  void SetShouldBlockUntilCompletion(bool flag) {
-    block_until_completion_ = flag;
-  }
+  virtual void DidFail(base::File::Error) = 0;
 
   virtual ~AsyncFileSystemCallbacks() = default;
-
- private:
-  bool block_until_completion_;
 };
 
 }  // namespace blink

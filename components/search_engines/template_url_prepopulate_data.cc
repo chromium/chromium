@@ -1256,7 +1256,7 @@ int GetCurrentCountryID() {
   return CountryStringToCountryID(base::android::GetDefaultCountryCode());
 }
 
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 int GetCurrentCountryID() {
   const char* locale = setlocale(LC_MESSAGES, nullptr);

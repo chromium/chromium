@@ -178,7 +178,7 @@ TEST_F(BufferSourceTest, GetUleb128) {
   constexpr uint32_t kUnInit = 0xCCCCCCCC;  // Arbitrary value.
   constexpr Result kBad{false, kUnInit, 0U};
 
-  auto run = [kUnInit](const std::string hex_string) -> Result {
+  auto run = [](const std::string hex_string) -> Result {
     std::vector<uint8_t> bytes = ParseHexString(hex_string);
     BufferSource source(ConstBufferView{bytes.data(), bytes.size()});
     BufferSource::iterator base = source.begin();
@@ -237,7 +237,7 @@ TEST_F(BufferSourceTest, GetSleb128) {
   constexpr int32_t kUnInit = 0xCCCCCCCC;  // Arbitrary value.
   constexpr Result kBad{false, kUnInit, 0U};
 
-  auto run = [kUnInit](const std::string hex_string) -> Result {
+  auto run = [](const std::string hex_string) -> Result {
     std::vector<uint8_t> bytes = ParseHexString(hex_string);
     BufferSource source(ConstBufferView{bytes.data(), bytes.size()});
     BufferSource::iterator base = source.begin();

@@ -22,10 +22,9 @@ namespace autofill {
 // process if provided. |web_contents| is used during fingerprinting as well,
 // when retrieving user prefs, and in determining window bounds when not on
 // Android.
-void LoadRiskData(
-    uint64_t obfuscated_gaia_id,
-    content::WebContents* web_contents,
-    const base::RepeatingCallback<void(const std::string&)>& callback);
+void LoadRiskData(uint64_t obfuscated_gaia_id,
+                  content::WebContents* web_contents,
+                  base::OnceCallback<void(const std::string&)> callback);
 
 }  // namespace autofill
 

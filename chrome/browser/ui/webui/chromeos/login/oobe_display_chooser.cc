@@ -8,7 +8,9 @@
 
 #include "ash/public/interfaces/constants.mojom.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/ui/ash/ash_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -62,8 +64,8 @@ void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
   if (primary_display.is_valid() && !TouchSupportAvailable(primary_display)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&OobeDisplayChooser::MaybeMoveToTouchDisplay,
                        weak_ptr_factory_.GetWeakPtr()));
   }

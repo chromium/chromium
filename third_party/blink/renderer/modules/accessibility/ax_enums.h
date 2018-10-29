@@ -15,63 +15,11 @@ enum AccessibilityOrientation {
   kAccessibilityOrientationHorizontal,
 };
 
-enum class AXDefaultActionVerb {
-  kNone = 0,
-  kActivate,
-  kCheck,
-  kClick,
-
-  // A click will be performed on one of the object's ancestors.
-  // This happens when the object itself is not clickable, but one of its
-  // ancestors has click handlers attached which are able to capture the click
-  // as it bubbles up.
-  kClickAncestor,
-
-  kJump,
-  kOpen,
-  kPress,
-  kSelect,
-  kUncheck
-};
-
 // The input restriction on an object.
 enum AXRestriction {
   kNone = 0,  // An object that is not disabled.
   kReadOnly,
   kDisabled,
-};
-
-enum class AXSupportedAction {
-  kNone = 0,
-  kActivate,
-  kCheck,
-  kClick,
-  kJump,
-  kOpen,
-  kPress,
-  kSelect,
-  kUncheck
-};
-
-enum AccessibilityTextDirection {
-  kAccessibilityTextDirectionLTR,
-  kAccessibilityTextDirectionRTL,
-  kAccessibilityTextDirectionTTB,
-  kAccessibilityTextDirectionBTT
-};
-
-enum AXTextPosition {
-  kAXTextPositionNone = 0,
-  kAXTextPositionSubscript,
-  kAXTextPositionSuperscript
-};
-
-enum SortDirection {
-  kSortDirectionUndefined = 0,
-  kSortDirectionNone,
-  kSortDirectionAscending,
-  kSortDirectionDescending,
-  kSortDirectionOther
 };
 
 enum AccessibilityExpanded {
@@ -84,36 +32,6 @@ enum AccessibilitySelectedState {
   kSelectedStateUndefined = 0,
   kSelectedStateFalse,
   kSelectedStateTrue,
-};
-
-enum AriaCurrentState {
-  kAriaCurrentStateUndefined = 0,
-  kAriaCurrentStateFalse,
-  kAriaCurrentStateTrue,
-  kAriaCurrentStatePage,
-  kAriaCurrentStateStep,
-  kAriaCurrentStateLocation,
-  kAriaCurrentStateDate,
-  kAriaCurrentStateTime
-};
-
-enum AXHasPopup {
-  kAXHasPopupFalse = 0,
-  kAXHasPopupTrue,
-  kAXHasPopupMenu,
-  kAXHasPopupListbox,
-  kAXHasPopupTree,
-  kAXHasPopupGrid,
-  kAXHasPopupDialog
-};
-
-enum InvalidState {
-  kInvalidStateUndefined = 0,
-  kInvalidStateFalse,
-  kInvalidStateTrue,
-  kInvalidStateSpelling,
-  kInvalidStateGrammar,
-  kInvalidStateOther
 };
 
 enum TextStyle {
@@ -144,42 +62,10 @@ enum class AXObjectVectorAttribute {
   kAriaFlowTo,
 };
 
-// The source of the accessible name of an element. This is needed
-// because on some platforms this determines how the accessible name
-// is exposed.
-enum AXNameFrom {
-  kAXNameFromUninitialized = -1,
-  kAXNameFromAttribute = 0,
-  kAXNameFromAttributeExplicitlyEmpty,
-  kAXNameFromCaption,
-  kAXNameFromContents,
-  kAXNameFromPlaceholder,
-  kAXNameFromRelatedElement,
-  kAXNameFromValue,
-  kAXNameFromTitle,
-};
-
-// The source of the accessible description of an element. This is needed
-// because on some platforms this determines how the accessible description
-// is exposed.
-enum AXDescriptionFrom {
-  kAXDescriptionFromUninitialized = -1,
-  kAXDescriptionFromAttribute = 0,
-  kAXDescriptionFromContents,
-  kAXDescriptionFromRelatedElement,
-};
-
 enum AXObjectInclusion {
   kIncludeObject,
   kIgnoreObject,
   kDefaultBehavior,
-};
-
-enum AccessibilityCheckedState {
-  kCheckedStateUndefined = 0,
-  kCheckedStateFalse,
-  kCheckedStateTrue,
-  kCheckedStateMixed
 };
 
 enum AccessibilityOptionalBool {

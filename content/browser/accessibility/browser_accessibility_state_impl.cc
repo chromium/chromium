@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -67,6 +68,9 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   // Hook ourselves up to observe ax mode changes.
   ui::AXPlatformNode::AddAXModeObserver(this);
 
+  // Let each platform do its own initialization.
+  PlatformInitialize();
+
 #if defined(OS_WIN)
   // The delay is necessary because assistive technology sometimes isn't
   // detected until after the user interacts in some way, so a reasonable delay
@@ -78,8 +82,8 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
 #else
   // On all other platforms, UpdateHistograms should be called on the UI
   // thread because it needs to be able to access PrefService.
-  BrowserThread::PostDelayedTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostDelayedTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistograms, this),
       base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS));
 #endif
@@ -167,6 +171,8 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() const {
 }
 
 #if !defined(OS_WIN) && !defined(OS_MACOSX)
+void BrowserAccessibilityStateImpl::PlatformInitialize() {}
+
 void BrowserAccessibilityStateImpl::UpdatePlatformSpecificHistograms() {
 }
 #endif

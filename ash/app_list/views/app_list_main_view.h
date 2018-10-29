@@ -68,6 +68,7 @@ class APP_LIST_EXPORT AppListMainView
 
   // Overridden from views::View:
   const char* GetClassName() const override;
+  void Layout() override;
 
   // Invoked when an item is activated on the grid view. |event_flags| contains
   // the flags of the keyboard/mouse event that triggers the activation request.

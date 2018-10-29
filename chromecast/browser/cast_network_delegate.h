@@ -30,6 +30,7 @@ class CastNetworkDelegate : public net::NetworkDelegateImpl {
   bool IsWhitelisted(const GURL& gurl,
                      const std::string& session_id,
                      int render_process_id,
+                     int render_frame_id,
                      bool for_device_auth) const;
 
  private:

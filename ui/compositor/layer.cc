@@ -187,16 +187,16 @@ std::unique_ptr<Layer> Layer::Clone() const {
 
   // cc::Layer state.
   if (surface_layer_) {
-    clone->SetShowPrimarySurface(
-        surface_layer_->primary_surface_id(), frame_size_in_dip_,
-        surface_layer_->background_color(),
-        surface_layer_->deadline_in_frames()
-            ? cc::DeadlinePolicy::UseSpecifiedDeadline(
-                  *surface_layer_->deadline_in_frames())
-            : cc::DeadlinePolicy::UseDefaultDeadline(),
-        surface_layer_->stretch_content_to_fill_bounds());
-    if (surface_layer_->fallback_surface_id())
-      clone->SetFallbackSurfaceId(*surface_layer_->fallback_surface_id());
+    clone->SetShowSurface(surface_layer_->surface_id(), frame_size_in_dip_,
+                          surface_layer_->background_color(),
+                          surface_layer_->deadline_in_frames()
+                              ? cc::DeadlinePolicy::UseSpecifiedDeadline(
+                                    *surface_layer_->deadline_in_frames())
+                              : cc::DeadlinePolicy::UseDefaultDeadline(),
+                          surface_layer_->stretch_content_to_fill_bounds());
+    if (surface_layer_->oldest_acceptable_fallback())
+      clone->SetOldestAcceptableFallback(
+          *surface_layer_->oldest_acceptable_fallback());
   } else if (type_ == LAYER_SOLID_COLOR) {
     clone->SetColor(GetTargetColor());
   }
@@ -284,8 +284,7 @@ void Layer::Remove(Layer* child) {
   if (compositor)
     child->ResetCompositorForAnimatorsInTree(compositor);
 
-  std::vector<Layer*>::iterator i =
-      std::find(children_.begin(), children_.end(), child);
+  auto i = std::find(children_.begin(), children_.end(), child);
   DCHECK(i != children_.end());
   children_.erase(i);
   child->parent_ = nullptr;
@@ -524,7 +523,7 @@ void Layer::SetLayerBackgroundFilters() {
         background_blur_sigma_, SkBlurImageFilter::kClamp_TileMode));
   }
 
-  cc_layer_->SetBackgroundFilters(filters);
+  cc_layer_->SetBackdropFilters(filters);
 }
 
 float Layer::GetTargetOpacity() const {
@@ -770,21 +769,16 @@ bool Layer::TextureFlipped() const {
   return texture_layer_->flipped();
 }
 
-void Layer::SetShowPrimarySurface(const viz::SurfaceId& surface_id,
-                                  const gfx::Size& frame_size_in_dip,
-                                  SkColor default_background_color,
-                                  const cc::DeadlinePolicy& deadline_policy,
-                                  bool stretch_content_to_fill_bounds) {
+void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
+                           const gfx::Size& frame_size_in_dip,
+                           SkColor default_background_color,
+                           const cc::DeadlinePolicy& deadline_policy,
+                           bool stretch_content_to_fill_bounds) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
 
-  if (!surface_layer_) {
-    scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
-    new_layer->SetSurfaceHitTestable(true);
-    SwitchToLayer(new_layer);
-    surface_layer_ = new_layer;
-  }
+  CreateSurfaceLayerIfNecessary();
 
-  surface_layer_->SetPrimarySurfaceId(surface_id, deadline_policy);
+  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
   surface_layer_->SetBackgroundColor(default_background_color);
   surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
 
@@ -792,31 +786,32 @@ void Layer::SetShowPrimarySurface(const viz::SurfaceId& surface_id,
   RecomputeDrawsContentAndUVRect();
 
   for (const auto& mirror : mirrors_) {
-    mirror->dest()->SetShowPrimarySurface(
-        surface_id, frame_size_in_dip, default_background_color,
-        deadline_policy, stretch_content_to_fill_bounds);
+    mirror->dest()->SetShowSurface(surface_id, frame_size_in_dip,
+                                   default_background_color, deadline_policy,
+                                   stretch_content_to_fill_bounds);
   }
 }
 
-void Layer::SetFallbackSurfaceId(const viz::SurfaceId& surface_id) {
+void Layer::SetOldestAcceptableFallback(const viz::SurfaceId& surface_id) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-  DCHECK(surface_layer_);
 
-  surface_layer_->SetFallbackSurfaceId(surface_id);
+  CreateSurfaceLayerIfNecessary();
+
+  surface_layer_->SetOldestAcceptableFallback(surface_id);
 
   for (const auto& mirror : mirrors_)
-    mirror->dest()->SetFallbackSurfaceId(surface_id);
+    mirror->dest()->SetOldestAcceptableFallback(surface_id);
 }
 
-const viz::SurfaceId* Layer::GetPrimarySurfaceId() const {
+const viz::SurfaceId* Layer::GetSurfaceId() const {
   if (surface_layer_)
-    return &surface_layer_->primary_surface_id();
+    return &surface_layer_->surface_id();
   return nullptr;
 }
 
-const viz::SurfaceId* Layer::GetFallbackSurfaceId() const {
-  if (surface_layer_ && surface_layer_->fallback_surface_id())
-    return &surface_layer_->fallback_surface_id().value();
+const viz::SurfaceId* Layer::GetOldestAcceptableFallback() const {
+  if (surface_layer_ && surface_layer_->oldest_acceptable_fallback())
+    return &surface_layer_->oldest_acceptable_fallback().value();
   return nullptr;
 }
 
@@ -848,7 +843,7 @@ void Layer::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
   // we don't need/want to, but we should address this in the future if it
   // becomes an issue.
   nine_patch_layer_->SetBitmap(
-      image.GetRepresentation(device_scale_factor_).sk_bitmap());
+      image.GetRepresentation(device_scale_factor_).GetBitmap());
 }
 
 void Layer::UpdateNinePatchLayerAperture(const gfx::Rect& aperture_in_dip) {
@@ -1325,6 +1320,15 @@ void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
 
   DCHECK(it != mirrors_.end());
   mirrors_.erase(it);
+}
+
+void Layer::CreateSurfaceLayerIfNecessary() {
+  if (surface_layer_)
+    return;
+  scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
+  new_layer->SetSurfaceHitTestable(true);
+  SwitchToLayer(new_layer);
+  surface_layer_ = new_layer;
 }
 
 }  // namespace ui

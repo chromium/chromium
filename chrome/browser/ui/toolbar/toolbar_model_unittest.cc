@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/toolbar/toolbar_model.h"
+#include "components/omnibox/browser/toolbar_model.h"
 
 #include <stddef.h>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/toolbar/toolbar_model.h"
+#include "components/omnibox/browser/toolbar_field_trial.h"
+#include "components/omnibox/browser/toolbar_model.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_constants.h"
@@ -109,7 +112,8 @@ ToolbarModelTest::~ToolbarModelTest() {
 void ToolbarModelTest::SetUp() {
   BrowserWithTestWindowTest::SetUp();
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(), &AutocompleteClassifierFactory::BuildInstanceFor);
+      profile(),
+      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Install a fake extension so that the ID in the chrome-extension test URL is
@@ -189,6 +193,12 @@ void ToolbarModelTest::NavigateAndCheckElided(const GURL& url) {
 
 // Test URL display.
 TEST_F(ToolbarModelTest, ShouldDisplayURL) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {toolbar::features::kHideSteadyStateUrlScheme,
+       toolbar::features::kHideSteadyStateUrlTrivialSubdomains},
+      {});
+
   AddTab(browser(), GURL(url::kAboutBlankURL));
 
   for (const TestItem& test_item : test_items) {
@@ -196,6 +206,56 @@ TEST_F(ToolbarModelTest, ShouldDisplayURL) {
         test_item.url,
         base::ASCIIToUTF16(test_item.expected_formatted_full_url),
         base::ASCIIToUTF16(test_item.expected_elided_url_for_display));
+  }
+}
+
+// Tests every combination of Steady State Elision flags.
+TEST_F(ToolbarModelTest, SteadyStateElisionsFlags) {
+  AddTab(browser(), GURL(url::kAboutBlankURL));
+
+  // Hide Scheme and Hide Trivial Subdomains both Disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {toolbar::features::kHideSteadyStateUrlScheme,
+             toolbar::features::kHideSteadyStateUrlTrivialSubdomains});
+    NavigateAndCheckText(GURL("https://www.google.com/"),
+                         base::ASCIIToUTF16("https://www.google.com"),
+                         base::ASCIIToUTF16("https://www.google.com"));
+  }
+
+  // Only Hide Scheme Enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {toolbar::features::kHideSteadyStateUrlScheme},
+        {toolbar::features::kHideSteadyStateUrlTrivialSubdomains});
+    NavigateAndCheckText(GURL("https://www.google.com/"),
+                         base::ASCIIToUTF16("https://www.google.com"),
+                         base::ASCIIToUTF16("www.google.com"));
+  }
+
+  // Only Hide Trivial Subdomains Enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {toolbar::features::kHideSteadyStateUrlTrivialSubdomains},
+        {toolbar::features::kHideSteadyStateUrlScheme});
+    NavigateAndCheckText(GURL("https://www.google.com/"),
+                         base::ASCIIToUTF16("https://www.google.com"),
+                         base::ASCIIToUTF16("https://google.com"));
+  }
+
+  // Hide Scheme and Hide Trivial Subdomains both Enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {toolbar::features::kHideSteadyStateUrlScheme,
+         toolbar::features::kHideSteadyStateUrlTrivialSubdomains},
+        {});
+    NavigateAndCheckText(GURL("https://www.google.com/"),
+                         base::ASCIIToUTF16("https://www.google.com"),
+                         base::ASCIIToUTF16("google.com"));
   }
 }
 

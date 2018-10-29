@@ -107,12 +107,6 @@ void SharedChangeProcessor::StartAssociation(
       return;
     }
 
-    std::string datatype_context;
-    if (GetDataTypeContext(&datatype_context)) {
-      local_service_->UpdateDataTypeContext(
-          type_, SyncChangeProcessor::NO_REFRESH, datatype_context);
-    }
-
     syncer_merge_result.set_num_items_before_association(
         initial_sync_data.size());
     // Passes a reference to |shared_change_processor|.
@@ -310,17 +304,8 @@ void SharedChangeProcessor::RecordAssociationTime(base::TimeDelta time) {
 }
 
 void SharedChangeProcessor::StopLocalService() {
-  if (local_service_) {
+  if (local_service_)
     local_service_->StopSyncing(type_);
-
-    // Also make the generic processor stop talking to the server (if not
-    // nullptr which is the case in some unit-tests).
-    // TODO(crbug.com/880029): This is a speculative fix for the bug. Remove if
-    // it does not work or if the real root cause is found.
-    if (generic_change_processor_) {
-      generic_change_processor_->Disconnect();
-    }
-  }
   local_service_.reset();
 }
 

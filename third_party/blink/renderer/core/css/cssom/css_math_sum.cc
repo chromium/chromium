@@ -84,7 +84,7 @@ base::Optional<CSSNumericSumValue> CSSMathSum::SumValue() const {
 
     // Collect like-terms
     for (const auto& term : child_sum->terms) {
-      size_t index = sum.terms.Find(UnitMapComparator{term});
+      wtf_size_t index = sum.terms.Find(UnitMapComparator{term});
       if (index == kNotFound)
         sum.terms.push_back(term);
       else
@@ -107,7 +107,7 @@ CSSCalcExpressionNode* CSSMathSum::ToCalcExpressionNode() const {
       NumericValues()[0]->ToCalcExpressionNode(),
       NumericValues()[1]->ToCalcExpressionNode(), kCalcAdd);
 
-  for (size_t i = 2; i < NumericValues().size(); i++) {
+  for (wtf_size_t i = 2; i < NumericValues().size(); i++) {
     node = CSSCalcValue::CreateExpressionNode(
         node, NumericValues()[i]->ToCalcExpressionNode(), kCalcAdd);
   }
@@ -125,7 +125,7 @@ void CSSMathSum::BuildCSSText(Nested nested,
   DCHECK(!values.IsEmpty());
   values[0]->BuildCSSText(Nested::kYes, ParenLess::kNo, result);
 
-  for (size_t i = 1; i < values.size(); i++) {
+  for (wtf_size_t i = 1; i < values.size(); i++) {
     const auto& arg = *values[i];
     if (arg.GetType() == CSSStyleValue::kNegateType) {
       result.Append(" - ");

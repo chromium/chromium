@@ -11,6 +11,7 @@
 #include "chrome/chrome_cleaner/interfaces/json_parser.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/ipc/sandbox.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -50,7 +51,7 @@ class JsonParserSandboxSetupHooks : public MojoSandboxSetupHooks {
 // |json_parser_ptr|.
 ResultCode SpawnJsonParserSandbox(
     scoped_refptr<MojoTaskRunner> mojo_task_runner,
-    base::OnceClosure connection_error_handler,
+    const SandboxConnectionErrorCallback& connection_error_callback,
     UniqueJsonParserPtr* json_parser_ptr);
 
 }  // namespace chrome_cleaner

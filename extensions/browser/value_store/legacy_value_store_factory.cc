@@ -8,7 +8,6 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
 #include "extensions/common/constants.h"
 
@@ -57,7 +56,6 @@ bool LegacyValueStoreFactory::ModelSettings::DataExists(
 
 std::set<ExtensionId>
 LegacyValueStoreFactory::ModelSettings::GetKnownExtensionIDs() const {
-  base::AssertBlockingAllowed();
   std::set<ExtensionId> result;
 
   // Leveldb databases are directories inside |base_path_|.
@@ -126,7 +124,6 @@ LegacyValueStoreFactory::SettingsRoot::GetModel(ModelType model_type) {
 std::set<ExtensionId>
 LegacyValueStoreFactory::SettingsRoot::GetKnownExtensionIDs(
     ModelType model_type) const {
-  base::AssertBlockingAllowed();
   switch (model_type) {
     case ValueStoreFactory::ModelType::APP:
       DCHECK(apps_ != nullptr);
@@ -190,7 +187,6 @@ void LegacyValueStoreFactory::DeleteSettings(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
     const ExtensionId& extension_id) {
-  base::AssertBlockingAllowed();
   ModelSettings* model_settings =
       GetSettingsRoot(settings_namespace).GetModel(model_type);
   if (model_settings == nullptr) {

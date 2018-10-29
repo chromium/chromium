@@ -14,6 +14,7 @@ namespace switches {
 HEADLESS_EXPORT extern const char kCrashDumpsDir[];
 HEADLESS_EXPORT extern const char kDefaultBackgroundColor[];
 HEADLESS_EXPORT extern const char kDeterministicMode[];
+HEADLESS_EXPORT extern const char kDisableCookieEncryption[];
 HEADLESS_EXPORT extern const char kDisableCrashReporter[];
 HEADLESS_EXPORT extern const char kDumpDom[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];

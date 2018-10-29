@@ -8,6 +8,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 import org.chromium.ui.base.WindowAndroid;
@@ -70,7 +71,7 @@ public class JavascriptTabModalDialog implements ModalDialogView.Controller {
         ChromeActivity activity = (ChromeActivity) window.getActivity().get();
         // If the activity has gone away, then just clean up the native pointer.
         if (activity == null) {
-            nativeCancel(nativeDialogPointer);
+            nativeCancel(nativeDialogPointer, false);
             return;
         }
 
@@ -90,7 +91,7 @@ public class JavascriptTabModalDialog implements ModalDialogView.Controller {
 
     @CalledByNative
     private void dismiss() {
-        mModalDialogManager.dismissDialog(mDialogView);
+        mModalDialogManager.dismissDialog(mDialogView, DialogDismissalCause.DISMISSED_BY_NATIVE);
         mNativeDialogPointer = 0;
     }
 
@@ -98,12 +99,12 @@ public class JavascriptTabModalDialog implements ModalDialogView.Controller {
     public void onClick(@ModalDialogView.ButtonType int buttonType) {
         switch (buttonType) {
             case ModalDialogView.ButtonType.POSITIVE:
-                accept(mDialogView.getPromptText());
-                mModalDialogManager.dismissDialog(mDialogView);
+                mModalDialogManager.dismissDialog(
+                        mDialogView, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 break;
             case ModalDialogView.ButtonType.NEGATIVE:
-                cancel();
-                mModalDialogManager.dismissDialog(mDialogView);
+                mModalDialogManager.dismissDialog(
+                        mDialogView, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 break;
             default:
                 Log.e(TAG, "Unexpected button pressed in dialog: " + buttonType);
@@ -111,32 +112,40 @@ public class JavascriptTabModalDialog implements ModalDialogView.Controller {
     }
 
     @Override
-    public void onCancel() {
-        cancel();
+    public void onDismiss(@DialogDismissalCause int dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                accept(mDialogView.getPromptText());
+                break;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                cancel(true);
+                break;
+            case DialogDismissalCause.DISMISSED_BY_NATIVE:
+                // We don't need to call native back in this case.
+                break;
+            default:
+                cancel(false);
+        }
+        mDialogView = null;
     }
-
-    @Override
-    public void onDismiss() {}
 
     /**
      * Sends notification to native that the user accepts the dialog.
      * @param promptResult The text edited by user.
      */
     private void accept(String promptResult) {
-        if (mNativeDialogPointer != 0) {
-            nativeAccept(mNativeDialogPointer, promptResult);
-        }
+        if (mNativeDialogPointer == 0) return;
+        nativeAccept(mNativeDialogPointer, promptResult);
     }
 
     /**
      * Sends notification to native that the user cancels the dialog.
      */
-    private void cancel() {
-        if (mNativeDialogPointer != 0) {
-            nativeCancel(mNativeDialogPointer);
-        }
+    private void cancel(boolean buttonClicked) {
+        if (mNativeDialogPointer == 0) return;
+        nativeCancel(mNativeDialogPointer, buttonClicked);
     }
 
     private native void nativeAccept(long nativeJavaScriptDialogAndroid, String prompt);
-    private native void nativeCancel(long nativeJavaScriptDialogAndroid);
+    private native void nativeCancel(long nativeJavaScriptDialogAndroid, boolean buttonClicked);
 }

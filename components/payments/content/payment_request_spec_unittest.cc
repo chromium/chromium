@@ -489,7 +489,7 @@ TEST_F(PaymentRequestSpecTest, RetryWithPayerErrors) {
 
   EXPECT_FALSE(spec()->has_payer_error());
 
-  mojom::PayerErrorFieldsPtr payer_errors = mojom::PayerErrorFields::New();
+  mojom::PayerErrorsPtr payer_errors = mojom::PayerErrors::New();
   payer_errors->email = "Invalid email";
   payer_errors->name = "Invalid name";
   payer_errors->phone = "Invalid phone";

@@ -48,8 +48,8 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
     return use_path_fallback_ ? LayoutSVGShape::IsShapeEmpty()
                               : fill_bounding_box_.IsEmpty();
   }
-  bool ShapeDependentStrokeContains(const FloatPoint&) override;
-  bool ShapeDependentFillContains(const FloatPoint&,
+  bool ShapeDependentStrokeContains(const HitTestLocation&) override;
+  bool ShapeDependentFillContains(const HitTestLocation&,
                                   const WindRule) const override;
   void CalculateRadiiAndCenter();
   bool HasContinuousStroke() const;

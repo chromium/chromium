@@ -80,6 +80,17 @@ TEST(MatchTest, ContainsNull) {
   EXPECT_FALSE(absl::StrContains(cs, sv2));
 }
 
+TEST(MatchTest, EqualsIgnoreCase) {
+  std::string text = "the";
+  absl::string_view data(text);
+
+  EXPECT_TRUE(absl::EqualsIgnoreCase(data, "The"));
+  EXPECT_TRUE(absl::EqualsIgnoreCase(data, "THE"));
+  EXPECT_TRUE(absl::EqualsIgnoreCase(data, "the"));
+  EXPECT_FALSE(absl::EqualsIgnoreCase(data, "Quick"));
+  EXPECT_FALSE(absl::EqualsIgnoreCase(data, "then"));
+}
+
 TEST(MatchTest, StartsWithIgnoreCase) {
   EXPECT_TRUE(absl::StartsWithIgnoreCase("foo", "foo"));
   EXPECT_TRUE(absl::StartsWithIgnoreCase("foo", "Fo"));

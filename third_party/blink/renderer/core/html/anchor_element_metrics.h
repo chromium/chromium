@@ -128,7 +128,12 @@ class CORE_EXPORT AnchorElementMetrics {
         is_in_iframe_(is_in_iframe),
         contains_image_(contains_image),
         is_same_host_(is_same_host),
-        is_url_incremented_by_one_(is_url_incremented_by_one) {}
+        is_url_incremented_by_one_(is_url_incremented_by_one) {
+    DCHECK_LE(0, ratio_area_);
+    DCHECK_GE(1, ratio_area_);
+    DCHECK_LE(0, ratio_visible_area_);
+    DCHECK_GE(1, ratio_visible_area_);
+  }
 };
 
 }  // namespace blink

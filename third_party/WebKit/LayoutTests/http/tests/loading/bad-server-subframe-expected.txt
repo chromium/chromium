@@ -4,6 +4,7 @@ frame "f1" - didReceiveTitle:
 frame "f1" - didStartProvisionalLoadForFrame
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
+frame "f1" - didFailProvisionalLoadWithError
 frame "f1" - didStartProvisionalLoadForFrame
 frame "f1" - didCommitLoadForFrame
 frame "f1" - didReceiveTitle: Error

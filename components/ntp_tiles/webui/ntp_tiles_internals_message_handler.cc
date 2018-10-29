@@ -262,7 +262,7 @@ void NTPTilesInternalsMessageHandler::SendTiles(
 
     auto icon_list = std::make_unique<base::ListValue>();
     for (const auto& entry : kIconTypesAndNames) {
-      FaviconResultMap::const_iterator it = result_map.find(
+      auto it = result_map.find(
           FaviconResultMap::key_type(tile.url, entry.type_enum));
 
       if (it != result_map.end()) {

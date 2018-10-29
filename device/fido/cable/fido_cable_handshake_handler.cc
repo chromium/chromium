@@ -9,9 +9,9 @@
 
 #include "base/containers/span.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
@@ -44,10 +44,10 @@ std::string GenerateKey(base::StringPiece secret,
 base::Optional<std::array<uint8_t, kClientHelloMessageSize>>
 ConstructHandshakeMessage(base::StringPiece handshake_key,
                           base::span<const uint8_t, 16> client_random_nonce) {
-  cbor::CBORValue::MapValue map;
+  cbor::Value::MapValue map;
   map.emplace(0, kCableClientHelloMessage);
   map.emplace(1, client_random_nonce);
-  auto client_hello = cbor::CBORWriter::Write(cbor::CBORValue(std::move(map)));
+  auto client_hello = cbor::Writer::Write(cbor::Value(std::move(map)));
   DCHECK(client_hello);
 
   crypto::HMAC hmac(crypto::HMAC::SHA256);
@@ -125,15 +125,14 @@ bool FidoCableHandshakeHandler::ValidateAuthenticatorHandshakeMessage(
     return false;
   }
 
-  const auto authenticator_hello_cbor =
-      cbor::CBORReader::Read(authenticator_hello);
+  const auto authenticator_hello_cbor = cbor::Reader::Read(authenticator_hello);
   if (!authenticator_hello_cbor || !authenticator_hello_cbor->is_map() ||
       authenticator_hello_cbor->GetMap().size() != 2) {
     return false;
   }
 
   const auto authenticator_hello_msg =
-      authenticator_hello_cbor->GetMap().find(cbor::CBORValue(0));
+      authenticator_hello_cbor->GetMap().find(cbor::Value(0));
   if (authenticator_hello_msg == authenticator_hello_cbor->GetMap().end() ||
       !authenticator_hello_msg->second.is_string() ||
       authenticator_hello_msg->second.GetString() !=
@@ -142,7 +141,7 @@ bool FidoCableHandshakeHandler::ValidateAuthenticatorHandshakeMessage(
   }
 
   const auto authenticator_random_nonce =
-      authenticator_hello_cbor->GetMap().find(cbor::CBORValue(1));
+      authenticator_hello_cbor->GetMap().find(cbor::Value(1));
   if (authenticator_random_nonce == authenticator_hello_cbor->GetMap().end() ||
       !authenticator_random_nonce->second.is_bytestring() ||
       authenticator_random_nonce->second.GetBytestring().size() != 16) {

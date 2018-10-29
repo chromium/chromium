@@ -7,7 +7,25 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@class ManualFillInjectionHandler;
 class WebStateList;
+
+namespace manual_fill {
+
+extern NSString* const PasswordDoneButtonAccessibilityIdentifier;
+
+}  // namespace manual_fill
+
+// Delegate for the coordinator actions.
+@protocol PasswordCoordinatorDelegate<NSObject>
+
+// Resets the accessory view.
+- (void)resetAccessoryView;
+
+// Opens the passwords settings.
+- (void)openPasswordSettings;
+
+@end
 
 // Creates and manages a view controller to present passwords to the user.
 // Any selected password will be sent to the current field in the active web
@@ -17,18 +35,25 @@ class WebStateList;
 // The view controller of this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
 
-// Creates a coordinator that uses a |viewController| a |browserState| and
-// a |webStateList|.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
-                              webStateList:(WebStateList*)webStateList;
+// The delegate for this coordinator.
+@property(nonatomic, weak) id<PasswordCoordinatorDelegate> delegate;
+
+// Creates a coordinator that uses a |viewController|, |browserState|,
+// |webStateList| and an |injectionHandler|.
+- (instancetype)
+initWithBaseViewController:(UIViewController*)viewController
+              browserState:(ios::ChromeBrowserState*)browserState
+              webStateList:(WebStateList*)webStateList
+          injectionHandler:(ManualFillInjectionHandler*)injectionHandler;
 
 // Unavailable, use -initWithBaseViewController:browserState:webStateList:.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                               browserState:
                                   (ios::ChromeBrowserState*)browserState
     NS_UNAVAILABLE;
+
+// Presents the password view controller as a popover from the passed button.
+- (void)presentFromButton:(UIButton*)button;
 
 @end
 

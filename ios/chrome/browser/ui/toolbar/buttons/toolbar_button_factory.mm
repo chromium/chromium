@@ -7,7 +7,6 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -17,8 +16,8 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
-#include "ios/chrome/browser/ui/toolbar/toolbar_resource_macros.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -103,17 +102,9 @@
   return tabGridButton;
 }
 
-- (ToolbarButton*)stackViewButton {
-  NOTREACHED();
-  return nil;
-}
-
 - (ToolbarToolsMenuButton*)toolsMenuButton {
-  ToolbarControllerStyle style = self.style == NORMAL
-                                     ? ToolbarControllerStyleLightMode
-                                     : ToolbarControllerStyleIncognitoMode;
   ToolbarToolsMenuButton* toolsMenuButton =
-      [[ToolbarToolsMenuButton alloc] initWithFrame:CGRectZero style:style];
+      [[ToolbarToolsMenuButton alloc] initWithFrame:CGRectZero];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);
@@ -191,16 +182,6 @@
   return bookmarkButton;
 }
 
-- (ToolbarButton*)voiceSearchButton {
-  NOTREACHED();
-  return nil;
-}
-
-- (ToolbarButton*)contractButton {
-  NOTREACHED();
-  return nil;
-}
-
 - (ToolbarButton*)omniboxButton {
   ToolbarSearchButton* omniboxButton = [ToolbarSearchButton
       toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_search"]];
@@ -220,11 +201,6 @@
   omniboxButton.visibilityMask =
       self.visibilityConfiguration.omniboxButtonVisibility;
   return omniboxButton;
-}
-
-- (ToolbarButton*)locationBarLeadingButton {
-  NOTREACHED();
-  return nil;
 }
 
 - (UIButton*)cancelButton {
@@ -265,16 +241,6 @@
   constraint.active = YES;
   button.configuration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
-}
-
-- (NSArray<UIImage*>*)voiceSearchImages {
-  NOTREACHED();
-  return nil;
-}
-
-- (NSArray<UIImage*>*)TTSImages {
-  NOTREACHED();
-  return nil;
 }
 
 @end

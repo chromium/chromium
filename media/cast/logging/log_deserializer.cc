@@ -94,7 +94,7 @@ bool PopulateDeserializedLog(base::BigEndianReader* reader,
     frame_event->set_relative_rtp_timestamp(
         relative_rtp_timestamp.lower_32_bits());
 
-    FrameEventMap::iterator it = frame_event_map.find(relative_rtp_timestamp);
+    auto it = frame_event_map.find(relative_rtp_timestamp);
     if (it == frame_event_map.end()) {
       frame_event_map.insert(
           std::make_pair(relative_rtp_timestamp, frame_event));
@@ -124,7 +124,7 @@ bool PopulateDeserializedLog(base::BigEndianReader* reader,
     packet_event->set_relative_rtp_timestamp(
         relative_rtp_timestamp.lower_32_bits());
 
-    PacketEventMap::iterator it = packet_event_map.find(relative_rtp_timestamp);
+    auto it = packet_event_map.find(relative_rtp_timestamp);
     if (it == packet_event_map.end()) {
       packet_event_map.insert(
           std::make_pair(relative_rtp_timestamp, packet_event));

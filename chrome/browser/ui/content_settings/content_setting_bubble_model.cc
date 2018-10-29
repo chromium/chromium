@@ -1407,9 +1407,6 @@ ContentSettingSubresourceFilterBubbleModel::
   SetMessage();
   SetManageText();
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OK));
-  // TODO(csharrison): The learn more link UI layout is non ideal. Make it align
-  // with the future Harmony UI version with a link icon in the bottom left of
-  // the bubble.
   set_show_learn_more(true);
   ChromeSubresourceFilterClient::LogAction(
       SubresourceFilterAction::kDetailsShown);
@@ -1687,6 +1684,14 @@ ContentSettingBubbleModel*
     return new ContentSettingMidiSysExBubbleModel(delegate, web_contents,
                                                   profile);
   }
+  if (content_type == CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS) {
+    return new ContentSettingDownloadsBubbleModel(delegate, web_contents,
+                                                  profile);
+  }
+  if (content_type == CONTENT_SETTINGS_TYPE_ADS) {
+    return new ContentSettingSubresourceFilterBubbleModel(
+        delegate, web_contents, profile);
+  }
   if (content_type == CONTENT_SETTINGS_TYPE_IMAGES ||
       content_type == CONTENT_SETTINGS_TYPE_JAVASCRIPT ||
       content_type == CONTENT_SETTINGS_TYPE_PPAPI_BROKER ||
@@ -1695,10 +1700,6 @@ ContentSettingBubbleModel*
       content_type == CONTENT_SETTINGS_TYPE_SENSORS) {
     return new ContentSettingSingleRadioGroup(delegate, web_contents, profile,
                                               content_type);
-  }
-  if (content_type == CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS) {
-    return new ContentSettingDownloadsBubbleModel(delegate, web_contents,
-                                                  profile);
   }
   NOTREACHED() << "No bubble for the content type " << content_type << ".";
   return nullptr;

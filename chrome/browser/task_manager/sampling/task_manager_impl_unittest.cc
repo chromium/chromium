@@ -116,6 +116,8 @@ TEST_F(TaskManagerImplTest, SortingTypes) {
       ->SetParent(tab2);
 
   AddTask(600, Task::ARC, "ARC", /*tab_id=*/SessionID::InvalidValue());
+  AddTask(650, Task::CROSTINI, "Crostini",
+          /*tab_id=*/SessionID::InvalidValue());
   AddTask(800, Task::UTILITY, "Utility One",
           /*tab_id=*/SessionID::InvalidValue());
   AddTask(700, Task::UTILITY, "Utility Two",
@@ -135,6 +137,7 @@ TEST_F(TaskManagerImplTest, SortingTypes) {
       "Browser\n"
       "Gpu Process\n"
       "ARC\n"
+      "Crostini\n"
       "Zygote\n"
       "Utility One\n"
       "Utility Two\n"

@@ -95,16 +95,16 @@ class HEVCBitstreamConverter : public BitstreamConverter {
       std::unique_ptr<HEVCDecoderConfigurationRecord> hevc_config);
 
   // BitstreamConverter interface
-  bool ConvertFrame(std::vector<uint8_t>* frame_buf,
-                    bool is_keyframe,
-                    std::vector<SubsampleEntry>* subsamples) const override;
-
-  AnalysisResult Analyze(
-      std::vector<uint8_t>* frame_buf,
-      std::vector<SubsampleEntry>* subsamples) const override;
+  bool ConvertAndAnalyzeFrame(std::vector<uint8_t>* frame_buf,
+                              bool is_keyframe,
+                              std::vector<SubsampleEntry>* subsamples,
+                              AnalysisResult* analysis_result) const override;
 
  private:
   ~HEVCBitstreamConverter() override;
+  AnalysisResult Analyze(
+      std::vector<uint8_t>* frame_buf,
+      std::vector<SubsampleEntry>* subsamples) const override;
   std::unique_ptr<HEVCDecoderConfigurationRecord> hevc_config_;
 };
 

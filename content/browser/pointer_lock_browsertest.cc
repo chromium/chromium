@@ -319,6 +319,55 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
       root->current_frame_host()->GetRenderWidgetHost()));
 }
 
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
+  // This test runs three times, testing a crash at each level of the frametree.
+  for (int crash_depth = 0; crash_depth < 3; crash_depth++) {
+    GURL main_url(embedded_test_server()->GetURL(
+        "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+    FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+    FrameTreeNode* lock_node = root->child_at(0)->child_at(0);
+
+    // Pick which node to crash.
+    FrameTreeNode* crash_node = root;
+    for (int i = 0; i < crash_depth; i++)
+      crash_node = crash_node->child_at(0);
+
+    // Request a pointer lock to |lock_node|'s document.body.
+    EXPECT_EQ("success", EvalJs(lock_node, R"(
+        new Promise((resolve, reject) => {
+            document.addEventListener('pointerlockchange', resolve);
+            document.addEventListener('pointerlockerror', reject);
+            document.body.requestPointerLock();
+        }).then(() => 'success');
+        )"));
+
+    // Root (platform) RenderWidgetHostView should have the pointer locked.
+    EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+    EXPECT_EQ(lock_node->current_frame_host()->GetRenderWidgetHost(),
+              web_contents()->GetMouseLockWidget());
+
+    // Crash the process of |crash_node|.
+    RenderProcessHost* crash_process =
+        crash_node->current_frame_host()->GetProcess();
+    RenderProcessHostWatcher crash_observer(
+        crash_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    crash_process->Shutdown(0);
+    crash_observer.Wait();
+
+    // This should cancel the pointer lock.
+    EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
+    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_);
+    EXPECT_FALSE(web_contents()->HasMouseLock(
+        root->current_frame_host()->GetRenderWidgetHost()));
+    if (crash_depth != 0)
+      EXPECT_FALSE(root->current_frame_host()->GetView()->IsMouseLocked());
+    else
+      EXPECT_EQ(nullptr, root->current_frame_host()->GetView());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockWheelEventRouting) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));

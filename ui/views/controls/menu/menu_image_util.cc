@@ -4,7 +4,6 @@
 
 #include "ui/views/controls/menu/menu_image_util.h"
 
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"

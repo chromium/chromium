@@ -18,6 +18,7 @@ namespace multidevice_setup {
 const char kInstantTetheringAllowedPrefName[] = "tether.allowed";
 const char kMessagesAllowedPrefName[] = "multidevice.sms_connect_allowed";
 const char kSmartLockAllowedPrefName[] = "easy_unlock.allowed";
+const char kSmartLockSigninAllowedPrefName[] = "smart_lock_signin.allowed";
 
 // "Enabled by user" preferences:
 const char kBetterTogetherSuiteEnabledPrefName[] =
@@ -31,6 +32,7 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kInstantTetheringAllowedPrefName, true);
   registry->RegisterBooleanPref(kMessagesAllowedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockAllowedPrefName, true);
+  registry->RegisterBooleanPref(kSmartLockSigninAllowedPrefName, true);
 
   registry->RegisterBooleanPref(kBetterTogetherSuiteEnabledPrefName, true);
   registry->RegisterBooleanPref(kInstantTetheringEnabledPrefName, true);
@@ -43,6 +45,22 @@ bool AreAnyMultiDeviceFeaturesAllowed(PrefService* pref_service) {
   return pref_service->GetBoolean(kInstantTetheringAllowedPrefName) ||
          pref_service->GetBoolean(kMessagesAllowedPrefName) ||
          pref_service->GetBoolean(kSmartLockAllowedPrefName);
+}
+
+bool IsFeatureAllowed(mojom::Feature feature, PrefService* pref_service) {
+  switch (feature) {
+    case mojom::Feature::kBetterTogetherSuite:
+      return AreAnyMultiDeviceFeaturesAllowed(pref_service);
+    case mojom::Feature::kInstantTethering:
+      return pref_service->GetBoolean(kInstantTetheringAllowedPrefName);
+    case mojom::Feature::kMessages:
+      return pref_service->GetBoolean(kMessagesAllowedPrefName);
+    case mojom::Feature::kSmartLock:
+      return pref_service->GetBoolean(kSmartLockAllowedPrefName);
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 }  // namespace multidevice_setup

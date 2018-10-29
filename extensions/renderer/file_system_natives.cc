@@ -120,7 +120,8 @@ void FileSystemNatives::CrackIsolatedFileSystemName(
 
   args.GetReturnValue().Set(
       v8::String::NewFromUtf8(isolate, filesystem_id.c_str(),
-                              v8::String::kNormalString, filesystem_id.size()));
+                              v8::NewStringType::kNormal, filesystem_id.size())
+          .ToLocalChecked());
 }
 
 }  // namespace extensions

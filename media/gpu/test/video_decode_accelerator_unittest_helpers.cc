@@ -4,8 +4,11 @@
 
 #include "media/gpu/test/video_decode_accelerator_unittest_helpers.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/video_decoder_config.h"
@@ -111,6 +114,7 @@ scoped_refptr<TextureRef> TextureRef::CreatePreallocated(
                                   buffer_format,
                                   gfx::BufferUsage::SCANOUT_VDA_WRITE);
   LOG_ASSERT(texture_ref->pixmap_);
+  texture_ref->coded_size_ = size;
 #endif
 
   return texture_ref;
@@ -140,6 +144,53 @@ gfx::GpuMemoryBufferHandle TextureRef::ExportGpuMemoryBufferHandle() const {
   }
 #endif
   return handle;
+}
+
+scoped_refptr<VideoFrame> TextureRef::CreateVideoFrame(
+    const gfx::Rect& visible_rect) const {
+  scoped_refptr<VideoFrame> video_frame;
+#if defined(OS_CHROMEOS)
+  VideoPixelFormat pixel_format =
+      GfxBufferFormatToVideoPixelFormat(pixmap_->GetBufferFormat());
+  CHECK_NE(pixel_format, PIXEL_FORMAT_UNKNOWN);
+  size_t num_planes = VideoFrame::NumPlanes(pixel_format);
+  std::vector<VideoFrameLayout::Plane> planes(num_planes);
+  std::vector<int> plane_height(num_planes, 0u);
+  for (size_t i = 0; i < num_planes; ++i) {
+    planes[i].stride = pixmap_->GetDmaBufPitch(i);
+    planes[i].offset = pixmap_->GetDmaBufOffset(i);
+    plane_height[i] = VideoFrame::Rows(i, pixel_format, coded_size_.height());
+  }
+
+  std::vector<base::ScopedFD> dmabuf_fds;
+  size_t num_fds = pixmap_->GetDmaBufFdCount();
+  LOG_ASSERT(num_fds <= num_planes);
+  for (size_t i = 0; i < num_fds; ++i) {
+    int duped_fd = HANDLE_EINTR(dup(pixmap_->GetDmaBufFd(i)));
+    LOG_ASSERT(duped_fd != -1) << "Failed duplicating dmabuf fd";
+    dmabuf_fds.emplace_back(duped_fd);
+  }
+
+  std::vector<size_t> buffer_sizes(num_fds, 0u);
+  for (size_t plane = 0, i = 0; plane < num_planes; ++plane) {
+    if (plane + 1 < buffer_sizes.size()) {
+      buffer_sizes[i] =
+          planes[plane].offset + planes[plane].stride * plane_height[plane];
+      ++i;
+    } else {
+      buffer_sizes[i] = std::max(
+          buffer_sizes[i],
+          planes[plane].offset + planes[plane].stride * plane_height[plane]);
+    }
+  }
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      pixel_format, coded_size_, std::move(planes), std::move(buffer_sizes));
+  LOG_ASSERT(layout.has_value() == true);
+  video_frame = VideoFrame::WrapExternalDmabufs(
+      *layout, visible_rect, visible_rect.size(), std::move(dmabuf_fds),
+      base::TimeDelta());
+#endif
+  return video_frame;
 }
 
 EncodedDataHelper::EncodedDataHelper(const std::string& data,

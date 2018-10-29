@@ -58,13 +58,6 @@ void ResourceDispatcherHostDelegate::RequestComplete(
 void ResourceDispatcherHostDelegate::RequestComplete(
     net::URLRequest* url_request) {}
 
-PreviewsState ResourceDispatcherHostDelegate::DetermineEnabledPreviews(
-    net::URLRequest* url_request,
-    content::ResourceContext* resource_context,
-    PreviewsState previews_to_allow) {
-  return PREVIEWS_UNSPECIFIED;
-}
-
 NavigationData* ResourceDispatcherHostDelegate::GetNavigationData(
     net::URLRequest* request) const {
   return nullptr;

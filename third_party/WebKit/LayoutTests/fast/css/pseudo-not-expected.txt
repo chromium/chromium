@@ -2,7 +2,6 @@ This test if the :not selector gets the specificity of its simple selector in va
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 debug("These spans should alternate red and green");
 span id= span10 class = evenclass1 span id= span11 class = oddclass1 span id= span12 class = evenclass1 span id= span13 class = oddclass1
 
@@ -14,6 +13,7 @@ span id= span30 class = evenclass3 span id= span31 class = oddclass3 span id= sp
 
 debug("These spans should be red, green, blue, green");
 span id= span40 class = evenclass4 span id= span41 class = oddclass4 span id= span42 class = evenclass4 span id= span43 class = oddclass4
+
 
 
 Test that :not selector with class name gets higher specificity than :not selector with tag name, or a selector with tag name

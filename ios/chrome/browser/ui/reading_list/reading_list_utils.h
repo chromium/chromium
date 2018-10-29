@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_UTILS_H_
 
 #include "components/reading_list/core/reading_list_entry.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_cell.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_ui_distillation_status.h"
 
 namespace reading_list {
 

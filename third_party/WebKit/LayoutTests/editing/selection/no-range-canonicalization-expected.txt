@@ -2,7 +2,6 @@ Ranges/Nodes set by a Selection method and returned by a corresoponding Selectio
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing selection on non-editable nodes...
 position = [text1, 1]
 PASS gotRange.startContainer === originalRange.startContainer is true

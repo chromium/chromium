@@ -18,7 +18,7 @@ class Member;
 // TraceWrapperMember fields must be traced in the class' |Trace| method.
 template <class T>
 class TraceWrapperMember : public Member<T> {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   TraceWrapperMember() : Member<T>(nullptr) {}

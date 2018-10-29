@@ -3,11 +3,11 @@ Tests that getDestinationInsertionPoints() should skip insertion points in user-
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS nodeList.length is expectedNodes.length
 PASS nodeList.item(0) is expectedNodes[0]
 PASS getNodeInComposedTree('host/detail-child').getDestinationInsertionPoints().length is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

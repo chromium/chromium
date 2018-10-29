@@ -117,14 +117,16 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
   //
   script_controller.ExecuteScriptInMainWorldAndReturnValue(
       ScriptSourceCode("var ro = new ResizeObserver( entries => {});"), KURL(),
-      kNotSharableCrossOrigin, ScriptFetchOptions(),
+      kOpaqueResource, ScriptFetchOptions(),
       ScriptController::kExecuteScriptWhenScriptsDisabled);
   ASSERT_EQ(observers.size(), 1U);
   script_controller.ExecuteScriptInMainWorldAndReturnValue(
-      ScriptSourceCode("ro = undefined;"), KURL(), kNotSharableCrossOrigin,
+      ScriptSourceCode("ro = undefined;"), KURL(), kOpaqueResource,
       ScriptFetchOptions(),
       ScriptController::kExecuteScriptWhenScriptsDisabled);
-  V8GCController::CollectAllGarbageForTesting(v8::Isolate::GetCurrent());
+  V8GCController::CollectAllGarbageForTesting(
+      v8::Isolate::GetCurrent(),
+      v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.IsEmpty(), true);
 
@@ -136,17 +138,21 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
                        "var el = document.createElement('div');"
                        "ro.observe(el);"
                        "ro = undefined;"),
-      KURL(), kNotSharableCrossOrigin, ScriptFetchOptions(),
+      KURL(), kOpaqueResource, ScriptFetchOptions(),
       ScriptController::kExecuteScriptWhenScriptsDisabled);
   ASSERT_EQ(observers.size(), 1U);
-  V8GCController::CollectAllGarbageForTesting(v8::Isolate::GetCurrent());
+  V8GCController::CollectAllGarbageForTesting(
+      v8::Isolate::GetCurrent(),
+      v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.size(), 1U);
   script_controller.ExecuteScriptInMainWorldAndReturnValue(
-      ScriptSourceCode("el = undefined;"), KURL(), kNotSharableCrossOrigin,
+      ScriptSourceCode("el = undefined;"), KURL(), kOpaqueResource,
       ScriptFetchOptions(),
       ScriptController::kExecuteScriptWhenScriptsDisabled);
-  V8GCController::CollectAllGarbageForTesting(v8::Isolate::GetCurrent());
+  V8GCController::CollectAllGarbageForTesting(
+      v8::Isolate::GetCurrent(),
+      v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.IsEmpty(), true);
 }

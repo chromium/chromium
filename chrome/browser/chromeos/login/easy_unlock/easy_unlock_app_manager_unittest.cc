@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -37,7 +38,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace easy_unlock_private_api = apps::api::easy_unlock_private;
+namespace easy_unlock_private_api = chrome_apps::api::easy_unlock_private;
 namespace screenlock_private_api = extensions::api::screenlock_private;
 namespace app_runtime_api = extensions::api::app_runtime;
 
@@ -250,9 +251,11 @@ class EasyUnlockAppManagerTest : public testing::Test {
         false /* autoupdate_enabled */);
 
     extensions::ProcessManagerFactory::GetInstance()->SetTestingFactory(
-        &profile_, &CreateTestProcessManager);
+        &profile_, base::BindRepeating(&CreateTestProcessManager));
     extensions::ScreenlockPrivateEventRouter::GetFactoryInstance()
-        ->SetTestingFactory(&profile_, &CreateScreenlockPrivateEventRouter);
+        ->SetTestingFactory(
+            &profile_,
+            base::BindRepeating(&CreateScreenlockPrivateEventRouter));
 
     event_router_ = extensions::CreateAndUseTestEventRouter(&profile_);
     event_router_->AddEventObserver(&event_consumer_);

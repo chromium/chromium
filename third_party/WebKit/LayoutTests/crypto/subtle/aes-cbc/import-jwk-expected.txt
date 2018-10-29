@@ -2,7 +2,6 @@ Test importing a JWK key for AES-CBC.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing a key...
 
 PASS key.type is 'secret'

@@ -128,4 +128,11 @@ public class DropdownPopupWindow {
     public boolean isShowing() {
         return mPopup.isShowing();
     }
+
+    /**
+     * See {@link DropdownPopupWindowInterface#setFooterView(View)}.
+     */
+    protected void setFooterView(View footerItem) {
+        mPopup.setFooterView(footerItem);
+    }
 }

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1018939186200882850">menü öğesi</translation>
-<translation id="1020833440720551630">ses kanalını kapat</translation>
 <translation id="10623998915015855">geçiş düğmesi</translation>
 <translation id="1088086359088493902">Saniye</translation>
 <translation id="1171774979989969504">Lütfen e-posta adresi girin.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">katkıda bulunanlar</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">videoyu pencere içinde pencere modunda oynatın</translation>
 <translation id="1589122976691792535">bölge</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1637811476055996098">Dosyaları Seç</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">ağaç tablo</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">uzaktan cihazda oynat</translation>
-<translation id="1838818994221231429">tam ekranı ekran kesimi alanı olarak değiştirin</translation>
 <translation id="190587075670221089">silme</translation>
 <translation id="1907737156431278478">örnek</translation>
 <translation id="1921819250265091946">gg</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">10 sn. atlamak için sola veya sağa iki kez dokunun</translation>
 <translation id="5631759159893697722">özet</translation>
-<translation id="5641012560118721995">oynatmayı duraklat</translation>
 <translation id="5643186887447432888">düğme</translation>
 <translation id="5677946354068040947">diğer seçenekler</translation>
 <translation id="576709008726043716">giriş</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Sıfırla</translation>
 <translation id="5966707198760109579">Hafta</translation>
 <translation id="5987525920412732405">dönme düğmesi</translation>
+<translation id="6011459053400940133">ses kaydırma çubuğu</translation>
 <translation id="6015796118275082299">Yıl</translation>
 <translation id="6023896073578205740">liste kutusu</translation>
-<translation id="6101327004457443354">ses kanalını aç</translation>
 <translation id="6150588977291308318">kaynakça</translation>
 <translation id="6164829606128959761">ölçüm aracı</translation>
 <translation id="6166809985690652833">sonsöz</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Saat</translation>
 <translation id="7681220483256441252">dizin</translation>
 <translation id="7720026100085573005">kalan süre</translation>
-<translation id="7740016676195725605">altyazıların görüntülenmesini durdur</translation>
 <translation id="7740050170769002709">HTML içeriği</translation>
 <translation id="7750228210027921155">Pencere içinde pencere</translation>
 <translation id="7789962463072032349">duraklat</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">arama metni alanı</translation>
 <translation id="8057695513531652401">bildirim</translation>
 <translation id="8105797009065549151">not referansı</translation>
-<translation id="8115662671911883373">altyazıları görüntülemeye başla</translation>
 <translation id="8117451130807776954">Bu hafta</translation>
-<translation id="819205353528511139">filmi tam ekran modunda oynat</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">Altyazılar</translation>
 <translation id="835897206747267392">Geçersiz değer.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">uzaktan oynatmayı kontrol et</translation>
 <translation id="862370744433916922">alt başlık</translation>
 <translation id="8750798805984357768">Lütfen bu seçeneklerden birini belirleyin.</translation>
-<translation id="8785498733064193001">oynatmayı başlat</translation>
 <translation id="8808573423886751634">bölüm</translation>
 <translation id="8845239796550121995">Şimdi TV'nize yayınlanıyor</translation>
 <translation id="8851136666856101339">main</translation>

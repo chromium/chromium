@@ -29,26 +29,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 
-namespace {
-void InstallIconFromFileThread(const base::FilePath& icon_path,
-                               const std::vector<unsigned char>& content_png) {
-  DCHECK(!content_png.empty());
-
-  base::CreateDirectory(icon_path.DirName());
-
-  int wrote = base::WriteFile(icon_path,
-                              reinterpret_cast<const char*>(content_png.data()),
-                              content_png.size());
-  if (wrote != static_cast<int>(content_png.size())) {
-    VLOG(2) << "Failed to write Crostini icon file: "
-            << icon_path.MaybeAsASCII();
-    if (!base::DeleteFile(icon_path, false)) {
-      VLOG(2) << "Couldn't delete broken icon file" << icon_path.MaybeAsASCII();
-    }
-  }
-}
-}  // namespace
-
 ////////////////////////////////////////////////////////////////////////////////
 // CrostiniAppIcon::ReadResult
 
@@ -100,7 +80,7 @@ gfx::ImageSkiaRep CrostiniAppIcon::Source::GetImageForScale(float scale) {
 
   // Host loads icon asynchronously, so use default icon so far.
   int resource_id;
-  if (host_ && host_->app_id() == kCrostiniTerminalId) {
+  if (host_ && host_->app_id() == crostini::kCrostiniTerminalId) {
     // Don't initiate the icon request from the container because we have this
     // one already.
     resource_id = IDR_LOGO_CROSTINI_TERMINAL;
@@ -178,35 +158,19 @@ void CrostiniAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
     return;
   }
 
+  // TODO(jkardatzke): Remove this code for M72. This is a workaround to deal
+  // with a bug where we were caching the wrong resolution of the icons and they
+  // looked really bad. This only existed on dev channel, so there's limited
+  // reach of it, and after everyone has upgraded we can remove this check.
+  // crbug.com/891588
+  if (bitmap.width() < expected_dim || bitmap.height() < expected_dim) {
+    host_->MaybeRequestIcon(scale_factor_);
+  }
+
   // We won't always get back from Crostini the icon size we asked for, so it
-  // is expected that sometimes we need to rescale it. When that happens we
-  // also want to store that result as the PNG to avoid having to do this
-  // rescale every time the icon is loaded from the file.
+  // is expected that sometimes we need to rescale it.
   SkBitmap resized_image = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_BEST, expected_dim, expected_dim);
-
-  std::vector<unsigned char> png_data;
-  bool encode_result;
-  if (resized_image.colorType() == kAlpha_8_SkColorType) {
-    encode_result = gfx::PNGCodec::EncodeA8SkBitmap(resized_image, &png_data);
-  } else {
-    encode_result = gfx::PNGCodec::EncodeBGRASkBitmap(
-        resized_image, false /* discard_transparency */, &png_data);
-  }
-  if (encode_result) {
-    if (!host_->registry_service_)
-      return;
-
-    // Now save this so we can reload it later when needed.
-    const base::FilePath path =
-        host_->registry_service_->GetIconPath(host_->app_id(), scale_factor_);
-    DCHECK(!path.empty());
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&InstallIconFromFileThread, path, std::move(png_data)));
-  } else {
-    LOG(ERROR) << "Failed encoding resized SkBitmap as PNG for Crostini icon";
-  }
 
   host_->Update(scale_factor_, std::move(resized_image));
   host_->DiscardDecodeRequest(this);
@@ -264,6 +228,15 @@ void CrostiniAppIcon::MaybeRequestIcon(ui::ScaleFactor scale_factor) {
   // Fail safely if the icon outlives the Profile (and the Crostini Registry).
   if (!registry_service_)
     return;
+
+  // TODO(jkardatzke): Remove this for M-72, this is here temporarily to prevent
+  // continually requesting updated icons if there are not larger size ones
+  // available in Linux for that app.
+  // crbug.com/891588
+  if (already_requested_icons_.find(scale_factor) !=
+      already_requested_icons_.end())
+    return;
+  already_requested_icons_.insert(scale_factor);
 
   // CrostiniRegistryService notifies CrostiniAppModelBuilder via Observer when
   // icon is ready and CrostiniAppModelBuilder refreshes the icon of the

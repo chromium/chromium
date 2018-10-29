@@ -28,7 +28,7 @@
       // reference file, use the task 'generate-reference' below.
       audit.define('load-reference', (task, should) => {
         let loader = new BufferLoader(
-            context, ['audiobuffersource-detune-modulation-expected.wav'],
+            context, ['resources/audiobuffersource-detune-modulation-expected.wav'],
             function(bufferList) {
               referenceBuffer = bufferList[0];
               task.done();
@@ -63,7 +63,7 @@
                 bitDepth: 16
               });
 
-              let filename = 'audiobuffersource-detune-modulation-actual.wav';
+              let filename = 'resources/audiobuffersource-detune-modulation-actual.wav';
               if (downloadAudioBuffer(renderedBuffer, filename))
                 should(true, 'Saved reference file').message(filename, '');
             })

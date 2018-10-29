@@ -4,15 +4,17 @@
 
 #include "components/search_engines/template_url_service.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/rappor/rappor_service_impl.h"
@@ -22,10 +24,12 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/util.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/variations/variations_associated_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -104,7 +108,7 @@ void PruneSyncChanges(const SyncDataMap* sync_data,
 // Sync and TemplateURLs that were initially local, assuming |sync_data| is the
 // |initial_sync_data| parameter.
 bool IsFromSync(const TemplateURL* turl, const SyncDataMap& sync_data) {
-  return !!sync_data.count(turl->sync_guid());
+  return base::ContainsKey(sync_data, turl->sync_guid());
 }
 
 // Log the number of instances of a keyword that exist, with zero or more
@@ -112,8 +116,7 @@ bool IsFromSync(const TemplateURL* turl, const SyncDataMap& sync_data) {
 void LogDuplicatesHistogram(
     const TemplateURLService::TemplateURLVector& template_urls) {
   std::map<base::string16, int> duplicates;
-  for (TemplateURLService::TemplateURLVector::const_iterator it =
-      template_urls.begin(); it != template_urls.end(); ++it) {
+  for (auto it = template_urls.begin(); it != template_urls.end(); ++it) {
     base::string16 keyword = (*it)->keyword();
     base::TrimString(keyword, base::ASCIIToUTF16("_"), &keyword);
     duplicates[keyword]++;
@@ -147,12 +150,31 @@ base::string16 GetDomainAndRegistry(const base::string16& host) {
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));
 }
 
+// For keywords that look like hostnames, returns whether KeywordProvider
+// should require users to type a prefix of the hostname to match against
+// them, rather than just the domain name portion. In other words, returns
+// whether the prefix before the domain name should be considered important
+// for matching purposes. Returns true if the experiment isn't active.
+bool OmniboxFieldTrialKeywordRequiresRegistry() {
+  // This would normally be
+  // bool OmniboxFieldTrial::KeywordRequiresRegistry()
+  // but that would create a dependency cycle since omnibox depends on
+  // search_engines (and search -> search_engines)
+  constexpr char kBundledExperimentFieldTrialName[] =
+      "OmniboxBundledExperimentV1";
+  constexpr char kKeywordRequiresRegistryRule[] = "KeywordRequiresRegistry";
+  const std::string value = variations::GetVariationParamValue(
+      kBundledExperimentFieldTrialName, kKeywordRequiresRegistryRule);
+  return value.empty() || (value == "true");
+}
+
 // Returns the length of the important part of the |keyword|, assumed to be
 // associated with the TemplateURL.  For instance, for the keyword
 // google.co.uk, this can return 6 (the length of "google").
 size_t GetMeaningfulKeywordLength(const base::string16& keyword,
                                   const TemplateURL* turl) {
-  if (OmniboxFieldTrial::KeywordRequiresRegistry())
+  // Using Omnibox from here is a layer violation and should be fixed.
+  if (OmniboxFieldTrialKeywordRequiresRegistry())
     return keyword.length();
   const size_t registry_length = GetRegistryLength(keyword);
   if (registry_length == std::string::npos)
@@ -365,8 +387,7 @@ TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
 
 const TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     const base::string16& keyword) const {
-  KeywordToTURLAndMeaningfulLength::const_iterator elem(
-      keyword_to_turl_and_length_.find(keyword));
+  auto elem(keyword_to_turl_and_length_.find(keyword));
   if (elem != keyword_to_turl_and_length_.end())
     return elem->second.first;
   return (!loaded_ && initial_default_search_provider_ &&
@@ -384,7 +405,7 @@ return const_cast<TemplateURL*>(
 
 const TemplateURL* TemplateURLService::GetTemplateURLForGUID(
     const std::string& sync_guid) const {
-  GUIDToTURL::const_iterator elem(guid_to_turl_.find(sync_guid));
+  auto elem(guid_to_turl_.find(sync_guid));
   if (elem != guid_to_turl_.end())
     return elem->second;
   return (!loaded_ && initial_default_search_provider_ &&
@@ -682,13 +703,13 @@ void TemplateURLService::RepairPrepopulatedSearchEngines() {
       &prepopulated_urls, template_urls_, default_search_provider_));
 
   // Remove items.
-  for (std::vector<TemplateURL*>::iterator i = actions.removed_engines.begin();
+  for (auto i = actions.removed_engines.begin();
        i < actions.removed_engines.end(); ++i)
     Remove(*i);
 
   // Edit items.
-  for (EditedEngines::iterator i(actions.edited_engines.begin());
-       i < actions.edited_engines.end(); ++i) {
+  for (auto i(actions.edited_engines.begin()); i < actions.edited_engines.end();
+       ++i) {
     TemplateURL new_values(i->second);
     Update(i->first, new_values);
   }
@@ -907,8 +928,7 @@ syncer::SyncError TemplateURLService::ProcessSyncChanges(
 
   syncer::SyncChangeList new_changes;
   syncer::SyncError error;
-  for (syncer::SyncChangeList::const_iterator iter = change_list.begin();
-       iter != change_list.end(); ++iter) {
+  for (auto iter = change_list.begin(); iter != change_list.end(); ++iter) {
     DCHECK_EQ(syncer::SEARCH_ENGINES, iter->sync_data().GetDataType());
 
     std::string guid =
@@ -1329,9 +1349,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
 SyncDataMap TemplateURLService::CreateGUIDToSyncDataMap(
     const syncer::SyncDataList& sync_data) {
   SyncDataMap data_map;
-  for (syncer::SyncDataList::const_iterator i(sync_data.begin());
-       i != sync_data.end();
-       ++i)
+  for (auto i(sync_data.begin()); i != sync_data.end(); ++i)
     data_map[i->GetSpecifics().search_engine().sync_guid()] = *i;
   return data_map;
 }
@@ -1702,8 +1720,7 @@ void TemplateURLService::UpdateKeywordSearchTermsForURL(
     return;
 
   TemplateURL* visited_url = nullptr;
-  for (TemplateURLSet::const_iterator i = urls_for_host->begin();
-       i != urls_for_host->end(); ++i) {
+  for (auto i = urls_for_host->begin(); i != urls_for_host->end(); ++i) {
     base::string16 search_terms;
     if ((*i)->ExtractSearchTermsFromURL(details.url, search_terms_data(),
                                         &search_terms) &&
@@ -2146,7 +2163,6 @@ void TemplateURLService::ResolveSyncKeywordConflict(
   change_list->push_back(syncer::SyncChange(FROM_HERE,
       syncer::SyncChange::ACTION_UPDATE,
       sync_data));
-
 }
 
 void TemplateURLService::MergeInSyncTemplateURL(

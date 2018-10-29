@@ -23,7 +23,7 @@
 #include "net/http/http_proxy_client_socket_wrapper.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
-#include "net/nqe/network_quality_provider.h"
+#include "net/nqe/network_quality_estimator.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool_base.h"
@@ -193,13 +193,14 @@ int HttpProxyConnectJob::HandleConnectResult(int result) {
 }
 
 HttpProxyClientSocketPool::HttpProxyConnectJobFactory::
-    HttpProxyConnectJobFactory(TransportClientSocketPool* transport_pool,
-                               SSLClientSocketPool* ssl_pool,
-                               NetworkQualityProvider* network_quality_provider,
-                               NetLog* net_log)
+    HttpProxyConnectJobFactory(
+        TransportClientSocketPool* transport_pool,
+        SSLClientSocketPool* ssl_pool,
+        NetworkQualityEstimator* network_quality_estimator,
+        NetLog* net_log)
     : transport_pool_(transport_pool),
       ssl_pool_(ssl_pool),
-      network_quality_provider_(network_quality_provider),
+      network_quality_estimator_(network_quality_estimator),
       ssl_http_rtt_multiplier_(GetInt32Param("ssl_http_rtt_multiplier", 10)),
       non_ssl_http_rtt_multiplier_(
           GetInt32Param("non_ssl_http_rtt_multiplier", 5)),
@@ -247,9 +248,9 @@ HttpProxyClientSocketPool::HttpProxyConnectJobFactory::ConnectionTimeout()
 
 base::TimeDelta HttpProxyClientSocketPool::HttpProxyConnectJobFactory::
     ConnectionTimeoutWithConnectionProperty(bool is_secure_connection) const {
-  if (network_quality_provider_) {
+  if (network_quality_estimator_) {
     base::Optional<base::TimeDelta> http_rtt_estimate =
-        network_quality_provider_->GetHttpRTT();
+        network_quality_estimator_->GetHttpRTT();
     if (http_rtt_estimate) {
       int32_t multiplier = is_secure_connection ? ssl_http_rtt_multiplier_
                                                 : non_ssl_http_rtt_multiplier_;
@@ -285,7 +286,7 @@ HttpProxyClientSocketPool::HttpProxyClientSocketPool(
     int max_sockets_per_group,
     TransportClientSocketPool* transport_pool,
     SSLClientSocketPool* ssl_pool,
-    NetworkQualityProvider* network_quality_provider,
+    NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log)
     : transport_pool_(transport_pool),
       ssl_pool_(ssl_pool),
@@ -296,7 +297,7 @@ HttpProxyClientSocketPool::HttpProxyClientSocketPool(
             ClientSocketPool::used_idle_socket_timeout(),
             new HttpProxyConnectJobFactory(transport_pool,
                                            ssl_pool,
-                                           network_quality_provider,
+                                           network_quality_estimator,
                                            net_log)) {
   // We should always have a |transport_pool_| except in unit tests.
   if (transport_pool_)

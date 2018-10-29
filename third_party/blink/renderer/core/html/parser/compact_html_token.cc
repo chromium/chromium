@@ -54,7 +54,7 @@ CompactHTMLToken::CompactHTMLToken(const HTMLToken* token,
       data_ = AttemptStaticStringCreation(token->GetName(), kLikely8Bit);
 
       // There is only 1 DOCTYPE token per document, so to avoid increasing the
-      // size of CompactHTMLToken, we just use the m_attributes vector.
+      // size of CompactHTMLToken, we just use the attributes_ vector.
       attributes_.push_back(Attribute(
           AttemptStaticStringCreation(token->PublicIdentifier(), kLikely8Bit),
           String(token->SystemIdentifier())));

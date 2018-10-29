@@ -23,7 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_helper.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
@@ -34,7 +34,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
@@ -175,16 +175,11 @@ void GetMetadataFromFrame(const media::VideoFrame& frame,
       media::VideoFrameMetadata::ROOT_SCROLL_OFFSET_X, &root_scroll_offset_x);
   success &= frame.metadata()->GetDouble(
       media::VideoFrameMetadata::ROOT_SCROLL_OFFSET_Y, &root_scroll_offset_y);
-#if defined(OS_ANDROID)
   success &= frame.metadata()->GetDouble(
       media::VideoFrameMetadata::TOP_CONTROLS_HEIGHT, top_controls_height);
   success &= frame.metadata()->GetDouble(
       media::VideoFrameMetadata::TOP_CONTROLS_SHOWN_RATIO,
       top_controls_shown_ratio);
-#else
-  *top_controls_height = 0.;
-  *top_controls_shown_ratio = 0.;
-#endif  // defined(OS_ANDROID)
   DCHECK(success);
 
   root_scroll_offset->set_x(root_scroll_offset_x);
@@ -193,7 +188,8 @@ void GetMetadataFromFrame(const media::VideoFrame& frame,
 
 }  // namespace
 
-PageHandler::PageHandler(EmulationHandler* emulation_handler)
+PageHandler::PageHandler(EmulationHandler* emulation_handler,
+                         bool allow_set_download_behavior)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       enabled_(false),
       screencast_enabled_(false),
@@ -210,6 +206,7 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler)
       last_surface_size_(gfx::Size()),
       host_(nullptr),
       emulation_handler_(emulation_handler),
+      allow_set_download_behavior_(allow_set_download_behavior),
       observer_(this),
       weak_factory_(this) {
   bool create_video_consumer = true;
@@ -247,8 +244,7 @@ std::vector<PageHandler*> PageHandler::EnabledForWebContents(
 // static
 std::vector<PageHandler*> PageHandler::ForAgentHost(
     DevToolsAgentHostImpl* host) {
-  return DevToolsSession::HandlersForAgentHost<PageHandler>(
-      host, Page::Metainfo::domainName);
+  return host->HandlersByName<PageHandler>(Page::Metainfo::domainName);
 }
 
 void PageHandler::SetRenderer(int process_host_id,
@@ -492,8 +488,8 @@ void PageHandler::Navigate(const std::string& url,
   }
 
   NavigationController::LoadURLParams params(gurl);
-  params.referrer =
-      Referrer(GURL(referrer.fromMaybe("")), blink::kWebReferrerPolicyDefault);
+  params.referrer = Referrer(GURL(referrer.fromMaybe("")),
+                             network::mojom::ReferrerPolicy::kDefault);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
   frame_tree_node->navigator()->GetController()->LoadURLWithParams(params);
@@ -607,7 +603,8 @@ void PageHandler::CaptureScreenshot(
     Maybe<Page::Viewport> clip,
     Maybe<bool> from_surface,
     std::unique_ptr<CaptureScreenshotCallback> callback) {
-  if (!host_ || !host_->GetRenderWidgetHost()) {
+  if (!host_ || !host_->GetRenderWidgetHost() ||
+      !host_->GetRenderWidgetHost()->GetView()) {
     callback->sendFailure(Response::InternalError());
     return;
   }
@@ -793,7 +790,8 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
   if (has_compositor_frame_metadata_) {
     InnerSwapCompositorFrame();
   } else {
-    widget_host->Send(new ViewMsg_ForceRedraw(widget_host->GetRoutingID(), 0));
+    widget_host->Send(
+        new WidgetMsg_ForceRedraw(widget_host->GetRoutingID(), 0));
   }
   return Response::FallThrough();
 }
@@ -859,6 +857,9 @@ Response PageHandler::BringToFront() {
 
 Response PageHandler::SetDownloadBehavior(const std::string& behavior,
                                           Maybe<std::string> download_path) {
+  if (!allow_set_download_behavior_)
+    return Response::Error("Not allowed.");
+
   WebContentsImpl* web_contents = GetWebContents();
   if (!web_contents)
     return Response::InternalError();
@@ -947,13 +948,11 @@ void PageHandler::InnerSwapCompositorFrame() {
   if (snapshot_size.IsEmpty())
     return;
 
-  double top_controls_height = 0.;
-  double top_controls_shown_ratio = 0.;
-#if defined(OS_ANDROID)
-  top_controls_height = last_compositor_frame_metadata_.top_controls_height;
-  top_controls_shown_ratio =
+  double top_controls_height =
+      last_compositor_frame_metadata_.top_controls_height;
+  double top_controls_shown_ratio =
       last_compositor_frame_metadata_.top_controls_shown_ratio;
-#endif
+
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =
       BuildScreencastFrameMetadata(
           surface_size, last_compositor_frame_metadata_.device_scale_factor,

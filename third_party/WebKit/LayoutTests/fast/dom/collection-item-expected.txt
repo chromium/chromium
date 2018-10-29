@@ -2,7 +2,6 @@ HTMLCollection.item() shouldn't fallback to namedItem().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.forms.item(0) is document.getElementById('a')
 PASS document.forms.item('0') is document.getElementById('a')
 PASS document.forms.item('z') is document.getElementById('a')

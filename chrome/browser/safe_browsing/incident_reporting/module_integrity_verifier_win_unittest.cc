@@ -187,8 +187,13 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleUnmodified) {
   ASSERT_EQ(0, num_bytes_different);
 }
 
-// Flaky. See https://crbug.com/877815.
-TEST_F(SafeBrowsingModuleVerifierWinTest, DISABLED_VerifyModuleModified) {
+// Flaky in debug builds; see https://crbug.com/877815.
+#if !defined(NDEBUG)
+#define MAYBE_VerifyModuleModified DISABLED_VerifyModuleModified
+#else
+#define MAYBE_VerifyModuleModified VerifyModuleModified
+#endif
+TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleModified) {
   int num_bytes_different = 0;
   ModuleState state;
 
@@ -237,7 +242,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, DISABLED_VerifyModuleModified) {
 }
 
 // TODO(crbug.com/838124) The test is flaky on Win7 debug.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if !defined(NDEBUG)
 #define MAYBE_VerifyModuleLongModification DISABLED_VerifyModuleLongModification
 #else
 #define MAYBE_VerifyModuleLongModification VerifyModuleLongModification
@@ -329,8 +334,13 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleRelocOverlap) {
             state.modification(0).modified_bytes());
 }
 
-// Flaky. See https://crbug.com/877815.
-TEST_F(SafeBrowsingModuleVerifierWinTest, DISABLED_VerifyModuleExportModified) {
+// Flaky in debug builds; see https://crbug.com/877815.
+#if !defined(NDEBUG)
+#define MAYBE_VerifyModuleExportModified DISABLED_VerifyModuleExportModified
+#else
+#define MAYBE_VerifyModuleExportModified VerifyModuleExportModified
+#endif
+TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleExportModified) {
   ModuleState state;
   int num_bytes_different = 0;
   // Confirm the module is identical in memory as on disk before we begin.

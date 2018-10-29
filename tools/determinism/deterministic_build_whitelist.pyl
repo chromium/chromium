@@ -11,73 +11,40 @@
 # List of files that are known to be _not_ deterministic. This is a "temporary"
 # workaround to find regression on the deterministic builders.
 #
-# PNaCl general bug: https://crbug.com/429358
-#
 # TODO(sebmarchand): Remove this once all the files are deterministic.
 {
   # https://crbug.com/383340
   'android': [
+    # https://crbug.com/897969
+    'apks/ChromePublicTest.apk',
+    'apks/VrNfcSimulator.apk',
+    'browser_tests_apk/browser_tests-debug.apk',
+    'unit_tests_apk/unit_tests-debug.apk',
+
+    # https://crbug.com/897970
+    'lib.java/chromium_commands.dex.jar',
   ],
 
   # https://crbug.com/330263
   'linux': [
-    'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
-
-    # TODO(tikuta): Remove this when crbug.com/870611 is fixed.
-    'remoting-webapp.v2.zip',
-
     'zucchini_apply_fuzzer_seed_corpus.zip',
-
-    'browser_tests.isolated',
 
     'mr_extension',
     'mr_extension/release',
   ],
 
-  'linux_component': [
-   # TODO(tikuta): Remove this when crbug.com/870584 is fixed.
-    'v8_context_snapshot.bin',
-
-    'app_shell_unittests.isolated',
-    'blink_heap_unittests.isolated',
-    'chrome_app_unittests.isolated',
-    'chromedriver_py_tests.isolated',
-    'components_browsertests.isolated',
-    'components_perftests.isolated',
-    'components_unittests.isolated',
-    'content_browsertests.isolated',
-    'content_shell_crash_test.isolated',
-    'content_unittests.isolated',
-    'extensions_browsertests.isolated',
-    'extensions_unittests.isolated',
-    'gin_unittests.isolated',
-    'headless_browsertests.isolated',
-    'headless_unittests.isolated',
-    'interactive_ui_tests.isolated',
-    'media_blink_unittests.isolated',
-    'performance_browser_tests.isolated',
-    'performance_test_suite.isolated',
-    'performance_webview_test_suite.isolated',
-    'services_unittests.isolated',
-    'sync_integration_tests.isolated',
-    'telemetry_gpu_integration_test.isolated',
-    'telemetry_perf_unittests.isolated',
-    'telemetry_unittests.isolated',
-    'unit_tests.isolated',
-    'vr_common_perftests.isolated',
-    'vr_common_unittests.isolated',
-    'vr_pixeltests.isolated',
-    'webkit_layout_tests.isolated',
-    'webkit_layout_tests_exparchive.isolated',
-    'webkit_unit_tests.isolated',
-  ],
-
   # https://crbug.com/330262
   'mac': [
+    # ld64 in current Xcode versions is not deterministic. Most smaller binaries
+    # are fine, but larger binaries often get different outputs.
+    # To reduce flakiness, list most binaries here.
+    # TODO(erikchen): Once our fix for this has made it into Xcode and that
+    # is on all the bots, remove most binaries.
     'accelerated_widget_mac_unittests',
     'accessibility_unittests',
     'angle_end2end_tests',
     'angle_unittests',
+    'angle_white_box_tests',
     'App Shell',
     'app_shell_unittests',
     'ar_sample_test_driver',
@@ -201,72 +168,29 @@
     'webkit_unit_tests',
     'wtf_unittests',
 
-    # TODO(tikuta): Remove this when crbug.com/870584 is fixed.
-    'v8_context_snapshot.bin',
+    # TODO(thakis): Given we list most executables above, we should probably
+    # also list most isolated files here.
+    'angle_unittests.isolated',
+    'angle_white_box_tests.isolated',
+    'browser_tests.isolated',
+    'chrome_app_unittests.isolated',
+    'content_unittests.isolated',
+    'headless_browsertests',
+    'headless_browsertests.isolated',
+    'interactive_ui_tests.isolated',
   ],
 
   # https://crbug.com/330260
   'win': [
-    # These two targets force symbol_level to be at least 1, they will work
-    # once we've figured out the PDB aging field.
-    'crashpad_snapshot_test_image_reader.exe',
-    'crashpad_snapshot_test_image_reader_module.dll',
-
-    # TODO(thakis): Figure out what's up with these two.
+    # TODO(thakis): Figure out what's up with these three (and their isolate).
     'mini_installer.exe',
+    'mini_installer.exe.pdb',
     'previous_version_mini_installer.exe',
+    'mini_installer_tests.isolated',
 
     # These probably have mtimes in the zip headers and the scripts creating
     # them probably should use build_utils.ZipDir() instead.
     'mini_installer_tests.zip',
     'policy_templates.zip',
-
-    # TODO(tikuta): Remove this when crbug.com/870611 is fixed.
-    'remoting-me2me-host-win.zip',
-    'remoting-webapp.v2.zip',
-
-    # TODO(tikuta): Remove this when crbug.com/870584 is fixed.
-    'v8_context_snapshot.bin',
-
-    # TODO(thakis): Figure out what's up with these two.
-    'ppapi_nacl_tests_pnacl_newlib_x32.nexe',
-    'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
-
-
-    'app_shell_unittests.isolated',
-    'blink_heap_unittests.isolated',
-    'browser_tests.isolated',
-    'chrome_app_unittests.isolated',
-    'chrome_elf_import_unittests.isolated',
-    'chromedriver_py_tests.isolated',
-    'components_browsertests.isolated',
-    'components_perftests.isolated',
-    'components_unittests.isolated',
-    'content_browsertests.isolated',
-    'content_shell_crash_test.isolated',
-    'content_unittests.isolated',
-    'crashpad_tests.isolated',
-    'extensions_browsertests.isolated',
-    'extensions_unittests.isolated',
-    'gin_unittests.isolated',
-    'headless_browsertests.isolated',
-    'interactive_ui_tests.isolated',
-    'media_blink_unittests.isolated',
-    'mini_installer_tests.isolated',
-    'performance_browser_tests.isolated',
-    'performance_test_suite.isolated',
-    'performance_webview_test_suite.isolated',
-    'services_unittests.isolated',
-    'sync_integration_tests.isolated',
-    'telemetry_gpu_integration_test.isolated',
-    'telemetry_perf_unittests.isolated',
-    'telemetry_unittests.isolated',
-    'unit_tests.isolated',
-    'vr_common_perftests.isolated',
-    'vr_common_unittests.isolated',
-    'vr_pixeltests.isolated',
-    'webkit_layout_tests.isolated',
-    'webkit_layout_tests_exparchive.isolated',
-    'webkit_unit_tests.isolated',
   ],
 }

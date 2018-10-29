@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "google_apis/gaia/oauth2_token_service.h"
-
 namespace syncer {
 
 // Contains everything needed to talk to and identify a user account.
@@ -25,9 +23,6 @@ struct SyncCredentials {
 
   // The raw authentication token's bytes.
   std::string sync_token;
-
-  // The set of scopes to use when talking to sync server.
-  OAuth2TokenService::ScopeSet scope_set;
 };
 
 }  // namespace syncer

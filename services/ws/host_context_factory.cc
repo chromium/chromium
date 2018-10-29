@@ -46,7 +46,7 @@ void HostContextFactory::OnEstablishedGpuChannel(
     return;
   }
   context_factory_private_->ConfigureCompositor(
-      compositor, std::move(context_provider), nullptr);
+      compositor.get(), std::move(context_provider), nullptr);
 }
 
 void HostContextFactory::CreateLayerTreeFrameSink(

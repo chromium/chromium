@@ -540,4 +540,38 @@ TEST_F(DesktopWindowTreeHostMusTest,
   EXPECT_TRUE(observer.got_root_window_hidden());
 }
 
+TEST_F(DesktopWindowTreeHostMusTest, MinimizeActivate) {
+  std::unique_ptr<Widget> widget(CreateWidget());
+  widget->Show();
+  EXPECT_TRUE(widget->IsActive());
+
+  widget->Minimize();
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_TRUE(widget->IsMinimized());
+
+  // Activate() should restore the window.
+  widget->Activate();
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(widget->IsMinimized());
+}
+
+TEST_F(DesktopWindowTreeHostMusTest, MaximizeMinimizeRestore) {
+  std::unique_ptr<Widget> widget(CreateWidget());
+  widget->Show();
+  EXPECT_TRUE(widget->IsActive());
+
+  widget->Maximize();
+  widget->Minimize();
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_FALSE(widget->IsMaximized());
+
+  widget->Restore();
+  // Restore() *always* sets the state to normal, not the pre-minimized state.
+  // This mirrors the logic in NativeWidgetAura. See
+  // DesktopWindowTreeHostMus::RestoreToPreminimizedState() for details.
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_FALSE(widget->IsMaximized());
+}
+
 }  // namespace views

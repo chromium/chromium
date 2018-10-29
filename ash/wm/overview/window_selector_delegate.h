@@ -5,6 +5,8 @@
 #ifndef ASH_WM_OVERVIEW_WINDOW_SELECTOR_DELEGATE_H_
 #define ASH_WM_OVERVIEW_WINDOW_SELECTOR_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 
@@ -37,12 +39,22 @@ class ASH_EXPORT WindowSelectorDelegate {
       std::unique_ptr<DelayedAnimationObserver> animation_observer) = 0;
 
   // Finds and erases |animation_observer| from the list deleting the widget
-  // owned by the |animation_observer|.
-  // This method should be called when a scheduled animation completes.
-  // If the animation completion callback is a result of a window getting
-  // destroyed then the DelayedAnimationObserver::Shutdown() should be called
-  // first before destroying the window.
+  // owned by the |animation_observer|. This method should be called when a
+  // scheduled animation completes. If the animation completion callback is a
+  // result of a window getting destroyed then the
+  // DelayedAnimationObserver::Shutdown() should be called first before
+  // destroying the window.
   virtual void RemoveAndDestroyAnimationObserver(
+      DelayedAnimationObserver* animation_observer) = 0;
+
+  // Passes ownership of |animation_observer| to |this| delegate.
+  virtual void AddStartAnimationObserver(
+      std::unique_ptr<DelayedAnimationObserver> animation_observer) = 0;
+
+  // Finds and erases |animation_observer| from the list which tracks the start
+  // animations. This method should be called when a scheduled start overview
+  // animation completes.
+  virtual void RemoveAndDestroyStartAnimationObserver(
       DelayedAnimationObserver* animation_observer) = 0;
 
  protected:

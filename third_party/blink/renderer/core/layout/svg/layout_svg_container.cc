@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
 namespace blink {
@@ -173,25 +174,22 @@ void LayoutSVGContainer::UpdateCachedBoundaries() {
   GetElement()->SetNeedsResizeObserverUpdate();
 }
 
-bool LayoutSVGContainer::NodeAtFloatPoint(HitTestResult& result,
-                                          const FloatPoint& point_in_parent,
-                                          HitTestAction hit_test_action) {
-  FloatPoint local_point;
-  if (!SVGLayoutSupport::TransformToUserSpaceAndCheckClipping(
-          *this, LocalToSVGParentTransform(), point_in_parent, local_point))
+bool LayoutSVGContainer::NodeAtPoint(
+    HitTestResult& result,
+    const HitTestLocation& location_in_container,
+    const LayoutPoint& accumulated_offset,
+    HitTestAction hit_test_action) {
+  DCHECK_EQ(accumulated_offset, LayoutPoint());
+  TransformedHitTestLocation local_location(location_in_container,
+                                            LocalToSVGParentTransform());
+  if (!local_location)
+    return false;
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, *local_location))
     return false;
 
-  for (LayoutObject* child = LastChild(); child;
-       child = child->PreviousSibling()) {
-    if (child->NodeAtFloatPoint(result, local_point, hit_test_action)) {
-      const LayoutPoint& local_layout_point = LayoutPoint(local_point);
-      UpdateHitTestResult(result, local_layout_point);
-      HitTestLocation location(local_layout_point);
-      if (result.AddNodeToListBasedTestResult(child->GetNode(), location) ==
-          kStopHitTesting)
-        return true;
-    }
-  }
+  if (SVGLayoutSupport::HitTestChildren(LastChild(), result, *local_location,
+                                        accumulated_offset, hit_test_action))
+    return true;
 
   // pointer-events: bounding-box makes it possible for containers to be direct
   // targets.
@@ -199,11 +197,11 @@ bool LayoutSVGContainer::NodeAtFloatPoint(HitTestResult& result,
     // Check for a valid bounding box because it will be invalid for empty
     // containers.
     if (IsObjectBoundingBoxValid() &&
-        ObjectBoundingBox().Contains(local_point)) {
-      const LayoutPoint& local_layout_point = LayoutPoint(local_point);
+        local_location->Intersects(ObjectBoundingBox())) {
+      const LayoutPoint& local_layout_point =
+          LayoutPoint(local_location->TransformedPoint());
       UpdateHitTestResult(result, local_layout_point);
-      HitTestLocation location(local_layout_point);
-      if (result.AddNodeToListBasedTestResult(GetElement(), location) ==
+      if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)
         return true;
     }

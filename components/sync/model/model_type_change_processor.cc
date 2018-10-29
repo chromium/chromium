@@ -4,8 +4,6 @@
 
 #include "components/sync/model/model_type_change_processor.h"
 
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-
 namespace syncer {
 
 ModelTypeChangeProcessor::ModelTypeChangeProcessor() {}

@@ -252,7 +252,7 @@ class Writer(object):
         return NameStyleConverter(name).to_snake_case()
 
     def make_header_guard(self, path):
-        return re.sub(r'[-/.]', '_', path).upper() + '_'
+        return NameStyleConverter(path).to_header_guard()
 
 
 class Maker(object):

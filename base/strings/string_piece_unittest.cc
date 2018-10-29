@@ -723,6 +723,33 @@ TEST(StringPieceTest, ConstexprCtor) {
   }
 }
 
+TEST(StringPieceTest, OutOfBoundsDeath) {
+  {
+    constexpr StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece[0], "");
+  }
+
+  {
+    constexpr StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.front(), "");
+  }
+
+  {
+    constexpr StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.back(), "");
+  }
+
+  {
+    StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.remove_suffix(1), "");
+  }
+
+  {
+    StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.remove_prefix(1), "");
+  }
+}
+
 TEST(StringPieceTest, ConstexprData) {
   {
     constexpr StringPiece piece;

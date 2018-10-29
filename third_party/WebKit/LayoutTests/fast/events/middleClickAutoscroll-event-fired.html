@@ -1,29 +1,33 @@
-<html>
-<head>
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/compositor-controls.js"></script>
+<script src="./resources/middleClickAutoscroll.js"></script>
 <style type="text/css">
 #scrollable {
-    height: 200px;
-    overflow: auto;
-    border: solid 3px #cc0000;
-    font-size: 80px;
+  height: 200px;
+  overflow: auto;
+  border: solid 3px #cc0000;
+  font-size: 80px;
 }
 </style>
-<script src="../../resources/js-test.js"></script>
-<script src="./resources/middleClickAutoscroll.js"></script>
 <script>
+var mousedown_fired = false;
 window.addEventListener('mousedown', function(event) {
+  mousedown_fired = true;
 });
 
-function start()
-{
-    description('Check pan scroll with mousedown event handler');
-    testPanScroll({
-        'clickOrDrag': 'drag',
-        'scrollable': $('scrollable'),
-    });
+function start() {
+  testSetUp({
+    'clickOrDrag': 'drag',
+    'scrollable': $('scrollable'),
+    'finishTest': function() {
+      assert_true(mousedown_fired);
+    },
+  });
 }
 </script>
-</head>
 <body onload="start()">
 <div id="container">
 <p id="description"></p>
@@ -34,4 +38,3 @@ To test manually, try to pan scroll inside this div.
 </div>
 <div id="console"></div>
 </body>
-</html>

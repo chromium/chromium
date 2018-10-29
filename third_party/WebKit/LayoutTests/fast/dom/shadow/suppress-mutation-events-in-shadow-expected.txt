@@ -2,9 +2,9 @@ Test that mutation events are not triggered in shadow DOM
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS mutationEventTriggered is false
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

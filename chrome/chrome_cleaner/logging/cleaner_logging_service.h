@@ -141,7 +141,7 @@ class CleanerLoggingService : public LoggingServiceAPI {
   // FolderInformation objects. Expects the lock to be held by the caller.
   void UpdateMatchedFilesAndFoldersMaps(UwS* added_uws);
 
-  // Reads the removal status of all files and folders from
+  // Reads the removal and quarantine status of all files and folders from
   // FileRemovalStatusUpdater and updates them in the report.
   void UpdateFileRemovalStatuses();
 

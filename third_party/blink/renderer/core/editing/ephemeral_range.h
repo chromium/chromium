@@ -33,7 +33,7 @@ class TraversalRangeNodes : private TraversalRange<Iterator> {
 };
 
 // This class acts like |TraversalNextIterator| but in addition
-// it allows to set current position and checks |m_current| pointer before
+// it allows to set current position and checks |current_| pointer before
 // dereferencing.
 template <class TraversalNext>
 class CheckedTraversalNextIterator

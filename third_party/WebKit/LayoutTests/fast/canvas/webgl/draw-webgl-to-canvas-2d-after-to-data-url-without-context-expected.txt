@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Check for drawing webgl to canvas 2d on the same frame.
 1) when drawingBuffer is preserved.
 PASS imgdata[0] is 255

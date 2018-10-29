@@ -55,7 +55,10 @@ Checkbox::~Checkbox() {
 }
 
 void Checkbox::SetChecked(bool checked) {
-  checked_ = checked;
+  if (checked_ != checked) {
+    checked_ = checked;
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+  }
   UpdateImage();
 }
 

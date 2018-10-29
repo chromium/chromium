@@ -34,6 +34,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/auth.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/trace_constants.h"
@@ -2029,7 +2030,8 @@ int HttpCache::Transaction::DoPartialHeadersReceived() {
   new_response_ = NULL;
 
   if (!partial_) {
-    if (entry_ && entry_->disk_entry->GetDataSize(kMetadataIndex)) {
+    if (entry_ && entry_->disk_entry->GetDataSize(kMetadataIndex) &&
+        !base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache)) {
       TransitionToState(STATE_CACHE_READ_METADATA);
     } else {
       TransitionToState(STATE_FINISH_HEADERS);
@@ -2128,6 +2130,7 @@ int HttpCache::Transaction::DoCacheReadMetadata() {
   TRACE_EVENT0("io", "HttpCacheTransaction::DoCacheReadMetadata");
   DCHECK(entry_);
   DCHECK(!response_.metadata.get());
+  DCHECK(!base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
   TransitionToState(STATE_CACHE_READ_METADATA_COMPLETE);
 
   response_.metadata = base::MakeRefCounted<IOBufferWithSize>(
@@ -2463,10 +2466,12 @@ int HttpCache::Transaction::BeginCacheRead() {
   if (method_ == "HEAD")
     FixHeadersForHead();
 
-  if (entry_->disk_entry->GetDataSize(kMetadataIndex))
+  if (entry_->disk_entry->GetDataSize(kMetadataIndex) &&
+      !base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache)) {
     TransitionToState(STATE_CACHE_READ_METADATA);
-  else
+  } else {
     TransitionToState(STATE_FINISH_HEADERS);
+  }
 
   return OK;
 }
@@ -3019,10 +3024,12 @@ int HttpCache::Transaction::DoSetupEntryForRead() {
   if (method_ == "HEAD")
     FixHeadersForHead();
 
-  if (entry_->disk_entry->GetDataSize(kMetadataIndex))
+  if (entry_->disk_entry->GetDataSize(kMetadataIndex) &&
+      !base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache)) {
     TransitionToState(STATE_CACHE_READ_METADATA);
-  else
+  } else {
     TransitionToState(STATE_FINISH_HEADERS);
+  }
   return OK;
 }
 

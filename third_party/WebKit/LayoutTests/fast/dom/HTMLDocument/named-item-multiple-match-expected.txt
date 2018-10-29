@@ -9,6 +9,6 @@ PASS collection[1]; document.someName is collection
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Tests that the named item created for an image with an ID is correctly removed. The test passes, if you see a "PASS" message in the div below.
-
-

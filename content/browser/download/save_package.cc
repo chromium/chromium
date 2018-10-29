@@ -441,7 +441,7 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
   base::FilePath::StringType file_name = base_name + file_name_ext;
 
   // Check whether we already have same name in a case insensitive manner.
-  FileNameSet::const_iterator iter = file_name_set_.find(file_name);
+  auto iter = file_name_set_.find(file_name);
   if (iter == file_name_set_.end()) {
     DCHECK(!file_name.empty());
     file_name_set_.insert(file_name);
@@ -463,7 +463,7 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
 
   // Prepare the new ordinal number.
   uint32_t ordinal_number;
-  FileNameCountMap::iterator it = file_name_count_map_.find(base_file_name);
+  auto it = file_name_count_map_.find(base_file_name);
   if (it == file_name_count_map_.end()) {
     // First base-name-conflict resolving, use 1 as initial ordinal number.
     file_name_count_map_[base_file_name] = 1;

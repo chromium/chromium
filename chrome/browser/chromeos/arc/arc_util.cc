@@ -20,11 +20,13 @@
 #include "base/strings/string_util.h"
 #include "base/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/login/configuration_keys.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/user_flow.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
@@ -86,7 +88,7 @@ base::LazyInstance<std::set<AccountId>>::DestructorAtExit
 // Returns whether ARC can run on the filesystem mounted at |path|.
 // This function should run only on threads where IO operations are allowed.
 bool IsArcCompatibleFilesystem(const base::FilePath& path) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   // If it can be verified it is not on ecryptfs, then it is ok.
   struct statfs statfs_buf;
@@ -450,6 +452,25 @@ bool IsArcOobeOptInActive() {
   return !IsArcOptInWizardForAssistantActive();
 }
 
+bool IsArcOobeOptInConfigurationBased() {
+  // Ignore if not applicable.
+  if (!IsArcOobeOptInActive())
+    return false;
+  // Check that configuration exist.
+  auto* oobe_configuration = chromeos::OobeConfiguration::Get();
+  if (!oobe_configuration)
+    return false;
+  if (!oobe_configuration->CheckCompleted())
+    return false;
+  // Check configuration value that triggers automatic ARC TOS acceptance.
+  auto& configuration = oobe_configuration->GetConfiguration();
+  auto* auto_accept = configuration.FindKeyOfType(
+      chromeos::configuration::kArcTosAutoAccept, base::Value::Type::BOOLEAN);
+  if (!auto_accept)
+    return false;
+  return auto_accept->GetBool();
+}
+
 bool IsArcOptInWizardForAssistantActive() {
   // Check if Assistant Wizard is currently showing.
   // TODO(b/65861628): Redesign the OptIn flow since there is no longer reason
@@ -684,6 +705,18 @@ ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
       break;
   }
   return supervision_transition;
+}
+
+bool IsPlayStoreAvailable() {
+  if (ShouldArcAlwaysStartWithNoPlayStore())
+    return false;
+
+  if (!IsRobotOrOfflineDemoAccountMode())
+    return true;
+
+  // Demo Mode is the only public session scenario that can launch Play.
+  return chromeos::DemoSession::IsDeviceInDemoMode() &&
+         chromeos::switches::ShouldShowPlayStoreInDemoMode();
 }
 
 }  // namespace arc

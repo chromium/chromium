@@ -125,8 +125,7 @@ TEST_F(StatsEventSubscriberTest, CaptureEncode) {
   StatsEventSubscriber::StatsMap stats_map;
   subscriber_->GetStatsInternal(&stats_map);
 
-  StatsEventSubscriber::StatsMap::iterator it =
-      stats_map.find(StatsEventSubscriber::CAPTURE_FPS);
+  auto it = stats_map.find(StatsEventSubscriber::CAPTURE_FPS);
   ASSERT_TRUE(it != stats_map.end());
 
   base::TimeDelta duration = end_time - start_time;
@@ -188,8 +187,7 @@ TEST_F(StatsEventSubscriberTest, Encode) {
   StatsEventSubscriber::StatsMap stats_map;
   subscriber_->GetStatsInternal(&stats_map);
 
-  StatsEventSubscriber::StatsMap::iterator it =
-      stats_map.find(StatsEventSubscriber::ENCODE_FPS);
+  auto it = stats_map.find(StatsEventSubscriber::ENCODE_FPS);
   ASSERT_TRUE(it != stats_map.end());
 
   base::TimeDelta duration = end_time - start_time;
@@ -244,8 +242,7 @@ TEST_F(StatsEventSubscriberTest, Decode) {
   StatsEventSubscriber::StatsMap stats_map;
   subscriber_->GetStatsInternal(&stats_map);
 
-  StatsEventSubscriber::StatsMap::iterator it =
-      stats_map.find(StatsEventSubscriber::DECODE_FPS);
+  auto it = stats_map.find(StatsEventSubscriber::DECODE_FPS);
   ASSERT_TRUE(it != stats_map.end());
 
   base::TimeDelta duration = end_time - start_time;
@@ -282,8 +279,7 @@ TEST_F(StatsEventSubscriberTest, PlayoutDelay) {
   StatsEventSubscriber::StatsMap stats_map;
   subscriber_->GetStatsInternal(&stats_map);
 
-  StatsEventSubscriber::StatsMap::iterator it = stats_map.find(
-      StatsEventSubscriber::NUM_FRAMES_LATE);
+  auto it = stats_map.find(StatsEventSubscriber::NUM_FRAMES_LATE);
   ASSERT_TRUE(it != stats_map.end());
 
   EXPECT_DOUBLE_EQ(it->second, late_frames);
@@ -329,8 +325,7 @@ TEST_F(StatsEventSubscriberTest, E2ELatency) {
   StatsEventSubscriber::StatsMap stats_map;
   subscriber_->GetStatsInternal(&stats_map);
 
-  StatsEventSubscriber::StatsMap::iterator it =
-      stats_map.find(StatsEventSubscriber::AVG_E2E_LATENCY_MS);
+  auto it = stats_map.find(StatsEventSubscriber::AVG_E2E_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
   EXPECT_DOUBLE_EQ(
@@ -492,8 +487,7 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   subscriber_->GetStatsInternal(&stats_map);
 
   // Measure AVG_NETWORK_LATENCY_MS, TRANSMISSION_KBPS, RETRANSMISSION_KBPS.
-  StatsEventSubscriber::StatsMap::iterator it =
-      stats_map.find(StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
+  auto it = stats_map.find(StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
   EXPECT_DOUBLE_EQ(

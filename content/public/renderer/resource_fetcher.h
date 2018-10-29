@@ -64,7 +64,7 @@ class CONTENT_EXPORT ResourceFetcher {
   // done.
   virtual void Start(
       blink::WebLocalFrame* frame,
-      blink::WebURLRequest::RequestContext request_context,
+      blink::mojom::RequestContextType request_context,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       Callback callback,

@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -712,15 +711,6 @@ base::string16 GoogleUpdateSettings::GetDownloadPreference() {
     return value;
   }
   return base::string16();
-}
-
-void GoogleUpdateSettings::RecordChromeUpdatePolicyHistograms() {
-  bool is_overridden = false;
-  const UpdatePolicy update_policy =
-      GetAppUpdatePolicy(install_static::GetAppGuid(), &is_overridden);
-  UMA_HISTOGRAM_BOOLEAN("GoogleUpdate.UpdatePolicyIsOverridden", is_overridden);
-  UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.EffectivePolicy", update_policy,
-                            UPDATE_POLICIES_COUNT);
 }
 
 base::string16 GoogleUpdateSettings::GetUninstallCommandLine(

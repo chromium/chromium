@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 400x200
-  LayoutSVGRoot {svg} at (0,0) size 400x200
-    LayoutSVGEllipse {circle} at (10,10) size 180x180 [fill={[type=SOLID] [color=#0000FF]}] [cx=100.00] [cy=100.00] [r=90.00]
-    LayoutSVGEllipse {circle} at (210,10) size 180x180 [fill={[type=SOLID] [color=#0000FF]}] [cx=300.00] [cy=100.00] [r=90.00]

@@ -289,7 +289,7 @@ class SiteIsolationFlagHandlingTest
     policy::LoginPolicyTestBase::SetUpOnMainThread();
 
     // Write ephemeral users status directly into CrosSettings.
-    settings_helper_.ReplaceProvider(kAccountsPrefEphemeralUsersEnabled);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 GetParam().ephemeral_users);
 
@@ -315,7 +315,9 @@ class SiteIsolationFlagHandlingTest
                 base::Unretained(this)));
   }
 
-  void TearDownOnMainThread() override { settings_helper_.RestoreProvider(); }
+  void TearDownOnMainThread() override {
+    settings_helper_.RestoreRealDeviceSettingsProvider();
+  }
 
   ChromeUserManagerImpl* GetChromeUserManager() const {
     return static_cast<ChromeUserManagerImpl*>(

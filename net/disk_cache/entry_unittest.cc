@@ -2692,6 +2692,43 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReuseInternalEntry) {
   }
 }
 
+TEST_F(DiskCacheEntryTest, SimpleCacheGiantEntry) {
+  const int kBufSize = 32 * 1024;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, false);
+
+  // Make sure SimpleCache can write up to 5MiB entry even with a 20MiB cache
+  // size that Android WebView uses at the time of this test's writing.
+  SetSimpleCacheMode();
+  SetMaxSize(20 * 1024 * 1024);
+  InitCache();
+
+  {
+    std::string key1("the first key");
+    disk_cache::Entry* entry1 = nullptr;
+    ASSERT_THAT(CreateEntry(key1, &entry1), IsOk());
+
+    const int kSize1 = 5 * 1024 * 1024;
+    EXPECT_EQ(kBufSize, WriteData(entry1, 1 /* stream */, kSize1 - kBufSize,
+                                  buffer.get(), kBufSize, true /* truncate */));
+    entry1->Close();
+  }
+
+  // ... but not bigger than that.
+  {
+    std::string key2("the second key");
+    disk_cache::Entry* entry2 = nullptr;
+    ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
+
+    const int kSize2 = 5 * 1024 * 1024 + 1;
+    EXPECT_EQ(net::ERR_FAILED,
+              WriteData(entry2, 1 /* stream */, kSize2 - kBufSize, buffer.get(),
+                        kBufSize, true /* truncate */));
+    entry2->Close();
+  }
+}
+
 TEST_F(DiskCacheEntryTest, SimpleCacheSizeChanges) {
   SetSimpleCacheMode();
   InitCache();

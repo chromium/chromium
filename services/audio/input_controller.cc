@@ -115,9 +115,10 @@ InputController::ProcessingHelper::~ProcessingHelper() {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
 }
 
-void InputController::ProcessingHelper::ChangeStreamMonitor(Snoopable* stream) {
+void InputController::ProcessingHelper::ChangeMonitoredStream(
+    Snoopable* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
-  TRACE_EVENT1("audio", "AIC ChangeStreamMonitor", "stream", stream);
+  TRACE_EVENT1("audio", "AIC ChangeMonitoredStream", "stream", stream);
   if (!audio_processor_)
     return;
   if (monitored_output_stream_ == stream)
@@ -177,6 +178,27 @@ media::AudioProcessor* InputController::ProcessingHelper::GetAudioProcessor() {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(audio_processor_);
   return audio_processor_.get();
+}
+
+void InputController::ProcessingHelper::StartMonitoringStream(
+    Snoopable* output_stream) {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(audio_processor_);
+  ChangeMonitoredStream(output_stream);
+}
+
+void InputController::ProcessingHelper::StopMonitoringStream(
+    Snoopable* output_stream) {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(audio_processor_);
+  if (output_stream == monitored_output_stream_)
+    ChangeMonitoredStream(nullptr);
+}
+
+void InputController::ProcessingHelper::StopAllStreamMonitoring() {
+  DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
+  DCHECK(audio_processor_);
+  ChangeMonitoredStream(nullptr);
 }
 
 #endif  // defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
@@ -420,7 +442,7 @@ void InputController::Close() {
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
   // Disconnect from any output stream, so we don't get called when we're gone.
   if (processing_helper_)
-    processing_helper_->ChangeStreamMonitor(nullptr);
+    processing_helper_->StopAllStreamMonitoring();
 #endif
 
   std::string log_string;
@@ -536,7 +558,7 @@ void InputController::OnStreamActive(Snoopable* output_stream) {
     case media::EchoCancellationType::kAec3:
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
       if (processing_helper_)
-        processing_helper_->ChangeStreamMonitor(output_stream);
+        processing_helper_->StartMonitoringStream(output_stream);
 #endif
       break;
     case media::EchoCancellationType::kDisabled:
@@ -549,7 +571,7 @@ void InputController::OnStreamInactive(Snoopable* output_stream) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
   if (processing_helper_)
-    processing_helper_->ChangeStreamMonitor(nullptr);
+    processing_helper_->StopMonitoringStream(output_stream);
 #endif
 }
 

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1018939186200882850">菜单项</translation>
-<translation id="1020833440720551630">将音轨设为静音</translation>
 <translation id="10623998915015855">切换按钮</translation>
 <translation id="1088086359088493902">秒</translation>
 <translation id="1171774979989969504">请输入电子邮件地址。</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">参与者名单</translation>
 <translation id="1342835525016946179">文章标记</translation>
 <translation id="1359897965706325498">横幅</translation>
-<translation id="1548116112524424341">在“画中画”模式中播放视频</translation>
 <translation id="1589122976691792535">区域</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1637811476055996098">选择文件</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">树状网格</translation>
 <translation id="1822429046913737220">上午/下午</translation>
 <translation id="1832974991323546415">在远程设备上播放</translation>
-<translation id="1838818994221231429">切换到包含刘海屏区域的全屏模式</translation>
 <translation id="190587075670221089">删除</translation>
 <translation id="1907737156431278478">示例</translation>
 <translation id="1921819250265091946">日</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">在左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="5631759159893697722">摘要</translation>
-<translation id="5641012560118721995">暂停播放</translation>
 <translation id="5643186887447432888">按钮</translation>
 <translation id="5677946354068040947">更多选项</translation>
 <translation id="576709008726043716">简介</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">重置</translation>
 <translation id="5966707198760109579">周</translation>
 <translation id="5987525920412732405">微调按钮</translation>
+<translation id="6011459053400940133">音量滑块</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6023896073578205740">列表框</translation>
-<translation id="6101327004457443354">取消对音轨静音</translation>
 <translation id="6150588977291308318">参考书目</translation>
 <translation id="6164829606128959761">计量条</translation>
 <translation id="6166809985690652833">后记</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">小时</translation>
 <translation id="7681220483256441252">索引</translation>
 <translation id="7720026100085573005">剩余时间</translation>
-<translation id="7740016676195725605">停止显示可选字幕</translation>
 <translation id="7740050170769002709">HTML 内容</translation>
 <translation id="7750228210027921155">画中画</translation>
 <translation id="7789962463072032349">暂停</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">搜索文本字段</translation>
 <translation id="8057695513531652401">通知</translation>
 <translation id="8105797009065549151">备注参考资料</translation>
-<translation id="8115662671911883373">开始显示可选字幕</translation>
 <translation id="8117451130807776954">本周</translation>
-<translation id="819205353528511139">在全屏模式下播放电影</translation>
 <translation id="8199524924445686405"> 年 </translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="835897206747267392">值无效。</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">控制远程播放</translation>
 <translation id="862370744433916922">副标题</translation>
 <translation id="8750798805984357768">请从这些选项中选择一个。</translation>
-<translation id="8785498733064193001">开始播放</translation>
 <translation id="8808573423886751634">章节</translation>
 <translation id="8845239796550121995">现在正投射到您的电视上</translation>
 <translation id="8851136666856101339">主体内容</translation>

@@ -8,16 +8,17 @@ GEN_INCLUDE(['walker_unittest_base.js']);
 /**
  * Test fixture.
  * @constructor
- * @extends {CvoxWalkerTestBase}
+ * @extends {ChromeVoxWalkerTestBase}
  */
-function CvoxCharacterWalkerUnitTest() {}
+function ChromeVoxCharacterWalkerUnitTest() {}
 
-CvoxCharacterWalkerUnitTest.prototype = {
-  __proto__: CvoxWalkerUnitTestBase.prototype,
+ChromeVoxCharacterWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxWalkerUnitTestBase.prototype,
 
   /** @override */
-  closureModuleDeps: CvoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
-      'cvox.CharacterWalker'),
+  closureModuleDeps:
+      ChromeVoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
+          'cvox.CharacterWalker'),
 
   /** @override */
   newWalker: function() {
@@ -35,9 +36,9 @@ CvoxCharacterWalkerUnitTest.prototype = {
   }
 };
 
-CvoxWalkerUnitTestBase.addCommonTests('CvoxCharacterWalkerUnitTest');
+ChromeVoxWalkerUnitTestBase.addCommonTests('ChromeVoxCharacterWalkerUnitTest');
 
-TEST_F('CvoxCharacterWalkerUnitTest', 'SimpleForwardSync', function() {
+TEST_F('ChromeVoxCharacterWalkerUnitTest', 'SimpleForwardSync', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -55,7 +56,8 @@ TEST_F('CvoxCharacterWalkerUnitTest', 'SimpleForwardSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleReversedSync', function() {
+TEST_F('ChromeVoxCharacterWalkerUnitTest', 'testSimpleReversedSync',
+       function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -74,7 +76,7 @@ TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleReversedSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleForwardNext', function() {
+TEST_F('ChromeVoxCharacterWalkerUnitTest', 'testSimpleForwardNext', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -88,7 +90,8 @@ TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleForwardNext', function() {
   });
 });
 
-TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleReversedNext', function() {
+TEST_F('ChromeVoxCharacterWalkerUnitTest', 'testSimpleReversedNext',
+       function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -105,7 +108,7 @@ TEST_F('CvoxCharacterWalkerUnitTest', 'testSimpleReversedNext', function() {
 /**
  * Tests for how spaces should be navigated character by character.
  */
-TEST_F('CvoxCharacterWalkerUnitTest', 'testSpaces', function() {
+TEST_F('ChromeVoxCharacterWalkerUnitTest', 'testSpaces', function() {
   this.loadDoc(function() {/*!
     <div id="foo">a <i>b</i> c<input type="text" value="asdf"/></div>
   */});

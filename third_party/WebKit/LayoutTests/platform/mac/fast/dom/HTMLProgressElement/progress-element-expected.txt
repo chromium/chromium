@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutProgress {PROGRESS} at (0,0) size 160x21
-      LayoutInline {SMALL} at (0,0) size 134x16
-        LayoutProgress {PROGRESS} at (160,7.14) size 133.33x13.33
-      LayoutText {#text} at (0,0) size 0x0

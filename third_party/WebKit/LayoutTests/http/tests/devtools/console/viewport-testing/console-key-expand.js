@@ -1,0 +1,213 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+(async function() {
+  TestRunner.addResult(`Tests that console artifacts can be expanded, collapsed via keyboard.\n`);
+  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.showPanel('console');
+  ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
+  await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
+
+  const consoleView = Console.ConsoleView.instance();
+  const viewport = consoleView._viewport;
+  const prompt = consoleView._prompt;
+
+  await TestRunner.evaluateInPagePromise(`
+    var obj1 = Object.create(null);
+    obj1.x = 1;
+
+    var obj2 = Object.create(null);
+    obj2.y = 2;
+  `);
+
+  TestRunner.runTestSuite([
+    async function testExpandingTraces(next) {
+      await clearAndLog(`console.warn("warning")`);
+      forceSelect(0);
+
+      dumpFocus();
+      press('ArrowRight');
+      dumpFocus();
+      press('ArrowLeft');
+      dumpFocus();
+
+      next();
+    },
+
+    async function testExpandingGroups(next) {
+      await clearAndLog(`console.group("group"); console.log("log child");`, 2);
+      forceSelect(0);
+
+      dumpFocus();
+      ConsoleTestRunner.dumpConsoleMessages();
+      press('ArrowLeft');
+      dumpFocus();
+      ConsoleTestRunner.dumpConsoleMessages();
+      press('ArrowRight');
+      dumpFocus();
+      ConsoleTestRunner.dumpConsoleMessages();
+
+      next();
+    },
+
+    async function testNavigateBetweenObjectsAndLogs(next) {
+      await clearAndLog(`console.log("before");console.log("text", obj1, obj2);console.log("after");`, 3);
+      forceSelect(1);
+
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowRight');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowUp');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowLeft');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      next();
+    },
+
+    async function testExpandingObjects(next) {
+      await clearAndLog(`console.log("before");console.log("text", obj1, obj2);console.log("after");`, 3);
+      forceSelect(1);
+
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowRight');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      // Expand object.
+      press('ArrowRight');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowDown');
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      // Expand array.
+      press('ArrowRight');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
+      press('ArrowDown');
+      press('ArrowDown');
+      press('ArrowDown');
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      press('ArrowUp');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      // Collapse object.
+      press('ArrowLeft');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      // Select message.
+      press('ArrowLeft');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+
+      next();
+    },
+
+    async function testExpandingObjectInTrace(next) {
+      await clearAndLog(`console.log("before");console.warn("warning", obj1);console.log("after");`, 3);
+      forceSelect(1);
+
+      dumpFocus(true, 1);
+      press('ArrowRight');
+      dumpFocus(true, 1);
+
+      // Expand object.
+      press('ArrowRight');
+      dumpFocus(true, 1);
+      await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
+      press('ArrowDown');
+      dumpFocus(true, 1);
+      press('ArrowDown');
+      press('ArrowDown');
+      dumpFocus(true, 1);
+
+      press('ArrowUp');
+      dumpFocus(true, 1);
+      press('ArrowUp');
+      dumpFocus(true, 1);
+
+      // Collapse trace.
+      press('ArrowLeft');
+      dumpFocus(true, 1);
+
+      // ArrowLeft on message does not collapse object.
+      press('ArrowLeft');
+      dumpFocus(true, 1);
+
+      next();
+    },
+  ]);
+
+
+  // Utilities.
+  async function clearAndLog(expression, expectedCount = 1) {
+    consoleView._consoleCleared();
+    TestRunner.addResult(`Evaluating: ${expression}`);
+    await TestRunner.evaluateInPagePromise(expression);
+    await ConsoleTestRunner.waitForConsoleMessagesPromise(expectedCount);
+    await ConsoleTestRunner.waitForPendingViewportUpdates();
+  }
+
+  function forceSelect(index) {
+    TestRunner.addResult(`\nForce selecting index ${index}`);
+    viewport._virtualSelectedIndex = index;
+    viewport._contentElement.focus();
+    viewport._updateFocusedItem();
+  }
+
+  function press(key) {
+    TestRunner.addResult(`\n${key}:`);
+    eventSender.keyDown(key);
+  }
+
+  function dumpFocus(activeElement, messageIndex = 0, skipObjectCheck) {
+    const firstMessage = consoleView._visibleViewMessages[messageIndex];
+    const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle');
+    const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden');
+    const hasCollapsedObject = firstMessage.element().querySelector('.console-view-object-properties-section:not(.expanded)');
+    const hasExpandedObject = firstMessage.element().querySelector('.console-view-object-properties-section.expanded');
+
+    TestRunner.addResult(`Viewport virtual selection: ${viewport._virtualSelectedIndex}`);
+
+    if (!skipObjectCheck) {
+      if (hasCollapsedObject) {
+        TestRunner.addResult(`Has object: collapsed`);
+      } else if (hasExpandedObject) {
+        TestRunner.addResult(`Has object: expanded`);
+      }
+    }
+
+    if (hasTrace) {
+      TestRunner.addResult(`Is trace expanded: ${!hasHiddenStackTrace ? 'YES' : 'NO'}`);
+    }
+    if (firstMessage instanceof Console.ConsoleGroupViewMessage) {
+      const expanded = !firstMessage.collapsed();
+      TestRunner.addResult(`Is group expanded: ${expanded ? 'YES' : 'NO'}`);
+    }
+
+    if (!activeElement)
+      return;
+    var element = document.deepActiveElement();
+    if (!element) {
+      TestRunner.addResult('null');
+      return;
+    }
+    var name = `activeElement: ${element.tagName}`;
+    if (element.id)
+      name += '#' + element.id;
+    else if (element.className)
+      name += '.' + element.className.split(' ').join('.');
+    if (element.deepTextContent())
+      name += '\nactive text: ' + element.deepTextContent();
+    TestRunner.addResult(name);
+  }
+})();

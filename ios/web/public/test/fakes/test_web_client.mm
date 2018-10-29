@@ -24,11 +24,13 @@ TestWebClient::~TestWebClient() {}
 void TestWebClient::AddAdditionalSchemes(Schemes* schemes) const {
   schemes->standard_schemes.push_back(kTestWebUIScheme);
   schemes->standard_schemes.push_back(kTestNativeContentScheme);
+  schemes->standard_schemes.push_back(kTestAppSpecificScheme);
 }
 
 bool TestWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kTestWebUIScheme) ||
-         url.SchemeIs(kTestNativeContentScheme);
+         url.SchemeIs(kTestNativeContentScheme) ||
+         url.SchemeIs(kTestAppSpecificScheme);
 }
 
 std::string TestWebClient::GetUserAgent(UserAgentType type) const {

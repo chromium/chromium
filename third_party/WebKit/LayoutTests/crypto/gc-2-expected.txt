@@ -2,7 +2,6 @@ Test that window.crypto.subtle wrapper preserves custom properties.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS [object Crypto] is defined.
 PASS [object SubtleCrypto] is defined.
 PASS anotherWindowCrypto.subtle.foo is "bar"

@@ -9,6 +9,7 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_error_tracker.h"
 #include "ui/gfx/x/x11_types.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_glx_x11.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_image_test_support.h"

@@ -29,9 +29,6 @@ ProxyWebWidgetClient::ProxyWebWidgetClient(
 void ProxyWebWidgetClient::DidInvalidateRect(const blink::WebRect& r) {
   base_class_widget_client_->DidInvalidateRect(r);
 }
-blink::WebLayerTreeView* ProxyWebWidgetClient::InitializeLayerTreeView() {
-  return base_class_widget_client_->InitializeLayerTreeView();
-}
 bool ProxyWebWidgetClient::AllowsBrokenNullLayerTreeView() const {
   return base_class_widget_client_->AllowsBrokenNullLayerTreeView();
 }
@@ -82,15 +79,6 @@ void ProxyWebWidgetClient::SetToolTipText(const blink::WebString& text,
   widget_test_client_->SetToolTipText(text, hint);
   base_class_widget_client_->SetToolTipText(text, hint);
 }
-blink::WebScreenInfo ProxyWebWidgetClient::GetScreenInfo() {
-  blink::WebScreenInfo info = base_class_widget_client_->GetScreenInfo();
-  blink::WebScreenInfo test_info = widget_test_client_->GetScreenInfo();
-  if (test_info.orientation_type != blink::kWebScreenOrientationUndefined) {
-    info.orientation_type = test_info.orientation_type;
-    info.orientation_angle = test_info.orientation_angle;
-  }
-  return info;
-}
 bool ProxyWebWidgetClient::RequestPointerLock() {
   return widget_test_client_->RequestPointerLock();
 }
@@ -136,7 +124,7 @@ void ProxyWebWidgetClient::ConvertViewportToWindow(blink::WebRect* rect) {
 void ProxyWebWidgetClient::ConvertWindowToViewport(blink::WebFloatRect* rect) {
   base_class_widget_client_->ConvertWindowToViewport(rect);
 }
-void ProxyWebWidgetClient::StartDragging(blink::WebReferrerPolicy policy,
+void ProxyWebWidgetClient::StartDragging(network::mojom::ReferrerPolicy policy,
                                          const blink::WebDragData& data,
                                          blink::WebDragOperationsMask mask,
                                          const SkBitmap& drag_image,
@@ -211,12 +199,15 @@ blink::WebView* WebViewTestProxy::CreateView(
     const blink::WebString& frame_name,
     blink::WebNavigationPolicy policy,
     bool suppress_opener,
-    blink::WebSandboxFlags sandbox_flags) {
+    blink::WebSandboxFlags sandbox_flags,
+    const blink::SessionStorageNamespaceId& session_storage_namespace_id) {
   if (!view_test_client_->CreateView(creator, request, features, frame_name,
-                                     policy, suppress_opener, sandbox_flags))
+                                     policy, suppress_opener, sandbox_flags,
+                                     session_storage_namespace_id))
     return nullptr;
   return RenderViewImpl::CreateView(creator, request, features, frame_name,
-                                    policy, suppress_opener, sandbox_flags);
+                                    policy, suppress_opener, sandbox_flags,
+                                    session_storage_namespace_id);
 }
 
 void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {
@@ -230,6 +221,16 @@ blink::WebString WebViewTestProxy::AcceptLanguages() {
 void WebViewTestProxy::DidFocus(blink::WebLocalFrame* calling_frame) {
   view_test_client_->DidFocus(calling_frame);
   RenderViewImpl::DidFocus(calling_frame);
+}
+
+blink::WebScreenInfo WebViewTestProxy::GetScreenInfo() {
+  blink::WebScreenInfo info = RenderViewImpl::GetScreenInfo();
+  blink::WebScreenInfo test_info = view_test_client_->GetScreenInfo();
+  if (test_info.orientation_type != blink::kWebScreenOrientationUndefined) {
+    info.orientation_type = test_info.orientation_type;
+    info.orientation_angle = test_info.orientation_angle;
+  }
+  return info;
 }
 
 blink::WebWidgetClient* WebViewTestProxy::WidgetClient() {

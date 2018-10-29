@@ -3,12 +3,18 @@
 // found in the LICENSE file.
 
 self.onconnect = async e => {
-  const params = new URLSearchParams(location.search);
-  const response = await fetch(params.get('url'));
-  if (!response.ok) {
-    e.ports[0].postMessage(`Bad response: ${responses.statusText}`);
-    return;
+  const port = e.ports[0];
+  port.onmessage = async e => {
+    try {
+      const response = await fetch(e.data.url);
+      if (!response.ok) {
+        port.postMessage(`Bad response: ${response.statusText}`);
+        return;
+      }
+      const text = await response.text();
+      port.postMessage(text);
+    } catch (error) {
+      port.postMessage(`${error}`);
+    }
   }
-  const text = await response.text();
-  e.ports[0].postMessage(text);
 };

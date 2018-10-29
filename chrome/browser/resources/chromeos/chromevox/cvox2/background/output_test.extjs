@@ -90,11 +90,11 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
  * @constructor
  * @extends {ChromeVoxNextE2ETestBase}
  */
-function OutputE2ETest() {
+function ChromeVoxOutputE2ETest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-OutputE2ETest.prototype = {
+ChromeVoxOutputE2ETest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** @override */
@@ -105,7 +105,7 @@ OutputE2ETest.prototype = {
   }
 };
 
-TEST_F('OutputE2ETest', 'Links', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Links', function() {
   this.runWithLoadedTree('<a href="#">Click here</a>',
     function(root) {
       var el = root.firstChild.firstChild;
@@ -128,7 +128,7 @@ TEST_F('OutputE2ETest', 'Links', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Checkbox', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', function() {
   this.runWithLoadedTree('<input type="checkbox">',
     function(root) {
       var el = root.firstChild.firstChild;
@@ -147,7 +147,7 @@ TEST_F('OutputE2ETest', 'Checkbox', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
   this.runWithLoadedTree('<p>OK',
     function(root) {
       var el = root.firstChild.firstChild.firstChild;
@@ -178,7 +178,7 @@ TEST_F('OutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Headings', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Headings', function() {
   this.runWithLoadedTree(function() {/*!
       <h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>
       <h1><a href="a.com">b</a></h1> */},
@@ -220,7 +220,7 @@ TEST_F('OutputE2ETest', 'Headings', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Audio', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Audio', function() {
   this.runWithLoadedTree('<audio src="foo.mp3" controls></audio>',
     function(root) {
       var el = root.find({role: 'button'});
@@ -229,19 +229,18 @@ TEST_F('OutputE2ETest', 'Audio', function() {
           .withoutHints()
           .withSpeechAndBraille(range, null, 'navigate');
 
-      checkSpeechOutput('play|Button|begin playback|audio|Tool bar',
+      checkSpeechOutput('play|Disabled|Button|audio|Tool bar',
           [
             {value: new Output.EarconAction('BUTTON'), start: 0, end: 4},
-            {value: 'description', start: 12, end: 26},
-            {value: 'name', start: 27, end: 32},
-            {value: 'role', start: 33, end: 41}
+            {value: 'name', start: 21, end: 26},
+            {value: 'role', start: 27, end: 35}
           ],
           o);
 
       checkBrailleOutput(
-          'play btn begin playback audio tlbar',
-          [{value: new Output.NodeSpan(el), start: 0, end: 23},
-           {value: new Output.NodeSpan(el.parent), start: 24, end: 35}],
+          'play xx btn audio tlbar',
+          [{value: new Output.NodeSpan(el), start: 0, end: 11},
+           {value: new Output.NodeSpan(el.parent), start: 12, end: 23}],
           o);
 
       // TODO(dmazzoni/dtseng): Replace with a query.
@@ -268,7 +267,7 @@ TEST_F('OutputE2ETest', 'Audio', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Input', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
   this.runWithLoadedTree(
       '<input type="text"></input>' +
       '<input type="email"></input>' +
@@ -374,7 +373,7 @@ TEST_F('OutputE2ETest', 'Input', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'List', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'List', function() {
   this.runWithLoadedTree(
       '<ul><li aria-label="a">a<li>b<li>c</ul>',
     function(root) {
@@ -400,7 +399,7 @@ TEST_F('OutputE2ETest', 'List', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Tree', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
   this.runWithLoadedTree(function() {/*!
     <ul role="tree" style="list-style-type:none">
       <li aria-expanded="true" role="treeitem">a
@@ -464,7 +463,7 @@ TEST_F('OutputE2ETest', 'Tree', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Menu', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Menu', function() {
   this.runWithLoadedTree(function() {/*!
     <div role="menu">
       <div role="menuitem">a</div>
@@ -487,7 +486,7 @@ TEST_F('OutputE2ETest', 'Menu', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'ListBox', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'ListBox', function() {
   this.runWithLoadedTree(function() {/*!
     <select multiple>
       <option>1</option>
@@ -513,7 +512,7 @@ TEST_F('OutputE2ETest', 'ListBox', function() {
   });
 });
 
-SYNC_TEST_F('OutputE2ETest', 'MessageIdAndEarconValidity', function() {
+SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
   const kNoBrailleMessageRequired = new Set([
     'contentDeletion',
     'contentInsertion',
@@ -594,7 +593,7 @@ SYNC_TEST_F('OutputE2ETest', 'MessageIdAndEarconValidity', function() {
   }
 });
 
-TEST_F('OutputE2ETest', 'DivOmitsRole', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', function() {
   this.runWithLoadedTree(function() {/*!
     <div>that has content</div>
     <div></div>
@@ -613,7 +612,7 @@ TEST_F('OutputE2ETest', 'DivOmitsRole', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'LessVerboseAncestry', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'LessVerboseAncestry', function() {
   this.runWithLoadedTree(function() {/*!
     <div role="banner"><p>inside</p></div>
     <div role="banner"><p>inside</p></div>
@@ -643,7 +642,7 @@ TEST_F('OutputE2ETest', 'LessVerboseAncestry', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'Brief', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'Brief', function() {
   this.runWithLoadedTree(function() {/*!
     <div role="article"><p>inside</p></div>
   */},
@@ -657,7 +656,7 @@ TEST_F('OutputE2ETest', 'Brief', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'AuralStyledHeadings', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'AuralStyledHeadings', function() {
   function toFixed(num) {
     return parseFloat(Number(num).toFixed(1));
   }
@@ -684,22 +683,24 @@ TEST_F('OutputE2ETest', 'AuralStyledHeadings', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'ToggleButton', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'ToggleButton', function() {
   this.runWithLoadedTree(function() {/*!
       <div role="button" aria-pressed="true">Subscribe</div>*/},
     function(root) {
       var el = root.firstChild;
-      var o = new Output().withSpeech(cursors.Range.fromNode(el));
-      assertEqualsJSON({string_: '|Subscribe|Button|Pressed|Press Search+Space to toggle.',
+      var o = new Output().withSpeechAndBraille(cursors.Range.fromNode(el));
+      assertEqualsJSON({string_:
+               '|Subscribe|Toggle Button|Pressed|Press Search+Space to toggle.',
             spans_: [
         {value: {earconId: 'CHECK_ON'}, start: 0, end: 0},
         {value: 'name', start: 1, end:10},
-        {value: 'role', start: 11, end: 17}
+        {value: 'role', start: 11, end: 24}
       ]}, o.speechOutputForTest);
+      assertEquals('Subscribe tgl btn =', o.brailleOutputForTest.string_);
   });
 });
 
-TEST_F('OutputE2ETest', 'JoinDescendants', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'JoinDescendants', function() {
   this.runWithLoadedTree(function() {/*!
       <p>This</p>
       <p>fragment</p>
@@ -717,7 +718,7 @@ TEST_F('OutputE2ETest', 'JoinDescendants', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'ComplexDiv', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'ComplexDiv', function() {
   this.runWithLoadedTree(function() {/*!
       <div><button>ok</button></div>
     */},
@@ -728,7 +729,7 @@ TEST_F('OutputE2ETest', 'ComplexDiv', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'ContainerFocus', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'ContainerFocus', function() {
   this.runWithLoadedTree(function() {/*!
       <div role="row" tabindex=0 aria-label="start"></div>
       <div role="row" tabindex=0 aria-label="end"></div>
@@ -741,7 +742,7 @@ TEST_F('OutputE2ETest', 'ContainerFocus', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'BraileWhitespace', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', function() {
   this.runWithLoadedTree(function() {/*!
     <p>this is a <em>test</em>of emphasized text</p>
   */},
@@ -764,7 +765,7 @@ TEST_F('OutputE2ETest', 'BraileWhitespace', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'BrailleAncestry', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', function() {
   this.runWithLoadedTree(function() {/*!
     <ul><li><a href="#">test</a></li></ul>
   */},
@@ -788,7 +789,7 @@ TEST_F('OutputE2ETest', 'BrailleAncestry', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'RangeOutput', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
   this.runWithLoadedTree(function(root) {/*!
     <div role="slider" aria-valuemin="1" aria-valuemax="10" aria-valuenow="2"
                        aria-label="volume"></div>
@@ -852,7 +853,7 @@ TEST_F('OutputE2ETest', 'RangeOutput', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'RoleDescription', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', function() {
   this.runWithLoadedTree(function(root) {/*!
     <div aria-label="hi" role="button" aria-roledescription="foo"></div>
   */}, function(root) {
@@ -870,7 +871,7 @@ TEST_F('OutputE2ETest', 'RoleDescription', function() {
   });
 });
 
-SYNC_TEST_F('OutputE2ETest', 'ValidateCommonProperties', function() {
+SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
   var stateStr = '$state';
   var restrictionStr = '$restriction';
   var descStr = '$description';
@@ -940,7 +941,7 @@ SYNC_TEST_F('OutputE2ETest', 'ValidateCommonProperties', function() {
   // descriptions somewhere in the output.
 });
 
-TEST_F('OutputE2ETest', 'InlineBraille', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', function() {
   this.runWithLoadedTree(function(root) {/*!
     <table border=1>
       <tr><td>Name</td><td id="active">Age</td><td>Address</td></tr>
@@ -955,7 +956,7 @@ TEST_F('OutputE2ETest', 'InlineBraille', function() {
   });
 });
 
-TEST_F('OutputE2ETest', 'TextFieldObeysRoleDescription', function() {
+TEST_F('ChromeVoxOutputE2ETest', 'TextFieldObeysRoleDescription', function() {
   this.runWithLoadedTree(function(root) {/*!
     <div role="textbox" aria-roledescription="square"></div>
     <div role="region" aria-roledescription="circle"></div>

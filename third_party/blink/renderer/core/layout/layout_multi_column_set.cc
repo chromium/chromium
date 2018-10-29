@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 #include "third_party/blink/renderer/core/paint/multi_column_set_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
 
@@ -520,7 +521,40 @@ LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
   return result;
 }
 
-void LayoutMultiColumnSet::AddOverflowFromChildren() {
+void LayoutMultiColumnSet::ComputeVisualOverflow(
+    const LayoutRect& previous_visual_overflow_rect,
+    bool recompute_floats) {
+  AddVisualOverflowFromChildren();
+
+  AddVisualEffectOverflow();
+  AddVisualOverflowFromTheme();
+
+  if (recompute_floats || CreatesNewFormattingContext() ||
+      HasSelfPaintingLayer())
+    AddVisualOverflowFromFloats();
+
+  if (VisualOverflowRect() != previous_visual_overflow_rect) {
+    if (Layer())
+      Layer()->SetNeedsCompositingInputsUpdate();
+    GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
+  }
+}
+
+void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
+  // It's useless to calculate overflow if we haven't determined the page
+  // logical height yet.
+  if (!IsPageLogicalHeightKnown())
+    return;
+  LayoutRect overflow_rect;
+  for (const auto& group : fragmentainer_groups_) {
+    LayoutRect rect = group.CalculateOverflow();
+    rect.Move(group.OffsetFromColumnSet());
+    overflow_rect.Unite(rect);
+  }
+  AddContentsVisualOverflow(overflow_rect);
+}
+
+void LayoutMultiColumnSet::AddLayoutOverflowFromChildren() {
   // It's useless to calculate overflow if we haven't determined the page
   // logical height yet.
   if (!IsPageLogicalHeightKnown())
@@ -532,7 +566,6 @@ void LayoutMultiColumnSet::AddOverflowFromChildren() {
     overflow_rect.Unite(rect);
   }
   AddLayoutOverflow(overflow_rect);
-  AddContentsVisualOverflow(overflow_rect);
 }
 
 void LayoutMultiColumnSet::InsertedIntoTree() {

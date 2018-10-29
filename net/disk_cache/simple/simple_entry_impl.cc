@@ -185,8 +185,8 @@ void SimpleEntryImpl::SetActiveEntryProxy(
   active_entry_proxy_ = std::move(active_entry_proxy);
 }
 
-int SimpleEntryImpl::OpenEntry(Entry** out_entry,
-                               net::CompletionOnceCallback callback) {
+net::Error SimpleEntryImpl::OpenEntry(Entry** out_entry,
+                                      net::CompletionOnceCallback callback) {
   DCHECK(backend_.get());
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_OPEN_CALL);
@@ -223,15 +223,15 @@ int SimpleEntryImpl::OpenEntry(Entry** out_entry,
   return net::ERR_IO_PENDING;
 }
 
-int SimpleEntryImpl::CreateEntry(Entry** out_entry,
-                                 net::CompletionOnceCallback callback) {
+net::Error SimpleEntryImpl::CreateEntry(Entry** out_entry,
+                                        net::CompletionOnceCallback callback) {
   DCHECK(backend_.get());
   DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CREATE_CALL);
 
   bool have_index = backend_->index()->initialized();
-  int ret_value = net::ERR_FAILED;
+  net::Error ret_value = net::ERR_FAILED;
   if (use_optimistic_operations_ &&
       state_ == STATE_UNINITIALIZED && pending_operations_.size() == 0) {
     net_log_.AddEvent(
@@ -267,7 +267,7 @@ int SimpleEntryImpl::CreateEntry(Entry** out_entry,
   return ret_value;
 }
 
-int SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
+net::Error SimpleEntryImpl::DoomEntry(net::CompletionOnceCallback callback) {
   if (doom_state_ != DOOM_NONE)
     return net::OK;
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_DOOM_CALL);
@@ -549,7 +549,7 @@ void SimpleEntryImpl::CancelSparseIO() {
   // I/O.  Therefore, CancelSparseIO and ReadyForSparseIO succeed instantly.
 }
 
-int SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
+net::Error SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
   DCHECK(io_thread_checker_.CalledOnValidThread());
   // The simple Cache does not return distinct objects for the same non-doomed
   // entry, so there's no need to coordinate which object is performing sparse

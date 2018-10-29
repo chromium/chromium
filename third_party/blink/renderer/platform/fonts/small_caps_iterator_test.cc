@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include <string>
 
 namespace blink {
 
 struct SmallCapsTestRun {
-  std::string text;
+  const char* const text;
   SmallCapsIterator::SmallCapsBehavior code;
 };
 
@@ -30,7 +29,7 @@ class SmallCapsIteratorTest : public testing::Test {
     String text(g_empty_string16_bit);
     Vector<SmallCapsExpectedRun> expect;
     for (auto& run : runs) {
-      text.append(String::FromUTF8(run.text.c_str()));
+      text.append(String::FromUTF8(run.text));
       expect.push_back(SmallCapsExpectedRun(text.length(), run.code));
     }
     SmallCapsIterator small_caps_iterator(text.Characters16(), text.length());

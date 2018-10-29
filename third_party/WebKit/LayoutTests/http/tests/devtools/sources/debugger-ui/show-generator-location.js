@@ -34,7 +34,7 @@
     TestRunner.addSniffer(panel, 'showUISourceCode', showUISourceCodeHook);
     var remote = await TestRunner.evaluateInPageRemoteObject(pageExpression);
 
-    remote.getOwnPropertiesPromise().then(revealLocation.bind(null, remote));
+    remote.getOwnProperties().then(revealLocation.bind(null, remote));
 
     function revealLocation(remote, properties) {
       var loc;

@@ -36,10 +36,6 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
                       const std::string webstore_item_id);
   ~WebstoreDataFetcher();
 
-  // Makes this request use a POST instead of GET, and sends |data| in the
-  // body of the request. If |data| is empty, this is a no-op.
-  void SetPostData(const std::string& data);
-
   void Start(network::mojom::URLLoaderFactory* url_loader_factory);
 
   void set_max_auto_retries(int max_retries) {

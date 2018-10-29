@@ -38,14 +38,4 @@ int UIStringOverrider::GetResourceIndex(uint32_t hash) {
   return resource_indices_[element - resource_hashes_];
 }
 
-void UIStringOverrider::OverrideUIString(uint32_t hash,
-                                         const base::string16& string) {
-  int resource_id = GetResourceIndex(hash);
-  if (resource_id == -1)
-    return;
-
-  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
-      resource_id, string);
-}
-
 }  // namespace variations

@@ -32,7 +32,7 @@ namespace blink {
 const unsigned DateTimeFieldsState::kEmptyValue = static_cast<unsigned>(-1);
 
 static unsigned GetNumberFromFormControlState(const FormControlState& state,
-                                              size_t index) {
+                                              wtf_size_t index) {
   if (index >= state.ValueSize())
     return DateTimeFieldsState::kEmptyValue;
   bool parsed;
@@ -42,7 +42,7 @@ static unsigned GetNumberFromFormControlState(const FormControlState& state,
 
 static DateTimeFieldsState::AMPMValue GetAMPMFromFormControlState(
     const FormControlState& state,
-    size_t index) {
+    wtf_size_t index) {
   if (index >= state.ValueSize())
     return DateTimeFieldsState::kAMPMValueEmpty;
   const String value = state[index];

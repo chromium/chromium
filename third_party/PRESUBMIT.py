@@ -18,6 +18,7 @@ ANDROID_WHITELISTED_LICENSES = [
   'SGI Free Software License B',
   'University of Illinois\/NCSA Open Source',
   'X11',
+  'Zlib',
 ]
 
 def LicenseIsCompatibleWithAndroid(input_api, license):

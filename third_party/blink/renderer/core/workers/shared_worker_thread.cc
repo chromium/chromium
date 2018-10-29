@@ -41,8 +41,8 @@ SharedWorkerThread::SharedWorkerThread(
     const String& name,
     WorkerReportingProxy& worker_reporting_proxy)
     : WorkerThread(worker_reporting_proxy),
-      worker_backing_thread_(WorkerBackingThread::Create(
-          WebThreadCreationParams(GetThreadType()))),
+      worker_backing_thread_(
+          WorkerBackingThread::Create(ThreadCreationParams(GetThreadType()))),
       name_(name.IsolatedCopy()) {}
 
 SharedWorkerThread::~SharedWorkerThread() = default;

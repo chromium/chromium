@@ -65,7 +65,7 @@ class STORAGE_EXPORT BlobReader {
         const base::Time& expected_modification_time) = 0;
   };
   enum class Status { NET_ERROR, IO_PENDING, DONE };
-  typedef base::Callback<void(Status)> StatusCallback;
+  using StatusCallback = base::OnceCallback<void(Status)>;
   virtual ~BlobReader();
 
   // This calculates the total size of the blob, and initializes the reading
@@ -92,7 +92,7 @@ class STORAGE_EXPORT BlobReader {
   // * If this function returns Status::IO_PENDING, the done callback will be
   //   called with Status::DONE or Status::NET_ERROR.
   // Currently side data is supported only for single DiskCache entry blob.
-  Status ReadSideData(const StatusCallback& done);
+  Status ReadSideData(StatusCallback done);
 
   // Returns the side data which has been already read with ReadSideData().
   net::IOBufferWithSize* side_data() const {
@@ -199,7 +199,7 @@ class STORAGE_EXPORT BlobReader {
   Status ReadDiskCacheEntryItem(const BlobDataItem& item, int bytes_to_read);
   void DidReadDiskCacheEntry(int result);
   void DidReadItem(int result);
-  void DidReadDiskCacheEntrySideData(const StatusCallback& done,
+  void DidReadDiskCacheEntrySideData(StatusCallback done,
                                      int expected_size,
                                      int result);
   int ComputeBytesToRead() const;

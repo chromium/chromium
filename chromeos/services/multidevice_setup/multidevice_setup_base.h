@@ -19,6 +19,12 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
 
   void BindRequest(mojom::MultiDeviceSetupRequest request);
 
+  // Sets the device with the given ID as the multi-device host for this
+  // account.
+  virtual void SetHostDeviceWithoutAuthToken(
+      const std::string& host_device_id,
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) = 0;
+
  protected:
   MultiDeviceSetupBase();
 

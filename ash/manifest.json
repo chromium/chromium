@@ -20,13 +20,13 @@
           "ash.mojom.AssistantController",
           "ash.mojom.AssistantVolumeControl",
           "ash.mojom.CastConfig",
-          "ash.mojom.ClientImageRegistry",
           "ash.mojom.CrosDisplayConfigController",
           "ash.mojom.DockedMagnifierController",
           "ash.mojom.EventRewriterController",
           "ash.mojom.FirstRunHelper",
           "ash.mojom.HighlighterController",
           "ash.mojom.ImeController",
+          "ash.mojom.KeyboardController",
           "ash.mojom.LocaleNotificationController",
           "ash.mojom.LoginScreen",
           "ash.mojom.MediaController",
@@ -44,7 +44,8 @@
           "ash.mojom.TrayAction",
           "ash.mojom.VoiceInteractionController",
           "ash.mojom.VpnList",
-          "ash.mojom.WallpaperController"
+          "ash.mojom.WallpaperController",
+          "keyboard.mojom.KeyboardController"
         ],
         // Test-only interfaces.
         "test": [
@@ -68,9 +69,12 @@
         "*": [ "accessibility", "app" ],
         "ash_pref_connector": [ "pref_connector" ],
         "catalog": [ "directory" ],
+        "device": [
+          "device:bluetooth_system",
+          "device:fingerprint"
+        ],
         "local_state": [ "pref_client" ],
         "multidevice_setup": [ "multidevice_setup" ],
-        "quick_launch_app": [ "mash:launchable" ],
         "ui": [
           "ozone",
           "window_manager"

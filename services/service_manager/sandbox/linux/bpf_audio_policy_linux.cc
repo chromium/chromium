@@ -36,6 +36,9 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #if defined(__NR_ftruncate)
     case __NR_ftruncate:
 #endif
+#if defined(__NR_ftruncate64)
+    case __NR_ftruncate64:
+#endif
 #if defined(__NR_getdents)
     case __NR_getdents:
 #endif

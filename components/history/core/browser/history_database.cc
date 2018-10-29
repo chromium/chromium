@@ -229,24 +229,49 @@ void HistoryDatabase::ComputeDatabaseMetrics(
   }
 }
 
+int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  // Collect all URLs visited within the last month.
+  base::Time one_month_ago = base::Time::Now() - base::TimeDelta::FromDays(30);
+
+  sql::Statement url_sql(
+      db_.GetUniqueStatement("SELECT url FROM urls "
+                             "WHERE last_visit_time > ? "
+                             "AND hidden = 0 "
+                             "AND visit_count > 0"));
+  url_sql.BindInt64(0, one_month_ago.ToInternalValue());
+
+  std::set<std::string> hosts;
+  while (url_sql.Step()) {
+    GURL url(url_sql.ColumnString(0));
+    hosts.insert(url.host());
+  }
+
+  UMA_HISTOGRAM_TIMES("History.DatabaseMonthlyHostCountTime",
+                      base::TimeTicks::Now() - start_time);
+  return hosts.size();
+}
+
 TopHostsList HistoryDatabase::TopHosts(size_t num_hosts) {
   base::Time one_month_ago =
       std::max(base::Time::Now() - base::TimeDelta::FromDays(30), base::Time());
 
   sql::Statement url_sql(db_.GetUniqueStatement(
-      "SELECT u.url, u.visit_count "
+      "SELECT u.url, COUNT(u.id) "
       "FROM urls u JOIN visits v ON u.id = v.url "
-      "WHERE last_visit_time > ? "
+      "WHERE v.visit_time > ? "
       "AND (v.transition & ?) != 0 "              // CHAIN_END
-      "AND (transition & ?) NOT IN (?, ?, ?)"));  // NO SUBFRAME or
-                                                  // KEYWORD_GENERATED
+      "AND (v.transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
+                                                  // RELOAD
+      "GROUP BY u.url "
+      "ORDER BY u.last_visit_time DESC"));
 
   url_sql.BindInt64(0, one_month_ago.ToInternalValue());
   url_sql.BindInt(1, ui::PAGE_TRANSITION_CHAIN_END);
   url_sql.BindInt(2, ui::PAGE_TRANSITION_CORE_MASK);
   url_sql.BindInt(3, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   url_sql.BindInt(4, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  url_sql.BindInt(5, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  url_sql.BindInt(5, ui::PAGE_TRANSITION_RELOAD);
 
   // Collect a map from host to visit count.
   base::hash_map<std::string, int> host_count;
@@ -255,14 +280,20 @@ TopHostsList HistoryDatabase::TopHosts(size_t num_hosts) {
     if (!(url.is_valid() && (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("ftp"))))
       continue;
 
-    int64_t visit_count = url_sql.ColumnInt64(1);
-    host_count[HostForTopHosts(url)] += visit_count;
+    std::string host_for_top_host = HostForTopHosts(url);
 
     // kMaxHostsInMemory is well above typical values for
-    // History.MonthlyHostCount, but here to guard against unbounded memory
+    // History.MonthlyHostCount, but is used to guard against unbounded memory
     // growth in the event of an atypical history.
-    if (host_count.size() >= kMaxHostsInMemory)
-      break;
+    // Continue in the case where the host limit is reached and this is a newly
+    // encountered host that would add an additional entry to the map.
+    if (host_count.size() >= kMaxHostsInMemory &&
+        host_count.find(host_for_top_host) == host_count.end()) {
+      continue;
+    }
+
+    int64_t visit_count = url_sql.ColumnInt64(1);
+    host_count[host_for_top_host] += visit_count;
   }
 
   // Collect the top 100 hosts by visit count, into the range

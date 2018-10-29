@@ -197,36 +197,6 @@ bool PaintImage::DecodeFromGenerator(void* memory,
   // First convert the info to have the requested color space, since the decoder
   // will convert this for us.
   *info = info->makeColorSpace(std::move(color_space));
-  if (info->colorType() != kN32_SkColorType) {
-    // Since the decoders only support N32 color types, make one of those and
-    // decode into temporary memory. Then read the bitmap which will convert it
-    // to the target color type.
-    SkImageInfo n32info = info->makeColorType(kN32_SkColorType);
-    std::unique_ptr<char[]> n32memory(
-        new char[n32info.minRowBytes() * n32info.height()]);
-
-    bool result = paint_image_generator_->GetPixels(
-        n32info, n32memory.get(), n32info.minRowBytes(), frame_index, client_id,
-        unique_id());
-    if (!result)
-      return false;
-
-    // The following block will use Skia to do the color type conversion from
-    // N32 to the destination color type. Since color space conversion was
-    // already done in GetPixels() above, remove the color space information
-    // first in case Skia tries to use it for something. In practice, n32info
-    // and *info color spaces match, so it should work without removing the
-    // color spaces, but better be safe.
-    SkImageInfo n32info_no_colorspace = n32info.makeColorSpace(nullptr);
-    SkImageInfo info_no_colorspace = info->makeColorSpace(nullptr);
-
-    SkBitmap bitmap;
-    bitmap.installPixels(n32info_no_colorspace, n32memory.get(),
-                         n32info.minRowBytes());
-    return bitmap.readPixels(info_no_colorspace, memory, info->minRowBytes(), 0,
-                             0);
-  }
-
   return paint_image_generator_->GetPixels(*info, memory, info->minRowBytes(),
                                            frame_index, client_id, unique_id());
 }
@@ -269,6 +239,14 @@ PaintImage::FrameKey PaintImage::GetKeyForFrame(size_t frame_index) const {
 
   DCHECK_NE(content_id, kInvalidContentId);
   return FrameKey(content_id, frame_index, subset_rect_);
+}
+
+SkColorType PaintImage::GetColorType() const {
+  if (paint_image_generator_)
+    return paint_image_generator_->GetSkImageInfo().colorType();
+  if (GetSkImage())
+    return GetSkImage()->colorType();
+  return kUnknown_SkColorType;
 }
 
 const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {

@@ -11,6 +11,7 @@
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/raster/tile_task.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/tiles/tile_priority.h"
 
 namespace cc {

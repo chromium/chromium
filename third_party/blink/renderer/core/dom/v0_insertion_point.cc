@@ -159,7 +159,7 @@ void V0InsertionPoint::DidRecalcStyle(StyleRecalcChange change) {
     node->SetNeedsStyleRecalc(
         style_change_type,
         StyleChangeReasonForTracing::Create(
-            StyleChangeReason::kPropagateInheritChangeToDistributedNodes));
+            style_change_reason::kPropagateInheritChangeToDistributedNodes));
   }
 }
 
@@ -212,8 +212,7 @@ bool V0InsertionPoint::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 void V0InsertionPoint::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (ShadowRoot* root = ContainingShadowRoot()) {
-    if (!(RuntimeEnabledFeatures::IncrementalShadowDOMEnabled() &&
-          root->IsV1()))
+    if (!root->IsV1())
       root->SetNeedsDistributionRecalc();
   }
 }
@@ -223,9 +222,7 @@ Node::InsertionNotificationRequest V0InsertionPoint::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   if (ShadowRoot* root = ContainingShadowRoot()) {
     if (!root->IsV1()) {
-      if (!(RuntimeEnabledFeatures::IncrementalShadowDOMEnabled() &&
-            root->IsV1()))
-        root->SetNeedsDistributionRecalc();
+      root->SetNeedsDistributionRecalc();
       if (CanBeActive() && !registered_with_shadow_root_ &&
           insertion_point.GetTreeScope().RootNode() == root) {
         registered_with_shadow_root_ = true;
@@ -248,8 +245,7 @@ void V0InsertionPoint::RemovedFrom(ContainerNode& insertion_point) {
   if (!root)
     root = insertion_point.ContainingShadowRoot();
 
-  if (root &&
-      !(RuntimeEnabledFeatures::IncrementalShadowDOMEnabled() && root->IsV1()))
+  if (root && !root->IsV1())
     root->SetNeedsDistributionRecalc();
 
   // Since this insertion point is no longer visible from the shadow subtree, it

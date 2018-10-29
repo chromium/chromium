@@ -21,6 +21,7 @@ class SessionDesktopEnvironment : public Me2MeDesktopEnvironment {
   ~SessionDesktopEnvironment() override;
 
   // DesktopEnvironment implementation.
+  std::unique_ptr<ActionExecutor> CreateActionExecutor() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
 
  private:
@@ -31,15 +32,15 @@ class SessionDesktopEnvironment : public Me2MeDesktopEnvironment {
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       ui::SystemInputInjectorFactory* system_input_injector_factory,
-      const base::Closure& inject_sas,
-      const base::Closure& lock_workstation,
+      const base::RepeatingClosure& inject_sas,
+      const base::RepeatingClosure& lock_workstation,
       const DesktopEnvironmentOptions& options);
 
   // Used to ask the daemon to inject Secure Attention Sequence.
-  base::Closure inject_sas_;
+  base::RepeatingClosure inject_sas_;
 
   // Used to lock the workstation for the current session.
-  base::Closure lock_workstation_;
+  base::RepeatingClosure lock_workstation_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionDesktopEnvironment);
 };
@@ -53,8 +54,8 @@ class SessionDesktopEnvironmentFactory : public Me2MeDesktopEnvironmentFactory {
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       ui::SystemInputInjectorFactory* system_input_injector_factory,
-      const base::Closure& inject_sas,
-      const base::Closure& lock_workstation);
+      const base::RepeatingClosure& inject_sas,
+      const base::RepeatingClosure& lock_workstation);
   ~SessionDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory implementation.
@@ -64,10 +65,10 @@ class SessionDesktopEnvironmentFactory : public Me2MeDesktopEnvironmentFactory {
 
  private:
   // Used to ask the daemon to inject Secure Attention Sequence.
-  base::Closure inject_sas_;
+  base::RepeatingClosure inject_sas_;
 
   // Used to lock the workstation for the current session.
-  base::Closure lock_workstation_;
+  base::RepeatingClosure lock_workstation_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionDesktopEnvironmentFactory);
 };

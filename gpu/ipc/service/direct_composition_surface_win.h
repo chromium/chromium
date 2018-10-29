@@ -36,11 +36,13 @@ class GPU_IPC_SERVICE_EXPORT DirectCompositionSurfaceWin
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
       HWND parent_window);
 
-  // Returns true if there's an output on the current adapter that can
-  // use overlays.
+  // Returns true if hardware overlays are supported, and DirectComposition
+  // surface and layers should be used.  Overridden with
+  // --enable-direct-composition-layers and --disable-direct-composition-layers.
   static bool AreOverlaysSupported();
 
-  // Returns a list of supported overlay formats for GPUInfo.
+  // Returns a list of supported overlay formats for GPUInfo.  This does not
+  // depend on finch features or command line flags.
   static OverlayCapabilities GetOverlayCapabilities();
 
   // Returns true if there is an HDR capable display connected.
@@ -50,12 +52,14 @@ class GPU_IPC_SERVICE_EXPORT DirectCompositionSurfaceWin
   // displays.  Tearing is only used if vsync is also disabled via command line.
   static bool IsSwapChainTearingSupported();
 
-  static void EnableScaledOverlaysForTesting();
+  static void SetScaledOverlaysSupportedForTesting(bool value);
+
+  static int GetNumFramesBeforeSwapChainResizeForTesting();
 
   bool InitializeNativeWindow();
 
   // GLSurfaceEGL implementation.
-  using GLSurfaceEGL::Initialize;
+  using GLSurface::Initialize;
   bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
   gfx::Size GetSize() override;
@@ -91,17 +95,13 @@ class GPU_IPC_SERVICE_EXPORT DirectCompositionSurfaceWin
   // tree at z-order 0.
   bool ScheduleDCLayer(const ui::DCRendererLayerParams& params) override;
 
-  const Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface() const;
-  const Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain() const;
-
-  uint64_t GetDCompSurfaceSerial() const;
-
   scoped_refptr<base::TaskRunner> GetWindowTaskRunnerForTesting();
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
       size_t index) const;
 
-  const GpuDriverBugWorkarounds& workarounds() const { return workarounds_; }
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> GetBackbufferSwapChainForTesting()
+      const;
 
  protected:
   ~DirectCompositionSurfaceWin() override;
@@ -110,8 +110,6 @@ class GPU_IPC_SERVICE_EXPORT DirectCompositionSurfaceWin
   bool RecreateRootSurface();
 
   ChildWindowWin child_window_;
-
-  GpuDriverBugWorkarounds workarounds_;
 
   HWND window_ = nullptr;
   // This is a placeholder surface used when not rendering to the

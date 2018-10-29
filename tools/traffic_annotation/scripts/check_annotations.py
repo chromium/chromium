@@ -25,6 +25,7 @@ CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
 class NetworkTrafficAnnotationChecker():
   EXTENSIONS = ['.cc', '.mm',]
+  ANNOTATIONS_FILE = 'annotations.xml'
 
   def __init__(self, build_path=None):
     """Initializes a NetworkTrafficAnnotationChecker object.
@@ -36,10 +37,46 @@ class NetworkTrafficAnnotationChecker():
     """
     self.tools = NetworkTrafficAnnotationTools(build_path)
 
+  def IsAnnotationsFile(self, file_path):
+    """Returns true if the given file is the annotations file."""
+    return os.path.basename(file_path) == self.ANNOTATIONS_FILE
+
   def ShouldCheckFile(self, file_path):
     """Returns true if the input file has an extension relevant to network
     traffic annotations."""
     return os.path.splitext(file_path)[1] in self.EXTENSIONS
+
+  def GetFilePaths(self, complete_run, limit):
+    if complete_run:
+      return []
+
+    # Get list of modified files. If failed, silently ignore as the test is
+    # run in error resilient mode.
+    file_paths = self.tools.GetModifiedFiles() or []
+
+    annotations_file_changed = any(
+        self.IsAnnotationsFile(file_path) for file_path in file_paths)
+
+    # If the annotations file has changed, trigger a full test to avoid
+    # missing a case where the annotations file has changed, but not the
+    # corresponding file, causing a mismatch that is not detected by just
+    # checking the changed .cc and .mm files.
+    if annotations_file_changed:
+      return []
+
+    file_paths = [
+        file_path for file_path in file_paths if self.ShouldCheckFile(
+            file_path)]
+    if not file_paths:
+      return None
+
+    # If the number of changed files in the CL exceeds a threshold, trigger
+    # full test to avoid sending very long list of arguments and possible
+    # failure in argument buffers.
+    if len(file_paths) > CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST:
+      file_paths = []
+
+    return file_paths
 
   def CheckFiles(self, complete_run, limit):
     """Passes all given files to traffic_annotation_auditor to be checked for
@@ -59,22 +96,9 @@ class NetworkTrafficAnnotationChecker():
             "are required to do it.")
       return 0
 
-    if complete_run:
-      file_paths = []
-    else:
-      # Get list of modified files. If failed, silently ignore as the test is
-      # run in error resilient mode.
-      file_paths = self.tools.GetModifiedFiles() or []
-      file_paths = [
-          file_path for file_path in file_paths if self.ShouldCheckFile(
-              file_path)]
-      if not file_paths:
-        return 0
-      # If the number of changed files in the CL exceeds a threshold, trigger
-      # full test to avoid sending very long list of arguments and possible
-      # failure in argument buffers.
-      if len(file_paths) > CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST:
-        file_paths = []
+    file_paths = self.GetFilePaths(complete_run, limit)
+    if file_paths is None:
+      return 0
 
     args = ["--test-only", "--limit=%i" % limit, "--error-resilient"] + \
            file_paths

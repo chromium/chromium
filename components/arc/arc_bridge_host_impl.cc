@@ -143,6 +143,12 @@ void ArcBridgeHostImpl::OnLockScreenInstanceReady(
                   std::move(lock_screen_ptr));
 }
 
+void ArcBridgeHostImpl::OnMediaSessionInstanceReady(
+    mojom::MediaSessionInstancePtr media_session_ptr) {
+  OnInstanceReady(arc_bridge_service_->media_session(),
+                  std::move(media_session_ptr));
+}
+
 void ArcBridgeHostImpl::OnMetricsInstanceReady(
     mojom::MetricsInstancePtr metrics_ptr) {
   OnInstanceReady(arc_bridge_service_->metrics(), std::move(metrics_ptr));

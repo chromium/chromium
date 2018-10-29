@@ -77,7 +77,7 @@ TEST_F(IPCVolumeReporterTest, Basic) {
   histogram_tester_.ExpectTotalCount("ResourceCoordinator.IPCPerMinute.Process",
                                      1);
   histogram_tester_.ExpectUniqueSample(
-      "ResourceCoordinator.IPCPerMinute.Process", 5, 1);
+      "ResourceCoordinator.IPCPerMinute.Process", 4, 1);
 
   EXPECT_TRUE(reporter_->mock_timer()->IsRunning());
 };

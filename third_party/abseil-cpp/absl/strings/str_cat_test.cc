@@ -28,7 +28,8 @@
 #define ABSL_EXPECT_DEBUG_DEATH(statement, regex) \
   EXPECT_DEBUG_DEATH(statement, ".*")
 #else
-#define ABSL_EXPECT_DEBUG_DEATH EXPECT_DEBUG_DEATH
+#define ABSL_EXPECT_DEBUG_DEATH(statement, regex) \
+  EXPECT_DEBUG_DEATH(statement, regex)
 #endif
 
 namespace {

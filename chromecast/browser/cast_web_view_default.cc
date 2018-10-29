@@ -13,7 +13,6 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_manager.h"
-#include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "content/public/browser/media_capture_devices.h"
@@ -60,14 +59,14 @@ CastWebViewDefault::CastWebViewDefault(
     scoped_refptr<content::SiteInstance> site_instance)
     : web_contents_manager_(web_contents_manager),
       browser_context_(browser_context),
-      remote_debugging_server_(
-          shell::CastBrowserProcess::GetInstance()->remote_debugging_server()),
       site_instance_(std::move(site_instance)),
       delegate_(params.delegate),
       transparent_(params.transparent),
       allow_media_access_(params.allow_media_access),
-      enabled_for_dev_(params.enabled_for_dev),
       web_contents_(CreateWebContents(browser_context_, site_instance_)),
+      cast_web_contents_(delegate_,
+                         web_contents_.get(),
+                         params.enabled_for_dev),
       window_(shell::CastContentWindow::Create(params.window_params)),
       did_start_navigation_(false) {
   DCHECK(delegate_);
@@ -97,13 +96,6 @@ CastWebViewDefault::CastWebViewDefault(
   content::MediaSession::Get(web_contents_.get())
       ->SetDuckingVolumeMultiplier(kDuckingMultiplier);
 #endif
-
-  // If this CastWebView is enabled for development, start the remote debugger.
-  if (enabled_for_dev_) {
-    LOG(INFO) << "Enabling dev console for " << web_contents_->GetVisibleURL();
-    remote_debugging_server_->EnableWebContentsForDebugging(
-        web_contents_.get());
-  }
 }
 
 CastWebViewDefault::~CastWebViewDefault() {}
@@ -124,19 +116,22 @@ void CastWebViewDefault::LoadUrl(GURL url) {
 void CastWebViewDefault::ClosePage(const base::TimeDelta& shutdown_delay) {
   shutdown_delay_ = shutdown_delay;
   content::WebContentsObserver::Observe(nullptr);
-  web_contents_->DispatchBeforeUnload(false /* auto_cancel */);
-  web_contents_->ClosePage();
+  cast_web_contents_.ClosePage();
 }
 
 void CastWebViewDefault::CloseContents(content::WebContents* source) {
   DCHECK_EQ(source, web_contents_.get());
   window_.reset();  // Window destructor requires live web_contents on Android.
-  // We need to delay the deletion of web_contents_ to give (and guarantee) the
-  // renderer enough time to finish 'onunload' handler (but we don't want to
-  // wait any longer than that to delay the starting of next app).
-  web_contents_manager_->DelayWebContentsDeletion(std::move(web_contents_),
-                                                  shutdown_delay_);
-  delegate_->OnPageStopped(net::OK);
+  if (!shutdown_delay_.is_zero()) {
+    // We need to delay the deletion of web_contents_ to give (and guarantee)
+    // the renderer enough time to finish 'onunload' handler (but we don't want
+    // to wait any longer than that to delay the starting of next app).
+    web_contents_manager_->DelayWebContentsDeletion(std::move(web_contents_),
+                                                    shutdown_delay_);
+  }
+  // This will signal to the owner that |web_contents_| is no longer in use,
+  // permitting the owner to tear down.
+  cast_web_contents_.Stop(net::OK);
 }
 
 void CastWebViewDefault::InitializeWindow(CastWindowManager* window_manager,
@@ -151,6 +146,8 @@ void CastWebViewDefault::InitializeWindow(CastWindowManager* window_manager,
                                       z_order, initial_priority);
   web_contents_->Focus();
 }
+
+void CastWebViewDefault::SetContext(base::Value context) {}
 
 void CastWebViewDefault::GrantScreenAccess() {
   window_->GrantScreenAccess();
@@ -173,11 +170,6 @@ content::WebContents* CastWebViewDefault::OpenURLFromTab(
   source->GetController().LoadURL(params.url, params.referrer,
                                   params.transition, params.extra_headers);
   return source;
-}
-
-void CastWebViewDefault::LoadingStateChanged(content::WebContents* source,
-                                             bool to_different_document) {
-  delegate_->OnLoadingStateChanged(source->IsLoading());
 }
 
 void CastWebViewDefault::ActivateContents(content::WebContents* contents) {
@@ -280,11 +272,6 @@ CastWebViewDefault::RunBluetoothChooser(
              : WebContentsDelegate::RunBluetoothChooser(frame, event_handler);
 }
 
-void CastWebViewDefault::RenderProcessGone(base::TerminationStatus status) {
-  LOG(INFO) << "APP_ERROR_CHILD_PROCESS_CRASHED";
-  delegate_->OnPageStopped(net::ERR_UNEXPECTED);
-}
-
 void CastWebViewDefault::RenderViewCreated(
     content::RenderViewHost* render_view_host) {
   content::RenderWidgetHostView* view =
@@ -294,59 +281,6 @@ void CastWebViewDefault::RenderViewCreated(
         transparent_ ? SK_ColorTRANSPARENT
                      : chromecast::GetSwitchValueColor(
                            switches::kCastAppBackgroundColor, SK_ColorBLACK));
-  }
-}
-
-void CastWebViewDefault::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // If the navigation was not committed, it means either the page was a
-  // download or error 204/205, or the navigation never left the previous
-  // URL. Ignore these navigations.
-  if (!navigation_handle->HasCommitted()) {
-    LOG(WARNING) << "Navigation did not commit: url="
-                 << navigation_handle->GetURL();
-    return;
-  }
-
-  net::Error error_code = navigation_handle->GetNetErrorCode();
-  if (!navigation_handle->IsErrorPage())
-    return;
-
-  // If we abort errors in an iframe, it can create a really confusing
-  // and fragile user experience.  Rather than create a list of errors
-  // that are most likely to occur, we ignore all of them for now.
-  if (!navigation_handle->IsInMainFrame()) {
-    LOG(ERROR) << "Got error on sub-iframe: url=" << navigation_handle->GetURL()
-               << ", error=" << error_code
-               << ", description=" << net::ErrorToShortString(error_code);
-    return;
-  }
-
-  LOG(ERROR) << "Got error on navigation: url=" << navigation_handle->GetURL()
-             << ", error_code=" << error_code
-             << ", description= " << net::ErrorToShortString(error_code);
-  delegate_->OnPageStopped(error_code);
-}
-
-void CastWebViewDefault::DidFailLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url,
-    int error_code,
-    const base::string16& error_description) {
-  // Only report an error if we are the main frame.  See b/8433611.
-  if (render_frame_host->GetParent()) {
-    LOG(ERROR) << "Got error on sub-iframe: url=" << validated_url.spec()
-               << ", error=" << error_code;
-  } else if (error_code == net::ERR_ABORTED) {
-    // ERR_ABORTED means download was aborted by the app, typically this happens
-    // when flinging URL for direct playback, the initial URLRequest gets
-    // cancelled/aborted and then the same URL is requested via the buffered
-    // data source for media::Pipeline playback.
-    LOG(INFO) << "Load canceled: url=" << validated_url.spec();
-  } else {
-    LOG(ERROR) << "Got error on load: url=" << validated_url.spec()
-               << ", error_code=" << error_code;
-    delegate_->OnPageStopped(error_code);
   }
 }
 

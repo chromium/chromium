@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo.h"
@@ -122,7 +123,8 @@ class CONTENT_EXPORT PluginList {
 
   // Removes |plugin_path| from the list of extra plugin paths. Should only be
   // called while holding |lock_|.
-  void RemoveExtraPluginPathLocked(const base::FilePath& plugin_path);
+  void RemoveExtraPluginPathLocked(const base::FilePath& plugin_path)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Creates a WebPluginInfo structure given a plugin's path.  On success
   // returns true, with the information being put into "info".
@@ -142,19 +144,19 @@ class CONTENT_EXPORT PluginList {
   // States whether we will load the plugin list the next time we try to access
   // it, whether we are currently in the process of loading it, or whether we
   // consider it up to date.
-  LoadingState loading_state_;
+  LoadingState loading_state_ GUARDED_BY(lock_);
 
   // Extra plugin paths that we want to search when loading.
-  std::vector<base::FilePath> extra_plugin_paths_;
+  std::vector<base::FilePath> extra_plugin_paths_ GUARDED_BY(lock_);
 
   // Holds information about internal plugins.
-  std::vector<WebPluginInfo> internal_plugins_;
+  std::vector<WebPluginInfo> internal_plugins_ GUARDED_BY(lock_);
 
   // A list holding all plugins.
-  std::vector<WebPluginInfo> plugins_list_;
+  std::vector<WebPluginInfo> plugins_list_ GUARDED_BY(lock_);
 
   // Callback that is invoked whenever the PluginList will reload the plugins.
-  base::Closure will_load_plugins_callback_;
+  base::Closure will_load_plugins_callback_ GUARDED_BY(lock_);
 
   // Need synchronization for the above members since this object can be
   // accessed on multiple threads.

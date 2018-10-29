@@ -15,9 +15,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
 #include "chrome/browser/android/vr/arcore_device/arcore_impl.h"
+#include "chrome/browser/android/vr/arcore_device/arcore_install_utils.h"
 #include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
@@ -35,7 +36,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
-// Input display coordinates (range 0..1) used with ARCore's
+// Input display coordinates (range 0..1) used with ArCore's
 // transformDisplayUvCoords to calculate the output matrix.
 constexpr std::array<float, 6> kDisplayCoordinatesForTransform = {
     0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
@@ -45,14 +46,14 @@ gfx::Transform ConvertUvsToTransformMatrix(const std::vector<float>& uvs) {
   // screen-filling quad, origin at bottom left, u=1 at right, v=1 at top) to
   // camera texture UV coordinates. This matrix is used to compute texture
   // coordinates for copying an appropriately cropped and rotated subsection of
-  // the camera image. The SampleData is a bit unfortunate. ARCore doesn't
+  // the camera image. The SampleData is a bit unfortunate. ArCore doesn't
   // provide a way to get a matrix directly. There's a function to transform UV
   // vectors individually, which obviously can't be used from a shader, so we
   // run that on selected vectors and recreate the matrix from the result.
 
   // Assumes that |uvs| is the result of transforming the display coordinates
   // from kDisplayCoordinatesForTransform. This combines the solved matrix with
-  // a Y flip because ARCore's "normalized screen space" coordinates have the
+  // a Y flip because ArCore's "normalized screen space" coordinates have the
   // origin at the top left to match 2D Android APIs, so it needs a Y flip to
   // get an origin at bottom left as used for textures.
   DCHECK_EQ(uvs.size(), 6U);
@@ -78,26 +79,26 @@ gfx::Transform ConvertUvsToTransformMatrix(const std::vector<float>& uvs) {
 
 namespace device {
 
-struct ARCoreHitTestRequest {
-  ARCoreHitTestRequest() = default;
-  ~ARCoreHitTestRequest() = default;
+struct ArCoreHitTestRequest {
+  ArCoreHitTestRequest() = default;
+  ~ArCoreHitTestRequest() = default;
   mojom::XRRayPtr ray;
   mojom::XREnvironmentIntegrationProvider::RequestHitTestCallback callback;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ARCoreHitTestRequest);
+  DISALLOW_COPY_AND_ASSIGN(ArCoreHitTestRequest);
 };
 
-ARCoreGl::ARCoreGl(std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge)
+ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      arcore_(std::make_unique<ARCoreImpl>()),
-      ar_image_transport_(
-          std::make_unique<ARImageTransport>(std::move(mailbox_bridge))),
+      ar_image_transport_(std::move(ar_image_transport)),
       weak_ptr_factory_(this) {}
 
-ARCoreGl::~ARCoreGl() {}
+ArCoreGl::~ArCoreGl() {}
 
-void ARCoreGl::Initialize(base::OnceCallback<void(bool)> callback) {
+void ArCoreGl::Initialize(vr::ArCoreInstallUtils* install_utils,
+                          ArCoreFactory* arcore_factory,
+                          base::OnceCallback<void(bool)> callback) {
   DCHECK(IsOnGlThread());
 
   // Do not DCHECK !is_initialized to allow multiple calls to correctly
@@ -115,13 +116,23 @@ void ARCoreGl::Initialize(base::OnceCallback<void(bool)> callback) {
     return;
   }
 
-  if (!arcore_->Initialize()) {
+  // Get the activity context.
+  base::android::ScopedJavaLocalRef<jobject> application_context =
+      install_utils->GetApplicationContext();
+  if (!application_context.obj()) {
+    DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  arcore_ = arcore_factory->Create();
+  if (!arcore_->Initialize(application_context)) {
     DLOG(ERROR) << "ARCore failed to initialize";
     std::move(callback).Run(false);
     return;
   }
 
-  // Set the texture on ARCore to render the camera.
+  // Set the texture on ArCore to render the camera.
   arcore_->SetCameraTexture(ar_image_transport_->GetCameraTextureId());
   // Set the Geometry to ensure consistent behaviour.
   arcore_->SetDisplayGeometry(gfx::Size(0, 0), display::Display::ROTATE_0);
@@ -131,7 +142,7 @@ void ARCoreGl::Initialize(base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
 }
 
-bool ARCoreGl::InitializeGl() {
+bool ArCoreGl::InitializeGl() {
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
 
@@ -172,7 +183,7 @@ bool ARCoreGl::InitializeGl() {
   return true;
 }
 
-void ARCoreGl::ProduceFrame(
+void ArCoreGl::ProduceFrame(
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
@@ -180,9 +191,10 @@ void ARCoreGl::ProduceFrame(
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
-  // Check if the frame_size and display_rotation updated last frame.
+  // Check if the frame_size and display_rotation updated last frame. If yes,
+  // apply the update for this frame.
   if (should_recalculate_uvs_) {
-    // Get the UV transform matrix from ARCore's UV transform.
+    // Get the UV transform matrix from ArCore's UV transform.
     std::vector<float> uvs_transformed =
         arcore_->TransformDisplayUvCoords(kDisplayCoordinatesForTransform);
     uv_transform_ = ConvertUvsToTransformMatrix(uvs_transformed);
@@ -196,6 +208,9 @@ void ARCoreGl::ProduceFrame(
     should_recalculate_uvs_ = false;
   }
 
+  // Now check if the frame_size or display_rotation neds to be updated
+  // for the next frame. This must happen after the should_recalculate_uvs_
+  // check above to ensure it executes with the needed one-frame delay.
   if (transfer_size_ != frame_size || display_rotation_ != display_rotation) {
     // Set display geometry before calling Update. It's a pending request that
     // applies to the next frame.
@@ -211,10 +226,10 @@ void ARCoreGl::ProduceFrame(
     should_recalculate_uvs_ = true;
   }
 
-  TRACE_EVENT_BEGIN0("gpu", "ARCore Update");
+  TRACE_EVENT_BEGIN0("gpu", "ArCore Update");
   bool camera_updated = false;
   mojom::VRPosePtr pose = arcore_->Update(&camera_updated);
-  TRACE_EVENT_END0("gpu", "ARCore Update");
+  TRACE_EVENT_END0("gpu", "ArCore Update");
   if (!camera_updated) {
     DVLOG(1) << "arcore_->Update() failed";
     std::move(callback).Run(nullptr);
@@ -244,25 +259,25 @@ void ARCoreGl::ProduceFrame(
   // on the arcore_->Update() call above, can be processed in this frame.
   gl_thread_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&ARCoreGl::ProcessFrame, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ArCoreGl::ProcessFrame, weak_ptr_factory_.GetWeakPtr(),
                      base::Passed(&frame_data), frame_size,
                      base::Passed(&callback)));
 }
 
-void ARCoreGl::RequestHitTest(
+void ArCoreGl::RequestHitTest(
     mojom::XRRayPtr ray,
     mojom::XREnvironmentIntegrationProvider::RequestHitTestCallback callback) {
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
-  std::unique_ptr<ARCoreHitTestRequest> request =
-      std::make_unique<ARCoreHitTestRequest>();
+  std::unique_ptr<ArCoreHitTestRequest> request =
+      std::make_unique<ArCoreHitTestRequest>();
   request->ray = std::move(ray);
   request->callback = std::move(callback);
   hit_test_requests_.push_back(std::move(request));
 }
 
-void ARCoreGl::ProcessFrame(
+void ArCoreGl::ProcessFrame(
     mojom::XRFrameDataPtr frame_data,
     const gfx::Size& frame_size,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
@@ -300,25 +315,25 @@ void ARCoreGl::ProcessFrame(
   std::move(callback).Run(std::move(frame_data));
 }
 
-void ARCoreGl::Pause() {
+void ArCoreGl::Pause() {
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
   arcore_->Pause();
 }
 
-void ARCoreGl::Resume() {
+void ArCoreGl::Resume() {
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
   arcore_->Resume();
 }
 
-bool ARCoreGl::IsOnGlThread() const {
+bool ArCoreGl::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
 }
 
-base::WeakPtr<ARCoreGl> ARCoreGl::GetWeakPtr() {
+base::WeakPtr<ArCoreGl> ArCoreGl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

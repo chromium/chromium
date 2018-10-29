@@ -55,7 +55,7 @@ class CORE_EXPORT BackwardGraphemeBoundaryStateMachine {
   // Used for composing supplementary code point with surrogate pairs.
   UChar trail_surrogate_ = 0;
 
-  // The code point immediately after the m_BoundaryOffset.
+  // The code point immediately after the boundary_offset_.
   UChar32 next_code_point_;
 
   // The relative offset from the begging of this state machine.

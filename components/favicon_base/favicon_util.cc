@@ -75,8 +75,7 @@ std::vector<gfx::ImagePNGRep> SelectFaviconFramesFromPNGsWithoutResizing(
     if (pixel_size.width() != pixel_size.height())
       continue;
 
-    std::map<int, float>::iterator it =
-        desired_pixel_sizes.find(pixel_size.width());
+    auto it = desired_pixel_sizes.find(pixel_size.width());
     if (it == desired_pixel_sizes.end())
       continue;
 
@@ -194,10 +193,8 @@ gfx::Image SelectFaviconFramesFromPNGs(
 
   std::vector<float> favicon_scales_to_generate = favicon_scales;
   for (size_t i = 0; i < png_reps.size(); ++i) {
-    std::vector<float>::iterator iter = std::find(
-        favicon_scales_to_generate.begin(),
-        favicon_scales_to_generate.end(),
-        png_reps[i].scale);
+    auto iter = std::find(favicon_scales_to_generate.begin(),
+                          favicon_scales_to_generate.end(), png_reps[i].scale);
     if (iter != favicon_scales_to_generate.end())
       favicon_scales_to_generate.erase(iter);
   }
@@ -239,8 +236,7 @@ gfx::Image SelectFaviconFramesFromPNGs(
   for (size_t i = 0; i < resized_image_skia_reps.size(); ++i) {
     scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
     if (gfx::PNGCodec::EncodeBGRASkBitmap(
-            resized_image_skia_reps[i].sk_bitmap(),
-            false,
+            resized_image_skia_reps[i].GetBitmap(), false,
             &png_bytes->data())) {
       png_reps.push_back(
           gfx::ImagePNGRep(png_bytes, resized_image_skia_reps[i].scale()));

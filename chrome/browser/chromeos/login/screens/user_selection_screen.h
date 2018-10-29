@@ -63,7 +63,6 @@ class UserSelectionScreen
   // Methods for easy unlock support.
   void HardLockPod(const AccountId& account_id);
   void AttemptEasyUnlock(const AccountId& account_id);
-  void RecordClickOnLockIcon(const AccountId& account_id);
 
   // ui::UserActivityDetector implementation:
   void OnUserActivity(const ui::Event* event) override;

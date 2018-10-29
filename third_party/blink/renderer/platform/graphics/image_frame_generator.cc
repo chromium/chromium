@@ -34,13 +34,13 @@
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/skia/include/core/SkYUVSizeInfo.h"
+#include "third_party/skia/include/core/SkYUVASizeInfo.h"
 
 namespace blink {
 
 static bool UpdateYUVComponentSizes(ImageDecoder* decoder,
-                                    SkISize component_sizes[3],
-                                    size_t component_width_bytes[3]) {
+                                    SkISize component_sizes[4],
+                                    size_t component_width_bytes[4]) {
   if (!decoder->CanDecodeToYUV())
     return false;
 
@@ -49,6 +49,8 @@ static bool UpdateYUVComponentSizes(ImageDecoder* decoder,
     component_sizes[yuv_index].set(size.Width(), size.Height());
     component_width_bytes[yuv_index] = decoder->DecodedYUVWidthBytes(yuv_index);
   }
+  component_sizes[3] = SkISize::MakeEmpty();
+  component_width_bytes[3] = 0;
 
   return true;
 }
@@ -209,7 +211,7 @@ bool ImageFrameGenerator::HasAlpha(size_t index) {
 }
 
 bool ImageFrameGenerator::GetYUVComponentSizes(SegmentReader* data,
-                                               SkYUVSizeInfo* size_info) {
+                                               SkYUVASizeInfo* size_info) {
   TRACE_EVENT2("blink", "ImageFrameGenerator::getYUVComponentSizes", "width",
                full_size_.width(), "height", full_size_.height());
 

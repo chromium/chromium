@@ -11,6 +11,7 @@
  * @param {string=} opt_mediaType Media type.
  * @param {Array<ThumbnailLoader.LoadTarget>=} opt_loadTargets Load targets.
  * @param {number=} opt_priority Priority.
+ * @constructor
  */
 function MockThumbnailLoader(entry, opt_loaderType, opt_metadata, opt_mediaType,
     opt_loadTargets, opt_priority) {
@@ -19,7 +20,7 @@ function MockThumbnailLoader(entry, opt_loaderType, opt_metadata, opt_mediaType,
 
 /**
  * Data url of test image.
- * @private {string}
+ * @private {?string}
  */
 MockThumbnailLoader.testImageDataUrl = null;
 
@@ -44,8 +45,8 @@ MockThumbnailLoader.errorUrls = [];
 /**
  * Loads thumbnail as data url.
  *
- * @return {!Promise<{data:string, width:number, height:number}>} A promise
- *     which is resolved with data url.
+ * @return {!Promise<{data:?string, width:number, height:number}>} A
+ *     promise which is resolved with data url.
  */
 MockThumbnailLoader.prototype.loadAsDataUrl = function() {
   if (MockThumbnailLoader.errorUrls.indexOf(this.entry_.toURL()) !== -1)

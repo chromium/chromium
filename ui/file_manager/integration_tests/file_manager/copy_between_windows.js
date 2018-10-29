@@ -181,8 +181,7 @@ testcase.copyBetweenWindowsDriveToUsb = function() {
     },
     // Mount an empty USB volume in the Downloads window.
     function() {
-      chrome.test.sendMessage(
-          JSON.stringify({name: 'mountFakeUsbEmpty'}), this.next);
+      sendTestMessage({name: 'mountFakeUsbEmpty'}).then(this.next);
     },
     // Wait for the USB mount.
     function() {

@@ -219,7 +219,7 @@ function sensorMocks() {
       this.readingSizeInBytes_ =
           device.mojom.SensorInitParams.kReadBufferSizeForTests;
       this.sharedBufferSizeInBytes_ = this.readingSizeInBytes_ *
-              (device.mojom.SensorType.RELATIVE_ORIENTATION_QUATERNION + 1);
+              (device.mojom.SensorType.MAX_VALUE + 1);
       let rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
       assert_equals(rv.result, Mojo.RESULT_OK, "Failed to create buffer");
       this.sharedBufferHandle_ = rv.handle;

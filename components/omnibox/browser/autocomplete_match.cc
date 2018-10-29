@@ -19,15 +19,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -143,6 +141,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                              ? new AutocompleteMatch(*match.associated_keyword)
                              : nullptr),
       keyword(match.keyword),
+      pedal(match.pedal),
       from_previous(match.from_previous),
       search_terms_args(
           match.search_terms_args
@@ -188,6 +187,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
           ? new AutocompleteMatch(*match.associated_keyword)
           : nullptr);
   keyword = match.keyword;
+  pedal = match.pedal;
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
@@ -198,28 +198,14 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   return *this;
 }
 
+#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
 // static
 const gfx::VectorIcon& AutocompleteMatch::TypeToVectorIcon(
     Type type,
     bool is_bookmark,
-    bool is_tab_match,
     DocumentType document_type) {
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
-#if !defined(OS_ANDROID)
-  const bool is_refresh_ui = ui::MaterialDesignController::IsRefreshUi();
-  const bool is_touch_ui =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
-#else
-  const bool is_refresh_ui = true;
-  const bool is_touch_ui = false;
-#endif
-
-  if (is_bookmark) {
-    if (is_refresh_ui || is_touch_ui)
-      return omnibox::kTouchableBookmarkIcon;
-    else
-      return omnibox::kStarIcon;
-  }
+  if (is_bookmark)
+    return omnibox::kBookmarkIcon;
 
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
@@ -234,17 +220,14 @@ const gfx::VectorIcon& AutocompleteMatch::TypeToVectorIcon(
     case Type::PHYSICAL_WEB_DEPRECATED:
     case Type::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case Type::TAB_SEARCH_DEPRECATED:
-      if (is_refresh_ui)
-        return omnibox::kMdPageIcon;
-      else if (is_touch_ui)
-        return omnibox::kTouchablePageIcon;
-      else
-        return omnibox::kHttpIcon;
+      return omnibox::kPageIcon;
 
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {
         case DocumentType::DRIVE_DOCS:
           return omnibox::kDriveDocsIcon;
+        case DocumentType::DRIVE_FORMS:
+          return omnibox::kDriveFormsIcon;
         case DocumentType::DRIVE_SHEETS:
           return omnibox::kDriveSheetsIcon;
         case DocumentType::DRIVE_SLIDES:
@@ -252,7 +235,7 @@ const gfx::VectorIcon& AutocompleteMatch::TypeToVectorIcon(
         case DocumentType::DRIVE_OTHER:
           return omnibox::kDriveLogoIcon;
         default:
-          return omnibox::kMdPageIcon;
+          return omnibox::kPageIcon;
       }
 
     case Type::SEARCH_WHAT_YOU_TYPED:
@@ -264,10 +247,7 @@ const gfx::VectorIcon& AutocompleteMatch::TypeToVectorIcon(
     case Type::SEARCH_OTHER_ENGINE:
     case Type::CONTACT_DEPRECATED:
     case Type::VOICE_SUGGEST:
-      if (is_touch_ui && !is_refresh_ui)
-        return omnibox::kTouchableSearchIcon;
-      else
-        return vector_icons::kSearchIcon;
+      return vector_icons::kSearchIcon;
 
     case Type::EXTENSION_APP_DEPRECATED:
       return omnibox::kExtensionAppIcon;
@@ -278,18 +258,17 @@ const gfx::VectorIcon& AutocompleteMatch::TypeToVectorIcon(
     case Type::SEARCH_SUGGEST_TAIL:
       return omnibox::kBlankIcon;
 
+    case Type::PEDAL:
+      return omnibox::kPedalIcon;
+
     case Type::NUM_TYPES:
-      NOTREACHED();
       break;
   }
   NOTREACHED();
-  return omnibox::kHttpIcon;
-#else
-  NOTREACHED();
   static const gfx::VectorIcon dummy = {};
   return dummy;
-#endif
 }
+#endif
 
 // static
 bool AutocompleteMatch::MoreRelevant(const AutocompleteMatch& elem1,
@@ -362,8 +341,8 @@ AutocompleteMatch::ACMatchClassifications
     return classifications1;
 
   ACMatchClassifications output;
-  for (ACMatchClassifications::const_iterator i = classifications1.begin(),
-       j = classifications2.begin(); i != classifications1.end();) {
+  for (auto i = classifications1.begin(), j = classifications2.begin();
+       i != classifications1.end();) {
     AutocompleteMatch::AddLastClassificationIfNecessary(&output,
         std::max(i->offset, j->offset), i->style | j->style);
     const size_t next_i_offset = (i + 1) == classifications1.end() ?
@@ -496,7 +475,8 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
     const GURL& url,
     const AutocompleteInput& input,
     const TemplateURLService* template_url_service,
-    const base::string16& keyword) {
+    const base::string16& keyword,
+    const std::string& additional_query_params) {
   if (!url.is_valid())
     return url;
 
@@ -517,10 +497,12 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
         stripped_destination_url,
         template_url_service->search_terms_data(),
         &search_terms)) {
+      TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
+      if (!additional_query_params.empty())
+        search_terms_args.additional_query_params = additional_query_params;
       stripped_destination_url =
           GURL(template_url->url_ref().ReplaceSearchTerms(
-              TemplateURLRef::SearchTermsArgs(search_terms),
-              template_url_service->search_terms_data()));
+              search_terms_args, template_url_service->search_terms_data()));
     }
   }
 
@@ -644,7 +626,8 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service) {
   stripped_destination_url = GURLToStrippedGURL(
-      destination_url, input, template_url_service, keyword);
+      destination_url, input, template_url_service, keyword,
+      search_terms_args ? search_terms_args->additional_query_params : "");
 }
 
 void AutocompleteMatch::GetKeywordUIState(
@@ -683,6 +666,29 @@ GURL AutocompleteMatch::ImageUrl() const {
   return answer ? answer->image_url() : GURL(image_url);
 }
 
+void AutocompleteMatch::ApplyPedal() {
+  // TODO(orinj): It may make more sense to start from a clean slate and
+  // apply only the bits of state relevant to the Pedal, rather than
+  // eliminating parts of an existing match that are no longer useful.
+
+  type = Type::PEDAL;
+  destination_url = pedal->GetNavigationUrl();
+
+  // Normally this is computed by the match using a TemplateURLService
+  // but Pedal URLs are not typical and unknown, and we don't want them to
+  // be deduped, e.g. after stripping a query parameter that may do something
+  // meaningful like indicate the viewable scope of a settings page.  So here
+  // we keep the URL exactly as the Pedal specifies it.
+  stripped_destination_url = destination_url;
+
+  // Note: Always use empty classifications for empty text and non-empty
+  // classifications for non-empty text.
+  contents = pedal->GetLabelStrings().suggestion_contents;
+  contents_class = {ACMatchClassification(0, ACMatchClassification::NONE)};
+  description.clear();
+  description_class.clear();
+}
+
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
                                              const std::string& value) {
   DCHECK(!property.empty());
@@ -704,7 +710,7 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 
 std::string AutocompleteMatch::GetAdditionalInfo(
     const std::string& property) const {
-  AdditionalInfo::const_iterator i(additional_info.find(property));
+  auto i(additional_info.find(property));
   return (i == additional_info.end()) ? std::string() : i->second;
 }
 
@@ -722,8 +728,8 @@ bool AutocompleteMatch::SupportsDeletion() const {
   if (deletable)
     return true;
 
-  for (ACMatches::const_iterator it(duplicate_matches.begin());
-       it != duplicate_matches.end(); ++it) {
+  for (auto it(duplicate_matches.begin()); it != duplicate_matches.end();
+       ++it) {
     if (it->deletable)
       return true;
   }
@@ -789,7 +795,11 @@ bool AutocompleteMatch::IsExceptedFromLineReversal() const {
 }
 
 bool AutocompleteMatch::ShouldShowTabMatch() const {
-  return has_tab_match && !associated_keyword;
+  // TODO(orinj): If side button Pedal presentation mode is not kept,
+  // the simpler logic (with no pedal checks) can be restored, and if it is
+  // kept then some minor refactoring (or at least renaming) is in order.
+  return (has_tab_match && !associated_keyword) ||
+         (pedal && pedal->ShouldPresentButton());
 }
 
 #if DCHECK_IS_ON()
@@ -815,8 +825,7 @@ void AutocompleteMatch::ValidateClassifications(
 
   // The classifications should always be sorted.
   size_t last_offset = classifications[0].offset;
-  for (ACMatchClassifications::const_iterator i(classifications.begin() + 1);
-       i != classifications.end(); ++i) {
+  for (auto i(classifications.begin() + 1); i != classifications.end(); ++i) {
     const char* provider_name = provider ? provider->GetName() : "None";
     DCHECK_GT(i->offset, last_offset)
         << " Classification for \"" << text << "\" with offset of " << i->offset

@@ -23,12 +23,6 @@
       "bounds": [122, 242]
     },
     {
-      "name": "Child Containment Layer",
-      "position": [9, 9],
-      "bounds": [120, 240],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV class='transformed box'",
       "bounds": [100, 100],
       "contentsOpaque": true,

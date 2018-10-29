@@ -66,7 +66,7 @@ void Referrer::SuggestHost(const GURL& url) {
   if (!url.has_host())  // TODO(jar): Is this really needed????
     return;
   DCHECK(url == url.GetWithEmptyPath());
-  SubresourceMap::iterator it = find(url);
+  auto it = find(url);
   if (it != end()) {
     it->second.SubresourceIsNeeded();
     return;
@@ -88,7 +88,7 @@ void Referrer::DeleteLeastUseful() {
   int64_t least_useful_lifetime = 0;  // Duration in milliseconds.
 
   const base::Time kNow(base::Time::Now());  // Avoid multiple calls.
-  for (SubresourceMap::iterator it = begin(); it != end(); ++it) {
+  for (auto it = begin(); it != end(); ++it) {
     int64_t lifetime = (kNow - it->second.birth_time()).InMilliseconds();
     double rate = it->second.subresource_use_rate();
     if (least_useful_url.has_host()) {
@@ -132,7 +132,7 @@ void Referrer::Deserialize(const base::Value& value) {
 
 std::unique_ptr<base::ListValue> Referrer::Serialize() const {
   auto subresource_list = std::make_unique<base::ListValue>();
-  for (const_iterator it = begin(); it != end(); ++it) {
+  for (auto it = begin(); it != end(); ++it) {
     subresource_list->AppendString(it->first.spec());
     subresource_list->AppendDouble(it->second.subresource_use_rate());
   }

@@ -531,8 +531,7 @@ bool Query::GetMemberValueAsDouble(const TraceEvent& event,
     case OTHER_ARG:
     case PREV_ARG: {
       // Search for the argument name and return its value if found.
-      std::map<std::string, double>::const_iterator num_i =
-          the_event->arg_numbers.find(string_);
+      auto num_i = the_event->arg_numbers.find(string_);
       if (num_i == the_event->arg_numbers.end())
         return false;
       *num = num_i->second;
@@ -582,8 +581,7 @@ bool Query::GetMemberValueAsString(const TraceEvent& event,
     case OTHER_ARG:
     case PREV_ARG: {
       // Search for the argument name and return its value if found.
-      std::map<std::string, std::string>::const_iterator str_i =
-          the_event->arg_strings.find(string_);
+      auto str_i = the_event->arg_strings.find(string_);
       if (str_i == the_event->arg_strings.end())
         return false;
       *str = str_i->second;
@@ -705,11 +703,11 @@ size_t FindMatchingEvents(const std::vector<TraceEvent>& events,
                           const Query& query,
                           TraceEventVector* output,
                           bool ignore_metadata_events) {
-  for (size_t i = 0; i < events.size(); ++i) {
-    if (ignore_metadata_events && events[i].phase == TRACE_EVENT_PHASE_METADATA)
+  for (const auto& i : events) {
+    if (ignore_metadata_events && i.phase == TRACE_EVENT_PHASE_METADATA)
       continue;
-    if (query.Evaluate(events[i]))
-      output->push_back(&events[i]);
+    if (query.Evaluate(i))
+      output->push_back(&i);
   }
   return output->size();
 }
@@ -804,11 +802,7 @@ void TraceAnalyzer::AssociateEvents(const Query& first,
   // Search for matching begin/end event pairs. When a matching end is found,
   // it is associated with the begin event.
   std::vector<TraceEvent*> begin_stack;
-  for (size_t event_index = 0; event_index < raw_events_.size();
-       ++event_index) {
-
-    TraceEvent& this_event = raw_events_[event_index];
-
+  for (auto& this_event : raw_events_) {
     if (second.Evaluate(this_event)) {
       // Search stack for matching begin, starting from end.
       for (int stack_index = static_cast<int>(begin_stack.size()) - 1;
@@ -841,20 +835,18 @@ void TraceAnalyzer::AssociateEvents(const Query& first,
 }
 
 void TraceAnalyzer::MergeAssociatedEventArgs() {
-  for (size_t i = 0; i < raw_events_.size(); ++i) {
+  for (auto& i : raw_events_) {
     // Merge all associated events with the first event.
-    const TraceEvent* other = raw_events_[i].other_event;
+    const TraceEvent* other = i.other_event;
     // Avoid looping by keeping set of encountered TraceEvents.
     std::set<const TraceEvent*> encounters;
-    encounters.insert(&raw_events_[i]);
+    encounters.insert(&i);
     while (other && encounters.find(other) == encounters.end()) {
       encounters.insert(other);
-      raw_events_[i].arg_numbers.insert(
-          other->arg_numbers.begin(),
-          other->arg_numbers.end());
-      raw_events_[i].arg_strings.insert(
-          other->arg_strings.begin(),
-          other->arg_strings.end());
+      i.arg_numbers.insert(other->arg_numbers.begin(),
+                           other->arg_numbers.end());
+      i.arg_strings.insert(other->arg_strings.begin(),
+                           other->arg_strings.end());
       other = other->other_event;
     }
   }
@@ -888,8 +880,7 @@ const std::string& TraceAnalyzer::GetThreadName(
 }
 
 void TraceAnalyzer::ParseMetadata() {
-  for (size_t i = 0; i < raw_events_.size(); ++i) {
-    TraceEvent& this_event = raw_events_[i];
+  for (const auto& this_event : raw_events_) {
     // Check for thread name metadata.
     if (this_event.phase != TRACE_EVENT_PHASE_METADATA ||
         this_event.name != "thread_name")

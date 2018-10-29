@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
+#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -119,31 +120,79 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // Store 0 and 1 have 3 printers now.
   ASSERT_TRUE(PrintersMatchChecker().Wait());
 
+  // Client 1 makes a local change.
   ASSERT_TRUE(
       EditPrinterDescription(GetPrinterStore(1), 0, kOverwrittenDescription));
 
-  // Wait for a non-zero period (200ms).
+  // Wait for a non-zero period (200ms) for modification timestamps to differ.
   base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
 
-  // Run all tasks so the first description change is applied.
-  // TODO(crbug.com/810408): This is a temporary fix to prevent flakiness. Tasks
-  // shouldn't run between description changes, because it prevents a real
-  // conflict from happening.
-  content::RunAllTasksUntilIdle();
+  // Client 0 goes offline, to make this test deterministic (client 1 commits
+  // first).
+  GetClient(0)->StopSyncService(syncer::SyncService::KEEP_DATA);
 
+  // Client 0 makes a change while offline.
+  ASSERT_TRUE(
+      EditPrinterDescription(GetPrinterStore(0), 0, kLatestDescription));
+
+  // We must wait until the sync cycle is completed before client 0 goes online
+  // in order to make the outcome of conflict resolution deterministic (needed
+  // due to lack of a strong consistency model on the server).
+  ProfileSyncServiceHarness::AwaitQuiescence({GetClient(1)});
+
+  ASSERT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+            kLatestDescription);
+  ASSERT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+            kOverwrittenDescription);
+
+  // Client 0 goes online, which results in a conflict (local wins).
+  GetClient(0)->StartSyncService();
+
+  // Run tasks until the most recent update has been applied to all stores.
+  ASSERT_TRUE(PrintersMatchChecker().Wait());
+
+  EXPECT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+            kLatestDescription);
+  EXPECT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+            kLatestDescription);
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
+                       ConflictResolutionWithStrongConsistency) {
+  ASSERT_TRUE(SetupSync());
+  GetFakeServer()->EnableStrongConsistencyWithConflictDetectionModel();
+
+  AddPrinter(GetPrinterStore(0), CreateTestPrinter(0));
+  AddPrinter(GetPrinterStore(0), CreateTestPrinter(2));
+  AddPrinter(GetPrinterStore(0), CreateTestPrinter(3));
+
+  // Store 0 and 1 have 3 printers now.
+  ASSERT_TRUE(PrintersMatchChecker().Wait());
+
+  // Client 1 makes a local change.
+  ASSERT_TRUE(
+      EditPrinterDescription(GetPrinterStore(1), 0, kOverwrittenDescription));
+
+  // Wait for a non-zero period (200ms) for modification timestamps to differ.
+  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+
+  // Client 0 makes a change to the same printer.
   ASSERT_TRUE(
       EditPrinterDescription(GetPrinterStore(0), 0, kLatestDescription));
 
   // Run tasks until the most recent update has been applied to all stores.
-  AwaitMatchStatusChangeChecker wait_latest_description_propagated(
-      base::BindRepeating([]() {
-        return GetPrinterStore(0)->GetConfiguredPrinters()[0].description() ==
-                   kLatestDescription &&
-               GetPrinterStore(1)->GetConfiguredPrinters()[0].description() ==
-                   kLatestDescription;
-      }),
-      "Description not propagated");
-  ASSERT_TRUE(wait_latest_description_propagated.Wait());
+  // One of the two clients (the second one committing) will be requested by the
+  // server to resolve the conflict and recommit. The custom conflict resolution
+  // as implemented in PrintersSyncBridge::ResolveConflict() should guarantee
+  // that the one with latest modification timestamp (kLatestDescription) wins,
+  // which can mean local wins or remote wins, depending on which client is
+  // involved.
+  ASSERT_TRUE(PrintersMatchChecker().Wait());
+
+  EXPECT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+            kLatestDescription);
+  EXPECT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+            kLatestDescription);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimpleMerge) {

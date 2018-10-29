@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.chrome.browser.widget.ViewHighlighter;
@@ -51,33 +50,11 @@ public class ToolbarButtonInProductHelpController {
     private static void maybeShowNTPButtonIPH(ChromeTabbedActivity activity) {
         if (!canShowNTPButtonIPH(activity)) return;
 
-        // This method is called after native initialization, at which point the variant should
-        // be pulled from variations associated data and cached.
-        String variant = ChromePreferenceManager.getInstance().getNewTabPageButtonVariant();
-        if (TextUtils.isEmpty(variant)) return;
-
-        int iphText = 0;
-        int iphTextForAccessibility = 0;
-        switch (variant) {
-            case ToolbarModel.NTP_BUTTON_HOME_VARIANT:
-                iphText = R.string.iph_ntp_button_text_home_text;
-                iphTextForAccessibility = R.string.iph_ntp_button_text_home_accessibility_text;
-                break;
-            case ToolbarModel.NTP_BUTTON_NEWS_FEED_VARIANT:
-                iphText = R.string.iph_ntp_button_text_news_feed_text;
-                iphTextForAccessibility = R.string.iph_ntp_button_text_news_feed_accessibility_text;
-                break;
-            case ToolbarModel.NTP_BUTTON_CHROME_VARIANT:
-                iphText = R.string.iph_ntp_button_text_chrome_text;
-                iphTextForAccessibility = R.string.iph_ntp_button_text_chrome_accessibility_text;
-                break;
-            default:
-                break;
-        }
-
-        setupAndMaybeShowIPHForFeature(FeatureConstants.NTP_BUTTON_FEATURE, null, iphText,
-                iphTextForAccessibility, activity.findViewById(R.id.home_button), null,
-                Profile.getLastUsedProfile(), activity);
+        setupAndMaybeShowIPHForFeature(FeatureConstants.NTP_BUTTON_FEATURE, null,
+                R.string.iph_ntp_button_text_home_text,
+                R.string.iph_ntp_button_text_home_accessibility_text,
+                activity.findViewById(R.id.home_button), null, Profile.getLastUsedProfile(),
+                activity);
     }
 
     /**

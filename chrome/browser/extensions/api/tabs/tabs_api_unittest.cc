@@ -315,4 +315,45 @@ TEST_F(TabsApiUnitTest, ExecuteScriptNoTabIsNonFatalError) {
   EXPECT_EQ(tabs_constants::kNoTabInBrowserWindowError, error);
 }
 
+// Tests that calling chrome.tabs.update with a JavaScript URL results
+// in an error.
+TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
+  // An extension with access to www.example.com.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(
+              DictionaryBuilder()
+                  .Set("name", "Extension with a host permission")
+                  .Set("version", "1.0")
+                  .Set("manifest_version", 2)
+                  .Set("permissions",
+                       ListBuilder().Append("http://www.example.com/*").Build())
+                  .Build())
+          .Build();
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension);
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(raw_contents);
+  web_contents_tester->NavigateAndCommit(GURL("http://www.example.com"));
+  SessionTabHelper::CreateForWebContents(raw_contents);
+  int tab_id = SessionTabHelper::IdForTab(raw_contents).id();
+
+  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_id, "javascript:void(document.title = 'Won't work')");
+  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
+      function.get(), args, browser(), api_test_utils::NONE);
+  EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInTabsUpdate, error);
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 }  // namespace extensions

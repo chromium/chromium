@@ -11,11 +11,9 @@
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/main/browser_view_information.h"
-#import "ios/chrome/browser/ui/main/tab_switcher_mode.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #include "ios/chrome/browser/ui/tab_grid/tab_grid_egtest_util.h"
-#include "ios/chrome/browser/ui/tab_switcher/tab_switcher_egtest_util.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -37,20 +35,7 @@ const NSTimeInterval kWaitElementTimeout = 3;
 // Shows the tab switcher by tapping the switcher button.  Works on both phone
 // and tablet.
 void ShowTabSwitcher() {
-  id<GREYMatcher> matcher = nil;
-  switch (GetTabSwitcherMode()) {
-    case TabSwitcherMode::STACK:
-      matcher = chrome_test_util::ShowTabsButton();
-      break;
-    case TabSwitcherMode::TABLET_SWITCHER:
-      matcher = chrome_test_util::TabletTabSwitcherOpenButton();
-      break;
-    case TabSwitcherMode::GRID:
-      matcher = chrome_test_util::TabGridOpenButton();
-      break;
-  }
-  DCHECK(matcher);
-
+  id<GREYMatcher> matcher = chrome_test_util::TabGridOpenButton();
   // Perform a tap with a timeout. Occasionally EG doesn't sync up properly to
   // the animations of tab switcher, so it is necessary to poll here.
   GREYCondition* tapTabSwitcher =
@@ -66,25 +51,6 @@ void ShowTabSwitcher() {
   // Wait until 2 seconds for the tap.
   BOOL hasClicked = [tapTabSwitcher waitWithTimeout:2];
   GREYAssertTrue(hasClicked, @"Tab switcher could not be tapped.");
-}
-
-// Closes the tabs switcher.
-void CloseTabSwitcher() {
-  id<GREYMatcher> matcher = nil;
-  switch (GetTabSwitcherMode()) {
-    case TabSwitcherMode::STACK:
-      matcher = chrome_test_util::ShowTabsButton();
-      break;
-    case TabSwitcherMode::TABLET_SWITCHER:
-      matcher = chrome_test_util::TabletTabSwitcherCloseButton();
-      break;
-    case TabSwitcherMode::GRID:
-      matcher = chrome_test_util::TabGridDoneButton();
-      break;
-  }
-  DCHECK(matcher);
-
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 }
 
 }  // namespace
@@ -112,36 +78,18 @@ void SwitchToNormalMode() {
   GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
                  @"Switching to normal mode is only allowed from Incognito.");
 
-  // Enter the tab switcher to switch modes.
+  // Enter the tab grid to switch modes.
   ShowTabSwitcher();
 
-  // Switch modes and exit the tab switcher.
-  switch (GetTabSwitcherMode()) {
-    case TabSwitcherMode::STACK:
-      [[EarlGrey selectElementWithMatcher:
-                     chrome_test_util::ButtonWithAccessibilityLabelId(
-                         IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)]
-          performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
-      CloseTabSwitcher();
-      break;
-    case TabSwitcherMode::TABLET_SWITCHER:
-      [[EarlGrey selectElementWithMatcher:
-                     chrome_test_util::TabletTabSwitcherOpenTabsPanelButton()]
-          performAction:grey_tap()];
-      CloseTabSwitcher();
-      break;
-    case TabSwitcherMode::GRID:
-      TabModel* model = [[chrome_test_util::GetMainController()
-          browserViewInformation] mainTabModel];
-      const int tab_index = model.webStateList->active_index();
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                              TabGridOpenTabsPanelButton()]
-          performAction:grey_tap()];
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(
-                                              tab_index)]
-          performAction:grey_tap()];
-      break;
-  }
+  // Switch modes and exit the tab grid.
+  TabModel* model = [[chrome_test_util::GetMainController()
+      browserViewInformation] mainTabModel];
+  const int tab_index = model.webStateList->active_index();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(
+                                          tab_index)] performAction:grey_tap()];
 
   // Turn off synchronization of GREYAssert to test the pending states.
   [[GREYConfiguration sharedInstance]

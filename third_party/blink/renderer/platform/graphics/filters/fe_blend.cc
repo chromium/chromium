@@ -46,10 +46,10 @@ bool FEBlend::SetBlendMode(BlendMode mode) {
 }
 
 sk_sp<PaintFilter> FEBlend::CreateImageFilter() {
-  sk_sp<PaintFilter> foreground(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
-  sk_sp<PaintFilter> background(
-      PaintFilterBuilder::Build(InputEffect(1), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> foreground(paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> background(paint_filter_builder::Build(
+      InputEffect(1), OperatingInterpolationSpace()));
   SkBlendMode mode =
       WebCoreCompositeToSkiaComposite(kCompositeSourceOver, mode_);
   PaintFilter::CropRect crop_rect = GetCropRect();

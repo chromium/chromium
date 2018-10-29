@@ -19,12 +19,14 @@ namespace {
 const char layout_tests_pattern[] = "/LayoutTests/";
 const std::string::size_type layout_tests_pattern_size =
     sizeof(layout_tests_pattern) - 1;
+const char web_tests_pattern[] = "/web_tests/";
+const std::string::size_type web_tests_pattern_size =
+    sizeof(web_tests_pattern) - 1;
 const char file_url_pattern[] = "file:/";
 const char file_test_prefix[] = "(file test):";
 const char data_url_pattern[] = "data:";
 const std::string::size_type data_url_pattern_size =
     sizeof(data_url_pattern) - 1;
-const char* kIllegalString = "illegal value";
 const char* kPolicyIgnore = "Ignore";
 const char* kPolicyDownload = "download";
 const char* kPolicyCurrentTab = "current tab";
@@ -35,6 +37,8 @@ const char* kPolicyNewPopup = "new popup";
 
 }  // namespace
 
+const char* kIllegalString = "illegal value";
+
 std::string NormalizeLayoutTestURL(const std::string& url) {
   std::string result = url;
   size_t pos;
@@ -42,6 +46,10 @@ std::string NormalizeLayoutTestURL(const std::string& url) {
       ((pos = url.find(layout_tests_pattern)) != std::string::npos)) {
     // adjust file URLs to match upstream results.
     result.replace(0, pos + layout_tests_pattern_size, file_test_prefix);
+  } else if (!url.find(file_url_pattern) &&
+             ((pos = url.find(web_tests_pattern)) != std::string::npos)) {
+    // adjust file URLs to match upstream results.
+    result.replace(0, pos + web_tests_pattern_size, file_test_prefix);
   } else if (!url.find(data_url_pattern)) {
     // URL-escape data URLs to match results upstream.
     std::string path = url.substr(data_url_pattern_size);

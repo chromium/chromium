@@ -24,12 +24,12 @@ class PLATFORM_EXPORT ScriptRunIterator {
   WTF_MAKE_NONCOPYABLE(ScriptRunIterator);
 
  public:
-  ScriptRunIterator(const UChar* text, size_t length);
+  ScriptRunIterator(const UChar* text, wtf_size_t length);
 
   // This maintains a reference to data. It must exist for the lifetime of
   // this object. Typically data is a singleton that exists for the life of
   // the process.
-  ScriptRunIterator(const UChar* text, size_t length, const ScriptData*);
+  ScriptRunIterator(const UChar* text, wtf_size_t length, const ScriptData*);
 
   bool Consume(unsigned& limit, UScriptCode&);
 
@@ -38,7 +38,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
 
  private:
   struct BracketRec {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     UChar32 ch;
     UScriptCode script;
   };
@@ -46,15 +46,15 @@ class PLATFORM_EXPORT ScriptRunIterator {
   void CloseBracket(UChar32);
   bool MergeSets();
   void FixupStack(UScriptCode resolved_script);
-  bool Fetch(size_t* pos, UChar32*);
+  bool Fetch(wtf_size_t* pos, UChar32*);
 
   UScriptCode ResolveCurrentScript() const;
 
   const UChar* text_;
-  const size_t length_;
+  const wtf_size_t length_;
 
   Deque<BracketRec> brackets_;
-  size_t brackets_fixup_depth_;
+  wtf_size_t brackets_fixup_depth_;
   // Limit max brackets so that the bracket tracking buffer does not grow
   // excessively large when processing long runs of text.
   static const int kMaxBrackets = 32;
@@ -67,7 +67,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
   std::unique_ptr<UScriptCodeList> ahead_set_;
 
   UChar32 ahead_character_;
-  size_t ahead_pos_;
+  wtf_size_t ahead_pos_;
 
   UScriptCode common_preferred_;
 

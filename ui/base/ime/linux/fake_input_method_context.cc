@@ -27,4 +27,9 @@ void FakeInputMethodContext::Blur() {
 void FakeInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 }
 
+void FakeInputMethodContext::SetSurroundingText(
+    const base::string16& text,
+    const gfx::Range& selection_range) {
+}
+
 }  // namespace ui

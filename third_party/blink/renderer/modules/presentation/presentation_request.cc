@@ -33,7 +33,7 @@ namespace {
 Settings* GetSettings(ExecutionContext* execution_context) {
   DCHECK(execution_context);
 
-  Document* document = ToDocument(execution_context);
+  Document* document = To<Document>(execution_context);
   return document->GetSettings();
 }
 
@@ -59,7 +59,7 @@ PresentationRequest* PresentationRequest::Create(
     ExecutionContext* execution_context,
     const Vector<String>& urls,
     ExceptionState& exception_state) {
-  if (ToDocument(execution_context)
+  if (To<Document>(execution_context)
           ->IsSandboxed(kSandboxPresentationController)) {
     exception_state.ThrowSecurityError(
         "The document is sandboxed and lacks the 'allow-presentation' flag.");
@@ -67,13 +67,13 @@ PresentationRequest* PresentationRequest::Create(
   }
 
   Vector<KURL> parsed_urls;
-  for (size_t i = 0; i < urls.size(); ++i) {
-    const KURL& parsed_url = KURL(execution_context->Url(), urls[i]);
+  for (const auto& url : urls) {
+    const KURL& parsed_url = KURL(execution_context->Url(), url);
 
     if (!parsed_url.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "'" + urls[i] + "' can't be resolved to a valid URL.");
+          "'" + url + "' can't be resolved to a valid URL.");
       return nullptr;
     }
 
@@ -81,7 +81,7 @@ PresentationRequest* PresentationRequest::Create(
         MixedContentChecker::IsMixedContent(
             execution_context->GetSecurityOrigin(), parsed_url)) {
       exception_state.ThrowSecurityError(
-          "Presentation of an insecure document [" + urls[i] +
+          "Presentation of an insecure document [" + url +
           "] is prohibited from a secure context.");
       return nullptr;
     }
@@ -148,14 +148,14 @@ void PresentationRequest::RecordStartOriginTypeAccess(
 ScriptPromise PresentationRequest::start(ScriptState* script_state) {
   ExecutionContext* execution_context = GetExecutionContext();
   Settings* context_settings = GetSettings(execution_context);
-  Document* doc = ToDocumentOrNull(execution_context);
+  Document* doc = To<Document>(execution_context);
 
   bool is_user_gesture_required =
       !context_settings ||
       context_settings->GetPresentationRequiresUserGesture();
 
   if (is_user_gesture_required &&
-      !Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr))
+      !LocalFrame::HasTransientUserActivation(doc->GetFrame()))
     return ScriptPromise::RejectWithDOMException(
         script_state,
         DOMException::Create(

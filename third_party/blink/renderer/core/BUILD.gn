@@ -181,11 +181,13 @@ component("core") {
     "//third_party/blink/renderer/core/clipboard",
     "//third_party/blink/renderer/core/context_features",
     "//third_party/blink/renderer/core/css",
+    "//third_party/blink/renderer/core/display_lock",
     "//third_party/blink/renderer/core/dom",
     "//third_party/blink/renderer/core/editing",
     "//third_party/blink/renderer/core/events",
     "//third_party/blink/renderer/core/execution_context",
     "//third_party/blink/renderer/core/exported",
+    "//third_party/blink/renderer/core/feature_policy",
     "//third_party/blink/renderer/core/fetch",
     "//third_party/blink/renderer/core/fileapi",
     "//third_party/blink/renderer/core/frame",
@@ -206,7 +208,6 @@ component("core") {
     "//third_party/blink/renderer/core/origin_trials",
     "//third_party/blink/renderer/core/page",
     "//third_party/blink/renderer/core/paint",
-    "//third_party/blink/renderer/core/policy",
     "//third_party/blink/renderer/core/probe",
     "//third_party/blink/renderer/core/resize_observer",
     "//third_party/blink/renderer/core/script",
@@ -1159,6 +1160,8 @@ code_generator("make_core_generated_atrule_names") {
 code_generator("make_core_generated_media_features") {
   script = "../build/scripts/core/css/make_media_features.py"
   json_inputs = [ "css/media_feature_names.json5" ]
+  other_inputs =
+      scripts_for_json5_files + [ "../build/scripts/media_feature_symbol.py" ]
   templates = [ "../build/scripts/core/css/templates/media_features.h.tmpl" ]
   outputs = [
     "$blink_core_output_dir/css/media_features.h",
@@ -1285,7 +1288,8 @@ code_generator("make_core_generated_media_feature_names") {
     "../build/scripts/templates/make_names.cc.tmpl",
     "../build/scripts/templates/make_names.h.tmpl",
   ]
-  other_inputs = make_names_files
+  other_inputs =
+      make_names_files + [ "../build/scripts/media_feature_symbol.py" ]
   outputs = [
     "$blink_core_output_dir/css/media_feature_names.cc",
     "$blink_core_output_dir/css/media_feature_names.h",
@@ -1572,11 +1576,10 @@ targets_generating_sources = [
   ":make_core_generated_css_primitive_value_unit_trie",
   ":make_core_generated_computed_style_initial_values",
   ":make_core_generated_computed_style_base",
-  ":make_core_generated_css_value_id_mappings",
-  ":make_core_generated_css_property_baseclass",
   ":make_core_generated_css_longhand_property_classes",
-  ":make_core_generated_css_shorthand_property_classes",
+  ":make_core_generated_css_property_baseclass",
   ":make_core_generated_css_property_names",
+  ":make_core_generated_css_shorthand_property_classes",
   ":make_core_generated_css_value_id_mappings",
   ":make_core_generated_cssom_types",
   ":make_core_generated_event_factory",
@@ -1841,6 +1844,8 @@ jumbo_source_set("unit_tests") {
     "exported/web_surrounding_text_test.cc",
     "exported/web_user_gesture_token_test.cc",
     "exported/web_view_test.cc",
+    "feature_policy/feature_policy_test.cc",
+    "feature_policy/policy_test.cc",
     "fetch/blob_bytes_consumer_test.cc",
     "fetch/body_stream_buffer_test.cc",
     "fetch/bytes_consumer_for_data_consumer_handle_test.cc",
@@ -1849,6 +1854,7 @@ jumbo_source_set("unit_tests") {
     "fetch/bytes_consumer_test_util.h",
     "fetch/data_consumer_handle_test_util.cc",
     "fetch/data_consumer_handle_test_util.h",
+    "fetch/data_pipe_bytes_consumer_test.cc",
     "fetch/fetch_data_loader_test.cc",
     "fetch/fetch_header_list_test.cc",
     "fetch/fetch_response_data_test.cc",
@@ -1874,6 +1880,7 @@ jumbo_source_set("unit_tests") {
     "frame/frame_test_helpers.h",
     "frame/history_test.cc",
     "frame/local_frame_test.cc",
+    "frame/local_frame_ukm_aggregator_test.cc",
     "frame/local_frame_view_test.cc",
     "frame/mhtml_archive_test.cc",
     "frame/mhtml_loading_test.cc",
@@ -1885,6 +1892,7 @@ jumbo_source_set("unit_tests") {
     "frame/visual_viewport_test.cc",
     "fullscreen/scoped_allow_fullscreen_test.cc",
     "geometry/dom_matrix_test.cc",
+    "html/anchor_element_metrics_sender_test.cc",
     "html/anchor_element_metrics_test.cc",
     "html/canvas/canvas_async_blob_creator_test.cc",
     "html/canvas/canvas_font_cache_test.cc",
@@ -1969,6 +1977,7 @@ jumbo_source_set("unit_tests") {
     "inspector/inspector_session_state_test.cc",
     "inspector/main_thread_debugger_test.cc",
     "inspector/protocol_parser_test.cc",
+    "inspector/protocol_unittest.cc",
     "intersection_observer/intersection_observer_test.cc",
     "layout/api/selection_state_test.cc",
     "layout/collapsed_border_value_test.cc",
@@ -2028,6 +2037,7 @@ jumbo_source_set("unit_tests") {
     "layout/ng/ng_block_node_test.cc",
     "layout/ng/ng_column_layout_algorithm_test.cc",
     "layout/ng/ng_constraint_space_builder_test.cc",
+    "layout/ng/ng_fieldset_layout_algorithm_test.cc",
     "layout/ng/ng_inline_layout_test.cc",
     "layout/ng/ng_layout_test.h",
     "layout/ng/ng_length_utils_test.cc",
@@ -2042,6 +2052,7 @@ jumbo_source_set("unit_tests") {
     "layout/shapes/box_shape_test.cc",
     "layout/svg/layout_svg_foreign_object_test.cc",
     "layout/svg/layout_svg_root_test.cc",
+    "layout/svg/layout_svg_text_test.cc",
     "layout/text_autosizer_test.cc",
     "layout/visual_rect_mapping_test.cc",
     "loader/allowed_by_nosniff_test.cc",
@@ -2090,6 +2101,7 @@ jumbo_source_set("unit_tests") {
     "page/scrolling/snap_coordinator_test.cc",
     "page/slot_scoped_traversal_test.cc",
     "page/spatial_navigation_test.cc",
+    "page/touch_adjustment_test.cc",
     "page/viewport_test.cc",
     "page/window_features_test.cc",
     "paint/block_painter_test.cc",
@@ -2107,6 +2119,7 @@ jumbo_source_set("unit_tests") {
     "paint/first_meaningful_paint_detector_test.cc",
     "paint/fragment_data_test.cc",
     "paint/html_canvas_painter_test.cc",
+    "paint/image_paint_timing_detector_test.cc",
     "paint/link_highlight_impl_test.cc",
     "paint/ng/ng_paint_fragment_test.cc",
     "paint/ng/ng_paint_fragment_traversal_test.cc",
@@ -2133,7 +2146,6 @@ jumbo_source_set("unit_tests") {
     "paint/text_selection_repaint_test.cc",
     "paint/video_painter_test.cc",
     "paint/view_painter_test.cc",
-    "policy/policy_test.cc",
     "resize_observer/resize_observer_test.cc",
     "scheduler/active_connection_throttling_test.cc",
     "scheduler/frame_scheduler_test.cc",
@@ -2352,4 +2364,17 @@ if (!is_win) {
       "css/parser/css.proto",
     ]
   }
+}
+
+# Fuzzer for blink::FeaturePolicy.
+fuzzer_test("feature_policy_fuzzer") {
+  sources = [
+    "feature_policy/feature_policy_fuzzer.cc",
+  ]
+  deps = [
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/icu",
+  ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/feature_policy.dict"
+  seed_corpus = "//testing/libfuzzer/fuzzers/feature_policy_corpus"
 }

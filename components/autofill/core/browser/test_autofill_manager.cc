@@ -87,7 +87,6 @@ bool TestAutofillManager::MaybeStartVoteUploadProcess(
 
 void TestAutofillManager::UploadFormDataAsyncCallback(
     const FormStructure* submitted_form,
-    const base::TimeTicks& load_time,
     const base::TimeTicks& interaction_time,
     const base::TimeTicks& submission_time,
     bool observed_submission) {
@@ -108,8 +107,7 @@ void TestAutofillManager::UploadFormDataAsyncCallback(
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),
                 possible_types.size());
-      for (ServerFieldTypeSet::const_iterator it =
-               expected_submitted_field_types_[i].begin();
+      for (auto it = expected_submitted_field_types_[i].begin();
            it != expected_submitted_field_types_[i].end(); ++it) {
         EXPECT_TRUE(possible_types.count(*it))
             << "Expected type: " << AutofillType(*it).ToString();
@@ -118,8 +116,7 @@ void TestAutofillManager::UploadFormDataAsyncCallback(
   }
 
   AutofillManager::UploadFormDataAsyncCallback(
-      submitted_form, load_time, interaction_time, submission_time,
-      observed_submission);
+      submitted_form, interaction_time, submission_time, observed_submission);
 }
 
 int TestAutofillManager::GetPackedCreditCardID(int credit_card_id) {

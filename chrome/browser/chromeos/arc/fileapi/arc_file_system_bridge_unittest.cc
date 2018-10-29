@@ -13,8 +13,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/fileapi/chrome_content_provider_url_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/chromeos/file_system_provider/service.h"
+#include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -22,9 +23,6 @@
 #include "components/arc/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
-#include "components/drive/chromeos/fake_file_system.h"
-#include "components/drive/service/fake_drive_service.h"
-#include "components/drive/service/test_util.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_service_manager_context.h"
 #include "content/public/test/test_utils.h"
@@ -37,10 +35,12 @@ namespace {
 
 constexpr char kTestingProfileName[] = "test-user";
 
-// Values set by drive::test_util::SetUpTestEntries().
-constexpr char kTestUrl[] = "externalfile:drive-test-user-hash/root/File 1.txt";
-constexpr char kTestFileType[] = "audio/mpeg";
-constexpr int64_t kTestFileSize = 26;
+// Values set by FakeProvidedFileSystem.
+constexpr char kTestUrl[] = "externalfile:abc:test-filesystem:/hello.txt";
+constexpr char kTestFileType[] = "text/plain";
+constexpr int64_t kTestFileSize = 55;
+constexpr char kExtensionId[] = "abc";
+constexpr char kFileSystemId[] = "test-filesystem";
 
 }  // namespace
 
@@ -57,24 +57,23 @@ class ArcFileSystemBridgeTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* profile =
         profile_manager_->CreateTestingProfile(kTestingProfileName);
+    auto fake_provider =
+        chromeos::file_system_provider::FakeExtensionProvider::Create(
+            kExtensionId);
+    const auto kProviderId = fake_provider->GetId();
+    auto* service = chromeos::file_system_provider::Service::Get(profile);
+    service->RegisterProvider(std::move(fake_provider));
+    service->MountFileSystem(kProviderId,
+                             chromeos::file_system_provider::MountOptions(
+                                 kFileSystemId, "Test FileSystem"));
 
     arc_file_system_bridge_ =
         std::make_unique<ArcFileSystemBridge>(profile, &arc_bridge_service_);
     arc_bridge_service_.file_system()->SetInstance(&fake_file_system_);
     WaitForInstanceReady(arc_bridge_service_.file_system());
-
-    // Create the drive integration service for the profile.
-    integration_service_factory_callback_ =
-        base::Bind(&ArcFileSystemBridgeTest::CreateDriveIntegrationService,
-                   base::Unretained(this));
-    integration_service_factory_scope_ = std::make_unique<
-        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
-        &integration_service_factory_callback_);
-    drive::DriveIntegrationServiceFactory::GetForProfile(profile);
   }
 
   void TearDown() override {
-    integration_service_factory_scope_.reset();
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
     profile_manager_.reset();
@@ -82,24 +81,6 @@ class ArcFileSystemBridgeTest : public testing::Test {
   }
 
  protected:
-  drive::DriveIntegrationService* CreateDriveIntegrationService(
-      Profile* profile) {
-    auto drive_service = std::make_unique<drive::FakeDriveService>();
-    if (!drive::test_util::SetUpTestEntries(drive_service.get()))
-      return nullptr;
-    std::string mount_name =
-        drive::util::GetDriveMountPointPath(profile).BaseName().AsUTF8Unsafe();
-    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        mount_name, storage::kFileSystemTypeDrive,
-        storage::FileSystemMountOption(),
-        drive::util::GetDriveMountPointPath(profile));
-    auto* drive_service_ptr = drive_service.get();
-    return new drive::DriveIntegrationService(
-        profile, nullptr, drive_service.release(), mount_name,
-        temp_dir_.GetPath(),
-        new drive::test_util::FakeFileSystem(drive_service_ptr));
-  }
-
   base::ScopedTempDir temp_dir_;
   content::TestBrowserThreadBundle thread_bundle_;
   content::TestServiceManagerContext service_manager_context_;
@@ -108,11 +89,6 @@ class ArcFileSystemBridgeTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
   ArcBridgeService arc_bridge_service_;
   std::unique_ptr<ArcFileSystemBridge> arc_file_system_bridge_;
-
-  drive::DriveIntegrationServiceFactory::FactoryCallback
-      integration_service_factory_callback_;
-  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
-      integration_service_factory_scope_;
 };
 
 TEST_F(ArcFileSystemBridgeTest, GetFileName) {
@@ -124,7 +100,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
              const base::Optional<std::string>& result) {
             run_loop->Quit();
             ASSERT_TRUE(result.has_value());
-            EXPECT_EQ("File 1.txt", result.value());
+            EXPECT_EQ("hello.txt", result.value());
           },
           &run_loop));
   run_loop.Run();
@@ -135,7 +111,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
       0x307b,  // HIRAGANA_LETTER_HO
       0x3052,  // HIRAGANA_LETTER_GE
   }));
-  const GURL url("externalfile:drive-test-user-hash/root/" + filename);
+  const GURL url("externalfile:abc:test-filesystem:/" + filename);
 
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(

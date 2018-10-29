@@ -21,6 +21,7 @@ class RebaselineTest(AbstractRebaseliningCommand):
             self.port_name_option,
             self.builder_option,
             self.build_number_option,
+            self.step_name_option,
             self.results_directory_option,
         ])
 
@@ -44,7 +45,9 @@ class RebaselineTest(AbstractRebaseliningCommand):
         if options.results_directory:
             results_url = 'file://' + options.results_directory
         else:
-            results_url = self._tool.buildbot.results_url(options.builder, build_number=options.build_number)
+            results_url = self._tool.buildbot.results_url(
+                options.builder, build_number=options.build_number,
+                step_name=options.step_name)
 
         for suffix in self._baseline_suffix_list:
             self._rebaseline_test(port_name, options.test, suffix, results_url)

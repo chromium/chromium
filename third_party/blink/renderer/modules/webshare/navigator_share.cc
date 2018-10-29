@@ -102,8 +102,7 @@ const char NavigatorShare::kSupplementName[] = "NavigatorShare";
 
 ScriptPromise NavigatorShare::share(ScriptState* script_state,
                                     const ShareData& share_data) {
-  Document* doc = ToDocument(ExecutionContext::From(script_state));
-  DCHECK(doc);
+  Document* doc = To<Document>(ExecutionContext::From(script_state));
 
   if (!share_data.hasTitle() && !share_data.hasText() && !share_data.hasURL()) {
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
@@ -120,7 +119,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     return ScriptPromise::Reject(script_state, error);
   }
 
-  if (!Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr)) {
+  if (!LocalFrame::HasTransientUserActivation(doc->GetFrame())) {
     DOMException* error = DOMException::Create(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");

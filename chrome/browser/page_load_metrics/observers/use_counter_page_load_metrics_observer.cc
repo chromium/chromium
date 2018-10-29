@@ -22,6 +22,9 @@ UseCounterPageLoadMetricsObserver::OnCommit(
     ukm::SourceId source_id) {
   // Verify that no feature usage is observed before commit
   DCHECK(features_recorded_.count() <= 0);
+  ukm::builders::Blink_UseCounter(source_id)
+      .SetFeature(static_cast<int64_t>(WebFeature::kPageVisits))
+      .Record(ukm::UkmRecorder::Get());
   UMA_HISTOGRAM_ENUMERATION(internal::kFeaturesHistogramName,
                             WebFeature::kPageVisits,
                             WebFeature::kNumberOfFeatures);

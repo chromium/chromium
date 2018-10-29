@@ -31,9 +31,9 @@ class FakeApiResource : public ApiResource {
 TEST_F(ApiResourceManagerUnitTest, TwoAppsCannotShareResources) {
   std::unique_ptr<ApiResourceManager<FakeApiResource>> manager(
       new ApiResourceManager<FakeApiResource>(browser_context()));
-  scoped_refptr<extensions::Extension> extension_one =
+  scoped_refptr<const extensions::Extension> extension_one =
       ExtensionBuilder("one").Build();
-  scoped_refptr<extensions::Extension> extension_two =
+  scoped_refptr<const extensions::Extension> extension_two =
       ExtensionBuilder("two").Build();
 
   const std::string extension_one_id(extension_one->id());

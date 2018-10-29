@@ -29,7 +29,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
 
@@ -82,7 +82,7 @@ class LifecycleNotifier : public GarbageCollectedMixin {
   }
 
  private:
-  using ObserverSet = HeapHashSet<WeakMember<LifecycleObserverBase>>;
+  using ObserverSet = HeapLinkedHashSet<WeakMember<LifecycleObserverBase>>;
 
   enum IterationState {
     kAllowingNone = 0,
@@ -154,7 +154,7 @@ inline void LifecycleNotifier<T, Observer>::NotifyContextDestroyed() {
   // Observer unregistration is allowed, but effectively a no-op.
   base::AutoReset<IterationState> scope(&iteration_state_, kAllowingRemoval);
   ObserverSet observers;
-  observers_.swap(observers);
+  observers_.Swap(observers);
   for (LifecycleObserverBase* observer_base : observers) {
     Observer* observer = static_cast<Observer*>(observer_base);
     DCHECK(observer->LifecycleContext() == Context());

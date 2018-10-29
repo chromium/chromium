@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "net/third_party/quic/core/quic_connection.h"
 #include "net/third_party/quic/core/quic_control_frame_manager.h"
@@ -81,7 +80,8 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // Does not take ownership of |connection| or |visitor|.
   QuicSession(QuicConnection* connection,
               Visitor* owner,
-              const QuicConfig& config);
+              const QuicConfig& config,
+              const ParsedQuicVersionVector& supported_versions);
   QuicSession(const QuicSession&) = delete;
   QuicSession& operator=(const QuicSession&) = delete;
 
@@ -336,7 +336,16 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // Set transmission type of next sending packets.
   void SetTransmissionType(TransmissionType type);
 
+  // Clean up closed_streams_.
+  void CleanUpClosedStreams();
+
   bool session_decides_what_to_write() const;
+
+  bool deprecate_post_process_after_data() const;
+
+  const ParsedQuicVersionVector& supported_versions() const {
+    return supported_versions_;
+  }
 
  protected:
   using StaticStreamMap = QuicSmallMap<QuicStreamId, QuicStream*, 2>;
@@ -352,12 +361,7 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // Creates a new stream to handle a peer-initiated stream.
   // Caller does not own the returned stream.
   // Returns nullptr and does error handling if the stream can not be created.
-  virtual QuicStream* CreateIncomingDynamicStream(QuicStreamId id) = 0;
-
-  // Create a new stream to handle a locally-initiated stream.
-  // Caller does not own the returned stream.
-  // Returns nullptr if max streams have already been opened.
-  virtual QuicStream* CreateOutgoingDynamicStream() = 0;
+  virtual QuicStream* CreateIncomingStream(QuicStreamId id) = 0;
 
   // Return the reserved crypto stream.
   virtual QuicCryptoStream* GetMutableCryptoStream() = 0;
@@ -371,6 +375,9 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // Returns the stream ID for a new outgoing stream, and increments the
   // underlying counter.
   QuicStreamId GetNextOutgoingStreamId();
+
+  // Indicates whether the next outgoing stream ID can be allocated or not.
+  bool CanOpenNextOutgoingStream();
 
   // Returns existing stream with id = |stream_id|. If no such stream exists,
   // and |stream_id| is a peer-created id, then a new stream is created and
@@ -568,6 +575,9 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // The largest stream id in |static_stream_map_|.
   QuicStreamId largest_static_stream_id_;
 
+  // Cached value of whether the crypto handshake has been confirmed.
+  bool is_handshake_confirmed_;
+
   // Whether a GoAway has been sent.
   bool goaway_sent_;
 
@@ -586,6 +596,13 @@ class QUIC_EXPORT_PRIVATE QuicSession : public QuicConnectionVisitorInterface,
   // is not used here.
   // List of streams with pending retransmissions.
   QuicLinkedHashMap<QuicStreamId, bool> streams_with_pending_retransmission_;
+
+  // Clean up closed_streams_ when this alarm fires.
+  std::unique_ptr<QuicAlarm> closed_streams_clean_up_alarm_;
+
+  // Supported version list used by the crypto handshake only. Please note, this
+  // list may be a superset of the connection framer's supported versions.
+  ParsedQuicVersionVector supported_versions_;
 };
 
 }  // namespace quic

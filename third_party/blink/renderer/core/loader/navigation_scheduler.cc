@@ -70,18 +70,18 @@ class ScheduledURLNavigation : public ScheduledNavigation {
                          double delay,
                          Document* origin_document,
                          const KURL& url,
-                         bool replaces_current_item,
+                         WebFrameLoadType frame_load_type,
                          bool is_location_change,
                          base::TimeTicks input_timestamp)
       : ScheduledNavigation(reason,
                             delay,
                             origin_document,
-                            replaces_current_item,
-                            is_location_change),
+                            is_location_change,
+                            input_timestamp),
         url_(url),
         should_check_main_world_content_security_policy_(
             kCheckContentSecurityPolicy),
-        input_timestamp_(input_timestamp) {
+        frame_load_type_(frame_load_type) {
     if (ContentSecurityPolicy::ShouldBypassMainWorld(origin_document)) {
       should_check_main_world_content_security_policy_ =
           kDoNotCheckContentSecurityPolicy;
@@ -99,11 +99,8 @@ class ScheduledURLNavigation : public ScheduledNavigation {
         CreateUserGestureIndicator();
     FrameLoadRequest request(OriginDocument(), ResourceRequest(url_), "_self",
                              should_check_main_world_content_security_policy_);
-    request.SetReplacesCurrentItem(ReplacesCurrentItem());
     request.SetClientRedirect(ClientRedirectPolicy::kClientRedirect);
-    if (!input_timestamp_.is_null()) {
-      request.SetInputStartTime(input_timestamp_);
-    }
+    request.SetInputStartTime(InputTimestamp());
 
     if (blob_url_token_) {
       mojom::blink::BlobURLTokenPtr token_clone;
@@ -111,17 +108,19 @@ class ScheduledURLNavigation : public ScheduledNavigation {
       request.SetBlobURLToken(std::move(token_clone));
     }
 
-    frame->Loader().StartNavigation(request);
+    frame->Loader().StartNavigation(request, frame_load_type_);
   }
 
   KURL Url() const override { return url_; }
+
+  WebFrameLoadType LoadType() const { return frame_load_type_; }
 
  private:
   KURL url_;
   mojom::blink::BlobURLTokenPtr blob_url_token_;
   ContentSecurityPolicyDisposition
       should_check_main_world_content_security_policy_;
-  base::TimeTicks input_timestamp_;
+  WebFrameLoadType frame_load_type_;
 };
 
 class ScheduledRedirect final : public ScheduledURLNavigation {
@@ -130,9 +129,10 @@ class ScheduledRedirect final : public ScheduledURLNavigation {
                                    Document* origin_document,
                                    const KURL& url,
                                    Document::HttpRefreshType http_refresh_type,
-                                   bool replaces_current_item) {
+                                   WebFrameLoadType frame_load_type,
+                                   base::TimeTicks input_timestamp) {
     return new ScheduledRedirect(delay, origin_document, url, http_refresh_type,
-                                 replaces_current_item);
+                                 frame_load_type, input_timestamp);
   }
 
   bool ShouldStartTimer(LocalFrame* frame) override {
@@ -143,8 +143,8 @@ class ScheduledRedirect final : public ScheduledURLNavigation {
     std::unique_ptr<UserGestureIndicator> gesture_indicator =
         CreateUserGestureIndicator();
     FrameLoadRequest request(OriginDocument(), ResourceRequest(Url()), "_self");
-    WebFrameLoadType load_type = WebFrameLoadType::kStandard;
-    request.SetReplacesCurrentItem(ReplacesCurrentItem());
+    request.SetInputStartTime(InputTimestamp());
+    WebFrameLoadType load_type = LoadType();
     if (EqualIgnoringFragmentIdentifier(frame->GetDocument()->Url(),
                                         request.GetResourceRequest().Url())) {
       request.GetResourceRequest().SetCacheMode(
@@ -173,14 +173,15 @@ class ScheduledRedirect final : public ScheduledURLNavigation {
                     Document* origin_document,
                     const KURL& url,
                     Document::HttpRefreshType http_refresh_type,
-                    bool replaces_current_item)
+                    WebFrameLoadType frame_load_type,
+                    base::TimeTicks input_timestamp)
       : ScheduledURLNavigation(ToReason(http_refresh_type),
                                delay,
                                origin_document,
                                url,
-                               replaces_current_item,
+                               frame_load_type,
                                false,
-                               base::TimeTicks()) {
+                               input_timestamp) {
     ClearUserGesture();
   }
 };
@@ -189,30 +190,31 @@ class ScheduledFrameNavigation final : public ScheduledURLNavigation {
  public:
   static ScheduledFrameNavigation* Create(Document* origin_document,
                                           const KURL& url,
-                                          bool replaces_current_item,
+                                          WebFrameLoadType frame_load_type,
                                           base::TimeTicks input_timestamp) {
-    return new ScheduledFrameNavigation(origin_document, url,
-                                        replaces_current_item, input_timestamp);
+    return new ScheduledFrameNavigation(origin_document, url, frame_load_type,
+                                        input_timestamp);
   }
 
  private:
   ScheduledFrameNavigation(Document* origin_document,
                            const KURL& url,
-                           bool replaces_current_item,
+                           WebFrameLoadType frame_load_type,
                            base::TimeTicks input_timestamp)
       : ScheduledURLNavigation(Reason::kFrameNavigation,
                                0.0,
                                origin_document,
                                url,
-                               replaces_current_item,
+                               frame_load_type,
                                !url.ProtocolIsJavaScript(),
                                input_timestamp) {}
 };
 
 class ScheduledReload final : public ScheduledNavigation {
  public:
-  static ScheduledReload* Create(LocalFrame* frame) {
-    return new ScheduledReload(frame);
+  static ScheduledReload* Create(LocalFrame* frame,
+                                 base::TimeTicks input_timestamp) {
+    return new ScheduledReload(frame, input_timestamp);
   }
 
   void Fire(LocalFrame* frame) override {
@@ -224,6 +226,7 @@ class ScheduledReload final : public ScheduledNavigation {
       return;
     FrameLoadRequest request = FrameLoadRequest(nullptr, resource_request);
     request.SetClientRedirect(ClientRedirectPolicy::kClientRedirect);
+    request.SetInputStartTime(InputTimestamp());
     frame->Loader().StartNavigation(request, WebFrameLoadType::kReload);
   }
 
@@ -235,12 +238,12 @@ class ScheduledReload final : public ScheduledNavigation {
   }
 
  private:
-  explicit ScheduledReload(LocalFrame* frame)
+  explicit ScheduledReload(LocalFrame* frame, base::TimeTicks input_timestamp)
       : ScheduledNavigation(Reason::kReload,
                             0.0,
                             nullptr /*origin_document */,
                             true,
-                            true),
+                            input_timestamp),
         frame_(frame) {
     DCHECK(frame->GetDocument());
   }
@@ -266,7 +269,7 @@ class ScheduledPageBlock final : public ScheduledNavigation {
                             0.0,
                             origin_document,
                             true,
-                            true),
+                            base::TimeTicks() /* input_timestamp */),
         reason_(reason) {}
 
   int reason_;
@@ -276,9 +279,10 @@ class ScheduledFormSubmission final : public ScheduledNavigation {
  public:
   static ScheduledFormSubmission* Create(Document* document,
                                          FormSubmission* submission,
-                                         bool replaces_current_item) {
-    return new ScheduledFormSubmission(document, submission,
-                                       replaces_current_item);
+                                         WebFrameLoadType frame_load_type,
+                                         base::TimeTicks input_timestamp) {
+    return new ScheduledFormSubmission(document, submission, frame_load_type,
+                                       input_timestamp);
   }
 
   void Fire(LocalFrame* frame) override {
@@ -286,8 +290,8 @@ class ScheduledFormSubmission final : public ScheduledNavigation {
         CreateUserGestureIndicator();
     FrameLoadRequest frame_request =
         submission_->CreateFrameLoadRequest(OriginDocument());
-    frame_request.SetReplacesCurrentItem(ReplacesCurrentItem());
-    frame->Loader().StartNavigation(frame_request, WebFrameLoadType::kStandard,
+    frame_request.SetInputStartTime(InputTimestamp());
+    frame->Loader().StartNavigation(frame_request, frame_load_type_,
                                     submission_->GetNavigationPolicy());
   }
 
@@ -301,20 +305,23 @@ class ScheduledFormSubmission final : public ScheduledNavigation {
  private:
   ScheduledFormSubmission(Document* document,
                           FormSubmission* submission,
-                          bool replaces_current_item)
+                          WebFrameLoadType frame_load_type,
+                          base::TimeTicks input_timestamp)
       : ScheduledNavigation(submission->Method() == FormSubmission::kGetMethod
                                 ? Reason::kFormSubmissionGet
                                 : Reason::kFormSubmissionPost,
                             0,
                             document,
-                            replaces_current_item,
-                            true),
-        submission_(submission) {
+                            true,
+                            input_timestamp),
+        submission_(submission),
+        frame_load_type_(frame_load_type) {
     DCHECK_NE(submission->Method(), FormSubmission::kDialogMethod);
     DCHECK(submission_->Form());
   }
 
   Member<FormSubmission> submission_;
+  WebFrameLoadType frame_load_type_;
 };
 
 NavigationScheduler::NavigationScheduler(LocalFrame* frame) : frame_(frame) {}
@@ -373,8 +380,12 @@ void NavigationScheduler::ScheduleRedirect(
 
   // We want a new back/forward list item if the refresh timeout is > 1 second.
   if (!redirect_ || delay <= redirect_->Delay()) {
+    WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+    if (delay <= 1)
+      frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
     Schedule(ScheduledRedirect::Create(delay, frame_->GetDocument(), url,
-                                       http_refresh_type, delay <= 1));
+                                       http_refresh_type, frame_load_type,
+                                       InputTimestamp()));
   }
 }
 
@@ -383,7 +394,7 @@ bool NavigationScheduler::MustReplaceCurrentItem(LocalFrame* target_frame) {
   // create a new back/forward item. See https://webkit.org/b/42861 for the
   // original motivation for this.
   if (!target_frame->GetDocument()->LoadEventFinished() &&
-      !Frame::HasTransientUserActivation(target_frame))
+      !LocalFrame::HasTransientUserActivation(target_frame))
     return true;
 
   // Navigation of a subframe during loading of an ancestor frame does not
@@ -396,20 +407,24 @@ bool NavigationScheduler::MustReplaceCurrentItem(LocalFrame* target_frame) {
          !ToLocalFrame(parent_frame)->Loader().AllAncestorsAreComplete();
 }
 
-void NavigationScheduler::ScheduleFrameNavigation(Document* origin_document,
-                                                  const KURL& url,
-                                                  bool replaces_current_item) {
+base::TimeTicks NavigationScheduler::InputTimestamp() {
+  if (const WebInputEvent* input_event = CurrentInputEvent::Get()) {
+    return input_event->TimeStamp();
+  }
+  return base::TimeTicks();
+}
+
+void NavigationScheduler::ScheduleFrameNavigation(
+    Document* origin_document,
+    const KURL& url,
+    WebFrameLoadType frame_load_type) {
   if (!ShouldScheduleNavigation(url))
     return;
 
-  base::TimeTicks input_timestamp;
-  if (const WebInputEvent* input_event = CurrentInputEvent::Get()) {
-    input_timestamp = input_event->TimeStamp();
-  }
+  if (MustReplaceCurrentItem(frame_))
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
-  replaces_current_item =
-      replaces_current_item || MustReplaceCurrentItem(frame_);
-
+  base::TimeTicks input_timestamp = InputTimestamp();
   // If the URL we're going to navigate to is the same as the current one,
   // except for the fragment part, we don't need to schedule the location
   // change. We'll skip this optimization for cross-origin navigations to
@@ -419,17 +434,16 @@ void NavigationScheduler::ScheduleFrameNavigation(Document* origin_document,
     if (url.HasFragmentIdentifier() &&
         EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url)) {
       FrameLoadRequest request(origin_document, ResourceRequest(url), "_self");
-      request.SetReplacesCurrentItem(replaces_current_item);
       request.SetInputStartTime(input_timestamp);
-      if (replaces_current_item)
+      if (frame_load_type == WebFrameLoadType::kReplaceCurrentItem)
         request.SetClientRedirect(ClientRedirectPolicy::kClientRedirect);
-      frame_->Loader().StartNavigation(request);
+      frame_->Loader().StartNavigation(request, frame_load_type);
       return;
     }
   }
 
-  Schedule(ScheduledFrameNavigation::Create(
-      origin_document, url, replaces_current_item, input_timestamp));
+  Schedule(ScheduledFrameNavigation::Create(origin_document, url,
+                                            frame_load_type, input_timestamp));
 }
 
 void NavigationScheduler::SchedulePageBlock(Document* origin_document,
@@ -441,8 +455,11 @@ void NavigationScheduler::SchedulePageBlock(Document* origin_document,
 void NavigationScheduler::ScheduleFormSubmission(Document* document,
                                                  FormSubmission* submission) {
   DCHECK(frame_->GetPage());
+  WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+  if (MustReplaceCurrentItem(frame_))
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   Schedule(ScheduledFormSubmission::Create(document, submission,
-                                           MustReplaceCurrentItem(frame_)));
+                                           frame_load_type, InputTimestamp()));
 }
 
 void NavigationScheduler::ScheduleReload() {
@@ -450,7 +467,7 @@ void NavigationScheduler::ScheduleReload() {
     return;
   if (frame_->GetDocument()->Url().IsEmpty())
     return;
-  Schedule(ScheduledReload::Create(frame_));
+  Schedule(ScheduledReload::Create(frame_, InputTimestamp()));
 }
 
 void NavigationScheduler::NavigateTask() {

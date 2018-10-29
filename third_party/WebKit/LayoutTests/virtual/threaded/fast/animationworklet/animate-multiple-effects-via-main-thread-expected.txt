@@ -1,6 +1,0 @@
-CONSOLE WARNING: The animation cannot be accelerated. Reason: Multiple effects with composited properties are not currently supported on compositor
-CONSOLE MESSAGE: line 79: background-color for the first target is: rgb(0, 128, 128)
-CONSOLE MESSAGE: line 81: width for the first target is: 150px
-CONSOLE MESSAGE: line 83: box-shadow for the second target is: rgb(0, 128, 128) 4px 4px 25px 0px
-CONSOLE MESSAGE: line 85: opacity for the second target is: 0.5
-

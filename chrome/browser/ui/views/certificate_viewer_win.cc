@@ -40,18 +40,21 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
       return;
     }
 
-    RunState run_state = BeginRun(parent);
-    run_state.dialog_thread->task_runner()->PostTaskAndReply(
+    std::unique_ptr<RunState> run_state = BeginRun(parent);
+
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        run_state->dialog_task_runner;
+    task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::Bind(&CertificateViewerDialog::ShowOnDialogThread,
-                   base::Unretained(this), run_state,
-                   base::WrapRefCounted(cert)),
-        base::Bind(&CertificateViewerDialog::OnDialogClosed,
-                   base::Unretained(this), run_state, callback));
+        base::BindOnce(&CertificateViewerDialog::ShowOnDialogThread,
+                       base::Unretained(this), parent,
+                       base::WrapRefCounted(cert)),
+        base::BindOnce(&CertificateViewerDialog::OnDialogClosed,
+                       base::Unretained(this), std::move(run_state), callback));
   }
 
  private:
-  void ShowOnDialogThread(const RunState& run_state,
+  void ShowOnDialogThread(HWND owner,
                           const scoped_refptr<net::X509Certificate>& cert) {
     // Create a new cert context and store containing just the certificate
     // and its intermediate certificates.
@@ -65,7 +68,7 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
 
     CRYPTUI_VIEWCERTIFICATE_STRUCT view_info = {0};
     view_info.dwSize = sizeof(view_info);
-    view_info.hwndParent = run_state.owner;
+    view_info.hwndParent = owner;
     view_info.dwFlags =
         CRYPTUI_DISABLE_EDITPROPERTIES | CRYPTUI_DISABLE_ADDTOSTORE;
     view_info.pCertContext = cert_list.get();
@@ -77,9 +80,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     ::CryptUIDlgViewCertificate(&view_info, &properties_changed);
   }
 
-  void OnDialogClosed(const RunState& run_state,
+  void OnDialogClosed(std::unique_ptr<RunState> run_state,
                       const base::Closure& callback) {
-    EndRun(run_state);
+    EndRun(std::move(run_state));
     // May delete |this|.
     callback.Run();
   }

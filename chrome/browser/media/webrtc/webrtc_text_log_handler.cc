@@ -11,7 +11,9 @@
 
 #include "base/bind.h"
 #include "base/cpu.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_info.h"
@@ -21,15 +23,19 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/media/webrtc_logging_messages.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/webrtc_log.h"
+#include "content/public/common/content_features.h"
 #include "gpu/config/gpu_info.h"
 #include "media/audio/audio_manager.h"
+#include "media/webrtc/webrtc_switches.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "services/service_manager/sandbox/features.h"
 
 #if defined(OS_LINUX)
 #include "base/linux_util.h"
@@ -140,8 +146,18 @@ WebRtcTextLogHandler::WebRtcTextLogHandler(int render_process_id)
 WebRtcTextLogHandler::~WebRtcTextLogHandler() {
   // If the log isn't closed that means we haven't decremented the log count
   // in the LogUploader.
-  DCHECK(logging_state_ == CLOSED || logging_state_ == CHANNEL_CLOSING);
+  DCHECK(logging_state_ == CLOSED || channel_is_closing_);
   DCHECK(!log_buffer_);
+}
+
+WebRtcTextLogHandler::LoggingState WebRtcTextLogHandler::GetState() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return logging_state_;
+}
+
+bool WebRtcTextLogHandler::GetChannelIsClosing() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return channel_is_closing_;
 }
 
 void WebRtcTextLogHandler::SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
@@ -149,9 +165,14 @@ void WebRtcTextLogHandler::SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!callback.is_null());
 
+  if (channel_is_closing_) {
+    FireGenericDoneCallback(callback, false, "The renderer is closing.");
+    return;
+  }
+
   if (logging_state_ != CLOSED && logging_state_ != STARTED) {
-    std::string error_message = "Meta data must be set before stop or upload.";
-    FireGenericDoneCallback(callback, false, error_message);
+    FireGenericDoneCallback(callback, false,
+                            "Meta data must be set before stop or upload.");
     return;
   }
 
@@ -178,7 +199,7 @@ bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!callback.is_null());
 
-  if (logging_state_ == CHANNEL_CLOSING) {
+  if (channel_is_closing_) {
     FireGenericDoneCallback(callback, false, "The renderer is closing.");
     return false;
   }
@@ -214,7 +235,7 @@ void WebRtcTextLogHandler::StartDone(const GenericDoneCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!callback.is_null());
 
-  if (logging_state_ == CHANNEL_CLOSING) {
+  if (channel_is_closing_) {
     FireGenericDoneCallback(callback, false,
                             "Failed to start log. Renderer is closing.");
     return;
@@ -231,7 +252,7 @@ bool WebRtcTextLogHandler::StopLogging(const GenericDoneCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!callback.is_null());
 
-  if (logging_state_ == CHANNEL_CLOSING) {
+  if (channel_is_closing_) {
     FireGenericDoneCallback(callback, false,
                             "Can't stop log. Renderer is closing.");
     return false;
@@ -251,11 +272,19 @@ bool WebRtcTextLogHandler::StopLogging(const GenericDoneCallback& callback) {
 
 void WebRtcTextLogHandler::StopDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(STOPPING, logging_state_);
+  DCHECK(stop_callback_);
+
+  if (channel_is_closing_) {
+    FireGenericDoneCallback(stop_callback_, false,
+                            "Failed to stop log. Renderer is closing.");
+    return;
+  }
+
   // If we aren't in STOPPING state, then there is a bug in the caller, since
   // it is responsible for checking the state before making the call. If we do
   // enter here in a bad state, then we can't use the stop_callback_ or we
   // might fire the same callback multiple times.
+  DCHECK_EQ(STOPPING, logging_state_);
   if (logging_state_ == STOPPING) {
     logging_started_time_ = base::Time();
     logging_state_ = STOPPED;
@@ -269,26 +298,31 @@ void WebRtcTextLogHandler::ChannelClosing() {
 
   if (logging_state_ == STARTING || logging_state_ == STARTED)
     content::WebRtcLog::ClearLogMessageCallback(render_process_id_);
-  logging_state_ = LoggingState::CHANNEL_CLOSING;
+  channel_is_closing_ = true;
 }
 
 void WebRtcTextLogHandler::DiscardLog() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(logging_state_ == STOPPED || logging_state_ == CHANNEL_CLOSING);
+  DCHECK(logging_state_ == STOPPED ||
+         (channel_is_closing_ && logging_state_ != CLOSED));
+
   log_buffer_.reset();
   meta_data_.reset();
-  if (logging_state_ != CHANNEL_CLOSING)
-    logging_state_ = LoggingState::CLOSED;
+  logging_state_ = LoggingState::CLOSED;
 }
 
 void WebRtcTextLogHandler::ReleaseLog(
     std::unique_ptr<WebRtcLogBuffer>* log_buffer,
     std::unique_ptr<MetaDataMap>* meta_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(logging_state_ == STOPPED || logging_state_ == CHANNEL_CLOSING);
+  DCHECK(logging_state_ == STOPPED ||
+         (channel_is_closing_ && logging_state_ != CLOSED));
+  DCHECK(log_buffer_);
+  DCHECK(meta_data_);
 
   // Checking log_buffer_ here due to seeing some crashes out in the wild.
   // See crbug/699960 for more details.
+  // TODO(crbug/807547): Remove if condition.
   if (log_buffer_) {
     log_buffer_->SetComplete();
     *log_buffer = std::move(log_buffer_);
@@ -297,8 +331,7 @@ void WebRtcTextLogHandler::ReleaseLog(
   if (meta_data_)
     *meta_data = std::move(meta_data_);
 
-  if (logging_state_ != CHANNEL_CLOSING)
-    logging_state_ = LoggingState::CLOSED;
+  logging_state_ = LoggingState::CLOSED;
 }
 
 void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
@@ -311,7 +344,7 @@ void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
 
 void WebRtcTextLogHandler::LogMessage(const std::string& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (logging_state_ == STARTED) {
+  if (logging_state_ == STARTED && !channel_is_closing_) {
     LogToCircularBuffer(WebRtcLoggingMessageData::Format(
         message, base::Time::Now(), logging_started_time_));
   }
@@ -343,38 +376,37 @@ void WebRtcTextLogHandler::FireGenericDoneCallback(
 
   if (error_message.empty()) {
     DCHECK(success);
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(callback, success, error_message));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(callback, success, error_message));
     return;
   }
 
   DCHECK(!success);
 
   // Add current logging state to error message.
-  std::string error_message_with_state(error_message);
-  switch (logging_state_) {
-    case LoggingState::CLOSED:
-      error_message_with_state += " State=closed.";
-      break;
-    case LoggingState::STARTING:
-      error_message_with_state += " State=starting.";
-      break;
-    case LoggingState::STARTED:
-      error_message_with_state += " State=started.";
-      break;
-    case LoggingState::STOPPING:
-      error_message_with_state += " State=stopping.";
-      break;
-    case LoggingState::STOPPED:
-      error_message_with_state += " State=stopped.";
-      break;
-    case LoggingState::CHANNEL_CLOSING:
-      error_message_with_state += " State=channel closing.";
-      break;
-  }
+  auto state_string = [&] {
+    switch (logging_state_) {
+      case LoggingState::CLOSED:
+        return "closed";
+      case LoggingState::STARTING:
+        return "starting";
+      case LoggingState::STARTED:
+        return "started";
+      case LoggingState::STOPPING:
+        return "stopping";
+      case LoggingState::STOPPED:
+        return "stopped";
+    }
+    NOTREACHED();
+    return "";
+  };
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  std::string error_message_with_state =
+      base::StrCat({error_message, ". State=", state_string(), ". Channel is ",
+                    channel_is_closing_ ? "" : "not ", "closing."});
+
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(callback, success, error_message_with_state));
 }
 
@@ -382,7 +414,8 @@ void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
     const GenericDoneCallback& callback,
     const net::NetworkInterfaceList& network_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (logging_state_ != STARTING) {
+
+  if (logging_state_ != STARTING || channel_is_closing_) {
     FireGenericDoneCallback(callback, false, "Logging cancelled.");
     return;
   }
@@ -445,6 +478,23 @@ void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
   LogToCircularBuffer("OpenGL: gl-vendor=" + gpu_info.gl_vendor +
                       ", gl-renderer=" + gpu_info.gl_renderer +
                       ", gl-version=" + gpu_info.gl_version);
+
+  // AudioService features
+  auto enabled_or_disabled_string = [](auto& feature) {
+    return base::FeatureList::IsEnabled(feature) ? "enabled" : "disabled";
+  };
+  LogToCircularBuffer(base::StrCat(
+      {"AudioService: AudioStreams=",
+       enabled_or_disabled_string(features::kAudioServiceAudioStreams),
+       ", OutOfProcess=",
+       enabled_or_disabled_string(features::kAudioServiceOutOfProcess),
+       ", LaunchOnStartup=",
+       enabled_or_disabled_string(features::kAudioServiceLaunchOnStartup),
+       ", Sandbox=",
+       enabled_or_disabled_string(
+           service_manager::features::kAudioServiceSandbox),
+       ", ApmInAudioService=",
+       enabled_or_disabled_string(features::kWebRtcApmInAudioService)}));
 
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure

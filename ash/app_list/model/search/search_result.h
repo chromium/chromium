@@ -45,6 +45,9 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   void SetIcon(const gfx::ImageSkia& icon);
 
+  const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
+  void SetChipIcon(const gfx::ImageSkia& chip_icon);
+
   const gfx::ImageSkia& badge_icon() const { return metadata_->badge_icon; }
   void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
 
@@ -61,6 +64,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
 
   const Tags& details_tags() const { return metadata_->details_tags; }
   void set_details_tags(const Tags& tags) { metadata_->details_tags = tags; }
+
+  const base::string16& accessible_name() const {
+    return metadata_->accessible_name;
+  }
+  void set_accessible_name(const base::string16& name) {
+    metadata_->accessible_name = name;
+  }
 
   float rating() const { return metadata_->rating; }
   void SetRating(float rating);

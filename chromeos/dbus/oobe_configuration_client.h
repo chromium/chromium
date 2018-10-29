@@ -34,6 +34,8 @@ class CHROMEOS_EXPORT OobeConfigurationClient : public DBusClient {
   virtual void CheckForOobeConfiguration(ConfigurationCallback callback) = 0;
 
  protected:
+  friend class OobeConfigurationClientTest;
+
   // Create() should be used instead.
   OobeConfigurationClient() = default;
 

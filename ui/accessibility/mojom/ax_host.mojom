@@ -7,6 +7,7 @@ module ax.mojom;
 import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_action_data.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
 const string kAXHostServiceName = "ax_host_service";
@@ -18,14 +19,17 @@ const string kAXHostServiceName = "ax_host_service";
 //   browser.
 // * Sends requests for actions (e.g. click a button) to the remote process.
 interface AXHost {
-  // Registers a host in a remote process.
-  // TODO(jamescook): Support multiple remote processes.
-  SetRemoteHost(AXRemoteHost remote);
+  // Registers a host in a remote process. |tree_id| is the ID to use as the
+  // root of the AX node tree. If |automation_enabled| is true then the remote
+  // process must send its initial AX node tree immediately (because a feature
+  // like ChromeVox is enabled).
+  RegisterRemoteHost(AXRemoteHost remote) =>
+      (ax.mojom.AXTreeID tree_id, bool automation_enabled);
 
   // Handles an accessibility |event| (e.g. focus change) for |tree_id| in the
   // remote process. Includes |updates| to child nodes.
   HandleAccessibilityEvent(
-      int32 tree_id, array<AXTreeUpdate> updates, AXEvent event);
+      ax.mojom.AXTreeID tree_id, array<AXTreeUpdate> updates, AXEvent event);
 };
 
 // Remote hosts run outside the browser process, for example in a mojo app like

@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +22,7 @@
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/message_bundle.h"
@@ -101,8 +103,22 @@ bool LocalizeManifestListValue(const std::string& key,
 }
 
 std::string& GetProcessLocale() {
-  CR_DEFINE_STATIC_LOCAL(std::string, locale, ());
-  return locale;
+  static base::NoDestructor<std::string> process_locale;
+  return *process_locale;
+}
+
+std::string& GetPreferredLocale() {
+  static base::NoDestructor<std::string> preferred_locale;
+  return *preferred_locale;
+}
+
+// Returns the desired locale to use for localization.
+std::string LocaleForLocalization() {
+  std::string preferred_locale =
+      l10n_util::NormalizeLocale(GetPreferredLocale());
+  if (!preferred_locale.empty())
+    return preferred_locale;
+  return extension_l10n_util::CurrentLocaleOrDefault();
 }
 
 }  // namespace
@@ -111,6 +127,10 @@ namespace extension_l10n_util {
 
 void SetProcessLocale(const std::string& locale) {
   GetProcessLocale() = locale;
+}
+
+void SetPreferredLocale(const std::string& locale) {
+  GetPreferredLocale() = locale;
 }
 
 std::string GetDefaultLocaleFromManifest(const base::DictionaryValue& manifest,
@@ -132,7 +152,7 @@ bool ShouldRelocalizeManifest(const base::DictionaryValue* manifest) {
 
   std::string manifest_current_locale;
   manifest->GetString(keys::kCurrentLocale, &manifest_current_locale);
-  return manifest_current_locale != CurrentLocaleOrDefault();
+  return manifest_current_locale != LocaleForLocalization();
 }
 
 bool LocalizeManifest(const extensions::MessageBundle& messages,
@@ -254,9 +274,9 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
           keys::kOverrideStartupPage, messages, manifest, error))
     return false;
 
-  // Add current locale key to the manifest, so we can overwrite prefs
+  // Add desired locale key to the manifest, so we can overwrite prefs
   // with new manifest when chrome locale changes.
-  manifest->SetString(keys::kCurrentLocale, CurrentLocaleOrDefault());
+  manifest->SetString(keys::kCurrentLocale, LocaleForLocalization());
   return true;
 }
 
@@ -331,6 +351,17 @@ void GetAllFallbackLocales(const std::string& application_locale,
                            const std::string& default_locale,
                            std::vector<std::string>* all_fallback_locales) {
   DCHECK(all_fallback_locales);
+  // Use the preferred locale if available. Otherwise, fall back to the
+  // application locale or the application locale's parent locales. Thus, a
+  // preferred locale of "en_CA" with an application locale of "en_GB" will
+  // first try to use an en_CA locale folder, followed by en_GB, followed by en.
+  std::string preferred_locale =
+      l10n_util::NormalizeLocale(GetPreferredLocale());
+  if (!preferred_locale.empty() && preferred_locale != default_locale &&
+      preferred_locale != application_locale) {
+    all_fallback_locales->push_back(preferred_locale);
+  }
+
   if (!application_locale.empty() && application_locale != default_locale)
     l10n_util::GetParentLocales(application_locale, all_fallback_locales);
   all_fallback_locales->push_back(default_locale);
@@ -411,8 +442,7 @@ bool ValidateExtensionLocales(const base::FilePath& extension_path,
   if (!GetValidLocales(locale_path, &valid_locales, error))
     return false;
 
-  for (std::set<std::string>::const_iterator locale = valid_locales.begin();
-       locale != valid_locales.end();
+  for (auto locale = valid_locales.cbegin(); locale != valid_locales.cend();
        ++locale) {
     std::string locale_error;
     std::unique_ptr<base::DictionaryValue> catalog =
@@ -453,15 +483,22 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
 }
 
 ScopedLocaleForTest::ScopedLocaleForTest()
-    : locale_(extension_l10n_util::CurrentLocaleOrDefault()) {}
+    : process_locale_(GetProcessLocale()),
+      preferred_locale_(GetPreferredLocale()) {}
 
-ScopedLocaleForTest::ScopedLocaleForTest(const std::string& locale)
-    : locale_(extension_l10n_util::CurrentLocaleOrDefault()) {
-  extension_l10n_util::SetProcessLocale(locale);
+ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece locale)
+    : ScopedLocaleForTest(locale, locale) {}
+
+ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece process_locale,
+                                         base::StringPiece preferred_locale)
+    : ScopedLocaleForTest() {
+  SetProcessLocale(process_locale.as_string());
+  SetPreferredLocale(preferred_locale.as_string());
 }
 
 ScopedLocaleForTest::~ScopedLocaleForTest() {
-  extension_l10n_util::SetProcessLocale(locale_);
+  SetProcessLocale(process_locale_.as_string());
+  SetPreferredLocale(preferred_locale_.as_string());
 }
 
 }  // namespace extension_l10n_util

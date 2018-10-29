@@ -12,104 +12,104 @@ namespace blink {
 
 TEST(NetworkUtilsTest, IsReservedIPAddress) {
   // Unreserved IPv4 addresses (in various forms).
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("8.8.8.8"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("99.64.0.0"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("212.15.0.0"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("212.15"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("212.15.0"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("3557752832"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("8.8.8.8"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("99.64.0.0"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("212.15.0.0"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("212.15"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("212.15.0"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("3557752832"));
 
   // Reserved IPv4 addresses (in various forms).
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("192.168.0.0"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("192.168.0.6"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("10.0.0.5"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("10.0.0"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("10.0"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("3232235526"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("192.168.0.0"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("192.168.0.6"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("10.0.0.5"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("10.0.0"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("10.0"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("3232235526"));
 
   // Unreserved IPv6 addresses.
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress(
+  EXPECT_FALSE(network_utils::IsReservedIPAddress(
       "[FFC0:ba98:7654:3210:FEDC:BA98:7654:3210]"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress(
+  EXPECT_FALSE(network_utils::IsReservedIPAddress(
       "[2000:ba98:7654:2301:EFCD:BA98:7654:3210]"));
   // IPv4-mapped to IPv6
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("[::ffff:8.8.8.8]"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("[::ffff:8.8.8.8]"));
 
   // Reserved IPv6 addresses.
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("[::1]"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("[::192.9.5.5]"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("[::ffff:192.168.1.1]"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress("[FEED::BEEF]"));
-  EXPECT_TRUE(NetworkUtils::IsReservedIPAddress(
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("[::1]"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("[::192.9.5.5]"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("[::ffff:192.168.1.1]"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress("[FEED::BEEF]"));
+  EXPECT_TRUE(network_utils::IsReservedIPAddress(
       "[FEC0:ba98:7654:3210:FEDC:BA98:7654:3210]"));
 
   // Not IP addresses at all.
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("example.com"));
-  EXPECT_FALSE(NetworkUtils::IsReservedIPAddress("127.0.0.1.example.com"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("example.com"));
+  EXPECT_FALSE(network_utils::IsReservedIPAddress("127.0.0.1.example.com"));
 
   // Moar IPv4
   for (int i = 0; i < 256; i++) {
     net::IPAddress address(i, 0, 0, 1);
     std::string address_string = address.ToString();
     if (i == 0 || i == 10 || i == 127 || i > 223) {
-      EXPECT_TRUE(NetworkUtils::IsReservedIPAddress(
+      EXPECT_TRUE(network_utils::IsReservedIPAddress(
           String::FromUTF8(address_string.data(), address_string.length())));
     } else {
-      EXPECT_FALSE(NetworkUtils::IsReservedIPAddress(
+      EXPECT_FALSE(network_utils::IsReservedIPAddress(
           String::FromUTF8(address_string.data(), address_string.length())));
     }
   }
 }
 
 TEST(NetworkUtilsTest, GetDomainAndRegistry) {
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    "", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    ".", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    "..", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    "com", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    ".com", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ(
-      "", NetworkUtils::GetDomainAndRegistry(
-              "www.example.com:8000", NetworkUtils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    ".", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "..", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "com", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    ".com", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "www.example.com:8000",
+                    network_utils::kIncludePrivateRegistries));
 
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    "localhost", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("", NetworkUtils::GetDomainAndRegistry(
-                    "127.0.0.1", NetworkUtils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "localhost", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("", network_utils::GetDomainAndRegistry(
+                    "127.0.0.1", network_utils::kIncludePrivateRegistries));
 
   EXPECT_EQ("example.com",
-            NetworkUtils::GetDomainAndRegistry(
-                "example.com", NetworkUtils::kIncludePrivateRegistries));
+            network_utils::GetDomainAndRegistry(
+                "example.com", network_utils::kIncludePrivateRegistries));
   EXPECT_EQ("example.com",
-            NetworkUtils::GetDomainAndRegistry(
-                "www.example.com", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("example.com",
-            NetworkUtils::GetDomainAndRegistry(
-                "static.example.com", NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("example.com", NetworkUtils::GetDomainAndRegistry(
+            network_utils::GetDomainAndRegistry(
+                "www.example.com", network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("example.com", network_utils::GetDomainAndRegistry(
+                               "static.example.com",
+                               network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("example.com", network_utils::GetDomainAndRegistry(
                                "multilevel.www.example.com",
-                               NetworkUtils::kIncludePrivateRegistries));
+                               network_utils::kIncludePrivateRegistries));
   EXPECT_EQ("example.co.uk",
-            NetworkUtils::GetDomainAndRegistry(
-                "www.example.co.uk", NetworkUtils::kIncludePrivateRegistries));
+            network_utils::GetDomainAndRegistry(
+                "www.example.co.uk", network_utils::kIncludePrivateRegistries));
 
   // Verify proper handling of 'private registries'.
-  EXPECT_EQ("foo.appspot.com", NetworkUtils::GetDomainAndRegistry(
+  EXPECT_EQ("foo.appspot.com", network_utils::GetDomainAndRegistry(
                                    "www.foo.appspot.com",
-                                   NetworkUtils::kIncludePrivateRegistries));
-  EXPECT_EQ("appspot.com", NetworkUtils::GetDomainAndRegistry(
+                                   network_utils::kIncludePrivateRegistries));
+  EXPECT_EQ("appspot.com", network_utils::GetDomainAndRegistry(
                                "www.foo.appspot.com",
-                               NetworkUtils::kExcludePrivateRegistries));
+                               network_utils::kExcludePrivateRegistries));
 
   // Verify that unknown registries are included.
   EXPECT_EQ("example.notarealregistry",
-            NetworkUtils::GetDomainAndRegistry(
+            network_utils::GetDomainAndRegistry(
                 "www.example.notarealregistry",
-                NetworkUtils::kIncludePrivateRegistries));
+                network_utils::kIncludePrivateRegistries));
 }
 
 }  // namespace blink

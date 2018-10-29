@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -24,6 +25,7 @@ import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.content_public.common.MediaMetadata;
 
 /**
@@ -48,11 +50,23 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
 
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);
 
-        assertEquals("title", shadowNotification.getContentTitle());
-        assertEquals("artist - album", shadowNotification.getContentText());
-        if (hasNApis()) {
-            assertEquals("https://example.com/",
-                    notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+        boolean userDataIsHidden = info.isPrivate
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
+        if (userDataIsHidden) {
+            assertNotEquals("title", shadowNotification.getContentTitle());
+            assertNotEquals("artist - album", shadowNotification.getContentText());
+            if (hasNApis()) {
+                assertNull(notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+            }
+        } else {
+            assertEquals("title", shadowNotification.getContentTitle());
+            assertEquals("artist - album", shadowNotification.getContentText());
+
+            if (hasNApis()) {
+                assertEquals("https://example.com/",
+                        notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+            }
         }
     }
 
@@ -68,8 +82,16 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
 
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);
 
-        assertEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
-        assertEquals(info.origin, shadowNotification.getContentText());
+        boolean userDataIsHidden = info.isPrivate
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
+        if (userDataIsHidden) {
+            assertNotEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
+            assertNull(shadowNotification.getContentText());
+        } else {
+            assertEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
+            assertEquals(info.origin, shadowNotification.getContentText());
+        }
         if (hasNApis()) {
             assertEquals(null, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
         }
@@ -87,10 +109,23 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
 
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);
 
-        assertEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
-        assertEquals("", shadowNotification.getContentText());
-        if (hasNApis()) {
-            assertEquals(info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+        boolean userDataIsHidden = info.isPrivate
+                && ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
+        if (userDataIsHidden) {
+            assertNotEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
+            assertNull(shadowNotification.getContentText());
+            if (hasNApis()) {
+                assertNotEquals(
+                        info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+            }
+        } else {
+            assertEquals(info.metadata.getTitle(), shadowNotification.getContentTitle());
+            assertEquals("", shadowNotification.getContentText());
+            if (hasNApis()) {
+                assertEquals(
+                        info.origin, notification.extras.getString(Notification.EXTRA_SUB_TEXT));
+            }
         }
     }
 
@@ -103,7 +138,14 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
         Notification notification = updateNotificationBuilderAndBuild(info);
 
         if (hasNApis()) {
-            assertTrue(largeIcon.sameAs(iconToBitmap(notification.getLargeIcon())));
+            boolean userDataIsHidden = info.isPrivate
+                    && ChromeFeatureList.isEnabled(
+                               ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS);
+            if (userDataIsHidden) {
+                assertNull(notification.getLargeIcon());
+            } else {
+                assertTrue(largeIcon.sameAs(iconToBitmap(notification.getLargeIcon())));
+            }
         }
     }
 

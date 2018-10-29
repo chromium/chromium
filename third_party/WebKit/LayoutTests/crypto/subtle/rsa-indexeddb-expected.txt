@@ -2,7 +2,6 @@ Test storing a private RSA key in IndexedDB, and retrieving it.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Put key into database successfully
 PASS retrievedKey.type is 'private'
 PASS retrievedKey.extractable is true

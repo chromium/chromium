@@ -12,12 +12,16 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/nqe/network_quality_estimator_params.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 
 namespace {
+
+static constexpr base::TimeDelta kLowerBoundQueuingDuration =
+    base::TimeDelta::FromSeconds(15);
 
 class ResourceSchedulerParamsManagerTest : public testing::Test {
  public:
@@ -87,7 +91,6 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
     switch (effective_connection_type) {
       case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
       case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
       case net::EFFECTIVE_CONNECTION_TYPE_4G:
         EXPECT_EQ(10u, resource_scheduler_params_manager
                            .GetParamsForEffectiveConnectionType(
@@ -101,6 +104,29 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
             resource_scheduler_params_manager
                 .GetParamsForEffectiveConnectionType(effective_connection_type)
                 .delay_requests_on_multiplexed_connections);
+        EXPECT_FALSE(
+            resource_scheduler_params_manager
+                .GetParamsForEffectiveConnectionType(effective_connection_type)
+                .max_queuing_time.has_value());
+        return;
+
+      case net::EFFECTIVE_CONNECTION_TYPE_3G:
+        EXPECT_EQ(10u, resource_scheduler_params_manager
+                           .GetParamsForEffectiveConnectionType(
+                               effective_connection_type)
+                           .max_delayable_requests);
+        EXPECT_EQ(0.0, resource_scheduler_params_manager
+                           .GetParamsForEffectiveConnectionType(
+                               effective_connection_type)
+                           .non_delayable_weight);
+        EXPECT_TRUE(
+            resource_scheduler_params_manager
+                .GetParamsForEffectiveConnectionType(effective_connection_type)
+                .delay_requests_on_multiplexed_connections);
+        EXPECT_FALSE(
+            resource_scheduler_params_manager
+                .GetParamsForEffectiveConnectionType(effective_connection_type)
+                .max_queuing_time.has_value());
         return;
 
       case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
@@ -113,11 +139,16 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
                            .GetParamsForEffectiveConnectionType(
                                effective_connection_type)
                            .non_delayable_weight);
-        EXPECT_FALSE(
+        EXPECT_TRUE(
             resource_scheduler_params_manager
                 .GetParamsForEffectiveConnectionType(effective_connection_type)
                 .delay_requests_on_multiplexed_connections);
+        EXPECT_FALSE(
+            resource_scheduler_params_manager
+                .GetParamsForEffectiveConnectionType(effective_connection_type)
+                .max_queuing_time.has_value());
         return;
+
       case net::EFFECTIVE_CONNECTION_TYPE_LAST:
         NOTREACHED();
         return;
@@ -183,11 +214,121 @@ TEST_F(ResourceSchedulerParamsManagerTest,
       EXPECT_TRUE(resource_scheduler_params_manager
                       .GetParamsForEffectiveConnectionType(ect)
                       .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
+
+    } else if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_3G) {
+      EXPECT_EQ(10u, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .max_delayable_requests);
+      EXPECT_EQ(0.0, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .non_delayable_weight);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
 
     } else {
       VerifyDefaultParams(
           resource_scheduler_params_manager,
           static_cast<net::EffectiveConnectionType>(effective_connection_type));
+    }
+  }
+}
+
+TEST_F(ResourceSchedulerParamsManagerTest, MaxQueuingTime) {
+  base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
+  const std::string kTrialName = "TrialFoo";
+  const std::string kGroupName = "GroupFoo";  // Value not used
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+
+  std::map<std::string, std::string> params;
+  params["http_rtt_multiplier"] = "20";
+  ASSERT_TRUE(
+      base::FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
+          kTrialName, kGroupName, params));
+
+  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  feature_list->RegisterFieldTrialOverride(
+      features::kUnthrottleRequestsAfterLongQueuingDelay.name,
+      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  ResourceSchedulerParamsManager resource_scheduler_params_manager;
+
+  for (int effective_connection_type = net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+       effective_connection_type < net::EFFECTIVE_CONNECTION_TYPE_LAST;
+       ++effective_connection_type) {
+    net::EffectiveConnectionType ect =
+        static_cast<net::EffectiveConnectionType>(effective_connection_type);
+    base::TimeDelta typical_http_rtt =
+        net::NetworkQualityEstimatorParams::GetDefaultTypicalHttpRtt(ect);
+
+    if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G ||
+        effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_2G) {
+      EXPECT_EQ(8u, resource_scheduler_params_manager
+                        .GetParamsForEffectiveConnectionType(ect)
+                        .max_delayable_requests);
+      EXPECT_EQ(3.0, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .non_delayable_weight);
+      EXPECT_TRUE(resource_scheduler_params_manager
+                      .GetParamsForEffectiveConnectionType(ect)
+                      .delay_requests_on_multiplexed_connections);
+      EXPECT_EQ(typical_http_rtt * 20,
+                resource_scheduler_params_manager
+                    .GetParamsForEffectiveConnectionType(ect)
+                    .max_queuing_time);
+
+    } else if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_3G) {
+      EXPECT_EQ(10u, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .max_delayable_requests);
+      EXPECT_EQ(0.0, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .non_delayable_weight);
+      EXPECT_TRUE(resource_scheduler_params_manager
+                      .GetParamsForEffectiveConnectionType(ect)
+                      .delay_requests_on_multiplexed_connections);
+      EXPECT_EQ(kLowerBoundQueuingDuration,
+                resource_scheduler_params_manager
+                    .GetParamsForEffectiveConnectionType(ect)
+                    .max_queuing_time);
+
+    } else if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_4G) {
+      EXPECT_EQ(10u, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .max_delayable_requests);
+      EXPECT_EQ(0.0, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .non_delayable_weight);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .delay_requests_on_multiplexed_connections);
+      EXPECT_EQ(kLowerBoundQueuingDuration,
+                resource_scheduler_params_manager
+                    .GetParamsForEffectiveConnectionType(ect)
+                    .max_queuing_time);
+    } else {
+      EXPECT_EQ(10u, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .max_delayable_requests);
+      EXPECT_EQ(0.0, resource_scheduler_params_manager
+                         .GetParamsForEffectiveConnectionType(ect)
+                         .non_delayable_weight);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
     }
   }
 }
@@ -252,6 +393,9 @@ TEST_F(ResourceSchedulerParamsManagerTest, MultipleFieldTrialsEnabled) {
       EXPECT_TRUE(resource_scheduler_params_manager
                       .GetParamsForEffectiveConnectionType(ect)
                       .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
 
     } else if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_3G) {
       EXPECT_EQ(12u, resource_scheduler_params_manager
@@ -263,6 +407,10 @@ TEST_F(ResourceSchedulerParamsManagerTest, MultipleFieldTrialsEnabled) {
       EXPECT_TRUE(resource_scheduler_params_manager
                       .GetParamsForEffectiveConnectionType(ect)
                       .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
+
     } else if (effective_connection_type == net::EFFECTIVE_CONNECTION_TYPE_4G) {
       EXPECT_EQ(14u, resource_scheduler_params_manager
                          .GetParamsForEffectiveConnectionType(ect)
@@ -273,6 +421,10 @@ TEST_F(ResourceSchedulerParamsManagerTest, MultipleFieldTrialsEnabled) {
       EXPECT_FALSE(resource_scheduler_params_manager
                        .GetParamsForEffectiveConnectionType(ect)
                        .delay_requests_on_multiplexed_connections);
+      EXPECT_FALSE(resource_scheduler_params_manager
+                       .GetParamsForEffectiveConnectionType(ect)
+                       .max_queuing_time.has_value());
+
     } else {
       VerifyDefaultParams(resource_scheduler_params_manager, ect);
     }
@@ -424,6 +576,10 @@ TEST_F(ResourceSchedulerParamsManagerTest,
                 .GetParamsForEffectiveConnectionType(
                     net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G)
                 .non_delayable_weight);
+  EXPECT_FALSE(resource_scheduler_params_manager
+                   .GetParamsForEffectiveConnectionType(
+                       net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G)
+                   .max_queuing_time.has_value());
 
   VerifyDefaultParams(resource_scheduler_params_manager,
                       net::EFFECTIVE_CONNECTION_TYPE_2G);
@@ -437,6 +593,10 @@ TEST_F(ResourceSchedulerParamsManagerTest,
                                          .GetParamsForEffectiveConnectionType(
                                              net::EFFECTIVE_CONNECTION_TYPE_3G)
                                          .non_delayable_weight);
+  EXPECT_FALSE(resource_scheduler_params_manager
+                   .GetParamsForEffectiveConnectionType(
+                       net::EFFECTIVE_CONNECTION_TYPE_3G)
+                   .max_queuing_time.has_value());
 
   VerifyDefaultParams(resource_scheduler_params_manager,
                       net::EFFECTIVE_CONNECTION_TYPE_4G);

@@ -26,21 +26,33 @@ class MouseEventCapturer : public ui::EventHandler {
   void Reset() { events_.clear(); }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (!(event->flags() & ui::EF_LEFT_MOUSE_BUTTON))
-      return;
+    bool save_event = false;
+    bool stop_event = false;
     // Filter out extraneous mouse events like mouse entered, exited,
     // capture changed, etc.
     ui::EventType type = event->type();
-    if (type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_PRESSED ||
-        type == ui::ET_MOUSE_RELEASED) {
+    if (type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED) {
+      // Only track left and right mouse button events, ensuring that we get
+      // left-click, right-click and double-click.
+      if (!(event->flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
+          (!(event->flags() & ui::EF_RIGHT_MOUSE_BUTTON)))
+        return;
+      save_event = true;
+      // Stop event propagation so we don't click on random stuff that
+      // might break test assumptions.
+      stop_event = true;
+    } else if (type == ui::ET_MOUSE_DRAGGED) {
+      save_event = true;
+      stop_event = false;
+    }
+    if (save_event) {
       events_.push_back(ui::MouseEvent(event->type(), event->location(),
                                        event->root_location(),
                                        ui::EventTimeForNow(), event->flags(),
                                        event->changed_button_flags()));
-      // Stop event propagation so we don't click on random stuff that
-      // might break test assumptions.
-      event->StopPropagation();
     }
+    if (stop_event)
+      event->StopPropagation();
 
     // If there is a possibility that we're in an infinite loop, we should
     // exit early with a sensible error rather than letting the test time out.
@@ -86,13 +98,19 @@ class AutoclickTest : public AshTestBase {
   }
 
   const std::vector<ui::MouseEvent>& WaitForMouseEvents() {
-    mouse_event_capturer_.Reset();
+    ClearMouseEvents();
     RunAllPendingInMessageLoop();
-    return mouse_event_capturer_.captured_events();
+    return GetMouseEvents();
   }
 
   AutoclickController* GetAutoclickController() {
     return Shell::Get()->autoclick_controller();
+  }
+
+  void ClearMouseEvents() { mouse_event_capturer_.Reset(); }
+
+  const std::vector<ui::MouseEvent>& GetMouseEvents() {
+    return mouse_event_capturer_.captured_events();
   }
 
  private:
@@ -115,18 +133,22 @@ TEST_F(AutoclickTest, ToggleEnabled) {
   GetEventGenerator()->MoveMouseTo(0, 0);
   EXPECT_TRUE(GetAutoclickController()->IsEnabled());
   events = WaitForMouseEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
 
   // We should not get any more clicks until we move the mouse.
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());
   GetEventGenerator()->MoveMouseTo(30, 30);
   events = WaitForMouseEvents();
-  EXPECT_EQ(2u, events.size());
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
 
   // Disable autoclick, and we should see the original behaviour.
   GetAutoclickController()->SetEnabled(false);
@@ -287,6 +309,161 @@ TEST_F(AutoclickTest, SynthesizedMouseMovesIgnored) {
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());
   EXPECT_EQ("1 1 0", delegate.GetMouseMotionCountsAndReset());
+}
+
+TEST_F(AutoclickTest, AutoclickChangeEventTypes) {
+  GetAutoclickController()->SetEnabled(true);
+  GetAutoclickController()->set_revert_to_left_click(false);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kRightClick);
+  std::vector<ui::MouseEvent> events;
+
+  GetEventGenerator()->MoveMouseTo(30, 30);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[1].type());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[1].flags());
+
+  // Changing the event type cancels the event
+  GetEventGenerator()->MoveMouseTo(60, 60);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kLeftClick);
+  events = WaitForMouseEvents();
+  EXPECT_EQ(0u, events.size());
+
+  // Changing the event type to the same thing does not cancel the event.
+  // kLeftClick type does not produce a double-click.
+  GetEventGenerator()->MoveMouseTo(90, 90);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kLeftClick);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & events[0].flags());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
+  EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & events[1].flags());
+
+  // Double-click works as expected.
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kDoubleClick);
+  GetEventGenerator()->MoveMouseTo(120, 120);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(4u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & events[0].flags());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
+  EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & events[1].flags());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[2].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[2].flags());
+  EXPECT_TRUE(ui::EF_IS_DOUBLE_CLICK & events[2].flags());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[3].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[3].flags());
+  EXPECT_TRUE(ui::EF_IS_DOUBLE_CLICK & events[3].flags());
+
+  // Pause / no action does not cause events to be generated even when the
+  // mouse moves.
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kNoAction);
+  GetEventGenerator()->MoveMouseTo(120, 120);
+  events = WaitForMouseEvents();
+  EXPECT_EQ(0u, events.size());
+}
+
+TEST_F(AutoclickTest, AutoclickDragAndDropEvents) {
+  GetAutoclickController()->SetEnabled(true);
+  GetAutoclickController()->set_revert_to_left_click(false);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kDragAndDrop);
+  std::vector<ui::MouseEvent> events;
+
+  GetEventGenerator()->MoveMouseTo(30, 30);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+
+  ClearMouseEvents();
+  GetEventGenerator()->MoveMouseTo(60, 60);
+  events = GetMouseEvents();
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_DRAGGED, events[0].type());
+
+  // Another move creates a drag
+  ClearMouseEvents();
+  GetEventGenerator()->MoveMouseTo(90, 90);
+  events = GetMouseEvents();
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_DRAGGED, events[0].type());
+
+  // Waiting in place creates the released event.
+  events = WaitForMouseEvents();
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, events[0].type());
+}
+
+TEST_F(AutoclickTest, AutoclickRevertsToLeftClick) {
+  GetAutoclickController()->SetEnabled(true);
+  GetAutoclickController()->set_revert_to_left_click(true);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kRightClick);
+  std::vector<ui::MouseEvent> events;
+
+  GetEventGenerator()->MoveMouseTo(30, 30);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[1].flags());
+
+  // Another event is now left-click; we've reverted to left click.
+  GetEventGenerator()->MoveMouseTo(90, 90);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kLeftClick);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
+
+  // The next event is also a left click.
+  GetEventGenerator()->MoveMouseTo(120, 120);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kLeftClick);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
+
+  // Changing revert to false doesn't change that we are on left click at
+  // present.
+  GetAutoclickController()->set_revert_to_left_click(false);
+  GetEventGenerator()->MoveMouseTo(150, 150);
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kLeftClick);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & events[1].flags());
+
+  // But we should no longer revert to left click if the type is something else.
+  GetAutoclickController()->SetAutoclickEventType(
+      mojom::AutoclickEventType::kRightClick);
+  GetEventGenerator()->MoveMouseTo(180, 180);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[1].flags());
+
+  // Should still be right click.
+  GetEventGenerator()->MoveMouseTo(210, 210);
+  events = WaitForMouseEvents();
+  ASSERT_EQ(2u, events.size());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[0].flags());
+  EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & events[1].flags());
 }
 
 }  // namespace ash

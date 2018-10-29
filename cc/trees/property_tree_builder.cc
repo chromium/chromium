@@ -740,12 +740,12 @@ static inline const gfx::PointF FiltersOrigin(LayerImpl* layer) {
   return layer->test_properties()->filters_origin;
 }
 
-static inline const FilterOperations& BackgroundFilters(Layer* layer) {
-  return layer->background_filters();
+static inline const FilterOperations& BackdropFilters(Layer* layer) {
+  return layer->backdrop_filters();
 }
 
-static inline const FilterOperations& BackgroundFilters(LayerImpl* layer) {
-  return layer->test_properties()->background_filters;
+static inline const FilterOperations& BackdropFilters(LayerImpl* layer) {
+  return layer->test_properties()->backdrop_filters;
 }
 
 static inline bool HideLayerAndSubtree(Layer* layer) {
@@ -794,7 +794,7 @@ bool ShouldCreateRenderSurface(const MutatorHost& mutator_host,
   }
 
   // If the layer uses a CSS filter.
-  if (!Filters(layer).IsEmpty() || !BackgroundFilters(layer).IsEmpty()) {
+  if (!Filters(layer).IsEmpty() || !BackdropFilters(layer).IsEmpty()) {
     return true;
   }
 
@@ -983,7 +983,7 @@ bool PropertyTreeBuilderContext<LayerType>::AddEffectNodeIfNeeded(
   node->cache_render_surface = CacheRenderSurface(layer);
   node->has_copy_request = HasCopyRequest(layer);
   node->filters = Filters(layer);
-  node->background_filters = BackgroundFilters(layer);
+  node->backdrop_filters = BackdropFilters(layer);
   node->filters_origin = FiltersOrigin(layer);
   node->trilinear_filtering = TrilinearFiltering(layer);
   node->has_potential_opacity_animation = has_potential_opacity_animation;
@@ -1404,7 +1404,7 @@ static void CheckClipPointersForLayer(Layer* layer) {
     return;
 
   if (layer->clip_children()) {
-    for (std::set<Layer*>::iterator it = layer->clip_children()->begin();
+    for (auto it = layer->clip_children()->begin();
          it != layer->clip_children()->end(); ++it) {
       DCHECK_EQ((*it)->clip_parent(), layer);
     }

@@ -11,16 +11,16 @@ GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js',
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function RecoveryStrategyTest() {
+function ChromeVoxRecoveryStrategyTest() {
   ChromeVoxNextE2ETest.call(this);
   window.RoleType = chrome.automation.RoleType;
 }
 
-RecoveryStrategyTest.prototype = {
+ChromeVoxRecoveryStrategyTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 };
 
-TEST_F('RecoveryStrategyTest', 'ReparentedRecovery', function() {
+TEST_F('ChromeVoxRecoveryStrategyTest', 'ReparentedRecovery', function() {
   this.runWithLoadedTree(function() {/*!
     <input type="text"></input>
     <p id="p">hi</p>

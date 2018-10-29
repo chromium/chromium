@@ -41,6 +41,8 @@ source_set("cdm") {
     # when EnabledIf attribute is supported in mojom.
     "cdm_proxy.cc",
     "cdm_proxy.h",
+    "cdm_proxy_context.cc",
+    "cdm_proxy_context.h",
     "cenc_utils.cc",
     "cenc_utils.h",
     "default_cdm_factory.cc",
@@ -84,6 +86,8 @@ source_set("cdm") {
       "cdm_helpers.h",
       "cdm_module.cc",
       "cdm_module.h",
+      "cdm_type_conversion.cc",
+      "cdm_type_conversion.h",
       "cdm_wrapper.h",
       "output_protection.h",
       "platform_verification.h",

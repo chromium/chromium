@@ -40,11 +40,31 @@ class ShaderCacheFactory;
 class ShaderDiskCache;
 }  // namespace gpu
 
-namespace IPC {
-class Channel;
-}
-
 namespace viz {
+
+// Contains either an interface or an associated interface pointer to a
+// mojom::VizMain implementation and routes the requests appropriately.
+class VIZ_HOST_EXPORT VizMainWrapper {
+ public:
+  explicit VizMainWrapper(mojom::VizMainPtr viz_main_ptr);
+  explicit VizMainWrapper(mojom::VizMainAssociatedPtr viz_main_associated_ptr);
+  ~VizMainWrapper();
+
+  void CreateGpuService(
+      mojom::GpuServiceRequest request,
+      mojom::GpuHostPtr gpu_host,
+      discardable_memory::mojom::DiscardableSharedMemoryManagerPtr
+          discardable_memory_manager,
+      mojo::ScopedSharedBufferHandle activity_flags,
+      gfx::FontRenderParams::SubpixelRendering subpixel_rendering);
+  void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params);
+
+ private:
+  mojom::VizMainPtr viz_main_ptr_;
+  mojom::VizMainAssociatedPtr viz_main_associated_ptr_;
+
+  DISALLOW_COPY_AND_ASSIGN(VizMainWrapper);
+};
 
 class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
  public:
@@ -52,7 +72,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
    public:
     virtual gpu::GPUInfo GetGPUInfo() const = 0;
     virtual gpu::GpuFeatureInfo GetGpuFeatureInfo() const = 0;
-    virtual void UpdateGpuInfo(
+    virtual void DidInitialize(
         const gpu::GPUInfo& gpu_info,
         const gpu::GpuFeatureInfo& gpu_feature_info,
         const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
@@ -125,10 +145,13 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                               const gpu::GpuFeatureInfo&,
                               EstablishChannelStatus)>;
 
-  GpuHostImpl(Delegate* delegate, IPC::Channel* channel, InitParams params);
+  GpuHostImpl(Delegate* delegate,
+              std::unique_ptr<VizMainWrapper> viz_main_ptr,
+              InitParams params);
   ~GpuHostImpl() override;
 
   static void InitFontRenderParams(const gfx::FontRenderParams& params);
+  static void ResetFontRenderParams();
 
   void OnProcessLaunched(base::ProcessId pid);
   void OnProcessCrashed();
@@ -164,6 +187,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
   }
 
  private:
+  friend class GpuHostImplTestApi;
+
 #if defined(USE_OZONE)
   void InitOzone();
   void TerminateGpuProcess(const std::string& message);
@@ -208,13 +233,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                         const std::string& message) override;
 
   Delegate* const delegate_;
-  IPC::Channel* const channel_;
+  std::unique_ptr<VizMainWrapper> viz_main_ptr_;
   const InitParams params_;
 
   // Task runner corresponding to the thread |this| is created on.
   scoped_refptr<base::SingleThreadTaskRunner> host_thread_task_runner_;
 
-  mojom::VizMainAssociatedPtr viz_main_ptr_;
   mojom::GpuServicePtr gpu_service_ptr_;
   mojo::Binding<mojom::GpuHost> gpu_host_binding_;
   gpu::GpuProcessHostActivityFlags activity_flags_;

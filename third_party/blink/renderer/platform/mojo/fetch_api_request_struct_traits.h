@@ -16,16 +16,6 @@ class KURL;
 namespace mojo {
 
 template <>
-struct EnumTraits<::blink::mojom::RequestContextType,
-                  ::blink::WebURLRequest::RequestContext> {
-  static ::blink::mojom::RequestContextType ToMojom(
-      ::blink::WebURLRequest::RequestContext input);
-
-  static bool FromMojom(::blink::mojom::RequestContextType input,
-                        ::blink::WebURLRequest::RequestContext* out);
-};
-
-template <>
 struct StructTraits<::blink::mojom::FetchAPIRequestDataView,
                     ::blink::WebServiceWorkerRequest> {
   static ::network::mojom::FetchRequestMode mode(
@@ -38,7 +28,7 @@ struct StructTraits<::blink::mojom::FetchAPIRequestDataView,
     return request.IsMainResourceLoad();
   }
 
-  static ::blink::WebURLRequest::RequestContext request_context_type(
+  static ::blink::mojom::RequestContextType request_context_type(
       const ::blink::WebServiceWorkerRequest& request) {
     return request.GetRequestContext();
   }

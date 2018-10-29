@@ -153,6 +153,13 @@ TEST_F(VoiceInteractionControllerClientTest, PrefChangeSendsNotification) {
   ASSERT_EQ("en-CA", prefs->GetString(language::prefs::kApplicationLocale));
   voice_interaction_controller_client()->FlushMojoForTesting();
   EXPECT_EQ("en-CA", voice_interaction_controller()->locale());
+
+  ASSERT_EQ(false,
+            prefs->GetBoolean(prefs::kVoiceInteractionLaunchWithMicOpen));
+  prefs->SetBoolean(prefs::kVoiceInteractionLaunchWithMicOpen, true);
+  ASSERT_EQ(true, prefs->GetBoolean(prefs::kVoiceInteractionLaunchWithMicOpen));
+  voice_interaction_controller_client()->FlushMojoForTesting();
+  EXPECT_EQ(true, voice_interaction_controller()->launch_with_mic_open());
 }
 
 }  // namespace arc

@@ -26,6 +26,24 @@ using blink::WebURL;
 
 namespace {
 
+base::FilePath GetWebTestsFilePath() {
+  static base::FilePath path;
+  if (path.empty()) {
+    base::FilePath root_path;
+    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    CHECK(success);
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestsInBlink)) {
+      path =
+          root_path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests/"));
+    } else {
+      path = root_path.Append(
+          FILE_PATH_LITERAL("third_party/WebKit/LayoutTests/"));
+    }
+  }
+  return path;
+}
+
 // Tests in csswg-test use absolute path links such as
 //   <script src="/resources/testharness.js">.
 // Because we load the tests as local files, such links don't work.
@@ -38,7 +56,8 @@ WebURL RewriteAbsolutePathInCsswgTest(const std::string& utf8_url) {
   static constexpr base::StringPiece kFileScheme = "file:///";
   if (!base::StartsWith(utf8_url, kFileScheme, base::CompareCase::SENSITIVE))
     return WebURL();
-  if (utf8_url.find("/LayoutTests/") != std::string::npos)
+  if (utf8_url.find("/LayoutTests/") != std::string::npos ||
+      utf8_url.find("/web_tests/") != std::string::npos)
     return WebURL();
 #if defined(OS_WIN)
   // +3 for a drive letter, :, and /.
@@ -49,9 +68,7 @@ WebURL RewriteAbsolutePathInCsswgTest(const std::string& utf8_url) {
 #else
   std::string path = utf8_url.substr(kFileScheme.size());
 #endif
-  base::FilePath new_path = content::GetWebKitRootDirFilePath()
-                                .Append(FILE_PATH_LITERAL("LayoutTests/"))
-                                .AppendASCII(path);
+  base::FilePath new_path = GetWebTestsFilePath().AppendASCII(path);
   return WebURL(net::FilePathToFileURL(new_path));
 }
 
@@ -148,13 +165,6 @@ void ApplyLayoutTestDefaultPreferences(WebPreferences* prefs) {
   prefs->translate_service_available = true;
 }
 
-base::FilePath GetWebKitRootDirFilePath() {
-  base::FilePath base_path;
-  bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path);
-  CHECK(success);
-  return base_path.Append(FILE_PATH_LITERAL("third_party/WebKit"));
-}
-
 base::FilePath GetBuildDirectory() {
   base::FilePath result;
   bool success = base::PathService::Get(base::DIR_EXE, &result);
@@ -193,14 +203,13 @@ WebURL RewriteLayoutTestsURL(const std::string& utf8_url, bool is_wpt_mode) {
     return WebURL(GURL(new_url));
   }
 
+  // TODO(tkent): Replace "tmp/LayoutTests" in tests with "tmp/web_tests".
   static constexpr base::StringPiece kPrefix = "file:///tmp/LayoutTests/";
 
   if (!base::StartsWith(utf8_url, kPrefix, base::CompareCase::SENSITIVE))
     return WebURL(GURL(utf8_url));
 
-  base::FilePath replace_path =
-      GetWebKitRootDirFilePath().Append(FILE_PATH_LITERAL("LayoutTests/"));
-  std::string utf8_path = replace_path.AsUTF8Unsafe();
+  std::string utf8_path = GetWebTestsFilePath().AsUTF8Unsafe();
   std::string new_url =
       std::string("file://") + utf8_path + utf8_url.substr(kPrefix.size());
   return WebURL(GURL(new_url));

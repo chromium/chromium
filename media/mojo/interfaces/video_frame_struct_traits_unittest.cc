@@ -73,7 +73,7 @@ TEST_F(VideoFrameStructTraitsTest, EOS) {
 
 TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
   scoped_refptr<VideoFrame> frame =
-      MojoSharedBufferVideoFrame::CreateDefaultI420(
+      MojoSharedBufferVideoFrame::CreateDefaultI420ForTesting(
           gfx::Size(100, 100), base::TimeDelta::FromSeconds(100));
   frame->metadata()->SetDouble(VideoFrameMetadata::FRAME_RATE, 42.0);
 

@@ -6,5 +6,6 @@
   display: flex;
   flex-flow: column;
   font-size: 16px;
+  min-height: 0;
   width: 576px;
 }

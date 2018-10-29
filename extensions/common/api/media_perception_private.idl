@@ -430,6 +430,11 @@ namespace mediaPerceptionPrivate {
     AudioVisualHumanPresenceDetection? audioVisualHumanPresenceDetection;
   };
 
+  // Stores metadata such as version of media perception features.
+  dictionary Metadata {
+    DOMString? visualExperienceControllerVersion;
+  };
+
   dictionary MediaPerception {
     // The time the media perception data was emitted by the media processing
     // pipeline. This value will be greater than the timestamp stored within
@@ -445,6 +450,9 @@ namespace mediaPerceptionPrivate {
 
     // An array of audio-visual perceptions.
     AudioVisualPerception[]? audioVisualPerceptions;
+
+    // Stores metadata such as version of media perception features.
+    Metadata? metadata;
   };
 
   enum ImageFormat {
@@ -479,6 +487,9 @@ namespace mediaPerceptionPrivate {
 
     // Perception results based on both audio and video inputs.
     AudioVisualPerception? audioVisualPerception;
+
+    // Stores metadata such as version of media perception features.
+    Metadata? metadata;
   };
 
   dictionary Diagnostics {

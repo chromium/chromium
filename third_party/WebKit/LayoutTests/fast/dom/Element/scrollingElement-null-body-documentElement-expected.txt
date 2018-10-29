@@ -2,7 +2,6 @@ Verifies that asking for the scrollingElement of a document with null body or nu
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.scrollingElement is document.documentElement
 PASS nullbody.contentDocument.compatMode is "BackCompat"
 PASS nullbody.contentDocument.body is null
@@ -14,6 +13,7 @@ PASS nullroot.contentDocument.scrollingElement is null
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 
 
 

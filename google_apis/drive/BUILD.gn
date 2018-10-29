@@ -1,0 +1,97 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+source_set("drive") {
+  assert(enable_extensions,
+         "Google Drive API requires being built with extensions")
+  sources = [
+    "auth_service.cc",
+    "auth_service.h",
+    "auth_service_interface.h",
+    "auth_service_observer.h",
+    "base_requests.cc",
+    "base_requests.h",
+    "drive_api_error_codes.cc",
+    "drive_api_error_codes.h",
+    "drive_api_parser.cc",
+    "drive_api_parser.h",
+    "drive_api_requests.cc",
+    "drive_api_requests.h",
+    "drive_api_url_generator.cc",
+    "drive_api_url_generator.h",
+    "drive_common_callbacks.h",
+    "files_list_request_runner.cc",
+    "files_list_request_runner.h",
+    "request_sender.cc",
+    "request_sender.h",
+    "request_util.cc",
+    "request_util.h",
+    "task_util.cc",
+    "task_util.h",
+    "time_util.cc",
+    "time_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//crypto",
+    "//google_apis:google_apis",
+    "//net",
+    "//services/identity/public/cpp:cpp",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  assert(enable_extensions,
+         "Google Drive API requires being built with extensions")
+  testonly = true
+
+  sources = [
+    "dummy_auth_service.cc",
+    "dummy_auth_service.h",
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  public_deps = [
+    ":drive",
+    "//base",
+    "//base/test:test_support",
+    "//google_apis:test_support",
+    "//net:test_support",
+  ]
+}
+
+source_set("drive_unittests") {
+  assert(enable_extensions,
+         "Google Drive API requires being built with extensions")
+  testonly = true
+
+  sources = [
+    "base_requests_server_unittest.cc",
+    "base_requests_unittest.cc",
+    "drive_api_parser_unittest.cc",
+    "drive_api_requests_unittest.cc",
+    "drive_api_url_generator_unittest.cc",
+    "files_list_request_runner_unittest.cc",
+    "request_sender_unittest.cc",
+    "request_util_unittest.cc",
+    "time_util_unittest.cc",
+  ]
+
+  deps = [
+    ":drive",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

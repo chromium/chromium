@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -24,6 +25,7 @@
 #include "components/signin/core/browser/signin_pref_names.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/test/browser_test.h"
@@ -81,8 +83,8 @@ void TestMirrorRequestForProfile(Profile* profile,
       ProfileIOData::FromResourceContext(profile->GetResourceContext());
 
   base::RunLoop run_loop;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(TestMirrorRequestForProfileOnIOThread, profile_io,
                      expected_header_value),
       run_loop.QuitClosure());
@@ -98,7 +100,7 @@ class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
   ~ChromeOsMirrorAccountConsistencyTest() override {}
 
   ChromeOsMirrorAccountConsistencyTest()
-      : LoginManagerTest(false),
+      : LoginManagerTest(false, true /* should_initialize_webui */),
         account_id_(AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId)) {}
 
   const AccountId account_id_;

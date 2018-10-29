@@ -87,8 +87,8 @@ void CaptionBar::SetButtonVisible(CaptionButtonId id, bool visible) {
 void CaptionBar::InitLayout() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kSpacingDip));
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets(0, kSpacingDip), kSpacingDip));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);

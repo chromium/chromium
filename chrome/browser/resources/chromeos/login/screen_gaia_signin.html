@@ -3,15 +3,18 @@
 <div class="step right hidden no-logo" id="gaia-signin" role="group"
     aria-live="polite" hidden>
   <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
-      has-buttons no-header no-footer-padding hidden>
+      has-buttons no-header no-footer-padding no-buttons-padding hidden>
     <div id="signin-frame-container-v2" slot="footer"
         class="flex layout vertical">
     </div>
-    <div id="navigation-buttons"
-        slot="bottom-buttons" class="flex layout horizontal center">
-      <oobe-back-button id="signin-back-button"></oobe-back-button>
-      <div class="flex">
+    <div id="gaia-screen-navigation-buttons"
+        slot="bottom-buttons" class="relative flex layout horizontal center">
+      <div id="buttons-container" class="fit">
+        <oobe-back-button id="signin-back-button"></oobe-back-button>
+        <div class="flex">
+        </div>
       </div>
+      <div id="gaia-screen-buttons-overlay" class="fit" hidden></div>
     </div>
   </oobe-dialog>
   <div id="gaia-step-contents" class="step-contents">
@@ -23,8 +26,7 @@
           hidden>
       </saml-interstitial>
       <offline-ad-login id="offline-ad-auth" class="fit gaia-dialog" hidden
-          i18n-values="ad-welcome-message:adAuthWelcomeMessage;
-                       user-name-label:adAuthLoginUsername">
+          i18n-values="ad-welcome-message:loginWelcomeMessage">
       </offline-ad-login>
     </div>
   </div>

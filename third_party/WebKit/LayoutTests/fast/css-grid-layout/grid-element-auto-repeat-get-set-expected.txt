@@ -2,7 +2,6 @@ Test that setting/getting grid-template-{columns|rows} with repeat(auto-fill|aut
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test auto-repeat syntax.
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[foo bar] 200px [foo bar] 200px [foo bar] 200px [foo bar] 200px"
 PASS element.style.gridTemplateColumns is "repeat(auto-fill, [foo bar] 200px)"
@@ -48,6 +47,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is 
 PASS element.style.gridTemplateColumns is "repeat(auto-fit, [start] 200px 100px [end])"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "100px [foo a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c a] 0px [b] 0px [c bar] 30px"
 PASS element.style.gridTemplateRows is "100px [foo] repeat(auto-fit, [a] 2em [b] 10% [c]) [bar] 3em"
+
 
 Test invalid repeat syntax.
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

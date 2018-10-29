@@ -1,4 +1,4 @@
 {
-  "web_app_manifest_url": "https://events.google.com/io2016/manifest.json",
-  "web_app_start_url": "https://events.google.com/io2016/?utm_source=web_app_manifest"
+  "app_url": "https://events.google.com/io2016/?utm_source=web_app_manifest",
+  "launch_container": "window"
 }

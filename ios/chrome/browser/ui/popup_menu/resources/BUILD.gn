@@ -103,15 +103,6 @@ imageset("popup_menu_settings") {
   ]
 }
 
-imageset("popup_background") {
-  sources = [
-    "popup_background.imageset/Contents.json",
-    "popup_background.imageset/popup_background.png",
-    "popup_background.imageset/popup_background@2x.png",
-    "popup_background.imageset/popup_background@3x.png",
-  ]
-}
-
 imageset("popup_menu_new_incognito_tab") {
   sources = [
     "popup_menu_new_incognito_tab.imageset/Contents.json",

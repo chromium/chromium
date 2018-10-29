@@ -49,7 +49,7 @@ void ImeWindowFrameView::Init() {
 
   title_icon_ = new views::ImageView();
   title_icon_->SetImage(ime_window_view_->GetWindowIcon());
-  title_icon_->SetTooltipText(ime_window_view_->GetWindowTitle());
+  title_icon_->set_tooltip_text(ime_window_view_->GetWindowTitle());
   AddChildView(title_icon_);
 }
 

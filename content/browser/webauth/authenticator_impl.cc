@@ -33,6 +33,7 @@
 #include "content/public/common/service_manager_connection.h"
 #include "crypto/sha2.h"
 #include "device/base/features.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -96,7 +97,7 @@ enum class AttestationPromptResult {
 // Reference https://url.spec.whatwg.org/#valid-domain-string and
 // https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain.
 bool HasValidEffectiveDomain(url::Origin caller_origin) {
-  return !caller_origin.unique() &&
+  return !caller_origin.opaque() &&
          !url::HostIsIPAddress(caller_origin.host()) &&
          content::IsOriginSecure(caller_origin.GetURL()) &&
          // Additionally, the scheme is required to be HTTP(S). Other schemes
@@ -222,6 +223,7 @@ device::CtapMakeCredentialRequest CreateCtapMakeCredentialRequest(
 
   make_credential_param.SetExcludeList(std::move(exclude_list));
   make_credential_param.SetIsIndividualAttestation(is_individual_attestation);
+  make_credential_param.SetHmacSecret(options->hmac_create_secret);
   return make_credential_param;
 }
 
@@ -356,7 +358,8 @@ CreateMakeCredentialResponse(
   common_info->id = response_data.GetId();
   response->info = std::move(common_info);
 
-  // The transport used for the registration is always first in the list.
+  // The transport list must not contain duplicates but the order doesn't matter
+  // because Blink will sort the resulting strings before returning them.
   std::vector<device::FidoTransportProtocol> transports = {
       response_data.transport_used()};
   // If the attestation certificate specifies that the token supports any other
@@ -372,6 +375,20 @@ CreateMakeCredentialResponse(
   for (auto transport : transports) {
     response->transports.push_back(
         mojo::ConvertTo<blink::mojom::AuthenticatorTransport>(transport));
+  }
+
+  const base::Optional<cbor::Value>& maybe_extensions =
+      response_data.attestation_object().authenticator_data().extensions();
+  if (maybe_extensions) {
+    DCHECK(maybe_extensions->is_map());
+    const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
+    const auto hmac_secret_it =
+        extensions.find(cbor::Value(device::kExtensionHmacSecret));
+    if (hmac_secret_it != extensions.end() &&
+        hmac_secret_it->second.is_bool()) {
+      response->echo_hmac_create_secret = true;
+      response->hmac_create_secret = hmac_secret_it->second.GetBool();
+    }
   }
 
   if (!preserve_attestation) {
@@ -420,6 +437,12 @@ base::flat_set<device::FidoTransportProtocol> GetTransportsEnabledByFlags() {
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   transports.insert(device::FidoTransportProtocol::kInternal);
+
+  // TODO(crbug.com/885165): We should not directly access the BLE stack here.
+  // It is used by //device/fido, so its availability should be checked there.
+  if (!device::BluetoothAdapterFactory::Get().IsLowEnergySupported())
+    return transports;
+
   if (base::FeatureList::IsEnabled(features::kWebAuthBle)) {
     transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
   }
@@ -560,6 +583,16 @@ void AuthenticatorImpl::MakeCredential(
     return;
   }
 
+  if (options->authenticator_selection &&
+      options->authenticator_selection->require_resident_key) {
+    // Disallow the creation of resident credentials.
+    InvokeCallbackAndCleanup(
+        std::move(callback),
+        blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED,
+        nullptr, Focus::kDontCheck);
+    return;
+  }
+
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);
 
@@ -605,7 +638,10 @@ void AuthenticatorImpl::MakeCredential(
           request_->GetWeakPtr()) /* request_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
-          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
+      base::BindRepeating(
+          &device::FidoRequestHandlerBase::InitiatePairingWithDevice,
+          request_->GetWeakPtr()) /* ble_pairing_callback*/);
   request_->set_observer(request_delegate_.get());
 
   request_->SetPlatformAuthenticatorOrMarkUnavailable(
@@ -647,6 +683,15 @@ void AuthenticatorImpl::GetAssertion(
     InvokeCallbackAndCleanup(std::move(callback),
                              blink::mojom::AuthenticatorStatus::INVALID_DOMAIN,
                              nullptr);
+    return;
+  }
+
+  if (options->allow_credentials.empty()) {
+    // Chrome currently does not support any resident keys.
+    InvokeCallbackAndCleanup(
+        std::move(callback),
+        blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED,
+        nullptr);
     return;
   }
 
@@ -696,7 +741,10 @@ void AuthenticatorImpl::GetAssertion(
           request_->GetWeakPtr()) /* request_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
-          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
+      base::BindRepeating(
+          &device::FidoRequestHandlerBase::InitiatePairingWithDevice,
+          request_->GetWeakPtr()) /* ble_pairing_callback*/);
   request_->set_observer(request_delegate_.get());
 
   request_->SetPlatformAuthenticatorOrMarkUnavailable(

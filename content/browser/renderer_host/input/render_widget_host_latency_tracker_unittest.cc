@@ -137,7 +137,6 @@ class RenderWidgetHostLatencyTrackerTest
     RenderViewHostImplTestHarness::SetUp();
     old_browser_client_ = SetBrowserClientForTesting(&test_browser_client_);
     tracker_ = std::make_unique<RenderWidgetHostLatencyTracker>(contents());
-    viz_tracker_.DisableMetricSamplingForTesting();
   }
 
   void TearDown() override {

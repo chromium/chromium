@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 
+#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -58,7 +58,7 @@ bool CheckForOptimizedImagePolicy(const LocalFrame& frame,
   // Invert the image if the document does not have the 'legacy-image-formats'
   // feature enabled, and the image is not one of the allowed formats.
   if (RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled() &&
-      !frame.IsFeatureEnabled(
+      !frame.DeprecatedIsFeatureEnabled(
           mojom::FeaturePolicyFeature::kLegacyImageFormats)) {
     if (!new_image->IsAcceptableContentType()) {
       return true;
@@ -67,7 +67,8 @@ bool CheckForOptimizedImagePolicy(const LocalFrame& frame,
   // Invert the image if the document does not have the image-compression'
   // feature enabled and the image is not sufficiently-well-compressed.
   if (RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled() &&
-      !frame.IsFeatureEnabled(mojom::FeaturePolicyFeature::kImageCompression)) {
+      !frame.DeprecatedIsFeatureEnabled(
+          mojom::FeaturePolicyFeature::kImageCompression)) {
     if (!new_image->IsAcceptableCompressionRatio())
       return true;
   }
@@ -75,25 +76,30 @@ bool CheckForOptimizedImagePolicy(const LocalFrame& frame,
 }
 
 bool CheckForMaxDownscalingImagePolicy(const LocalFrame& frame,
-                                       HTMLImageElement* element,
+                                       ImageResourceContent* new_image,
                                        LayoutImage* layout_image) {
+  DCHECK(new_image);
   if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled() ||
-      frame.IsFeatureEnabled(mojom::FeaturePolicyFeature::kMaxDownscalingImage))
+      frame.DeprecatedIsFeatureEnabled(
+          mojom::FeaturePolicyFeature::kMaxDownscalingImage))
     return false;
-  // Invert the image if the image's size is more than 2 times bigger than the
-  // size it is being laid-out by.
-  LayoutUnit layout_width = layout_image->ContentWidth();
-  LayoutUnit layout_height = layout_image->ContentHeight();
-  auto image_width = element->naturalWidth();
-  auto image_height = element->naturalHeight();
-  if (layout_width > 0 && layout_height > 0 && image_width > 0 &&
-      image_height > 0) {
-    double device_pixel_ratio = frame.DevicePixelRatio();
-    if (LayoutUnit(image_width / (kmax_downscaling_ratio *
-                                  device_pixel_ratio)) > layout_width ||
-        LayoutUnit(image_height / (kmax_downscaling_ratio *
-                                   device_pixel_ratio)) > layout_height)
-      return true;
+  if (auto* image = new_image->GetImage()) {
+    // Invert the image if the image's size is more than 2 times bigger than the
+    // size it is being laid-out by.
+    LayoutUnit layout_width = layout_image->ContentWidth();
+    LayoutUnit layout_height = layout_image->ContentHeight();
+    int image_width = image->width();
+    int image_height = image->height();
+
+    if (layout_width > 0 && layout_height > 0 && image_width > 0 &&
+        image_height > 0) {
+      double device_pixel_ratio = frame.DevicePixelRatio();
+      if (LayoutUnit(image_width / (kmax_downscaling_ratio *
+                                    device_pixel_ratio)) > layout_width ||
+          LayoutUnit(image_height / (kmax_downscaling_ratio *
+                                     device_pixel_ratio)) > layout_height)
+        return true;
+    }
   }
   return false;
 }
@@ -147,8 +153,7 @@ void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {
 }
 
 void LayoutImage::ImageChanged(WrappedImagePtr new_image,
-                               CanDeferInvalidation defer,
-                               const IntRect* rect) {
+                               CanDeferInvalidation defer) {
   DCHECK(View());
   DCHECK(View()->GetFrameView());
   if (DocumentBeingDestroyed())
@@ -156,7 +161,7 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
 
   if (HasBoxDecorationBackground() || HasMask() || HasShapeOutside() ||
       HasReflection())
-    LayoutReplaced::ImageChanged(new_image, defer, rect);
+    LayoutReplaced::ImageChanged(new_image, defer);
 
   if (!image_resource_)
     return;
@@ -268,16 +273,13 @@ void LayoutImage::ImageNotifyFinished(ImageResourceContent* new_image) {
 
   // Check for optimized image policies.
   if (View() && View()->GetFrameView()) {
-    bool old_flag = ShouldInvertColor();
     const LocalFrame& frame = View()->GetFrameView()->GetFrame();
     is_legacy_format_or_compressed_image_ =
         CheckForOptimizedImagePolicy(frame, this, new_image);
     if (auto* image_element = ToHTMLImageElementOrNull(GetNode())) {
       is_downscaled_image_ =
-          CheckForMaxDownscalingImagePolicy(frame, image_element, this);
+          CheckForMaxDownscalingImagePolicy(frame, new_image, this);
     }
-    if (old_flag != ShouldInvertColor())
-      UpdateShouldInvertColor();
   }
 
   if (new_image == image_resource_->CachedImage()) {
@@ -478,21 +480,8 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
   return ToSVGImageOrNull(cached_image->GetImage());
 }
 
-bool LayoutImage::ShouldInvertColor() const {
+bool LayoutImage::IsImagePolicyViolated() const {
   return is_downscaled_image_ || is_legacy_format_or_compressed_image_;
-}
-
-void LayoutImage::UpdateShouldInvertColor() {
-  SetNeedsPaintPropertyUpdate();
-  // If composited image, update compositing layer.
-  if (Layer())
-    Layer()->SetNeedsCompositingInputsUpdate();
-}
-
-void LayoutImage::UpdateShouldInvertColorForTest(bool value) {
-  is_downscaled_image_ = value;
-  is_legacy_format_or_compressed_image_ = value;
-  UpdateShouldInvertColor();
 }
 
 void LayoutImage::UpdateAfterLayout() {
@@ -502,17 +491,16 @@ void LayoutImage::UpdateAfterLayout() {
     if (View() && View()->GetFrameView()) {
       const LocalFrame& frame = View()->GetFrameView()->GetFrame();
 
-      // Check for optimized image policies.
-      bool old_flag = ShouldInvertColor();
-      is_downscaled_image_ =
-          CheckForMaxDownscalingImagePolicy(frame, image_element, this);
-      if (old_flag != ShouldInvertColor())
-        UpdateShouldInvertColor();
+      if (image_resource_ && image_resource_->CachedImage()) {
+        // Check for optimized image policies.
+        is_downscaled_image_ = CheckForMaxDownscalingImagePolicy(
+            frame, image_resource_->CachedImage(), this);
+      }
     }
 
     // Report violation of unsized-media policy.
     if (image_element->IsDefaultIntrinsicSize())
-      MediaElementParserHelpers::ReportUnsizedMediaViolation(this);
+      media_element_parser_helpers::ReportUnsizedMediaViolation(this);
   }
 }
 

@@ -15,12 +15,11 @@ class PasswordDialogControllerMock : public PasswordDialogController {
   ~PasswordDialogControllerMock() override;
 
   MOCK_CONST_METHOD0(GetLocalForms, const FormsVector&());
-  MOCK_CONST_METHOD0(GetAccoutChooserTitle,
-                     std::pair<base::string16, gfx::Range>());
+  MOCK_CONST_METHOD0(GetAccoutChooserTitle, base::string16());
   MOCK_CONST_METHOD0(ShouldShowSignInButton, bool());
   MOCK_CONST_METHOD0(GetAutoSigninPromoTitle, base::string16());
-  MOCK_CONST_METHOD0(GetAutoSigninText,
-                     std::pair<base::string16, gfx::Range>());
+  MOCK_CONST_METHOD0(GetAutoSigninText, base::string16());
+  MOCK_CONST_METHOD0(ShouldShowFooter, bool());
   MOCK_METHOD0(OnSmartLockLinkClicked, void());
   MOCK_METHOD2(OnChooseCredentials, void(
       const autofill::PasswordForm& password_form,

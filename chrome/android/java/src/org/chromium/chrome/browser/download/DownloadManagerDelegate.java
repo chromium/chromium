@@ -14,10 +14,10 @@ import android.os.Environment;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.UrlConstants;
 
 import java.io.File;

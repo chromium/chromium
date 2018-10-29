@@ -4,7 +4,6 @@
 
 #include "ash/system/cast/cast_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -67,10 +66,6 @@ CastNotificationController::~CastNotificationController() {
 
 void CastNotificationController::OnDevicesUpdated(
     std::vector<mojom::SinkAndRoutePtr> devices) {
-  // The notification is only shown when UnifiedSystemTray is enabled.
-  if (!features::IsSystemTrayUnifiedEnabled())
-    return;
-
   if (ShouldShowNotification())
     ShowNotification(std::move(devices));
   else

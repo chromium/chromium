@@ -38,4 +38,8 @@ bool LocalSurfaceId::IsSameOrNewerThan(const LocalSurfaceId& other) const {
   return IsNewerThan(other) || *this == other;
 }
 
+LocalSurfaceId LocalSurfaceId::ToSmallestId() const {
+  return LocalSurfaceId(1, 1, embed_token_);
+}
+
 }  // namespace viz

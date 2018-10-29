@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_web_ui.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -50,7 +51,7 @@ class ExtensionWebUITest : public testing::Test {
     extension_service_ = system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
-        profile_.get(), &BuildOverrideRegistrar);
+        profile_.get(), base::BindRepeating(&BuildOverrideRegistrar));
     ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_.get());
   }
 
@@ -80,7 +81,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
       .Set(manifest_keys::kManifestVersion, 2)
       .Set(std::string(manifest_keys::kChromeURLOverrides),
            DictionaryBuilder().Set("bookmarks", kOverrideResource).Build());
-  scoped_refptr<Extension> ext_unpacked(
+  scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
           .SetManifest(manifest.Build())
           .SetLocation(Manifest::UNPACKED)
@@ -116,7 +117,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
       .Set(manifest_keys::kManifestVersion, 2)
       .Set(std::string(manifest_keys::kChromeURLOverrides),
            DictionaryBuilder().Set("bookmarks", kOverrideResource2).Build());
-  scoped_refptr<Extension> ext_component(
+  scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
           .SetManifest(manifest2.Build())
           .SetLocation(Manifest::COMPONENT)

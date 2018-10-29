@@ -6,7 +6,7 @@
 #include "third_party/blink/public/platform/linux/out_of_process_font.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/fonts/paint_typeface.h"
+#include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
 
 namespace blink {
 
@@ -30,12 +30,9 @@ sk_sp<SkTypeface> FontUniqueNameLookupLinux::MatchUniqueName(
   if (!uniquely_matched_font.filename.size())
     return nullptr;
 
-  cc::PaintTypeface paint_typeface =
-      cc::PaintTypeface::FromFontConfigInterfaceIdAndTtcIndex(
-          uniquely_matched_font.fontconfig_interface_id,
-          uniquely_matched_font.ttc_index);
-
-  return paint_typeface.ToSkTypeface();
+  return SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
+      uniquely_matched_font.fontconfig_interface_id,
+      uniquely_matched_font.ttc_index);
 }
 
 }  // namespace blink

@@ -26,7 +26,4 @@ const char kAccountConsistencyMirror[] = "mirror";
 const char kAccountConsistencyDice[] = "dice";
 #endif
 
-// Enables multiple account versions of chrome.identity APIs.
-const char kExtensionsMultiAccount[] = "extensions-multi-account";
-
 }  // namespace switches

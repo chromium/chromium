@@ -35,22 +35,6 @@ struct PasswordHashData {
   bool is_gaia_password = true;
 };
 
-// SyncPasswordData is being deprecated. Please use PasswordHashData instead.
-struct SyncPasswordData {
-  SyncPasswordData() = default;
-  SyncPasswordData(const SyncPasswordData& other) = default;
-  SyncPasswordData(const base::string16& password, bool force_update);
-  // Returns true iff |*this| represents |password|.
-  bool MatchesPassword(const base::string16& password) const;
-
-  size_t length = 0;
-  std::string salt;
-  uint64_t hash = 0;
-  // Signal that we need to update password hash, salt, and length in profile
-  // prefs.
-  bool force_update = false;
-};
-
 // Calculates 37 bits hash for a password. The calculation is based on a slow
 // hash function. The running time is ~10^{-4} seconds on Desktop.
 uint64_t CalculatePasswordHash(const base::StringPiece16& text,

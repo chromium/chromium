@@ -14,8 +14,10 @@ cr.define('sync.confirmation', function() {
   function getConsentConfirmation(path) {
     var consentConfirmation;
     for (var element of path) {
-      if (element.hasAttribute('consent-confirmation'))
+      if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
+          element.hasAttribute('consent-confirmation')) {
         return element.innerHTML.trim();
+      }
     }
     assertNotReached('No consent confirmation element found.');
     return '';

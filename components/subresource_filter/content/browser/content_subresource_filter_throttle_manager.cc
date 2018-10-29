@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "components/subresource_filter/content/browser/activation_state_computing_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/console_message_level.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace subresource_filter {
 
@@ -122,8 +123,10 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
       transferred_ad_frame || base::ContainsKey(ad_frames_, frame_host);
   DCHECK(!is_ad_subframe || !navigation_handle->IsInMainFrame());
 
-  frame_host->Send(new SubresourceFilterMsg_ActivateForNextCommittedLoad(
-      frame_host->GetRoutingID(), filter->activation_state(), is_ad_subframe));
+  mojom::SubresourceFilterAgentAssociatedPtr agent;
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+  agent->ActivateForNextCommittedLoad(filter->activation_state().Clone(),
+                                      is_ad_subframe);
 }
 
 void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
@@ -194,18 +197,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishLoad(
   if (!statistics_ || render_frame_host->GetParent())
     return;
   statistics_->OnDidFinishLoad();
-}
-
-bool ContentSubresourceFilterThrottleManager::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ContentSubresourceFilterThrottleManager, message)
-    IPC_MESSAGE_HANDLER(SubresourceFilterHostMsg_DocumentLoadStatistics,
-                        OnDocumentLoadStatistics)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 // Sets the desired page-level |activation_state| for the currently ongoing
@@ -382,12 +373,6 @@ void ContentSubresourceFilterThrottleManager::
   }
 }
 
-void ContentSubresourceFilterThrottleManager::OnDocumentLoadStatistics(
-    const DocumentLoadStatistics& statistics) {
-  if (statistics_)
-    statistics_->OnDocumentLoadStatistics(statistics);
-}
-
 void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
@@ -403,6 +388,12 @@ void ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource() {
 
 void ContentSubresourceFilterThrottleManager::FrameIsAdSubframe() {
   OnFrameIsAdSubframe(binding_.GetCurrentTargetFrame());
+}
+
+void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
+    mojom::DocumentLoadStatisticsPtr statistics) {
+  if (statistics_)
+    statistics_->OnDocumentLoadStatistics(*statistics);
 }
 
 void ContentSubresourceFilterThrottleManager::MaybeActivateSubframeSpecialUrls(

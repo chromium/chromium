@@ -13,31 +13,31 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/network_quality_observer_factory.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "net/nqe/effective_connection_type.h"
-#include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality.h"
-#include "net/nqe/rtt_throughput_estimates_observer.h"
-
-namespace net {
-class NetworkQualityEstimator;
-}
+#include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace content {
 
 // Listens for changes to the network quality and manages sending updates to
 // each RenderProcess via mojo.
 class CONTENT_EXPORT NetworkQualityObserverImpl
-    : public net::EffectiveConnectionTypeObserver,
-      public net::RTTAndThroughputEstimatesObserver {
+    : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
+      public network::NetworkQualityTracker::RTTAndThroughputEstimatesObserver,
+      public content::NotificationObserver {
  public:
   explicit NetworkQualityObserverImpl(
-      net::NetworkQualityEstimator* network_quality_estimator);
+      network::NetworkQualityTracker* network_quality_tracker);
 
   ~NetworkQualityObserverImpl() override;
 
  private:
-  class UiThreadObserver;
+  // content::NotificationObserver:
+  void Observe(int type,
+               const NotificationSource& source,
+               const NotificationDetails& details) override;
 
   // net::EffectiveConnectionTypeObserver implementation:
   void OnEffectiveConnectionTypeChanged(
@@ -49,19 +49,15 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
       base::TimeDelta transport_rtt,
       int32_t downstream_throughput_kbps) override;
 
-  // |ui_thread_observer_| is owned by |this|, and interacts with
-  // the render processes. It is created on the IO thread but afterwards, should
-  // only be accessed on the UI thread. |ui_thread_observer_| is guaranteed to
-  // be non-null during the lifetime of |this|.
-  std::unique_ptr<UiThreadObserver> ui_thread_observer_;
-
-  // |network_quality_estimator_| is guaranteed to be non-null during the
+  // |network_quality_tracker_| is guaranteed to be non-null during the
   // lifetime of |this|.
-  net::NetworkQualityEstimator* network_quality_estimator_;
+  network::NetworkQualityTracker* network_quality_tracker_;
 
   //  The network quality when the |ui_thread_observer_| was last notified.
   net::EffectiveConnectionType last_notified_type_;
   net::nqe::internal::NetworkQuality last_notified_network_quality_;
+
+  content::NotificationRegistrar registrar_;
 
   base::ThreadChecker thread_checker_;
 

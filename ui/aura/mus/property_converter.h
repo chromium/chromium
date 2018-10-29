@@ -46,6 +46,10 @@ class AURA_EXPORT PropertyConverter {
   // accept any value.
   static base::RepeatingCallback<bool(int64_t)> CreateAcceptAnyValueCallback();
 
+  // Returns the key for the window property registered against the specified
+  // transport name.
+  const void* GetPropertyKeyFromTransportName(const std::string& name);
+
   // Returns true if RegisterProperty() has been called with the specified
   // transport name.
   bool IsTransportNameRegistered(const std::string& name) const;

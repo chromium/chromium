@@ -26,7 +26,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() {
     return view()->parent()->GetNativeViewAccessible();
 
   if (view()->GetWidget())
-    return view()->GetWidget()->GetNativeView();
+    return view()->GetWidget()->GetNativeView().GetNativeNSView();
 
   return nullptr;
 }

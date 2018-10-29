@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/media/stream/media_stream_constraints_util.h"
@@ -27,6 +29,33 @@
 #include "third_party/webrtc/modules/audio_processing/typing_detection.h"
 
 namespace content {
+namespace {
+
+base::Optional<double> GetGainControlCompressionGain(
+    const base::Value* config) {
+  if (!config)
+    return base::nullopt;
+  const base::Value* found =
+      config->FindKey("gain_control_compression_gain_db");
+  if (!found)
+    return base::nullopt;
+  double gain = found->GetDouble();
+  DCHECK_GE(gain, 0.f);
+  return gain;
+}
+
+base::Optional<double> GetPreAmplifierGainFactor(const base::Value* config) {
+  if (!config)
+    return base::nullopt;
+  const base::Value* found = config->FindKey("pre_amplifier_fixed_gain_factor");
+  if (!found)
+    return base::nullopt;
+  double factor = found->GetDouble();
+  DCHECK_GE(factor, 1.f);
+  return factor;
+}
+
+}  // namespace
 
 AudioProcessingProperties::AudioProcessingProperties() = default;
 AudioProcessingProperties::AudioProcessingProperties(
@@ -91,25 +120,11 @@ AudioProcessingProperties::ToAudioProcessingSettings() const {
 }
 
 void EnableEchoCancellation(AudioProcessing* audio_processing) {
-  // TODO(bugs.webrtc.org/9535): Remove double-booking AEC toggle when the
-  // config applies (from 2018-08-16).
   webrtc::AudioProcessing::Config apm_config = audio_processing->GetConfig();
   apm_config.echo_canceller.enabled = true;
 #if defined(OS_ANDROID)
-  // Mobile devices are using AECM.
-  CHECK_EQ(0, audio_processing->echo_control_mobile()->set_routing_mode(
-                  webrtc::EchoControlMobile::kSpeakerphone));
-  CHECK_EQ(0, audio_processing->echo_control_mobile()->Enable(true));
   apm_config.echo_canceller.mobile_mode = true;
 #else
-  int err = audio_processing->echo_cancellation()->set_suppression_level(
-      webrtc::EchoCancellation::kHighSuppression);
-
-  // Enable the metrics for AEC.
-  err |= audio_processing->echo_cancellation()->enable_metrics(true);
-  err |= audio_processing->echo_cancellation()->enable_delay_logging(true);
-  err |= audio_processing->echo_cancellation()->Enable(true);
-  CHECK_EQ(err, 0);
   apm_config.echo_canceller.mobile_mode = false;
 #endif
   audio_processing->ApplyConfig(apm_config);
@@ -157,15 +172,49 @@ void StopEchoCancellationDump(AudioProcessing* audio_processing) {
   audio_processing->DetachAecDump();
 }
 
-void EnableAutomaticGainControl(AudioProcessing* audio_processing) {
+void GetExtraGainConfig(
+    const base::Optional<std::string>& audio_processing_platform_config_json,
+    base::Optional<double>* pre_amplifier_fixed_gain_factor,
+    base::Optional<double>* gain_control_compression_gain_db) {
+  if (!audio_processing_platform_config_json)
+    return;
+  std::unique_ptr<base::Value> config;
+  config = base::JSONReader::Read(*audio_processing_platform_config_json);
+  if (!config) {
+    LOG(ERROR) << "Failed to parse platform config JSON.";
+    return;
+  }
+  *pre_amplifier_fixed_gain_factor = GetPreAmplifierGainFactor(config.get());
+  *gain_control_compression_gain_db =
+      GetGainControlCompressionGain(config.get());
+}
+
+void EnableAutomaticGainControl(AudioProcessing* audio_processing,
+                                base::Optional<double> compression_gain_db) {
 #if defined(OS_ANDROID)
   const webrtc::GainControl::Mode mode = webrtc::GainControl::kFixedDigital;
 #else
   const webrtc::GainControl::Mode mode = webrtc::GainControl::kAdaptiveAnalog;
 #endif
-  int err = audio_processing->gain_control()->set_mode(mode);
+  int err = 0;
+  if (!!compression_gain_db) {
+    err |= audio_processing->gain_control()->set_mode(
+        webrtc::GainControl::kFixedDigital);
+    err |= audio_processing->gain_control()->set_compression_gain_db(
+        compression_gain_db.value());
+  } else {
+    err |= audio_processing->gain_control()->set_mode(mode);
+  }
   err |= audio_processing->gain_control()->Enable(true);
   CHECK_EQ(err, 0);
+}
+
+void ConfigPreAmplifier(webrtc::AudioProcessing::Config* apm_config,
+                        base::Optional<double> fixed_gain_factor) {
+  if (!!fixed_gain_factor) {
+    apm_config->pre_amplifier.enabled = true;
+    apm_config->pre_amplifier.fixed_gain_factor = fixed_gain_factor.value();
+  }
 }
 
 void GetAudioProcessingStats(

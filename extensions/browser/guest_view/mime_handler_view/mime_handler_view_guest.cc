@@ -102,6 +102,13 @@ MimeHandlerViewGuest::MimeHandlerViewGuest(WebContents* owner_web_contents)
       embedder_widget_routing_id_(MSG_ROUTING_NONE) {}
 
 MimeHandlerViewGuest::~MimeHandlerViewGuest() {
+  // Before attaching is complete, the instance ID is not valid.
+  if (element_instance_id() != guest_view::kInstanceIDNone) {
+    if (auto* embedder_frame = GetEmbedderFrame()) {
+      embedder_frame->Send(new ExtensionsGuestViewMsg_DestroyFrameContainer(
+          element_instance_id()));
+    }
+  }
 }
 
 bool MimeHandlerViewGuest::CanUseCrossProcessFrames() {

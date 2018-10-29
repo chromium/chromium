@@ -65,9 +65,9 @@ void ViewPainterTest::RunFixedBackgroundTest(
       layer_for_background->GetPaintController().GetDisplayItemList();
   const DisplayItem& background = display_items[0];
   EXPECT_EQ(background.GetType(), kDocumentBackgroundType);
-  DisplayItemClient* expected_client;
+  const DisplayItemClient* expected_client;
   if (!prefer_compositing_to_lcd_text)
-    expected_client = GetLayoutView().Layer()->GraphicsLayerBacking();
+    expected_client = &ViewScrollingBackgroundClient();
   else
     expected_client = &GetLayoutView();
   EXPECT_EQ(&background.Client(), expected_client);
@@ -101,19 +101,14 @@ TEST_P(ViewPainterTest, DocumentBackgroundWithScroll) {
 
   SetBodyInnerHTML("<div style='height: 5000px'></div>");
 
-  const DisplayItemClient* background_item_client;
-  const DisplayItemClient* background_chunk_client;
-  background_item_client = GetLayoutView().Layer()->GraphicsLayerBacking();
-  background_chunk_client = background_item_client;
-
-  EXPECT_DISPLAY_LIST(
-      RootPaintController().GetDisplayItemList(), 1,
-      TestDisplayItem(*background_item_client, kDocumentBackgroundType));
+  EXPECT_DISPLAY_LIST(RootPaintController().GetDisplayItemList(), 1,
+                      TestDisplayItem(ViewScrollingBackgroundClient(),
+                                      kDocumentBackgroundType));
 
   const auto& chunks = RootPaintController().GetPaintArtifact().PaintChunks();
   EXPECT_EQ(1u, chunks.size());
   const auto& chunk = chunks[0];
-  EXPECT_EQ(background_chunk_client, &chunk.id.client);
+  EXPECT_EQ(&ViewScrollingBackgroundClient(), &chunk.id.client);
 
   const auto& tree_state = chunk.properties;
   EXPECT_EQ(&EffectPaintPropertyNode::Root(), tree_state.Effect());

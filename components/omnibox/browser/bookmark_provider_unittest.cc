@@ -90,8 +90,7 @@ typedef std::vector<TestBookmarkPosition> TestBookmarkPositions;
 std::string TestBookmarkPositionsAsString(
     const TestBookmarkPositions& positions) {
   std::string position_string("{");
-  for (TestBookmarkPositions::const_iterator i = positions.begin();
-       i != positions.end(); ++i) {
+  for (auto i = positions.begin(); i != positions.end(); ++i) {
     if (i != positions.begin())
       position_string += ", ";
     position_string += "{" + base::NumberToString(i->begin) + ", " +
@@ -105,7 +104,7 @@ std::string TestBookmarkPositionsAsString(
 // diagnostic output.
 base::string16 MatchesAsString16(const ACMatches& matches) {
   base::string16 matches_string;
-  for (ACMatches::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+  for (auto i = matches.begin(); i != matches.end(); ++i) {
     matches_string.append(base::ASCIIToUTF16("    '"));
     matches_string.append(i->description);
     matches_string.append(base::ASCIIToUTF16("'\n"));
@@ -126,8 +125,7 @@ TestBookmarkPositions PositionsFromAutocompleteMatch(
   TestBookmarkPositions positions;
   bool started = false;
   size_t start = 0;
-  for (AutocompleteMatch::ACMatchClassifications::const_iterator
-       i = match.description_class.begin();
+  for (auto i = match.description_class.begin();
        i != match.description_class.end(); ++i) {
     if (i->style & AutocompleteMatch::ACMatchClassification::MATCH) {
       // We have found the start of a match.

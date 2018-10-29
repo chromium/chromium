@@ -34,7 +34,8 @@ class DiceSigninButtonView : public views::View {
   DiceSigninButtonView(const AccountInfo& account_info,
                        const gfx::Image& account_icon,
                        views::ButtonListener* button_listener,
-                       bool show_drop_down_arrow = false);
+                       bool show_drop_down_arrow = false,
+                       bool use_account_name_as_title = false);
   ~DiceSigninButtonView() override;
 
   views::LabelButton* signin_button() const { return signin_button_; }
@@ -42,9 +43,6 @@ class DiceSigninButtonView : public views::View {
   base::Optional<AccountInfo> account() const { return account_; }
 
  private:
-  // views::View override:
-  void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
 
   views::LabelButton* signin_button_ = nullptr;
   HoverButton* arrow_ = nullptr;

@@ -25,7 +25,7 @@ TEST(ClientServiceMap, BasicMapping) {
   EXPECT_EQ(kServiceId, service_id);
 
   // Check null is handled for GetServiceID
-  EXPECT_TRUE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_TRUE(map.HasClientID(kClientId));
 
   // Check service -> client ID lookup
   MapDataType client_id = 0;
@@ -90,19 +90,19 @@ TEST(ClientServiceMap, RemoveMapping) {
   ClientServiceMapType map;
 
   map.SetIDMapping(kClientId, kServiceId);
-  EXPECT_TRUE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_TRUE(map.HasClientID(kClientId));
   map.RemoveClientID(kClientId);
-  EXPECT_FALSE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_FALSE(map.HasClientID(kClientId));
 
   map.SetIDMapping(kClientId, kServiceId);
-  EXPECT_TRUE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_TRUE(map.HasClientID(kClientId));
   map.Clear();
-  EXPECT_FALSE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_FALSE(map.HasClientID(kClientId));
 
   map.SetIDMapping(kClientId, kLargeServiceId);
-  EXPECT_TRUE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_TRUE(map.HasClientID(kClientId));
   map.RemoveClientID(kClientId);
-  EXPECT_FALSE(map.GetServiceID(kClientId, nullptr));
+  EXPECT_FALSE(map.HasClientID(kClientId));
 }
 
 TEST(ClientServiceMap, ManyIDs) {

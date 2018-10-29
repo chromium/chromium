@@ -35,6 +35,28 @@ using bookmarks::ManagedBookmarkService;
 using testing::Mock;
 using testing::_;
 
+TEST(ManagedBookmarkServiceNoPolicyTest, EmptyManagedNode) {
+  // Verifies that the managed node is empty and invisible when the policy is
+  // not set.
+  content::TestBrowserThreadBundle thread_bundle;
+  TestingProfile profile;
+
+  // Make sure the policy isn't set.
+  ASSERT_EQ(nullptr, profile.GetTestingPrefService()->GetManagedPref(
+                         bookmarks::prefs::kManagedBookmarks));
+
+  profile.CreateBookmarkModel(false);
+  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(&profile);
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  ManagedBookmarkService* managed =
+      ManagedBookmarkServiceFactory::GetForProfile(&profile);
+  DCHECK(managed);
+
+  ASSERT_TRUE(managed->managed_node());
+  EXPECT_TRUE(managed->managed_node()->empty());
+  EXPECT_FALSE(managed->managed_node()->IsVisible());
+}
+
 class ManagedBookmarkServiceTest : public testing::Test {
  public:
   ManagedBookmarkServiceTest() : managed_(NULL), model_(NULL) {}
@@ -47,7 +69,14 @@ class ManagedBookmarkServiceTest : public testing::Test {
     // TODO(crbug.com/697817): Convert SetManagedPrefs to take a unique_ptr.
     prefs_->SetManagedPref(bookmarks::prefs::kManagedBookmarks,
                            CreateTestTree());
-    ResetModel();
+
+    // Create and load the bookmark model.
+    profile_.CreateBookmarkModel(false);
+    model_ = BookmarkModelFactory::GetForBrowserContext(&profile_);
+    bookmarks::test::WaitForBookmarkModelToLoad(model_);
+    model_->AddObserver(&observer_);
+    managed_ = ManagedBookmarkServiceFactory::GetForProfile(&profile_);
+    DCHECK(managed_);
 
     // The managed node always exists.
     ASSERT_TRUE(managed_->managed_node());
@@ -56,15 +85,6 @@ class ManagedBookmarkServiceTest : public testing::Test {
   }
 
   void TearDown() override { model_->RemoveObserver(&observer_); }
-
-  void ResetModel() {
-    profile_.CreateBookmarkModel(false);
-    model_ = BookmarkModelFactory::GetForBrowserContext(&profile_);
-    bookmarks::test::WaitForBookmarkModelToLoad(model_);
-    model_->AddObserver(&observer_);
-    managed_ = ManagedBookmarkServiceFactory::GetForProfile(&profile_);
-    DCHECK(managed_);
-  }
 
   static std::unique_ptr<base::DictionaryValue> CreateBookmark(
       const std::string& title,
@@ -144,18 +164,6 @@ class ManagedBookmarkServiceTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceTest);
 };
-
-TEST_F(ManagedBookmarkServiceTest, EmptyManagedNode) {
-  // Verifies that the managed node is empty and invisible when the policy is
-  // not set.
-  model_->RemoveObserver(&observer_);
-  prefs_->RemoveManagedPref(bookmarks::prefs::kManagedBookmarks);
-  ResetModel();
-
-  ASSERT_TRUE(managed_->managed_node());
-  EXPECT_TRUE(managed_->managed_node()->empty());
-  EXPECT_FALSE(managed_->managed_node()->IsVisible());
-}
 
 TEST_F(ManagedBookmarkServiceTest, LoadInitial) {
   // Verifies that the initial load picks up the initial policy too.

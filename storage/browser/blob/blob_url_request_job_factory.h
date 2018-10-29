@@ -44,9 +44,11 @@ class STORAGE_EXPORT BlobProtocolHandler
   explicit BlobProtocolHandler(BlobStorageContext* context);
   ~BlobProtocolHandler() override;
 
+  // net::URLRequestJobFactory::ProtocolHandler implementation:
   net::URLRequestJob* MaybeCreateJob(
       net::URLRequest* request,
       net::NetworkDelegate* network_delegate) const override;
+  bool IsSafeRedirectTarget(const GURL& location) const override;
 
  private:
   BlobDataHandle* LookupBlobHandle(net::URLRequest* request) const;

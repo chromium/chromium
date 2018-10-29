@@ -37,19 +37,18 @@ PickRequestTask::PickRequestTask(
     RequestPickedCallback picked_callback,
     RequestNotPickedCallback not_picked_callback,
     RequestCountCallback request_count_callback,
-    DeviceConditions& device_conditions,
+    DeviceConditions device_conditions,
     const std::set<int64_t>& disabled_requests,
-    base::circular_deque<int64_t>& prioritized_requests)
+    base::circular_deque<int64_t>* prioritized_requests)
     : store_(store),
       policy_(policy),
       picked_callback_(std::move(picked_callback)),
       not_picked_callback_(std::move(not_picked_callback)),
       request_count_callback_(std::move(request_count_callback)),
+      device_conditions_(std::move(device_conditions)),
       disabled_requests_(disabled_requests),
       prioritized_requests_(prioritized_requests),
-      weak_ptr_factory_(this) {
-  device_conditions_.reset(new DeviceConditions(device_conditions));
-}
+      weak_ptr_factory_(this) {}
 
 PickRequestTask::~PickRequestTask() {}
 
@@ -122,7 +121,7 @@ void PickRequestTask::Choose(
       non_user_requested_tasks_remaining = true;
     if (request->request_state() == SavePageRequest::RequestState::AVAILABLE)
       available_requests->push_back(*request);
-    if (!RequestConditionsSatisfied(request.get()))
+    if (!RequestConditionsSatisfied(*request))
       continue;
     available_request_ids.insert(request->request_id());
   }
@@ -137,17 +136,17 @@ void PickRequestTask::Choose(
   // For every ID in |available_request_ids|, there exists a corresponding
   // request in |requests|, so this won't be an infinite loop: either we pick a
   // request, or there's a request being poped from |prioritized_requests_|.
-  while (!picked_request && !prioritized_requests_.empty()) {
-    if (available_request_ids.count(prioritized_requests_.back()) > 0) {
+  while (!picked_request && !prioritized_requests_->empty()) {
+    if (available_request_ids.count(prioritized_requests_->back()) > 0) {
       for (const auto& request : *available_requests) {
-        if (request.request_id() == prioritized_requests_.back()) {
+        if (request.request_id() == prioritized_requests_->back()) {
           picked_request = &request;
           break;
         }
       }
       DCHECK(picked_request);
     } else {
-      prioritized_requests_.pop_back();
+      prioritized_requests_->pop_back();
     }
   }
 
@@ -156,7 +155,8 @@ void PickRequestTask::Choose(
   if (!picked_request) {
     for (const auto& request : *available_requests) {
       if ((available_request_ids.count(request.request_id()) > 0) &&
-          (IsNewRequestBetter(picked_request, &request, comparator))) {
+          (!picked_request ||
+           IsNewRequestBetter(*picked_request, request, comparator))) {
         picked_request = &request;
       }
     }
@@ -179,43 +179,39 @@ void PickRequestTask::Choose(
 // this is a predictive request, and we are not on WiFi, it should be ignored
 // this round.
 bool PickRequestTask::RequestConditionsSatisfied(
-    const SavePageRequest* request) {
+    const SavePageRequest& request) {
   // If the user did not request the page directly, make sure we are connected
   // to power and have WiFi and sufficient battery remaining before we take this
   // request.
-  if (!device_conditions_->IsPowerConnected() &&
-      policy_->PowerRequired(request->user_requested())) {
+  if (!device_conditions_.IsPowerConnected() &&
+      policy_->PowerRequired(request.user_requested())) {
     return false;
   }
 
-  if (device_conditions_->GetNetConnectionType() !=
+  if (device_conditions_.GetNetConnectionType() !=
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI &&
-      policy_->UnmeteredNetworkRequired(request->user_requested())) {
+      policy_->UnmeteredNetworkRequired(request.user_requested())) {
     return false;
   }
 
-  if (device_conditions_->GetBatteryPercentage() <
-      policy_->BatteryPercentageRequired(request->user_requested())) {
+  if (device_conditions_.GetBatteryPercentage() <
+      policy_->BatteryPercentageRequired(request.user_requested())) {
     return false;
   }
 
   // If the request is paused, do not consider it.
-  if (request->request_state() == SavePageRequest::RequestState::PAUSED)
+  if (request.request_state() == SavePageRequest::RequestState::PAUSED)
     return false;
 
   return true;
 }
 
 // Look at policies to decide which requests to prefer.
-bool PickRequestTask::IsNewRequestBetter(const SavePageRequest* oldRequest,
-                                         const SavePageRequest* newRequest,
+bool PickRequestTask::IsNewRequestBetter(const SavePageRequest& oldRequest,
+                                         const SavePageRequest& newRequest,
                                          RequestCompareFunction comparator) {
-  // If there is no old request, the new one is better.
-  if (oldRequest == nullptr)
-    return true;
-
   // User requested pages get priority.
-  if (newRequest->user_requested() && !oldRequest->user_requested())
+  if (newRequest.user_requested() && !oldRequest.user_requested())
     return true;
 
   // Otherwise, use the comparison function for the current policy, which
@@ -226,8 +222,8 @@ bool PickRequestTask::IsNewRequestBetter(const SavePageRequest* oldRequest,
 // Compare the results, checking request count before recency.  Returns true if
 // left hand side is better, false otherwise.
 bool PickRequestTask::RetryCountFirstCompareFunction(
-    const SavePageRequest* left,
-    const SavePageRequest* right) {
+    const SavePageRequest& left,
+    const SavePageRequest& right) {
   // Check the attempt count.
   int result = CompareRetryCount(left, right);
 
@@ -243,8 +239,8 @@ bool PickRequestTask::RetryCountFirstCompareFunction(
 // Compare the results, checking recency before request count. Returns true if
 // left hand side is better, false otherwise.
 bool PickRequestTask::RecencyFirstCompareFunction(
-    const SavePageRequest* left,
-    const SavePageRequest* right) {
+    const SavePageRequest& left,
+    const SavePageRequest& right) {
   // Check the recency.
   int result = CompareCreationTime(left, right);
 
@@ -259,11 +255,11 @@ bool PickRequestTask::RecencyFirstCompareFunction(
 
 // Compare left and right side, returning 1 if the left side is better
 // (preferred by policy), 0 if the same, and -1 if the right side is better.
-int PickRequestTask::CompareRetryCount(const SavePageRequest* left,
-                                       const SavePageRequest* right) {
+int PickRequestTask::CompareRetryCount(const SavePageRequest& left,
+                                       const SavePageRequest& right) {
   // Check the attempt count.
-  int result = signum(left->completed_attempt_count() -
-                      right->completed_attempt_count());
+  int result =
+      signum(left.completed_attempt_count() - right.completed_attempt_count());
 
   // Flip the direction of comparison if policy prefers fewer retries.
   if (policy_->ShouldPreferUntriedRequests())
@@ -274,10 +270,10 @@ int PickRequestTask::CompareRetryCount(const SavePageRequest* left,
 
 // Compare left and right side, returning 1 if the left side is better
 // (preferred by policy), 0 if the same, and -1 if the right side is better.
-int PickRequestTask::CompareCreationTime(const SavePageRequest* left,
-                                         const SavePageRequest* right) {
+int PickRequestTask::CompareCreationTime(const SavePageRequest& left,
+                                         const SavePageRequest& right) {
   // Check the recency.
-  base::TimeDelta difference = left->creation_time() - right->creation_time();
+  base::TimeDelta difference = left.creation_time() - right.creation_time();
   int result = signum(difference.InMilliseconds());
 
   // Flip the direction of comparison if policy prefers fewer retries.

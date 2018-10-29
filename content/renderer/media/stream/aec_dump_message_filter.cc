@@ -148,7 +148,7 @@ void AecDumpMessageFilter::DoEnableAecDump(
     int id,
     IPC::PlatformFileForTransit file_handle) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DelegateMap::iterator it = delegates_.find(id);
+  auto it = delegates_.find(id);
   if (it != delegates_.end()) {
     it->second->OnAecDumpFile(file_handle);
   } else {
@@ -161,16 +161,14 @@ void AecDumpMessageFilter::DoEnableAecDump(
 
 void AecDumpMessageFilter::DoDisableAecDump() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  for (DelegateMap::iterator it = delegates_.begin();
-       it != delegates_.end(); ++it) {
+  for (auto it = delegates_.begin(); it != delegates_.end(); ++it) {
     it->second->OnDisableAecDump();
   }
 }
 
 void AecDumpMessageFilter::DoChannelClosingOnDelegates() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  for (DelegateMap::iterator it = delegates_.begin();
-       it != delegates_.end(); ++it) {
+  for (auto it = delegates_.begin(); it != delegates_.end(); ++it) {
     it->second->OnIpcClosing();
   }
   delegates_.clear();
@@ -179,8 +177,7 @@ void AecDumpMessageFilter::DoChannelClosingOnDelegates() {
 int AecDumpMessageFilter::GetIdForDelegate(
     AecDumpMessageFilter::AecDumpDelegate* delegate) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  for (DelegateMap::iterator it = delegates_.begin();
-       it != delegates_.end(); ++it) {
+  for (auto it = delegates_.begin(); it != delegates_.end(); ++it) {
     if (it->second == delegate)
       return it->first;
   }

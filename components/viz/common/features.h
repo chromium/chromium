@@ -17,6 +17,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kEnableVizHitTestDrawQuad;
 VIZ_COMMON_EXPORT extern const base::Feature kEnableVizHitTestSurfaceLayer;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaDeferredDisplayList;
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
+VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
 VIZ_COMMON_EXPORT extern const base::Feature kVizDisplayCompositor;
 
 VIZ_COMMON_EXPORT bool IsDrawOcclusionEnabled();
@@ -26,6 +27,7 @@ VIZ_COMMON_EXPORT bool IsVizHitTestingEnabled();
 VIZ_COMMON_EXPORT bool IsVizHitTestingSurfaceLayerEnabled();
 VIZ_COMMON_EXPORT bool IsUsingSkiaDeferredDisplayList();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
+VIZ_COMMON_EXPORT bool IsRecordingSkPicture();
 
 }  // namespace features
 

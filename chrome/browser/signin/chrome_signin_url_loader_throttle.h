@@ -58,7 +58,6 @@ class URLLoaderThrottle : public content::URLLoaderThrottle {
   GURL request_referrer_;
   net::HttpRequestHeaders request_headers_;
   content::ResourceType request_resource_type_;
-  bool is_main_frame_ = false;
 
   base::OnceClosure destruction_callback_;
 

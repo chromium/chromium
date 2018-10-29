@@ -35,15 +35,10 @@
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive/primary_toolbar_view_controller.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/clean/toolbar_mediator.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
-#include "ios/web/public/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -197,6 +192,8 @@
       [[ContentSuggestionsHeaderSynchronizer alloc]
           initWithCollectionController:self.suggestionsViewController
                       headerController:self.headerController];
+  self.NTPMediator.headerCollectionInteractionHandler =
+      self.headerCollectionInteractionHandler;
 }
 
 - (void)stop {
@@ -263,9 +260,7 @@
   CGFloat topInset = 0.0;
   if (@available(iOS 11, *)) {
     topInset = self.suggestionsViewController.view.safeAreaInsets.top;
-  } else if (IsUIRefreshPhase1Enabled() ||
-             base::FeatureList::IsEnabled(
-                 web::features::kBrowserContainerFullscreen)) {
+  } else {
     // TODO(crbug.com/826369) Replace this when the NTP is contained by the
     // BVC with |self.suggestionsViewController.topLayoutGuide.length|.
     topInset = StatusBarHeight();
@@ -284,13 +279,9 @@
 }
 
 - (void)wasShown {
-  self.headerController.isShowing = YES;
-  [self.suggestionsViewController.collectionView
-          .collectionViewLayout invalidateLayout];
 }
 
 - (void)wasHidden {
-  self.headerController.isShowing = NO;
 }
 
 - (void)dismissModals {

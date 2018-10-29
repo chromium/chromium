@@ -1,26 +1,26 @@
 This is a testharness.js-based test.
-Found 126 tests; 80 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 95 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Simplest possible test
 PASS Simplest possible test, detached
 PASS Newlines convert to <br> in non-white-space:pre elements
 PASS Newlines convert to <br> in non-white-space:pre elements, detached
-FAIL Newlines convert to <br> in <pre> element assert_equals: expected "abc<br>def" but got "abc\ndef"
+PASS Newlines convert to <br> in <pre> element
 PASS Newlines convert to <br> in <pre> element, detached
-FAIL Newlines convert to <br> in <textarea> element assert_equals: expected "abc<br>def" but got "abc\ndef"
+PASS Newlines convert to <br> in <textarea> element
 PASS Newlines convert to <br> in <textarea> element, detached
-FAIL Newlines convert to <br> in white-space:pre element assert_equals: expected "abc<br>def" but got "abc\ndef"
+PASS Newlines convert to <br> in white-space:pre element
 PASS Newlines convert to <br> in white-space:pre element, detached
 PASS CRs convert to <br> in non-white-space:pre elements
 PASS CRs convert to <br> in non-white-space:pre elements, detached
-FAIL CRs convert to <br> in <pre> element assert_equals: expected "abc<br>def" but got "abc\ndef"
+PASS CRs convert to <br> in <pre> element
 PASS CRs convert to <br> in <pre> element, detached
 PASS Newline/CR pair converts to <br> in non-white-space:pre element
 PASS Newline/CR pair converts to <br> in non-white-space:pre element, detached
-FAIL Newline/newline pair converts to two <br>s in non-white-space:pre element assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Newline/newline pair converts to two <br>s in non-white-space:pre element, detached assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL CR/CR pair converts to two <br>s in non-white-space:pre element assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL CR/CR pair converts to two <br>s in non-white-space:pre element, detached assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL CRs convert to <br> in white-space:pre element assert_equals: expected "abc<br>def" but got "abc\ndef"
+PASS Newline/newline pair converts to two <br>s in non-white-space:pre element
+PASS Newline/newline pair converts to two <br>s in non-white-space:pre element, detached
+PASS CR/CR pair converts to two <br>s in non-white-space:pre element
+PASS CR/CR pair converts to two <br>s in non-white-space:pre element, detached
+PASS CRs convert to <br> in white-space:pre element
 PASS CRs convert to <br> in white-space:pre element, detached
 PASS < preserved
 PASS < preserved, detached
@@ -56,12 +56,12 @@ PASS Assigning null
 PASS Assigning null, detached
 PASS Assigning undefined
 PASS Assigning undefined, detached
-FAIL Start with CR assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Start with CR, detached assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Start with LF assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Start with LF, detached assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Start with CRLF assert_not_equals: Should not have empty text nodes got disallowed value ""
-FAIL Start with CRLF, detached assert_not_equals: Should not have empty text nodes got disallowed value ""
+PASS Start with CR
+PASS Start with CR, detached
+PASS Start with LF
+PASS Start with LF, detached
+PASS Start with CRLF
+PASS Start with CRLF, detached
 PASS End with CR
 PASS End with CR, detached
 PASS End with LF

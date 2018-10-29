@@ -33,6 +33,7 @@
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_metrics.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -353,7 +354,7 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
   for (auto it = token_fetchers_.begin(); it != token_fetchers_.end(); ++it) {
     DiceTokenFetcher* fetcher = it->get();
     if (fetcher->gaia_id() == gaia_id) {
-      DCHECK_EQ(fetcher->email(), email);
+      DCHECK(gaia::AreEmailsSame(fetcher->email(), email));
       // If there is a fetch in progress for a resfresh token for the given
       // account, then simply mark it to enable sync after the refresh token is
       // available.

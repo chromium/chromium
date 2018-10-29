@@ -104,7 +104,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     return 0;
   switch (match_) {
     case kId:
-      return 0x010000;
+      return kIdSpecificity;
     case kPseudoClass:
       switch (GetPseudoType()) {
         case kPseudoHost:
@@ -122,7 +122,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         default:
           break;
       }
-      return 0x000100;
+      return kClassLikeSpecificity;
     case kClass:
     case kPseudoElement:
     case kAttributeExact:
@@ -132,11 +132,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     case kAttributeContain:
     case kAttributeBegin:
     case kAttributeEnd:
-      return 0x000100;
+      return kClassLikeSpecificity;
     case kTag:
       if (TagQName().LocalName() == UniversalSelectorAtom())
         return 0;
-      return 0x000001;
+      return kTagSpecificity;
     case kUnknown:
       return 0;
   }
@@ -218,7 +218,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoVisited:
     case kPseudoAny:
     case kPseudoMatches:
-    case kPseudoIS:
+    case kPseudoWhere:
     case kPseudoAnyLink:
     case kPseudoWebkitAnyLink:
     case kPseudoAutofill:
@@ -399,7 +399,6 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"cue", CSSSelector::kPseudoCue},
     {"host", CSSSelector::kPseudoHost},
     {"host-context", CSSSelector::kPseudoHostContext},
-    {"is", CSSSelector::kPseudoIS},
     {"lang", CSSSelector::kPseudoLang},
     {"matches", CSSSelector::kPseudoMatches},
     {"not", CSSSelector::kPseudoNot},
@@ -409,6 +408,7 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
+    {"where", CSSSelector::kPseudoWhere},
 };
 
 class NameToPseudoCompare {
@@ -619,7 +619,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoIncrement:
     case kPseudoIndeterminate:
     case kPseudoInvalid:
-    case kPseudoIS:
+    case kPseudoWhere:
     case kPseudoLang:
     case kPseudoLastChild:
     case kPseudoLastOfType:
@@ -771,7 +771,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
         case kPseudoHostContext:
         case kPseudoAny:
         case kPseudoMatches:
-        case kPseudoIS:
+        case kPseudoWhere:
           break;
         default:
           break;
@@ -1110,9 +1110,9 @@ bool CSSSelector::HasPseudoMatches() const {
   return false;
 }
 
-bool CSSSelector::HasPseudoIS() const {
+bool CSSSelector::HasPseudoWhere() const {
   for (const CSSSelector* s = this; s; s = s->TagHistory()) {
-    if (s->GetPseudoType() == CSSSelector::kPseudoIS)
+    if (s->GetPseudoType() == CSSSelector::kPseudoWhere)
       return true;
   }
   return false;

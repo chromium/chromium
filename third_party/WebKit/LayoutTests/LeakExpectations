@@ -15,6 +15,12 @@ crbug.com/410974 virtual/scroll_customization/fast/scroll-behavior/scroll-custom
 crbug.com/410974 virtual/scroll_customization/fast/scroll-behavior/scroll-customization/touch-scroll-customization.html [ Leak ]
 crbug.com/410974 virtual/scroll_customization/fast/scroll-behavior/scroll-customization/scrollstate-distribute-to-scroll-chain-descendant.html [ Leak ]
 
+# FIXME: rootscroller/set-root-scroller.html on WebKit Linux Trusty
+crbug.com/891575 rootscroller/set-root-scroller.html [ Leak ]
+crbug.com/891575 virtual/android/rootscroller/remove-rootscroller-crash.html [ Leak Pass ]
+crbug.com/891575 virtual/android/rootscroller/set-root-scroller.html [ Leak ]
+crbug.com/891575 virtual/android/fullscreen/video-overlay-scroll.html [ Leak Pass ]
+
 # -----------------------------------------------------------------
 # Untriaged but known leaks of PausableObject (fast).
 # -----------------------------------------------------------------
@@ -40,7 +46,6 @@ crbug.com/859640 http/tests/devtools/tracing/timeline-style/timeline-style-recal
 # detached, which means leaks reported by the leak detector are by design.
 # Ignore them.
 crbug.com/755625 external/wpt/beacon/beacon-error.window.html [ Leak ]
-crbug.com/762353 external/wpt/beacon/headers/header-referrer-no-referrer.html [ Leak ]
 crbug.com/651742 external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html [ Leak ]
 
 # -----------------------------------------------------------------
@@ -84,6 +89,9 @@ crbug.com/847114 [ Linux ] virtual/threaded/http/tests/devtools/tracing/decode-r
 crbug.com/878724 [ Linux ] editing/selection/modify_extend/extend_by_character.html [ Pass Leak ]
 crbug.com/878724 [ Linux ] editing/selection/modify_move/move_right_word_09_ltr_multi_line.html [ Pass Leak ]
 crbug.com/878727 [ Linux ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Pass Leak ]
+
+# Sheriff 2018-10-25
+crbug.com/862029 [ Linux ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js [ Pass Leak ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #

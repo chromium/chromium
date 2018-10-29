@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
@@ -63,14 +62,6 @@ ScopedReplacedContentPaintState::ScopedReplacedContentPaintState(
       (!painter_implements_content_box_clip ||
        replaced.StyleRef().HasBorderRadius())) {
     new_properties.SetClip(paint_properties->OverflowClip());
-    property_changed = true;
-  }
-
-  // Check filter for optimized image policy violation highlights, which
-  // may be applied locally.
-  if (paint_properties->Filter() &&
-      (!replaced.HasLayer() || !replaced.Layer()->IsSelfPaintingLayer())) {
-    new_properties.SetEffect(paint_properties->Filter());
     property_changed = true;
   }
 
@@ -195,14 +186,18 @@ void ReplacedPainter::RecordHitTestData(const PaintInfo& paint_info,
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
+  // If an object is not visible, it does not participate in hit testing.
+  if (layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible)
+    return;
+
   auto touch_action = layout_replaced_.EffectiveWhitelistedTouchAction();
   if (touch_action == TouchAction::kTouchActionAuto)
     return;
 
   auto rect = layout_replaced_.VisualOverflowRect();
   rect.MoveBy(paint_offset);
-  HitTestData::RecordTouchActionRect(paint_info.context, layout_replaced_,
-                                     TouchActionRect(rect, touch_action));
+  HitTestData::RecordHitTestRect(paint_info.context, layout_replaced_,
+                                 HitTestRect(rect, touch_action));
 }
 
 bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {

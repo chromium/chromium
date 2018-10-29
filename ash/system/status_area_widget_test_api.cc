@@ -38,7 +38,7 @@ void StatusAreaWidgetTestApi::TapSelectToSpeakTray(
   // a bare bones event to perform the action.
   ui::TouchEvent event(
       ui::ET_TOUCH_PRESSED, gfx::Point(), base::TimeTicks::Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH), 0, 0.0f);
+      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH), 0);
   widget_->select_to_speak_tray_->PerformAction(event);
   std::move(callback).Run();
 }

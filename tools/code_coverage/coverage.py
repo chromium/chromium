@@ -87,7 +87,7 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'tools',
         'clang', 'scripts'))
-import update as clang_update
+from update import LLVM_BUILD_DIR
 
 sys.path.append(
     os.path.join(
@@ -96,10 +96,10 @@ sys.path.append(
 from collections import defaultdict
 
 import coverage_utils
+import update_clang_coverage_tools
 
 # Absolute path to the code coverage tools binary. These paths can be
 # overwritten by user specified coverage tool paths.
-LLVM_BUILD_DIR = clang_update.LLVM_BUILD_DIR
 LLVM_BIN_DIR = os.path.join(LLVM_BUILD_DIR, 'bin')
 LLVM_COV_PATH = os.path.join(LLVM_BIN_DIR, 'llvm-cov')
 LLVM_PROFDATA_PATH = os.path.join(LLVM_BIN_DIR, 'llvm-profdata')
@@ -164,14 +164,13 @@ def _ConfigureLLVMCoverageTools(args):
     LLVM_COV_PATH = os.path.join(llvm_bin_dir, 'llvm-cov')
     LLVM_PROFDATA_PATH = os.path.join(llvm_bin_dir, 'llvm-profdata')
   else:
-    DownloadCoverageToolsIfNeeded()
+    update_clang_coverage_tools.DownloadCoverageToolsIfNeeded()
 
   coverage_tools_exist = (
       os.path.exists(LLVM_COV_PATH) and os.path.exists(LLVM_PROFDATA_PATH))
   assert coverage_tools_exist, ('Cannot find coverage tools, please make sure '
                                 'both \'%s\' and \'%s\' exist.') % (
                                     LLVM_COV_PATH, LLVM_PROFDATA_PATH)
-
 
 def _GetPathWithLLVMSymbolizerDir():
   """Add llvm-symbolizer directory to path for symbolized stacks."""
@@ -196,74 +195,6 @@ def _IsIOS():
   """Returns true if the target_os specified in args.gn file is ios"""
   return _GetTargetOS() == 'ios'
 
-
-# TODO(crbug.com/759794): remove this function once tools get included to
-# Clang bundle:
-# https://chromium-review.googlesource.com/c/chromium/src/+/688221
-def DownloadCoverageToolsIfNeeded():
-  """Temporary solution to download llvm-profdata and llvm-cov tools."""
-
-  def _GetRevisionFromStampFile(stamp_file_path):
-    """Returns a pair of revision number by reading the build stamp file.
-
-    Args:
-      stamp_file_path: A path the build stamp file created by
-                       tools/clang/scripts/update.py.
-    Returns:
-      A pair of integers represeting the main and sub revision respectively.
-    """
-    if not os.path.exists(stamp_file_path):
-      return 0, 0
-
-    with open(stamp_file_path) as stamp_file:
-      stamp_file_line = stamp_file.readline()
-      if ',' in stamp_file_line:
-        package_version = stamp_file_line.rstrip().split(',')[0]
-      else:
-        package_version = stamp_file_line.rstrip()
-
-      clang_revision_str, clang_sub_revision_str = package_version.split('-')
-      return int(clang_revision_str), int(clang_sub_revision_str)
-
-  host_platform = coverage_utils.GetHostPlatform()
-  clang_revision, clang_sub_revision = _GetRevisionFromStampFile(
-      clang_update.STAMP_FILE)
-
-  coverage_revision_stamp_file = os.path.join(
-      os.path.dirname(clang_update.STAMP_FILE), 'cr_coverage_revision')
-  coverage_revision, coverage_sub_revision = _GetRevisionFromStampFile(
-      coverage_revision_stamp_file)
-
-  has_coverage_tools = (
-      os.path.exists(LLVM_COV_PATH) and os.path.exists(LLVM_PROFDATA_PATH))
-
-  if (has_coverage_tools and coverage_revision == clang_revision and
-      coverage_sub_revision == clang_sub_revision):
-    # LLVM coverage tools are up to date, bail out.
-    return
-
-  package_version = '%d-%d' % (clang_revision, clang_sub_revision)
-  coverage_tools_file = 'llvm-code-coverage-%s.tgz' % package_version
-
-  # The code bellow follows the code from tools/clang/scripts/update.py.
-  if host_platform == 'mac':
-    coverage_tools_url = clang_update.CDS_URL + '/Mac/' + coverage_tools_file
-  elif host_platform == 'linux':
-    coverage_tools_url = (
-        clang_update.CDS_URL + '/Linux_x64/' + coverage_tools_file)
-  else:
-    assert host_platform == 'win'
-    coverage_tools_url = (clang_update.CDS_URL + '/Win/' + coverage_tools_file)
-
-  try:
-    clang_update.DownloadAndUnpack(coverage_tools_url,
-                                   clang_update.LLVM_BUILD_DIR)
-    with open(coverage_revision_stamp_file, 'w') as file_handle:
-      file_handle.write('%s,%s' % (package_version, host_platform))
-      file_handle.write('\n')
-  except urllib2.URLError:
-    raise Exception(
-        'Failed to download coverage tools: %s.' % coverage_tools_url)
 
 
 def _GeneratePerFileLineByLineCoverageInHtml(binary_paths, profdata_file_path,
@@ -1009,7 +940,7 @@ def Main():
   # Setup coverage binaries even when script is called with empty params. This
   # is used by coverage bot for initial setup.
   if len(sys.argv) == 1:
-    DownloadCoverageToolsIfNeeded()
+    update_clang_coverage_tools.DownloadCoverageToolsIfNeeded()
     print(__doc__)
     return
 

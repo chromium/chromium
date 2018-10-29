@@ -6,6 +6,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_menubar_tracker.h"
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller_views.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -14,7 +16,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/hit_test.h"
@@ -22,13 +25,18 @@
 #include "ui/gfx/canvas.h"
 
 namespace {
+
+constexpr int kHostedAppMenuMargin = 7;
+constexpr int kFramePaddingLeft = 75;
+
 FullscreenToolbarStyle GetUserPreferredToolbarStyle(
     const PrefService* pref_service) {
   return pref_service->GetBoolean(prefs::kShowFullscreenToolbar)
              ? FullscreenToolbarStyle::TOOLBAR_PRESENT
              : FullscreenToolbarStyle::TOOLBAR_HIDDEN;
 }
-}
+
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, public:
@@ -48,6 +56,20 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
       prefs::kShowFullscreenToolbar,
       base::BindRepeating(&BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
                           base::Unretained(this), true));
+
+  if (browser_view->IsBrowserTypeHostedApp()) {
+    set_hosted_app_button_container(new HostedAppButtonContainer(
+        frame, browser_view, GetReadableFrameForegroundColor(kActive),
+        GetReadableFrameForegroundColor(kInactive), kHostedAppMenuMargin));
+    AddChildView(hosted_app_button_container());
+
+    DCHECK(browser_view->ShouldShowWindowTitle());
+    window_title_ = new views::Label(browser_view->GetWindowTitle());
+    // view::Label's readability algorithm conflicts with the one used by
+    // |GetReadableFrameForegroundColor|.
+    window_title_->SetAutoColorReadabilityEnabled(false);
+    AddChildView(window_title_);
+  }
 }
 
 BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
@@ -83,15 +105,19 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStrip(
   // calling through private APIs.
   DCHECK(tabstrip);
 
+  constexpr int kTabstripLeftInset = 70;  // Make room for caption buttons.
+  // Do not draw caption buttons on fullscreen.
+  const int x = frame()->IsFullscreen() ? 0 : kTabstripLeftInset;
   const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
-  gfx::Rect bounds = gfx::Rect(0, GetTopInset(restored), width(),
-                               tabstrip->GetPreferredSize().height());
-  bounds.Inset(GetTabStripLeftInset(), 0,
-               GetAfterTabstripItemWidth() + GetTabstripPadding(), 0);
-  return bounds;
+  return gfx::Rect(x, GetTopInset(restored), width() - x,
+                   tabstrip->GetPreferredSize().height());
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
+  if (browser_view()->IsBrowserTypeHostedApp())
+    return hosted_app_button_container()->GetPreferredSize().height() +
+           kHostedAppMenuMargin * 2;
+
   if (!browser_view()->IsTabStripVisible())
     return 0;
 
@@ -110,7 +136,7 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
   CGFloat y_offset = TopUIFullscreenYOffset();
   if (y_offset > 0) {
     // When menubar shows up, we need to update mouse tracking area.
-    NSWindow* window = GetWidget()->GetNativeWindow();
+    NSWindow* window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
     NSRect content_bounds = [[window contentView] bounds];
     // Backing bar tracking area uses native coordinates.
     CGFloat tracking_height =
@@ -122,18 +148,6 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
   }
 
   return y_offset + top_inset;
-}
-
-int BrowserNonClientFrameViewMac::GetAfterTabstripItemWidth() const {
-  int item_width;
-  views::View* profile_switcher_button = GetProfileSwitcherButton();
-  if (profile_indicator_icon() && browser_view()->IsTabStripVisible())
-    item_width = profile_indicator_icon()->width();
-  else if (profile_switcher_button)
-    item_width = profile_switcher_button->GetPreferredSize().width();
-  else
-    return 0;
-  return item_width + GetAvatarIconPadding();
 }
 
 int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
@@ -185,15 +199,6 @@ bool BrowserNonClientFrameViewMac::ShouldHideTopUIForFullscreen() const {
 void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {
 }
 
-int BrowserNonClientFrameViewMac::GetTabStripLeftInset() const {
-  constexpr int kTabstripLeftInset = 70;  // Make room for caption buttons.
-
-  if (frame()->IsFullscreen())
-    return 0;  // Do not draw caption buttons on fullscreen.
-  else
-    return kTabstripLeftInset;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
@@ -207,37 +212,30 @@ gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
 }
 
 int BrowserNonClientFrameViewMac::NonClientHitTest(const gfx::Point& point) {
-  views::View* profile_switcher_view = GetProfileSwitcherButton();
-  if (profile_switcher_view) {
-    gfx::Point point_in_switcher(point);
-    views::View::ConvertPointToTarget(this, profile_switcher_view,
-                                      &point_in_switcher);
-    if (profile_switcher_view->HitTestPoint(point_in_switcher)) {
-      return HTCLIENT;
-    }
-  }
-  int component = frame()->client_view()->NonClientHitTest(point);
+  int super_component = BrowserNonClientFrameView::NonClientHitTest(point);
+  if (super_component != HTNOWHERE)
+    return super_component;
 
   // BrowserView::NonClientHitTest will return HTNOWHERE for points that hit
   // the native title bar. On Mac, we need to explicitly return HTCAPTION for
   // those points.
-  if (component == HTNOWHERE && bounds().Contains(point))
-    return HTCAPTION;
-
-  return component;
+  const int component = frame()->client_view()->NonClientHitTest(point);
+  return (component == HTNOWHERE && bounds().Contains(point)) ? HTCAPTION
+                                                              : component;
 }
 
 void BrowserNonClientFrameViewMac::GetWindowMask(const gfx::Size& size,
                                                  gfx::Path* window_mask) {
 }
 
-void BrowserNonClientFrameViewMac::ResetWindowControls() {
-}
-
 void BrowserNonClientFrameViewMac::UpdateWindowIcon() {
 }
 
 void BrowserNonClientFrameViewMac::UpdateWindowTitle() {
+  if (window_title_ && !frame()->IsFullscreen()) {
+    window_title_->SetText(browser_view()->GetWindowTitle());
+    Layout();
+  }
 }
 
 void BrowserNonClientFrameViewMac::SizeConstraintsChanged() {
@@ -261,51 +259,64 @@ gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
 
 // views::View:
 
-void BrowserNonClientFrameViewMac::Layout() {
-  DCHECK(browser_view());
-  views::View* profile_switcher_button = GetProfileSwitcherButton();
-  if (profile_indicator_icon() && browser_view()->IsTabStripVisible()) {
-    LayoutIncognitoButton();
-    // Mac lays out the incognito icon on the right, as the stoplight
-    // buttons live in its Windows/Linux location.
-    profile_indicator_icon()->SetX(width() - GetAfterTabstripItemWidth());
-  } else if (profile_switcher_button) {
-    gfx::Size button_size = profile_switcher_button->GetPreferredSize();
-    int button_x = width() - GetAfterTabstripItemWidth();
-    int button_y = 0;
-    TabStrip* tabstrip = browser_view()->tabstrip();
-    if (tabstrip && browser_view()->IsTabStripVisible()) {
-      int new_tab_button_bottom =
-          tabstrip->bounds().y() + tabstrip->new_tab_button_bounds().height();
-      // Align the switcher's bottom to bottom of the new tab button;
-      button_y = new_tab_button_bottom - button_size.height();
-    }
-    profile_switcher_button->SetBounds(button_x, button_y, button_size.width(),
-                                       button_size.height());
-  }
-  BrowserNonClientFrameView::Layout();
-}
-
 void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
-  if (!browser_view()->IsBrowserTypeNormal())
+  if (!browser_view()->IsBrowserTypeNormal() &&
+      !browser_view()->IsBrowserTypeHostedApp()) {
     return;
+  }
 
-  canvas->DrawColor(GetFrameColor());
+  SkColor frame_color = GetFrameColor();
+  canvas->DrawColor(frame_color);
 
-  if (!GetThemeProvider()->UsingSystemTheme())
+  if (window_title_) {
+    window_title_->SetBackgroundColor(frame_color);
+    window_title_->SetEnabledColor(
+        GetReadableFrameForegroundColor(kUseCurrent));
+  }
+
+  auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_view()->browser()->profile());
+  if (!theme_service->UsingSystemTheme())
     PaintThemedFrame(canvas);
-
-  if (browser_view()->IsToolbarVisible())
-    PaintToolbarTopStroke(canvas);
 }
 
-// BrowserNonClientFrameView:
-AvatarButtonStyle BrowserNonClientFrameViewMac::GetAvatarButtonStyle() const {
-  return AvatarButtonStyle::NATIVE;
+void BrowserNonClientFrameViewMac::Layout() {
+  const int available_height = GetTopInset(true);
+  int leading_x = kFramePaddingLeft;
+  int trailing_x = width();
+
+  if (hosted_app_button_container()) {
+    trailing_x = hosted_app_button_container()->LayoutInContainer(
+        leading_x, trailing_x, 0, available_height);
+    window_title_->SetBoundsRect(GetCenteredTitleBounds(
+        width(), available_height, leading_x, trailing_x,
+        window_title_->CalculatePreferredSize().width()));
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, private:
+
+gfx::Rect BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
+    int frame_width,
+    int frame_height,
+    int left_inset_x,
+    int right_inset_x,
+    int title_width) {
+  // Center in container.
+  int title_x = (frame_width - title_width) / 2;
+
+  // Align right side to right inset if overlapping.
+  title_x = std::min(title_x, right_inset_x - title_width);
+
+  // Align left side to left inset if overlapping.
+  title_x = std::max(title_x, left_inset_x);
+
+  // Clip width to right inset if overlapping.
+  title_width = std::min(title_width, right_inset_x - title_x);
+
+  return gfx::Rect(title_x, 0, title_width, frame_height);
+}
 
 void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
   gfx::ImageSkia image = GetFrameImage();
@@ -313,6 +324,11 @@ void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
                        image.height());
   gfx::ImageSkia overlay = GetFrameOverlayImage();
   canvas->DrawImageInt(overlay, 0, 0);
+}
+
+SkColor BrowserNonClientFrameViewMac::GetReadableFrameForegroundColor(
+    ActiveState active_state) const {
+  return color_utils::GetThemedAssetColor(GetFrameColor(active_state));
 }
 
 CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
@@ -324,7 +340,7 @@ CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
     total_height += browser_view->GetTabStripHeight();
 
   if (browser_view->IsToolbarVisible())
-    total_height += browser_view->GetToolbarBounds().height();
+    total_height += browser_view->toolbar()->bounds().height();
 
   if (browser_view->IsBookmarkBarVisible() &&
       browser_view->GetBookmarkBarView()->IsDetached()) {

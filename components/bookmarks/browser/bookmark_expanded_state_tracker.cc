@@ -48,8 +48,7 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
     return nodes;
 
   bool changed = false;
-  for (base::ListValue::const_iterator i = value->begin();
-       i != value->end(); ++i) {
+  for (auto i = value->begin(); i != value->end(); ++i) {
     std::string value;
     int64_t node_id;
     const BookmarkNode* node;

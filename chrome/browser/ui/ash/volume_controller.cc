@@ -58,37 +58,28 @@ VolumeController::VolumeController() : binding_(this) {
   }
 }
 
-VolumeController::~VolumeController() {}
+VolumeController::~VolumeController() = default;
 
-void VolumeController::VolumeMute() {
-  chromeos::CrasAudioHandler::Get()->SetOutputMute(true);
+void VolumeController::VolumeMuteToggle() {
+  chromeos::CrasAudioHandler* audio = chromeos::CrasAudioHandler::Get();
+  audio->SetOutputMute(!audio->IsOutputMuted());
 }
 
 void VolumeController::VolumeDown() {
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
-  if (audio_handler->IsOutputMuted()) {
-    audio_handler->SetOutputVolumePercent(0);
-  } else {
-    audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
-    if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
-      audio_handler->SetOutputMute(true);
-    else
-      PlayVolumeAdjustSound();
-  }
+  chromeos::CrasAudioHandler* audio = chromeos::CrasAudioHandler::Get();
+  audio->AdjustOutputVolumeByPercent(-kStepPercentage);
+  audio->SetOutputMute(audio->IsOutputVolumeBelowDefaultMuteLevel());
+  if (!audio->IsOutputMuted())
+    PlayVolumeAdjustSound();
 }
 
 void VolumeController::VolumeUp() {
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
-  bool play_sound = false;
-  if (audio_handler->IsOutputMuted()) {
-    audio_handler->SetOutputMute(false);
-    audio_handler->AdjustOutputVolumeToAudibleLevel();
-    play_sound = true;
-  } else {
-    play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
-  }
-
+  chromeos::CrasAudioHandler* audio = chromeos::CrasAudioHandler::Get();
+  const bool play_sound = audio->GetOutputVolumePercent() != 100;
+  audio->AdjustOutputVolumeByPercent(kStepPercentage);
+  if (audio->IsOutputVolumeBelowDefaultMuteLevel())
+    audio->AdjustOutputVolumeToAudibleLevel();
+  audio->SetOutputMute(false);
   if (play_sound)
     PlayVolumeAdjustSound();
 }

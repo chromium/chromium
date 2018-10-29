@@ -1896,6 +1896,34 @@ body[drive='error'] #unmounted-panel > .error,
   min-height: 30px;
 }
 
+.install-linux-package-details-frame {
+  border: 1px solid lightgray;
+  display: block;
+  height: 150px;
+  overflow: scroll;
+  padding: 8px 10px;
+  user-select: text;
+}
+
+.install-linux-package-details-label {
+  color: #5a5a5a;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.install-linux-package-detail-label {
+  color: #5a5a5a;
+  display: inline;
+  font-weight: 500;
+  margin-inline-end: 5px;
+}
+
+.install-linux-package-detail-value {
+  display: inline;
+  margin-bottom: 5px;
+  white-space: pre-wrap;
+}
+
 .drive-welcome-wrapper {
   /* drive_welcome.css will override it once loaded. */
   display: none;
@@ -2251,8 +2279,13 @@ files-toggle-ripple {
   z-index: 505; /* Must be above the scroll bar (500). */
 }
 
-/* Preventing FOUC */
-cr-input:unresolved {
+/*
+ * Preventing FOUC
+ * TODO(dpapad): Remove :unresolved when Polymer 2 migration is complete,
+ * (crbug.com/738611).
+ */
+cr-input:unresolved,
+cr-input:not(:defined) {
   display: none;
 }
 

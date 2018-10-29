@@ -59,13 +59,14 @@
 #include "net/base/url_util.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_client.h"
-#include "net/dns/dns_config_service.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/dns_reloader.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/mdns_client.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -76,6 +77,10 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
 #include "url/url_canon_ip.h"
+
+#if BUILDFLAG(ENABLE_MDNS)
+#include "net/dns/mdns_client_impl.h"
+#endif
 
 #if defined(OS_WIN)
 #include "net/base/winsock_init.h"
@@ -1242,6 +1247,16 @@ class HostResolverImpl::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       addr_list_.insert(addr_list_.begin(), addr_list.begin(), addr_list.end());
     }
 
+    // If requested via HOST_RESOLVER_CANONNAME, store the canonical name from
+    // the response. Prefer the name from the AAAA response. Only look at name
+    // if there is at least one address record.
+    if ((key_.host_resolver_flags & HOST_RESOLVER_CANONNAME) != 0 &&
+        !addr_list.empty() &&
+        (transaction->GetType() == dns_protocol::kTypeAAAA ||
+         addr_list_.canonical_name().empty())) {
+      addr_list_.set_canonical_name(addr_list.canonical_name());
+    }
+
     if (needs_two_transactions() && num_completed_transactions_ == 1) {
       // No need to repeat the suffix search.
       key_.hostname = transaction->GetHostname();
@@ -1513,7 +1528,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
       // This will destroy the Job.
       CompleteRequests(
           MakeCacheEntry(OK, addr_list, HostCache::Entry::SOURCE_HOSTS),
-          base::TimeDelta());
+          base::TimeDelta(), true /* allow_cache */);
       return true;
     }
     return false;
@@ -1526,7 +1541,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
   }
 
   bool is_running() const {
-    return is_dns_running() || is_proc_running();
+    return is_dns_running() || is_mdns_running() || is_proc_running();
   }
 
  private:
@@ -1634,6 +1649,9 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
 
         StartDnsTask();
         break;
+      case HostResolverSource::MULTICAST_DNS:
+        StartMdnsTask();
+        break;
     }
 
     // Caution: Job::Start must not complete synchronously.
@@ -1644,7 +1662,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
   // TaskScheduler threads low, we will need to use an "inner"
   // PrioritizedDispatcher with tighter limits.
   void StartProcTask() {
-    DCHECK(!is_dns_running());
+    DCHECK(!is_running());
     proc_task_ = std::make_unique<ProcTask>(
         key_, resolver_->proc_params_,
         base::BindOnce(&Job::OnProcTaskComplete, base::Unretained(this),
@@ -1694,7 +1712,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
     // Don't store the |ttl| in cache since it's not obtained from the server.
     CompleteRequests(
         MakeCacheEntry(net_error, addr_list, HostCache::Entry::SOURCE_UNKNOWN),
-        ttl);
+        ttl, true /* allow_cache */);
   }
 
   void StartDnsTask() {
@@ -1752,7 +1770,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
       CompleteRequests(
           HostCache::Entry(net_error, AddressList(),
                            HostCache::Entry::Source::SOURCE_UNKNOWN, ttl),
-          ttl);
+          ttl, true /* allow_cache */);
     }
   }
 
@@ -1785,7 +1803,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
     } else {
       CompleteRequests(MakeCacheEntryWithTTL(net_error, addr_list,
                                              HostCache::Entry::SOURCE_DNS, ttl),
-                       bounded_ttl);
+                       bounded_ttl, true /* allow_cache */);
     }
   }
 
@@ -1800,6 +1818,50 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
     // for the second slot.
     if (dns_task_->needs_another_transaction())
       dns_task_->StartSecondTransaction();
+  }
+
+  void StartMdnsTask() {
+    DCHECK(!is_running());
+
+    // No flags are supported for MDNS except
+    // HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6 (which is not actually an
+    // input flag).
+    DCHECK_EQ(0, key_.host_resolver_flags &
+                     ~HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6);
+
+    std::vector<HostResolver::DnsQueryType> query_types;
+    switch (key_.address_family) {
+      case ADDRESS_FAMILY_UNSPECIFIED:
+        query_types.push_back(HostResolver::DnsQueryType::A);
+        query_types.push_back(HostResolver::DnsQueryType::AAAA);
+        break;
+      case ADDRESS_FAMILY_IPV4:
+        query_types.push_back(HostResolver::DnsQueryType::A);
+        break;
+      case ADDRESS_FAMILY_IPV6:
+        query_types.push_back(HostResolver::DnsQueryType::AAAA);
+        break;
+    }
+
+    mdns_task_ = std::make_unique<HostResolverMdnsTask>(
+        resolver_->GetOrCreateMdnsClient(), key_.hostname, query_types);
+    mdns_task_->Start(
+        base::BindOnce(&Job::OnMdnsTaskComplete, base::Unretained(this)));
+  }
+
+  void OnMdnsTaskComplete(int error) {
+    DCHECK(is_mdns_running());
+    // TODO(crbug.com/846423): Consider adding MDNS-specific logging.
+
+    if (error != OK) {
+      CompleteRequestsWithError(error);
+    } else if (ContainsIcannNameCollisionIp(mdns_task_->result_addresses())) {
+      CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
+    } else {
+      // MDNS uses a separate cache, so skip saving result to cache.
+      // TODO(crbug.com/846423): Consider merging caches.
+      CompleteRequestsWithoutCache(error, mdns_task_->result_addresses());
+    }
   }
 
   URLRequestContext* url_request_context() override {
@@ -1881,8 +1943,12 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
   }
 
   // Performs Job's last rites. Completes all Requests. Deletes this.
+  //
+  // If not |allow_cache|, result will not be stored in the host cache, even if
+  // result would otherwise allow doing so.
   void CompleteRequests(const HostCache::Entry& entry,
-                        base::TimeDelta ttl) {
+                        base::TimeDelta ttl,
+                        bool allow_cache) {
     CHECK(resolver_.get());
 
     // This job must be removed from resolver's |jobs_| now to make room for a
@@ -1894,6 +1960,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
     if (is_running()) {
       proc_task_ = nullptr;
       KillDnsTask();
+      mdns_task_ = nullptr;
 
       // Signal dispatcher that a slot has opened.
       resolver_->dispatcher_->OnJobFinished();
@@ -1923,7 +1990,7 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
 
     bool did_complete = (entry.error() != ERR_NETWORK_CHANGED) &&
                         (entry.error() != ERR_HOST_RESOLVER_QUEUE_TOO_LARGE);
-    if (did_complete)
+    if (did_complete && allow_cache)
       resolver_->CacheResult(key_, entry, ttl);
 
     RecordJobHistograms(entry.error());
@@ -1955,11 +2022,17 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
     }
   }
 
+  void CompleteRequestsWithoutCache(int error, const AddressList& addresses) {
+    CompleteRequests(
+        MakeCacheEntry(error, addresses, HostCache::Entry::SOURCE_UNKNOWN),
+        base::TimeDelta(), false /* allow_cache */);
+  }
+
   // Convenience wrapper for CompleteRequests in case of failure.
   void CompleteRequestsWithError(int net_error) {
     CompleteRequests(HostCache::Entry(net_error, AddressList(),
                                       HostCache::Entry::SOURCE_UNKNOWN),
-                     base::TimeDelta());
+                     base::TimeDelta(), true /* allow_cache */);
   }
 
   RequestPriority priority() const override {
@@ -1972,6 +2045,8 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
   }
 
   bool is_dns_running() const { return !!dns_task_; }
+
+  bool is_mdns_running() const { return !!mdns_task_; }
 
   bool is_proc_running() const { return !!proc_task_; }
 
@@ -2005,6 +2080,9 @@ class HostResolverImpl::Job : public PrioritizedDispatcher::Job,
 
   // Resolves the host using a DnsTransaction.
   std::unique_ptr<DnsTask> dns_task_;
+
+  // Resolves the host using MDnsClient.
+  std::unique_ptr<HostResolverMdnsTask> mdns_task_;
 
   // All Requests waiting for the result of this Job. Some can be canceled.
   base::LinkedList<RequestImpl> requests_;
@@ -2080,8 +2158,7 @@ HostResolverImpl::HostResolverImpl(const Options& options, NetLog* net_log)
   OnConnectionTypeChanged(NetworkChangeNotifier::GetConnectionType());
 
   {
-    DnsConfig dns_config;
-    NetworkChangeNotifier::GetDnsConfig(&dns_config);
+    DnsConfig dns_config = GetBaseDnsConfig();
     received_dns_config_ = dns_config.IsValid();
     // Conservatively assume local IPv6 is needed when DnsConfig is not valid.
     use_local_ipv6_ = !dns_config.IsValid() || dns_config.use_local_ipv6;
@@ -2109,10 +2186,10 @@ void HostResolverImpl::SetDnsClient(std::unique_ptr<DnsClient> dns_client) {
   dns_client_ = std::move(dns_client);
   if (dns_client_ && !dns_client_->GetConfig() &&
       num_dns_failures_ < kMaximumDnsFailures) {
-    DnsConfig dns_config;
-    NetworkChangeNotifier::GetDnsConfig(&dns_config);
-    dns_config.dns_over_https_servers = dns_over_https_servers_;
-    dns_client_->SetConfig(dns_config);
+    DnsConfig dns_config = GetBaseDnsConfig();
+    DnsConfig overridden_config =
+        dns_config_overrides_.ApplyOverrides(dns_config);
+    dns_client_->SetConfig(overridden_config);
     num_dns_failures_ = 0;
     if (dns_client_->GetConfig())
       UMA_HISTOGRAM_BOOLEAN("AsyncDNS.DnsClientEnabled", true);
@@ -2262,34 +2339,29 @@ bool HostResolverImpl::GetNoIPv6OnWifi() {
   return assume_ipv6_failure_on_wifi_;
 }
 
+void HostResolverImpl::SetDnsConfigOverrides(
+    const DnsConfigOverrides& overrides) {
+  if (dns_config_overrides_ == overrides)
+    return;
+
+  dns_config_overrides_ = overrides;
+  if (dns_client_.get() && dns_client_->GetConfig())
+    UpdateDNSConfig(true);
+}
+
 void HostResolverImpl::SetRequestContext(URLRequestContext* context) {
   if (context != url_request_context_) {
     url_request_context_ = context;
   }
 }
 
-void HostResolverImpl::AddDnsOverHttpsServer(std::string uri_template,
-                                             bool use_post) {
-  dns_over_https_servers_.emplace_back(uri_template, use_post);
-  if (dns_client_.get() && dns_client_->GetConfig())
-    UpdateDNSConfig(true);
-}
-
-void HostResolverImpl::ClearDnsOverHttpsServers() {
-  if (dns_over_https_servers_.size() == 0)
-    return;
-
-  dns_over_https_servers_.clear();
-
-  if (dns_client_.get() && dns_client_->GetConfig())
-    UpdateDNSConfig(true);
-}
-
 const std::vector<DnsConfig::DnsOverHttpsServerConfig>*
 HostResolverImpl::GetDnsOverHttpsServersForTesting() const {
-  if (dns_over_https_servers_.empty())
+  if (!dns_config_overrides_.dns_over_https_servers ||
+      dns_config_overrides_.dns_over_https_servers.value().empty()) {
     return nullptr;
-  return &dns_over_https_servers_;
+  }
+  return &dns_config_overrides_.dns_over_https_servers.value();
 }
 
 void HostResolverImpl::SetTickClockForTesting(
@@ -2312,6 +2384,23 @@ void HostResolverImpl::SetHaveOnlyLoopbackAddresses(bool result) {
   }
 }
 
+void HostResolverImpl::SetMdnsSocketFactoryForTesting(
+    std::unique_ptr<MDnsSocketFactory> socket_factory) {
+  DCHECK(!mdns_client_);
+  mdns_socket_factory_ = std::move(socket_factory);
+}
+
+void HostResolverImpl::SetMdnsClientForTesting(
+    std::unique_ptr<MDnsClient> client) {
+  mdns_client_ = std::move(client);
+}
+
+void HostResolverImpl::SetBaseDnsConfigForTesting(
+    const DnsConfig& base_config) {
+  test_base_config_ = base_config;
+  UpdateDNSConfig(true);
+}
+
 void HostResolverImpl::SetTaskRunnerForTesting(
     scoped_refptr<base::TaskRunner> task_runner) {
   proc_task_runner_ = std::move(task_runner);
@@ -2322,6 +2411,11 @@ int HostResolverImpl::Resolve(RequestImpl* request) {
   DCHECK(!request->job());
   // Request may only be resolved once.
   DCHECK(!request->complete());
+  // MDNS requests do not support skipping cache.
+  // TODO(crbug.com/846423): Either add support for skipping the MDNS cache, or
+  // merge to use the normal host cache for MDNS requests.
+  DCHECK(request->parameters().source != HostResolverSource::MULTICAST_DNS ||
+         request->parameters().allow_cached_response);
 
   request->set_request_time(tick_clock_->NowTicks());
 
@@ -2523,16 +2617,14 @@ bool HostResolverImpl::ServeFromHosts(const Key& key,
   // necessary.
   if (key.address_family == ADDRESS_FAMILY_IPV6 ||
       key.address_family == ADDRESS_FAMILY_UNSPECIFIED) {
-    DnsHosts::const_iterator it = hosts.find(
-        DnsHostsKey(hostname, ADDRESS_FAMILY_IPV6));
+    auto it = hosts.find(DnsHostsKey(hostname, ADDRESS_FAMILY_IPV6));
     if (it != hosts.end())
       addresses->push_back(IPEndPoint(it->second, host_port));
   }
 
   if (key.address_family == ADDRESS_FAMILY_IPV4 ||
       key.address_family == ADDRESS_FAMILY_UNSPECIFIED) {
-    DnsHosts::const_iterator it = hosts.find(
-        DnsHostsKey(hostname, ADDRESS_FAMILY_IPV4));
+    auto it = hosts.find(DnsHostsKey(hostname, ADDRESS_FAMILY_IPV4));
     if (it != hosts.end())
       addresses->push_back(IPEndPoint(it->second, host_port));
   }
@@ -2783,12 +2875,24 @@ void HostResolverImpl::OnInitialDNSConfigRead() {
 }
 
 void HostResolverImpl::OnDNSChanged() {
+  // Ignore changes if we're using a test config.
+  if (test_base_config_)
+    return;
+
   UpdateDNSConfig(true);
 }
 
-void HostResolverImpl::UpdateDNSConfig(bool config_changed) {
+DnsConfig HostResolverImpl::GetBaseDnsConfig() const {
   DnsConfig dns_config;
-  NetworkChangeNotifier::GetDnsConfig(&dns_config);
+  if (test_base_config_)
+    dns_config = test_base_config_.value();
+  else
+    NetworkChangeNotifier::GetDnsConfig(&dns_config);
+  return dns_config;
+}
+
+void HostResolverImpl::UpdateDNSConfig(bool config_changed) {
+  DnsConfig dns_config = GetBaseDnsConfig();
 
   if (net_log_) {
     net_log_->AddGlobalEntry(NetLogEventType::DNS_CONFIG_CHANGED,
@@ -2797,6 +2901,9 @@ void HostResolverImpl::UpdateDNSConfig(bool config_changed) {
 
   // TODO(szym): Remove once http://crbug.com/137914 is resolved.
   received_dns_config_ = dns_config.IsValid();
+
+  dns_config = dns_config_overrides_.ApplyOverrides(dns_config);
+
   // Conservatively assume local IPv6 is needed when DnsConfig is not valid.
   use_local_ipv6_ = !dns_config.IsValid() || dns_config.use_local_ipv6;
 
@@ -2809,7 +2916,6 @@ void HostResolverImpl::UpdateDNSConfig(bool config_changed) {
     // wasn't already a DnsConfig or it's the same one.
     DCHECK(config_changed || !dns_client_->GetConfig() ||
            dns_client_->GetConfig()->Equals(dns_config));
-    dns_config.dns_over_https_servers = dns_over_https_servers_;
     dns_client_->SetConfig(dns_config);
     if (dns_client_->GetConfig())
       UMA_HISTOGRAM_BOOLEAN("AsyncDNS.DnsClientEnabled", true);
@@ -2865,6 +2971,25 @@ void HostResolverImpl::OnDnsTaskResolve(int net_error) {
   UMA_HISTOGRAM_BOOLEAN("AsyncDNS.DnsClientEnabled", false);
   base::UmaHistogramSparse("AsyncDNS.DnsClientDisabledReason",
                            std::abs(net_error));
+}
+
+MDnsClient* HostResolverImpl::GetOrCreateMdnsClient() {
+#if BUILDFLAG(ENABLE_MDNS)
+  if (!mdns_client_) {
+    if (!mdns_socket_factory_)
+      mdns_socket_factory_ = std::make_unique<MDnsSocketFactoryImpl>(net_log_);
+
+    mdns_client_ = MDnsClient::CreateDefault();
+    mdns_client_->StartListening(mdns_socket_factory_.get());
+  }
+
+  DCHECK(mdns_client_->IsListening());
+  return mdns_client_.get();
+#else
+  // Should not request MDNS resoltuion unless MDNS is enabled.
+  NOTREACHED();
+  return nullptr;
+#endif
 }
 
 HostResolverImpl::RequestImpl::~RequestImpl() {

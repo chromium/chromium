@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -69,6 +70,8 @@ class TextureRef : public base::RefCounted<TextureRef> {
       const gfx::Size& size);
 
   gfx::GpuMemoryBufferHandle ExportGpuMemoryBufferHandle() const;
+  scoped_refptr<VideoFrame> CreateVideoFrame(
+      const gfx::Rect& visible_rect) const;
 
   int32_t texture_id() const { return texture_id_; }
 
@@ -82,6 +85,7 @@ class TextureRef : public base::RefCounted<TextureRef> {
   base::OnceClosure no_longer_needed_cb_;
 #if defined(OS_CHROMEOS)
   scoped_refptr<gfx::NativePixmap> pixmap_;
+  gfx::Size coded_size_;
 #endif
   THREAD_CHECKER(thread_checker_);
 };

@@ -14,12 +14,9 @@ void LayoutTestRuntimeFlags::Reset() {
   set_generate_pixel_results(true);
 
   set_dump_as_text(false);
-  set_dump_child_frames_as_text(false);
-
   set_dump_as_markup(false);
-  set_dump_child_frames_as_markup(false);
-
-  set_dump_child_frame_scroll_positions(false);
+  set_dump_as_layout(false);
+  set_dump_child_frames(false);
 
   set_is_printing(false);
   set_printing_frame("");

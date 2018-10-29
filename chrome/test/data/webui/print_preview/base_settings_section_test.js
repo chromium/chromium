@@ -18,20 +18,22 @@ cr.define('base_settings_section_test', function() {
       settingsSection =
           document.createElement('print-preview-settings-section');
       document.body.appendChild(settingsSection);
+      Polymer.dom.flush();
     });
 
     // Test that key events that would result in invalid values are blocked.
     test(assert(TestNames.ManagedShowsEnterpriseIcon), function() {
-      const icon = settingsSection.$$('iron-icon');
-
-      // Default initial state is that the section is not managed, so the icon
-      // is hidden.
-      assertTrue(icon.hidden);
+      // No icons until managed is set.
+      let icons = settingsSection.shadowRoot.querySelectorAll('iron-icon');
+      assertEquals(0, icons.length);
       assertFalse(settingsSection.managed);
 
       // Simulate setting the section to managed and verify icon appears.
       settingsSection.managed = true;
-      assertFalse(icon.hidden);
+      Polymer.dom.flush();
+      icons = settingsSection.shadowRoot.querySelectorAll('iron-icon');
+      assertEquals(1, icons.length);
+      assertFalse(icons[0].hidden);
     });
   });
 

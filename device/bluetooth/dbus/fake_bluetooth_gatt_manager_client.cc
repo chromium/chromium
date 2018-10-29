@@ -145,8 +145,7 @@ void FakeBluetoothGattManagerClient::RegisterApplicationServiceProvider(
 
 void FakeBluetoothGattManagerClient::UnregisterApplicationServiceProvider(
     FakeBluetoothGattApplicationServiceProvider* provider) {
-  ApplicationMap::iterator iter =
-      application_map_.find(provider->object_path());
+  auto iter = application_map_.find(provider->object_path());
   if (iter != application_map_.end() && iter->second.first == provider)
     application_map_.erase(iter);
 }
@@ -154,14 +153,14 @@ void FakeBluetoothGattManagerClient::UnregisterApplicationServiceProvider(
 FakeBluetoothGattManagerClient::ApplicationProvider*
 FakeBluetoothGattManagerClient::GetApplicationServiceProvider(
     const dbus::ObjectPath& object_path) {
-  ApplicationMap::iterator iter = application_map_.find(object_path);
+  auto iter = application_map_.find(object_path);
   return (iter != application_map_.end()) ? &iter->second : nullptr;
 }
 
 void FakeBluetoothGattManagerClient::RegisterServiceServiceProvider(
     FakeBluetoothGattServiceServiceProvider* provider) {
   // Ignore, if a service provider is already registered for the object path.
-  ServiceMap::iterator iter = service_map_.find(provider->object_path());
+  auto iter = service_map_.find(provider->object_path());
   if (iter != service_map_.end()) {
     VLOG(1) << "GATT service service provider already registered for "
             << "object path: " << provider->object_path().value();
@@ -173,8 +172,7 @@ void FakeBluetoothGattManagerClient::RegisterServiceServiceProvider(
 void FakeBluetoothGattManagerClient::RegisterCharacteristicServiceProvider(
     FakeBluetoothGattCharacteristicServiceProvider* provider) {
   // Ignore, if a service provider is already registered for the object path.
-  CharacteristicMap::iterator iter =
-      characteristic_map_.find(provider->object_path());
+  auto iter = characteristic_map_.find(provider->object_path());
   if (iter != characteristic_map_.end()) {
     VLOG(1) << "GATT characteristic service provider already registered for "
             << "object path: " << provider->object_path().value();
@@ -186,7 +184,7 @@ void FakeBluetoothGattManagerClient::RegisterCharacteristicServiceProvider(
 void FakeBluetoothGattManagerClient::RegisterDescriptorServiceProvider(
     FakeBluetoothGattDescriptorServiceProvider* provider) {
   // Ignore, if a service provider is already registered for the object path.
-  DescriptorMap::iterator iter = descriptor_map_.find(provider->object_path());
+  auto iter = descriptor_map_.find(provider->object_path());
   if (iter != descriptor_map_.end()) {
     VLOG(1) << "GATT descriptor service provider already registered for "
             << "object path: " << provider->object_path().value();
@@ -197,7 +195,7 @@ void FakeBluetoothGattManagerClient::RegisterDescriptorServiceProvider(
 
 void FakeBluetoothGattManagerClient::UnregisterServiceServiceProvider(
     FakeBluetoothGattServiceServiceProvider* provider) {
-  ServiceMap::iterator iter = service_map_.find(provider->object_path());
+  auto iter = service_map_.find(provider->object_path());
   if (iter != service_map_.end() && iter->second == provider)
     service_map_.erase(iter);
 }
@@ -215,7 +213,7 @@ void FakeBluetoothGattManagerClient::UnregisterDescriptorServiceProvider(
 FakeBluetoothGattServiceServiceProvider*
 FakeBluetoothGattManagerClient::GetServiceServiceProvider(
     const dbus::ObjectPath& object_path) const {
-  ServiceMap::const_iterator iter = service_map_.find(object_path);
+  auto iter = service_map_.find(object_path);
   if (iter == service_map_.end())
     return NULL;
   return iter->second;
@@ -224,8 +222,7 @@ FakeBluetoothGattManagerClient::GetServiceServiceProvider(
 FakeBluetoothGattCharacteristicServiceProvider*
 FakeBluetoothGattManagerClient::GetCharacteristicServiceProvider(
     const dbus::ObjectPath& object_path) const {
-  CharacteristicMap::const_iterator iter =
-      characteristic_map_.find(object_path);
+  auto iter = characteristic_map_.find(object_path);
   if (iter == characteristic_map_.end())
     return NULL;
   return iter->second;
@@ -234,7 +231,7 @@ FakeBluetoothGattManagerClient::GetCharacteristicServiceProvider(
 FakeBluetoothGattDescriptorServiceProvider*
 FakeBluetoothGattManagerClient::GetDescriptorServiceProvider(
     const dbus::ObjectPath& object_path) const {
-  DescriptorMap::const_iterator iter = descriptor_map_.find(object_path);
+  auto iter = descriptor_map_.find(object_path);
   if (iter == descriptor_map_.end())
     return NULL;
   return iter->second;

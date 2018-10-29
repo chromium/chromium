@@ -41,7 +41,7 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     int64_t registration_id,
     base::WeakPtr<ServiceWorkerContextCore> context)
-    : pattern_(options.scope),
+    : scope_(options.scope),
       update_via_cache_(options.update_via_cache),
       registration_id_(registration_id),
       is_deleted_(false),
@@ -104,7 +104,7 @@ void ServiceWorkerRegistration::NotifyVersionAttributesChanged(
 ServiceWorkerRegistrationInfo ServiceWorkerRegistration::GetInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return ServiceWorkerRegistrationInfo(
-      pattern(), update_via_cache(), registration_id_,
+      scope(), update_via_cache(), registration_id_,
       is_deleted_ ? ServiceWorkerRegistrationInfo::IS_DELETED
                   : ServiceWorkerRegistrationInfo::IS_NOT_DELETED,
       GetVersionInfo(active_version_.get()),
@@ -219,7 +219,7 @@ void ServiceWorkerRegistration::ActivateWaitingVersionWhenReady() {
       // If the waiting worker is ready and the active worker needs to be
       // swapped out, ask the active worker to trigger idle timer as soon as
       // possible.
-      active_version()->endpoint()->SetIdleTimerDelayToZero();
+      active_version()->TriggerIdleTerminationAsap();
     }
     StartLameDuckTimer();
   }
@@ -231,7 +231,7 @@ void ServiceWorkerRegistration::ClaimClients() {
 
   for (std::unique_ptr<ServiceWorkerContextCore::ProviderHostIterator> it =
            context_->GetClientProviderHostIterator(
-               pattern_.GetOrigin(), false /* include_reserved_clients */);
+               scope_.GetOrigin(), false /* include_reserved_clients */);
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerProviderHost* host = it->GetProviderHost();
     if (host->controller() == active_version())
@@ -251,7 +251,7 @@ void ServiceWorkerRegistration::ClearWhenReady() {
 
   context_->storage()->NotifyUninstallingRegistration(this);
   context_->storage()->DeleteRegistration(
-      id(), pattern().GetOrigin(),
+      id(), scope().GetOrigin(),
       AdaptCallbackForRepeating(
           base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this)));
 
@@ -302,7 +302,7 @@ void ServiceWorkerRegistration::OnNoControllees(ServiceWorkerVersion* version) {
       // If the waiting worker is ready and the active worker needs to be
       // swapped out, ask the active worker to trigger idle timer as soon as
       // possible.
-      active_version()->endpoint()->SetIdleTimerDelayToZero();
+      active_version()->TriggerIdleTerminationAsap();
     }
     StartLameDuckTimer();
   }
@@ -313,7 +313,7 @@ void ServiceWorkerRegistration::OnNoWork(ServiceWorkerVersion* version) {
     return;
   DCHECK_EQ(active_version(), version);
   if (IsReadyToActivate())
-    ActivateWaitingVersion(false /* delay */);
+    ActivateWaitingVersion(true /* delay */);
 }
 
 bool ServiceWorkerRegistration::IsReadyToActivate() const {
@@ -327,7 +327,7 @@ bool ServiceWorkerRegistration::IsReadyToActivate() const {
     return true;
   }
   if (IsLameDuckActiveVersion()) {
-    return !active->HasWorkInBrowser() ||
+    return active->HasNoWork() ||
            waiting->TimeSinceSkipWaiting() > kMaxLameDuckTime ||
            active->TimeSinceNoControllees() > kMaxLameDuckTime;
   }
@@ -450,7 +450,7 @@ void ServiceWorkerRegistration::DeleteVersion(
   if (!active_version() && !waiting_version()) {
     // Delete the records from the db.
     context_->storage()->DeleteRegistration(
-        id(), pattern().GetOrigin(),
+        id(), scope().GetOrigin(),
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
     // But not from memory if there is a version in the pipeline.
     // TODO(falken): Fix this logic. There could be a running register job for

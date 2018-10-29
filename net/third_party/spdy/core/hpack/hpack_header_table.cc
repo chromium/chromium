@@ -62,7 +62,7 @@ const HpackEntry* HpackHeaderTable::GetByIndex(size_t index) {
 
 const HpackEntry* HpackHeaderTable::GetByName(SpdyStringPiece name) {
   {
-    NameToEntryMap::const_iterator it = static_name_index_.find(name);
+    auto it = static_name_index_.find(name);
     if (it != static_name_index_.end()) {
       return it->second;
     }
@@ -84,13 +84,13 @@ const HpackEntry* HpackHeaderTable::GetByNameAndValue(SpdyStringPiece name,
                                                       SpdyStringPiece value) {
   HpackEntry query(name, value);
   {
-    UnorderedEntrySet::const_iterator it = static_index_.find(&query);
+    auto it = static_index_.find(&query);
     if (it != static_index_.end()) {
       return *it;
     }
   }
   {
-    UnorderedEntrySet::const_iterator it = dynamic_index_.find(&query);
+    auto it = dynamic_index_.find(&query);
     if (it != dynamic_index_.end()) {
       const HpackEntry* result = *it;
       if (debug_visitor_ != nullptr) {
@@ -150,7 +150,7 @@ size_t HpackHeaderTable::EvictionCountForEntry(SpdyStringPiece name,
 
 size_t HpackHeaderTable::EvictionCountToReclaim(size_t reclaim_size) const {
   size_t count = 0;
-  for (EntryTable::const_reverse_iterator it = dynamic_entries_.rbegin();
+  for (auto it = dynamic_entries_.rbegin();
        it != dynamic_entries_.rend() && reclaim_size != 0; ++it, ++count) {
     reclaim_size -= std::min(reclaim_size, it->Size());
   }
@@ -163,7 +163,7 @@ void HpackHeaderTable::Evict(size_t count) {
     HpackEntry* entry = &dynamic_entries_.back();
 
     size_ -= entry->Size();
-    UnorderedEntrySet::iterator it = dynamic_index_.find(entry);
+    auto it = dynamic_index_.find(entry);
     DCHECK(it != dynamic_index_.end());
     // Only remove an entry from the index if its insertion index matches;
     // otherwise, the index refers to another entry with the same name and
@@ -171,7 +171,7 @@ void HpackHeaderTable::Evict(size_t count) {
     if ((*it)->InsertionIndex() == entry->InsertionIndex()) {
       dynamic_index_.erase(it);
     }
-    NameToEntryMap::iterator name_it = dynamic_name_index_.find(entry->name());
+    auto name_it = dynamic_name_index_.find(entry->name());
     DCHECK(name_it != dynamic_name_index_.end());
     // Only remove an entry from the literal index if its insertion index
     /// matches; otherwise, the index refers to another entry with the same
@@ -244,8 +244,7 @@ const HpackEntry* HpackHeaderTable::TryAddEntry(SpdyStringPiece name,
 
 void HpackHeaderTable::DebugLogTableState() const {
   DVLOG(2) << "Dynamic table:";
-  for (EntryTable::const_iterator it = dynamic_entries_.begin();
-       it != dynamic_entries_.end(); ++it) {
+  for (auto it = dynamic_entries_.begin(); it != dynamic_entries_.end(); ++it) {
     DVLOG(2) << "  " << it->GetDebugString();
   }
   DVLOG(2) << "Full Static Index:";

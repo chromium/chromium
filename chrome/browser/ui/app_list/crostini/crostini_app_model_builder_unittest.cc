@@ -73,7 +73,7 @@ std::string GetFullName(const std::string& app_name) {
 std::vector<std::string> AppendRootFolderId(
     const std::vector<std::string> ids) {
   std::vector<std::string> result = ids;
-  result.emplace_back(kCrostiniFolderId);
+  result.emplace_back(crostini::kCrostiniFolderId);
   return result;
 }
 
@@ -126,18 +126,18 @@ class CrostiniAppModelBuilderTest : public AppListTestBase {
 
 // Test that the Terminal app is only shown when Crostini is enabled
 TEST_F(CrostiniAppModelBuilderTest, EnableCrostini) {
-  SetCrostiniUIAllowedForTesting(true);
+  crostini::SetCrostiniUIAllowedForTesting(true);
   EXPECT_EQ(0u, model_updater_->ItemCount());
 
   CrostiniTestHelper::EnableCrostini(profile());
   // Root folder + terminal app.
-  EXPECT_THAT(
-      GetAppIds(model_updater_.get()),
-      testing::UnorderedElementsAre(kCrostiniFolderId, kCrostiniTerminalId));
+  EXPECT_THAT(GetAppIds(model_updater_.get()),
+              testing::UnorderedElementsAre(crostini::kCrostiniFolderId,
+                                            crostini::kCrostiniTerminalId));
   EXPECT_THAT(GetAppNames(model_updater_.get()),
               testing::UnorderedElementsAre(kRootFolderName,
                                             GetFullName(TerminalAppName())));
-  SetCrostiniUIAllowedForTesting(false);
+  crostini::SetCrostiniUIAllowedForTesting(false);
 }
 
 TEST_F(CrostiniAppModelBuilderTest, AppInstallation) {
@@ -180,7 +180,7 @@ TEST_F(CrostiniAppModelBuilderTest, UpdateApps) {
   EXPECT_EQ(3u, model_updater_->ItemCount());
   EXPECT_THAT(GetAppIds(model_updater_.get()),
               testing::UnorderedElementsAre(
-                  kCrostiniFolderId, kCrostiniTerminalId,
+                  crostini::kCrostiniFolderId, crostini::kCrostiniTerminalId,
                   CrostiniTestHelper::GenerateAppId(kDummpyApp2Id)));
 
   // Setting NoDisplay to false should unhide an app.
@@ -230,8 +230,9 @@ TEST_F(CrostiniAppModelBuilderTest, DisableCrostini) {
 
   // The uninstall flow removes all apps before setting the CrostiniEnabled pref
   // to false, so we need to do that explicitly too.
-  RegistryService()->ClearApplicationList(kCrostiniDefaultVmName,
-                                          kCrostiniDefaultContainerName);
+  RegistryService()->ClearApplicationList(
+      crostini::kCrostiniDefaultVmName,
+      crostini::kCrostiniDefaultContainerName);
   CrostiniTestHelper::DisableCrostini(profile());
   // Root folder is left. We rely on default handling of empty folder.
   EXPECT_EQ(1u, model_updater_->ItemCount());

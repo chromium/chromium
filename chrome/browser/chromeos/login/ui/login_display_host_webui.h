@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
+#include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/signin_screen_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
@@ -45,6 +46,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public content::WebContentsObserver,
                               public chromeos::SessionManagerClient::Observer,
                               public chromeos::CrasAudioHandler::AudioObserver,
+                              public chromeos::OobeConfiguration::Observer,
                               public display::DisplayObserver,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
@@ -109,6 +111,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // chromeos::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
+
+  // chromeos::OobeConfiguration::Observer:
+  void OnOobeConfigurationChanged() override;
 
   // chromeos::CrasAudioHandler::AudioObserver:
   void OnActiveOutputNodeChanged() override;
@@ -225,6 +230,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // True if WebUI is initialized in hidden state and we're waiting for
   // wallpaper load animation to finish.
   bool waiting_for_wallpaper_load_;
+
+  // True if WebUI is initialized in hidden state, the OOBE is not completed
+  // and we're waiting for OOBE configuration check to finish.
+  bool waiting_for_configuration_ = false;
+
+  static bool disable_restrictive_proxy_check_for_test_;
 
   // How many times renderer has crashed.
   int crash_count_ = 0;

@@ -73,13 +73,15 @@ void PassphraseCollectionViewControllerTest::SetUp() {
   TestChromeBrowserState::Builder test_cbs_builder;
   test_cbs_builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFake::CreateAuthenticationService);
+      base::BindRepeating(
+          &AuthenticationServiceFake::CreateAuthenticationService));
   test_cbs_builder.SetPrefService(CreatePrefService());
   chrome_browser_state_ = test_cbs_builder.Build();
 
   fake_sync_service_ = static_cast<browser_sync::ProfileSyncServiceMock*>(
       ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          chrome_browser_state_.get(), CreateNiceProfileSyncServiceMock));
+          chrome_browser_state_.get(),
+          base::BindRepeating(&CreateNiceProfileSyncServiceMock)));
   ON_CALL(*fake_sync_service_, GetRegisteredDataTypes())
       .WillByDefault(Return(syncer::ModelTypeSet()));
   fake_sync_service_->Initialize();

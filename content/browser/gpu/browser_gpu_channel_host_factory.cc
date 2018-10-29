@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
@@ -25,6 +26,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -101,8 +103,8 @@ BrowserGpuChannelHostFactory::EstablishRequest::Create(
   scoped_refptr<EstablishRequest> establish_request =
       new EstablishRequest(gpu_client_id, gpu_client_tracing_id);
   // PostTask outside the constructor to ensure at least one reference exists.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO,
           establish_request));
@@ -164,8 +166,8 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablishedOnIO(
         base::BindOnce(
             &BrowserGpuChannelHostFactory::EstablishRequest::RestartTimeout,
             this));
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO,
             this));
@@ -265,8 +267,8 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
     base::FilePath cache_dir =
         GetContentClient()->browser()->GetShaderDiskCacheDirectory();
     if (!cache_dir.empty()) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO,
               gpu_client_id_, cache_dir));
@@ -277,8 +279,8 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
       base::FilePath gr_cache_dir =
           GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
       if (!gr_cache_dir.empty()) {
-        BrowserThread::PostTask(
-            BrowserThread::IO, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::IO},
             base::BindOnce(
                 &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
                 gr_cache_dir));
@@ -349,6 +351,21 @@ BrowserGpuChannelHostFactory::GetGpuMemoryBufferManager() {
   return gpu_memory_buffer_manager_.get();
 }
 
+// Ensures that any pending timeout is cancelled when we are backgrounded.
+// Restarts the timeout when we return to the foreground.
+void BrowserGpuChannelHostFactory::SetApplicationVisible(bool is_visible) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  if (is_visible_ == is_visible)
+    return;
+
+  is_visible_ = is_visible;
+  if (is_visible_) {
+    RestartTimeout();
+  } else {
+    timeout_.Stop();
+  }
+}
+
 gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
   if (gpu_channel_.get() && !gpu_channel_->IsLost())
     return gpu_channel_.get();
@@ -375,7 +392,9 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
     return;
   }
 
-  if (!pending_request_)
+  // Don't restart the timeout if we aren't visible. This function will be
+  // re-called when we become visible again.
+  if (!pending_request_ || !is_visible_)
     return;
 
 #if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \

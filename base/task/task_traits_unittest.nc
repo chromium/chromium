@@ -24,7 +24,7 @@ constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
 constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
                                MayBlock(),
                                TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
-#elif defined(NCTEST_TASK_TRAITS_INVALID_TYPE)  // [r"no matching function for call to 'MakeTaskTraitsExtension'"]
+#elif defined(NCTEST_TASK_TRAITS_INVALID_TYPE)  // [r"no matching constructor for initialization of 'const base::TaskTraits'"]
 constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};
 #endif
 

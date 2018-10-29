@@ -160,12 +160,8 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
   PaintFlags simple_flags;
   simple_flags.setColor(SkColorSetARGB(255, 12, 23, 34));
 
-  SkBitmap non_discardable_bitmap;
-  non_discardable_bitmap.allocN32Pixels(128, 128);
-  non_discardable_bitmap.setImmutable();
-  sk_sp<SkImage> non_discardable_image =
-      SkImage::MakeFromBitmap(non_discardable_bitmap);
-
+  auto non_discardable_image =
+      CreateNonDiscardablePaintImage(gfx::Size(128, 128));
   recording_source->add_draw_rect_with_flags(gfx::Rect(0, 0, 256, 256),
                                              simple_flags);
   recording_source->add_draw_rect_with_flags(gfx::Rect(128, 128, 512, 512),
@@ -274,12 +270,8 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       CreateRecordingSource(recorded_viewport);
-
-  SkBitmap non_discardable_bitmap;
-  non_discardable_bitmap.allocN32Pixels(512, 512);
-  non_discardable_bitmap.setImmutable();
-  sk_sp<SkImage> non_discardable_image =
-      SkImage::MakeFromBitmap(non_discardable_bitmap);
+  PaintImage non_discardable_image =
+      CreateNonDiscardablePaintImage(gfx::Size(512, 512));
 
   PaintImage discardable_image[2][2];
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(128, 128));

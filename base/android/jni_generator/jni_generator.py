@@ -1136,7 +1136,7 @@ ${TRACE_EVENT}\
 
     if called_by_native.static or called_by_native.is_constructor:
       first_param_in_declaration = ''
-      first_param_in_call = ('%s_clazz(env)' % GetBinaryClassName(java_class))
+      first_param_in_call = 'clazz'
     else:
       first_param_in_declaration = (
           ', const base::android::JavaRef<jobject>& obj')
@@ -1153,9 +1153,11 @@ ${TRACE_EVENT}\
     if called_by_native.static_cast:
       pre_call = 'static_cast<%s>(' % called_by_native.static_cast
       post_call = ')'
-    check_exception = ''
+    check_exception = 'Unchecked'
+    method_id_member_name = 'call_context.method_id'
     if not called_by_native.unchecked:
-      check_exception = 'jni_generator::CheckException(env);'
+      check_exception = 'Checked'
+      method_id_member_name = 'call_context.base.method_id'
     return_type = JavaDataTypeToC(called_by_native.return_type)
     optional_error_return = JavaReturnValueToC(called_by_native.return_type)
     if optional_error_return:
@@ -1202,6 +1204,7 @@ ${TRACE_EVENT}\
         'PROFILING_LEAVING_NATIVE': profiling_leaving_native,
         'JNI_NAME': jni_name,
         'JNI_SIGNATURE': jni_signature,
+        'METHOD_ID_MEMBER_NAME': method_id_member_name,
         'METHOD_ID_VAR_NAME': called_by_native.method_id_var_name,
         'METHOD_ID_TYPE': 'STATIC' if called_by_native.static else 'INSTANCE',
         'JAVA_NAME_FULL': java_name_full,
@@ -1220,11 +1223,15 @@ ${FUNCTION_SIGNATURE} {""")
     template = Template("""
 static std::atomic<jmethodID> g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME}(nullptr);
 ${FUNCTION_HEADER}
+  jclass clazz = ${JAVA_CLASS}_clazz(env);
   CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL},
       ${JAVA_CLASS}_clazz(env)${OPTIONAL_ERROR_RETURN});
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContext${CHECK_EXCEPTION} call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_${METHOD_ID_TYPE}>(
-          env, ${JAVA_CLASS}_clazz(env),
+          env,
+          clazz,
           "${JNI_NAME}",
           ${JNI_SIGNATURE},
           &g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME});
@@ -1233,8 +1240,7 @@ ${TRACE_EVENT}\
 ${PROFILING_LEAVING_NATIVE}\
   ${RETURN_DECLARATION}
      ${PRE_CALL}env->${ENV_CALL}(${FIRST_PARAM_IN_CALL},
-          method_id${PARAMS_IN_CALL})${POST_CALL};
-  ${CHECK_EXCEPTION}
+          ${METHOD_ID_MEMBER_NAME}${PARAMS_IN_CALL})${POST_CALL};
   ${RETURN_CLAUSE}
 }""")
     values = self.GetCalledByNativeValues(called_by_native)
@@ -1254,7 +1260,7 @@ ${PROFILING_LEAVING_NATIVE}\
 
   def GetTraceEventForNameTemplate(self, name_template, values):
     name = Template(name_template).substitute(values)
-    return '  TRACE_EVENT0("jni", "%s");' % name
+    return '  TRACE_EVENT0("jni", "%s");\n' % name
 
 
 def WrapOutput(output):

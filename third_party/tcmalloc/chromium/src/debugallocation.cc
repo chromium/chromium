@@ -775,6 +775,17 @@ class MallocBlock {
     return FromRawPointer(const_cast<void*>(p));
   }
 
+  // Return whether p points to memory returned by memalign.
+  // Requires that p be non-zero and has been checked for sanity with
+  // FromRawPointer().
+  static bool IsMemaligned(const void* p) {
+    const MallocBlock* mb = reinterpret_cast<const MallocBlock*>(
+        reinterpret_cast<const char*>(p) - MallocBlock::data_offset());
+    // If the offset is non-zero, the block was allocated by memalign
+    // (see FromRawPointer above).
+    return mb->offset_ != 0;
+  }
+
   void Check(int type) const {
     alloc_map_lock_.Lock();
     CheckLocked(type);
@@ -1287,13 +1298,20 @@ extern "C" PERFTOOLS_DLL_DECL void* tc_realloc(void* ptr, size_t size) PERFTOOLS
     MallocHook::InvokeNewHook(ptr, size);
     return ptr;
   }
+  MallocBlock* old = MallocBlock::FromRawPointer(ptr);
+  old->Check(MallocBlock::kMallocType);
+  if (MallocBlock::IsMemaligned(ptr)) {
+    RAW_LOG(FATAL,
+            "realloc/memalign mismatch at %p: "
+            "non-NULL pointers passed to realloc must be obtained "
+            "from malloc, calloc, or realloc",
+            ptr);
+  }
   if (size == 0) {
     MallocHook::InvokeDeleteHook(ptr);
     DebugDeallocate(ptr, MallocBlock::kMallocType, 0);
     return NULL;
   }
-  MallocBlock* old = MallocBlock::FromRawPointer(ptr);
-  old->Check(MallocBlock::kMallocType);
   MallocBlock* p = MallocBlock::Allocate(size, MallocBlock::kMallocType);
 
   // If realloc fails we are to leave the old block untouched and

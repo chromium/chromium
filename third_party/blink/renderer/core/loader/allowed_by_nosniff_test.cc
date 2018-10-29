@@ -189,4 +189,41 @@ TEST_F(AllowedByNosniffTest, Counters) {
   }
 }
 
+TEST_F(AllowedByNosniffTest, AllTheSchemes) {
+  // We test various URL schemes.
+  // To force a decision based on the scheme, we give all responses an
+  // invalid Content-Type plus a "nosniff" header. That way, all Content-Type
+  // based checks are always denied and we can test for whether this is decided
+  // based on the URL or not.
+  struct {
+    const char* url;
+    bool allowed;
+  } data[] = {
+      {"http://example.com/bla.js", false},
+      {"https://example.com/bla.js", false},
+      {"file://etc/passwd.js", true},
+      {"file://etc/passwd", false},
+      {"chrome://dino/dino.js", true},
+      {"chrome://dino/dino.css", false},
+      {"ftp://example.com/bla.js", true},
+      {"ftp://example.com/bla.txt", false},
+
+      {"file://home/potato.txt", false},
+      {"file://home/potato.js", true},
+      {"file://home/potato.mjs", true},
+      {"chrome://dino/dino.mjs", true},
+  };
+
+  for (auto& testcase : data) {
+    SetUp();
+    SCOPED_TRACE(testing::Message() << "\n  url: " << testcase.url
+                                    << "\n  allowed: " << testcase.allowed);
+    ResourceResponse response(KURL(testcase.url));
+    response.SetHTTPHeaderField("Content-Type", "invalid");
+    response.SetHTTPHeaderField("X-Content-Type-Options", "nosniff");
+    EXPECT_EQ(testcase.allowed,
+              AllowedByNosniff::MimeTypeAsScript(doc(), response));
+  }
+}
+
 }  // namespace blink

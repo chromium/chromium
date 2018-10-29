@@ -69,8 +69,8 @@ class ImageViewTest : public ViewsTestBase,
   }
 
   int CurrentImageOriginForParam() {
-    gfx::Point origin =
-        image_view()->ComputeImageOrigin(image_view()->GetImageSize());
+    image_view()->UpdateImageOrigin();
+    gfx::Point origin = image_view()->GetImageBounds().origin();
     return GetParam() == Axis::kHorizontal ? origin.x() : origin.y();
   }
 
@@ -124,6 +124,21 @@ TEST_P(ImageViewTest, CenterAlignment) {
   SetRTL(false);
   widget()->GetContentsView()->Layout();
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
+}
+
+TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {
+  gfx::Rect image_view_bounds(10, 10, 80, 80);
+  image_view()->SetHorizontalAlignment(ImageView::CENTER);
+  image_view()->SetBoundsRect(image_view_bounds);
+
+  SkBitmap bitmap;
+  constexpr int kImageSkiaSize = 20;
+  bitmap.allocN32Pixels(kImageSkiaSize, kImageSkiaSize);
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image_view()->SetImage(image_skia);
+
+  EXPECT_EQ(gfx::Point(30, 30), image_view()->GetImageBounds().origin());
+  EXPECT_EQ(image_view_bounds, image_view()->bounds());
 }
 
 INSTANTIATE_TEST_CASE_P(,

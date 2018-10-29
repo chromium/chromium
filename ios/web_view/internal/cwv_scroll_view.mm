@@ -168,6 +168,14 @@
   }
 }
 
+- (BOOL)webViewScrollViewShouldScrollToTop:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if ([_delegate respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+    return [_delegate scrollViewShouldScrollToTop:self];
+  }
+  return YES;
+}
+
 - (void)webViewScrollViewDidResetContentSize:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   self.contentSize = _proxy.contentSize;

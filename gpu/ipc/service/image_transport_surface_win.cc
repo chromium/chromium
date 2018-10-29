@@ -29,16 +29,16 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
 
   scoped_refptr<gl::GLSurface> surface;
   bool override_vsync_for_multi_window_swap = false;
+
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2) {
     auto vsync_provider =
         std::make_unique<gl::VSyncProviderWin>(surface_handle);
-    if (gl::GLSurfaceEGL::IsDirectCompositionSupported()) {
-      scoped_refptr<DirectCompositionSurfaceWin> egl_surface =
-          base::MakeRefCounted<DirectCompositionSurfaceWin>(
-              std::move(vsync_provider), delegate, surface_handle);
-      if (!egl_surface->Initialize())
+
+    if (DirectCompositionSurfaceWin::AreOverlaysSupported()) {
+      surface = base::MakeRefCounted<DirectCompositionSurfaceWin>(
+          std::move(vsync_provider), delegate, surface_handle);
+      if (!surface->Initialize())
         return nullptr;
-      surface = egl_surface;
     } else {
       surface = gl::InitializeGLSurface(
           base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(

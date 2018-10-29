@@ -86,6 +86,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDBusClientBundle {
     return bluetooth_profile_manager_client_.get();
   }
 
+  BluetoothAdapterClient* alternate_bluetooth_adapter_client() {
+    return alternate_bluetooth_adapter_client_.get();
+  }
+
  private:
   friend class BluezDBusManagerSetter;
 
@@ -108,6 +112,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDBusClientBundle {
       bluetooth_media_transport_client_;
   std::unique_ptr<BluetoothProfileManagerClient>
       bluetooth_profile_manager_client_;
+
+  // See "Alternate D-Bus Client" note in bluez_dbus_manager.h.
+  std::unique_ptr<BluetoothAdapterClient> alternate_bluetooth_adapter_client_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDBusClientBundle);
 };

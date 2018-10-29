@@ -43,9 +43,9 @@ IOSChromeLargeIconServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 IOSChromeLargeIconServiceFactory::GetDefaultFactory() {
-  return &BuildLargeIconService;
+  return base::BindRepeating(&BuildLargeIconService);
 }
 
 IOSChromeLargeIconServiceFactory::IOSChromeLargeIconServiceFactory()

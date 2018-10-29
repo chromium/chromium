@@ -1,12 +1,11 @@
 {
   "0": {
     "benchmarks": {
-      "experimental.startup.android.coldish": {}
+      "heap_profiling.mobile.disabled": {}
     }
   },
   "1": {
     "benchmarks": {
-      "heap_profiling.mobile.disabled": {},
       "heap_profiling.mobile.native": {}
     }
   },

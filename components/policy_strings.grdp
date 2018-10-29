@@ -331,11 +331,26 @@ Additional details:
   <message name="IDS_POLICY_STATUS_USER" desc="Title for the user policy status box.">
     User policies
   </message>
+<message name="IDS_POLICY_STATUS_MACHINE" desc="Title for the machine policy status box.">
+    Machine policies
+  </message>
   <message name="IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the device policy status box.">
     Enrollment domain:
   </message>
   <message name="IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN" desc="Label for the display domain in the device policy status box.">
     Display domain:
+  </message>
+  <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the machine policy status box.">
+    Enrollment domain:
+  </message>
+  <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_TOKEN" desc="Label for the enrollment token in the machine policy status box.">
+    Enrollment Token:
+  </message>
+  <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID" desc="Label for the device ID in the machine policy status box.">
+    Device ID:
+  </message>
+    <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_MACHINE_NAME" desc="Label for the machine name in the machine policy status box.">
+    Machine Name:
   </message>
   <message name="IDS_POLICY_LABEL_USERNAME" desc="Label for the username in the user policy status box.">
     User:

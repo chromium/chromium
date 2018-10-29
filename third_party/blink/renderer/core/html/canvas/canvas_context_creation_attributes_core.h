@@ -13,7 +13,7 @@
 namespace blink {
 
 class CORE_EXPORT CanvasContextCreationAttributesCore {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   CanvasContextCreationAttributesCore();
@@ -27,12 +27,12 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   bool depth = true;
   bool fail_if_major_performance_caveat = false;
   bool low_latency = false;
-  String pixel_format = "8-8-8-8";
+  String pixel_format = "uint8";
   bool premultiplied_alpha = true;
   bool preserve_drawing_buffer = false;
   bool stencil = false;
 
-  // This attribute is of type XRDevice, defined in modules/xr/XRDevice.h
+  // This attribute is of type XRDevice, defined in modules/xr/xr_device.h
   Member<ScriptWrappable> compatible_xr_device;
 
   void Trace(blink::Visitor*);

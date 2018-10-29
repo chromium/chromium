@@ -118,9 +118,9 @@ void TextTrackContainer::UpdateDefaultFontSize(
 
   // Avoid excessive FP precision issue.
   // C11 5.2.4.2.2:9 requires assignment and cast to remove extra precision, but
-  // the behavior is currently not portable. fontSize may have precision higher
-  // than m_fontSize thus straight comparison can fail despite they cast to the
-  // same float value.
+  // the behavior is currently not portable. font_size may have precision higher
+  // than default_font_size_ thus straight comparison can fail despite they cast
+  // to the same float value.
   volatile float& current_font_size = default_font_size_;
   float old_font_size = current_font_size;
   current_font_size = font_size;

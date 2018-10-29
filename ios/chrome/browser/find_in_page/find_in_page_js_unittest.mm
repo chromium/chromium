@@ -221,9 +221,26 @@ TEST_F(FindInPageJsTest, SearchForNonAscii) {
   NSString* result = ExecuteJavaScript([NSString
       stringWithFormat:@"__gCrWeb.findInPage.highlightWord('%@', false, 1000)",
                        kNonAscii]);
-  DCHECK(result);
+  ASSERT_TRUE(result);
   AssertJavaScriptValue(kJavaScriptIndex, 0);
   AssertJavaScriptValue(kJavaScriptSpansLength, 1);
+}
+
+TEST_F(FindInPageJsTest, SearchForWhitespace) {
+  LoadHtml(
+      @"<html><body> <div> </div> <h1> </h1><p> <span> </span> </p> "
+      @"</body></html>");
+  // Assert the index and span count contain their initialized values.
+  AssertJavaScriptValue(kJavaScriptIndex, -1);
+  AssertJavaScriptValue(kJavaScriptSpansLength, 0);
+
+  // Search for space. Performing the search sets the index to
+  // point to the first visible occurrence of the whitespace.
+  NSString* result =
+      ExecuteJavaScript(@"__gCrWeb.findInPage.highlightWord(' ', false, 1000)");
+  ASSERT_TRUE(result);
+  AssertJavaScriptValue(kJavaScriptIndex, 0);
+  AssertJavaScriptValue(kJavaScriptSpansLength, 8);
 }
 
 }  // namespace

@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#include "ios/chrome/browser/ui/util/dynamic_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,29 +44,8 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
 }
 
 int FontSizeTabHelper::GetSystemSuggestedFontSize() const {
-  // Scaling numbers are calculated by [UIFont
-  // preferredFontForTextStyle:UIFontTextStyleBody].pointSize, which are [14,
-  // 15, 16, 17(default), 19, 21, 23, 28, 33, 40, 47, 53].
-  static NSDictionary* font_size_map = @{
-    UIContentSizeCategoryUnspecified : @100,
-    UIContentSizeCategoryExtraSmall : @82,
-    UIContentSizeCategorySmall : @88,
-    UIContentSizeCategoryMedium : @94,
-    UIContentSizeCategoryLarge : @100,  // system default
-    UIContentSizeCategoryExtraLarge : @112,
-    UIContentSizeCategoryExtraExtraLarge : @124,
-    UIContentSizeCategoryExtraExtraExtraLarge : @135,
-    UIContentSizeCategoryAccessibilityMedium : @165,
-    UIContentSizeCategoryAccessibilityLarge : @194,
-    UIContentSizeCategoryAccessibilityExtraLarge : @235,
-    UIContentSizeCategoryAccessibilityExtraExtraLarge : @276,
-    UIContentSizeCategoryAccessibilityExtraExtraExtraLarge : @312,
-  };
-  UIContentSizeCategory category =
-      UIApplication.sharedApplication.preferredContentSizeCategory;
-  NSNumber* font_size = font_size_map[category];
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.iOS.NewLargerTextCategory", !font_size);
-  return font_size ? font_size.intValue : 100;
+  // Multiply by 100 as the web property needs a percentage.
+  return SystemSuggestedFontSizeMultiplier() * 100;
 }
 
 void FontSizeTabHelper::WebStateDestroyed(web::WebState* web_state) {

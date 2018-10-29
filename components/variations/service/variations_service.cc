@@ -12,7 +12,9 @@
 
 #include "base/base64.h"
 #include "base/base_switches.h"
+#include "base/bind.h"
 #include "base/build_time.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -103,6 +105,8 @@ std::string GetPlatformString() {
   return "chromeos";
 #elif defined(OS_ANDROID)
   return "android";
+#elif defined(OS_FUCHSIA)
+  return "fuchsia";
 #elif defined(OS_LINUX) || defined(OS_BSD) || defined(OS_SOLARIS)
   // Default BSD and SOLARIS to Linux to not break those builds, although these
   // platforms are not officially supported by Chrome.
@@ -254,6 +258,14 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
   return nullptr;
 }
 
+// Called when the VariationsSeedStore first stores a seed.
+void OnInitialSeedStored() {
+#if defined(OS_ANDROID)
+  android::MarkVariationsSeedAsStored();
+  android::ClearJavaFirstRunPrefs();
+#endif
+}
+
 }  // namespace
 
 VariationsService::VariationsService(
@@ -274,8 +286,11 @@ VariationsService::VariationsService(
                          local_state),
       field_trial_creator_(local_state,
                            client_.get(),
-                           ui_string_overrider,
-                           MaybeImportFirstRunSeed(local_state)),
+                           std::make_unique<VariationsSeedStore>(
+                               local_state,
+                               MaybeImportFirstRunSeed(local_state),
+                               base::BindOnce(&OnInitialSeedStored)),
+                           ui_string_overrider),
       weak_ptr_factory_(this) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
@@ -286,6 +301,7 @@ VariationsService::~VariationsService() {
 
 void VariationsService::PerformPreMainMessageLoopStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(field_trial_creator_.IsOverrideResourceMapEmpty());
 
   InitResourceRequestedAllowedNotifier();
 
@@ -809,6 +825,10 @@ bool VariationsService::SetupFieldTrials(
       kEnableGpuBenchmarking, kEnableFeatures, kDisableFeatures,
       unforceable_field_trials, variation_ids, CreateLowEntropyProvider(),
       std::move(feature_list), platform_field_trials, &safe_seed_manager_);
+}
+
+void VariationsService::OverrideCachedUIStrings() {
+  field_trial_creator_.OverrideCachedUIStrings();
 }
 
 std::string VariationsService::GetStoredPermanentCountry() {

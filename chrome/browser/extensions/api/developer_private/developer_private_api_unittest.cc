@@ -7,13 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
@@ -24,20 +23,13 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_service_impl.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/policy_constants.h"
 #include "components/services/unzip/unzip_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/notification_service.h"
@@ -50,10 +42,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install/extension_install_ui.h"
 #include "extensions/browser/mock_external_provider.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
@@ -68,9 +60,6 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
-
-using testing::Return;
-using testing::_;
 
 namespace extensions {
 
@@ -203,36 +192,24 @@ bool DeveloperPrivateApiUnitTest::RunFunction(
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
-  const char kManifest[] =
-      "{"
-      " \"name\": \"foo\","
-      " \"version\": \"1.0\","
-      " \"manifest_version\": 2,"
-      " \"permissions\": [\"*://*/*\"]"
-      "}";
+  constexpr char kManifest[] =
+      R"({
+           "name": "foo",
+           "version": "1.0",
+           "manifest_version": 2,
+           "permissions": ["*://*/*"]
+         })";
 
   test_extension_dirs_.push_back(std::make_unique<TestExtensionDir>());
   TestExtensionDir* dir = test_extension_dirs_.back().get();
   dir->WriteManifest(kManifest);
 
-  // TODO(devlin): We should extract out methods to load an unpacked extension
-  // synchronously. We do it in ExtensionBrowserTest, but that's not helpful
-  // for unittests.
-  TestExtensionRegistryObserver registry_observer(registry());
-  scoped_refptr<UnpackedInstaller> installer(
-      UnpackedInstaller::Create(service()));
-  installer->Load(dir->UnpackedPath());
-  base::FilePath extension_path =
-      base::MakeAbsoluteFilePath(dir->UnpackedPath());
-  const Extension* extension = nullptr;
-  do {
-    extension = registry_observer.WaitForExtensionLoaded();
-  } while (extension->path() != extension_path);
+  ChromeTestExtensionLoader loader(profile());
   // The fact that unpacked extensions get file access by default is an
   // irrelevant detail to these tests. Disable it.
-  ExtensionPrefs::Get(browser_context())->SetAllowFileAccess(extension->id(),
-                                                             false);
-  return extension;
+  loader.set_allow_file_access(false);
+
+  return loader.LoadExtension(dir->UnpackedPath()).get();
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
@@ -388,11 +365,11 @@ void DeveloperPrivateApiUnitTest::SetUp() {
   browser_.reset(new Browser(params));
 
   // Allow the API to be created.
-  EventRouterFactory::GetInstance()->SetTestingFactory(profile(),
-                                                       &BuildEventRouter);
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
 
   DeveloperPrivateAPI::GetFactoryInstance()->SetTestingFactory(
-      profile(), &BuildAPI);
+      profile(), base::BindRepeating(&BuildAPI));
 
   // Loading unpacked extensions through the developerPrivate API requires
   // developer mode to be enabled.

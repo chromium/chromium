@@ -809,9 +809,9 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
   for (const blink::WebFormControlElement& element : web_control_elements) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
-    CR_DEFINE_STATIC_LOCAL(WebString, kHidden, ("hidden"));
+    static base::NoDestructor<WebString> kHidden("hidden");
     const blink::WebInputElement* input = blink::ToWebInputElement(&element);
-    if (!input || input->FormControlTypeForAutofill() != kHidden)
+    if (!input || input->FormControlTypeForAutofill() != *kHidden)
       continue;
 
     // There must be a hidden input named "rart".

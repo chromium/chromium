@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_task_environment.h"
-#include "chromeos/cert_loader.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill_profile_client.h"
 #include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_state_handler.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -69,14 +69,14 @@ class NetworkCertMigratorTest : public testing::Test {
     service_test_->ClearServices();
     scoped_task_environment_.RunUntilIdle();
 
-    CertLoader::Initialize();
+    NetworkCertLoader::Initialize();
   }
 
   void TearDown() override {
     network_state_handler_->Shutdown();
     network_cert_migrator_.reset();
     network_state_handler_.reset();
-    CertLoader::Shutdown();
+    NetworkCertLoader::Shutdown();
     DBusThreadManager::Shutdown();
   }
 
@@ -90,7 +90,7 @@ class NetworkCertMigratorTest : public testing::Test {
     ASSERT_TRUE(test_client_cert_.get());
 
     int slot_id = -1;
-    test_client_cert_pkcs11_id_ = CertLoader::GetPkcs11IdAndSlotForCert(
+    test_client_cert_pkcs11_id_ = NetworkCertLoader::GetPkcs11IdAndSlotForCert(
         test_client_cert_.get(), &slot_id);
     ASSERT_FALSE(test_client_cert_pkcs11_id_.empty());
     ASSERT_NE(-1, slot_id);
@@ -222,7 +222,7 @@ class NetworkCertMigratorTest : public testing::Test {
 TEST_F(NetworkCertMigratorTest, DeferUserNetworkMigrationToUserCertDbLoad) {
   SetupNetworkWithEapCertId(ShillProfile::USER, true /* wifi */, "123:12345");
   // Load the system NSSDB only first
-  CertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
 
   SetupNetworkHandlers();
   scoped_task_environment_.RunUntilIdle();
@@ -235,7 +235,7 @@ TEST_F(NetworkCertMigratorTest, DeferUserNetworkMigrationToUserCertDbLoad) {
   EXPECT_EQ(expected_cert_id, cert_id);
 
   // Load the user NSSDB now
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
   scoped_task_environment_.RunUntilIdle();
 
   // Since the PKCS11 ID is unknown, the certificate configuration of the shared
@@ -249,7 +249,7 @@ TEST_F(NetworkCertMigratorTest, DeferUserNetworkMigrationToUserCertDbLoad) {
 TEST_F(NetworkCertMigratorTest, RunSharedNetworkMigrationOnFirstCertDbLoad) {
   SetupNetworkWithEapCertId(ShillProfile::SHARED, true /* wifi */, "123:12345");
   // Load the system NSSDB only first
-  CertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
 
   SetupNetworkHandlers();
   scoped_task_environment_.RunUntilIdle();
@@ -262,7 +262,7 @@ TEST_F(NetworkCertMigratorTest, RunSharedNetworkMigrationOnFirstCertDbLoad) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateOnInitialization) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   // Add a network for migration before the handlers are initialized.
@@ -279,7 +279,7 @@ TEST_F(NetworkCertMigratorTest, MigrateOnInitialization) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateEapCertIdNoMatchingCert) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -298,7 +298,7 @@ TEST_F(NetworkCertMigratorTest, MigrateEapCertIdNoMatchingCert) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateEapCertIdNoSlotId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -318,7 +318,7 @@ TEST_F(NetworkCertMigratorTest, MigrateEapCertIdNoSlotId) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateWifiEapCertIdWrongSlotId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -338,7 +338,7 @@ TEST_F(NetworkCertMigratorTest, MigrateWifiEapCertIdWrongSlotId) {
 }
 
 TEST_F(NetworkCertMigratorTest, DoNotChangeEapCertIdWithCorrectSlotId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -359,7 +359,7 @@ TEST_F(NetworkCertMigratorTest, DoNotChangeEapCertIdWithCorrectSlotId) {
 }
 
 TEST_F(NetworkCertMigratorTest, IgnoreOpenVPNCertId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -382,7 +382,7 @@ TEST_F(NetworkCertMigratorTest, IgnoreOpenVPNCertId) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateEthernetEapCertIdWrongSlotId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();
@@ -404,7 +404,7 @@ TEST_F(NetworkCertMigratorTest, MigrateEthernetEapCertIdWrongSlotId) {
 }
 
 TEST_F(NetworkCertMigratorTest, MigrateIpsecCertIdWrongSlotId) {
-  CertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetUserNSSDB(test_user_nsscertdb_.get());
 
   SetupTestClientCert(&test_user_nssdb_);
   SetupNetworkHandlers();

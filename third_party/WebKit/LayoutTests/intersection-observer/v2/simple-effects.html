@@ -33,7 +33,7 @@ var target;
 var effects;
 
 if (window.internals) {
-  internals.DisableIntersectionObserverV2Throttle();
+  internals.DisableIntersectionObserverThrottleDelay();
 }
 
 runTestCycle(function() {
@@ -43,7 +43,7 @@ runTestCycle(function() {
   assert_true(!!effects, "effects exists");
   var observer = new IntersectionObserver(function(changes) {
     entries = entries.concat(changes)
-  }, {trackVisibility: true});
+  }, {trackVisibility: true, delay: 100});
   observer.observe(target);
   entries = entries.concat(observer.takeRecords());
   assert_equals(entries.length, 0, "No initial notifications.");

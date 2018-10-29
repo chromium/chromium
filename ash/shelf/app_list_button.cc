@@ -54,6 +54,12 @@ bool IsAssistantEnabled() {
          chromeos::switches::IsAssistantEnabled();
 }
 
+bool IsHomeLauncherShown() {
+  return Shell::Get()
+      ->app_list_controller()
+      ->IsHomeLauncherEnabledInTabletMode();
+}
+
 }  // namespace
 
 AppListButton::AppListButton(InkDropButtonListener* listener,
@@ -78,7 +84,7 @@ AppListButton::AppListButton(InkDropButtonListener* listener,
   set_ink_drop_visible_opacity(kShelfInkDropVisibleOpacity);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
-  SetSize(gfx::Size(kShelfControlSizeNewUi, kShelfControlSizeNewUi));
+  SetSize(gfx::Size(kShelfControlSize, kShelfControlSize));
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   set_notify_action(Button::NOTIFY_ON_PRESS);
 
@@ -99,7 +105,7 @@ AppListButton::~AppListButton() {
 void AppListButton::OnAppListShown() {
   // Do not show a highlight in tablet mode since the "homecher" view is always
   // open in the background.
-  if (shelf_view_->ShouldShowAppListButtonHighlight())
+  if (!IsHomeLauncherShown())
     AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
   is_showing_app_list_ = true;
   shelf_->UpdateAutoHideState();
@@ -124,6 +130,8 @@ void AppListButton::OnGestureEvent(ui::GestureEvent* event) {
         assistant_overlay_->EndAnimation();
         assistant_animation_delay_timer_->Stop();
       }
+      if (IsHomeLauncherShown())
+        AnimateInkDrop(views::InkDropState::ACTION_TRIGGERED, event);
       ImageButton::OnGestureEvent(event);
       return;
     case ui::ET_GESTURE_TAP_DOWN:
@@ -135,8 +143,10 @@ void AppListButton::OnGestureEvent(ui::GestureEvent* event) {
             base::Bind(&AppListButton::StartVoiceInteractionAnimation,
                        base::Unretained(this)));
       }
-      if (!Shell::Get()->app_list_controller()->IsVisible())
+      if (!Shell::Get()->app_list_controller()->IsVisible() ||
+          IsHomeLauncherShown()) {
         AnimateInkDrop(views::InkDropState::ACTION_PENDING, event);
+      }
       ImageButton::OnGestureEvent(event);
       return;
     case ui::ET_GESTURE_LONG_PRESS:

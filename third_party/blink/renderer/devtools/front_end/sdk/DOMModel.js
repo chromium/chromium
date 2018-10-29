@@ -947,7 +947,7 @@ SDK.DOMNode = class {
     const object = await node.resolveToObject();
     if (!object)
       return;
-    await object.callFunctionPromise(focusInPage);
+    await object.callFunction(focusInPage);
     object.release();
     node.highlightForTwoSeconds();
     this._domModel.target().pageAgent().bringToFront();
@@ -1594,9 +1594,11 @@ SDK.DOMModel = class extends SDK.SDKModel {
    * @param {boolean} includeUserAgentShadowDOM
    * @return {!Promise<?SDK.DOMNode>}
    */
-  nodeForLocation(x, y, includeUserAgentShadowDOM) {
-    return this._agent.getNodeForLocation(x, y, includeUserAgentShadowDOM)
-        .then(nodeId => nodeId ? this.nodeForId(nodeId) : null);
+  async nodeForLocation(x, y, includeUserAgentShadowDOM) {
+    const response = await this._agent.invoke_getNodeForLocation({x, y, includeUserAgentShadowDOM});
+    if (response[Protocol.Error] || !response.nodeId)
+      return null;
+    return this.nodeForId(response.nodeId);
   }
 
   /**

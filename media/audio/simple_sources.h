@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_converter.h"
@@ -47,10 +48,10 @@ class MEDIA_EXPORT SineWaveAudioSource
   int errors() { return errors_; }
 
  protected:
-  int channels_;
-  double f_;
-  int time_state_;
-  int cap_;
+  const int channels_;
+  const double f_;
+  int time_state_ GUARDED_BY(time_lock_);
+  int cap_ GUARDED_BY(time_lock_);
   int callbacks_;
   int errors_;
   base::Lock time_lock_;

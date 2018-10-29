@@ -889,14 +889,16 @@ TEST_F(UserMediaClientImplTest, DefaultConstraintsPropagate) {
 
   const VideoTrackAdapterSettings& track_settings =
       video_capture_settings.track_adapter_settings();
-  EXPECT_EQ(track_settings.max_width, MediaStreamVideoSource::kDefaultWidth);
-  EXPECT_EQ(track_settings.max_height, MediaStreamVideoSource::kDefaultHeight);
-  EXPECT_EQ(track_settings.min_aspect_ratio,
+  EXPECT_EQ(track_settings.target_width(),
+            MediaStreamVideoSource::kDefaultWidth);
+  EXPECT_EQ(track_settings.target_height(),
+            MediaStreamVideoSource::kDefaultHeight);
+  EXPECT_EQ(track_settings.min_aspect_ratio(),
             1.0 / MediaStreamVideoSource::kDefaultHeight);
-  EXPECT_EQ(track_settings.max_aspect_ratio,
+  EXPECT_EQ(track_settings.max_aspect_ratio(),
             MediaStreamVideoSource::kDefaultWidth);
   // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate, 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
 TEST_F(UserMediaClientImplTest, DefaultTabCapturePropagate) {
@@ -949,12 +951,12 @@ TEST_F(UserMediaClientImplTest, DefaultTabCapturePropagate) {
 
   const VideoTrackAdapterSettings& track_settings =
       video_capture_settings.track_adapter_settings();
-  EXPECT_EQ(track_settings.max_width, kDefaultScreenCastWidth);
-  EXPECT_EQ(track_settings.max_height, kDefaultScreenCastHeight);
-  EXPECT_EQ(track_settings.min_aspect_ratio, 1.0 / kMaxScreenCastDimension);
-  EXPECT_EQ(track_settings.max_aspect_ratio, kMaxScreenCastDimension);
+  EXPECT_EQ(track_settings.target_width(), kDefaultScreenCastWidth);
+  EXPECT_EQ(track_settings.target_height(), kDefaultScreenCastHeight);
+  EXPECT_EQ(track_settings.min_aspect_ratio(), 1.0 / kMaxScreenCastDimension);
+  EXPECT_EQ(track_settings.max_aspect_ratio(), kMaxScreenCastDimension);
   // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate, 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
 TEST_F(UserMediaClientImplTest, DefaultDesktopCapturePropagate) {
@@ -1008,12 +1010,12 @@ TEST_F(UserMediaClientImplTest, DefaultDesktopCapturePropagate) {
 
   const VideoTrackAdapterSettings& track_settings =
       video_capture_settings.track_adapter_settings();
-  EXPECT_EQ(track_settings.max_width, kDefaultScreenCastWidth);
-  EXPECT_EQ(track_settings.max_height, kDefaultScreenCastHeight);
-  EXPECT_EQ(track_settings.min_aspect_ratio, 1.0 / kMaxScreenCastDimension);
-  EXPECT_EQ(track_settings.max_aspect_ratio, kMaxScreenCastDimension);
+  EXPECT_EQ(track_settings.target_width(), kDefaultScreenCastWidth);
+  EXPECT_EQ(track_settings.target_height(), kDefaultScreenCastHeight);
+  EXPECT_EQ(track_settings.min_aspect_ratio(), 1.0 / kMaxScreenCastDimension);
+  EXPECT_EQ(track_settings.max_aspect_ratio(), kMaxScreenCastDimension);
   // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate, 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
 }
 
 TEST_F(UserMediaClientImplTest, NonDefaultAudioConstraintsPropagate) {

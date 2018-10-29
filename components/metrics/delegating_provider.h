@@ -33,9 +33,7 @@ class DelegatingProvider final : public MetricsProvider {
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void OnAppEnterBackground() override;
-  bool ProvideIndependentMetrics(
-      SystemProfileProto* system_profile_proto,
-      base::HistogramSnapshotManager* snapshot_manager) override;
+  bool HasIndependentMetrics() override;
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
   bool HasPreviousSessionData() override;

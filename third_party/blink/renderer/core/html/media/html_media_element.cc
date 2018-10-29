@@ -208,8 +208,9 @@ const char* BoolString(bool val) {
 }
 
 DocumentElementSetMap& DocumentToElementSetMap() {
-  DEFINE_STATIC_LOCAL(DocumentElementSetMap, map, (new DocumentElementSetMap));
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<DocumentElementSetMap>, map,
+                      (new DocumentElementSetMap));
+  return *map;
 }
 
 void AddElementToDocumentMap(HTMLMediaElement* element, Document* document) {
@@ -409,21 +410,10 @@ MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
   return result;
 }
 
-URLRegistry* HTMLMediaElement::media_stream_registry_ = nullptr;
-
 const HashSet<AtomicString>& HTMLMediaElement::GetCheckedAttributeNames()
     const {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, attribute_set, ({"src"}));
   return attribute_set;
-}
-
-void HTMLMediaElement::SetMediaStreamRegistry(URLRegistry* registry) {
-  DCHECK(!media_stream_registry_);
-  media_stream_registry_ = registry;
-}
-
-bool HTMLMediaElement::IsMediaStreamURL(const String& url) {
-  return media_stream_registry_ ? media_stream_registry_->Contains(url) : false;
 }
 
 bool HTMLMediaElement::IsHLSURL(const KURL& url) {
@@ -477,6 +467,10 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
           document.GetTaskRunner(TaskType::kInternalMedia),
           this,
           &HTMLMediaElement::CheckViewportIntersectionTimerFired),
+      removed_from_document_timer_(
+          document.GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &HTMLMediaElement::OnRemovedFromDocumentTimerFired),
       played_time_ranges_(),
       async_event_queue_(EventQueue::Create(GetExecutionContext(),
                                             TaskType::kMediaElementEvent)),
@@ -576,6 +570,8 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   check_viewport_intersection_timer_.MoveToNewTaskRunner(
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
   deferred_load_timer_.MoveToNewTaskRunner(
+      GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+  removed_from_document_timer_.MoveToNewTaskRunner(
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
 
   autoplay_policy_->DidMoveToNewDocument(old_document);
@@ -728,11 +724,9 @@ void HTMLMediaElement::RemovedFrom(ContainerNode& insertion_point) {
   BLINK_MEDIA_LOG << "removedFrom(" << (void*)this << ", " << insertion_point
                   << ")";
 
+  removed_from_document_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+
   HTMLElement::RemovedFrom(insertion_point);
-  if (insertion_point.InActiveDocument()) {
-    if (network_state_ > kNetworkEmpty)
-      PauseInternal();
-  }
 }
 
 void HTMLMediaElement::AttachLayoutTree(AttachContext& context) {
@@ -1002,7 +996,7 @@ void HTMLMediaElement::InvokeResourceSelectionAlgorithm() {
   // 3 - Set the media element's delaying-the-load-event flag to true (this
   // delays the load event)
   SetShouldDelayLoadEvent(true);
-  if (GetMediaControls())
+  if (GetMediaControls() && isConnected())
     GetMediaControls()->Reset();
 
   // 4 - Await a stable state, allowing the task that invoked this algorithm to
@@ -1405,8 +1399,7 @@ WebMediaPlayer::LoadType HTMLMediaElement::GetLoadType() const {
   if (media_source_)
     return WebMediaPlayer::kLoadTypeMediaSource;
 
-  if (src_object_ ||
-      (!current_src_.IsNull() && IsMediaStreamURL(current_src_.GetString())))
+  if (src_object_)
     return WebMediaPlayer::kLoadTypeMediaStream;
 
   return WebMediaPlayer::kLoadTypeURL;
@@ -1499,32 +1492,15 @@ bool HTMLMediaElement::IsSafeToLoadURL(const KURL& url,
   return true;
 }
 
-bool HTMLMediaElement::IsMediaDataCORSSameOrigin(
-    const SecurityOrigin* origin) const {
-  // If a service worker handled the request, we don't know if the origin in the
-  // src is the same as the actual response URL so can't rely on URL checks
-  // alone. So detect an opaque response via
-  // DidGetOpaqueResponseFromServiceWorker().
-  if (GetWebMediaPlayer() &&
-      GetWebMediaPlayer()->DidGetOpaqueResponseFromServiceWorker()) {
-    return false;
-  }
+bool HTMLMediaElement::IsMediaDataCORSSameOrigin() const {
+  if (!GetWebMediaPlayer())
+    return true;
 
-  // At this point, either a service worker was not used, or it didn't provide
-  // an opaque response, so continue with the normal checks.
-
-  // HasSingleSecurityOrigin() tells us whether the origin in the src
-  // is the same as the actual request (i.e. after redirects).
-  if (!HasSingleSecurityOrigin())
+  const auto network_state = GetWebMediaPlayer()->GetNetworkState();
+  if (network_state == WebMediaPlayer::kNetworkStateNetworkError)
     return false;
 
-  // DidPassCORSAccessCheck() means it was a successful CORS-enabled fetch (vs.
-  // non-CORS-enabled or failed). CanReadContent() does CheckAccess() on the
-  // URL plus allows data sources, to ensure that it is not a URL that requires
-  // CORS (basically same origin).
-  return (GetWebMediaPlayer() &&
-          GetWebMediaPlayer()->DidPassCORSAccessCheck()) ||
-         origin->CanReadContent(currentSrc());
+  return !GetWebMediaPlayer()->WouldTaintOrigin();
 }
 
 bool HTMLMediaElement::IsInCrossOriginFrame() const {
@@ -2001,7 +1977,7 @@ bool HTMLMediaElement::SupportsSave() const {
     return false;
 
   // MediaStream can't be downloaded.
-  if (IsMediaStreamURL(current_src_.GetString()))
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
     return false;
 
   // MediaSource can't be downloaded.
@@ -2263,10 +2239,15 @@ bool HTMLMediaElement::paused() const {
 }
 
 double HTMLMediaElement::defaultPlaybackRate() const {
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return 1.0;
   return default_playback_rate_;
 }
 
 void HTMLMediaElement::setDefaultPlaybackRate(double rate) {
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return;
+
   if (default_playback_rate_ == rate)
     return;
 
@@ -2275,12 +2256,16 @@ void HTMLMediaElement::setDefaultPlaybackRate(double rate) {
 }
 
 double HTMLMediaElement::playbackRate() const {
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return 1.0;
   return playback_rate_;
 }
 
 void HTMLMediaElement::setPlaybackRate(double rate,
                                        ExceptionState& exception_state) {
   BLINK_MEDIA_LOG << "setPlaybackRate(" << (void*)this << ", " << rate << ")";
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return;
 
   if (rate != 0.0 && (rate < kMinRate || rate > kMaxRate)) {
     UseCounter::Count(GetDocument(),
@@ -2330,11 +2315,15 @@ bool HTMLMediaElement::Autoplay() const {
 }
 
 String HTMLMediaElement::preload() const {
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return PreloadTypeToString(WebMediaPlayer::kPreloadNone);
   return PreloadTypeToString(PreloadType());
 }
 
 void HTMLMediaElement::setPreload(const AtomicString& preload) {
   BLINK_MEDIA_LOG << "setPreload(" << (void*)this << ", " << preload << ")";
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)
+    return;
   setAttribute(preloadAttr, preload);
 }
 
@@ -3008,7 +2997,8 @@ void HTMLMediaElement::DidRemoveTrackElement(HTMLTrackElement* track_element) {
   // corresponding text track from the media element's list of text tracks.
   text_tracks_->Remove(text_track);
 
-  size_t index = text_tracks_when_resource_selection_began_.Find(text_track);
+  wtf_size_t index =
+      text_tracks_when_resource_selection_began_.Find(text_track);
   if (index != kNotFound)
     text_tracks_when_resource_selection_began_.EraseAt(index);
 }
@@ -3612,6 +3602,7 @@ void HTMLMediaElement::ContextDestroyed(ExecutionContext*) {
     GetLayoutObject()->UpdateFromElement();
 
   StopPeriodicTimers();
+  removed_from_document_timer_.Stop();
 }
 
 bool HTMLMediaElement::HasPendingActivity() const {
@@ -3804,13 +3795,13 @@ void HTMLMediaElement::MarkCaptionAndSubtitleTracksAsUnconfigured() {
   }
 }
 
-unsigned HTMLMediaElement::webkitAudioDecodedByteCount() const {
+uint64_t HTMLMediaElement::webkitAudioDecodedByteCount() const {
   if (!GetWebMediaPlayer())
     return 0;
   return GetWebMediaPlayer()->AudioDecodedByteCount();
 }
 
-unsigned HTMLMediaElement::webkitVideoDecodedByteCount() const {
+uint64_t HTMLMediaElement::webkitVideoDecodedByteCount() const {
   if (!GetWebMediaPlayer())
     return 0;
   return GetWebMediaPlayer()->VideoDecodedByteCount();
@@ -4147,6 +4138,13 @@ EnumerationHistogram& HTMLMediaElement::ShowControlsHistogram() const {
   return histogram;
 }
 
+void HTMLMediaElement::OnRemovedFromDocumentTimerFired(TimerBase*) {
+  if (InActiveDocument())
+    return;
+
+  PauseInternal();
+}
+
 void HTMLMediaElement::ClearWeakMembers(Visitor* visitor) {
   if (!ThreadHeap::IsHeapObjectAlive(audio_source_node_)) {
     GetAudioSourceProvider().SetClient(nullptr);
@@ -4191,9 +4189,9 @@ void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
   }
 
   // Wrap the AudioBus channel data using WebVector.
-  size_t n = bus->NumberOfChannels();
+  unsigned n = bus->NumberOfChannels();
   WebVector<float*> web_audio_data(n);
-  for (size_t i = 0; i < n; ++i)
+  for (unsigned i = 0; i < n; ++i)
     web_audio_data[i] = bus->Channel(i)->MutableData();
 
   web_audio_source_provider_->ProvideInput(web_audio_data, frames_to_process);
@@ -4256,8 +4254,8 @@ void HTMLMediaElement::RequestPause() {
 }
 
 bool HTMLMediaElement::MediaShouldBeOpaque() const {
-  return !IsMediaDataCORSSameOrigin(GetDocument().GetSecurityOrigin()) &&
-         ready_state_ < kHaveMetadata && !FastGetAttribute(srcAttr).IsEmpty() &&
+  return !IsMediaDataCORSSameOrigin() && ready_state_ < kHaveMetadata &&
+         !FastGetAttribute(srcAttr).IsEmpty() &&
          EffectivePreloadType() != WebMediaPlayer::kPreloadNone;
 }
 

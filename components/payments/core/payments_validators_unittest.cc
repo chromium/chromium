@@ -285,7 +285,7 @@ mojom::PaymentValidationErrorsPtr toPaymentValidationErrors(
   mojom::PaymentValidationErrorsPtr errors =
       mojom::PaymentValidationErrors::New();
 
-  mojom::PayerErrorFieldsPtr payer = mojom::PayerErrorFields::New();
+  mojom::PayerErrorsPtr payer = mojom::PayerErrors::New();
   payer->email = test_case.m_payer_email;
   payer->name = test_case.m_payer_name;
   payer->phone = test_case.m_payer_phone;

@@ -10,7 +10,7 @@
 
 namespace content {
 
-#if defined(NCTEST_BROWSER_TASK_TRAITS_NO_THREAD)  // [r"no member named 'GetDefaultValue' in 'base::trait_helpers::RequiredEnumArgGetter<content::BrowserThread::ID>'"]
+#if defined(NCTEST_BROWSER_TASK_TRAITS_NO_THREAD)  // [r"TaskTraits contains a Trait that must be explicity initialized in its constructor."]
 constexpr base::TaskTraits traits = {NonNestable()};
 #elif defined(NCTEST_BROWSER_TASK_TRAITS_MULTIPLE_THREADS)  // [r"Multiple arguments of the same type were provided to the constructor of TaskTraits."]
 constexpr base::TaskTraits traits = {BrowserThread::UI,

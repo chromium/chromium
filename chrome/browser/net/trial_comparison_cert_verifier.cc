@@ -22,6 +22,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
@@ -53,10 +54,10 @@ bool CheckTrialEligibility(void* profile_id) {
   const Profile* profile = reinterpret_cast<const Profile*>(profile_id);
   const PrefService& prefs = *profile->GetPrefs();
 
-  // Only allow on non-incognito profiles which have SBER2 (Scout) opt-in set.
+  // Only allow on non-incognito profiles which have SBER opt-in set.
   // See design doc for more details:
   // https://docs.google.com/document/d/1AM1CD42bC6LHWjKg-Hkid_RLr2DH6OMzstH9-pGSi-g
-  return !profile->IsOffTheRecord() && safe_browsing::IsScout(prefs) &&
+  return !profile->IsOffTheRecord() &&
          safe_browsing::IsExtendedReportingEnabled(prefs);
 }
 
@@ -238,7 +239,7 @@ class TrialComparisonCertVerifier::TrialVerificationJob {
     if (!is_success &&
         !base::GetFieldTrialParamByFeatureAsBool(
             features::kCertDualVerificationTrialFeature, "uma_only", false)) {
-      content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
           ->PostTask(FROM_HERE, base::BindOnce(&SendTrialVerificationReport,
                                                profile_id_, config_, params_,
                                                primary_result_, trial_result_));
@@ -542,7 +543,7 @@ void TrialComparisonCertVerifier::OnPrimaryVerifierComplete(
   }
 
   base::PostTaskAndReplyWithResult(
-      content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
           .get(),
       FROM_HERE, base::BindOnce(CheckTrialEligibility, profile_id_),
       base::BindOnce(&TrialComparisonCertVerifier::MaybeDoTrialVerification,

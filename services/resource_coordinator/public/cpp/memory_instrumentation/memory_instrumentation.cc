@@ -20,7 +20,7 @@ void WrapGlobalMemoryDump(
     MemoryInstrumentation::RequestGlobalDumpCallback callback,
     bool success,
     mojom::GlobalMemoryDumpPtr dump) {
-  callback.Run(success, GlobalMemoryDump::MoveFrom(std::move(dump)));
+  std::move(callback).Run(success, GlobalMemoryDump::MoveFrom(std::move(dump)));
 }
 }  // namespace
 
@@ -58,7 +58,7 @@ void MemoryInstrumentation::RequestGlobalDump(
   coordinator->RequestGlobalMemoryDump(
       MemoryDumpType::SUMMARY_ONLY, MemoryDumpLevelOfDetail::BACKGROUND,
       allocator_dump_names,
-      base::BindRepeating(&WrapGlobalMemoryDump, callback));
+      base::BindOnce(&WrapGlobalMemoryDump, std::move(callback)));
 }
 
 void MemoryInstrumentation::RequestPrivateMemoryFootprint(
@@ -66,7 +66,7 @@ void MemoryInstrumentation::RequestPrivateMemoryFootprint(
     RequestGlobalDumpCallback callback) {
   const auto& coordinator = GetCoordinatorBindingForCurrentThread();
   coordinator->RequestPrivateMemoryFootprint(
-      pid, base::BindRepeating(&WrapGlobalMemoryDump, callback));
+      pid, base::BindOnce(&WrapGlobalMemoryDump, std::move(callback)));
 }
 
 void MemoryInstrumentation::RequestGlobalDumpForPid(
@@ -76,7 +76,7 @@ void MemoryInstrumentation::RequestGlobalDumpForPid(
   const auto& coordinator = GetCoordinatorBindingForCurrentThread();
   coordinator->RequestGlobalMemoryDumpForPid(
       pid, allocator_dump_names,
-      base::BindRepeating(&WrapGlobalMemoryDump, callback));
+      base::BindOnce(&WrapGlobalMemoryDump, std::move(callback)));
 }
 
 void MemoryInstrumentation::RequestGlobalDumpAndAppendToTrace(
@@ -85,7 +85,7 @@ void MemoryInstrumentation::RequestGlobalDumpAndAppendToTrace(
     RequestGlobalMemoryDumpAndAppendToTraceCallback callback) {
   const auto& coordinator = GetCoordinatorBindingForCurrentThread();
   coordinator->RequestGlobalMemoryDumpAndAppendToTrace(
-      dump_type, level_of_detail, callback);
+      dump_type, level_of_detail, std::move(callback));
 }
 
 const mojom::CoordinatorPtr&

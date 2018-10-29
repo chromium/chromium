@@ -61,7 +61,6 @@
 #include "extensions/renderer/context_menus_custom_bindings.h"
 #include "extensions/renderer/dispatcher_delegate.h"
 #include "extensions/renderer/display_source_custom_bindings.h"
-#include "extensions/renderer/document_custom_bindings.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/event_bindings.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -101,6 +100,7 @@
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
+#include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -173,12 +173,14 @@ class ChromeNativeHandler : public ObjectBackedNativeHandler {
   void GetChrome(const v8::FunctionCallbackInfo<v8::Value>& args) {
     // Check for the chrome property. If one doesn't exist, create one.
     v8::Local<v8::String> chrome_string(
-        v8::String::NewFromUtf8(context()->isolate(), "chrome"));
+        v8::String::NewFromUtf8(context()->isolate(), "chrome",
+                                v8::NewStringType::kInternalized)
+            .ToLocalChecked());
     v8::Local<v8::Object> global(context()->v8_context()->Global());
     v8::Local<v8::Value> chrome(global->Get(chrome_string));
     if (chrome->IsUndefined()) {
       chrome = v8::Object::New(context()->isolate());
-      global->Set(chrome_string, chrome);
+      global->Set(context()->v8_context(), chrome_string, chrome).ToChecked();
     }
     args.GetReturnValue().Set(chrome);
   }
@@ -214,8 +216,6 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   // this enabled-ness is too late.
   WorkerThreadDispatcher::Get()->Init(RenderThread::Get());
 
-  RenderThread::Get()->RegisterExtension(SafeBuiltins::CreateV8Extension());
-
   // Register WebSecurityPolicy whitelists for the chrome-extension:// scheme.
   WebString extension_scheme(WebString::FromASCII(kExtensionScheme));
 
@@ -245,6 +245,10 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
 }
 
 Dispatcher::~Dispatcher() {
+}
+
+void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
+  thread->RegisterExtension(extensions::SafeBuiltins::CreateV8Extension());
 }
 
 void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {
@@ -296,7 +300,6 @@ void Dispatcher::DidCreateScriptContext(
   }
 
   RequireGuestViewModules(context);
-  delegate_->RequireAdditionalModules(context);
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   switch (context->context_type()) {
@@ -415,7 +418,6 @@ void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(
     // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
     // necessary for Extension SW.
     RequireGuestViewModules(context);
-    delegate_->RequireAdditionalModules(context);
   }
 
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
@@ -445,7 +447,7 @@ void Dispatcher::DidInitializeServiceWorkerContextOnWorkerThread(
   LoggingNativeHandler* logging = new LoggingNativeHandler(context);
   logging->Initialize();
   context->AddInvalidationObserver(
-      base::Bind(&NativeHandler::Invalidate, base::Owned(logging)));
+      base::BindOnce(&NativeHandler::Invalidate, base::Owned(logging)));
 
   // Execute the main function with its dependencies passed in as arguments.
   v8::Local<v8::Value> args[] = {
@@ -662,6 +664,7 @@ std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
       // chrome.webview API bindings.
       {"webView", IDR_WEB_VIEW_JS},
       {"webViewElement", IDR_WEB_VIEW_ELEMENT_JS},
+      {"extensionsWebViewElement", IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS},
       {"webViewActionRequests", IDR_WEB_VIEW_ACTION_REQUESTS_JS},
       {"webViewApiMethods", IDR_WEB_VIEW_API_METHODS_JS},
       {"webViewAttributes", IDR_WEB_VIEW_ATTRIBUTES_JS},
@@ -670,7 +673,7 @@ std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
       {"webViewInternal", IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
 
       {"keep_alive", IDR_KEEP_ALIVE_JS},
-      {"mojo_bindings", IDR_MOJO_BINDINGS_JS, true},
+      {"mojo_bindings", IDR_MOJO_MOJO_BINDINGS_JS, true},
       {"extensions/common/mojo/keep_alive.mojom", IDR_KEEP_ALIVE_MOJOM_JS},
 
       // Custom bindings.
@@ -788,9 +791,6 @@ void Dispatcher::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "context_menus",
       std::unique_ptr<NativeHandler>(new ContextMenusCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "document_natives",
-      std::unique_ptr<NativeHandler>(new DocumentCustomBindings(context)));
   module_system->RegisterNativeHandler(
       "guest_view_internal", std::unique_ptr<NativeHandler>(
                                  new GuestViewInternalCustomBindings(context)));
@@ -1105,6 +1105,16 @@ void Dispatcher::OnUpdateDefaultPolicyHostRestrictions(
     const ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params& params) {
   PermissionsData::SetDefaultPolicyHostRestrictions(
       params.default_policy_blocked_hosts, params.default_policy_allowed_hosts);
+  // Update blink host permission allowlist exceptions for all loaded
+  // extensions.
+  for (const std::string& extension_id :
+       RendererExtensionRegistry::Get()->GetIDs()) {
+    const Extension* extension =
+        RendererExtensionRegistry::Get()->GetByID(extension_id);
+    if (extension->permissions_data()->UsesDefaultPolicyHostRestrictions()) {
+      UpdateOriginPermissions(*extension);
+    }
+  }
   UpdateBindings(std::string());
 }
 
@@ -1114,6 +1124,13 @@ void Dispatcher::OnUpdatePermissions(
       RendererExtensionRegistry::Get()->GetByID(params.extension_id);
   if (!extension)
     return;
+
+  if (params.uses_default_policy_host_restrictions) {
+    extension->permissions_data()->SetUsesDefaultHostRestrictions();
+  } else {
+    extension->permissions_data()->SetPolicyHostRestrictions(
+        params.policy_blocked_hosts, params.policy_allowed_hosts);
+  }
 
   std::unique_ptr<const PermissionSet> active =
       params.active_permissions.ToPermissionSet();
@@ -1189,14 +1206,6 @@ void Dispatcher::UpdateActiveExtensions() {
 }
 
 void Dispatcher::InitOriginPermissions(const Extension* extension) {
-  const GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
-  WebSecurityPolicy::AddOriginAccessBlockListEntry(
-      extension->url(), WebString::FromUTF8(webstore_launch_url.scheme()),
-      WebString::FromUTF8(webstore_launch_url.host()), true);
-
-  // TODO(devlin): Should we also block the webstore update URL here? See
-  // https://crbug.com/826946 for a related instance.
-
   UpdateOriginPermissions(*extension);
 }
 
@@ -1214,24 +1223,61 @@ void Dispatcher::UpdateOriginPermissions(const Extension& extension) {
   };
 
   // Remove all old patterns associated with this extension.
-  WebSecurityPolicy::ClearOriginAccessAllowListForOrigin(extension.url());
+  WebSecurityPolicy::ClearOriginAccessListForOrigin(extension.url());
 
   delegate_->AddOriginAccessPermissions(extension,
                                         IsExtensionActive(extension.id()));
 
-  URLPatternSet patterns =
+  URLPatternSet origin_permissions =
       extension.permissions_data()->GetEffectiveHostPermissions();
 
-  for (size_t i = 0; i < arraysize(kSchemes); ++i) {
-    const char* scheme = kSchemes[i];
-    for (const auto& pattern : patterns) {
-      if (pattern.MatchesScheme(scheme)) {
+  // Permissions declared by the extension.
+  for (const URLPattern& pattern : origin_permissions) {
+    for (const char* scheme : kSchemes) {
+      if (pattern.MatchesScheme(scheme))
         WebSecurityPolicy::AddOriginAccessAllowListEntry(
             extension.url(), WebString::FromUTF8(scheme),
-            WebString::FromUTF8(pattern.host()), pattern.match_subdomains());
-      }
+            WebString::FromUTF8(pattern.host()), pattern.match_subdomains(),
+            network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
     }
   }
+
+  // Hosts blocked by enterprise policy.
+  for (const URLPattern& pattern :
+       extension.permissions_data()->policy_blocked_hosts()) {
+    for (const char* scheme : kSchemes) {
+      if (pattern.MatchesScheme(scheme))
+        WebSecurityPolicy::AddOriginAccessBlockListEntry(
+            extension.url(), WebString::FromUTF8(scheme),
+            WebString::FromUTF8(pattern.host()), pattern.match_subdomains(),
+            network::mojom::CORSOriginAccessMatchPriority::kLowPriority);
+    }
+  }
+
+  // Hosts exempted from the enterprise policy blocklist.
+  // This set intersection is necessary to prevent an enterprise policy from
+  // granting a host permission the extension didn't ask for.
+  URLPatternSet overlap = URLPatternSet::CreateIntersection(
+      extension.permissions_data()->policy_allowed_hosts(), origin_permissions,
+      URLPatternSet::IntersectionBehavior::kDetailed);
+  for (const URLPattern& pattern : overlap) {
+    for (const char* scheme : kSchemes) {
+      if (pattern.MatchesScheme(scheme))
+        WebSecurityPolicy::AddOriginAccessAllowListEntry(
+            extension.url(), WebString::FromUTF8(scheme),
+            WebString::FromUTF8(pattern.host()), pattern.match_subdomains(),
+            network::mojom::CORSOriginAccessMatchPriority::kMediumPriority);
+    }
+  };
+
+  const GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
+  WebSecurityPolicy::AddOriginAccessBlockListEntry(
+      extension.url(), WebString::FromUTF8(webstore_launch_url.scheme()),
+      WebString::FromUTF8(webstore_launch_url.host()), true,
+      network::mojom::CORSOriginAccessMatchPriority::kHighPriority);
+
+  // TODO(devlin): Should we also block the webstore update URL here? See
+  // https://crbug.com/826946 for a related instance.
 }
 
 void Dispatcher::EnableCustomElementWhiteList() {
@@ -1316,9 +1362,8 @@ void Dispatcher::PopulateSourceMap() {
 }
 
 bool Dispatcher::IsWithinPlatformApp() {
-  for (std::set<std::string>::iterator iter = active_extension_ids_.begin();
-       iter != active_extension_ids_.end();
-       ++iter) {
+  for (auto iter = active_extension_ids_.begin();
+       iter != active_extension_ids_.end(); ++iter) {
     const Extension* extension =
         RendererExtensionRegistry::Get()->GetByID(*iter);
     if (extension && extension->is_platform_app())
@@ -1331,6 +1376,10 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   Feature::Context context_type = context->context_type();
   ModuleSystem* module_system = context->module_system();
   bool requires_guest_view_module = false;
+
+  // TODO(fsamuel): Eagerly calling Require on context startup is expensive.
+  // It would be better if there were a light way of detecting when a webview
+  // or appview is created and only then set up the infrastructure.
 
   // Require AppView.
   if (context->GetAvailability("appViewEmbedderInternal").is_available()) {
@@ -1353,7 +1402,9 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // Require WebView.
   if (context->GetAvailability("webViewInternal").is_available()) {
     requires_guest_view_module = true;
-    module_system->Require("webViewElement");
+    // The embedder of the extensions layer may define its own implementation
+    // of WebView.
+    delegate_->RequireWebViewModules(context);
   }
 
   if (requires_guest_view_module &&

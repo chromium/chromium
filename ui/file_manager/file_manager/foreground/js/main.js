@@ -3,38 +3,39 @@
 // found in the LICENSE file.
 
 /**
+ * Creates the fileManager object. Note the DOM and external scripts are not
+ * fully loaded yet.
  * @type {FileManager}
  */
-var fileManager;
+const fileManager = new FileManager();
 
 /**
- * Indicates if the DOM and scripts have been already loaded.
- * @type {boolean}
+ * Initialize the core stuff, which doesn't require access to the DOM, or to
+ * external scripts.
  */
-var pageLoaded = false;
+fileManager.initializeCore();
 
 /**
- * Kick off the file manager dialog.
- * Called by main.html after the DOM has been parsed.
+ * Initializes the File Manager's UI. Called after the DOM, and all external
+ * scripts, have been loaded.
  */
-function init() {
-  // Initializes UI and starts the File Manager dialog.
-  fileManager.initializeUI(document.body).then(function() {
+function initializeUI() {
+  fileManager.initializeUI(document.body).then(() => {
     util.testSendMessage('ready');
     metrics.recordInterval('Load.Total');
     fileManager.tracker.send(metrics.Management.WINDOW_CREATED);
   });
 }
 
-// Create the File Manager object. Note, that the DOM, nor any external
-// scripts may not be ready yet.
-fileManager = new FileManager();
+/**
+ * Final initialization performed after DOM and all scripts have loaded. See
+ * also crbug.com/581028 which added a 'defer' attribute to main_scripts.js.
+ */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+  initializeUI();
+}
 
-// Initialize the core stuff, which doesn't require access to DOM nor to
-// additional scripts.
-fileManager.initializeCore();
-
-// Final initialization is performed after all scripts and DOM is loaded.
-util.addPageLoadHandler(init);
-
-metrics.recordInterval('Load.Script');  // Must be the last line.
+/** Record script load metric: must be the last line. */
+metrics.recordInterval('Load.Script');

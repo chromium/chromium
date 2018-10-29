@@ -1,5 +1,4 @@
 <body>
-Schedules several dozen tasks, then cancels all but the last.<br>
 <script>
 if (window.testRunner) {
   testRunner.dumpAsText();
@@ -8,19 +7,17 @@ if (window.testRunner) {
 
 var queue = new WorkerTaskQueue("background");
 
-var stop = 11;
-var next = 0;
-function print(result) {
-  document.body.appendChild(document.createTextNode("Fibonnaci #" + next++ + " is " +result));
+function finished(result) {
+  document.body.appendChild(document.createTextNode("Fibonnaci #10 is " + result));
   document.body.appendChild(document.createElement("br"));
-  if (next == stop) {
-    if (window.testRunner)
-      testRunner.notifyDone();
-  }
+  if (window.testRunner)
+    testRunner.notifyDone();
 };
 
-function fail() {
-  next++;
+function cancelled(result) {
+  document.body.appendChild(document.createTextNode("Exception: " + result));
+  if (window.testRunner)
+    testRunner.notifyDone();
 }
 
 function fib(n) {
@@ -29,14 +26,12 @@ function fib(n) {
   return fib(n - 1) + fib(n - 2);
 }
 
-const controller = new AbortController();
-const signal = controller.signal;
-
-for (var i = 0; i < stop; i++) {
-  queue.postTask(fib, i < stop - 1 ? signal : undefined, i)
-     .then(print, fail);
+async function test() {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  queue.postFunction(fib, signal, 10).then(finished, cancelled);
+  controller.abort();
 }
-
-controller.abort();
+test();
 </script>
 </body>

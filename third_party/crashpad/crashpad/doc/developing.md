@@ -193,6 +193,13 @@ $ cd ~/crashpad/crashpad
 $ python build/run_tests.py out/Debug
 ```
 
+To run a subset of the tests, use the --gtest\_filter flag, e.g., to run all the
+tests for MinidumpStringWriter:
+
+```sh
+$ python build/run_tests.py out/Debug --gtest_filter MinidumpStringWriter*
+```
+
 ### Windows
 
 On Windows, `end_to_end_test.py` requires the CDB debugger, installed with
@@ -219,6 +226,25 @@ connected, one may be chosen explicitly with the `ANDROID_DEVICE` environment
 variable. `run_tests.py` will upload test executables and data to a temporary
 location on the detected or selected device, run them, and clean up after itself
 when done.
+
+### Fuchsia
+
+To test on Fuchsia, you need a connected device running Fuchsia and then run:
+
+```sh
+$ gn gen out/fuchsia --args='target_os="fuchsia" target_cpu="x64" is_debug=true'
+$ ninja -C out/fuchsia
+$ python build/run_tests.py out/fuchsia
+```
+
+If you have multiple devices running, you will need to specify which device you
+want using their hostname, for instance:
+
+```sh
+$ export ZIRCON_NODENAME=scare-brook-skip-dried; \
+  python build/run_tests.py out/fuchsia; \
+  unset ZIRCON_NODENAME
+```
 
 ## Contributing
 

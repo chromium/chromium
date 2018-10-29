@@ -494,7 +494,7 @@ BidirectionalIterator c_copy_backward(const C& src,
 // Container-based version of the <algorithm> `std::move()` function to move
 // a container's elements into an iterator.
 template <typename C, typename OutputIterator>
-OutputIterator c_move(C& src, OutputIterator dest) {
+OutputIterator c_move(C&& src, OutputIterator dest) {
   return std::move(container_algorithm_internal::c_begin(src),
                    container_algorithm_internal::c_end(src), dest);
 }

@@ -45,11 +45,11 @@ class SpeechRecognitionEvent final : public Event {
   ~SpeechRecognitionEvent() override;
 
   static SpeechRecognitionEvent* CreateResult(
-      unsigned long result_index,
+      uint32_t result_index,
       const HeapVector<Member<SpeechRecognitionResult>>& results);
   static SpeechRecognitionEvent* CreateNoMatch(SpeechRecognitionResult*);
 
-  unsigned long resultIndex() const { return result_index_; }
+  uint32_t resultIndex() const { return result_index_; }
   SpeechRecognitionResultList* results() const { return results_; }
 
   // These two methods are here to satisfy the specification which requires
@@ -66,10 +66,10 @@ class SpeechRecognitionEvent final : public Event {
   SpeechRecognitionEvent(const AtomicString&,
                          const SpeechRecognitionEventInit&);
   SpeechRecognitionEvent(const AtomicString& event_name,
-                         unsigned long result_index,
+                         uint32_t result_index,
                          SpeechRecognitionResultList* results);
 
-  unsigned long result_index_;
+  uint32_t result_index_;
   Member<SpeechRecognitionResultList> results_;
 };
 

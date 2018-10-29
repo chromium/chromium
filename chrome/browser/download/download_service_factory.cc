@@ -27,6 +27,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -82,8 +83,8 @@ KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext::BlobContextGetter blob_context_getter =
         content::BrowserContext::GetBlobStorageContext(context);
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::IO);
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO});
 
     return download::BuildInMemoryDownloadService(
         context, std::move(clients), content::GetNetworkConnectionTracker(),

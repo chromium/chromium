@@ -23,7 +23,7 @@ namespace ui_devtools {
 
 namespace {
 const char kChromeDeveloperToolsPrefix[] =
-    "chrome-devtools://devtools/bundled/inspector.html?ws=";
+    "chrome-devtools://devtools/bundled/devtools_app.html?ws=";
 
 bool IsDevToolsEnabled(const char* enable_devtools_flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -104,7 +104,8 @@ UiDevToolsServer::GetClientNamesAndUrls() {
        i++) {
     pairs.push_back(std::pair<std::string, std::string>(
         devtools_server_->clients_[i]->name(),
-        base::StringPrintf("%s0.0.0.0:%d/%" PRIuS, kChromeDeveloperToolsPrefix,
+        base::StringPrintf("%s127.0.0.1:%d/%" PRIuS,
+                           kChromeDeveloperToolsPrefix,
                            devtools_server_->port(), i)));
   }
   return pairs;
@@ -186,7 +187,7 @@ void UiDevToolsServer::OnWebSocketRequest(
 void UiDevToolsServer::OnWebSocketMessage(int connection_id,
                                           const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
-  ConnectionsMap::iterator it = connections_.find(connection_id);
+  auto it = connections_.find(connection_id);
   DCHECK(it != connections_.end());
   UiDevToolsClient* client = it->second;
   client->Dispatch(data);
@@ -194,7 +195,7 @@ void UiDevToolsServer::OnWebSocketMessage(int connection_id,
 
 void UiDevToolsServer::OnClose(int connection_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
-  ConnectionsMap::iterator it = connections_.find(connection_id);
+  auto it = connections_.find(connection_id);
   if (it == connections_.end())
     return;
   UiDevToolsClient* client = it->second;

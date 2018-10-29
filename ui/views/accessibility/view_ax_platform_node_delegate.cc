@@ -9,9 +9,12 @@
 
 #include "base/lazy_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/events/event_utils.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -148,7 +151,7 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
       OnMenuEnd();
       break;
     case ax::mojom::Event::kSelection:
-      if (menu_depth_ && GetData().role == ax::mojom::Role::kMenuItem)
+      if (menu_depth_ && ui::IsMenuItem(GetData().role))
         OnMenuItemActive();
       break;
     case ax::mojom::Event::kFocusContext: {
@@ -226,6 +229,10 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
 int ViewAXPlatformNodeDelegate::GetChildCount() {
   if (IsLeaf())
     return 0;
+
+  if (virtual_child_count())
+    return virtual_child_count();
+
   int child_count = view()->child_count();
 
   std::vector<Widget*> child_widgets;
@@ -241,8 +248,14 @@ int ViewAXPlatformNodeDelegate::GetChildCount() {
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(int index) {
+  DCHECK_GE(index, 0) << "Child indices should be greater or equal to 0.";
+  DCHECK_LT(index, GetChildCount())
+      << "Child indices should be less than the child count.";
   if (IsLeaf())
     return nullptr;
+
+  if (virtual_child_count())
+    return virtual_child_at(index)->GetNativeObject();
 
   // If this is a root view, our widget might have child widgets. Include
   std::vector<Widget*> child_widgets;

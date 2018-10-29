@@ -65,8 +65,7 @@ Polymer({
 
   /** @private */
   onDestinationSet_: function() {
-    if (this.destination && this.destination.id)
-      this.loadingDestination_ = false;
+    this.loadingDestination_ = !this.destination || !this.destination.id;
   },
 
   /**
@@ -74,7 +73,8 @@ Polymer({
    * @private
    */
   getStatusText_: function() {
-    if (this.destination === undefined)
+    // |destination| can be either undefined, or null here.
+    if (!this.destination)
       return '';
 
     return this.destination.shouldShowInvalidCertificateError ?
@@ -87,12 +87,7 @@ Polymer({
     this.destinationStore.startLoadAllDestinations();
     this.invitationStore.startLoadingInvitations();
     const dialog = this.$.destinationDialog.get();
-    // This async() call is a workaround to prevent a DCHECK - see
-    // https://crbug.com/804047.
-    // TODO(rbpotter): Remove after Polymer2 migration is complete.
-    this.async(() => {
-      dialog.show();
-    }, 1);
+    dialog.show();
   },
 
   showCloudPrintPromo: function() {

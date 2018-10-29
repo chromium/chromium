@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
 PASS Magnetometer: sensor is suspended and resumed when focus traverses from to cross-origin frame
 PASS Magnetometer: sensor is not suspended when focus traverses from to same-origin frame
+PASS Magnetometer: losing a document's frame with an active sensor does not crash
 FAIL UncalibratedMagnetometer: sensor is suspended and resumed when focus traverses from to cross-origin frame assert_true: expected true got false
 FAIL UncalibratedMagnetometer: sensor is not suspended when focus traverses from to same-origin frame assert_true: expected true got false
+FAIL UncalibratedMagnetometer: losing a document's frame with an active sensor does not crash assert_true: expected true got false
 Harness: the test ran to completion.
 

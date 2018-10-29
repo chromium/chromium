@@ -24,7 +24,7 @@ AudioWorkletObjectProxy::AudioWorkletObjectProxy(
 
 void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(
     WorkerOrWorkletGlobalScope* global_scope) {
-  global_scope_ = ToAudioWorkletGlobalScope(global_scope);
+  global_scope_ = To<AudioWorkletGlobalScope>(global_scope);
   global_scope_->SetSampleRate(context_sample_rate_);
 }
 

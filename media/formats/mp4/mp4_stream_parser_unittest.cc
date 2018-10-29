@@ -323,13 +323,37 @@ TEST_F(MP4StreamParserTest, AVC_KeyAndNonKeyframeness_Match_Container) {
   ParseMP4File("bear-640x360-v-2frames_frag.mp4", 512);
 }
 
-TEST_F(MP4StreamParserTest, AVC_Keyframeness_Mismatches_Container) {
+TEST_F(MP4StreamParserTest, LegacyByDts_AVC_Keyframeness_Mismatches_Container) {
   // The first AVC video frame's keyframe-ness metadata matches the MP4:
   // Frame 0: AVC IDR, trun.first_sample_flags: NOT sync sample, DEPENDS on
   //          others.
   // Frame 1: AVC Non-IDR, tfhd.default_sample_flags: not sync sample, depends
   //          on others.
   InSequence s;  // The EXPECT* sequence matters for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kMseBufferByPts);
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+  verifying_keyframeness_sequence_ = true;
+  EXPECT_MEDIA_LOG(DebugLog(
+      "ISO-BMFF container metadata for video frame indicates that the frame is "
+      "not a keyframe, but the video frame contents indicate the opposite."));
+  EXPECT_CALL(*this, ParsedNonKeyframe());
+  EXPECT_CALL(*this, ParsedNonKeyframe());
+  ParseMP4File("bear-640x360-v-2frames-keyframe-is-non-sync-sample_frag.mp4",
+               512);
+}
+
+TEST_F(MP4StreamParserTest, NewByPts_AVC_Keyframeness_Mismatches_Container) {
+  // The first AVC video frame's keyframe-ness metadata matches the MP4:
+  // Frame 0: AVC IDR, trun.first_sample_flags: NOT sync sample, DEPENDS on
+  //          others.
+  // Frame 1: AVC Non-IDR, tfhd.default_sample_flags: not sync sample, depends
+  //          on others.
+  InSequence s;  // The EXPECT* sequence matters for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMseBufferByPts);
   auto params = GetDefaultInitParametersExpectations();
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);
@@ -343,13 +367,38 @@ TEST_F(MP4StreamParserTest, AVC_Keyframeness_Mismatches_Container) {
                512);
 }
 
-TEST_F(MP4StreamParserTest, AVC_NonKeyframeness_Mismatches_Container) {
+TEST_F(MP4StreamParserTest,
+       LegacyByDts_AVC_NonKeyframeness_Mismatches_Container) {
   // The second AVC video frame's keyframe-ness metadata matches the MP4:
   // Frame 0: AVC IDR, trun.first_sample_flags: sync sample that doesn't
   //          depend on others.
   // Frame 1: AVC Non-IDR, tfhd.default_sample_flags: SYNC sample, DOES NOT
   //          depend on others.
   InSequence s;  // The EXPECT* sequence matters for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kMseBufferByPts);
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+  verifying_keyframeness_sequence_ = true;
+  EXPECT_CALL(*this, ParsedKeyframe());
+  EXPECT_MEDIA_LOG(DebugLog(
+      "ISO-BMFF container metadata for video frame indicates that the frame is "
+      "a keyframe, but the video frame contents indicate the opposite."));
+  EXPECT_CALL(*this, ParsedKeyframe());
+  ParseMP4File("bear-640x360-v-2frames-nonkeyframe-is-sync-sample_frag.mp4",
+               512);
+}
+
+TEST_F(MP4StreamParserTest, NewByPts_AVC_NonKeyframeness_Mismatches_Container) {
+  // The second AVC video frame's keyframe-ness metadata matches the MP4:
+  // Frame 0: AVC IDR, trun.first_sample_flags: sync sample that doesn't
+  //          depend on others.
+  // Frame 1: AVC Non-IDR, tfhd.default_sample_flags: SYNC sample, DOES NOT
+  //          depend on others.
+  InSequence s;  // The EXPECT* sequence matters for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMseBufferByPts);
   auto params = GetDefaultInitParametersExpectations();
   params.detected_audio_track_count = 0;
   InitializeParserWithInitParametersExpectations(params);

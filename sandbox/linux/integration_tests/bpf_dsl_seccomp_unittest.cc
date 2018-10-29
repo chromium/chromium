@@ -689,7 +689,7 @@ BPF_TEST_C(SandboxBPF, SigBus, RedirectAllSyscallsPolicy) {
   sa.sa_sigaction = SigBusHandler;
   sa.sa_flags = SA_SIGINFO;
   BPF_ASSERT(sigaction(SIGBUS, &sa, NULL) == 0);
-  raise(SIGBUS);
+  kill(getpid(), SIGBUS);
   char c = '\000';
   BPF_ASSERT(read(fds[0], &c, 1) == 1);
   BPF_ASSERT(close(fds[0]) == 0);

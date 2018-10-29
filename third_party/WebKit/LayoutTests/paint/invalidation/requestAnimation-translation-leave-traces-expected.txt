@@ -21,12 +21,12 @@ Tested locations: 1200,1500
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [1300, 0, 300, 585],
           "reason": "incremental"
         },
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [1000, 0, 300, 585],
           "reason": "incremental"
         },

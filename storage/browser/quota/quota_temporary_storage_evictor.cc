@@ -224,19 +224,21 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
   OnEvictionRoundFinished();
 }
 
-void QuotaTemporaryStorageEvictor::OnGotEvictionOrigin(const GURL& origin) {
+void QuotaTemporaryStorageEvictor::OnGotEvictionOrigin(
+    const base::Optional<url::Origin>& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (origin.is_empty()) {
+  if (!origin.has_value()) {
     StartEvictionTimerWithDelay(interval_ms_);
     OnEvictionRoundFinished();
     return;
   }
 
-  in_progress_eviction_origins_.insert(origin);
+  DCHECK(!origin->GetURL().is_empty());
+  in_progress_eviction_origins_.insert(*origin);
 
   quota_eviction_handler_->EvictOriginData(
-      origin, blink::mojom::StorageType::kTemporary,
+      *origin, blink::mojom::StorageType::kTemporary,
       base::BindOnce(&QuotaTemporaryStorageEvictor::OnEvictionComplete,
                      weak_factory_.GetWeakPtr()));
 }

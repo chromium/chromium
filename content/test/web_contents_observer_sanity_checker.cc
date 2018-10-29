@@ -5,6 +5,7 @@
 #include "content/test/web_contents_observer_sanity_checker.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
@@ -268,8 +269,7 @@ void WebContentsObserverSanityChecker::MediaStartedPlaying(
     const MediaPlayerInfo& media_info,
     const MediaPlayerId& id) {
   CHECK(!web_contents_destroyed_);
-  CHECK(std::find(active_media_players_.begin(), active_media_players_.end(),
-                  id) == active_media_players_.end());
+  CHECK(!base::ContainsValue(active_media_players_, id));
   active_media_players_.push_back(id);
 }
 
@@ -278,11 +278,8 @@ void WebContentsObserverSanityChecker::MediaStoppedPlaying(
     const MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   CHECK(!web_contents_destroyed_);
-  CHECK(std::find(active_media_players_.begin(), active_media_players_.end(),
-                  id) != active_media_players_.end());
-  active_media_players_.erase(std::remove(active_media_players_.begin(),
-                                          active_media_players_.end(), id),
-                              active_media_players_.end());
+  CHECK(base::ContainsValue(active_media_players_, id));
+  base::Erase(active_media_players_, id);
 }
 
 bool WebContentsObserverSanityChecker::OnMessageReceived(

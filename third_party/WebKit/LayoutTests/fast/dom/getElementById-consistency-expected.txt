@@ -2,7 +2,6 @@ Test that DOMSubtreeModified listeners cannot cause inDocument to be incorrect
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.contains(document.getElementById('el')) is true
 PASS document.getElementById('el') is null
 PASS successfullyParsed is true

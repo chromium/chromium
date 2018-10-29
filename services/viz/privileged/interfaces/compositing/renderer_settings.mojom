@@ -4,6 +4,8 @@
 
 module viz.mojom;
 
+import "ui/gfx/geometry/mojo/geometry.mojom";
+
 struct RendererSettings {
   bool allow_antialiasing;
   bool finish_rendering_on_resize;
@@ -19,6 +21,10 @@ struct RendererSettings {
   int32 slow_down_compositing_scale_factor;
   bool use_skia_renderer;
   bool use_skia_deferred_display_list;
+  bool record_sk_picture;
   bool allow_overlays;
   bool requires_alpha_channel;
+
+  [EnableIf=is_android]
+  gfx.mojom.Size initial_screen_size;
 };

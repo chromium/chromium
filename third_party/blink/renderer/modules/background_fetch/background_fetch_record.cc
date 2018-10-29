@@ -10,8 +10,9 @@
 namespace blink {
 
 BackgroundFetchRecord::BackgroundFetchRecord(Request* request,
-                                             Response* response)
-    : request_(request), response_(response) {
+                                             Response* response,
+                                             bool aborted)
+    : request_(request), response_(response), aborted_(aborted) {
   DCHECK(request_);
 }
 
@@ -23,13 +24,25 @@ ScriptPromise BackgroundFetchRecord::responseReady(ScriptState* script_state) {
         new ResponseReadyProperty(ExecutionContext::From(script_state), this,
                                   ResponseReadyProperty::kResponseReady);
   }
-  if (!response_) {
-    response_ = Response::Create(ExecutionContext::From(script_state),
-                                 nullptr /* FetchResponseData */);
+
+  if (response_) {
+    DCHECK(response_);
+    response_ready_property_->Resolve(response_);
+    return response_ready_property_->Promise(script_state->World());
   }
-  DCHECK(response_);
-  response_ready_property_->Resolve(response_);
-  return response_ready_property_->Promise(script_state->World());
+
+  if (aborted_) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        DOMException::Create(
+            DOMExceptionCode::kAbortError,
+            "The fetch was aborted before the record was processed."));
+  }
+
+  return ScriptPromise::Reject(
+      script_state,
+      V8ThrowException::CreateTypeError(script_state->GetIsolate(),
+                                        "The response is not available."));
 }
 
 Request* BackgroundFetchRecord::request() const {

@@ -32,7 +32,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 class CORE_EXPORT Function : public Expression {
  public:
@@ -53,7 +53,7 @@ Function* CreateFunction(const String& name);
 CORE_EXPORT Function* CreateFunction(const String& name,
                                      HeapVector<Member<Expression>>&);
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 

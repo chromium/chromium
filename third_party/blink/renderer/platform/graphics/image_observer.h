@@ -32,7 +32,6 @@
 namespace blink {
 
 class Image;
-class IntRect;
 
 // Interface for notification about changes to an image, including decoding,
 // drawing, and animating.
@@ -44,9 +43,10 @@ class PLATFORM_EXPORT ImageObserver : public GarbageCollectedMixin {
   virtual void DecodedSizeChangedTo(const Image*, size_t new_size) = 0;
 
   virtual bool ShouldPauseAnimation(const Image*) = 0;
-  virtual void AnimationAdvanced(const Image*) = 0;
 
-  virtual void ChangedInRect(const Image*, const IntRect&) = 0;
+  // Notification for when the image's contents have changed such as when an
+  // SVG image animates.
+  virtual void Changed(const Image*) = 0;
 
   // See the comment of Image::SetData().
   virtual void AsyncLoadCompleted(const Image*) = 0;

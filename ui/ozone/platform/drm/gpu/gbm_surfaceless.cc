@@ -15,7 +15,6 @@
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
-#include "ui/ozone/platform/drm/gpu/drm_vsync_provider.h"
 #include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/gpu/gbm_surface_factory.h"
 
@@ -54,9 +53,6 @@ void GbmSurfaceless::QueueOverlayPlane(DrmOverlayPlane plane) {
 bool GbmSurfaceless::Initialize(gl::GLSurfaceFormat format) {
   if (!SurfacelessEGL::Initialize(format))
     return false;
-  vsync_provider_ = std::make_unique<DrmVSyncProvider>(window_.get());
-  if (!vsync_provider_)
-    return false;
   return true;
 }
 
@@ -82,10 +78,6 @@ bool GbmSurfaceless::ScheduleOverlayPlane(
 
 bool GbmSurfaceless::IsOffscreen() {
   return false;
-}
-
-gfx::VSyncProvider* GbmSurfaceless::GetVSyncProvider() {
-  return vsync_provider_.get();
 }
 
 bool GbmSurfaceless::SupportsPresentationCallback() {

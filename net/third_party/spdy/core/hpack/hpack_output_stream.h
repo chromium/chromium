@@ -5,8 +5,7 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_OUTPUT_STREAM_H_
 #define NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_OUTPUT_STREAM_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include <map>
 

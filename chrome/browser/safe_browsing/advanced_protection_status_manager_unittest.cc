@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 
+#include "base/bind.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/fake_profile_oauth2_token_service_builder.h"
@@ -34,10 +35,12 @@ class AdvancedProtectionStatusManagerTest : public testing::Test {
  public:
   AdvancedProtectionStatusManagerTest() {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              BuildFakeSigninManagerBase);
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              BuildFakeProfileOAuth2TokenService);
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
     testing_profile_.reset(builder.Build().release());
     fake_signin_manager_ = static_cast<FakeSigninManagerForTesting*>(
         SigninManagerFactory::GetForProfile(testing_profile_.get()));
@@ -225,8 +228,8 @@ TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndUnderAP) {
       prefs::kAdvancedProtectionLastRefreshInUs,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  // Simulates the situation where user signed in long time ago, thus
-  // has no advanced protection status.
+  // Simulates the situation where the user has already signed in and is
+  // under advanced protection.
   std::string account_id =
       SignIn("gaia_id", "email", /* is_under_advanced_protection = */ true);
   AdvancedProtectionStatusManager aps_manager(
@@ -239,6 +242,50 @@ TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndUnderAP) {
   // A refresh is scheduled in the future.
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+}
+
+TEST_F(AdvancedProtectionStatusManagerTest,
+       AlreadySignedInAndUnderAPIncognito) {
+  testing_profile_->GetPrefs()->SetInt64(
+      prefs::kAdvancedProtectionLastRefreshInUs,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  // Simulates the situation where the user has already signed in and is
+  // under advanced protection.
+  std::string account_id =
+      SignIn("gaia_id", "email", /* is_under_advanced_protection = */ true);
+  AdvancedProtectionStatusManagerFactory::GetForBrowserContext(
+      Profile::FromBrowserContext(testing_profile_.get()))
+      ->MaybeRefreshOnStartUp();
+
+  // Incognito profile should share the advanced protection status with the
+  // original profile.
+  EXPECT_TRUE(AdvancedProtectionStatusManager::IsUnderAdvancedProtection(
+      testing_profile_->GetOffTheRecordProfile()));
+  EXPECT_TRUE(AdvancedProtectionStatusManager::IsUnderAdvancedProtection(
+      testing_profile_.get()));
+}
+
+TEST_F(AdvancedProtectionStatusManagerTest,
+       AlreadySignedInAndNotUnderAPIncognito) {
+  testing_profile_->GetPrefs()->SetInt64(
+      prefs::kAdvancedProtectionLastRefreshInUs,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  // Simulates the situation where the user has already signed in and is
+  // NOT under advanced protection.
+  std::string account_id =
+      SignIn("gaia_id", "email", /* is_under_advanced_protection = */ false);
+  AdvancedProtectionStatusManagerFactory::GetForBrowserContext(
+      Profile::FromBrowserContext(testing_profile_.get()))
+      ->MaybeRefreshOnStartUp();
+
+  // Incognito profile should share the advanced protection status with the
+  // original profile.
+  EXPECT_FALSE(AdvancedProtectionStatusManager::IsUnderAdvancedProtection(
+      testing_profile_->GetOffTheRecordProfile()));
+  EXPECT_FALSE(AdvancedProtectionStatusManager::IsUnderAdvancedProtection(
+      testing_profile_.get()));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {

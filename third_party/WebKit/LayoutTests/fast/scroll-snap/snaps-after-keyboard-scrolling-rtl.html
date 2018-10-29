@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+div {
+  position: absolute;
+}
+#scroller {
+  writing-mode: vertical-rl;
+  width: 400px;
+  height: 400px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  padding: 0px;
+}
+.snap {
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+  scroll-snap-align: start;
+}
+#space {
+  width: 1000px;
+  height: 1000px;
+}
+.left {
+  left: -400px;
+  top: 0px;
+}
+.right {
+  left: 0px;
+  top: 0px;
+}
+</style>
+
+<div id='scroller'>
+  <div id="space"></div>
+  <div class="snap left" id="left"></div>
+  <div class="snap right" id="right"></div>
+</div>
+
+<script>
+var scroller = document.getElementById("scroller");
+var width = scroller.clientWidth;
+
+function scrollLeft() {
+  return scroller.scrollLeft;
+}
+
+function keyPress(key) {
+  return new Promise((resolve, reject) => {
+    if (window.eventSender) {
+      eventSender.keyDown(key);
+      resolve();
+    }
+    else {
+      reject('This test requires window.eventSender');
+    }
+  })
+}
+
+promise_test (async () => {
+  await mouseClickOn(510, 10);
+  scroller.scrollTo(0, 0);
+  await keyPress("ArrowRight");
+  await waitForAnimationEnd(scrollLeft, 500, 15);
+  // The left border of #right is at 1000 - width.
+  // The right border of #right is thus 1200 - width.
+  // When right-aligned, the scroll position should be 1200 - 2 * width.
+  assert_equals(scroller.scrollLeft, 1200 - 2 * width);
+}, "Snaps to #right after pressing ArrowRight");
+
+promise_test (async () => {
+  await mouseClickOn(510, 10);
+  scroller.scrollTo(400, 0);
+  await keyPress("ArrowLeft");
+  await waitForAnimationEnd(scrollLeft, 500, 15);
+  // The left border of #left is at 600 - width.
+  // The right border of #left is thus 800 - width.
+  // When right-aligned, the scroll position should be 800 - 2 * width.
+  assert_equals(scroller.scrollLeft, 800 - 2 * width);
+}, "Snaps to #left after pressing ArrowLeft");
+</script>

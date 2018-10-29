@@ -400,9 +400,9 @@ class SingleDeviceCandidateSet {
             basic_constraint_set, is_device_capture,
             should_disable_hardware_noise_suppression);
 
-    return AudioCaptureSettings(
-        std::move(device_id), parameters_, hotword_enabled, disable_local_echo,
-        render_to_associated_sink, audio_processing_properties);
+    return AudioCaptureSettings(std::move(device_id), hotword_enabled,
+                                disable_local_echo, render_to_associated_sink,
+                                audio_processing_properties);
   }
 
  private:

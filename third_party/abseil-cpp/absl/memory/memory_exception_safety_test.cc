@@ -32,7 +32,7 @@ TEST(MakeUnique, CheckForLeaks) {
                     .WithInitialValue(Thrower(kValue))
                     // Ensures make_unique does not modify the input. The real
                     // test, though, is ConstructorTracker checking for leaks.
-                    .WithInvariants(testing::strong_guarantee);
+                    .WithContracts(testing::strong_guarantee);
 
   EXPECT_TRUE(tester.Test([](Thrower* thrower) {
     static_cast<void>(absl::make_unique<Thrower>(*thrower));

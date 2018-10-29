@@ -39,10 +39,13 @@
 #define ABSL_LOW_LEVEL_ALLOC_MISSING 1
 #endif
 
-// Using LowLevelAlloc with kAsyncSignalSafe isn't supported on Windows.
+// Using LowLevelAlloc with kAsyncSignalSafe isn't supported on Windows or
+// asm.js / WebAssembly.
+// See https://kripken.github.io/emscripten-site/docs/porting/pthreads.html
+// for more information.
 #ifdef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
 #error ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING cannot be directly set
-#elif defined(_WIN32)
+#elif defined(_WIN32) || defined(__asmjs__) || defined(__wasm__)
 #define ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING 1
 #endif
 

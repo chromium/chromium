@@ -32,7 +32,7 @@ NetworkCertificateHandler::Certificate GetCertificate(CERTCertificate* cert,
   if (type == net::USER_CERT) {
     int slot_id;
     std::string pkcs11_id =
-        CertLoader::GetPkcs11IdAndSlotForCert(cert, &slot_id);
+        NetworkCertLoader::GetPkcs11IdAndSlotForCert(cert, &slot_id);
     result.pkcs11_id = base::StringPrintf("%i:%s", slot_id, pkcs11_id.c_str());
   } else if (type == net::CA_CERT) {
     if (!net::x509_util::GetPEMEncoded(cert, &result.pem)) {
@@ -42,7 +42,7 @@ NetworkCertificateHandler::Certificate GetCertificate(CERTCertificate* cert,
     NOTREACHED();
   }
 
-  result.hardware_backed = CertLoader::IsCertificateHardwareBacked(cert);
+  result.hardware_backed = NetworkCertLoader::IsCertificateHardwareBacked(cert);
 
   return result;
 }
@@ -57,13 +57,13 @@ NetworkCertificateHandler::Certificate::Certificate(const Certificate& other) =
     default;
 
 NetworkCertificateHandler::NetworkCertificateHandler() {
-  CertLoader::Get()->AddObserver(this);
-  if (CertLoader::Get()->initial_load_finished())
-    OnCertificatesLoaded(CertLoader::Get()->all_certs());
+  NetworkCertLoader::Get()->AddObserver(this);
+  if (NetworkCertLoader::Get()->initial_load_finished())
+    OnCertificatesLoaded(NetworkCertLoader::Get()->all_certs());
 }
 
 NetworkCertificateHandler::~NetworkCertificateHandler() {
-  CertLoader::Get()->RemoveObserver(this);
+  NetworkCertLoader::Get()->RemoveObserver(this);
 }
 
 void NetworkCertificateHandler::AddObserver(

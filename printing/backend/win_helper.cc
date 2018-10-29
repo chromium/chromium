@@ -14,9 +14,9 @@
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -385,10 +385,10 @@ std::string GetDriverInfo(HANDLE printer) {
     }
   }
 
-  for (size_t i = 0; i < arraysize(info); ++i) {
+  for (size_t i = 0; i < base::size(info); ++i) {
     std::replace(info[i].begin(), info[i].end(), ';', ',');
     driver_info.append(info[i]);
-    if (i < arraysize(info) - 1)
+    if (i < base::size(info) - 1)
       driver_info.append(";");
   }
   return driver_info;

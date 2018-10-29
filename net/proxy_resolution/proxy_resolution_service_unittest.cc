@@ -1971,8 +1971,7 @@ TEST_F(ProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   ASSERT_EQ(4u, retry_info.size());
   for (const ProxyServer& proxy_server :
        config.proxy_rules().proxies_for_http.GetAll()) {
-    ProxyRetryInfoMap::const_iterator i =
-        retry_info.find(proxy_server.host_port_pair().ToString());
+    auto i = retry_info.find(proxy_server.host_port_pair().ToString());
     ASSERT_TRUE(i != retry_info.end());
   }
 }
@@ -3670,60 +3669,6 @@ TEST_F(ProxyResolutionServiceTest, PACScriptRefetchAfterActivity) {
                            callback3.callback(), &request3, NetLogWithSource());
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(info3.is_direct());
-}
-
-// Test that the synchronous resolution fails when a PAC script is active.
-TEST_F(ProxyResolutionServiceTest, SynchronousWithPAC) {
-  MockProxyConfigService* config_service =
-      new MockProxyConfigService("http://foopy/proxy.pac");
-
-  MockAsyncProxyResolverFactory* factory =
-      new MockAsyncProxyResolverFactory(false);
-
-  ProxyResolutionService service(base::WrapUnique(config_service),
-                                 base::WrapUnique(factory), nullptr);
-
-  GURL url("http://www.google.com/");
-
-  ProxyInfo info;
-  info.UseDirect();
-  BoundTestNetLog log;
-
-  bool synchronous_success = service.TryResolveProxySynchronously(
-      url, std::string(), &info, log.bound());
-  EXPECT_FALSE(synchronous_success);
-
-  // |info| should not have been modified.
-  EXPECT_TRUE(info.is_direct());
-}
-
-// Test that synchronous results are returned correctly if a fixed proxy
-// configuration is active.
-TEST_F(ProxyResolutionServiceTest, SynchronousWithFixedConfiguration) {
-  ProxyConfig config;
-  config.proxy_rules().ParseFromString("foopy1:8080");
-  config.set_auto_detect(false);
-
-  MockAsyncProxyResolverFactory* factory =
-      new MockAsyncProxyResolverFactory(false);
-
-  ProxyResolutionService service(
-      std::make_unique<MockProxyConfigService>(config),
-      base::WrapUnique(factory), nullptr);
-
-  GURL url("http://www.google.com/");
-
-  ProxyInfo info;
-  BoundTestNetLog log;
-
-  bool synchronous_success = service.TryResolveProxySynchronously(
-      url, std::string(), &info, log.bound());
-  EXPECT_TRUE(synchronous_success);
-  EXPECT_FALSE(info.is_direct());
-  EXPECT_EQ("foopy1", info.proxy_server().host_port_pair().host());
-
-  // No request should have been queued.
-  EXPECT_EQ(0u, factory->pending_requests().size());
 }
 
 // Helper class to exercise URL sanitization using the different policies. This

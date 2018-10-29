@@ -12,7 +12,7 @@ enum VRDisplayEventReason {
 
 // https://w3c.github.io/webvr/#interface-vrdisplayevent
 [
-    RuntimeEnabled=WebVR,
+    OriginTrialEnabled=WebVR,
     Constructor(DOMString type, optional VRDisplayEventInit eventInitDict)
 ] interface VRDisplayEvent : Event {
     readonly attribute VRDisplay display;

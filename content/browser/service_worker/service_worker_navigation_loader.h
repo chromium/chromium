@@ -114,8 +114,6 @@ class CONTENT_EXPORT ServiceWorkerNavigationLoader
     kCompleted,
   };
 
-  static const char* StatusString(Status status);
-
   // For FORWARD_TO_SERVICE_WORKER case.
   void StartRequest(const network::ResourceRequest& resource_request,
                     network::mojom::URLLoaderRequest request,
@@ -127,6 +125,7 @@ class CONTENT_EXPORT ServiceWorkerNavigationLoader
       ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
       scoped_refptr<ServiceWorkerVersion> version);
 
   void StartResponse(blink::mojom::FetchAPIResponsePtr response,
@@ -157,6 +156,11 @@ class CONTENT_EXPORT ServiceWorkerNavigationLoader
   void ReportDestination(
       ServiceWorkerMetrics::MainResourceRequestDestination destination);
 
+  // Records loading milestones. Called only after ForwardToServiceWorker() is
+  // called and there was no error. |handled| is true when a fetch handler
+  // handled the request (i.e. non network fallback case).
+  void RecordTimingMetrics(bool handled);
+
   void TransitionToStatus(Status new_status);
 
   ResponseType response_type_ = ResponseType::NOT_DETERMINED;
@@ -182,14 +186,15 @@ class CONTENT_EXPORT ServiceWorkerNavigationLoader
   bool did_navigation_preload_ = false;
   network::ResourceResponseHead response_head_;
 
+  bool devtools_attached_ = false;
+  blink::mojom::ServiceWorkerFetchEventTimingPtr fetch_event_timing_;
+  base::TimeTicks completion_time_;
+
   // Pointer to the URLLoaderClient (i.e. NavigationURLLoader).
   network::mojom::URLLoaderClientPtr url_loader_client_;
   mojo::Binding<network::mojom::URLLoader> binding_;
 
   Status status_ = Status::kNotStarted;
-
-  // https://crbug.com/881826
-  base::Optional<std::vector<std::string>> debug_log_;
 
   base::WeakPtrFactory<ServiceWorkerNavigationLoader> weak_factory_;
 

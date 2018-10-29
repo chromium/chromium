@@ -101,7 +101,7 @@ bool AudioOutputDispatcherImpl::StartStream(
 
 void AudioOutputDispatcherImpl::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  AudioStreamMap::iterator it = proxy_to_physical_map_.find(stream_proxy);
+  auto it = proxy_to_physical_map_.find(stream_proxy);
   DCHECK(it != proxy_to_physical_map_.end());
   StopPhysicalStream(it->second);
   proxy_to_physical_map_.erase(it);
@@ -111,7 +111,7 @@ void AudioOutputDispatcherImpl::StopStream(AudioOutputProxy* stream_proxy) {
 void AudioOutputDispatcherImpl::StreamVolumeSet(AudioOutputProxy* stream_proxy,
                                                 double volume) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  AudioStreamMap::iterator it = proxy_to_physical_map_.find(stream_proxy);
+  auto it = proxy_to_physical_map_.find(stream_proxy);
   if (it != proxy_to_physical_map_.end()) {
     AudioOutputStream* physical_stream = it->second;
     physical_stream->SetVolume(volume);

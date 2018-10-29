@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
@@ -33,6 +35,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
@@ -163,7 +166,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_temp_history_dir = temp_dir_.GetPath();
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), &BuildTestHistoryService);
+        profile(), base::BindRepeating(&BuildTestHistoryService));
     SiteEngagementScore::SetParamValuesForTesting();
     service_ = base::WrapUnique(new SiteEngagementService(profile(), &clock_));
   }
@@ -212,12 +215,13 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
       const GURL& url) {
     double score = 0;
     base::RunLoop run_loop;
-    content::BrowserThread::GetTaskRunnerForThread(thread_id)->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
-                       base::Unretained(this), base::RetainedRef(settings_map),
-                       url, &score),
-        run_loop.QuitClosure());
+    base::CreateSingleThreadTaskRunnerWithTraits({thread_id})
+        ->PostTaskAndReply(
+            FROM_HERE,
+            base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
+                           base::Unretained(this),
+                           base::RetainedRef(settings_map), url, &score),
+            run_loop.QuitClosure());
     run_loop.Run();
     return score;
   }

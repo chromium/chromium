@@ -18,8 +18,8 @@ TEST(OfflineURLUtilsTest, OfflineRootDirectoryPathTest) {
   base::FilePath offline_directory =
       reading_list::OfflineRootDirectoryPath(profile_path);
   // Expected value: profile_path/Offline
-  std::string expected =
-      base::StringPrintf("profile_path%" PRIsFP "Offline", separator.c_str());
+  std::string expected = base::StringPrintf(
+      "profile_path%" PRFilePath "Offline", separator.c_str());
   EXPECT_EQ(expected, offline_directory.AsUTF8Unsafe());
 }
 
@@ -42,7 +42,7 @@ TEST(OfflineURLUtilsTest, OfflineURLDirectoryAbsolutePathTest) {
       reading_list::OfflineURLDirectoryAbsolutePath(profile_path, url);
   // Expected value: profile_path/Offline/0090071ef710946a1263c276284bb3b8
   std::string expected =
-      base::StringPrintf("profile_path%" PRIsFP "Offline%" PRIsFP
+      base::StringPrintf("profile_path%" PRFilePath "Offline%" PRFilePath
                          "0090071ef710946a1263c276284bb3b8",
                          separator.c_str(), separator.c_str());
   EXPECT_EQ(expected, offline_directory.AsUTF8Unsafe());
@@ -60,7 +60,8 @@ TEST(OfflineURLUtilsTest, AbsolutePathForRelativePathTest) {
                                                            relative_path);
   // Expected value: profile_path/Offline/relative/path
   std::string expected = base::StringPrintf(
-      "profile_path%" PRIsFP "Offline%" PRIsFP "relative%" PRIsFP "path",
+      "profile_path%" PRFilePath "Offline%" PRFilePath "relative%" PRFilePath
+      "path",
       separator.c_str(), separator.c_str(), separator.c_str());
   EXPECT_EQ(expected, absolute_path.AsUTF8Unsafe());
 }
@@ -72,14 +73,15 @@ TEST(OfflineURLUtilsTest, OfflinePagePathTest) {
   base::FilePath offline_page =
       reading_list::OfflinePagePath(url, reading_list::OFFLINE_TYPE_HTML);
   // Expected value: 0090071ef710946a1263c276284bb3b8/page.html
-  std::string expected_html =
-      base::StringPrintf("0090071ef710946a1263c276284bb3b8%" PRIsFP "page.html",
-                         separator.c_str());
+  std::string expected_html = base::StringPrintf(
+      "0090071ef710946a1263c276284bb3b8%" PRFilePath "page.html",
+      separator.c_str());
   EXPECT_EQ(expected_html, offline_page.AsUTF8Unsafe());
   offline_page =
       reading_list::OfflinePagePath(url, reading_list::OFFLINE_TYPE_PDF);
   // Expected value: 0090071ef710946a1263c276284bb3b8/file.pdf
   std::string expected_pdf = base::StringPrintf(
-      "0090071ef710946a1263c276284bb3b8%" PRIsFP "file.pdf", separator.c_str());
+      "0090071ef710946a1263c276284bb3b8%" PRFilePath "file.pdf",
+      separator.c_str());
   EXPECT_EQ(expected_pdf, offline_page.AsUTF8Unsafe());
 }

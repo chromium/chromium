@@ -25,6 +25,34 @@ Polymer({
     },
   },
 
+  /**
+   * Flag that ensures that OOBE configuration is applied only once.
+   * @private {boolean}
+   */
+  configuration_applied_: false,
+
+  /** Called when dialog is shown */
+  onBeforeShow: function() {
+    this.behaviors.forEach((behavior) => {
+      if (behavior.onBeforeShow)
+        behavior.onBeforeShow.call(this);
+    });
+    window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
+  },
+
+  /** Called when dialog is shown for the first time */
+  applyOobeConfiguration_: function() {
+    if (this.configuration_applied_)
+      return;
+    var configuration = Oobe.getInstance().getOobeConfiguration();
+    if (!configuration)
+      return;
+    if (configuration.demoPreferencesNext) {
+      this.onNextClicked_();
+    }
+    this.configuration_applied_ = true;
+  },
+
   /** Called after resources are updated. */
   updateLocalizedContent: function() {
     assert(loadTimeData);

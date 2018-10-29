@@ -9,8 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 
@@ -60,7 +60,7 @@ void GetSnapshotsPaths(std::vector<base::FilePath>* snapshots_paths) {
   } else if (scale == 3) {
     retina_suffix = "@3x";
   }
-  for (unsigned int i = 0; i < arraysize(kOrientationDescriptions); i++) {
+  for (unsigned int i = 0; i < base::size(kOrientationDescriptions); i++) {
     std::string snapshot_filename =
         base::StringPrintf("UIApplicationAutomaticSnapshotDefault-%s%s.png",
                            kOrientationDescriptions[i], retina_suffix);

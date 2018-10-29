@@ -67,7 +67,7 @@ void WebSocketHandleImpl::Connect(network::mojom::blink::WebSocketPtr websocket,
 void WebSocketHandleImpl::Send(bool fin,
                                WebSocketHandle::MessageType type,
                                const char* data,
-                               size_t size) {
+                               wtf_size_t size) {
   DCHECK(websocket_);
 
   network::mojom::blink::WebSocketMessageType type_to_pass;

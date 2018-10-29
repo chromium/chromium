@@ -382,8 +382,8 @@ You might have to adjust the commands to your situation and needs.
 Launch commands are the equivalent of `F5` in Visual Studio: They launch some
 program or a debugger. Optionally, they can run some task defined in
 `tasks.json`. Launch commands can be run from the debug view (`Ctrl+Shift+D`).
-Copy the code below to chromium/src/.vscode/launch.json and adjust them to
-your situation and needs.
+Copy the code below to `//.vscode/launch.json` and adjust them to your situation
+and needs.
 ```
 {
   "version": "0.2.0",
@@ -441,6 +441,21 @@ your situation and needs.
     "cwd": "${workspaceRoot}/out/Debug/",
     "environment": [],
     "externalConsole": false
+  },
+  {
+    // Must be running before launching: out/Debug/bin/chrome_public_apk gdb --ide
+    "name": "Attach Android",
+    "type": "cppdbg",
+    "request": "launch",
+    "targetArchitecture": "arm",
+    "program": "/tmp/adb-gdb-support-${env:USER}/app_process",
+    "miDebuggerPath": "/tmp/adb-gdb-support-${env:USER}/gdb",
+    "miDebuggerServerAddress": "ignored",
+    "cwd": "${workspaceRoot}",
+    "customLaunchSetupCommands": [{
+      "text": "-interpreter-exec console \"source -v /tmp/adb-gdb-support-${env:USER}/gdbinit\""
+    }],
+    "launchCompleteCommand": "None",
   }]
 }
 ```

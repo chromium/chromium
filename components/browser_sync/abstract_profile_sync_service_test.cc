@@ -20,7 +20,6 @@
 #include "components/sync/engine/test_engine_components_factory.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/syncable/test_user_share.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
 using syncer::SyncBackendHostImpl;
@@ -85,7 +84,6 @@ void SyncEngineForProfileSyncTest::Initialize(InitParams params) {
           network::TestNetworkConnectionTracker::GetInstance());
   params.credentials.email = "testuser@gmail.com";
   params.credentials.sync_token = "token";
-  params.credentials.scope_set.insert(GaiaConstants::kChromeSyncOAuth2Scope);
   params.restored_key_for_bootstrapping.clear();
 
   // It'd be nice if we avoided creating the EngineComponentsFactory in the
@@ -175,7 +173,7 @@ void AbstractProfileSyncServiceTest::CreateSyncService(
   syncer::SyncApiComponentFactoryMock* components =
       profile_sync_service_bundle_.component_factory();
   auto engine = std::make_unique<SyncEngineForProfileSyncTest>(
-      temp_dir_.GetPath(), sync_service_->GetSyncClient(),
+      temp_dir_.GetPath(), sync_service_->GetSyncClientForTest(),
       profile_sync_service_bundle_.fake_invalidation_service(),
       sync_service_->sync_prefs()->AsWeakPtr(),
       std::move(initialization_success_callback));

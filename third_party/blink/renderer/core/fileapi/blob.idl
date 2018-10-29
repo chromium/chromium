@@ -28,14 +28,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/FileAPI/#blob
+// https://w3c.github.io/FileAPI/#blob-section
 
 typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
 [
     Constructor(optional sequence<BlobPart> blobParts, optional BlobPropertyBag options),
     ConstructorCallWith=ExecutionContext,
     RaisesException=Constructor,
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker),
+    Serializable
 ] interface Blob {
     readonly attribute unsigned long long size;
     readonly attribute DOMString type;

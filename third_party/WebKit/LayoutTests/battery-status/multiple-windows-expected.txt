@@ -2,7 +2,6 @@ Test battery status API with multiple windows.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 resolution in window
 PASS batteryInfo is defined.
 PASS lastSetMockBatteryInfo is defined.

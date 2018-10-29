@@ -37,4 +37,5 @@ interface SVGElement : Element {
 };
 
 SVGElement implements GlobalEventHandlers;
+SVGElement implements DocumentAndElementEventHandlers;
 SVGElement implements NoncedElement;

@@ -55,7 +55,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
     RasterContextProvider* const context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
-    const char* url_;
   };
 
   // RefCounted interface.

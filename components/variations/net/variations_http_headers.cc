@@ -38,6 +38,7 @@ const char* kSuffixesToSetHeadersFor[] = {
     ".googleusercontent.com",
     ".googlevideo.com",
     ".gstatic.com",
+    ".litepages.googlezip.net",
     ".ytimg.com",
 };
 

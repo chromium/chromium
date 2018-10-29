@@ -4,6 +4,10 @@
 
 #include "ui/views/accessibility/view_accessibility.h"
 
+#include <algorithm>
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/ui_features.h"
@@ -36,6 +40,7 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
 #if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+  // Cannot use std::make_unique because constructor is protected.
   return base::WrapUnique(new ViewAccessibility(view));
 }
 #endif
@@ -44,6 +49,63 @@ ViewAccessibility::ViewAccessibility(View* view)
     : owner_view_(view), is_leaf_(false) {}
 
 ViewAccessibility::~ViewAccessibility() = default;
+
+void ViewAccessibility::AddVirtualChildView(
+    std::unique_ptr<AXVirtualView> virtual_view) {
+  DCHECK(virtual_view);
+  if (virtual_view->parent_view() == view())
+    return;
+  AddVirtualChildViewAt(std::move(virtual_view), virtual_child_count());
+}
+
+void ViewAccessibility::AddVirtualChildViewAt(
+    std::unique_ptr<AXVirtualView> virtual_view,
+    int index) {
+  DCHECK(virtual_view);
+  DCHECK(!virtual_view->parent_view()) << "This |view| already has a View "
+                                          "parent. Call RemoveVirtualChildView "
+                                          "first.";
+  DCHECK(!virtual_view->virtual_parent_view()) << "This |view| already has an "
+                                                  "AXVirtualView parent. Call "
+                                                  "RemoveChildView first.";
+  DCHECK_GE(index, 0);
+  DCHECK_LE(index, virtual_child_count());
+
+  virtual_view->set_parent_view(view());
+  virtual_children_.insert(virtual_children_.begin() + index,
+                           std::move(virtual_view));
+}
+
+std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
+    AXVirtualView* virtual_view) {
+  DCHECK(virtual_view);
+  int cur_index = GetIndexOf(virtual_view);
+  if (cur_index < 0)
+    return {};
+
+  std::unique_ptr<AXVirtualView> child =
+      std::move(virtual_children_[cur_index]);
+  virtual_children_.erase(virtual_children_.begin() + cur_index);
+  child->set_parent_view(nullptr);
+  return child;
+}
+
+void ViewAccessibility::RemoveAllVirtualChildViews() {
+  while (!virtual_children_.empty())
+    RemoveVirtualChildView(virtual_children_.back().get());
+}
+
+int ViewAccessibility::GetIndexOf(const AXVirtualView* virtual_view) const {
+  DCHECK(virtual_view);
+  const auto iter =
+      std::find_if(virtual_children_.begin(), virtual_children_.end(),
+                   [virtual_view](const auto& child) {
+                     return child.get() == virtual_view;
+                   });
+  return iter != virtual_children_.end()
+             ? static_cast<int>(iter - virtual_children_.begin())
+             : -1;
+}
 
 const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
   return unique_id_;
@@ -109,7 +171,7 @@ bool ViewAccessibility::IsLeaf() const {
   return is_leaf_;
 }
 
-void ViewAccessibility::OverrideRole(ax::mojom::Role role) {
+void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role));
 
   custom_data_.role = role;
@@ -120,14 +182,15 @@ void ViewAccessibility::OverrideName(const std::string& name) {
 }
 
 void ViewAccessibility::OverrideName(const base::string16& name) {
-  custom_data_.SetName(base::UTF16ToUTF8(name));
+  custom_data_.SetName(name);
 }
 
 void ViewAccessibility::OverrideDescription(const std::string& description) {
-  DCHECK(!custom_data_.HasStringAttribute(
-      ax::mojom::StringAttribute::kDescription));
-  custom_data_.AddStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                  description);
+  custom_data_.SetDescription(description);
+}
+
+void ViewAccessibility::OverrideDescription(const base::string16& description) {
+  custom_data_.SetDescription(description);
 }
 
 void ViewAccessibility::OverrideIsLeaf() {

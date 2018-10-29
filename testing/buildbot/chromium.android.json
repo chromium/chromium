@@ -544,15 +544,29 @@
     ]
   },
   "Android WebView L (dbg)": {
-    "cts_tests": [
+    "isolated_scripts": [
       {
-        "arch": "arm64",
-        "platform": "L"
-      }
-    ],
-    "instrumentation_tests": [
-      {
-        "test": "system_webview_shell_layout_test_apk"
+        "isolate_name": "webview_cts_tests",
+        "name": "webview_cts_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive",
+              "revision": "version:1.0"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "device_os": "LMY47I",
+              "device_type": "hammerhead",
+              "os": "Android"
+            }
+          ],
+          "hard_timeout": 960,
+          "shards": 3
+        }
       }
     ]
   },
@@ -1019,6 +1033,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3184,11 +3199,11 @@
     "isolated_scripts": [
       {
         "args": [
+          "--num-retries=3",
           "--debug",
           "--android",
           "--additional-driver-flag=--use-gpu-in-tests"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -3668,6 +3683,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6289,6 +6305,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -9053,6 +9070,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -11749,6 +11767,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14403,6 +14422,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -16650,8 +16670,7 @@
               "device_type": "marlin",
               "os": "Android"
             }
-          ],
-          "hard_timeout": 1800
+          ]
         },
         "test": "chrome_public_test_vr_apk"
       },
@@ -16689,8 +16708,7 @@
               "device_type": "marlin",
               "os": "Android"
             }
-          ],
-          "hard_timeout": 1800
+          ]
         },
         "test": "chrome_public_test_vr_apk"
       },
@@ -16730,8 +16748,7 @@
               "device_type": "marlin",
               "os": "Android"
             }
-          ],
-          "hard_timeout": 1800
+          ]
         },
         "test": "chrome_public_test_vr_apk"
       }
@@ -18139,6 +18156,11 @@
       }
     ]
   },
+  "android-jumbo-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "android-kitkat-arm-rel": {
     "additional_compile_targets": [
       "cronet_test_instrumentation_apk",
@@ -18534,6 +18556,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -21207,6 +21230,7 @@
       },
       {
         "args": [
+          "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

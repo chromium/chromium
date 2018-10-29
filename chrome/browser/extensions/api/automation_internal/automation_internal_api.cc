@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/automation.h"
-#include "chrome/common/extensions/api/automation_api_constants.h"
 #include "chrome/common/extensions/api/automation_internal.h"
 #include "chrome/common/extensions/chrome_extension_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -192,7 +191,7 @@ class AutomationWebContentsObserver
 
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
-    int tree_id = render_frame_host->GetAXTreeID();
+    ui::AXTreeID tree_id = render_frame_host->GetAXTreeID();
     AutomationEventRouter::GetInstance()->DispatchTreeDestroyedEvent(
         tree_id,
         browser_context_);
@@ -285,7 +284,7 @@ AutomationInternalEnableTabFunction::Run() {
   AutomationWebContentsObserver::CreateForWebContents(contents);
   contents->EnableWebContentsOnlyAccessibilityMode();
 
-  int ax_tree_id = rfh->GetAXTreeID();
+  ui::AXTreeID ax_tree_id = rfh->GetAXTreeID();
 
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
@@ -304,8 +303,8 @@ ExtensionFunction::ResponseAction AutomationInternalEnableFrameFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromAXTreeID(params->tree_id);
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
+      ui::AXTreeID::FromString(params->tree_id));
   if (!rfh)
     return RespondNow(Error("unable to load tab"));
 
@@ -325,7 +324,7 @@ ExtensionFunction::ResponseAction
 AutomationInternalPerformActionFunction::ConvertToAXActionData(
     api::automation_internal::PerformAction::Params* params,
     ui::AXActionData* action) {
-  action->target_tree_id = params->args.tree_id;
+  action->target_tree_id = ui::AXTreeID::FromString(params->args.tree_id);
   action->source_extension_id = extension_id();
   action->target_node_id = params->args.automation_node_id;
   int* request_id = params->args.request_id.get();
@@ -478,7 +477,7 @@ AutomationInternalPerformActionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
   ui::AXHostDelegate* delegate =
-      registry->GetHostDelegate(params->args.tree_id);
+      registry->GetHostDelegate(ui::AXTreeID::FromString(params->args.tree_id));
   if (delegate) {
 #if defined(USE_AURA)
     ui::AXActionData data;
@@ -492,8 +491,8 @@ AutomationInternalPerformActionFunction::Run() {
                             " platform does not support desktop automation"));
 #endif  // defined(USE_AURA)
   }
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromAXTreeID(params->args.tree_id);
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
+      ui::AXTreeID::FromString(params->args.tree_id));
   if (!rfh)
     return RespondNow(Error("Ignoring action on destroyed node"));
 
@@ -545,7 +544,7 @@ AutomationInternalEnableDesktopFunction::Run() {
   AutomationEventRouter::GetInstance()->RegisterListenerWithDesktopPermission(
       extension_id(), source_process_id());
 
-  AutomationManagerAura::GetInstance()->Enable(browser_context());
+  AutomationManagerAura::GetInstance()->Enable();
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error("getDesktop is unsupported by this platform"));
@@ -564,8 +563,8 @@ AutomationInternalQuerySelectorFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromAXTreeID(params->args.tree_id);
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
+      ui::AXTreeID::FromString(params->args.tree_id));
   if (!rfh) {
     return RespondNow(
         Error("domQuerySelector query sent on non-web or destroyed tree."));

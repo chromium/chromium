@@ -2,7 +2,6 @@ Test useCSS command
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS useCSS changed the state successfully
 PASS useCSS changed the state successfully
 PASS useCSS changed the state successfully

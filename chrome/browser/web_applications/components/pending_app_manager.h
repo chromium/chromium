@@ -17,6 +17,8 @@
 namespace web_app {
 
 enum class InstallResultCode;
+enum class InstallSource;
+enum class LaunchContainer;
 
 // PendingAppManager installs, uninstalls, and updates apps.
 //
@@ -34,67 +36,20 @@ class PendingAppManager {
   using UninstallCallback =
       base::RepeatingCallback<void(const GURL& app_url, bool succeeded)>;
 
-  // How the app will be launched after installation.
-  enum class LaunchContainer {
-    // When `kDefault` is used, the app will launch in a window if the site is
-    // "installable" (also referred to as Progressive Web App) and in a tab if
-    // the site is not "installable".
-    kDefault,
-    kTab,
-    kWindow,
-  };
-
-  // Where an app was installed from. This affects what flags will be used when
-  // installing the app.
-  //
-  // Internal means that the set of apps to install is defined statically, and
-  // can be determined solely by 'first party' data: the Chromium binary,
-  // stored user preferences (assumed to have been edited only by Chromiums
-  // past and present) and the like. External means that the set of apps to
-  // install is defined dynamically, depending on 'third party' data that can
-  // change from session to session even if those sessions are for the same
-  // user running the same binary on the same hardware.
-  //
-  // Third party data sources can include configuration files in well known
-  // directories on the file system, entries (or the lack of) in the Windows
-  // registry, or centrally configured sys-admin policy.
-  //
-  // The internal versus external distinction matters because, for external
-  // install sources, the code that installs apps based on those external data
-  // sources can also need to *un*install apps if those external data sources
-  // change, either by an explicit uninstall request or an implicit uninstall
-  // of a previously-listed no-longer-listed app.
-  //
-  // Without the distinction between e.g. kInternal and kExternalXxx, the code
-  // that manages external-xxx apps might inadvertently uninstall internal apps
-  // that it otherwise doesn't recognize.
-  //
-  // In practice, every kExternalXxx enum definition should correspond to
-  // exactly one place in the code where SynchronizeInstalledApps is called.
-  enum class InstallSource {
-    // Do not remove or re-order the names, only append to the end. Their
-    // integer values are persisted in the preferences.
-
-    kInternal = 0,
-    // Installed by default on the system, such as "all such-and-such make and
-    // model Chromebooks should have this app installed".
-    //
-    // The corresponding SynchronizeInstalledApps call site is in
-    // WebAppProvider::OnScanForExternalWebApps.
-    kExternalDefault = 1,
-    // Installed by sys-admin policy, such as "all example.com employees should
-    // have this app installed".
-    //
-    // The corresponding SynchronizeInstalledApps call site is in
-    // WebAppPolicyManager::RefreshPolicyInstalledApps.
-    kExternalPolicy = 2,
-  };
-
   struct AppInfo {
+    static const bool kDefaultCreateShortcuts;
+    static const bool kDefaultOverridePreviousUserUninstall;
+    static const bool kDefaultBypassServiceWorkerCheck;
+    static const bool kDefaultRequireManifest;
+
     AppInfo(GURL url,
             LaunchContainer launch_container,
             InstallSource install_source,
-            bool create_shortcuts = true);
+            bool create_shortcuts = kDefaultCreateShortcuts,
+            bool override_previous_user_uninstall =
+                kDefaultOverridePreviousUserUninstall,
+            bool bypass_service_worker_check = kDefaultBypassServiceWorkerCheck,
+            bool require_manifest = kDefaultRequireManifest);
     AppInfo(AppInfo&& other);
     ~AppInfo();
 
@@ -106,6 +61,16 @@ class PendingAppManager {
     const LaunchContainer launch_container;
     const InstallSource install_source;
     const bool create_shortcuts;
+    const bool override_previous_user_uninstall;
+
+    // This must only be used by pre-installed default or system apps that are
+    // valid PWAs if loading the real service worker is too costly to verify
+    // programmatically.
+    const bool bypass_service_worker_check;
+
+    // This should be used for installing all default apps so that good metadata
+    // is ensured.
+    const bool require_manifest;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(AppInfo);

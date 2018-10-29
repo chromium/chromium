@@ -49,6 +49,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   bool IsEnterpriseManaged() const override;
 
+  bool HasMachineLevelPolicies() override;
+
   void Shutdown() override;
 
   ConfigurationPolicyProvider* GetPlatformProvider();

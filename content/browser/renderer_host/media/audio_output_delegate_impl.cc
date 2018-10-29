@@ -9,10 +9,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_observer.h"
 #include "media/audio/audio_output_controller.h"
@@ -64,29 +66,29 @@ AudioOutputDelegateImpl::ControllerEventHandler::ControllerEventHandler(
     : delegate_(std::move(delegate)), stream_id_(stream_id) {}
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerCreated() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioOutputDelegateImpl::SendCreatedNotification,
                      delegate_));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerPlaying() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState, delegate_,
                      true));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerPaused() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState, delegate_,
                      false));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerError() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioOutputDelegateImpl::OnError, delegate_));
 }
 

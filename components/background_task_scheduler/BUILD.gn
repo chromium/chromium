@@ -68,6 +68,7 @@ if (is_android) {
 
     deps = [
       ":background_task_scheduler_java",
+      ":background_task_scheduler_task_ids_java",
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_gcm_java",

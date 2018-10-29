@@ -11,6 +11,7 @@
 
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/storage/database_task.h"
+#include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/platform/modules/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -21,7 +22,8 @@ struct BackgroundFetchRegistration;
 
 namespace background_fetch {
 
-// Creates Background Fetch metadata entries in the database.
+// Checks if the registration can be created, then writes the Background
+// Fetch metadata in the SW database with corresponding entries in the cache.
 class CreateMetadataTask : public DatabaseTask {
  public:
   using CreateMetadataCallback =
@@ -33,6 +35,7 @@ class CreateMetadataTask : public DatabaseTask {
                      const std::vector<ServiceWorkerFetchRequest>& requests,
                      const BackgroundFetchOptions& options,
                      const SkBitmap& icon,
+                     bool start_paused,
                      CreateMetadataCallback callback);
 
   ~CreateMetadataTask() override;
@@ -40,6 +43,8 @@ class CreateMetadataTask : public DatabaseTask {
   void Start() override;
 
  private:
+  void DidGetCanCreateRegistration(blink::mojom::BackgroundFetchError error,
+                                   bool can_create);
   void DidGetIsQuotaAvailable(bool is_available);
 
   void GetRegistrationUniqueId();
@@ -56,6 +61,12 @@ class CreateMetadataTask : public DatabaseTask {
 
   void InitializeMetadataProto();
 
+  void DidOpenCache(CacheStorageCacheHandle handle,
+                    blink::mojom::CacheStorageError error);
+
+  void DidStoreRequests(CacheStorageCacheHandle handle,
+                        blink::mojom::CacheStorageVerboseErrorPtr error);
+
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
   std::string HistogramName() const override;
@@ -64,6 +75,7 @@ class CreateMetadataTask : public DatabaseTask {
   std::vector<ServiceWorkerFetchRequest> requests_;
   BackgroundFetchOptions options_;
   SkBitmap icon_;
+  bool start_paused_;
   CreateMetadataCallback callback_;
 
   std::unique_ptr<proto::BackgroundFetchMetadata> metadata_proto_;

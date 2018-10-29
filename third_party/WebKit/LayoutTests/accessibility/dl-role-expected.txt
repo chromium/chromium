@@ -2,12 +2,12 @@ This tests that AXRole for dl element is AXDescriptionList.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS dlElement.role is 'AXRole: AXDescriptionList'
 PASS dtElement.role is 'AXRole: AXDescriptionListTerm'
 PASS ddElement.role is 'AXRole: AXDescriptionListDetail'
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 term
 definition

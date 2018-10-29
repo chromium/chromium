@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/color_helpers.h"
 
+#include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/color_utils.h"
 

@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
@@ -19,12 +20,14 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_fetcher_service_factory.h"
+#include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/fake_account_fetcher_service_builder.h"
 #include "chrome/browser/signin/fake_profile_oauth2_token_service_builder.h"
 #include "chrome/browser/signin/fake_signin_manager_builder.h"
 #include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,6 +56,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,7 +102,8 @@ UserCloudPolicyManager* BuildCloudPolicyManager(
   return new UserCloudPolicyManager(
       std::unique_ptr<UserCloudPolicyStore>(store), base::FilePath(),
       std::unique_ptr<CloudExternalDataManager>(),
-      base::ThreadTaskRunnerHandle::Get());
+      base::ThreadTaskRunnerHandle::Get(),
+      network::TestNetworkConnectionTracker::CreateGetter());
 }
 
 class UserPolicySigninServiceTest : public testing::Test {
@@ -131,8 +136,8 @@ class UserPolicySigninServiceTest : public testing::Test {
                    base::Unretained(this));
 #if defined(OS_ANDROID)
     GetTokenService()->UpdateCredentials(
-        AccountTrackerService::PickAccountIdForAccount(
-            profile_.get()->GetPrefs(), kTestGaiaId, kTestUser),
+        AccountTrackerServiceFactory::GetForProfile(profile_.get())
+            ->SeedAccountInfo(kTestGaiaId, kTestUser),
         "oauth2_login_refresh_token");
     service->RegisterForPolicyWithAccountId(kTestUser, kTestGaiaId, callback);
     ASSERT_TRUE(IsRequestActive());
@@ -146,12 +151,12 @@ class UserPolicySigninServiceTest : public testing::Test {
   void SetUp() override {
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
         &device_management_service_);
-    UserPolicySigninServiceFactory::SetSystemURLLoaderFactoryForTesting(
-        test_system_shared_loader_factory_);
 
     local_state_.reset(new TestingPrefServiceSimple);
     RegisterLocalState(local_state_->registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(local_state_.get());
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_system_shared_loader_factory_);
 
     g_browser_process->browser_policy_connector()->Init(
         local_state_.get(), test_system_shared_loader_factory_);
@@ -168,19 +173,23 @@ class UserPolicySigninServiceTest : public testing::Test {
     // instances) so we have to inject our testing factory via a special
     // API before creating the profile.
     UserCloudPolicyManagerFactory::GetInstance()->RegisterTestingFactory(
-        BuildCloudPolicyManager);
+        base::BindRepeating(&BuildCloudPolicyManager));
     TestingProfile::Builder builder;
     builder.SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(
             std::move(prefs)));
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              BuildFakeSigninManagerBase);
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              BuildFakeProfileOAuth2TokenService);
-    builder.AddTestingFactory(AccountFetcherServiceFactory::GetInstance(),
-                              FakeAccountFetcherServiceBuilder::BuildForTests);
-    builder.AddTestingFactory(ChromeSigninClientFactory::GetInstance(),
-                              signin::BuildTestSigninClient);
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
+    builder.AddTestingFactory(
+        AccountFetcherServiceFactory::GetInstance(),
+        base::BindRepeating(&FakeAccountFetcherServiceBuilder::BuildForTests));
+    builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&signin::BuildTestSigninClient));
 
     profile_ = builder.Build();
 
@@ -432,8 +441,9 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   ASSERT_FALSE(IsRequestActive());
 
   // Make oauth token available.
-  std::string account_id = AccountTrackerService::PickAccountIdForAccount(
-      profile_.get()->GetPrefs(), kTestGaiaId, kTestUser);
+  std::string account_id =
+      AccountTrackerServiceFactory::GetForProfile(profile_.get())
+          ->SeedAccountInfo(kTestGaiaId, kTestUser);
   GetTokenService()->UpdateCredentials(account_id, "oauth_login_refresh_token");
 
   // Not signed in yet, so client registration should be deferred.
@@ -846,7 +856,7 @@ TEST_F(UserPolicySigninServiceTest, PolicyFetchFailureDisableManagement) {
 
   EXPECT_TRUE(manager_->IsClientRegistered());
 #if !defined(OS_ANDROID)
-  EXPECT_TRUE(signin_manager_->IsSignoutProhibited());
+  EXPECT_FALSE(signin_util::IsUserSignoutAllowedForProfile(profile_.get()));
 #endif
 
   // Kick off another policy fetch.
@@ -868,7 +878,7 @@ TEST_F(UserPolicySigninServiceTest, PolicyFetchFailureDisableManagement) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(manager_->IsClientRegistered());
 #if !defined(OS_ANDROID)
-  EXPECT_FALSE(signin_manager_->IsSignoutProhibited());
+  EXPECT_TRUE(signin_util::IsUserSignoutAllowedForProfile(profile_.get()));
 #endif
 }
 

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/writer.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -19,7 +19,7 @@ namespace device {
 namespace {
 
 bool AreMakeCredentialRequestMapKeysCorrect(
-    const cbor::CBORValue::MapValue& request_map) {
+    const cbor::Value::MapValue& request_map) {
   return std::all_of(request_map.begin(), request_map.end(),
                      [](const auto& param) {
                        if (!param.first.is_integer())
@@ -31,7 +31,7 @@ bool AreMakeCredentialRequestMapKeysCorrect(
 }
 
 bool IsMakeCredentialOptionMapFormatCorrect(
-    const cbor::CBORValue::MapValue& option_map) {
+    const cbor::Value::MapValue& option_map) {
   return std::all_of(
       option_map.begin(), option_map.end(), [](const auto& param) {
         if (!param.first.is_string())
@@ -70,47 +70,52 @@ CtapMakeCredentialRequest& CtapMakeCredentialRequest::operator=(
 CtapMakeCredentialRequest::~CtapMakeCredentialRequest() = default;
 
 std::vector<uint8_t> CtapMakeCredentialRequest::EncodeAsCBOR() const {
-  cbor::CBORValue::MapValue cbor_map;
-  cbor_map[cbor::CBORValue(1)] = cbor::CBORValue(client_data_hash_);
-  cbor_map[cbor::CBORValue(2)] = rp_.ConvertToCBOR();
-  cbor_map[cbor::CBORValue(3)] = user_.ConvertToCBOR();
-  cbor_map[cbor::CBORValue(4)] = public_key_credential_params_.ConvertToCBOR();
+  cbor::Value::MapValue cbor_map;
+  cbor_map[cbor::Value(1)] = cbor::Value(client_data_hash_);
+  cbor_map[cbor::Value(2)] = rp_.ConvertToCBOR();
+  cbor_map[cbor::Value(3)] = user_.ConvertToCBOR();
+  cbor_map[cbor::Value(4)] = public_key_credential_params_.ConvertToCBOR();
   if (exclude_list_) {
-    cbor::CBORValue::ArrayValue exclude_list_array;
+    cbor::Value::ArrayValue exclude_list_array;
     for (const auto& descriptor : *exclude_list_) {
       exclude_list_array.push_back(descriptor.ConvertToCBOR());
     }
-    cbor_map[cbor::CBORValue(5)] =
-        cbor::CBORValue(std::move(exclude_list_array));
+    cbor_map[cbor::Value(5)] = cbor::Value(std::move(exclude_list_array));
   }
+
+  if (hmac_secret_) {
+    cbor::Value::MapValue extensions;
+    extensions[cbor::Value(kExtensionHmacSecret)] = cbor::Value(true);
+    cbor_map[cbor::Value(6)] = cbor::Value(std::move(extensions));
+  }
+
   if (pin_auth_) {
-    cbor_map[cbor::CBORValue(8)] = cbor::CBORValue(*pin_auth_);
+    cbor_map[cbor::Value(8)] = cbor::Value(*pin_auth_);
   }
 
   if (pin_protocol_) {
-    cbor_map[cbor::CBORValue(9)] = cbor::CBORValue(*pin_protocol_);
+    cbor_map[cbor::Value(9)] = cbor::Value(*pin_protocol_);
   }
 
-  cbor::CBORValue::MapValue option_map;
+  cbor::Value::MapValue option_map;
 
   // Resident keys are not supported by default.
   if (resident_key_supported_) {
-    option_map[cbor::CBORValue(kResidentKeyMapKey)] =
-        cbor::CBORValue(resident_key_supported_);
+    option_map[cbor::Value(kResidentKeyMapKey)] =
+        cbor::Value(resident_key_supported_);
   }
 
   // User verification is not required by default.
   if (user_verification_required_) {
-    option_map[cbor::CBORValue(kUserVerificationMapKey)] =
-        cbor::CBORValue(user_verification_required_);
+    option_map[cbor::Value(kUserVerificationMapKey)] =
+        cbor::Value(user_verification_required_);
   }
 
   if (!option_map.empty()) {
-    cbor_map[cbor::CBORValue(7)] = cbor::CBORValue(std::move(option_map));
+    cbor_map[cbor::Value(7)] = cbor::Value(std::move(option_map));
   }
 
-  auto serialized_param =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_map)));
+  auto serialized_param = cbor::Writer::Write(cbor::Value(std::move(cbor_map)));
   DCHECK(serialized_param);
 
   std::vector<uint8_t> cbor_request({base::strict_cast<uint8_t>(
@@ -158,9 +163,15 @@ CtapMakeCredentialRequest::SetIsIndividualAttestation(
   return *this;
 }
 
+CtapMakeCredentialRequest& CtapMakeCredentialRequest::SetHmacSecret(
+    bool hmac_secret) {
+  hmac_secret_ = hmac_secret;
+  return *this;
+}
+
 base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
     base::span<const uint8_t> request_bytes) {
-  const auto& cbor_request = cbor::CBORReader::Read(request_bytes);
+  const auto& cbor_request = cbor::Reader::Read(request_bytes);
   if (!cbor_request || !cbor_request->is_map())
     return base::nullopt;
 
@@ -168,7 +179,7 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
   if (!AreMakeCredentialRequestMapKeysCorrect(request_map))
     return base::nullopt;
 
-  const auto client_data_hash_it = request_map.find(cbor::CBORValue(1));
+  const auto client_data_hash_it = request_map.find(cbor::Value(1));
   if (client_data_hash_it == request_map.end() ||
       !client_data_hash_it->second.is_bytestring())
     return base::nullopt;
@@ -177,7 +188,7 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
       base::make_span(client_data_hash_it->second.GetBytestring())
           .subspan<0, kClientDataHashLength>();
 
-  const auto rp_entity_it = request_map.find(cbor::CBORValue(2));
+  const auto rp_entity_it = request_map.find(cbor::Value(2));
   if (rp_entity_it == request_map.end() || !rp_entity_it->second.is_map())
     return base::nullopt;
 
@@ -186,7 +197,7 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
   if (!rp_entity)
     return base::nullopt;
 
-  const auto user_entity_it = request_map.find(cbor::CBORValue(3));
+  const auto user_entity_it = request_map.find(cbor::Value(3));
   if (user_entity_it == request_map.end() || !user_entity_it->second.is_map())
     return base::nullopt;
 
@@ -195,7 +206,7 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
   if (!user_entity)
     return base::nullopt;
 
-  const auto credential_params_it = request_map.find(cbor::CBORValue(4));
+  const auto credential_params_it = request_map.find(cbor::Value(4));
   if (credential_params_it == request_map.end())
     return base::nullopt;
 
@@ -208,7 +219,7 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
                                     std::move(*user_entity),
                                     std::move(*credential_params));
 
-  const auto exclude_list_it = request_map.find(cbor::CBORValue(5));
+  const auto exclude_list_it = request_map.find(cbor::Value(5));
   if (exclude_list_it != request_map.end()) {
     if (!exclude_list_it->second.is_array())
       return base::nullopt;
@@ -227,7 +238,24 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
     request.SetExcludeList(std::move(exclude_list));
   }
 
-  const auto option_it = request_map.find(cbor::CBORValue(7));
+  const auto extensions_it = request_map.find(cbor::Value(6));
+  if (extensions_it != request_map.end()) {
+    if (!extensions_it->second.is_map()) {
+      return base::nullopt;
+    }
+
+    const auto& extensions = extensions_it->second.GetMap();
+    const auto hmac_secret_it =
+        extensions.find(cbor::Value(kExtensionHmacSecret));
+    if (hmac_secret_it != extensions.end()) {
+      if (!hmac_secret_it->second.is_bool()) {
+        return base::nullopt;
+      }
+      request.SetHmacSecret(hmac_secret_it->second.GetBool());
+    }
+  }
+
+  const auto option_it = request_map.find(cbor::Value(7));
   if (option_it != request_map.end()) {
     if (!option_it->second.is_map())
       return base::nullopt;
@@ -237,24 +265,24 @@ base::Optional<CtapMakeCredentialRequest> ParseCtapMakeCredentialRequest(
       return base::nullopt;
 
     const auto resident_key_option =
-        option_map.find(cbor::CBORValue(kResidentKeyMapKey));
+        option_map.find(cbor::Value(kResidentKeyMapKey));
     if (resident_key_option != option_map.end())
       request.SetResidentKeySupported(resident_key_option->second.GetBool());
 
     const auto uv_option =
-        option_map.find(cbor::CBORValue(kUserVerificationMapKey));
+        option_map.find(cbor::Value(kUserVerificationMapKey));
     if (uv_option != option_map.end())
       request.SetUserVerificationRequired(uv_option->second.GetBool());
   }
 
-  const auto pin_auth_it = request_map.find(cbor::CBORValue(8));
+  const auto pin_auth_it = request_map.find(cbor::Value(8));
   if (pin_auth_it != request_map.end()) {
     if (!pin_auth_it->second.is_bytestring())
       return base::nullopt;
     request.SetPinAuth(pin_auth_it->second.GetBytestring());
   }
 
-  const auto pin_protocol_it = request_map.find(cbor::CBORValue(9));
+  const auto pin_protocol_it = request_map.find(cbor::Value(9));
   if (pin_protocol_it != request_map.end()) {
     if (!pin_protocol_it->second.is_unsigned() ||
         pin_protocol_it->second.GetUnsigned() >

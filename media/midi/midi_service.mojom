@@ -31,6 +31,13 @@ enum PortState {
   LAST = OPENED,
 };
 
-// TODO(toyoshim): MidiPortInfo, and MidiService should be
-// declared here.
+struct PortInfo {
+  string id;
+  string manufacturer;
+  string name;
+  string version;
+  PortState state;
+};
+
+// TODO(toyoshim): MidiService should be declared here.
 // http://crbug.com/582327

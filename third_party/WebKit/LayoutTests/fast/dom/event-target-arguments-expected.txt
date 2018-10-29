@@ -2,7 +2,6 @@ EventTarget.addEventListener and EventTarget.removeEventLister should throw on i
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Signature:
 void addEventListener(DOMString type, EventListener? listener, optional boolean useCapture)
 PASS document.addEventListener() threw exception TypeError: Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only 0 present..
@@ -18,6 +17,7 @@ PASS document.addEventListener("zork", listener, null) did not throw exception.
 PASS document.addEventListener(undefined, listener) did not throw exception.
 PASS document.addEventListener("foo", undefined) did not throw exception.
 PASS document.addEventListener("zork", listener, undefined) did not throw exception.
+
 
 Signature:
 void removeEventListener(DOMString type, EventListener? listener, optional boolean useCapture)

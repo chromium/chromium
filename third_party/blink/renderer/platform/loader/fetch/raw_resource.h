@@ -72,18 +72,16 @@ class PLATFORM_EXPORT RawResource final : public Resource {
     ResourceLoaderOptions options;
     return new RawResource(request, type, options);
   }
-  static RawResource* CreateForTest(const KURL& url, ResourceType type) {
+  static RawResource* CreateForTest(const KURL& url,
+                                    scoped_refptr<const SecurityOrigin> origin,
+                                    ResourceType type) {
     ResourceRequest request(url);
+    request.SetRequestorOrigin(std::move(origin));
     return CreateForTest(request, type);
-  }
-  static RawResource* CreateForTest(const char* url, ResourceType type) {
-    return CreateForTest(KURL(url), type);
   }
 
   // Resource implementation
-  MatchStatus CanReuse(
-      const FetchParameters&,
-      scoped_refptr<const SecurityOrigin> new_source_origin) const override;
+  MatchStatus CanReuse(const FetchParameters&) const override;
   bool WillFollowRedirect(const ResourceRequest&,
                           const ResourceResponse&) override;
 

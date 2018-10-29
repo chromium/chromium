@@ -209,7 +209,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   data.primary_hover_type = kHoverTypeHover;
   data.default_font_size = 16;
   data.three_d_enabled = true;
-  data.media_type = MediaTypeNames::screen;
+  data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
   data.display_mode = kWebDisplayModeBrowser;
   data.display_shape = kDisplayShapeRect;
@@ -228,11 +228,11 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 
   // Print values.
   {
-    data.media_type = MediaTypeNames::print;
+    data.media_type = media_type_names::kPrint;
     MediaValues* media_values = MediaValuesCached::Create(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_print_test_cases, media_query_evaluator);
-    data.media_type = MediaTypeNames::screen;
+    data.media_type = media_type_names::kScreen;
   }
 
   // Monochrome values.
@@ -261,11 +261,11 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 TEST(MediaQueryEvaluatorTest, Dynamic) {
   std::unique_ptr<DummyPageHolder> page_holder =
       DummyPageHolder::Create(IntSize(500, 500));
-  page_holder->GetFrameView().SetMediaType(MediaTypeNames::screen);
+  page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
   TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
-  page_holder->GetFrameView().SetMediaType(MediaTypeNames::print);
+  page_holder->GetFrameView().SetMediaType(media_type_names::kPrint);
   TestMQEvaluator(g_print_test_cases, media_query_evaluator);
 }
 
@@ -304,7 +304,7 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
 TEST(MediaQueryEvaluatorTest, InitialViewport) {
   std::unique_ptr<DummyPageHolder> page_holder =
       DummyPageHolder::Create(IntSize(500, 500));
-  page_holder->GetFrameView().SetMediaType(MediaTypeNames::screen);
+  page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
   page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
   page_holder->GetFrameView().SetInitialViewportSize(IntSize(500, 500));
   page_holder->GetFrameView().SetLayoutSize(IntSize(800, 800));
@@ -318,7 +318,7 @@ TEST(MediaQueryEvaluatorTest, InitialViewport) {
 TEST(MediaQueryEvaluatorTest, DynamicImmersive) {
   std::unique_ptr<DummyPageHolder> page_holder =
       DummyPageHolder::Create(IntSize(500, 500));
-  page_holder->GetFrameView().SetMediaType(MediaTypeNames::screen);
+  page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
   page_holder->GetDocument().GetSettings()->SetImmersiveModeEnabled(false);

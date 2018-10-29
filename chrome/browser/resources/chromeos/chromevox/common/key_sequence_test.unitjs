@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxKeySequenceUnitTest() {}
+function ChromeVoxKeySequenceUnitTest() {}
 
-CvoxKeySequenceUnitTest.prototype = {
+ChromeVoxKeySequenceUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -156,7 +156,7 @@ CvoxKeySequenceUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxKeySequenceUnitTest', 'SimpleSequenceNoModifier', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'SimpleSequenceNoModifier', function() {
   var downKey = new cvox.KeySequence(this.downArrowEvent, false);
 
   assertEqualsJSON([40], downKey.keys.keyCode);
@@ -176,7 +176,8 @@ TEST_F('CvoxKeySequenceUnitTest', 'SimpleSequenceNoModifier', function() {
 
 
 /** Test another key sequence, this time with the modifier */
-TEST_F('CvoxKeySequenceUnitTest', 'SimpleSequenceWithModifier', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'SimpleSequenceWithModifier',
+       function() {
   var downKey = new cvox.KeySequence(this.downArrowEvent, true);
 
   assertEqualsJSON([40], downKey.keys.keyCode);
@@ -196,7 +197,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'SimpleSequenceWithModifier', function() {
 
 
 /** Test a key sequence that includes the modifier */
-TEST_F('CvoxKeySequenceUnitTest', 'ModifiedSequence', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'ModifiedSequence', function() {
   var cvoxDownKey = new cvox.KeySequence(this.altDownArrowEvent, true);
 
   assertEqualsJSON([40], cvoxDownKey.keys.keyCode);
@@ -220,7 +221,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'ModifiedSequence', function() {
  * These should be equal because Ctrl should still function even with
  * sticky mode on.
 */
-TEST_F('CvoxKeySequenceUnitTest', 'StickyEquality', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'StickyEquality', function() {
   var ctrlKey = new cvox.KeySequence(this.ctrlEvent, false);
   var ctrlSticky = new cvox.KeySequence(this.ctrlStickyEvent, false);
 
@@ -233,7 +234,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'StickyEquality', function() {
  * modifier.
  * These should not be equal because they do not have the same modifiers.
 */
-TEST_F('CvoxKeySequenceUnitTest', 'ShiftEquality', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'ShiftEquality', function() {
   var aKey = new cvox.KeySequence(this.aEvent, false);
   var shiftA = new cvox.KeySequence(this.shiftAEvent, false);
 
@@ -246,7 +247,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'ShiftEquality', function() {
  * on, 'a' with prefix key, and 'a' with ChromeVox modifier held down. These
  * should all be equal to each other.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'FourWayEquality', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'FourWayEquality', function() {
   var commandSequence = new cvox.KeySequence(this.aEvent, true);
   var stickySequence = new cvox.KeySequence(this.aEventSticky, false);
   var prefixSequence = new cvox.KeySequence(this.aEventPrefix, false);
@@ -276,7 +277,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'FourWayEquality', function() {
  * modifier specified vs. 'a' key with ChromeVox modifier held down.
  * These should all be equal to each other..
 */
-TEST_F('CvoxKeySequenceUnitTest', 'ShiftPrefixEquality', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'ShiftPrefixEquality', function() {
   var shiftAWithModifier = new cvox.KeySequence(this.shiftAEvent, true);
   var shiftAWithPrefix = new cvox.KeySequence(this.shiftAPrefixEvent, false);
   var shiftASticky = new cvox.KeySequence(this.shiftAStickyEvent, false);
@@ -304,7 +305,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'ShiftPrefixEquality', function() {
  * Test inequality - 'a' with modifier key vs. 'a' without modifier key.
  * These should not be equal.
 */
-TEST_F('CvoxKeySequenceUnitTest', 'Inequality', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'Inequality', function() {
   var aNoModifier = new cvox.KeySequence(this.aEvent, false);
   var aWithModifier = new cvox.KeySequence(this.aEvent, true);
 
@@ -316,7 +317,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'Inequality', function() {
 /**
  * Test equality - adding an additional key onto a sequence.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'CvoxCtrl', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'CvoxCtrl', function() {
   var cvoxCtrlSequence = new cvox.KeySequence(this.ctrlEvent, true);
   assertTrue(cvoxCtrlSequence.addKeyEvent(this.rightArrowEvent));
 
@@ -347,7 +348,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'CvoxCtrl', function() {
 /**
  * Test for inequality - key sequences in different orders.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'DifferentSequences', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'DifferentSequences', function() {
   var cvoxBSequence = new cvox.KeySequence(this.bEvent, true);
   assertTrue(cvoxBSequence.addKeyEvent(this.cEvent));
 
@@ -363,7 +364,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'DifferentSequences', function() {
  * Tests modifiers (ctrl, alt, etc) - if two sequences have different modifiers
  * held down then they aren't equal.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'MoreModifiers', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'MoreModifiers', function() {
   var ctrlASequence = new cvox.KeySequence(this.ctrlAEvent, false);
   var ctrlModifierKeyASequence = new cvox.KeySequence(this.ctrlAEvent, true);
 
@@ -381,7 +382,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'MoreModifiers', function() {
  * Tests modifier (ctrl, alt, etc) order - if two sequences have the same
  * modifiers but held down in a different order then they aren't equal.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'ModifierOrder', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'ModifierOrder', function() {
   var ctrlShiftSequence = new cvox.KeySequence(this.ctrlShiftEvent, false);
   var shiftCtrlSequence = new cvox.KeySequence(this.shiftCtrlEvent, true);
 
@@ -392,7 +393,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'ModifierOrder', function() {
 /**
  * Tests converting from a string to a KeySequence object.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'FromStr', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'FromStr', function() {
   var ctrlString = cvox.KeySequence.fromStr('Ctrl');
   assertEqualsJSON(ctrlString.keys.ctrlKey, [true]);
   assertEqualsJSON(ctrlString.keys.keyCode, [17]);
@@ -428,7 +429,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'FromStr', function() {
 /**
  * Tests converting from a JSON string to a KeySequence object.
  */
-TEST_F('CvoxKeySequenceUnitTest', 'Deserialize', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'Deserialize', function() {
   var forwardSequence = cvox.KeySequence.deserialize({'cvoxModifier': true,
       'stickyMode': false, 'prefixKey': false, 'keys': {'ctrlKey': [false],
       'searchKeyHeld': [false], 'altKey': [false], 'altGraphKey': [false],
@@ -444,7 +445,8 @@ TEST_F('CvoxKeySequenceUnitTest', 'Deserialize', function() {
   assertEqualsJSON(ctrlSequence.keys.keyCode, [17]);
 });
 
-TEST_F('CvoxKeySequenceUnitTest', 'DeserializeAltShiftCvoxMod', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'DeserializeAltShiftCvoxMod',
+       function() {
   cvox.ChromeVox.modKeyStr = 'Alt+Shift';
 
   // Build a key sequence that does not strip modifiers when deserializing.
@@ -463,7 +465,8 @@ TEST_F('CvoxKeySequenceUnitTest', 'DeserializeAltShiftCvoxMod', function() {
   assertTrue(prevHeadingSeq.keys.shiftKey[0]);
 });
 
-TEST_F('CvoxKeySequenceUnitTest', 'DeserializeSearchCvoxMod', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'DeserializeSearchCvoxMod',
+       function() {
   // Test the case when we do want to strip modifiers when deserializing. This
   // is important when the key sequence in the key map and the key sequence at
   // runtime both contain the bare cvox modifier as a key code such as in the
@@ -487,7 +490,7 @@ TEST_F('CvoxKeySequenceUnitTest', 'DeserializeSearchCvoxMod', function() {
   assertFalse(stickySeq.keys.searchKeyHeld[0]);
 });
 
-TEST_F('CvoxKeySequenceUnitTest', 'RequireStickyMode', function() {
+TEST_F('ChromeVoxKeySequenceUnitTest', 'RequireStickyMode', function() {
   var oneFromMap = cvox.KeySequence.deserialize({requireStickyMode: true,
                                           keys: {keyCode: [49]}});
 

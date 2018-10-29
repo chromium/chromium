@@ -227,7 +227,7 @@ String SerializeNodes(MarkupAccumulator& accumulator,
   Namespaces namespace_hash;
   if (!accumulator.SerializeAsHTMLDocument(target_node)) {
     // Add pre-bound namespaces for XML fragments.
-    namespace_hash.Set(g_xml_atom, XMLNames::xmlNamespaceURI);
+    namespace_hash.Set(g_xml_atom, xml_names::kNamespaceURI);
     namespaces = &namespace_hash;
   }
 

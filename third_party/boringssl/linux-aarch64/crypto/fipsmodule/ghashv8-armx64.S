@@ -1,4 +1,14 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__aarch64__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 #include <openssl/arm_arch.h>
 
 .text
@@ -231,3 +241,4 @@ gcm_ghash_v8:
 .align	2
 .align	2
 #endif
+#endif  // !OPENSSL_NO_ASM

@@ -41,6 +41,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 
   // If the url is a direct FIDO U2F x-callback call, consider it as invalid, to
   // prevent pages from spoofing requests with different origins.
+  // See https://crbug.com/897329#c2 for details on how U2F works.
   if (app_url.SchemeIs("u2f-x-callback"))
     return false;
 
@@ -100,7 +101,8 @@ AppLauncherTabHelper::~AppLauncherTabHelper() = default;
 bool AppLauncherTabHelper::IsAppUrl(const GURL& url) {
   return !(web::UrlHasWebScheme(url) ||
            web::GetWebClient()->IsAppSpecificURL(url) ||
-           url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kAboutScheme));
+           url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kAboutScheme) ||
+           url.SchemeIs(url::kBlobScheme));
 }
 
 bool AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
@@ -188,6 +190,9 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
   if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked)
     return false;
 
+  if (!IsValidAppUrl(request_url))
+    return false;
+
   Tab* tab = LegacyTabHelper::GetTabForWebState(web_state_);
 
   // If this is a Universal 2nd Factor (U2F) call, the origin needs to be
@@ -199,30 +204,36 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
                       ->GetURL()
                       .GetOrigin();
     request_url = [tab XCallbackFromRequestURL:request_url originURL:origin];
+    // If the URL was rejected by the U2F handler, |request_url| will be empty.
+    if (!request_url.is_valid())
+      return false;
   }
 
-  const GURL& source_url = request_info.source_url;
+  GURL last_committed_url = web_state_->GetLastCommittedURL();
+  web::NavigationItem* pending_item =
+      web_state_->GetNavigationManager()->GetPendingItem();
+  GURL original_pending_url =
+      pending_item ? pending_item->GetOriginalRequestURL() : GURL::EmptyGURL();
   bool is_link_transition = ui::PageTransitionTypeIncludingQualifiersIs(
       request_info.transition_type, ui::PAGE_TRANSITION_LINK);
 
   if (base::FeatureList::IsEnabled(kAppLauncherRefresh)) {
-    if (!is_link_transition && source_url.is_valid()) {
+    if (!is_link_transition && original_pending_url.is_valid()) {
       // At this stage the navigation will be canceled in all cases. If this
       // was a redirection, the |source_url| may not have been reported to
       // ReadingListWebStateObserver. Report it to mark as read if needed.
       ReadingListModel* model =
           ReadingListModelFactory::GetForBrowserState(tab.browserState);
       if (model && model->loaded())
-        model->SetReadStatus(source_url, true);
+        model->SetReadStatus(original_pending_url, true);
     }
-    if (IsValidAppUrl(request_url)) {
-      RequestToLaunchApp(request_url, source_url, is_link_transition);
+    if (last_committed_url.is_valid()) {
+      RequestToLaunchApp(request_url, last_committed_url, is_link_transition);
     }
     return false;
   }
 
-  if (IsValidAppUrl(request_url) &&
-      RequestToLaunchApp(request_url, source_url, is_link_transition)) {
+  if (RequestToLaunchApp(request_url, last_committed_url, is_link_transition)) {
     // Clears pending navigation history after successfully launching the
     // external app.
     web_state_->GetNavigationManager()->DiscardNonCommittedItems();
@@ -230,11 +241,11 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
     // When opening applications, the navigation is cancelled. Report the
     // opening of the application to the ReadingListWebStateObserver to mark the
     // entry as read if needed.
-    if (source_url.is_valid()) {
+    if (original_pending_url.is_valid()) {
       ReadingListModel* model =
           ReadingListModelFactory::GetForBrowserState(tab.browserState);
       if (model && model->loaded())
-        model->SetReadStatus(source_url, true);
+        model->SetReadStatus(original_pending_url, true);
     }
   }
   return false;

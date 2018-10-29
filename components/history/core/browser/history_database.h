@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/typed_url_sync_metadata_database.h"
+#include "components/history/core/browser/sync/typed_url_sync_metadata_database.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_database.h"
 #include "components/history/core/browser/visitsegment_database.h"
@@ -86,6 +86,9 @@ class HistoryDatabase : public DownloadDatabase,
   // Computes and records various metrics for the database. Should only be
   // called once and only upon successful Init.
   void ComputeDatabaseMetrics(const base::FilePath& filename);
+
+  // Counts the number of unique Hosts visited in the last month.
+  int CountUniqueHostsVisitedLastMonth();
 
   // Computes the |num_hosts| most-visited hostnames in the past 30 days. See
   // history_service.h for details.

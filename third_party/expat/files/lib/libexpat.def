@@ -74,3 +74,5 @@ EXPORTS
 ; added with version 2.1.1
 ; XML_GetAttributeInfo @66
   XML_SetHashSalt @67@
+; added with version 2.2.5
+  _INTERNAL_trim_to_complete_utf8_characters @68@

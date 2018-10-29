@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x51
-  LayoutBlockFlow {test} at (0,0) size 800x51
-    LayoutBlockFlow {p} at (0,16) size 800x19
-      LayoutButton {button} at (0,1) size 471.08x18 [bgcolor=#FFFFFF] [border: (1px solid #D8D8D8) (1px solid #D1D1D1) (1px solid #BABABA) (1px solid #D1D1D1)]
-        LayoutBlockFlow (anonymous) at (8,2) size 455.08x13
-          LayoutText {#text} at (0,0) size 456x13
-            text run at (0,0) width 456: "Activating (e.g. holding the mouse button down on) this button should make it go green."

@@ -19,50 +19,10 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/feature.h"
 #include "components/unified_consent/pref_names.h"
-#include "components/unified_consent/unified_consent_metrics.h"
-#include "components/unified_consent/unified_consent_service_client.h"
 
 namespace unified_consent {
 
 namespace {
-
-// Histogram recorded at startup to log which Google services are enabled.
-const char kSyncAndGoogleServicesSettingsHistogram[] =
-    "UnifiedConsent.SyncAndGoogleServicesSettings";
-
-// Records a sample in the kSyncAndGoogleServicesSettingsHistogram. Wrapped in a
-// function to avoid code size issues caused by histogram macros.
-void RecordSettingsHistogramSample(SettingsHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION(kSyncAndGoogleServicesSettingsHistogram, value);
-}
-
-// Checks if a pref is enabled and if so, records a sample in the
-// kSyncAndGoogleServicesSettingsHistogram. Returns true if a sample was
-// recorded.
-bool RecordSettingsHistogramFromPref(const char* pref_name,
-                                     PrefService* pref_service,
-                                     SettingsHistogramValue value) {
-  if (!pref_service->GetBoolean(pref_name))
-    return false;
-  RecordSettingsHistogramSample(value);
-  return true;
-}
-
-// Checks if a service is enabled and if so, records a sample in the
-// kSyncAndGoogleServicesSettingsHistogram. Returns true if a sample was
-// recorded.
-bool RecordSettingsHistogramFromService(
-    UnifiedConsentServiceClient* client,
-    UnifiedConsentServiceClient::Service service,
-    SettingsHistogramValue value) {
-  if (client->GetServiceState(service) !=
-      UnifiedConsentServiceClient::ServiceState::kEnabled) {
-    return false;
-  }
-
-  RecordSettingsHistogramSample(value);
-  return true;
-}
 
 // Used for observing the sync service and finishing the rollback once the sync
 // engine is initialized.
@@ -95,25 +55,42 @@ void RollbackHelper::OnStateChanged(syncer::SyncService* sync_service) {
     return;
 
   scoped_sync_observer_.RemoveAll();
-  DoRollbackIfPossibleAndDie(sync_service);
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&RollbackHelper::DoRollbackIfPossibleAndDie,
+                                base::Unretained(this), sync_service));
 }
 
 void RollbackHelper::DoRollbackIfPossibleAndDie(
     syncer::SyncService* sync_service) {
   DCHECK(!scoped_sync_observer_.IsObservingSources());
 
-  syncer::ModelTypeSet user_types_without_user_events =
+// Warning: ugly code ahead. See https://crbug.com/885382 for background.
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  syncer::ModelTypeSet user_selectable_types_except_user_events(
+      syncer::AUTOFILL, syncer::BOOKMARKS, syncer::PASSWORDS,
+      syncer::PREFERENCES, syncer::PROXY_TABS,
+#if BUILDFLAG(ENABLE_READING_LIST)
+      syncer::READING_LIST,
+#endif
+      syncer::TYPED_URLS);
+#else
+  syncer::ModelTypeSet user_selectable_types_except_user_events =
       syncer::UserSelectableTypes();
-  user_types_without_user_events.Remove(syncer::USER_EVENTS);
+  // USER_EVENTS data type doesn't have to be enabled, because it is not
+  // configurable if Unified Consent feature is disabled.
+  user_selectable_types_except_user_events.Remove(syncer::USER_EVENTS);
+#endif
 
   if (sync_service->GetPreferredDataTypes().HasAll(
-          user_types_without_user_events)) {
+          user_selectable_types_except_user_events)) {
     // As part of the migration of a profile to Unified Consent, sync everything
     // is disabled but sync continues to be enabled for all data types except
     // USER_EVENTS. Therefore it is desired to restore sync everything when
     // rolling back unified consent to leave sync in the same state as the one
     // before migration.
-    sync_service->OnUserChoseDatatypes(true, syncer::UserSelectableTypes());
+    sync_service->OnUserChoseDatatypes(/*sync_everything=*/true,
+                                       syncer::UserSelectableTypes());
   }
 
   base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
@@ -129,7 +106,8 @@ UnifiedConsentService::UnifiedConsentService(
     : service_client_(std::move(service_client)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
-      sync_service_(sync_service) {
+      sync_service_(sync_service),
+      weak_ptr_factory_(this) {
   DCHECK(service_client_);
   DCHECK(pref_service_);
   DCHECK(identity_manager_);
@@ -161,6 +139,12 @@ UnifiedConsentService::UnifiedConsentService(
         metrics::UnifiedConsentRevokeReason::kServiceWasDisabled);
   }
 
+  // Update pref for existing users.
+  // TODO(tangltom): Delete this when all users are migrated.
+  if (pref_service_->GetBoolean(prefs::kUnifiedConsentGiven))
+    pref_service_->SetBoolean(prefs::kAllUnifiedConsentServicesWereEnabled,
+                              true);
+
   RecordSettingsHistogram();
 }
 
@@ -178,13 +162,17 @@ void UnifiedConsentService::RegisterPrefs(
   registry->RegisterBooleanPref(prefs::kShouldShowUnifiedConsentBump, false);
   registry->RegisterBooleanPref(prefs::kHadEverythingSyncedBeforeMigration,
                                 false);
+  registry->RegisterBooleanPref(prefs::kAllUnifiedConsentServicesWereEnabled,
+                                false);
 }
 
 // static
 void UnifiedConsentService::RollbackIfNeeded(
     PrefService* user_pref_service,
-    syncer::SyncService* sync_service) {
+    syncer::SyncService* sync_service,
+    UnifiedConsentServiceClient* service_client) {
   DCHECK(user_pref_service);
+  DCHECK(service_client);
 
   if (user_pref_service->GetInteger(prefs::kUnifiedConsentMigrationState) ==
       static_cast<int>(MigrationState::kNotInitialized)) {
@@ -204,12 +192,24 @@ void UnifiedConsentService::RollbackIfNeeded(
     new RollbackHelper(sync_service);
   }
 
+  // Turn off all off-by-default services if services were enabled due to
+  // unified consent.
+  if (user_pref_service->GetBoolean(
+          prefs::kAllUnifiedConsentServicesWereEnabled)) {
+    service_client->SetServiceEnabled(Service::kSafeBrowsingExtendedReporting,
+                                      false);
+    service_client->SetServiceEnabled(Service::kSpellCheck, false);
+    contextual_search::ContextualSearchPreference::GetInstance()->SetPref(
+        user_pref_service, false);
+  }
+
   // Clear all unified consent prefs.
   user_pref_service->ClearPref(prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
   user_pref_service->ClearPref(prefs::kUnifiedConsentGiven);
   user_pref_service->ClearPref(prefs::kUnifiedConsentMigrationState);
   user_pref_service->ClearPref(prefs::kShouldShowUnifiedConsentBump);
   user_pref_service->ClearPref(prefs::kHadEverythingSyncedBeforeMigration);
+  user_pref_service->ClearPref(prefs::kAllUnifiedConsentServicesWereEnabled);
 }
 
 void UnifiedConsentService::SetUnifiedConsentGiven(bool unified_consent_given) {
@@ -233,26 +233,27 @@ bool UnifiedConsentService::ShouldShowConsentBump() {
 void UnifiedConsentService::MarkConsentBumpShown() {
   // Record suppress reason kNone, which means that it was shown. This also sets
   // the |kShouldShowConsentBump| pref to false.
-  RecordConsentBumpSuppressReason(ConsentBumpSuppressReason::kNone);
+  RecordConsentBumpSuppressReason(metrics::ConsentBumpSuppressReason::kNone);
 }
 
 void UnifiedConsentService::RecordConsentBumpSuppressReason(
-    ConsentBumpSuppressReason suppress_reason) {
+    metrics::ConsentBumpSuppressReason suppress_reason) {
   UMA_HISTOGRAM_ENUMERATION("UnifiedConsent.ConsentBump.SuppressReason",
                             suppress_reason);
 
   switch (suppress_reason) {
-    case ConsentBumpSuppressReason::kNone:
-    case ConsentBumpSuppressReason::kNotSignedIn:
-    case ConsentBumpSuppressReason::kSyncEverythingOff:
-    case ConsentBumpSuppressReason::kPrivacySettingOff:
-    case ConsentBumpSuppressReason::kSettingsOptIn:
-    case ConsentBumpSuppressReason::kUserSignedOut:
-    case ConsentBumpSuppressReason::kUserTurnedSyncDatatypeOff:
-    case ConsentBumpSuppressReason::kUserTurnedPrivacySettingOff:
+    case metrics::ConsentBumpSuppressReason::kNone:
+    case metrics::ConsentBumpSuppressReason::kNotSignedIn:
+    case metrics::ConsentBumpSuppressReason::kSyncEverythingOff:
+    case metrics::ConsentBumpSuppressReason::kPrivacySettingOff:
+    case metrics::ConsentBumpSuppressReason::kSettingsOptIn:
+    case metrics::ConsentBumpSuppressReason::kUserSignedOut:
+    case metrics::ConsentBumpSuppressReason::kUserTurnedSyncDatatypeOff:
+    case metrics::ConsentBumpSuppressReason::kUserTurnedPrivacySettingOff:
+    case metrics::ConsentBumpSuppressReason::kCustomPassphrase:
       pref_service_->SetBoolean(prefs::kShouldShowUnifiedConsentBump, false);
       break;
-    case ConsentBumpSuppressReason::kSyncPaused:
+    case metrics::ConsentBumpSuppressReason::kSyncPaused:
       // Consent bump should be shown when sync is active again.
       DCHECK(ShouldShowConsentBump());
       break;
@@ -260,6 +261,7 @@ void UnifiedConsentService::RecordConsentBumpSuppressReason(
 }
 
 void UnifiedConsentService::Shutdown() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   service_client_->RemoveObserver(this);
   identity_manager_->RemoveObserver(this);
   sync_service_->RemoveObserver(this);
@@ -279,9 +281,13 @@ void UnifiedConsentService::OnServiceStateChanged(Service service) {
 void UnifiedConsentService::OnPrimaryAccountCleared(
     const AccountInfo& account_info) {
   // When signing out, the unfied consent is revoked.
-  pref_service_->SetBoolean(prefs::kUnifiedConsentGiven, false);
-  RecordUnifiedConsentRevoked(
-      metrics::UnifiedConsentRevokeReason::kUserSignedOut);
+  if (IsUnifiedConsentGiven()) {
+    SetUnifiedConsentGiven(false);
+    RecordUnifiedConsentRevoked(
+        metrics::UnifiedConsentRevokeReason::kUserSignedOut);
+  }
+  pref_service_->SetBoolean(prefs::kAllUnifiedConsentServicesWereEnabled,
+                            false);
 
   // By design, signing out of Chrome automatically disables off-by-default
   // services.
@@ -299,7 +305,8 @@ void UnifiedConsentService::OnPrimaryAccountCleared(
   }
 
   if (ShouldShowConsentBump())
-    RecordConsentBumpSuppressReason(ConsentBumpSuppressReason::kUserSignedOut);
+    RecordConsentBumpSuppressReason(
+        metrics::ConsentBumpSuppressReason::kUserSignedOut);
 }
 
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
@@ -312,28 +319,70 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   if (GetMigrationState() == MigrationState::kInProgressWaitForSyncInit)
     UpdateSettingsForMigration();
 
-  if (sync_service_->IsUsingSecondaryPassphrase() && IsUnifiedConsentGiven()) {
-    // Force off unified consent given when the user sets a custom passphrase.
-    SetUnifiedConsentGiven(false);
-    RecordUnifiedConsentRevoked(
-        metrics::UnifiedConsentRevokeReason::kCustomPassphrase);
+  if (sync_service_->IsUsingSecondaryPassphrase()) {
+    if (ShouldShowConsentBump()) {
+      // Do not show the consent bump when the user has a custom passphrase.
+      RecordConsentBumpSuppressReason(
+          metrics::ConsentBumpSuppressReason::kCustomPassphrase);
+    }
+    if (IsUnifiedConsentGiven()) {
+      // Force off unified consent given when the user sets a custom passphrase.
+      SetUnifiedConsentGiven(false);
+      RecordUnifiedConsentRevoked(
+          metrics::UnifiedConsentRevokeReason::kCustomPassphrase);
+    }
   }
 
   syncer::SyncPrefs sync_prefs(pref_service_);
   if (IsUnifiedConsentGiven() != sync_prefs.HasKeepEverythingSynced()) {
     // Make sync-everything consistent with the |kUnifiedConsentGiven| pref.
-    SetSyncEverythingIfPossible(IsUnifiedConsentGiven());
+    PostTaskToUpdateSyncSettings(/*sync_everything=*/IsUnifiedConsentGiven());
   }
+}
+
+void UnifiedConsentService::UpdateSyncSettingsIfPossible(
+    bool sync_everything,
+    syncer::ModelTypeSet enable_data_types,
+    syncer::ModelTypeSet disable_data_types) {
+  DCHECK(Intersection(enable_data_types, disable_data_types).Empty());
+
+  if (sync_service_->GetDisableReasons() !=
+          syncer::SyncService::DISABLE_REASON_NONE ||
+      !sync_service_->IsEngineInitialized()) {
+    return;
+  }
+
+  if (sync_everything) {
+    sync_service_->OnUserChoseDatatypes(/*sync_everything=*/true,
+                                        syncer::UserSelectableTypes());
+    return;
+  }
+
+  syncer::ModelTypeSet data_types = sync_service_->GetPreferredDataTypes();
+  data_types.PutAll(enable_data_types);
+  data_types.RemoveAll(disable_data_types);
+  data_types.RetainAll(syncer::UserSelectableTypes());
+  sync_service_->OnUserChoseDatatypes(/*sync_everything=*/false, data_types);
+}
+
+void UnifiedConsentService::PostTaskToUpdateSyncSettings(
+    bool sync_everything,
+    syncer::ModelTypeSet enable_data_types,
+    syncer::ModelTypeSet disable_data_types) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UnifiedConsentService::UpdateSyncSettingsIfPossible,
+                     weak_ptr_factory_.GetWeakPtr(), sync_everything,
+                     enable_data_types, disable_data_types));
 }
 
 void UnifiedConsentService::OnUnifiedConsentGivenPrefChanged() {
   bool enabled = pref_service_->GetBoolean(prefs::kUnifiedConsentGiven);
 
   if (!enabled) {
-    if (identity_manager_->HasPrimaryAccount()) {
-      // Sync-everything is set to false, so the user can select individual
-      // sync data types.
-      SetSyncEverythingIfPossible(false);
+    if (identity_manager_->HasPrimaryAccount() &&
+        syncer::SyncPrefs(pref_service_).HasKeepEverythingSynced()) {
+      UpdateSyncSettingsIfPossible(/*sync_everything=*/false);
     }
     return;
   }
@@ -351,11 +400,13 @@ void UnifiedConsentService::OnUnifiedConsentGivenPrefChanged() {
   }
 
   if (ShouldShowConsentBump())
-    RecordConsentBumpSuppressReason(ConsentBumpSuppressReason::kSettingsOptIn);
+    RecordConsentBumpSuppressReason(
+        metrics::ConsentBumpSuppressReason::kSettingsOptIn);
 
   // Enable all sync data types if possible, otherwise they will be enabled with
   // |OnStateChanged| once sync is active;
-  SetSyncEverythingIfPossible(true);
+  autofill::prefs::SetPaymentsIntegrationEnabled(pref_service_, true);
+  UpdateSyncSettingsIfPossible(/*sync_everything=*/true);
 
   // Enable all non-personalized services.
   pref_service_->SetBoolean(prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
@@ -370,25 +421,8 @@ void UnifiedConsentService::OnUnifiedConsentGivenPrefChanged() {
       service_client_->SetServiceEnabled(service, true);
     }
   }
-}
 
-void UnifiedConsentService::SetSyncEverythingIfPossible(bool sync_everything) {
-  syncer::SyncPrefs sync_prefs(pref_service_);
-  if (sync_everything == sync_prefs.HasKeepEverythingSynced())
-    return;
-
-  if (!IsSyncConfigurable())
-    return;
-
-  if (sync_everything) {
-    autofill::prefs::SetPaymentsIntegrationEnabled(pref_service_, true);
-    sync_service_->OnUserChoseDatatypes(sync_everything,
-                                        syncer::UserSelectableTypes());
-  } else {
-    syncer::ModelTypeSet preferred = sync_service_->GetPreferredDataTypes();
-    preferred.RetainAll(syncer::UserSelectableTypes());
-    sync_service_->OnUserChoseDatatypes(false, preferred);
-  }
+  pref_service_->SetBoolean(prefs::kAllUnifiedConsentServicesWereEnabled, true);
 }
 
 MigrationState UnifiedConsentService::GetMigrationState() {
@@ -410,7 +444,8 @@ void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
   DCHECK(!IsUnifiedConsentGiven());
 
   if (!identity_manager_->HasPrimaryAccount()) {
-    RecordConsentBumpSuppressReason(ConsentBumpSuppressReason::kNotSignedIn);
+    RecordConsentBumpSuppressReason(
+        metrics::ConsentBumpSuppressReason::kNotSignedIn);
     SetMigrationState(MigrationState::kCompleted);
     return;
   }
@@ -421,10 +456,10 @@ void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
 
   if (!is_syncing_everything) {
     RecordConsentBumpSuppressReason(
-        ConsentBumpSuppressReason::kSyncEverythingOff);
+        metrics::ConsentBumpSuppressReason::kSyncEverythingOff);
   } else if (!AreAllOnByDefaultPrivacySettingsOn()) {
     RecordConsentBumpSuppressReason(
-        ConsentBumpSuppressReason::kPrivacySettingOff);
+        metrics::ConsentBumpSuppressReason::kPrivacySettingOff);
   } else {
     // When the user was syncing everything, and all on-by-default privacy
     // settings were on, the consent bump should be shown.
@@ -435,7 +470,7 @@ void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
 }
 
 void UnifiedConsentService::UpdateSettingsForMigration() {
-  if (!IsSyncConfigurable()) {
+  if (!sync_service_->IsEngineInitialized()) {
     SetMigrationState(MigrationState::kInProgressWaitForSyncInit);
     return;
   }
@@ -458,12 +493,9 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
 
   // Disable the datatype user events for newly migrated users. Also set
   // sync-everything to false, so it matches unified consent given.
-  syncer::ModelTypeSet preferred_types_without_user_events =
-      sync_service_->GetPreferredDataTypes();
-  preferred_types_without_user_events.RetainAll(syncer::UserSelectableTypes());
-  preferred_types_without_user_events.Remove(syncer::USER_EVENTS);
-  sync_service_->OnUserChoseDatatypes(false /*sync everything */,
-                                      preferred_types_without_user_events);
+  PostTaskToUpdateSyncSettings(
+      /*sync_everything=*/false, /*enable_data_types=*/syncer::ModelTypeSet(),
+      /*disable_data_types=*/syncer::ModelTypeSet(syncer::USER_EVENTS));
 
   SetMigrationState(MigrationState::kCompleted);
 }
@@ -491,36 +523,32 @@ bool UnifiedConsentService::AreAllOnByDefaultPrivacySettingsOn() {
   return true;
 }
 
-bool UnifiedConsentService::IsSyncConfigurable() {
-  return sync_service_->GetTransportState() ==
-         syncer::SyncService::TransportState::ACTIVE;
-}
-
 void UnifiedConsentService::RecordSettingsHistogram() {
   bool metric_recorded = false;
 
   if (IsUnifiedConsentGiven()) {
-    RecordSettingsHistogramSample(SettingsHistogramValue::kUnifiedConsentGiven);
+    RecordSettingsHistogramSample(
+        metrics::SettingsHistogramValue::kUnifiedConsentGiven);
     metric_recorded = true;
   }
   if (identity_manager_->HasPrimaryAccount() &&
       sync_service_->GetPreferredDataTypes().Has(syncer::USER_EVENTS)) {
-    RecordSettingsHistogramSample(SettingsHistogramValue::kUserEvents);
+    RecordSettingsHistogramSample(metrics::SettingsHistogramValue::kUserEvents);
     metric_recorded = true;
   }
   metric_recorded |= RecordSettingsHistogramFromPref(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled, pref_service_,
-      SettingsHistogramValue::kUrlKeyedAnonymizedDataCollection);
+      metrics::SettingsHistogramValue::kUrlKeyedAnonymizedDataCollection);
   metric_recorded |= RecordSettingsHistogramFromService(
       service_client_.get(),
       UnifiedConsentServiceClient::Service::kSafeBrowsingExtendedReporting,
-      SettingsHistogramValue::kSafeBrowsingExtendedReporting);
+      metrics::SettingsHistogramValue::kSafeBrowsingExtendedReporting);
   metric_recorded |= RecordSettingsHistogramFromService(
       service_client_.get(), UnifiedConsentServiceClient::Service::kSpellCheck,
-      SettingsHistogramValue::kSpellCheck);
+      metrics::SettingsHistogramValue::kSpellCheck);
 
   if (!metric_recorded)
-    RecordSettingsHistogramSample(SettingsHistogramValue::kNone);
+    RecordSettingsHistogramSample(metrics::SettingsHistogramValue::kNone);
 }
 
 void UnifiedConsentService::CheckConsentBumpEligibility() {
@@ -537,10 +565,10 @@ void UnifiedConsentService::CheckConsentBumpEligibility() {
   if (!sync_service_->GetPreferredDataTypes().HasAll(
           user_types_without_user_events)) {
     RecordConsentBumpSuppressReason(
-        ConsentBumpSuppressReason::kUserTurnedSyncDatatypeOff);
+        metrics::ConsentBumpSuppressReason::kUserTurnedSyncDatatypeOff);
   } else if (!AreAllOnByDefaultPrivacySettingsOn()) {
     RecordConsentBumpSuppressReason(
-        ConsentBumpSuppressReason::kUserTurnedPrivacySettingOff);
+        metrics::ConsentBumpSuppressReason::kUserTurnedPrivacySettingOff);
   }
   metrics::RecordConsentBumpEligibility(
       pref_service_->GetBoolean(prefs::kShouldShowUnifiedConsentBump));

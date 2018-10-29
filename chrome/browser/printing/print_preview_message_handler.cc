@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -23,12 +25,14 @@
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "printing/nup_parameters.h"
+#include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 
@@ -47,8 +51,8 @@ void StopWorker(int document_cookie) {
   scoped_refptr<PrinterQuery> printer_query =
       queue->PopPrinterQuery(document_cookie);
   if (printer_query) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&PrinterQuery::StopWorker, printer_query));
   }
 }
@@ -59,25 +63,6 @@ bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
 
 bool IsValidPageNumber(int page_number, int page_count) {
   return page_number >= 0 && page_number < page_count;
-}
-
-// Checks whether |printable_area| can be used to form a valid symmetrical
-// printable area, so that margin_left equals margin_right, and margin_top
-// equals margin_bottom.  For example if
-// printable_area.x() * 2 >= page_size.width(), then the
-// content_width = page_size.width() - 2 * printable_area.x() would be zero or
-// negative, which is invalid.
-// |page_size| is the physical page size that includes margins.
-bool IsValidPrintableArea(const gfx::Size& page_size,
-                          const gfx::Rect& printable_area) {
-  return !printable_area.IsEmpty() && printable_area.x() >= 0 &&
-         printable_area.y() >= 0 &&
-         printable_area.right() <= page_size.width() &&
-         printable_area.bottom() <= page_size.height() &&
-         printable_area.x() * 2 < page_size.width() &&
-         printable_area.y() * 2 < page_size.height() &&
-         printable_area.right() * 2 > page_size.width() &&
-         printable_area.bottom() * 2 > page_size.height();
 }
 
 }  // namespace
@@ -358,7 +343,7 @@ void PrintPreviewMessageHandler::OnCompositePdfPageDone(
       std::vector<base::ReadOnlySharedMemoryRegion> pdf_page_regions =
           print_preview_ui->TakePagesForNupConvert();
 
-      gfx::Rect printable_area = GetSymmetricalPrintableArea(
+      gfx::Rect printable_area = PageSetup::GetSymmetricalPrintableArea(
           print_preview_ui->page_size(), print_preview_ui->printable_area());
       if (printable_area.IsEmpty())
         return;
@@ -419,7 +404,7 @@ void PrintPreviewMessageHandler::OnCompositePdfDocumentDone(
     auto* client = PdfNupConverterClient::FromWebContents(web_contents());
     DCHECK(client);
 
-    gfx::Rect printable_area = GetSymmetricalPrintableArea(
+    gfx::Rect printable_area = PageSetup::GetSymmetricalPrintableArea(
         print_preview_ui->page_size(), print_preview_ui->printable_area());
     if (printable_area.IsEmpty())
       return;
@@ -486,26 +471,6 @@ bool PrintPreviewMessageHandler::OnMessageReceived(
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-// static
-gfx::Rect PrintPreviewMessageHandler::GetSymmetricalPrintableArea(
-    const gfx::Size& page_size,
-    const gfx::Rect& printable_area) {
-  if (!IsValidPrintableArea(page_size, printable_area))
-    return gfx::Rect();
-
-  int left_right_margin =
-      std::max(printable_area.x(), page_size.width() - printable_area.right());
-  int top_bottom_margin = std::max(
-      printable_area.y(), page_size.height() - printable_area.bottom());
-  int width = page_size.width() - 2 * left_right_margin;
-  int height = page_size.height() - 2 * top_bottom_margin;
-
-  gfx::Rect symmetrical_printable_area = gfx::Rect(page_size);
-  symmetrical_printable_area.ClampToCenteredSize(gfx::Size(width, height));
-
-  return symmetrical_printable_area;
 }
 
 }  // namespace printing

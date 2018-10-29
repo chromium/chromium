@@ -8,5 +8,6 @@ include_rules = [
   "+components/prefs",
   "+components/version_info",
   "+mojo/core/embedder",
+  "+services/network/public/cpp",
   "+sandbox/win/src",
 ]

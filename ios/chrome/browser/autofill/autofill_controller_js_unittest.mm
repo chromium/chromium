@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/format_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
@@ -898,7 +899,7 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
   LoadHtml(kHTMLForTestingElements);
   ExecuteBooleanJavaScriptOnElementsAndCheck(
       javascript,
-      GetElementsByNameJavaScripts(elementsByName, arraysize(elementsByName)),
+      GetElementsByNameJavaScripts(elementsByName, base::size(elementsByName)),
       GetElementsByNameJavaScripts(elements_with_true_expected,
                                    size_elements_with_true_expected));
 }
@@ -924,7 +925,7 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.hasTagName(%@, 'input')", elements_expecting_true,
-      arraysize(elements_expecting_true));
+      base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, CombineAndCollapseWhitespace) {
@@ -1108,7 +1109,7 @@ TEST_F(AutofillControllerJsTest, IsAutofillableElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isAutofillableElement(%@)", elements_expecting_true,
-      arraysize(elements_expecting_true));
+      base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
@@ -1121,7 +1122,7 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
        "__gCrWeb.fill.getOptionStringsFromElement(%@, field);"
        "__gCrWeb.stringify(field);",
       GetElementsByNameJavaScripts(testing_elements,
-                                   arraysize(testing_elements)),
+                                   base::size(testing_elements)),
       @[
         @("{\"option_values\":[\"CA\",\"MA\"],"
           "\"option_contents\":[\"CA\",\"MA\"]}"),
@@ -1152,7 +1153,7 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
     @"new name",
     @"MA",
   ];
-  for (size_t i = 0; i < arraysize(elements); ++i) {
+  for (size_t i = 0; i < base::size(elements); ++i) {
     NSString* get_element_javascript = GetElementByNameJavaScript(elements[i]);
     NSString* new_value = [values objectAtIndex:i];
     EXPECT_NSEQ(new_value,
@@ -1171,7 +1172,7 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
   const bool final_is_checked_values[] = {
       true, false, true, false, true, true,
   };
-  for (size_t i = 0; i < arraysize(checkable_elements); ++i) {
+  for (size_t i = 0; i < base::size(checkable_elements); ++i) {
     NSString* get_element_javascript =
         GetElementByNameJavaScript(checkable_elements[i]);
     bool is_checked = final_is_checked_values[i];
@@ -1191,7 +1192,7 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
       {"state", 0, 0},  // option element
       {"state", 0, 1},  // option element
   };
-  for (size_t i = 0; i < arraysize(unchanged_elements); ++i) {
+  for (size_t i = 0; i < base::size(unchanged_elements); ++i) {
     NSString* get_element_javascript =
         GetElementByNameJavaScript(unchanged_elements[i]);
     NSString* actual = ExecuteJavaScriptWithFormat(
@@ -1214,7 +1215,7 @@ TEST_F(AutofillControllerJsTest, IsTextInput) {
 
   TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isTextInput(%@)",
                                           elements_expecting_true,
-                                          arraysize(elements_expecting_true));
+                                          base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsSelectElement) {
@@ -1224,7 +1225,7 @@ TEST_F(AutofillControllerJsTest, IsSelectElement) {
 
   TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isSelectElement(%@)",
                                           elements_expecting_true,
-                                          arraysize(elements_expecting_true));
+                                          base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsCheckableElement) {
@@ -1235,7 +1236,7 @@ TEST_F(AutofillControllerJsTest, IsCheckableElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isCheckableElement(%@)", elements_expecting_true,
-      arraysize(elements_expecting_true));
+      base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
@@ -1251,7 +1252,7 @@ TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isAutofillableInputElement(%@)", elements_expecting_true,
-      arraysize(elements_expecting_true));
+      base::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
@@ -1266,7 +1267,7 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
       {"boolean", 2, -1},   {"state", 0, -1},
   };
   NSArray* expected = GetElementsByNameJavaScripts(
-      expected_elements, arraysize(expected_elements));
+      expected_elements, base::size(expected_elements));
 
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
   for (NSUInteger index = 0; index < [expected count]; index++) {
@@ -1284,7 +1285,7 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
     NSString* tag_name) {
   LoadHtml([test_data firstObject]);
 
-  for (NSUInteger i = 0; i < arraysize(kFormExtractMasks); ++i) {
+  for (NSUInteger i = 0; i < base::size(kFormExtractMasks); ++i) {
     ExtractMask extract_mask = kFormExtractMasks[i];
     NSArray* attributes_to_check =
         GetFormFieldAttributeListsToCheck(extract_mask);
@@ -1389,7 +1390,7 @@ void AutofillControllerJsTest::TestWebFormElementToFormData(
 
   NSString* parameter = @"document.getElementsByTagName('form')[0]";
   for (NSUInteger extract_index = 0;
-       extract_index < arraysize(kFormExtractMasks); ++extract_index) {
+       extract_index < base::size(kFormExtractMasks); ++extract_index) {
     NSString* expected_result = @"true";
     // We don't verify 'action' here as action is generated as a complete url
     // and here data url is used.

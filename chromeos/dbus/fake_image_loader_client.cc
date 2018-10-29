@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
@@ -25,12 +26,29 @@ void FakeImageLoaderClient::SetMountPathForComponent(
   mount_paths_[component_name] = mount_path;
 }
 
+bool FakeImageLoaderClient::IsLoaded(const std::string& name) const {
+  return base::ContainsKey(loaded_components_, name);
+}
+
+base::FilePath FakeImageLoaderClient::GetComponentInstallPath(
+    const std::string& name) const {
+  if (!IsLoaded(name))
+    return base::FilePath();
+
+  const auto it = component_install_paths_.find(name);
+  if (it == component_install_paths_.end())
+    return base::FilePath();
+  return it->second;
+}
+
 void FakeImageLoaderClient::RegisterComponent(
     const std::string& name,
     const std::string& version,
     const std::string& component_folder_abs_path,
     DBusMethodCallback<bool> callback) {
   registered_components_[name] = version;
+  component_install_paths_[name] =
+      base::FilePath(component_folder_abs_path).AppendASCII(version);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), base::make_optional(true)));
@@ -53,6 +71,7 @@ void FakeImageLoaderClient::LoadComponent(
     return;
   }
 
+  loaded_components_.insert(name);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -71,6 +90,10 @@ void FakeImageLoaderClient::LoadComponentAtPath(
         FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
     return;
   }
+
+  loaded_components_.insert(name);
+  component_install_paths_[name] = path;
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 base::make_optional(mount_path_it->second)));
@@ -79,6 +102,7 @@ void FakeImageLoaderClient::LoadComponentAtPath(
 void FakeImageLoaderClient::RemoveComponent(const std::string& name,
                                             DBusMethodCallback<bool> callback) {
   registered_components_.erase(name);
+  component_install_paths_.erase(name);
   UnmountComponent(name, std::move(callback));
 }
 
@@ -99,7 +123,8 @@ void FakeImageLoaderClient::RequestComponentVersion(
 void FakeImageLoaderClient::UnmountComponent(
     const std::string& name,
     DBusMethodCallback<bool> callback) {
-  mount_paths_.erase(name);
+  loaded_components_.erase(name);
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), base::make_optional(true)));

@@ -85,6 +85,9 @@ extern const FormatUrlType kFormatUrlOmitTrivialSubdomains;
 // are all omitted.
 extern const FormatUrlType kFormatUrlTrimAfterHost;
 
+// If the scheme is 'file://', it's removed. Not in kFormatUrlOmitDefaults.
+extern const FormatUrlType kFormatUrlOmitFileScheme;
+
 // Convenience for omitting all unecessary types. Does not include HTTPS scheme
 // removal, or experimental flags.
 extern const FormatUrlType kFormatUrlOmitDefaults;

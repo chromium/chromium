@@ -110,7 +110,7 @@ void SkiaTextMetrics::GetSkiaBoundsForGlyph(Glyph glyph, SkRect* bounds) {
   }
 }
 
-void SkiaTextMetrics::GetSkiaBoundsForGlyphs(const Vector<Glyph, 256> glyphs,
+void SkiaTextMetrics::GetSkiaBoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
                                              SkRect* bounds) {
 #if defined(OS_MACOSX)
   for (unsigned i = 0; i < glyphs.size(); i++) {

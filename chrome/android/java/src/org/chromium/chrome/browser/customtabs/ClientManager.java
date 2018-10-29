@@ -20,6 +20,7 @@ import android.support.customtabs.CustomTabsCallback;
 import android.support.customtabs.CustomTabsService;
 import android.support.customtabs.CustomTabsService.Relation;
 import android.support.customtabs.CustomTabsSessionToken;
+import android.support.customtabs.PostMessageServiceConnection;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 
@@ -167,6 +168,7 @@ class ClientManager {
         private CustomTabsCallback mCustomTabsCallback;
         public final DisconnectCallback disconnectCallback;
         public final PostMessageHandler postMessageHandler;
+        public final PostMessageServiceConnection serviceConnection;
         public final Set<Origin> mLinkedOrigins = new HashSet<>();
         public OriginVerifier originVerifier;
         public boolean mIgnoreFragments;
@@ -186,13 +188,15 @@ class ClientManager {
         private boolean mShouldGetPageLoadMetrics;
 
         public SessionParams(Context context, int uid, CustomTabsCallback customTabsCallback,
-                             DisconnectCallback callback, PostMessageHandler postMessageHandler) {
+                DisconnectCallback callback, PostMessageHandler postMessageHandler,
+                PostMessageServiceConnection serviceConnection) {
             this.uid = uid;
             mPackageName = getPackageName(context, uid);
             mCustomTabsCallback = customTabsCallback;
             disconnectCallback = callback;
             this.postMessageHandler = postMessageHandler;
-            if (postMessageHandler != null) this.postMessageHandler.setPackageName(mPackageName);
+            this.serviceConnection = serviceConnection;
+            if (postMessageHandler != null) this.serviceConnection.setPackageName(mPackageName);
         }
 
         /**
@@ -297,13 +301,14 @@ class ClientManager {
      * @return true for success.
      */
     public synchronized boolean newSession(CustomTabsSessionToken session, int uid,
-            DisconnectCallback onDisconnect, @NonNull PostMessageHandler postMessageHandler) {
+            DisconnectCallback onDisconnect, @NonNull PostMessageHandler postMessageHandler,
+            @NonNull PostMessageServiceConnection serviceConnection) {
         if (session == null || session.getCallback() == null) return false;
         if (mSessionParams.containsKey(session)) {
             mSessionParams.get(session).setCustomTabsCallback(session.getCallback());
         } else {
             SessionParams params = new SessionParams(ContextUtils.getApplicationContext(), uid,
-                    session.getCallback(), onDisconnect, postMessageHandler);
+                    session.getCallback(), onDisconnect, postMessageHandler, serviceConnection);
             mSessionParams.put(session, params);
         }
 
@@ -427,12 +432,13 @@ class ClientManager {
     }
 
     /**
-     * See {@link PostMessageHandler#bindSessionToPostMessageService(Context, String)}.
+     * See {@link PostMessageServiceConnection#bindSessionToPostMessageService(Context, String)}.
      */
     public synchronized boolean bindToPostMessageServiceForSession(CustomTabsSessionToken session) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return false;
-        return params.postMessageHandler.bindSessionToPostMessageService();
+        return params.serviceConnection.bindSessionToPostMessageService(
+                ContextUtils.getApplicationContext());
     }
 
     /**
@@ -791,8 +797,8 @@ class ClientManager {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return;
         mSessionParams.remove(session);
-        if (params.postMessageHandler != null) {
-            params.postMessageHandler.cleanup(ContextUtils.getApplicationContext());
+        if (params.serviceConnection != null) {
+            params.serviceConnection.cleanup(ContextUtils.getApplicationContext());
         }
         if (params.originVerifier != null) params.originVerifier.cleanUp();
         if (params.disconnectCallback != null) params.disconnectCallback.run(session);

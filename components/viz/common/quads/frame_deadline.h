@@ -8,9 +8,20 @@
 #include "components/viz/common/viz_common_export.h"
 
 #include "base/time/time.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
 
+// FrameDeadline is a class that represents a CompositorFrame's deadline for
+// activation. The deadline consists of three components: start time, deadline
+// in frames, and frame interval. All three components are stored individually
+// in this class in order to allow resolution of this deadline that incorporates
+// a system default deadline in the Viz service. In particular, the computation
+// to translate FrameDeadline into wall time is:
+// if use system default lower bound deadline:
+//    start time + max(deadline in frames, default deadline) * frame interval
+// else:
+//    start time + deadline in frames * frame interval
 class VIZ_COMMON_EXPORT FrameDeadline {
  public:
   FrameDeadline() = default;
@@ -26,6 +37,12 @@ class VIZ_COMMON_EXPORT FrameDeadline {
   FrameDeadline(const FrameDeadline& other) = default;
 
   FrameDeadline& operator=(const FrameDeadline& other) = default;
+
+  // Converts this FrameDeadline object into a wall time given a system default
+  // deadline in frames.
+  base::TimeTicks ToWallTime(
+      base::Optional<uint32_t> default_deadline_in_frames =
+          base::nullopt) const;
 
   bool operator==(const FrameDeadline& other) const {
     return other.frame_start_time_ == frame_start_time_ &&
@@ -49,12 +66,17 @@ class VIZ_COMMON_EXPORT FrameDeadline {
     return use_default_lower_bound_deadline_;
   }
 
+  std::string ToString() const;
+
  private:
   base::TimeTicks frame_start_time_;
   uint32_t deadline_in_frames_ = 0u;
-  base::TimeDelta frame_interval_;
+  base::TimeDelta frame_interval_ = BeginFrameArgs::DefaultInterval();
   bool use_default_lower_bound_deadline_ = true;
 };
+
+VIZ_COMMON_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           const FrameDeadline& frame_deadline);
 
 }  // namespace viz
 

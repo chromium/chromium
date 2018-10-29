@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
-namespace test {
 
 class FakeSurfaceDeadlineClient : public SurfaceDeadlineClient {
  public:
@@ -197,5 +196,4 @@ TEST_F(SurfaceDependencyDeadlineTest, InheritDeadlineWithActiveDeadline) {
   EXPECT_GT(duration1, duration2);
 }
 
-}  // namespace test
 }  // namespace viz

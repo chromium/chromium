@@ -120,6 +120,7 @@ source_set("lib") {
     public_deps += [ "//sandbox/win:sandbox" ]
   }
   configs += [
+    "//build/config/compiler:wexit_time_destructors",
     "//media:media_config",
     "//media/audio:platform_config",
   ]

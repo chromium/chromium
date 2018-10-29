@@ -19,6 +19,11 @@ class AudioContextOptions;
 class AudioTimestamp;
 class Document;
 class ExceptionState;
+class HTMLMediaElement;
+class MediaElementAudioSourceNode;
+class MediaStream;
+class MediaStreamAudioDestinationNode;
+class MediaStreamAudioSourceNode;
 class ScriptState;
 class WebAudioLatencyHint;
 
@@ -41,13 +46,20 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   ScriptPromise closeContext(ScriptState*);
   bool IsContextClosed() const final;
 
-  ScriptPromise suspendContext(ScriptState*) final;
-  ScriptPromise resumeContext(ScriptState*) final;
+  ScriptPromise suspendContext(ScriptState*);
+  ScriptPromise resumeContext(ScriptState*);
 
   bool HasRealtimeConstraint() final { return true; }
 
   void getOutputTimestamp(ScriptState*, AudioTimestamp&);
   double baseLatency() const;
+
+  MediaElementAudioSourceNode* createMediaElementSource(HTMLMediaElement*,
+                                                        ExceptionState&);
+  MediaStreamAudioSourceNode* createMediaStreamSource(MediaStream*,
+                                                      ExceptionState&);
+  MediaStreamAudioDestinationNode* createMediaStreamDestination(
+      ExceptionState&);
 
   // Called by handlers of AudioScheduledSourceNode and AudioBufferSourceNode to
   // notify their associated AudioContext when start() is called. It may resume

@@ -417,7 +417,7 @@ const newTreeElement = (() => {
   /** @type {HTMLInputElement} */
   const _fileUpload = document.getElementById('upload');
   /** @type {HTMLInputElement} */
-  const _dataUrlInput = form.elements.namedItem('data_url');
+  const _dataUrlInput = form.elements.namedItem('load_url');
   const _progress = new ProgressBar('progress');
 
   /**

@@ -1,10 +1,10 @@
 <html>
 <head>
+<script src="../../resources/common.js"></script>
 <script>
-
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
 }
 
 function write(s)
@@ -13,8 +13,8 @@ function write(s)
 }
 
 function test() {
-    var layoutTestDir = location.href;
-    layoutTestDir = layoutTestDir.substring(layoutTestDir.indexOf("LayoutTests"), layoutTestDir.lastIndexOf("/"));
+    var layoutTestDir = relativeTestPath(location.href);
+    layoutTestDir = layoutTestDir.substring(0, layoutTestDir.lastIndexOf("/"));
 
     var frameSrc = document.getElementsByTagName('frame')[1].src;
     if (frameSrc.search(layoutTestDir) != -1)

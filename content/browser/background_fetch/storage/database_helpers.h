@@ -34,7 +34,8 @@ const char kActiveRequestKeyPrefix[] = "bgfetch_active_request_";
 const char kCompletedRequestKeyPrefix[] = "bgfetch_completed_request_";
 
 // Database Keys.
-std::string ActiveRegistrationUniqueIdKey(const std::string& developer_id);
+CONTENT_EXPORT std::string ActiveRegistrationUniqueIdKey(
+    const std::string& developer_id);
 
 CONTENT_EXPORT std::string RegistrationKey(const std::string& unique_id);
 

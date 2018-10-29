@@ -20,6 +20,7 @@ loadScript('extensions/common/mojo/keep_alive.mojom');
 loadScript('media/mojo/interfaces/mirror_service_remoting.mojom');
 loadScript('media/mojo/interfaces/remoting_common.mojom');
 loadScript('mojo/public/mojom/base/time.mojom');
+loadScript('mojo/public/mojom/base/unguessable_token.mojom');
 loadScript('net/interfaces/ip_address.mojom');
 loadScript('net/interfaces/ip_endpoint.mojom');
 loadScript('url/mojom/origin.mojom');

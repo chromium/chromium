@@ -155,7 +155,7 @@ bool AffReader::EncodingToUTF8(const std::string& encoded,
 }
 
 int AffReader::GetAFIndexForAFString(const std::string& af_string) {
-  std::map<std::string, int>::iterator found = affix_groups_.find(af_string);
+  auto found = affix_groups_.find(af_string);
   if (found != affix_groups_.end())
     return found->second;
   std::string my_string(af_string);
@@ -166,8 +166,7 @@ int AffReader::GetAFIndexForAFString(const std::string& af_string) {
 // line with "AF" for the parser to read later.
 std::vector<std::string> AffReader::GetAffixGroups() const {
   int max_id = 0;
-  for (std::map<std::string, int>::const_iterator i = affix_groups_.begin();
-       i != affix_groups_.end(); ++i) {
+  for (auto i = affix_groups_.begin(); i != affix_groups_.end(); ++i) {
     if (i->second > max_id)
       max_id = i->second;
   }
@@ -175,8 +174,7 @@ std::vector<std::string> AffReader::GetAffixGroups() const {
   std::vector<std::string> ret;
 
   ret.resize(max_id);
-  for (std::map<std::string, int>::const_iterator i = affix_groups_.begin();
-       i != affix_groups_.end(); ++i) {
+  for (auto i = affix_groups_.begin(); i != affix_groups_.end(); ++i) {
     // Convert the indices into 1-based.
     ret[i->second - 1] = std::string("AF ") + i->first;
   }

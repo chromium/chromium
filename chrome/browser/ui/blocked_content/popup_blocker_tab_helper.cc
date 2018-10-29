@@ -7,12 +7,8 @@
 #include <iterator>
 #include <string>
 
-#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/list_item_position.h"
 #include "chrome/browser/ui/blocked_content/popup_tracker.h"
@@ -20,18 +16,14 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/render_messages.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "url/gurl.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -53,9 +45,9 @@ struct PopupBlockerTabHelper::BlockedRequest {
 };
 
 PopupBlockerTabHelper::PopupBlockerTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      safe_browsing_triggered_popup_blocker_(
-          SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents)) {}
+    : content::WebContentsObserver(web_contents) {
+  SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents);
+}
 
 PopupBlockerTabHelper::~PopupBlockerTabHelper() {
 }
@@ -66,15 +58,6 @@ void PopupBlockerTabHelper::AddObserver(Observer* observer) {
 
 void PopupBlockerTabHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-// static
-bool PopupBlockerTabHelper::ConsiderForPopupBlocking(
-    WindowOpenDisposition disposition) {
-  return disposition == WindowOpenDisposition::NEW_POPUP ||
-         disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-         disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-         disposition == WindowOpenDisposition::NEW_WINDOW;
 }
 
 void PopupBlockerTabHelper::DidFinishNavigation(
@@ -101,64 +84,6 @@ void PopupBlockerTabHelper::PopupNotificationVisibilityChanged(
     TabSpecificContentSettings::FromWebContents(web_contents())->
         SetPopupsBlocked(visible);
   }
-}
-
-// static
-bool PopupBlockerTabHelper::MaybeBlockPopup(
-    content::WebContents* web_contents,
-    const base::Optional<GURL>& opener_url,
-    NavigateParams* params,
-    const content::OpenURLParams* open_url_params,
-    const blink::mojom::WindowFeatures& window_features) {
-  DCHECK(web_contents);
-  DCHECK(!open_url_params ||
-         open_url_params->user_gesture == params->user_gesture);
-
-  LogAction(Action::kInitiated);
-
-  const bool user_gesture = params->user_gesture;
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisablePopupBlocking)) {
-    return false;
-  }
-
-  auto* popup_blocker = PopupBlockerTabHelper::FromWebContents(web_contents);
-  if (!popup_blocker)
-    return false;
-
-  // If an explicit opener is not given, use the current committed load in this
-  // web contents. This is because A page can't spawn popups (or do anything
-  // else, either) until its load commits, so when we reach here, the popup was
-  // spawned by the NavigationController's last committed entry, not the active
-  // entry.  For example, if a page opens a popup in an onunload() handler, then
-  // the active entry is the page to be loaded as we navigate away from the
-  // unloading page.
-  const GURL& url =
-      opener_url ? opener_url.value() : web_contents->GetLastCommittedURL();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (url.is_valid() &&
-      HostContentSettingsMapFactory::GetForProfile(profile)->GetContentSetting(
-          url, url, CONTENT_SETTINGS_TYPE_POPUPS, std::string()) ==
-          CONTENT_SETTING_ALLOW) {
-    return false;
-  }
-
-  PopupBlockType block_type = PopupBlockType::kNoGesture;
-  if (user_gesture) {
-    auto* safe_browsing_blocker =
-        popup_blocker->safe_browsing_triggered_popup_blocker_.get();
-    if (!safe_browsing_blocker ||
-        !safe_browsing_blocker->ShouldApplyStrongPopupBlocker(
-            open_url_params)) {
-      return false;
-    }
-    block_type = PopupBlockType::kAbusive;
-  }
-
-  popup_blocker->AddBlockedPopup(params, window_features, block_type);
-  return true;
 }
 
 void PopupBlockerTabHelper::AddBlockedPopup(
@@ -247,6 +172,5 @@ PopupBlockerTabHelper::PopupIdMap
 
 // static
 void PopupBlockerTabHelper::LogAction(Action action) {
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups.BlockerActions", action,
-                            Action::kLast);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups.BlockerActions", action);
 }

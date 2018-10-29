@@ -8,12 +8,13 @@
 #include "ash/ash_export.h"
 
 namespace views {
-class TrayBubbleView;
 class Widget;
 }  // namespace views
 
 namespace ash {
+
 class TrayBackgroundView;
+class TrayBubbleView;
 
 // Base class for tray bubbles registered to TrayEventFilter.
 class ASH_EXPORT TrayBubbleBase {
@@ -24,7 +25,7 @@ class ASH_EXPORT TrayBubbleBase {
   virtual TrayBackgroundView* GetTray() const = 0;
 
   // Returns the TrayBubbleView instance of the bubble.
-  virtual views::TrayBubbleView* GetBubbleView() const = 0;
+  virtual TrayBubbleView* GetBubbleView() const = 0;
 
   // Returns the widget of the bubble.
   virtual views::Widget* GetBubbleWidget() const = 0;

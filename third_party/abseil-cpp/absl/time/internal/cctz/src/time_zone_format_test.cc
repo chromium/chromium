@@ -669,13 +669,13 @@ TEST(Parse, WithTimeZone) {
                     utc_time_zone(), &tp));
   ExpectTime(tp, tz, 2013, 6, 28, 19 - 8 - 7, 8, 9, -7 * 60 * 60, true, "PDT");
 
-  // Check a skipped time (a Spring DST transition).  parse() returns
-  // the preferred-offset result, as defined for ConvertDateTime().
+  // Check a skipped time (a Spring DST transition). parse() uses the
+  // pre-transition offset.
   EXPECT_TRUE(parse("%Y-%m-%d %H:%M:%S", "2011-03-13 02:15:00", tz, &tp));
   ExpectTime(tp, tz, 2011, 3, 13, 3, 15, 0, -7 * 60 * 60, true, "PDT");
 
-  // Check a repeated time (a Fall DST transition).  parse() returns
-  // the preferred-offset result, as defined for ConvertDateTime().
+  // Check a repeated time (a Fall DST transition).  parse() uses the
+  // pre-transition offset.
   EXPECT_TRUE(parse("%Y-%m-%d %H:%M:%S", "2011-11-06 01:15:00", tz, &tp));
   ExpectTime(tp, tz, 2011, 11, 6, 1, 15, 0, -7 * 60 * 60, true, "PDT");
 }

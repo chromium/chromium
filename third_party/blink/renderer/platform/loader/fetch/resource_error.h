@@ -43,7 +43,7 @@ enum class ResourceRequestBlockedReason;
 // ResourceError represents an error for loading a resource. There is no
 // "no-error" instance. Use Optional for nullable errors.
 class PLATFORM_EXPORT ResourceError final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   static ResourceError CancelledError(const KURL&);

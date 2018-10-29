@@ -18,8 +18,8 @@ function drag(startX, startY, destX, destY, callback) {
 
 var t = async_test('Test for resizing the TEXTAREA below its min intrinsic size.');
 t.step(() => {
-  assert_exists(window, 'chrome');
-  assert_exists(chrome, 'gpuBenchmarking');
+  assert_own_property(window, 'chrome');
+  assert_own_property(chrome, 'gpuBenchmarking');
 
   var textArea = document.getElementById("textInputID");
   var startX = textArea.offsetLeft + 400;

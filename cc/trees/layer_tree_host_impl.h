@@ -18,7 +18,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -171,8 +170,7 @@ class CC_EXPORT LayerTreeHostImpl
       public ScrollbarAnimationControllerClient,
       public VideoFrameControllerClient,
       public MutatorHostClient,
-      public base::SupportsWeakPtr<LayerTreeHostImpl>,
-      public base::MemoryCoordinatorClient {
+      public base::SupportsWeakPtr<LayerTreeHostImpl> {
  public:
   // This structure is used to build all the state required for producing a
   // single CompositorFrame. The |render_passes| list becomes the set of
@@ -297,11 +295,16 @@ class CC_EXPORT LayerTreeHostImpl
   float CurrentBrowserControlsShownRatio() const override;
   void DidChangeBrowserControlsPosition() override;
   bool HaveRootScrollNode() const override;
+  void SetNeedsCommit() override;
 
   void UpdateViewportContainerSizes();
 
   void set_resourceless_software_draw_for_testing() {
     resourceless_software_draw_ = true;
+  }
+
+  const gfx::Rect& viewport_damage_rect_for_testing() const {
+    return viewport_damage_rect_;
   }
 
   virtual void DidSendBeginMainFrame() {}
@@ -540,7 +543,6 @@ class CC_EXPORT LayerTreeHostImpl
     return is_animating_for_snap_;
   }
 
-  void SetNeedsCommit() { client_->SetNeedsCommitOnImplThread(); }
   void SetNeedsOneBeginImplFrame();
   void SetNeedsRedraw();
 
@@ -613,8 +615,8 @@ class CC_EXPORT LayerTreeHostImpl
   gfx::ScrollOffset GetVisualScrollOffset(const ScrollNode& scroll_node) const;
 
   bool GetSnapFlingInfo(const gfx::Vector2dF& natural_displacement_in_viewport,
-                        gfx::Vector2dF* out_initial_offset,
-                        gfx::Vector2dF* out_target_offset) const override;
+                        gfx::Vector2dF* out_initial_position,
+                        gfx::Vector2dF* out_target_position) const override;
 
   // Returns the amount of delta that can be applied to scroll_node, taking
   // page scale into account.
@@ -784,7 +786,12 @@ class CC_EXPORT LayerTreeHostImpl
       ScrollState* scroll_state,
       ScrollNode* scrolling_node,
       InputHandler::ScrollInputType type);
-  bool IsInitialScrollHitTestReliable(LayerImpl* layer, const gfx::PointF&);
+  bool IsTouchDraggingScrollbar(
+      LayerImpl* first_scrolling_layer_or_drawn_scrollbar,
+      InputHandler::ScrollInputType type);
+  bool IsInitialScrollHitTestReliable(
+      LayerImpl* layer,
+      LayerImpl* first_scrolling_layer_or_drawn_scrollbar);
   void DistributeScrollDelta(ScrollState* scroll_state);
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
@@ -873,11 +880,6 @@ class CC_EXPORT LayerTreeHostImpl
   // active tree.
   void ActivateStateForImages();
 
-  // Overriden from base::MemoryCoordinatorClient.
-  void OnPurgeMemory() override;
-
-  // TODO(gyuyoung): OnMemoryPressure is deprecated. So this should be removed
-  // when the memory coordinator is enabled by default.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 

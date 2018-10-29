@@ -71,6 +71,7 @@ class ExtensionAppResult : public AppResult,
 
   bool is_platform_app_;
   std::unique_ptr<extensions::ChromeAppIcon> icon_;
+  std::unique_ptr<extensions::ChromeAppIcon> chip_icon_;
   std::unique_ptr<ExtensionAppContextMenu> context_menu_;
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
 

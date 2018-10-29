@@ -12,9 +12,20 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
+
+class MockCredentialsCleanerObserver : public CredentialsCleaner::Observer {
+ public:
+  MockCredentialsCleanerObserver() = default;
+  ~MockCredentialsCleanerObserver() override = default;
+  MOCK_METHOD0(CleaningCompleted, void());
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockCredentialsCleanerObserver);
+};
 
 class BlacklistedDuplicatesCleanerTest : public ::testing::Test {
  public:
@@ -81,7 +92,17 @@ TEST_F(BlacklistedDuplicatesCleanerTest, RemoveBlacklistedDuplicates) {
   prefs()->registry()->RegisterBooleanPref(
       prefs::kDuplicatedBlacklistedCredentialsRemoved, false);
 
-  password_manager_util::DeleteBlacklistedDuplicates(store(), prefs(), 0);
+  // In this test we are explicitly only testing the clean up of duplicated
+  // credentials and setting this true will prevent making another unrelated
+  // clean-up.
+  prefs()->registry()->RegisterBooleanPref(
+      prefs::kCredentialsWithWrongSignonRealmRemoved, true);
+
+  MockCredentialsCleanerObserver observer;
+  auto cleaner =
+      std::make_unique<BlacklistedDuplicatesCleaner>(store(), prefs());
+  EXPECT_CALL(observer, CleaningCompleted);
+  cleaner->StartCleaning(&observer);
   scoped_task_environment.RunUntilIdle();
 
   // Check that one of the next two forms was removed.
@@ -93,7 +114,9 @@ TEST_F(BlacklistedDuplicatesCleanerTest, RemoveBlacklistedDuplicates) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kDuplicatedBlacklistedCredentialsRemoved));
 
-  password_manager_util::DeleteBlacklistedDuplicates(store(), prefs(), 0);
+  cleaner = std::make_unique<BlacklistedDuplicatesCleaner>(store(), prefs());
+  EXPECT_CALL(observer, CleaningCompleted);
+  cleaner->StartCleaning(&observer);
   scoped_task_environment.RunUntilIdle();
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kDuplicatedBlacklistedCredentialsRemoved));

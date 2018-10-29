@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/instrumentation/platform_instrumentation.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -53,19 +52,16 @@ namespace blink {
 
 int GetRepetitionCountWithPolicyOverride(int actual_count,
                                          ImageAnimationPolicy policy) {
-  switch (policy) {
-    case kImageAnimationPolicyAllowed:
-      // Default policy, no count override.
-      return actual_count;
-    case kImageAnimationPolicyAnimateOnce:
-      // Only a single loop allowed.
-      return kAnimationLoopOnce;
-    case kImageAnimationPolicyNoAnimation:
-      // Dont animate.
-      return kAnimationNone;
+  if (actual_count == kAnimationNone ||
+      policy == kImageAnimationPolicyNoAnimation) {
+    return kAnimationNone;
   }
 
-  NOTREACHED();
+  if (actual_count == kAnimationLoopOnce ||
+      policy == kImageAnimationPolicyAnimateOnce) {
+    return kAnimationLoopOnce;
+  }
+
   return actual_count;
 }
 
@@ -128,6 +124,7 @@ PaintImage BitmapImage::CreatePaintImage() {
           .set_paint_image_generator(std::move(generator))
           .set_repetition_count(GetRepetitionCountWithPolicyOverride(
               RepetitionCount(), animation_policy_))
+          .set_is_high_bit_depth(decoder_->ImageIsHighBitDepth())
           .set_completion_state(completion_state)
           .set_reset_animation_sequence_id(reset_animation_sequence_id_);
 
@@ -288,8 +285,11 @@ void BitmapImage::Draw(
                         &flags,
                         WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
 
-  if (is_lazy_generated)
-    PlatformInstrumentation::DidDrawLazyPixelRef(unique_id);
+  if (is_lazy_generated) {
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
+                         "LazyPixelRef", unique_id);
+  }
 
   StartAnimation();
 }

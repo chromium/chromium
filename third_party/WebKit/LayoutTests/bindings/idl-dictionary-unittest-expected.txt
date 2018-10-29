@@ -3,7 +3,6 @@ IDL dictionary unittest
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test for setting an empty dictionary
 PASS dict.longMember is undefined.
 PASS dict.longMemberWithDefault is 42
@@ -32,6 +31,7 @@ PASS dict.eventTargetOrNullMember is null
 PASS dict.anyMember is undefined.
 PASS dict.callbackFunctionMember is undefined.
 
+
 Test for setting undefined
 PASS dict.longMember is undefined.
 PASS dict.longMemberWithDefault is 42
@@ -54,6 +54,7 @@ PASS dict.objectOrNullMemberWithDefault is null
 PASS dict.eventTargetOrNullMember is null
 PASS dict.anyMember is undefined.
 PASS dict.callbackFunctionMember is undefined.
+
 
 Test for setting valid values
 PASS dict.longMember is 1
@@ -84,6 +85,7 @@ PASS dict.internalEnumOrInternalEnumSequenceMember is "foo"
 PASS dict.anyMember is 42
 PASS dict.callbackFunctionMember("A", "B") is "Hi A and B"
 
+
 Additional test for union type members
 PASS dict.doubleOrStringMember is "foo"
 PASS dict.doubleOrStringMember is "[object Object]"
@@ -91,6 +93,7 @@ PASS dict.doubleOrStringMember is ""
 PASS dict.doubleOrStringMember is "null"
 PASS dict.doubleOrStringMember is undefined.
 PASS dict.internalEnumOrInternalEnumSequenceMember is ["foo", "bar"]
+
 
 Test for explicit undefined or null, and missing members
 PASS dict.enumOrNullMember is null
@@ -100,6 +103,7 @@ PASS dict.longOrNullMember is null
 PASS dict.longOrNullMemberWithDefault is null
 PASS dictionaryTest.set({enumMember: null}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided value 'null' is not a valid enum value of type InternalEnum..
 
+
 Test for different values for the any type
 PASS dict.anyMember is ""
 PASS dict.anyMember is 0
@@ -107,8 +111,10 @@ PASS dict.anyMember is undefined.
 PASS dict.anyMember is false
 PASS dict.anyMember is null
 
+
 Test for setting invalid member
 PASS dict.invalidMember is undefined.
+
 
 Test for setting invalid double value
 PASS dictionaryTest.set({doubleMember: NaN}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided double value is non-finite..
@@ -116,13 +122,16 @@ PASS dictionaryTest.set({doubleMember: Infinity}) threw exception TypeError: Fai
 PASS dictionaryTest.set({doubleMember: -Infinity}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided double value is non-finite..
 PASS dictionaryTest.set({doubleMember: 'invalid'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided double value is non-finite..
 
+
 Test for setting invalid ByteString value
 PASS dictionaryTest.set({byteStringMember: 'Ā'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': Value is not a valid ByteString..
+
 
 Test for setting invalid USVString value
 PASS dict.usvStringMember is "_�_�_��_"
 Test for setting invalid enum value
 PASS dictionaryTest.set({enumMember: 'invalid'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided value 'invalid' is not a valid enum value of type InternalEnum..
+
 
 Test for setting invalid enum value in union sequence
 PASS dictionaryTest.set({internalEnumOrInternalEnumSequenceMember: 'invalid'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The provided value 'invalid' is not a valid enum value of type InternalEnum..
@@ -131,23 +140,28 @@ Test for setting invalid object value
 PASS dictionaryTest.set({objectMember: 42}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member objectMember is not an object..
 PASS dictionaryTest.set({objectMember: 'invalid'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member objectMember is not an object..
 
+
 Test for setting invalid Element value
 PASS dictionaryTest.set({elementMember: 42}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member elementMember is not of type Element..
 PASS dictionaryTest.set({elementMember: testObject1}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member elementMember is not of type Element..
 PASS dictionaryTest.set({elementMember: []}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member elementMember is not of type Element..
 PASS dictionaryTest.set({elementMember: document}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member elementMember is not of type Element..
 
+
 Test for passing invalid dictionary values
 PASS dictionaryTest.set(42) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': parameter 1 ('testingDictionary') is not an object..
 PASS dictionaryTest.set('string') threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': parameter 1 ('testingDictionary') is not an object..
+
 
 Test for [Clamp] and [EnforceRange] member
 PASS dict.longMember is -2147483648
 PASS dict.longMemberWithClamp is 2147483647
 PASS dictionaryTest.set({ longMemberWithEnforceRange: 2147483648 }) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': Value is outside the 'long' value range..
 
+
 Test for [ImplementedAs] and [DeprecateAs] member
 PASS dict.longMember is 42
+
 
 Test for passing EventTarget
 PASS dict.eventTargetOrNullMember is window
@@ -158,6 +172,7 @@ PASS dictionaryTest.set({eventTargetOrNullMember: 42}) threw exception TypeError
 PASS dictionaryTest.set({eventTargetOrNullMember: []}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member eventTargetOrNullMember is not of type EventTarget..
 PASS dictionaryTest.set({eventTargetOrNullMember: {}}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': member eventTargetOrNullMember is not of type EventTarget..
 
+
 Test for passing Dictionary (not IDL dictionary)
 PASS properties.foo is "x"
 PASS properties.bar is "y"
@@ -165,6 +180,7 @@ PASS properties.baz is undefined.
 PASS properties is {}
 PASS dictionaryTest.set({dictionaryMember: 42}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The dictionary provided is neither undefined, null nor an Object..
 PASS dictionaryTest.set({dictionaryMember: 'foo'}) threw exception TypeError: Failed to execute 'set' on 'DictionaryTest': The dictionary provided is neither undefined, null nor an Object..
+
 
 Test for derived dictionary
 PASS derived.longMember is undefined.
@@ -189,6 +205,7 @@ PASS derived.derivedStringMember is undefined.
 PASS derived.derivedStringMemberWithDefault is "derivedDefaultStringValue"
 PASS derived.requiredBooleanMember is true
 
+
 PASS derived.longMember is 1
 PASS derived.stringMemberWithDefault is "modifiedString"
 PASS derived.derivedStringMember is "modifiedString2"
@@ -196,11 +213,13 @@ PASS derived.derivedStringMemberWithDefault is "modifiedString3"
 PASS derived.invalidMember is undefined.
 PASS derived.requiredBooleanMember is false
 
+
 Test for triple level derived dictionary
 PASS derived.longMember is 1
 PASS derived.derivedStringMember is "modifiedString"
 PASS derived.derivedDerivedStringMember is "modifiedString2"
 PASS derived.requiredBooleanMember is false
+
 
 Test for passing invalid values as derived dictionary
 PASS dictionaryTest.setDerived({objectMember: 42, requiredBooleanMember: false }) threw exception TypeError: Failed to execute 'setDerived' on 'DictionaryTest': member objectMember is not an object..

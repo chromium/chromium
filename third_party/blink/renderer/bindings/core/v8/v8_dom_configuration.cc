@@ -811,6 +811,7 @@ void V8DOMConfiguration::InitializeDOMInterfaceTemplate(
     // This is needed since bug 110436 asks WebKit to tell native-initiated
     // prototypes from pure-JS ones.  This doesn't mark kinds "root" classes
     // like Node, where setting this changes prototype chain structure.
+    // The value of this field is not used, only the count.
     prototype_template->SetInternalFieldCount(kV8PrototypeInternalFieldcount);
   }
 }

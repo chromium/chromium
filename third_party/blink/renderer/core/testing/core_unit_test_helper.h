@@ -79,6 +79,7 @@ class RenderingTest : public PageTestBase, public UseMockScrollbarSettings {
   explicit RenderingTest(LocalFrameClient* = nullptr);
 
   const Node* HitTest(int x, int y);
+  HitTestResult::NodeSet RectBasedHitTest(LayoutRect rect);
 
  protected:
   void SetUp() override;
@@ -97,6 +98,8 @@ class RenderingTest : public PageTestBase, public UseMockScrollbarSettings {
 
   // Both enables compositing and runs the document lifecycle.
   void EnableCompositing() {
+    // This Page is not actually being shown by a compositor, but we act like it
+    // will in order to test behaviour.
     GetPage().GetSettings().SetAcceleratedCompositingEnabled(true);
     GetDocument().View()->SetParentVisible(true);
     GetDocument().View()->SetSelfVisible(true);

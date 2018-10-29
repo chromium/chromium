@@ -82,7 +82,7 @@ const char WorkerContentSettingsClient::kSupplementName[] =
 
 WorkerContentSettingsClient* WorkerContentSettingsClient::From(
     ExecutionContext& context) {
-  WorkerClients* clients = ToWorkerOrWorkletGlobalScope(context).Clients();
+  WorkerClients* clients = To<WorkerOrWorkletGlobalScope>(context).Clients();
   DCHECK(clients);
   return Supplement<WorkerClients>::From<WorkerContentSettingsClient>(*clients);
 }

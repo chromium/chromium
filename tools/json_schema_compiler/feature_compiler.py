@@ -192,10 +192,10 @@ FEATURE_GRAMMAR = (
       list: {'subtype': unicode}
     },
     'max_manifest_version': {
-      int: {'values': [1]}
+      int: {'values': [1, 2]}
     },
     'min_manifest_version': {
-      int: {'values': [2]}
+      int: {'values': [2, 3]}
     },
     'noparent': {
       bool: {'values': [True]}

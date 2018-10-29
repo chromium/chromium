@@ -135,7 +135,6 @@ class LifecycleTest : public test::ServiceTest {
   // test::ServiceTest:
   void SetUp() override {
     test::ServiceTest::SetUp();
-    InitPackage();
     instances_ = TrackInstances();
   }
   void TearDown() override {
@@ -145,14 +144,6 @@ class LifecycleTest : public test::ServiceTest {
 
   bool CanRunCrashTest() {
     return !base::CommandLine::ForCurrentProcess()->HasSwitch("single-process");
-  }
-
-  void InitPackage() {
-    test::mojom::LifecycleControlPtr lifecycle = ConnectTo(kTestPackageName);
-    base::RunLoop loop;
-    lifecycle.set_connection_error_handler(loop.QuitClosure());
-    lifecycle->GracefulQuit();
-    loop.Run();
   }
 
   test::mojom::LifecycleControlPtr ConnectTo(const std::string& name) {

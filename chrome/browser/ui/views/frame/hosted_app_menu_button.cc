@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -49,9 +50,10 @@ HostedAppMenuButton::HostedAppMenuButton(BrowserView* browser_view)
 
 HostedAppMenuButton::~HostedAppMenuButton() {}
 
-void HostedAppMenuButton::SetIconColor(SkColor color) {
+void HostedAppMenuButton::SetColor(SkColor color) {
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kBrowserToolsIcon, color));
+  ink_drop_color_ = color;
 }
 
 void HostedAppMenuButton::StartHighlightAnimation() {
@@ -78,6 +80,10 @@ void HostedAppMenuButton::OnMenuButtonClicked(views::MenuButton* source,
   // Add UMA for how many times the hosted app menu button are clicked.
   base::RecordAction(
       base::UserMetricsAction("HostedAppMenuButtonButton_Clicked"));
+}
+
+SkColor HostedAppMenuButton::GetInkDropBaseColor() const {
+  return ink_drop_color_;
 }
 
 void HostedAppMenuButton::FadeHighlightOff() {

@@ -76,8 +76,7 @@ void CloseDatabaseSync(
 }
 
 void ReportStoreEvent(OfflinePagesStoreEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.PrefetchStore.StoreEvent", event,
-                            OfflinePagesStoreEvent::STORE_EVENT_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("OfflinePages.PrefetchStore.StoreEvent", event);
 }
 
 }  // namespace
@@ -114,14 +113,14 @@ void PrefetchStore::Initialize(base::OnceClosure pending_command) {
   initialization_status_ = InitializationStatus::INITIALIZING;
 
   if (!last_closing_time_.is_null()) {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_REOPENED);
+    ReportStoreEvent(OfflinePagesStoreEvent::kReopened);
     UMA_HISTOGRAM_CUSTOM_TIMES("OfflinePages.PrefetchStore.TimeFromCloseToOpen",
                                base::Time::Now() - last_closing_time_,
                                base::TimeDelta::FromMilliseconds(10),
                                base::TimeDelta::FromMinutes(10),
                                50 /* buckets */);
   } else {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_OPENED_FIRST_TIME);
+    ReportStoreEvent(OfflinePagesStoreEvent::kOpenedFirstTime);
   }
 
   // This is how we reset a pointer and provide deleter. This is necessary to
@@ -163,13 +162,13 @@ void PrefetchStore::OnInitializeDone(base::OnceClosure pending_command,
 
 void PrefetchStore::CloseInternal() {
   if (initialization_status_ != InitializationStatus::SUCCESS) {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_CLOSE_SKIPPED);
+    ReportStoreEvent(OfflinePagesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Prefetch Store", this, "Open");
 
   last_closing_time_ = base::Time::Now();
-  ReportStoreEvent(OfflinePagesStoreEvent::STORE_CLOSED);
+  ReportStoreEvent(OfflinePagesStoreEvent::kClosed);
 
   initialization_status_ = InitializationStatus::NOT_INITIALIZED;
   blocking_task_runner_->PostTask(

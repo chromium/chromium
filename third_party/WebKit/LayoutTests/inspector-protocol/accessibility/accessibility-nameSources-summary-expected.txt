@@ -33,6 +33,13 @@ Tests name sources in details and summary.
   },
   "properties": [
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "expanded",
       "value": {
         "type": "booleanOrUndefined",
@@ -84,6 +91,13 @@ Tests name sources in details and summary.
     "value": "summary3-title"
   },
   "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
     {
       "name": "expanded",
       "value": {
@@ -145,6 +159,13 @@ Tests name sources in details and summary.
     "value": "summary4-contents"
   },
   "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
     {
       "name": "expanded",
       "value": {
@@ -222,6 +243,13 @@ Tests name sources in details and summary.
     "value": "summary5-contents"
   },
   "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
     {
       "name": "expanded",
       "value": {

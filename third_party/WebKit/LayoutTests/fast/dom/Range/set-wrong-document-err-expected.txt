@@ -2,7 +2,6 @@ Range set* functions should not throw WRONG_DOCUMENT_ERR.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS range.setStart(iframe.contentDocument.body, 0) did not throw exception.
 PASS range.startContainer is iframe.contentDocument.body
 PASS range.collapsed is true

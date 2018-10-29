@@ -46,8 +46,9 @@ struct MediaEngagementConfig {
   bool feature_record_data;
   bool feature_bypass_autoplay;
   bool feature_preload_data;
-  bool feature_autoplay_sound_settings;
-  bool pref_unified_autoplay;
+  bool feature_autoplay_disable_settings;
+  bool feature_autoplay_whitelist_settings;
+  bool pref_disable_unified_autoplay;
   bool has_custom_autoplay_policy;
   string autoplay_policy;
 

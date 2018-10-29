@@ -16,7 +16,8 @@ found in the LICENSE file.
           playerRemoved: doNothing,
           playerAdded: doNothing,
           audioComponentAdded: doNothing,
-          audioComponentRemoved: doNothing
+          audioComponentRemoved: doNothing,
+          generalAudioInformationSet: doNothing
         };
 
         var manager = new Manager(mockClientRenderer);
@@ -84,6 +85,14 @@ found in the LICENSE file.
         assertEquals(1, window.manager.audioComponents_.length);
         assertEquals(0, Object.keys(
             window.manager.audioComponents_[event.component_type]).length);
+      };
+
+      window.testGeneralAudioInformation = function() {
+        var audioInfo = {
+          property: 'value'
+        };
+        window.media.updateGeneralAudioInformation(audioInfo);
+        assertEquals(audioInfo.property, window.manager.audioInfo_.property);
       };
     </script>
   </body>

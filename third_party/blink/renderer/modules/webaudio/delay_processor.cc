@@ -48,9 +48,9 @@ std::unique_ptr<AudioDSPKernel> DelayProcessor::CreateKernel() {
 }
 
 void DelayProcessor::ProcessOnlyAudioParams(size_t frames_to_process) {
-  DCHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
-  float values[AudioUtilities::kRenderQuantumFrames];
+  float values[audio_utilities::kRenderQuantumFrames];
 
   delay_time_->CalculateSampleAccurateValues(values, frames_to_process);
 }

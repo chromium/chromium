@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/was_activated_option.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
@@ -257,6 +258,14 @@ struct NavigateParams {
   // only set when a link is clicked or the navigation takes place from the
   // desktop omnibox.
   base::TimeTicks input_start;
+
+  // Indicates that the new page should have a propagated user activation.
+  // This should be used when we want to pass an activation that occurred
+  // outside of the page and pass it to the page as if it happened on a prior
+  // page. For example, if the assistant opens a page we should treat the
+  // user's interaction with the assistant as a previous user activation.
+  content::WasActivatedOption was_activated =
+      content::WasActivatedOption::kUnknown;
 
  private:
   NavigateParams();

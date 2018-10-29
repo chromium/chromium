@@ -78,4 +78,9 @@ Polymer({
     return this.getIndicatorTooltip(
         indicatorType, this.pref.controlledByName || '', matches);
   },
+
+  /** @return {!Element} */
+  getFocusableElement: function() {
+    return this.$$('cr-tooltip-icon').getFocusableElement();
+  },
 });

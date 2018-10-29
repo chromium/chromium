@@ -739,12 +739,12 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
           if (downstream_end_.ComputeEditingOffset() > 0) {
             DeleteTextFromNode(text, 0, downstream_end_.ComputeEditingOffset());
           }
-          // Remove children of m_downstreamEnd.anchorNode() that come after
-          // m_upstreamStart. Don't try to remove children if m_upstreamStart
-          // was inside m_downstreamEnd.anchorNode() and m_upstreamStart has
+          // Remove children of downstream_end_.AnchorNode() that come after
+          // upstream_start_. Don't try to remove children if upstream_start_
+          // was inside downstream_end_.AnchorNode() and upstream_start_ has
           // been removed from the document, because then we don't know how many
           // children to remove.
-          // FIXME: Make m_upstreamStart a position we update as we remove
+          // FIXME: Make upstream_start_ a position we update as we remove
           // content, then we can always know which children to remove.
         } else if (!(start_node_was_descendant_of_end_node &&
                      !upstream_start_.IsConnected())) {
@@ -836,7 +836,7 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
       CreateVisiblePosition(downstream_end_);
   VisiblePosition merge_destination = CreateVisiblePosition(upstream_start_);
 
-  // m_downstreamEnd's block has been emptied out by deletion.  There is no
+  // downstream_end_'s block has been emptied out by deletion.  There is no
   // content inside of it to move, so just remove it.
   Element* end_block = EnclosingBlock(downstream_end_.AnchorNode());
   if (!end_block ||
@@ -850,7 +850,7 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   RelocatablePosition relocatable_start(
       start_of_paragraph_to_move.DeepEquivalent());
 
-  // We need to merge into m_upstreamStart's block, but it's been emptied out
+  // We need to merge into upstream_start_'s block, but it's been emptied out
   // and collapsed by deletion.
   if (!merge_destination.DeepEquivalent().AnchorNode() ||
       (!merge_destination.DeepEquivalent().AnchorNode()->IsDescendantOf(
@@ -903,8 +903,10 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
   // the right.
   // FIXME: Consider RTL.
   if (!starts_at_empty_line_ && IsStartOfParagraph(merge_destination) &&
-      AbsoluteCaretBoundsOf(start_of_paragraph_to_move).X() >
-          AbsoluteCaretBoundsOf(merge_destination).X()) {
+      AbsoluteCaretBoundsOf(start_of_paragraph_to_move.ToPositionWithAffinity())
+              .X() >
+          AbsoluteCaretBoundsOf(merge_destination.ToPositionWithAffinity())
+              .X()) {
     if (IsHTMLBRElement(
             *MostForwardCaretPosition(merge_destination.DeepEquivalent())
                  .AnchorNode())) {
@@ -987,14 +989,14 @@ void DeleteSelectionCommand::RemovePreviouslySelectedEmptyTableRows(
   if (end_table_row_ && end_table_row_->isConnected() &&
       end_table_row_ != start_table_row_) {
     if (IsTableRowEmpty(end_table_row_.Get())) {
-      // Don't remove m_endTableRow if it's where we're putting the ending
+      // Don't remove end_table_row_ if it's where we're putting the ending
       // selection.
       if (!ending_position_.AnchorNode()->IsDescendantOf(
               end_table_row_.Get())) {
-        // FIXME: We probably shouldn't remove m_endTableRow unless it's
+        // FIXME: We probably shouldn't remove end_table_row_ unless it's
         // fully selected, even if it is empty. We'll need to start
         // adjusting the selection endpoints during deletion to know
-        // whether or not m_endTableRow was fully selected here.
+        // whether or not end_table_row_ was fully selected here.
         CompositeEditCommand::RemoveNode(end_table_row_.Get(), editing_state);
         if (editing_state->IsAborted())
           return;
@@ -1187,9 +1189,9 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
       if (editing_state->IsAborted())
         return;
     }
-    // handleGeneralDelete cause DOM mutation events so |m_endingPosition|
+    // HandleGeneralDelete cause DOM mutation events so |ending_position_|
     // can be out of document.
-    if (ending_position_.IsConnected()) {
+    if (ending_position_.IsValidFor(GetDocument())) {
       InsertNodeAt(placeholder, ending_position_, editing_state);
       if (editing_state->IsAborted())
         return;
@@ -1238,9 +1240,9 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
 InputEvent::InputType DeleteSelectionCommand::GetInputType() const {
   // |DeleteSelectionCommand| could be used with Cut, Menu Bar deletion and
   // |TypingCommand|.
-  // 1. Cut and Menu Bar deletion should rely on correct |m_inputType|.
-  // 2. |TypingCommand| will supply the |inputType()|, so |m_inputType| could
-  // default to |InputType::None|.
+  // 1. Cut and Menu Bar deletion should rely on correct |input_type_|.
+  // 2. |TypingCommand| will supply the |GetInputType()|, so |input_type_| could
+  // default to |InputType::kNone|.
   return input_type_;
 }
 

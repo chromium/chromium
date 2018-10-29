@@ -159,7 +159,7 @@ def member_context(member, info_provider):
         'is_traceable': member.is_traceable,
         'rvalue_cpp_type': member.cpp_type_args(used_as_rvalue_type=True),
         'specific_type_enum': 'k' + member.name,
-        'type_name': member.name,
+        'type_name': member.inner_type.name if member.is_annotated_type else member.name,
         'v8_value_to_local_cpp_value': member.v8_value_to_local_cpp_value(
             {}, 'v8Value', 'cppValue', isolate='isolate',
             use_exception_state=True)

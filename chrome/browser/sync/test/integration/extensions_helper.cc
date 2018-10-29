@@ -157,7 +157,7 @@ std::string ExtensionsMatchChecker::GetDebugMessage() const {
 }
 
 bool ExtensionsMatchChecker::IsExitConditionSatisfied() {
-  std::vector<Profile*>::iterator it = profiles_.begin();
+  auto it = profiles_.begin();
   Profile* profile0 = *it;
   ++it;
   for (; it != profiles_.end(); ++it) {

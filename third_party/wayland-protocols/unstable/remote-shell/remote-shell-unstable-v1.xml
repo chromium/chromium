@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v1" version="18">
+  <interface name="zcr_remote_shell_v1" version="19">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -151,8 +151,8 @@
 	Defines an area of the remote shell used for layout. Each series of
 	"workspace" events must be terminated by a "configure" event.
       </description>
-      <arg name="id_hi" type="uint"/>
-      <arg name="id_lo" type="uint"/>
+      <arg name="display_id_hi" type="uint"/>
+      <arg name="display_id_lo" type="uint"/>
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
       <arg name="width" type="int"/>
@@ -193,6 +193,20 @@
       <arg name="id" type="new_id" interface="zcr_input_method_surface_v1"/>
       <arg name="surface" type="object" interface="wl_surface"/>
     </request>
+
+    <!-- Version 19 additions -->
+
+    <event name="display_info" since="19">
+      <description summary="extra display information">
+	Sends display size in pixels and display identification data, typically
+	in EDID format. Preceded by a "workspace" event for the same display.
+      </description>
+      <arg name="display_id_hi" type="uint"/>
+      <arg name="display_id_lo" type="uint"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="identification_data" type="array"/>
+    </event>
   </interface>
 
   <interface name="zcr_remote_surface_v1" version="18">

@@ -4,57 +4,12 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("bookmark_bar_innershadow") {
-  sources = [
-    "bookmark_bar_innershadow.imageset/Contents.json",
-    "bookmark_bar_innershadow.imageset/bookmark_bar_innershadow.png",
-    "bookmark_bar_innershadow.imageset/bookmark_bar_innershadow@2x.png",
-    "bookmark_bar_innershadow.imageset/bookmark_bar_innershadow@3x.png",
-  ]
-}
-
 imageset("bookmark_bar_shadow") {
   sources = [
     "bookmark_bar_shadow.imageset/Contents.json",
     "bookmark_bar_shadow.imageset/bookmark_bar_shadow.png",
     "bookmark_bar_shadow.imageset/bookmark_bar_shadow@2x.png",
     "bookmark_bar_shadow.imageset/bookmark_bar_shadow@3x.png",
-  ]
-}
-
-imageset("bookmark_black_delete") {
-  sources = [
-    "bookmark_black_delete.imageset/Contents.json",
-    "bookmark_black_delete.imageset/bookmark_black_delete.png",
-    "bookmark_black_delete.imageset/bookmark_black_delete@2x.png",
-    "bookmark_black_delete.imageset/bookmark_black_delete@3x.png",
-  ]
-}
-
-imageset("bookmark_black_edit") {
-  sources = [
-    "bookmark_black_edit.imageset/Contents.json",
-    "bookmark_black_edit.imageset/bookmark_black_edit.png",
-    "bookmark_black_edit.imageset/bookmark_black_edit@2x.png",
-    "bookmark_black_edit.imageset/bookmark_black_edit@3x.png",
-  ]
-}
-
-imageset("bookmark_black_move") {
-  sources = [
-    "bookmark_black_move.imageset/Contents.json",
-    "bookmark_black_move.imageset/bookmark_black_move.png",
-    "bookmark_black_move.imageset/bookmark_black_move@2x.png",
-    "bookmark_black_move.imageset/bookmark_black_move@3x.png",
-  ]
-}
-
-imageset("bookmark_black_select") {
-  sources = [
-    "bookmark_black_select.imageset/Contents.json",
-    "bookmark_black_select.imageset/bookmark_black_select.png",
-    "bookmark_black_select.imageset/bookmark_black_select@2x.png",
-    "bookmark_black_select.imageset/bookmark_black_select@3x.png",
   ]
 }
 
@@ -91,131 +46,5 @@ imageset("bookmark_empty_star") {
     "bookmark_empty_star.imageset/bookmark_empty_star.png",
     "bookmark_empty_star.imageset/bookmark_empty_star@2x.png",
     "bookmark_empty_star.imageset/bookmark_empty_star@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_back") {
-  sources = [
-    "bookmark_gray_back.imageset/Contents.json",
-    "bookmark_gray_back.imageset/bookmark_gray_back.png",
-    "bookmark_gray_back.imageset/bookmark_gray_back@2x.png",
-    "bookmark_gray_back.imageset/bookmark_gray_back@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_check") {
-  sources = [
-    "bookmark_gray_check.imageset/Contents.json",
-    "bookmark_gray_check.imageset/bookmark_gray_check.png",
-    "bookmark_gray_check.imageset/bookmark_gray_check@2x.png",
-    "bookmark_gray_check.imageset/bookmark_gray_check@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_close") {
-  sources = [
-    "bookmark_gray_close.imageset/Contents.json",
-    "bookmark_gray_close.imageset/bookmark_gray_close.png",
-    "bookmark_gray_close.imageset/bookmark_gray_close@2x.png",
-    "bookmark_gray_close.imageset/bookmark_gray_close@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_edit") {
-  sources = [
-    "bookmark_gray_edit.imageset/Contents.json",
-    "bookmark_gray_edit.imageset/bookmark_gray_edit.png",
-    "bookmark_gray_edit.imageset/bookmark_gray_edit@2x.png",
-    "bookmark_gray_edit.imageset/bookmark_gray_edit@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_folder") {
-  sources = [
-    "bookmark_gray_folder.imageset/Contents.json",
-    "bookmark_gray_folder.imageset/bookmark_gray_folder.png",
-    "bookmark_gray_folder.imageset/bookmark_gray_folder@2x.png",
-    "bookmark_gray_folder.imageset/bookmark_gray_folder@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_folder_new") {
-  sources = [
-    "bookmark_gray_folder_new.imageset/Contents.json",
-    "bookmark_gray_folder_new.imageset/bookmark_gray_folder_new.png",
-    "bookmark_gray_folder_new.imageset/bookmark_gray_folder_new@2x.png",
-    "bookmark_gray_folder_new.imageset/bookmark_gray_folder_new@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_menu") {
-  sources = [
-    "bookmark_gray_menu.imageset/Contents.json",
-    "bookmark_gray_menu.imageset/bookmark_gray_menu.png",
-    "bookmark_gray_menu.imageset/bookmark_gray_menu@2x.png",
-    "bookmark_gray_menu.imageset/bookmark_gray_menu@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_new_folder") {
-  sources = [
-    "bookmark_gray_new_folder.imageset/Contents.json",
-    "bookmark_gray_new_folder.imageset/bookmark_gray_new_folder.png",
-    "bookmark_gray_new_folder.imageset/bookmark_gray_new_folder@2x.png",
-    "bookmark_gray_new_folder.imageset/bookmark_gray_new_folder@3x.png",
-  ]
-}
-
-imageset("bookmark_gray_star_large") {
-  sources = [
-    "bookmark_gray_star_large.imageset/Contents.json",
-    "bookmark_gray_star_large.imageset/bookmark_gray_star_large.png",
-    "bookmark_gray_star_large.imageset/bookmark_gray_star_large@2x.png",
-    "bookmark_gray_star_large.imageset/bookmark_gray_star_large@3x.png",
-  ]
-}
-
-imageset("bookmark_more") {
-  sources = [
-    "bookmark_more.imageset/Contents.json",
-    "bookmark_more.imageset/bookmark_more.png",
-    "bookmark_more.imageset/bookmark_more@2x.png",
-    "bookmark_more.imageset/bookmark_more@3x.png",
-  ]
-}
-
-imageset("bookmark_white_close") {
-  sources = [
-    "bookmark_white_close.imageset/Contents.json",
-    "bookmark_white_close.imageset/bookmark_white_close.png",
-    "bookmark_white_close.imageset/bookmark_white_close@2x.png",
-    "bookmark_white_close.imageset/bookmark_white_close@3x.png",
-  ]
-}
-
-imageset("bookmark_white_delete") {
-  sources = [
-    "bookmark_white_delete.imageset/Contents.json",
-    "bookmark_white_delete.imageset/bookmark_white_delete.png",
-    "bookmark_white_delete.imageset/bookmark_white_delete@2x.png",
-    "bookmark_white_delete.imageset/bookmark_white_delete@3x.png",
-  ]
-}
-
-imageset("bookmark_white_edit") {
-  sources = [
-    "bookmark_white_edit.imageset/Contents.json",
-    "bookmark_white_edit.imageset/bookmark_white_edit.png",
-    "bookmark_white_edit.imageset/bookmark_white_edit@2x.png",
-    "bookmark_white_edit.imageset/bookmark_white_edit@3x.png",
-  ]
-}
-
-imageset("bookmark_white_move") {
-  sources = [
-    "bookmark_white_move.imageset/Contents.json",
-    "bookmark_white_move.imageset/bookmark_white_move.png",
-    "bookmark_white_move.imageset/bookmark_white_move@2x.png",
-    "bookmark_white_move.imageset/bookmark_white_move@3x.png",
   ]
 }

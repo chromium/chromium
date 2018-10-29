@@ -74,7 +74,7 @@ template <typename Container>
 typename Container::mapped_type FindItem(
     const Container& container,
     const typename Container::key_type& key) {
-  typename Container::const_iterator found = container.find(key);
+  auto found = container.find(key);
   if (found == container.end())
     return typename Container::mapped_type();
   return found->second;
@@ -366,8 +366,7 @@ int64_t MetadataDatabaseIndex::GetAppRootTracker(
 TrackerIDSet MetadataDatabaseIndex::GetFileTrackerIDsByParentAndTitle(
     int64_t parent_tracker_id,
     const std::string& title) const {
-  TrackerIDsByParentAndTitle::const_iterator found =
-      trackers_by_parent_and_title_.find(parent_tracker_id);
+  auto found = trackers_by_parent_and_title_.find(parent_tracker_id);
   if (found == trackers_by_parent_and_title_.end())
     return TrackerIDSet();
   return FindItem(found->second, title);
@@ -376,13 +375,11 @@ TrackerIDSet MetadataDatabaseIndex::GetFileTrackerIDsByParentAndTitle(
 std::vector<int64_t> MetadataDatabaseIndex::GetFileTrackerIDsByParent(
     int64_t parent_tracker_id) const {
   std::vector<int64_t> result;
-  TrackerIDsByParentAndTitle::const_iterator found =
-      trackers_by_parent_and_title_.find(parent_tracker_id);
+  auto found = trackers_by_parent_and_title_.find(parent_tracker_id);
   if (found == trackers_by_parent_and_title_.end())
     return result;
 
-  for (TrackerIDsByTitle::const_iterator itr = found->second.begin();
-       itr != found->second.end(); ++itr) {
+  for (auto itr = found->second.begin(); itr != found->second.end(); ++itr) {
     result.insert(result.end(), itr->second.begin(), itr->second.end());
   }
 
@@ -593,8 +590,7 @@ void MetadataDatabaseIndex::UpdateInFileIDIndexes(
 
 void MetadataDatabaseIndex::RemoveFromFileIDIndexes(
     const FileTracker& tracker) {
-  TrackerIDsByFileID::iterator found =
-      trackers_by_file_id_.find(tracker.file_id());
+  auto found = trackers_by_file_id_.find(tracker.file_id());
   if (found == trackers_by_file_id_.end()) {
     NOTREACHED();
     return;
@@ -649,7 +645,7 @@ void MetadataDatabaseIndex::UpdateInPathIndexes(
   TrackerIDsByTitle* trackers_by_title = &trackers_by_parent_and_title_[parent];
 
   if (old_title != title) {
-    TrackerIDsByTitle::iterator found = trackers_by_title->find(old_title);
+    auto found = trackers_by_title->find(old_title);
     if (found != trackers_by_title->end()) {
       DVLOG(3) << "  Remove from trackers_by_parent_and_title_: "
              << parent << " " << old_title;

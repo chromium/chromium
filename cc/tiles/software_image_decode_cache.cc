@@ -8,9 +8,9 @@
 
 #include "base/format_macros.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/histograms.h"
@@ -30,8 +30,6 @@ namespace {
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
 const size_t kNormalMaxItemsInCacheForSoftware = 1000;
-const size_t kThrottledMaxItemsInCacheForSoftware = 100;
-const size_t kSuspendedMaxItemsInCacheForSoftware = 0;
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -155,8 +153,6 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
         this, "cc::SoftwareImageDecodeCache",
         base::ThreadTaskRunnerHandle::Get());
   }
-  // Register this component with base::MemoryCoordinatorClientRegistry.
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
   memory_pressure_listener_.reset(new base::MemoryPressureListener(
       base::BindRepeating(&SoftwareImageDecodeCache::OnMemoryPressure,
                           base::Unretained(this))));
@@ -166,9 +162,6 @@ SoftwareImageDecodeCache::~SoftwareImageDecodeCache() {
   // It is safe to unregister, even if we didn't register in the constructor.
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
-  // Unregister this component with memory_coordinator::ClientRegistry.
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
-
   // TODO(vmpstr): If we don't have a client name, it may cause problems in
   // unittests, since most tests don't set the name but some do. The UMA system
   // expects the name to be always the same. This assertion is violated in the
@@ -682,31 +675,6 @@ bool SoftwareImageDecodeCache::OnMemoryDump(
 
   // Memory dump can't fail, always return true.
   return true;
-}
-
-void SoftwareImageDecodeCache::OnMemoryStateChange(base::MemoryState state) {
-  {
-    base::AutoLock hold(lock_);
-    switch (state) {
-      case base::MemoryState::NORMAL:
-        max_items_in_cache_ = kNormalMaxItemsInCacheForSoftware;
-        break;
-      case base::MemoryState::THROTTLED:
-        max_items_in_cache_ = kThrottledMaxItemsInCacheForSoftware;
-        break;
-      case base::MemoryState::SUSPENDED:
-        max_items_in_cache_ = kSuspendedMaxItemsInCacheForSoftware;
-        break;
-      case base::MemoryState::UNKNOWN:
-        NOTREACHED();
-        return;
-    }
-  }
-}
-
-void SoftwareImageDecodeCache::OnPurgeMemory() {
-  base::AutoLock lock(lock_);
-  ReduceCacheUsageUntilWithinLimit(0);
 }
 
 void SoftwareImageDecodeCache::OnMemoryPressure(

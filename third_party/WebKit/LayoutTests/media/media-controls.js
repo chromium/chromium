@@ -32,6 +32,13 @@ function buttonPanelElement(videoElement) {
   return element;
 }
 
+function panelElement(videoElement) {
+  var element = mediaControlsButton(videoElement, "panel");
+  if (!element)
+    throw 'Failed to find media controls panel';
+  return element;
+}
+
 function castButton(videoElement) {
     var controlID = '-internal-media-controls-cast-button';
     var button = mediaControlsElement(internals.shadowRoot(videoElement).firstChild, controlID);
@@ -180,6 +187,16 @@ function coordinatesOutsideElement(element)
     return new Array(x, y);
 }
 
+function videoLeftEdgeCoordinates(element) {
+    const rect = element.getBoundingClientRect();
+    return [rect.left + 5, rect.top + rect.height / 2];
+}
+
+function videoRightEdgeCoordinates(element) {
+    const rect = element.getBoundingClientRect();
+    return [rect.right - 5, rect.top + rect.height / 2];
+}
+
 function mediaControlsButtonCoordinates(element, id)
 {
     var button = mediaControlsButton(element, id);
@@ -270,8 +287,29 @@ function playButton(videoElement) {
     return mediaControlsButton(videoElement, 'play-button');
 }
 
+function enabledPlayButton(videoElement) {
+  if (internals.runtimeFlags.mediaControlsOverlayPlayButtonEnabled) {
+    return mediaControlsOverlayPlayButton(videoElement);
+  }
+  return playButton(videoElement);
+}
+
 function muteButton(videoElement) {
     return mediaControlsButton(videoElement, 'mute-button');
+}
+
+function volumeSliderElement(videoElement) {
+  return mediaControlsButton(videoElement, 'volume-slider');
+}
+
+function isVolumeSliderOpen(videoElement) {
+  return !volumeSliderElement(videoElement).classList.contains('closed');
+}
+
+function runAfterVolumeSliderAnimationEnds(func) {
+  // 300ms timer plus 200ms slack.
+  const volumeSliderTimeoutMs = 300 + 200;
+  setTimeout(func, volumeSliderTimeoutMs);
 }
 
 function timelineElement(videoElement) {
@@ -373,6 +411,12 @@ function runAfterHideMediaControlsTimerFired(func, mediaElement)
         throw "The media will end before the controls have been hidden";
 
     setTimeout(func, hideTimeoutMs);
+}
+
+function runAfterDoubleTapTimerFired(func) {
+  // 300ms timer plus 500ms slack.
+  const doubleTapTimeoutMs = 300 + 500;
+  setTimeout(func, doubleTapTimeoutMs);
 }
 
 function hasEnabledFullscreenButton(element) {
@@ -490,6 +534,18 @@ function singleTapOnControl(control, callback) {
   singleTapAtCoordinates(coordinates[0], coordinates[1], callback);
 }
 
+function hoverOverControl(control, callback) {
+  const coordinates = elementCoordinates(control);
+  chrome.gpuBenchmarking.pointerActionSequence([
+    {
+      source: 'mouse',
+      actions: [
+        { name: 'pointerMove', x: coordinates[0], y: coordinates[1] }
+      ]
+    }
+  ], callback);
+}
+
 // This function does not work on Mac due to crbug.com/613672. When using this
 // function, add an entry into TestExpectations to skip on Mac.
 function singleTouchAtCoordinates(xPos, yPos, callback) {
@@ -572,5 +628,16 @@ function enableImmersiveMode(t) {
   internals.settings.setImmersiveModeEnabled(true);
   t.add_cleanup(() => {
     internals.settings.setImmersiveModeEnabled(oldImmersive);
+  });
+}
+
+function setPreferHiddenVolumeControlsForTest(t, preferHidden) {
+  if (!window.internals)
+    return;
+
+  const oldSetting = internals.settings.preferHiddenVolumeControls;
+  internals.settings.setPreferHiddenVolumeControls(preferHidden);
+  t.add_cleanup(() => {
+    internals.settings.setPreferHiddenVolumeControls(oldSetting);
   });
 }

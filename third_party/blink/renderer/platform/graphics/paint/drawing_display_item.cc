@@ -63,8 +63,8 @@ static bool BitmapsEqual(sk_sp<const PaintRecord> record1,
   constexpr int kMaxMismatches = 10;
   for (int y = 0; y < bounds.Height(); ++y) {
     for (int x = 0; x < bounds.Width(); ++x) {
-      SkPMColor pixel1 = *bitmap1.getAddr32(x, y);
-      SkPMColor pixel2 = *bitmap2.getAddr32(x, y);
+      SkColor pixel1 = bitmap1.getColor(x, y);
+      SkColor pixel2 = bitmap2.getColor(x, y);
       if (pixel1 != pixel2) {
         if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
           return false;

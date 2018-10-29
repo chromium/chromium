@@ -24,10 +24,10 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/shared_worker/shared_worker_service_impl.h"
-#include "content/common/gpu_stream_constants.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/unique_name_helper.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/gpu_stream_constants.h"
 #include "content/public/common/page_state.h"
 #include "content/public/common/screen_info.h"
 #include "content/renderer/gpu/layer_tree_view.h"
@@ -237,9 +237,9 @@ RenderWidget* GetRenderWidget(
 
 void EnableWebTestProxyCreation() {
   RenderViewImpl::InstallCreateHook(CreateWebViewTestProxy);
-  RenderWidget::InstallCreateHook(CreateWebWidgetTestProxy,
-                                  RenderWidgetInitialized);
-  RenderFrameImpl::InstallCreateHook(CreateWebFrameTestProxy);
+  RenderFrameImpl::InstallCreateHook(CreateWebFrameTestProxy,
+                                     CreateWebWidgetTestProxy,
+                                     RenderWidgetInitialized);
 }
 
 void FetchManifest(blink::WebView* view, FetchManifestCallback callback) {
@@ -390,8 +390,8 @@ class LayoutTestDependenciesImpl : public LayoutTestDependencies,
           ws::command_buffer_metrics::ContextType::FOR_TESTING);
       context_result = context_provider->BindToCurrentThread();
 
-      // Layout tests can't recover from a fatal failure.
-      CHECK_NE(context_result, gpu::ContextResult::kFatalFailure);
+      // Layout tests can't recover from a fatal or surface failure.
+      CHECK(!gpu::IsFatalOrSurfaceFailure(context_result));
     }
 
     bool flipped_output_surface = false;

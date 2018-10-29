@@ -92,18 +92,14 @@ test(() => {
 
   builder
     .addFunction("fn", kSig_v_v)
-    .addBody([
-        kExprEnd
-    ])
+    .addBody([])
     .exportFunc();
   builder
     .addFunction("fn2", kSig_v_v)
-    .addBody([
-        kExprEnd
-    ])
+    .addBody([])
     .exportFunc();
 
-  builder.setFunctionTableLength(1);
+  builder.setTableLength(1);
   builder.addExportOfKind("table", kExternalTable, 0);
 
   builder.addGlobal(kWasmI32, true)
@@ -128,3 +124,9 @@ test(() => {
   ];
   assert_exports(exports, expected);
 }, "exports");
+
+test(() => {
+  const module = new WebAssembly.Module(emptyModuleBinary);
+  const exports = WebAssembly.Module.exports(module, {});
+  assert_exports(exports, []);
+}, "Stray argument");

@@ -1,3 +1,0 @@
-Type something into the first input and press tab. The browser should not crash.
-
-PASSED

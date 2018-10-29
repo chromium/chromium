@@ -1,9 +1,10 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <div>Type something into the first input and press tab.  The browser should not crash.</div>
 <div id="parent">
 <input id="a" />
 <input id="b" />
 </div>
-<div id="results"></div>
 <script>
 document.getElementById("a").addEventListener("change", function(e) {
     var parent = document.getElementById("parent");
@@ -11,17 +12,11 @@ document.getElementById("a").addEventListener("change", function(e) {
     document.getElementById("c").select();
 }, false);
 
-function runTest()
-{
+test(() => {
     document.getElementById("a").focus();
     if (!window.testRunner)
         return;
-    testRunner.dumpAsText();
     eventSender.keyDown("x")
     eventSender.keyDown("\t");
-    document.getElementById("results").innerText = "PASSED";
-}
-
-runTest();
-
+}, "Typing followed by focus change doesn't crash");
 </script>

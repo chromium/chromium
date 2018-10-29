@@ -51,3 +51,7 @@ const CGFloat kTabGridFloatingButtonHorizontalInset = 20.0f;
 // Intrinsic heights of the tab grid toolbars.
 const CGFloat kTabGridTopToolbarHeight = 52.0f;
 const CGFloat kTabGridBottomToolbarHeight = 44.0f;
+
+// The delay (in milliseconds) after closing the last incognito tab and before
+// automatically scrolling to the regular tabs panel.
+const int64_t kTabGridScrollAnimationDelayInMilliseconds = 300;

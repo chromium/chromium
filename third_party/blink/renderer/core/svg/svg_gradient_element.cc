@@ -50,15 +50,15 @@ SVGGradientElement::SVGGradientElement(const QualifiedName& tag_name,
       SVGURIReference(this),
       gradient_transform_(
           SVGAnimatedTransformList::Create(this,
-                                           SVGNames::gradientTransformAttr,
+                                           svg_names::kGradientTransformAttr,
                                            CSSPropertyTransform)),
       spread_method_(SVGAnimatedEnumeration<SVGSpreadMethodType>::Create(
           this,
-          SVGNames::spreadMethodAttr,
+          svg_names::kSpreadMethodAttr,
           kSVGSpreadMethodPad)),
       gradient_units_(SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
           this,
-          SVGNames::gradientUnitsAttr,
+          svg_names::kGradientUnitsAttr,
           SVGUnitTypes::kSvgUnitTypeObjectboundingbox)) {
   AddToPropertyMap(gradient_transform_);
   AddToPropertyMap(spread_method_);
@@ -94,7 +94,7 @@ void SVGGradientElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == SVGNames::gradientTransformAttr) {
+  if (name == svg_names::kGradientTransformAttr) {
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyTransform,
         *gradient_transform_->CurrentValue()->CssValue());
@@ -104,15 +104,15 @@ void SVGGradientElement::CollectStyleForPresentationAttribute(
 }
 
 void SVGGradientElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::gradientTransformAttr) {
+  if (attr_name == svg_names::kGradientTransformAttr) {
     InvalidateSVGPresentationAttributeStyle();
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(attr_name));
   }
 
-  if (attr_name == SVGNames::gradientUnitsAttr ||
-      attr_name == SVGNames::gradientTransformAttr ||
-      attr_name == SVGNames::spreadMethodAttr) {
+  if (attr_name == svg_names::kGradientUnitsAttr ||
+      attr_name == svg_names::kGradientTransformAttr ||
+      attr_name == svg_names::kSpreadMethodAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateGradient(LayoutInvalidationReason::kAttributeChanged);
     return;

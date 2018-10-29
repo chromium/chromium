@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBar;
 import org.chromium.chrome.browser.infobar.InfoBarCompactLayout;
@@ -100,4 +101,17 @@ public class TranslateUtil {
         });
     }
 
+    /**
+     * Simulate the target menu item with given language |code| being clicked (even if it is not
+     * visible).
+     */
+    public static void clickTargetMenuItem(
+            final TranslateCompactInfoBar infoBar, final String code) {
+        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
+            @Override
+            public void run() {
+                infoBar.onTargetMenuItemClicked(code);
+            }
+        });
+    }
 }

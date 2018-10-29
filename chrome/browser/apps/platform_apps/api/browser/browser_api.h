@@ -7,7 +7,7 @@
 
 #include "extensions/browser/extension_function.h"
 
-namespace apps {
+namespace chrome_apps {
 namespace api {
 
 class BrowserOpenTabFunction : public UIThreadExtensionFunction {
@@ -21,6 +21,6 @@ class BrowserOpenTabFunction : public UIThreadExtensionFunction {
 };
 
 }  // namespace api
-}  // namespace apps
+}  // namespace chrome_apps
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_API_BROWSER_BROWSER_API_H_

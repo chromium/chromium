@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_flood_element.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -29,21 +29,21 @@
 namespace blink {
 
 inline SVGFEFloodElement::SVGFEFloodElement(Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feFloodTag, document) {}
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEFloodTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGFEFloodElement)
 
 bool SVGFEFloodElement::SetFilterEffectAttribute(
     FilterEffect* effect,
     const QualifiedName& attr_name) {
-  LayoutObject* layout_object = this->GetLayoutObject();
-  DCHECK(layout_object);
-  const ComputedStyle& style = layout_object->StyleRef();
-  FEFlood* flood = static_cast<FEFlood*>(effect);
+  const ComputedStyle& style = ComputedStyleRef();
 
-  if (attr_name == SVGNames::flood_colorAttr)
-    return flood->SetFloodColor(style.SvgStyle().FloodColor());
-  if (attr_name == SVGNames::flood_opacityAttr)
+  FEFlood* flood = static_cast<FEFlood*>(effect);
+  if (attr_name == svg_names::kFloodColorAttr) {
+    return flood->SetFloodColor(
+        style.VisitedDependentColor(GetCSSPropertyFloodColor()));
+  }
+  if (attr_name == svg_names::kFloodOpacityAttr)
     return flood->SetFloodOpacity(style.SvgStyle().FloodOpacity());
 
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
@@ -51,15 +51,12 @@ bool SVGFEFloodElement::SetFilterEffectAttribute(
 }
 
 FilterEffect* SVGFEFloodElement::Build(SVGFilterBuilder*, Filter* filter) {
-  LayoutObject* layout_object = this->GetLayoutObject();
-  if (!layout_object)
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style)
     return nullptr;
 
-  DCHECK(layout_object->Style());
-  const SVGComputedStyle& svg_style = layout_object->StyleRef().SvgStyle();
-
-  Color color = svg_style.FloodColor();
-  float opacity = svg_style.FloodOpacity();
+  Color color = style->VisitedDependentColor(GetCSSPropertyFloodColor());
+  float opacity = style->SvgStyle().FloodOpacity();
 
   return FEFlood::Create(filter, color, opacity);
 }

@@ -26,6 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 
@@ -76,18 +77,19 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
   DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealEndedWaiter);
 };
 
+}  // namespace
+
 class TabScrubberTest : public InProcessBrowserTest,
                         public TabStripModelObserver {
  public:
-  TabScrubberTest() : target_index_(-1) {}
+  TabScrubberTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(chromeos::switches::kNaturalScrollDefault);
   }
 
   void SetUpOnMainThread() override {
-    TabScrubber::GetInstance()->set_activation_delay(0);
-
+    TabScrubber::GetInstance()->use_default_activation_delay_ = false;
     // Disable external monitor scaling of coordinates.
     ash::Shell* shell = ash::Shell::Get();
     shell->event_transformation_handler()->set_transformation_mode(
@@ -107,19 +109,17 @@ class TabScrubberTest : public InProcessBrowserTest,
     return tab_strip;
   }
 
-  float GetStartX(Browser* browser,
-                  int index,
-                  TabScrubber::Direction direction) {
-    return static_cast<float>(
-        TabScrubber::GetStartPoint(GetTabStrip(browser), index, direction).x());
+  int GetStartX(Browser* browser, int index, TabScrubber::Direction direction) {
+    return TabScrubber::GetStartPoint(GetTabStrip(browser), index, direction)
+        .x();
   }
 
-  float GetTabCenter(Browser* browser, int index) {
-    return static_cast<float>(GetTabStrip(browser)
-                                  ->tab_at(index)
-                                  ->GetMirroredBounds()
-                                  .CenterPoint()
-                                  .x());
+  int GetTabCenter(Browser* browser, int index) {
+    return GetTabStrip(browser)
+        ->tab_at(index)
+        ->GetMirroredBounds()
+        .CenterPoint()
+        .x();
   }
 
   // The simulated scroll event's offsets are calculated in the tests rather
@@ -142,21 +142,19 @@ class TabScrubberTest : public InProcessBrowserTest,
   // Sends one scroll event synchronously without initial or final
   // fling events.
   void SendScrubEvent(Browser* browser, int index) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    aura::Window* root = window->GetRootWindow();
-    ui::test::EventGenerator event_generator(root, window);
+    auto event_generator = CreateEventGenerator(browser);
     int active_index = browser->tab_strip_model()->active_index();
     TabScrubber::Direction direction =
         index < active_index ? TabScrubber::LEFT : TabScrubber::RIGHT;
 
     direction = InvertDirectionIfNeeded(direction);
 
-    float offset = GetTabCenter(browser, index) -
-                   GetStartX(browser, active_index, direction);
+    int offset = GetTabCenter(browser, index) -
+                 GetStartX(browser, active_index, direction);
     ui::ScrollEvent scroll_event(ui::ET_SCROLL, gfx::Point(0, 0),
                                  ui::EventTimeForNow(), 0, offset, 0, offset, 0,
                                  3);
-    event_generator.Dispatch(&scroll_event);
+    event_generator->Dispatch(&scroll_event);
   }
 
   enum ScrubType {
@@ -168,10 +166,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   // Sends asynchronous events and waits for tab at |index| to become
   // active.
   void Scrub(Browser* browser, int index, ScrubType scrub_type) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    aura::Window* root = window->GetRootWindow();
-    ui::test::EventGenerator event_generator(root, window);
-    event_generator.set_async(true);
+    auto event_generator = CreateEventGenerator(browser);
     activation_order_.clear();
     int active_index = browser->tab_strip_model()->active_index();
     ASSERT_NE(index, active_index);
@@ -190,21 +185,20 @@ class TabScrubberTest : public InProcessBrowserTest,
 
     if (scrub_type == SKIP_TABS)
       increment *= 2;
-    float last = GetStartX(browser, active_index, direction);
-    std::vector<gfx::PointF> offsets;
+    browser->tab_strip_model()->AddObserver(this);
+    ScrollGenerator scroll_generator(event_generator.get());
+    int last = GetStartX(browser, active_index, direction);
     for (int i = active_index + increment; i != (index + increment);
          i += increment) {
-      float tab_center = GetTabCenter(browser, i);
-      offsets.push_back(gfx::PointF(tab_center - last, 0));
+      int tab_center = GetTabCenter(browser, i);
+      scroll_generator.GenerateScroll(tab_center - last);
       last = GetStartX(browser, i, direction);
       if (scrub_type == REPEAT_TABS) {
-        offsets.push_back(gfx::PointF(static_cast<float>(increment), 0));
+        scroll_generator.GenerateScroll(increment);
         last += increment;
       }
     }
-    event_generator.ScrollSequence(
-        gfx::Point(0, 0), base::TimeDelta::FromMilliseconds(100), offsets, 3);
-    RunUntilTabActive(browser, index);
+    browser->tab_strip_model()->RemoveObserver(this);
   }
 
   // Sends events and waits for tab at |index| to become active
@@ -212,19 +206,11 @@ class TabScrubberTest : public InProcessBrowserTest,
   // If the active tab is expected to stay the same, send events
   // synchronously (as we don't have anything to wait for).
   void SendScrubSequence(Browser* browser, float x_offset, int index) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    aura::Window* root = window->GetRootWindow();
-    ui::test::EventGenerator event_generator(root, window);
-    bool wait_for_active = false;
-    if (index != browser->tab_strip_model()->active_index()) {
-      wait_for_active = true;
-      event_generator.set_async(true);
-    }
-    event_generator.ScrollSequence(gfx::Point(0, 0),
-                                   base::TimeDelta::FromMilliseconds(100),
-                                   x_offset, 0, 1, 3);
-    if (wait_for_active)
-      RunUntilTabActive(browser, index);
+    auto event_generator = CreateEventGenerator(browser);
+    browser->tab_strip_model()->AddObserver(this);
+    ScrollGenerator scroll_generator(event_generator.get());
+    scroll_generator.GenerateScroll(x_offset);
+    browser->tab_strip_model()->RemoveObserver(this);
   }
 
   void AddTabs(Browser* browser, int num_tabs) {
@@ -243,31 +229,68 @@ class TabScrubberTest : public InProcessBrowserTest,
                         int index,
                         int reason) override {
     activation_order_.push_back(index);
-    if (index == target_index_)
-      quit_closure_.Run();
   }
 
   // History of tab activation. Scrub() resets it.
   std::vector<int> activation_order_;
 
  private:
-  void RunUntilTabActive(Browser* browser, int target) {
-    base::RunLoop run_loop;
-    quit_closure_ = content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    browser->tab_strip_model()->AddObserver(this);
-    target_index_ = target;
-    content::RunThisRunLoop(&run_loop);
-    browser->tab_strip_model()->RemoveObserver(this);
-    target_index_ = -1;
+  // Used to generate a sequence of scrolls. Starts with a cancel, is followed
+  // by any number of scrolls and finally a fling-start. After every event this
+  // forces the TabScrubber to complete any pending activation.
+  class ScrollGenerator {
+   public:
+    // TabScrubber reacts to three-finger scrolls.
+    static const int kNumFingers = 3;
+
+    explicit ScrollGenerator(ui::test::EventGenerator* event_generator)
+        : event_generator_(event_generator) {
+      ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                                   time_for_next_event_, 0, 0, 0, 0, 0,
+                                   kNumFingers);
+      event_generator->Dispatch(&fling_cancel);
+      if (TabScrubber::GetInstance()->IsActivationPending())
+        TabScrubber::GetInstance()->FinishScrub(true);
+    }
+
+    ~ScrollGenerator() {
+      ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                                  time_for_next_event_, 0, last_x_offset_, 0,
+                                  last_x_offset_, 0, kNumFingers);
+      event_generator_->Dispatch(&fling_start);
+      if (TabScrubber::GetInstance()->IsActivationPending())
+        TabScrubber::GetInstance()->FinishScrub(true);
+    }
+
+    void GenerateScroll(int x_offset) {
+      time_for_next_event_ += base::TimeDelta::FromMilliseconds(100);
+      ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), time_for_next_event_,
+                             0, x_offset, 0, x_offset, 0, kNumFingers);
+      last_x_offset_ = x_offset;
+      event_generator_->Dispatch(&scroll);
+      if (TabScrubber::GetInstance()->IsActivationPending())
+        TabScrubber::GetInstance()->FinishScrub(true);
+    }
+
+   private:
+    ui::test::EventGenerator* event_generator_;
+    base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
+    int last_x_offset_ = 0;
+
+    DISALLOW_COPY_AND_ASSIGN(ScrollGenerator);
+  };
+
+  std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
+      Browser* browser) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    aura::Window* root = window->GetRootWindow();
+    return std::make_unique<ui::test::EventGenerator>(
+        features::IsUsingWindowService() ? nullptr : root, window);
   }
 
-  base::Closure quit_closure_;
-  int target_index_;
 
   DISALLOW_COPY_AND_ASSIGN(TabScrubberTest);
 };
-
-}  // namespace
 
 // Swipe a single tab in each direction.
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, Single) {

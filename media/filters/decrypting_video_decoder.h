@@ -71,8 +71,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   void DecodePendingBuffer();
 
   // Callback for Decryptor::DecryptAndDecodeVideo().
-  void DeliverFrame(int buffer_size,
-                    Decryptor::Status status,
+  void DeliverFrame(Decryptor::Status status,
                     const scoped_refptr<VideoFrame>& frame);
 
   // Callback for the |decryptor_| to notify this object that a new key has been
@@ -81,6 +80,10 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
 
   // Reset decoder and call |reset_cb_|.
   void DoReset();
+
+  // Completes traces for various pending states.
+  void CompletePendingDecode(Decryptor::Status status);
+  void CompleteWaitingForDecryptionKey();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -107,10 +110,6 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   // decrypting/decoding again in case the newly added key is the correct
   // decryption key.
   bool key_added_while_decode_pending_;
-
-  // A unique ID to trace Decryptor::DecryptAndDecodeVideo() call and the
-  // matching DecryptCB call (in DoDeliverFrame()).
-  uint32_t trace_id_;
 
   // Once Initialized() with encrypted content support, if the stream changes to
   // clear content, we want to ensure this decoder remains used.

@@ -75,8 +75,7 @@ void TypedUrlsSyncPerfTest::UpdateURLs(int profile) {
 void TypedUrlsSyncPerfTest::RemoveURLs(int profile) {
   const history::URLRows& urls = GetTypedUrlsFromClient(profile);
   std::vector<GURL> gurls;
-  for (history::URLRows::const_iterator it = urls.begin(); it != urls.end();
-       ++it) {
+  for (auto it = urls.begin(); it != urls.end(); ++it) {
     gurls.push_back(it->url());
   }
   DeleteUrlsFromHistory(profile, gurls);

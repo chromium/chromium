@@ -452,7 +452,7 @@ class ExtensionPrinterHandlerTest : public testing::Test {
 
   void SetUp() override {
     extensions::PrinterProviderAPIFactory::GetInstance()->SetTestingFactory(
-        env_.profile(), &BuildTestingPrinterProviderAPI);
+        env_.profile(), base::BindRepeating(&BuildTestingPrinterProviderAPI));
     extension_printer_handler_ =
         std::make_unique<ExtensionPrinterHandler>(env_.profile());
 

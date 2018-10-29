@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 877 PASS, 123 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 881 PASS, 119 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["fontsize","4"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") before
 PASS [["fontsize","4"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
 PASS [["fontsize","4"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") after
@@ -91,7 +91,7 @@ PASS [["fontsize","4"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" que
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar": execCommand("fontsize", false, "4") return value
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("fontsize") before
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" queryCommandState("fontsize") before
 PASS [["fontsize","4"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("fontsize") before
@@ -108,7 +108,7 @@ PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": 
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<font size=\"4\">a</font>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<font size=\"4\">a</font>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("fontsize") before
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("fontsize") before
 PASS [["fontsize","4"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") before
@@ -169,7 +169,7 @@ PASS [["fontsize","4"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" que
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar": execCommand("fontsize", false, "4") return value
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("fontsize") before
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("fontsize") before
 PASS [["fontsize","4"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("fontsize") before
@@ -186,7 +186,7 @@ PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar"
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<font size=\"4\">a</font>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<font size=\"4\">a</font>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("fontsize") before
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("fontsize") before
 PASS [["fontsize","4"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") before
@@ -731,7 +731,7 @@ PASS [["forecolor","#0000FF"],["insertlinebreak",""],["inserttext","a"]] "foo[]b
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar": execCommand("forecolor", false, "#0000FF") return value
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("forecolor") before
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("forecolor") before
 PASS [["forecolor","#0000FF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("forecolor") before
@@ -748,7 +748,7 @@ PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<font color=\"#0000ff\">a</font>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<font color=\"#0000ff\">a</font>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forecolor") before
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("forecolor") before
 PASS [["forecolor","#0000FF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") before
@@ -809,7 +809,7 @@ PASS [["forecolor","#0000FF"],["insertparagraph",""],["inserttext","a"]] "foo[]b
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar": execCommand("forecolor", false, "#0000FF") return value
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("forecolor") before
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("forecolor") before
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("forecolor") before
@@ -826,7 +826,7 @@ PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "fo
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<font color=\"#0000ff\">a</font>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<font color=\"#0000ff\">a</font>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forecolor") before
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("forecolor") before
 PASS [["forecolor","#0000FF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") before

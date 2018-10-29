@@ -30,13 +30,14 @@ struct AppListItemMetadata {
 
 // A structure holding the common information which is sent from chrome to ash,
 // representing a search result.
-// This structure should be kept as small as possible so that ash can get and
-// render search results as early as possible.
 struct SearchResultMetadata {
   string id;                  // The id of the result.
   mojo_base.mojom.String16 title;    // The title of the result, e.g. an app's
                                      // name, an autocomplete query, etc.
   mojo_base.mojom.String16 details;  // A detail string of this result.
+  mojo_base.mojom.String16 accessible_name;
+                                     // An text to be announced by a screen
+                                     // reader app.
   array<SearchResultTag> title_tags;    // How the title matches the query. See
                                         // the SearchResultTag section for
                                         // more details.
@@ -70,6 +71,9 @@ struct SearchResultMetadata {
                                      // loading and its renderer notifies it
                                      // about a new contents size.
   gfx.mojom.ImageSkia? icon;  // The icon of this result.
+  gfx.mojom.ImageSkia? chip_icon;  // The icon of this result in a smaller
+                                   // dimension to be rendered in suggestion
+                                   // chip view.
   gfx.mojom.ImageSkia? badge_icon;  // The badge icon of this result that
                                     // indicates its type, e.g. installable from
                                     // PlayStore, installable from WebStore,

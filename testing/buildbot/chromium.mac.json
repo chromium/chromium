@@ -141,7 +141,8 @@
               "gpu": "none",
               "os": "Mac-10.10"
             }
-          ]
+          ],
+          "shards": 4
         },
         "test": "browser_tests"
       },
@@ -158,6 +159,9 @@
         "test": "cacheinvalidation_unittests"
       },
       {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -862,18 +866,6 @@
             }
           ]
         },
-        "test": "traffic_annotation_auditor_unittests"
-      },
-      {
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.10"
-            }
-          ]
-        },
         "test": "ui_base_unittests"
       },
       {
@@ -1096,6 +1088,9 @@
         }
       },
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -1263,8 +1258,7 @@
           "dimension_sets": [
             {
               "gpu": "none",
-              "os": "Mac-10.11",
-              "pool": "Chrome-quarantine"
+              "os": "Mac-10.11"
             }
           ],
           "shards": 10
@@ -1284,7 +1278,8 @@
               "gpu": "none",
               "os": "Mac-10.11"
             }
-          ]
+          ],
+          "shards": 4
         },
         "test": "browser_tests"
       },
@@ -1301,6 +1296,9 @@
         "test": "cacheinvalidation_unittests"
       },
       {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2005,18 +2003,6 @@
             }
           ]
         },
-        "test": "traffic_annotation_auditor_unittests"
-      },
-      {
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.11"
-            }
-          ]
-        },
         "test": "ui_base_unittests"
       },
       {
@@ -2239,6 +2225,9 @@
         }
       },
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -2405,9 +2394,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
-              "os": "Mac-10.12.6",
-              "pool": "Chrome-quarantine"
+              "gpu": "8086:0a2e",
+              "os": "Mac-10.12.6"
             }
           ],
           "shards": 10
@@ -2445,7 +2433,8 @@
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "shards": 4
         },
         "test": "browser_tests"
       },
@@ -2462,6 +2451,9 @@
         "test": "cacheinvalidation_unittests"
       },
       {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3233,18 +3225,6 @@
             }
           ]
         },
-        "test": "traffic_annotation_auditor_unittests"
-      },
-      {
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.12.6"
-            }
-          ]
-        },
         "test": "ui_base_unittests"
       },
       {
@@ -3467,6 +3447,9 @@
         }
       },
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -3629,14 +3612,12 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter",
           "--gtest_shuffle"
         ],
-        "experiment_percentage": 50,
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "none",
-              "os": "Mac-10.13",
-              "pool": "Chrome-quarantine"
+              "os": "Mac-10.13"
             }
           ],
           "shards": 10
@@ -3656,7 +3637,8 @@
               "gpu": "none",
               "os": "Mac-10.13"
             }
-          ]
+          ],
+          "shards": 4
         },
         "test": "browser_tests"
       },
@@ -3673,6 +3655,9 @@
         "test": "cacheinvalidation_unittests"
       },
       {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4366,18 +4351,6 @@
           ]
         },
         "test": "sync_integration_tests"
-      },
-      {
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.13"
-            }
-          ]
-        },
-        "test": "traffic_annotation_auditor_unittests"
       },
       {
         "swarming": {
@@ -4592,6 +4565,9 @@
         }
       },
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -4766,8 +4742,7 @@
           "dimension_sets": [
             {
               "gpu": "none",
-              "os": "Mac-10.13",
-              "pool": "Chrome-quarantine"
+              "os": "Mac-10.13"
             }
           ],
           "shards": 10
@@ -4787,7 +4762,8 @@
               "gpu": "none",
               "os": "Mac-10.13"
             }
-          ]
+          ],
+          "shards": 4
         },
         "test": "browser_tests"
       },
@@ -4804,6 +4780,9 @@
         "test": "cacheinvalidation_unittests"
       },
       {
+        "args": [
+          "--gtest_filter=-*UsingRealWebcam*"
+        ],
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -5508,18 +5487,6 @@
             }
           ]
         },
-        "test": "traffic_annotation_auditor_unittests"
-      },
-      {
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.13"
-            }
-          ]
-        },
         "test": "ui_base_unittests"
       },
       {
@@ -5708,6 +5675,7 @@
       },
       {
         "args": [
+          "--num-retries=3",
           "--debug"
         ],
         "isolate_name": "webkit_layout_tests_exparchive",
@@ -5745,69 +5713,33 @@
       }
     ]
   },
-  "mac-cocoa-rel": {
-    "gtest_tests": [
+  "WebKit Mac10.13 (retina)": {
+    "isolated_scripts": [
       {
         "args": [
-          "--disable-features=ViewsBrowserWindows",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter",
-          "--gtest_shuffle"
+          "--num-retries=3"
         ],
+        "isolate_name": "webkit_layout_tests_exparchive",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "webkit_layout_tests",
+        "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
-              "os": "Mac-10.13",
-              "pool": "Chrome-quarantine"
+              "gpu": "1002:6821",
+              "hidpi": "1",
+              "os": "Mac-10.13.6",
+              "pool": "Chrome-GPU"
             }
           ],
-          "shards": 10
-        },
-        "test": "browser_tests"
-      },
-      {
-        "args": [
-          "--disable-features=ViewsBrowserWindows"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.13"
-            }
-          ]
-        },
-        "test": "components_browsertests"
-      },
-      {
-        "args": [
-          "--disable-features=ViewsBrowserWindows"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.13"
-            }
-          ]
-        },
-        "test": "content_browsertests"
-      },
-      {
-        "args": [
-          "--disable-features=ViewsBrowserWindows"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.13"
-            }
-          ],
-          "shards": 3
-        },
-        "test": "interactive_ui_tests"
+          "shards": 12
+        }
       }
     ]
   },

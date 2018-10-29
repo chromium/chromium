@@ -23,10 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html#tts-section
-
+// https://w3c.github.io/speech-api/#speechsynthesisevent
 [
-    RuntimeEnabled=ScriptedSpeech
+    RuntimeEnabled=ScriptedSpeech,
+    Constructor(DOMString type, SpeechSynthesisEventInit eventInitDict)
 ] interface SpeechSynthesisEvent : Event {
     readonly attribute SpeechSynthesisUtterance utterance;
     readonly attribute unsigned long charIndex;

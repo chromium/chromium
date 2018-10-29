@@ -42,7 +42,7 @@ void BackgroundHTMLInputStream::Close() {
 }
 
 HTMLInputCheckpoint BackgroundHTMLInputStream::CreateCheckpoint(
-    size_t tokens_extracted_since_previous_checkpoint) {
+    wtf_size_t tokens_extracted_since_previous_checkpoint) {
   HTMLInputCheckpoint checkpoint = checkpoints_.size();
   checkpoints_.push_back(Checkpoint(
       current_, segments_.size(), tokens_extracted_since_previous_checkpoint));
@@ -63,13 +63,13 @@ void BackgroundHTMLInputStream::InvalidateCheckpointsBefore(
 
   DCHECK_LE(first_valid_segment_index_,
             last_invalid_checkpoint.number_of_segments_already_appended);
-  for (size_t i = first_valid_segment_index_;
+  for (wtf_size_t i = first_valid_segment_index_;
        i < last_invalid_checkpoint.number_of_segments_already_appended; ++i)
     segments_[i] = String();
   first_valid_segment_index_ =
       last_invalid_checkpoint.number_of_segments_already_appended;
 
-  for (size_t i = first_valid_checkpoint_index_;
+  for (wtf_size_t i = first_valid_checkpoint_index_;
        i < new_first_valid_checkpoint_index; ++i)
     checkpoints_[i].Clear();
   first_valid_checkpoint_index_ = new_first_valid_checkpoint_index;
@@ -92,7 +92,7 @@ void BackgroundHTMLInputStream::RewindTo(HTMLInputCheckpoint checkpoint_index,
 
   current_ = checkpoint.input;
 
-  for (size_t i = checkpoint.number_of_segments_already_appended;
+  for (wtf_size_t i = checkpoint.number_of_segments_already_appended;
        i < segments_.size(); ++i) {
     DCHECK(!segments_[i].IsNull());
     current_.Append(SegmentedString(segments_[i]));

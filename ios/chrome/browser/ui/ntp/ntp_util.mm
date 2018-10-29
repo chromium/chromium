@@ -13,6 +13,8 @@
 #endif
 
 bool IsVisibleUrlNewTabPage(web::WebState* web_state) {
+  if (!web_state)
+    return false;
   web::NavigationItem* item =
       web_state->GetNavigationManager()->GetVisibleItem();
   return item && item->GetURL().GetOrigin() == kChromeUINewTabURL;

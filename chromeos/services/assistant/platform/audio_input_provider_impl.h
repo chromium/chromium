@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_PROVIDER_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -87,6 +88,12 @@ class AudioInputImpl : public assistant_client::AudioInput,
   // Guards observers_;
   base::Lock lock_;
   std::vector<assistant_client::AudioInput::Observer*> observers_;
+
+  // This is the total number of frames captured during the life time of this
+  // object. We don't worry about overflow because this count is only used for
+  // logging purposes. If in the future this changes, we should re-evaluate.
+  int captured_frames_count_ = 0;
+  base::TimeTicks last_frame_count_report_time_;
 
   // To be initialized on assistant thread the first call to AddObserver.
   // It ensures that AddObserver / RemoveObserver are called on the same

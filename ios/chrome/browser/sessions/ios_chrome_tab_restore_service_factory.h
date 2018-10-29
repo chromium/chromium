@@ -35,7 +35,7 @@ class IOSChromeTabRestoreServiceFactory
 
   // Returns the default factory used to build TabRestoreServices. Can be
   // registered with SetTestingFactory to use real instances during testing.
-  static TestingFactoryFunction GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend struct base::DefaultSingletonTraits<IOSChromeTabRestoreServiceFactory>;

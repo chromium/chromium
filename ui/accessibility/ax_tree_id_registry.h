@@ -6,10 +6,12 @@
 #define UI_ACCESSIBILITY_AX_TREE_ID_REGISTRY_H_
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace base {
 template <typename T>
@@ -31,10 +33,6 @@ class AXHostDelegate;
 class AX_EXPORT AXTreeIDRegistry {
  public:
   using FrameID = std::pair<int, int>;
-
-  using AXTreeID = int;
-
-  static constexpr AXTreeID kNoAXTreeID = -1;
 
   // Get the single instance of this class.
   static AXTreeIDRegistry* GetInstance();
@@ -59,8 +57,8 @@ class AX_EXPORT AXTreeIDRegistry {
   AXTreeIDRegistry();
   virtual ~AXTreeIDRegistry();
 
-  // Tracks the current unique ax frame id.
-  AXTreeID ax_tree_id_counter_;
+  // Tracks the current unique ax tree id.
+  int ax_tree_id_counter_;
 
   // Maps an accessibility tree to its frame via ids.
   std::map<AXTreeID, FrameID> ax_tree_to_frame_id_map_;

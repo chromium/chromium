@@ -6,9 +6,22 @@
 #define UI_BASE_MATERIAL_DESIGN_MATERIAL_DESIGN_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "build/build_config.h"
 #include "ui/base/ui_base_export.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
+namespace gfx {
+class SingletonHwndObserver;
+}
+
 namespace ui {
+
+class MaterialDesignControllerObserver;
 
 namespace test {
 class MaterialDesignControllerTestAPI;
@@ -17,63 +30,40 @@ class MaterialDesignControllerTestAPI;
 // Central controller to handle material design modes.
 class UI_BASE_EXPORT MaterialDesignController {
  public:
-  // The different material design modes. The order cannot be changed without
-  // updating references as these are used as array indices.
-  enum Mode {
-    // Basic material design.
-    MATERIAL_NORMAL = 0,
-    // Material design targeted at mouse/touch hybrid devices.
-    MATERIAL_HYBRID = 1,
-    // Material design that is more optimized for touch devices.
-    MATERIAL_TOUCH_OPTIMIZED = 2,
-    // Material Refresh design targeted at mouse devices.
-    MATERIAL_REFRESH = 3,
-    // Material Refresh design optimized for touch devices.
-    MATERIAL_TOUCH_REFRESH = 4,
-  };
-
-  // Initializes |mode_|. Must be called before checking |mode_|.
+  // Initializes touch UI state based on command-line flags.
   static void Initialize();
 
-  // Get the current Mode that should be used by the system.
-  static Mode GetMode();
+  static bool touch_ui() { return touch_ui_; }
 
-  // Returns true if the touch-optimized UI material design mode is enabled.
-  static bool IsTouchOptimizedUiEnabled();
+  // Exposed for TabletModeClient on ChromeOS + ash.
+  static void OnTabletModeToggled(bool enabled);
 
-  // Returns true if the Material Refresh or touch-optimized UI is enabled.
-  static bool IsNewerMaterialUi();
+  static MaterialDesignController* GetInstance();
 
-  // Returns true if any Material Refresh mode is enabled.
-  static bool IsRefreshUi();
-
-  // Returns the per-platform default material design variant.
-  static Mode DefaultMode();
-
-  static bool is_mode_initialized() { return is_mode_initialized_; }
+  void AddObserver(MaterialDesignControllerObserver* observer);
+  void RemoveObserver(MaterialDesignControllerObserver* observer);
 
  private:
+  friend class base::NoDestructor<MaterialDesignController>;
   friend class test::MaterialDesignControllerTestAPI;
 
-  // Tracks whether |mode_| has been initialized. This is necessary to avoid
-  // checking the |mode_| early in initialization before a call to Initialize().
-  // Tests can use it to reset the state back to a clean state during tear down.
-  static bool is_mode_initialized_;
-
-  // The current Mode to be used by the system.
-  static Mode mode_;
-
-  // Declarations only. Do not allow construction of an object.
   MaterialDesignController();
-  ~MaterialDesignController();
+  ~MaterialDesignController() = delete;
 
-  // Resets the initialization state to uninitialized. To be used by tests to
-  // allow calling Initialize() more than once.
-  static void Uninitialize();
+  // Sets the touch UI state and notifies observers of the state change.
+  static void SetTouchUi(bool touch_ui);
 
-  // Set |mode_| to |mode| and updates |is_mode_initialized_| to true. Can be
-  // used by tests to directly set the mode.
-  static void SetMode(Mode mode);
+  // Whether the UI layout should be touch-optimized.
+  static bool touch_ui_;
+
+  // Whether |touch_ui_| should toggle on and off depending on the tablet state.
+  static bool automatic_touch_ui_;
+
+#if defined(OS_WIN)
+  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+#endif
+
+  base::ObserverList<MaterialDesignControllerObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(MaterialDesignController);
 };

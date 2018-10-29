@@ -11,11 +11,13 @@
 #endif
 
 namespace chrome_apps {
+namespace api {
 
 void EnsureAPIBrowserContextKeyedServiceFactoriesBuilt() {
 #if defined(OS_CHROMEOS)
-  apps::EasyUnlockPrivateAPI::GetFactoryInstance();
+  EasyUnlockPrivateAPI::GetFactoryInstance();
 #endif
 }
 
+}  // namespace api
 }  // namespace chrome_apps

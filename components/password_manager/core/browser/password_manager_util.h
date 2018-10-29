@@ -47,11 +47,6 @@ void UpdateMetadataForUsage(autofill::PasswordForm* credential);
 password_manager::SyncState GetPasswordSyncState(
     const syncer::SyncService* sync_service);
 
-// Reports whether and how browsing history is currently synced. In particular,
-// for a null |sync_service| returns NOT_SYNCING.
-password_manager::SyncState GetHistorySyncState(
-    const syncer::SyncService* sync_service);
-
 // Finds the forms with a duplicate sync tags in |forms|. The first one of
 // the duplicated entries stays in |forms|, the others are moved to
 // |duplicates|.
@@ -92,21 +87,32 @@ void UserTriggeredShowAllSavedPasswordsFromContextMenu(
 void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client);
 
-// Two blacklisted forms are considered equal if they have the same
-// signon_realm.
-void DeleteBlacklistedDuplicates(
+// This function handles the following clean-ups of credentials:
+// (1) Removing blacklisted duplicates: if two blacklisted credentials have the
+// same signon_realm, they are duplicates of each other. Deleting all but one
+// sharing the signon_realm does not affect Chrome's behaviour and hence
+// duplicates can be removed. Having duplicates makes un-blacklisting not work,
+// hence blacklisted duplicates need to be removed.
+// (2) Removing or fixing of HTTPS credentials with wrong signon_realm. See
+// https://crbug.com/881731 for details.
+// (3) Report metrics about HTTP to HTTPS migration process and remove obsolete
+// HTTP credentials. This feature is not available on iOS platform because the
+// HSTS query is not supported. |network_context_getter| is always null for iOS
+// and it can also be null for some unittests.
+void RemoveUselessCredentials(
     scoped_refptr<password_manager::PasswordStore> store,
     PrefService* prefs,
-    int delay_in_seconds);
-
-// Report metrics about HTTP to HTTPS migration process. This function cannot be
-// used on iOS platform because the HSTS query is not supported.
-// |network_context_getter| should return nullptr if it can't get the network
-// context because whatever owns it is dead.
-void ReportHttpMigrationMetrics(
-    scoped_refptr<password_manager::PasswordStore> store,
+    int delay_in_seconds,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter);
+
+// Excluding protocol from a signon_realm means to remove from the signon_realm
+// what is before the web origin (with the protocol excluded as well). For
+// example if the signon_realm is "https://www.google.com/", after
+// excluding protocol it becomes "www.google.com/".
+// This assumes that the |form|'s origin is a substring of the signon_realm.
+base::StringPiece GetSignonRealmWithProtocolExcluded(
+    const autofill::PasswordForm& form);
 
 // Given all non-blacklisted |matches|, finds and populates
 // |best_matches_|, |preferred_match_| and |non_best_matches_| accordingly.

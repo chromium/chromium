@@ -273,8 +273,8 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
 
   bool equals = remote_locations.size() == remote_locations_.size();
   if (equals) {
-    RemoteLocations::iterator it1 = remote_locations.begin();
-    RemoteLocations::iterator it2 = remote_locations_.begin();
+    auto it1 = remote_locations.begin();
+    auto it2 = remote_locations_.begin();
     while (it1 != remote_locations.end()) {
       DCHECK(it2 != remote_locations_.end());
       if (!(*it1).Equals(*it2))
@@ -304,4 +304,12 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
                    base::Unretained(this))));
   }
   remote_locations_.swap(remote_locations);
+}
+
+void ChromeDevToolsManagerDelegate::ResetAndroidDeviceManagerForTesting() {
+  device_manager_.reset();
+
+  // We also need |device_discovery_| to go away because there may be a pending
+  // task using a raw pointer to the DeviceManager we just deleted.
+  device_discovery_.reset();
 }

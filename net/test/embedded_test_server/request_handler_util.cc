@@ -32,6 +32,8 @@ const char kMockHttpHeadersExtension[] = "mock-http-headers";
 std::string GetContentType(const base::FilePath& path) {
   if (path.MatchesExtension(FILE_PATH_LITERAL(".crx")))
     return "application/x-chrome-extension";
+  if (path.MatchesExtension(FILE_PATH_LITERAL(".css")))
+    return "text/css";
   if (path.MatchesExtension(FILE_PATH_LITERAL(".exe")))
     return "application/octet-stream";
   if (path.MatchesExtension(FILE_PATH_LITERAL(".gif")))

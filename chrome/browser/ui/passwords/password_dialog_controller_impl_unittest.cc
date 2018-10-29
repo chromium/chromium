@@ -211,9 +211,4 @@ TEST_F(PasswordDialogControllerTest, AutoSigninPromoTurnOff) {
        password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF, 1);
 }
 
-TEST_F(PasswordDialogControllerTest, OnBrandLinkClicked) {
-  EXPECT_CALL(ui_controller_mock(), NavigateToSmartLockHelpPage());
-  controller().OnSmartLockLinkClicked();
-}
-
 }  // namespace

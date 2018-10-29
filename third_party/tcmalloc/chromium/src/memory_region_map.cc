@@ -234,6 +234,9 @@ void MemoryRegionMap::Init(int max_stack_depth, bool use_buckets) {
     memset(bucket_table_, 0, table_bytes);
     num_buckets_ = 0;
   }
+  if (regions_ == NULL) {  // init regions_
+    InitRegionSetLocked();
+  }
   Unlock();
   RAW_VLOG(10, "MemoryRegionMap Init done");
 }
@@ -536,6 +539,15 @@ void MemoryRegionMap::RestoreSavedBucketsLocked() {
   }
 }
 
+inline void MemoryRegionMap::InitRegionSetLocked() {
+  RAW_VLOG(12, "Initializing region set");
+  regions_ = regions_rep.region_set();
+  recursive_insert = true;
+  new (regions_) RegionSet();
+  HandleSavedRegionsLocked(&DoInsertRegionLocked);
+  recursive_insert = false;
+}
+
 inline void MemoryRegionMap::InsertRegionLocked(const Region& region) {
   RAW_CHECK(LockIsHeld(), "should be held (by this thread)");
   // We can be called recursively, because RegionSet constructor
@@ -556,12 +568,7 @@ inline void MemoryRegionMap::InsertRegionLocked(const Region& region) {
     saved_regions[saved_regions_count++] = region;
   } else {  // not a recusrive call
     if (regions_ == NULL) {  // init regions_
-      RAW_VLOG(12, "Initializing region set");
-      regions_ = regions_rep.region_set();
-      recursive_insert = true;
-      new(regions_) RegionSet();
-      HandleSavedRegionsLocked(&DoInsertRegionLocked);
-      recursive_insert = false;
+      InitRegionSetLocked();
     }
     recursive_insert = true;
     // Do the actual insertion work to put new regions into regions_:

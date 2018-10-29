@@ -13,7 +13,7 @@ namespace blink {
 
 class QualifiedName;
 
-namespace StyleChangeReason {
+namespace style_change_reason {
 extern const char kActiveStylesheetsUpdate[];
 extern const char kAnimation[];
 extern const char kAttribute[];
@@ -50,7 +50,7 @@ extern const char kVisitedLink[];
 extern const char kVisuallyOrdered[];
 extern const char kWritingModeChange[];
 extern const char kZoom[];
-}  // namespace StyleChangeReason
+}  // namespace style_change_reason
 typedef const char StyleChangeReasonString[];
 
 namespace StyleChangeExtraData {
@@ -89,7 +89,7 @@ class StyleChangeReasonForTracing {
 
   static StyleChangeReasonForTracing FromAttribute(
       const QualifiedName& attribute_name) {
-    return StyleChangeReasonForTracing(StyleChangeReason::kAttribute,
+    return StyleChangeReasonForTracing(style_change_reason::kAttribute,
                                        attribute_name.LocalName());
   }
 

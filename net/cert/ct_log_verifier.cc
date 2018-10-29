@@ -177,7 +177,7 @@ bool CTLogVerifier::VerifyConsistencyProof(
   // 1. If "first" is an exact power of 2, then prepend "first_hash" to the
   // "consistency_path" array.
   base::StringPiece first_proof_node = old_tree_hash;
-  std::vector<std::string>::const_iterator iter = proof.nodes.begin();
+  auto iter = proof.nodes.begin();
   if (!IsPowerOfTwo(proof.first_tree_size)) {
     if (iter == proof.nodes.end())
       return false;

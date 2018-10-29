@@ -7,6 +7,8 @@
 
 #include "net/third_party/quic/core/http/quic_server_session_base.h"
 
+#include "net/third_party/quic/core/quic_utils.h"
+
 namespace quic {
 namespace test {
 
@@ -19,7 +21,9 @@ class QuicServerSessionBasePeer {
   static void SetCryptoStream(QuicServerSessionBase* s,
                               QuicCryptoServerStream* crypto_stream) {
     s->crypto_stream_.reset(crypto_stream);
-    s->RegisterStaticStream(kCryptoStreamId, crypto_stream);
+    s->RegisterStaticStream(
+        QuicUtils::GetCryptoStreamId(s->connection()->transport_version()),
+        crypto_stream);
   }
   static bool IsBandwidthResumptionEnabled(QuicServerSessionBase* s) {
     return s->bandwidth_resumption_enabled_;

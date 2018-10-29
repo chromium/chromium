@@ -44,9 +44,12 @@ class QuicSimpleServerStreamPeer : public QuicSimpleServerStream {
   QuicSimpleServerStreamPeer(
       QuicStreamId stream_id,
       QuicSpdySession* session,
+      StreamType type,
       QuicSimpleServerBackend* quic_simple_server_backend)
-      : QuicSimpleServerStream(stream_id, session, quic_simple_server_backend) {
-  }
+      : QuicSimpleServerStream(stream_id,
+                               session,
+                               type,
+                               quic_simple_server_backend) {}
 
   ~QuicSimpleServerStreamPeer() override = default;
 
@@ -91,6 +94,7 @@ class MockQuicSimpleServerSession : public QuicSimpleServerSession {
       QuicCompressedCertsCache* compressed_certs_cache,
       QuicSimpleServerBackend* quic_simple_server_backend)
       : QuicSimpleServerSession(DefaultQuicConfig(),
+                                CurrentSupportedVersions(),
                                 connection,
                                 owner,
                                 helper,
@@ -112,7 +116,7 @@ class MockQuicSimpleServerSession : public QuicSimpleServerSession {
                void(QuicErrorCode error,
                     const QuicString& error_details,
                     ConnectionCloseSource source));
-  MOCK_METHOD1(CreateIncomingDynamicStream, QuicSpdyStream*(QuicStreamId id));
+  MOCK_METHOD1(CreateIncomingStream, QuicSpdyStream*(QuicStreamId id));
   MOCK_METHOD5(WritevData,
                QuicConsumedData(QuicStream* stream,
                                 QuicStreamId id,
@@ -210,9 +214,10 @@ class QuicSimpleServerStreamTest : public QuicTestWithParam<ParsedQuicVersion> {
         kInitialSessionFlowControlWindowForTest);
     stream_ = new QuicSimpleServerStreamPeer(
         QuicSpdySessionPeer::GetNthClientInitiatedStreamId(session_, 0),
-        &session_, &memory_cache_backend_);
+        &session_, BIDIRECTIONAL, &memory_cache_backend_);
     // Register stream_ in dynamic_stream_map_ and pass ownership to session_.
     session_.ActivateStream(QuicWrapUnique(stream_));
+    connection_->AdvanceTime(QuicTime::Delta::FromSeconds(1));
   }
 
   const QuicString& StreamBody() {
@@ -368,8 +373,9 @@ TEST_P(QuicSimpleServerStreamTest, SendResponseWithIllegalResponseStatus2) {
 
 TEST_P(QuicSimpleServerStreamTest, SendPushResponseWith404Response) {
   // Create a new promised stream with even id().
-  QuicSimpleServerStreamPeer* promised_stream =
-      new QuicSimpleServerStreamPeer(2, &session_, &memory_cache_backend_);
+  QuicSimpleServerStreamPeer* promised_stream = new QuicSimpleServerStreamPeer(
+      QuicSpdySessionPeer::GetNthServerInitiatedStreamId(session_, 0),
+      &session_, WRITE_UNIDIRECTIONAL, &memory_cache_backend_);
   session_.ActivateStream(QuicWrapUnique(promised_stream));
 
   // Send a push response with response status 404, which will be regarded as
@@ -476,10 +482,12 @@ TEST_P(QuicSimpleServerStreamTest, PushResponseOnServerInitiatedStream) {
   // and fetch response from cache, and send it out.
 
   // Create a stream with even stream id and test against this stream.
-  const QuicStreamId kServerInitiatedStreamId = 2;
+  const QuicStreamId kServerInitiatedStreamId =
+      QuicSpdySessionPeer::GetNthServerInitiatedStreamId(session_, 0);
   // Create a server initiated stream and pass it to session_.
   QuicSimpleServerStreamPeer* server_initiated_stream =
       new QuicSimpleServerStreamPeer(kServerInitiatedStreamId, &session_,
+                                     WRITE_UNIDIRECTIONAL,
                                      &memory_cache_backend_);
   session_.ActivateStream(QuicWrapUnique(server_initiated_stream));
 

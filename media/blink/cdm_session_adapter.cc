@@ -258,7 +258,7 @@ WebContentDecryptionModuleSessionImpl* CdmSessionAdapter::GetSession(
   // Since session objects may get garbage collected, it is possible that there
   // are events coming back from the CDM and the session has been unregistered.
   // We can not tell if the CDM is firing events at sessions that never existed.
-  SessionMap::iterator session = sessions_.find(session_id);
+  auto session = sessions_.find(session_id);
   return (session != sessions_.end()) ? session->second.get() : NULL;
 }
 

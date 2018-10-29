@@ -35,16 +35,29 @@
 
 namespace blink {
 
+namespace {
+
+StyleRule* CreateDummyStyleRule() {
+  CSSTestHelper helper;
+  helper.AddCSSRules("#id { color: tomato; }");
+  const RuleSet& rule_set = helper.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("id");
+  DCHECK_EQ(1u, rules->size());
+  return rules->at(0)->Rule();
+}
+
+}  // namespace
+
 TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
   CSSTestHelper helper;
 
   helper.AddCSSRules("summary::-webkit-details-marker { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("-webkit-details-marker");
-  const TerminatedArray<RuleData>* rules =
+  const HeapVector<Member<const RuleData>>* rules =
       rule_set.ShadowPseudoElementRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0).Selector().Value());
+  ASSERT_EQ(str, rules->at(0)->Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
@@ -53,9 +66,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
   helper.AddCSSRules("#id { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("id");
-  const TerminatedArray<RuleData>* rules = rule_set.IdRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0).Selector().Value());
+  ASSERT_EQ(str, rules->at(0)->Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
@@ -64,9 +77,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
   helper.AddCSSRules("div:nth-child(2) { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("div");
-  const TerminatedArray<RuleData>* rules = rule_set.TagRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0).Selector().TagQName().LocalName());
+  ASSERT_EQ(str, rules->at(0)->Selector().TagQName().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
@@ -76,10 +89,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("id");
   // id is prefered over class even if class preceeds it in the selector.
-  const TerminatedArray<RuleData>* rules = rule_set.IdRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString class_str("class");
-  ASSERT_EQ(class_str, rules->at(0).Selector().Value());
+  ASSERT_EQ(class_str, rules->at(0)->Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
@@ -88,9 +101,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
   helper.AddCSSRules("#id.class { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("id");
-  const TerminatedArray<RuleData>* rules = rule_set.IdRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0).Selector().Value());
+  ASSERT_EQ(str, rules->at(0)->Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
@@ -99,10 +112,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
   helper.AddCSSRules("[attr]#id { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("id");
-  const TerminatedArray<RuleData>* rules = rule_set.IdRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString attr_str("attr");
-  ASSERT_EQ(attr_str, rules->at(0).Selector().Attribute().LocalName());
+  ASSERT_EQ(attr_str, rules->at(0)->Selector().Attribute().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
@@ -111,10 +124,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
   helper.AddCSSRules("div[attr]#id { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("id");
-  const TerminatedArray<RuleData>* rules = rule_set.IdRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString tag_str("div");
-  ASSERT_EQ(tag_str, rules->at(0).Selector().TagQName().LocalName());
+  ASSERT_EQ(tag_str, rules->at(0)->Selector().TagQName().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_DivWithContent) {
@@ -123,10 +136,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_DivWithContent) {
   helper.AddCSSRules("div::content { }");
   RuleSet& rule_set = helper.GetRuleSet();
   AtomicString str("div");
-  const TerminatedArray<RuleData>* rules = rule_set.TagRules(str);
+  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString value_str("content");
-  ASSERT_EQ(value_str, rules->at(0).Selector().TagHistory()->Value());
+  ASSERT_EQ(value_str, rules->at(0)->Selector().TagHistory()->Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
@@ -134,7 +147,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
 
   helper.AddCSSRules(":host { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -143,7 +156,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostWithId) {
 
   helper.AddCSSRules(":host(#x) { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -152,7 +165,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContext) {
 
   helper.AddCSSRules(":host-context(*) { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -161,7 +174,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextWithId) {
 
   helper.AddCSSRules(":host-context(#x) { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -170,9 +183,11 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndHostContextNotInRightmost) {
 
   helper.AddCSSRules(":host-context(#x) .y, :host(.a) > #b  { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* shadow_rules = rule_set.ShadowHostRules();
-  const TerminatedArray<RuleData>* id_rules = rule_set.IdRules("b");
-  const TerminatedArray<RuleData>* class_rules = rule_set.ClassRules("y");
+  const HeapVector<Member<const RuleData>>* shadow_rules =
+      rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* id_rules = rule_set.IdRules("b");
+  const HeapVector<Member<const RuleData>>* class_rules =
+      rule_set.ClassRules("y");
   ASSERT_EQ(0u, shadow_rules->size());
   ASSERT_EQ(1u, id_rules->size());
   ASSERT_EQ(1u, class_rules->size());
@@ -183,7 +198,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndClass) {
 
   helper.AddCSSRules(".foo:host { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(0u, rules->size());
 }
 
@@ -192,7 +207,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextAndClass) {
 
   helper.AddCSSRules(".foo:host-context(*) { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(0u, rules->size());
 }
 
@@ -202,7 +217,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
   helper.AddCSSRules(":focus { }");
   helper.AddCSSRules("[attr]:focus { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.FocusPseudoClassRules();
+  const HeapVector<Member<const RuleData>>* rules =
+      rule_set.FocusPseudoClassRules();
   ASSERT_EQ(2u, rules->size());
 }
 
@@ -216,7 +232,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
   helper.AddCSSRules(":-webkit-any-link { }");
   helper.AddCSSRules("[attr]:-webkit-any-link { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.LinkPseudoClassRules();
+  const HeapVector<Member<const RuleData>>* rules =
+      rule_set.LinkPseudoClassRules();
   ASSERT_EQ(6u, rules->size());
 }
 
@@ -226,7 +243,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
   helper.AddCSSRules("::cue(b) { }");
   helper.AddCSSRules("video::cue(u) { }");
   RuleSet& rule_set = helper.GetRuleSet();
-  const HeapVector<RuleData>* rules = rule_set.CuePseudoRules();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.CuePseudoRules();
   ASSERT_EQ(2u, rules->size());
 }
 
@@ -247,46 +264,46 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoMatches) {
   RuleSet& rule_set = helper.GetRuleSet();
   {
     AtomicString str("c");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
   {
     AtomicString str("e");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
   {
     AtomicString str("f");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
 }
 
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoIS) {
+TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhere) {
   CSSTestHelper helper;
 
-  helper.AddCSSRules(".a :is(.b+.c, .d>:is(.e, .f)) { }");
+  helper.AddCSSRules(".a :where(.b+.c, .d>:where(.e, .f)) { }");
   RuleSet& rule_set = helper.GetRuleSet();
   {
     AtomicString str("c");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
   {
     AtomicString str("e");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
   {
     AtomicString str("f");
-    const TerminatedArray<RuleData>* rules = rule_set.ClassRules(str);
+    const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules(str);
     ASSERT_EQ(1u, rules->size());
-    ASSERT_EQ(str, rules->at(0).Selector().Value());
+    ASSERT_EQ(str, rules->at(0)->Selector().Value());
   }
 }
 
@@ -308,15 +325,15 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoMatchesTooLarge) {
   ASSERT_EQ(0u, rule_set.RuleCount());
 }
 
-TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoISTooLarge) {
+TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoWhereTooLarge) {
   // RuleData cannot support selectors at index 8192 or beyond so the expansion
   // is limited to this size
   CSSTestHelper helper;
 
   helper.AddCSSRules(
-      ":is(.a#a, .b#b, .c#c, .d#d) + :is(.e#e, .f#f, .g#g, .h#h) + "
-      ":is(.i#i, .j#j, .k#k, .l#l) + :is(.m#m, .n#n, .o#o, .p#p) + "
-      ":is(.q#q, .r#r, .s#s, .t#t) + :is(.u#u, .v#v, .w#w, .x#x) { }",
+      ":where(.a#a, .b#b, .c#c, .d#d) + :where(.e#e, .f#f, .g#g, .h#h) + "
+      ":where(.i#i, .j#j, .k#k, .l#l) + :where(.m#m, .n#n, .o#o, .p#p) + "
+      ":where(.q#q, .r#r, .s#s, .t#t) + :where(.u#u, .v#v, .w#w, .x#x) { }",
       true);
 
   RuleSet& rule_set = helper.GetRuleSet();
@@ -324,6 +341,13 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PseudoISTooLarge) {
 }
 
 TEST(RuleSetTest, SelectorIndexLimit) {
+  // It's not feasible to run this test for a large number of bits. If the
+  // number of bits have increased to a large number, consider removing this
+  // test and making do with RuleSetTest.RuleDataSelectorIndexLimit.
+  static_assert(
+      RuleData::kSelectorIndexBits == 13,
+      "Please manually consider whether this test should be removed.");
+
   StringBuilder builder;
 
   // We use 13 bits to storing the selector start index in RuleData. This is a
@@ -337,10 +361,48 @@ TEST(RuleSetTest, SelectorIndexLimit) {
   CSSTestHelper helper;
   helper.AddCSSRules(builder.ToString().Ascii().data());
   const RuleSet& rule_set = helper.GetRuleSet();
-  const HeapTerminatedArray<RuleData>* rules = rule_set.TagRules("b");
+  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules("b");
   ASSERT_EQ(1u, rules->size());
-  EXPECT_EQ("b", rules->at(0).Selector().TagQName().LocalName());
+  EXPECT_EQ("b", rules->at(0)->Selector().TagQName().LocalName());
   EXPECT_FALSE(rule_set.TagRules("span"));
+}
+
+TEST(RuleSetTest, RuleDataSelectorIndexLimit) {
+  StyleRule* rule = CreateDummyStyleRule();
+  AddRuleFlags flags = kRuleHasNoSpecialState;
+  const unsigned position = 0;
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags));
+  EXPECT_FALSE(RuleData::MaybeCreate(rule, (1 << RuleData::kSelectorIndexBits),
+                                     position, flags));
+  EXPECT_FALSE(RuleData::MaybeCreate(
+      rule, (1 << RuleData::kSelectorIndexBits) + 1, position, flags));
+}
+
+TEST(RuleSetTest, RuleDataPositionLimit) {
+  StyleRule* rule = CreateDummyStyleRule();
+  AddRuleFlags flags = kRuleHasNoSpecialState;
+  const unsigned selector_index = 0;
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags));
+  EXPECT_FALSE(RuleData::MaybeCreate(rule, selector_index,
+                                     (1 << RuleData::kPositionBits), flags));
+  EXPECT_FALSE(RuleData::MaybeCreate(
+      rule, selector_index, (1 << RuleData::kPositionBits) + 1, flags));
+}
+
+TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
+  RuleSet* rule_set = RuleSet::Create();
+  EXPECT_EQ(0u, rule_set->RuleCount());
+
+  AddRuleFlags flags = kRuleHasNoSpecialState;
+  StyleRule* rule = CreateDummyStyleRule();
+
+  // Add with valid selector_index=0.
+  rule_set->AddRule(rule, 0, flags);
+  EXPECT_EQ(1u, rule_set->RuleCount());
+
+  // Adding with invalid selector_index should not lead to a change in count.
+  rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags);
+  EXPECT_EQ(1u, rule_set->RuleCount());
 }
 
 }  // namespace blink

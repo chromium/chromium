@@ -20,8 +20,4 @@ std::ostream& operator<<(std::ostream& ostream, TextAffinity affinity) {
   return ostream << "TextAffinity(" << static_cast<int>(affinity) << ')';
 }
 
-
-STATIC_ASSERT_ENUM(kWebAXTextAffinityUpstream, TextAffinity::kUpstream);
-STATIC_ASSERT_ENUM(kWebAXTextAffinityDownstream, TextAffinity::kDownstream);
-
 }  // namespace blink

@@ -199,7 +199,7 @@ enum LogSeverity {INFO = -1, WARNING = -2, ERROR = -3, FATAL = -4};
 inline void LogPrintf(int severity, const char* pat, va_list ap) {
   // We write directly to the stderr file descriptor and avoid FILE
   // buffering because that may invoke malloc()
-  char buf[600];
+  char buf[1600];
   perftools_vsnprintf(buf, sizeof(buf)-1, pat, ap);
   if (buf[0] != '\0' && buf[strlen(buf)-1] != '\n') {
     assert(strlen(buf)+1 < sizeof(buf));

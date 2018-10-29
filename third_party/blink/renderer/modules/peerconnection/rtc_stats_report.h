@@ -23,7 +23,7 @@ class RTCStatsReport final : public ScriptWrappable,
  public:
   RTCStatsReport(std::unique_ptr<WebRTCStatsReport>);
 
-  size_t size() const { return report_->Size(); }
+  uint32_t size() const;
 
   // Maplike<String, v8::Local<v8::Value>>
   PairIterable<String, v8::Local<v8::Value>>::IterationSource* StartIteration(

@@ -38,8 +38,8 @@ void TextTrackImpl::addWebVTTCue(base::TimeDelta start,
                                  const std::string& content,
                                  const std::string& settings) {
   task_runner_->PostTask(
-      FROM_HERE, base::Bind(&TextTrackImpl::OnAddCue, text_track_.get(), start,
-                            end, id, content, settings));
+      FROM_HERE, base::BindOnce(&TextTrackImpl::OnAddCue, text_track_.get(),
+                                start, end, id, content, settings));
 }
 
 void TextTrackImpl::OnAddCue(WebInbandTextTrackImpl* text_track,

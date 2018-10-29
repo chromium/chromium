@@ -47,6 +47,10 @@ Polymer({
     },
   },
 
+  listeners: {
+    'keydown': 'onKeydown_',
+  },
+
   /**
    * Promise resolver for promise returned by {@code this.resolveDestination}.
    * @private {?PromiseResolver<!print_preview.Destination>}
@@ -110,10 +114,26 @@ Polymer({
             });
   },
 
+  /**
+   * @param {!KeyboardEvent} e Event containing the key
+   * @private
+   */
+  onKeydown_: function(e) {
+    e.stopPropagation();
+    if (e.key == 'Escape') {
+      this.$.dialog.cancel();
+      e.preventDefault();
+    }
+  },
+
+  /** @private */
+  onCancelClick_: function() {
+    this.$.dialog.cancel();
+  },
+
   /** @private */
   onCancel_: function() {
     this.promiseResolver_.reject();
-    this.$.dialog.close();
     this.state_ = print_preview_new.ResolverState.INITIAL;
   },
 

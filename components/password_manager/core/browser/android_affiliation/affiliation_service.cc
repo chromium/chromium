@@ -35,6 +35,7 @@ AffiliationService::~AffiliationService() {
 
 void AffiliationService::Initialize(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& db_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!backend_);
@@ -43,9 +44,10 @@ void AffiliationService::Initialize(
                                     base::DefaultTickClock::GetInstance());
 
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AffiliationBackend::Initialize,
-                                base::Unretained(backend_),
-                                url_loader_factory->Clone(), db_path));
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::Initialize,
+                     base::Unretained(backend_), url_loader_factory->Clone(),
+                     base::Unretained(network_connection_tracker), db_path));
 }
 
 void AffiliationService::GetAffiliationsAndBranding(

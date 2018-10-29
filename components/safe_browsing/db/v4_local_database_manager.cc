@@ -21,6 +21,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/safe_browsing/db/v4_feature_list.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -569,8 +570,8 @@ void V4LocalDatabaseManager::DatabaseUpdated() {
     v4_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished, this));
   }
@@ -755,8 +756,8 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
   pending_checks_.insert(check.get());
 
   // Post on the IO thread to enforce async behavior.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
                      weak_factory_.GetWeakPtr(), std::move(check),
                      full_hash_to_store_and_hash_prefixes));

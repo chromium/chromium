@@ -20,9 +20,7 @@ namespace {
 std::unique_ptr<base::ListValue> CharacteristicPropertiesToValue(
     const std::vector<CharacteristicProperty> properties) {
   std::unique_ptr<base::ListValue> property_list(new base::ListValue());
-  for (std::vector<CharacteristicProperty>::const_iterator iter =
-           properties.begin();
-       iter != properties.end(); ++iter)
+  for (auto iter = properties.cbegin(); iter != properties.cend(); ++iter)
     property_list->AppendString(ToString(*iter));
   return property_list;
 }

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
+import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.url_formatter.UrlFormatter;
 
@@ -127,8 +128,34 @@ public final class UiUtils {
 
     /** @return A drawable resource id representing an icon for {@code item}. */
     public static @DrawableRes int getIconForItem(OfflineItem item) {
-        return DownloadUtils.getIconResId(Filters.offlineItemFilterToDownloadFilter(item.filter),
-                DownloadUtils.IconSize.DP_24);
+        switch (Filters.fromOfflineItem(item)) {
+            case Filters.FilterType.NONE:
+                return R.drawable.ic_file_download_24dp;
+            case Filters.FilterType.SITES:
+                return R.drawable.ic_globe_24dp;
+            case Filters.FilterType.VIDEOS:
+                return R.drawable.ic_videocam_24dp;
+            case Filters.FilterType.MUSIC:
+                return R.drawable.ic_music_note_24dp;
+            case Filters.FilterType.IMAGES:
+                return R.drawable.ic_drive_image_24dp;
+            case Filters.FilterType.DOCUMENT:
+                return R.drawable.ic_drive_document_24dp;
+            case Filters.FilterType.OTHER: // Intentional fallthrough.
+            default:
+                return R.drawable.ic_drive_file_24dp;
+        }
+    }
+
+    /**
+     * Generates a caption for downloads that are in-progress.
+     * @param item       The {@link OfflineItem} to generate a caption for.
+     * @param abbreviate Whether or not to abbreviate the caption for smaller UI surfaces.
+     * @return           The {@link CharSequence} representing the caption.
+     */
+    public static CharSequence generateInProgressCaption(OfflineItem item, boolean abbreviate) {
+        return abbreviate ? generateInProgressShortCaption(item)
+                          : generateInProgressLongCaption(item);
     }
 
     /**
@@ -141,7 +168,8 @@ public final class UiUtils {
     public static void setProgressForOfflineItem(CircularProgressView view, OfflineItem item) {
         Progress progress = item.progress;
         final boolean indeterminate = progress != null && progress.isIndeterminate();
-        final int determinateProgress = progress != null ? progress.getPercentage() : 0;
+        final int determinateProgress =
+                progress != null && !indeterminate ? progress.getPercentage() : 0;
         final int activeProgress =
                 indeterminate ? CircularProgressView.INDETERMINATE : determinateProgress;
         final int inactiveProgress = indeterminate ? 0 : determinateProgress;
@@ -160,8 +188,11 @@ public final class UiUtils {
                 shownState = CircularProgressView.UiState.RETRY;
                 break;
             case OfflineItemState.PAUSED:
-            case OfflineItemState.INTERRUPTED:
                 shownState = CircularProgressView.UiState.PAUSED;
+                break;
+            case OfflineItemState.INTERRUPTED:
+                shownState = item.isResumable ? CircularProgressView.UiState.PAUSED
+                                              : CircularProgressView.UiState.RETRY;
                 break;
             case OfflineItemState.COMPLETE: // Intentional fallthrough.
             default:
@@ -171,7 +202,6 @@ public final class UiUtils {
         }
 
         switch (item.state) {
-            case OfflineItemState.INTERRUPTED: // Intentional fallthrough.
             case OfflineItemState.PAUSED: // Intentional fallthrough.
             case OfflineItemState.PENDING:
                 shownProgress = inactiveProgress;
@@ -180,8 +210,11 @@ public final class UiUtils {
                 shownProgress = activeProgress;
                 break;
             case OfflineItemState.FAILED: // Intentional fallthrough.
-            case OfflineItemState.CANCELLED: // Intentional fallthrough.
+            case OfflineItemState.CANCELLED:
                 shownProgress = 0;
+                break;
+            case OfflineItemState.INTERRUPTED:
+                shownProgress = item.isResumable ? inactiveProgress : 0;
                 break;
             case OfflineItemState.COMPLETE: // Intentional fallthrough.
             default:
@@ -190,7 +223,96 @@ public final class UiUtils {
                 break;
         }
 
+        // TODO(dtrainor): This will need to be updated once we nail down failure cases
+        // (specifically non-retriable failures).
         view.setState(shownState);
         view.setProgress(shownProgress);
+    }
+
+    /**
+     * Generates a detailed caption for downloads that are in-progress.
+     * @param item The {@link OfflineItem} to generate a caption for.
+     * @return     The {@link CharSequence} representing the caption.
+     */
+    private static CharSequence generateInProgressLongCaption(OfflineItem item) {
+        Context context = ContextUtils.getApplicationContext();
+        assert item.state != OfflineItemState.COMPLETE;
+
+        OfflineItem.Progress progress = item.progress;
+
+        // Make sure we have a valid OfflineItem.Progress to parse even if it's just for the failed
+        // message.
+        if (progress == null) {
+            if (item.totalSizeBytes > 0) {
+                progress = new OfflineItem.Progress(
+                        0, item.totalSizeBytes, OfflineItemProgressUnit.BYTES);
+            } else {
+                progress = new OfflineItem.Progress(0, 100L, OfflineItemProgressUnit.PERCENTAGE);
+            }
+        }
+
+        CharSequence progressString = DownloadUtils.getProgressTextForNotification(progress);
+        CharSequence statusString = null;
+
+        switch (item.state) {
+            case OfflineItemState.PENDING:
+                // TODO(crbug.com/891421): Add detailed pending state string from
+                // DownloadUtils.getPendingStatusString().
+                statusString = context.getString(R.string.download_manager_pending);
+                break;
+            case OfflineItemState.IN_PROGRESS:
+                if (item.timeRemainingMs > 0) {
+                    statusString = DownloadUtils.formatRemainingTime(context, item.timeRemainingMs);
+                }
+                break;
+            case OfflineItemState.FAILED: // Intentional fallthrough.
+            case OfflineItemState.CANCELLED: // Intentional fallthrough.
+            case OfflineItemState.INTERRUPTED:
+                // TODO(crbug.com/891421): Add detailed failure state string from
+                // DownloadUtils.getFailStatusString().
+                statusString = context.getString(R.string.download_manager_failed);
+                break;
+            case OfflineItemState.PAUSED:
+                statusString = context.getString(R.string.download_manager_paused);
+                break;
+            case OfflineItemState.COMPLETE: // Intentional fallthrough.
+            default:
+                assert false;
+        }
+
+        if (statusString == null) return progressString;
+
+        return context.getString(
+                R.string.download_manager_in_progress_description, progressString, statusString);
+    }
+
+    /**
+     * Generates a short caption for downloads that are in-progress.
+     * @param item The {@link OfflineItem} to generate a short caption for.
+     * @return     The {@link CharSequence} representing the caption.
+     */
+    private static CharSequence generateInProgressShortCaption(OfflineItem item) {
+        Context context = ContextUtils.getApplicationContext();
+
+        switch (item.state) {
+            case OfflineItemState.PENDING:
+                return context.getString(R.string.download_manager_pending);
+            case OfflineItemState.IN_PROGRESS:
+                if (item.timeRemainingMs > 0) {
+                    return DownloadUtils.formatRemainingTime(context, item.timeRemainingMs);
+                } else {
+                    return DownloadUtils.getProgressTextForNotification(item.progress);
+                }
+            case OfflineItemState.FAILED: // Intentional fallthrough.
+            case OfflineItemState.CANCELLED: // Intentional fallthrough.
+            case OfflineItemState.INTERRUPTED:
+                return context.getString(R.string.download_manager_failed);
+            case OfflineItemState.PAUSED:
+                return context.getString(R.string.download_manager_paused);
+            case OfflineItemState.COMPLETE: // Intentional fallthrough.
+            default:
+                assert false;
+                return "";
+        }
     }
 }

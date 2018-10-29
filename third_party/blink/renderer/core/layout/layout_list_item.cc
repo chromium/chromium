@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/paint/list_item_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/saturated_arithmetic.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -289,9 +290,33 @@ bool LayoutListItem::UpdateMarkerLocation() {
   return false;
 }
 
-void LayoutListItem::AddOverflowFromChildren() {
-  LayoutBlockFlow::AddOverflowFromChildren();
-  PositionListMarker();
+void LayoutListItem::ComputeVisualOverflow(
+    const LayoutRect& previous_visual_overflow_rect,
+    bool recompute_floats) {
+  AddVisualOverflowFromChildren();
+
+  AddVisualEffectOverflow();
+  AddVisualOverflowFromTheme();
+
+  if (recompute_floats || CreatesNewFormattingContext() ||
+      HasSelfPaintingLayer())
+    AddVisualOverflowFromFloats();
+
+  if (VisualOverflowRect() != previous_visual_overflow_rect) {
+    if (Layer())
+      Layer()->SetNeedsCompositingInputsUpdate();
+    GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
+  }
+}
+
+void LayoutListItem::AddVisualOverflowFromChildren() {
+  LayoutBlockFlow::AddVisualOverflowFromChildren();
+  UpdateOverflow(Visual);
+}
+
+void LayoutListItem::AddLayoutOverflowFromChildren() {
+  LayoutBlockFlow::AddLayoutOverflowFromChildren();
+  UpdateOverflow(Layout);
 }
 
 // Align marker_inline_box in block direction according to line_box_root's
@@ -365,53 +390,54 @@ void LayoutListItem::AlignMarkerInBlockDirection() {
   }
 }
 
-void LayoutListItem::PositionListMarker() {
-  if (marker_ && marker_->Parent() && marker_->Parent()->IsBox() &&
-      !marker_->IsInside() && marker_->InlineBoxWrapper()) {
-    if (need_block_direction_align_)
-      AlignMarkerInBlockDirection();
+void LayoutListItem::UpdateOverflow(OverflowType overflow_type) {
+  if (!marker_ || !marker_->Parent() || !marker_->Parent()->IsBox() ||
+      marker_->IsInside() || !marker_->InlineBoxWrapper())
+    return;
 
-    LayoutUnit marker_old_logical_left = marker_->LogicalLeft();
-    LayoutUnit block_offset;
-    LayoutUnit line_offset;
-    for (LayoutBox* o = marker_->ParentBox(); o != this; o = o->ParentBox()) {
-      block_offset += o->LogicalTop();
-      line_offset += o->LogicalLeft();
-    }
+  if (need_block_direction_align_)
+    AlignMarkerInBlockDirection();
 
-    bool adjust_overflow = false;
-    LayoutUnit marker_logical_left;
-    InlineBox* marker_inline_box = marker_->InlineBoxWrapper();
-    RootInlineBox& root = marker_inline_box->Root();
-    bool hit_self_painting_layer = false;
+  LayoutUnit marker_old_logical_left = marker_->LogicalLeft();
+  LayoutUnit block_offset;
+  LayoutUnit line_offset;
+  for (LayoutBox* o = marker_->ParentBox(); o != this; o = o->ParentBox()) {
+    block_offset += o->LogicalTop();
+    line_offset += o->LogicalLeft();
+  }
 
-    LayoutUnit line_top = root.LineTop();
-    LayoutUnit line_bottom = root.LineBottom();
+  bool adjust_overflow = false;
+  LayoutUnit marker_logical_left;
+  InlineBox* marker_inline_box = marker_->InlineBoxWrapper();
+  RootInlineBox& root = marker_inline_box->Root();
+  bool hit_self_painting_layer = false;
 
-    // We figured out the inline position of the marker before laying out the
-    // line so that floats later in the line don't interfere with it. However
-    // if the line has shifted down then that position will be too far out.
-    // So we always take the lowest value of (1) the position of the marker
-    // if we calculate it now and (2) the inline position we calculated before
-    // laying out the line.
-    // TODO(jchaffraix): Propagating the overflow to the line boxes seems
-    // pretty wrong (https://crbug.com/554160).
-    // FIXME: Need to account for relative positioning in the layout overflow.
-    if (StyleRef().IsLeftToRightDirection()) {
-      LayoutUnit marker_line_offset =
-          std::min(marker_->LineOffset(),
-                   LogicalLeftOffsetForLine(marker_->LogicalTop(),
-                                            kDoNotIndentText, LayoutUnit()));
-      marker_logical_left = marker_line_offset - line_offset - PaddingStart() -
-                            BorderStart() + marker_->MarginStart();
-      marker_inline_box->MoveInInlineDirection(marker_logical_left -
-                                               marker_old_logical_left);
-      for (InlineFlowBox* box = marker_inline_box->Parent(); box;
-           box = box->Parent()) {
+  LayoutUnit line_top = root.LineTop();
+  LayoutUnit line_bottom = root.LineBottom();
+
+  // We figured out the inline position of the marker before laying out the
+  // line so that floats later in the line don't interfere with it. However
+  // if the line has shifted down then that position will be too far out.
+  // So we always take the lowest value of (1) the position of the marker
+  // if we calculate it now and (2) the inline position we calculated before
+  // laying out the line.
+  // TODO(jchaffraix): Propagating the overflow to the line boxes seems
+  // pretty wrong (https://crbug.com/554160).
+  // FIXME: Need to account for relative positioning in the layout overflow.
+  if (StyleRef().IsLeftToRightDirection()) {
+    LayoutUnit marker_line_offset =
+        std::min(marker_->LineOffset(),
+                 LogicalLeftOffsetForLine(marker_->LogicalTop(),
+                                          kDoNotIndentText, LayoutUnit()));
+    marker_logical_left = marker_line_offset - line_offset - PaddingStart() -
+                          BorderStart() + marker_->MarginStart();
+    marker_inline_box->MoveInInlineDirection(marker_logical_left -
+                                             marker_old_logical_left);
+    for (InlineFlowBox* box = marker_inline_box->Parent(); box;
+         box = box->Parent()) {
+      if (overflow_type == Visual) {
         LayoutRect new_logical_visual_overflow_rect =
             box->LogicalVisualOverflowRect(line_top, line_bottom);
-        LayoutRect new_logical_layout_overflow_rect =
-            box->LogicalLayoutOverflowRect(line_top, line_bottom);
         if (marker_logical_left < new_logical_visual_overflow_rect.X() &&
             !hit_self_painting_layer) {
           new_logical_visual_overflow_rect.SetWidth(
@@ -420,6 +446,14 @@ void LayoutListItem::PositionListMarker() {
           if (box == root)
             adjust_overflow = true;
         }
+        box->OverrideVisualOverflowFromLogicalRect(
+            new_logical_visual_overflow_rect, line_top, line_bottom);
+
+        if (box->BoxModelObject().HasSelfPaintingLayer())
+          hit_self_painting_layer = true;
+      } else {
+        LayoutRect new_logical_layout_overflow_rect =
+            box->LogicalLayoutOverflowRect(line_top, line_bottom);
         if (marker_logical_left < new_logical_layout_overflow_rect.X()) {
           new_logical_layout_overflow_rect.SetWidth(
               new_logical_layout_overflow_rect.MaxX() - marker_logical_left);
@@ -427,27 +461,24 @@ void LayoutListItem::PositionListMarker() {
           if (box == root)
             adjust_overflow = true;
         }
-        box->OverrideOverflowFromLogicalRects(new_logical_layout_overflow_rect,
-                                              new_logical_visual_overflow_rect,
-                                              line_top, line_bottom);
-        if (box->BoxModelObject().HasSelfPaintingLayer())
-          hit_self_painting_layer = true;
+        box->OverrideLayoutOverflowFromLogicalRect(
+            new_logical_layout_overflow_rect, line_top, line_bottom);
       }
-    } else {
-      LayoutUnit marker_line_offset =
-          std::max(marker_->LineOffset(),
-                   LogicalRightOffsetForLine(marker_->LogicalTop(),
-                                             kDoNotIndentText, LayoutUnit()));
-      marker_logical_left = marker_line_offset - line_offset + PaddingStart() +
-                            BorderStart() + marker_->MarginEnd();
-      marker_inline_box->MoveInInlineDirection(marker_logical_left -
-                                               marker_old_logical_left);
-      for (InlineFlowBox* box = marker_inline_box->Parent(); box;
-           box = box->Parent()) {
+    }
+  } else {
+    LayoutUnit marker_line_offset =
+        std::max(marker_->LineOffset(),
+                 LogicalRightOffsetForLine(marker_->LogicalTop(),
+                                           kDoNotIndentText, LayoutUnit()));
+    marker_logical_left = marker_line_offset - line_offset + PaddingStart() +
+                          BorderStart() + marker_->MarginEnd();
+    marker_inline_box->MoveInInlineDirection(marker_logical_left -
+                                             marker_old_logical_left);
+    for (InlineFlowBox* box = marker_inline_box->Parent(); box;
+         box = box->Parent()) {
+      if (overflow_type == Visual) {
         LayoutRect new_logical_visual_overflow_rect =
             box->LogicalVisualOverflowRect(line_top, line_bottom);
-        LayoutRect new_logical_layout_overflow_rect =
-            box->LogicalLayoutOverflowRect(line_top, line_bottom);
         if (marker_logical_left + marker_->LogicalWidth() >
                 new_logical_visual_overflow_rect.MaxX() &&
             !hit_self_painting_layer) {
@@ -457,6 +488,14 @@ void LayoutListItem::PositionListMarker() {
           if (box == root)
             adjust_overflow = true;
         }
+        box->OverrideVisualOverflowFromLogicalRect(
+            new_logical_visual_overflow_rect, line_top, line_bottom);
+
+        if (box->BoxModelObject().HasSelfPaintingLayer())
+          hit_self_painting_layer = true;
+      } else {
+        LayoutRect new_logical_layout_overflow_rect =
+            box->LogicalLayoutOverflowRect(line_top, line_bottom);
         if (marker_logical_left + marker_->LogicalWidth() >
             new_logical_layout_overflow_rect.MaxX()) {
           new_logical_layout_overflow_rect.SetWidth(
@@ -465,45 +504,43 @@ void LayoutListItem::PositionListMarker() {
           if (box == root)
             adjust_overflow = true;
         }
-        box->OverrideOverflowFromLogicalRects(new_logical_layout_overflow_rect,
-                                              new_logical_visual_overflow_rect,
-                                              line_top, line_bottom);
-
-        if (box->BoxModelObject().HasSelfPaintingLayer())
-          hit_self_painting_layer = true;
+        box->OverrideLayoutOverflowFromLogicalRect(
+            new_logical_layout_overflow_rect, line_top, line_bottom);
       }
     }
+  }
 
-    if (adjust_overflow) {
-      // AlignMarkerInBlockDirection and pagination_strut might move root or
-      // marker_inline_box in block direction. We should add marker_inline_box
-      // top when propagate overflow.
-      LayoutRect marker_rect(
-          LayoutPoint(marker_logical_left + line_offset,
-                      block_offset + marker_inline_box->LogicalTop()),
-          marker_->Size());
-      if (!StyleRef().IsHorizontalWritingMode())
-        marker_rect = marker_rect.TransposedRect();
-      LayoutBox* o = marker_;
-      bool propagate_visual_overflow = true;
-      bool propagate_layout_overflow = true;
+  if (adjust_overflow) {
+    // AlignMarkerInBlockDirection and pagination_strut might move root or
+    // marker_inline_box in block direction. We should add marker_inline_box
+    // top when propagate overflow.
+    LayoutRect marker_rect(
+        LayoutPoint(marker_logical_left + line_offset,
+                    block_offset + marker_inline_box->LogicalTop()),
+        marker_->Size());
+    if (!StyleRef().IsHorizontalWritingMode())
+      marker_rect = marker_rect.TransposedRect();
+    LayoutBox* o = marker_;
+
+    if (overflow_type == Visual) {
+      do {
+        o = o->ParentBox();
+        if (o->IsLayoutBlock())
+          ToLayoutBlock(o)->AddContentsVisualOverflow(marker_rect);
+        if (o->HasOverflowClip() || o->HasSelfPaintingLayer())
+          break;
+        marker_rect.MoveBy(-o->Location());
+      } while (o != this);
+    } else {
       do {
         o = o->ParentBox();
         if (o->IsLayoutBlock()) {
-          if (propagate_visual_overflow)
-            ToLayoutBlock(o)->AddContentsVisualOverflow(marker_rect);
-          if (propagate_layout_overflow)
-            ToLayoutBlock(o)->AddLayoutOverflow(marker_rect);
+          ToLayoutBlock(o)->AddLayoutOverflow(marker_rect);
         }
-        if (o->HasOverflowClip()) {
-          propagate_layout_overflow = false;
-          propagate_visual_overflow = false;
-        }
-        if (o->HasSelfPaintingLayer())
-          propagate_visual_overflow = false;
+        if (o->HasOverflowClip())
+          break;
         marker_rect.MoveBy(-o->Location());
-      } while (o != this && propagate_visual_overflow &&
-               propagate_layout_overflow);
+      } while (o != this);
     }
   }
 }

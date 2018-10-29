@@ -48,7 +48,7 @@
 namespace blink {
 
 bool DetectTextEncoding(const char* data,
-                        size_t length,
+                        uint32_t length,
                         const char* hint_encoding_name,
                         const KURL& hint_url,
                         const char* hint_user_language,

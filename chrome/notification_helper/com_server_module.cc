@@ -18,6 +18,8 @@
 #include "chrome/notification_helper/notification_activator.h"
 #include "chrome/notification_helper/trace_util.h"
 
+namespace mswr = Microsoft::WRL;
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -64,9 +66,8 @@ HRESULT ComServerModule::Run() {
 HRESULT ComServerModule::RegisterClassObjects() {
   // Create an out-of-proc COM module with caching disabled. The supplied
   // method is invoked when the last instance object of the module is released.
-  auto& module =
-      Microsoft::WRL::Module<Microsoft::WRL::OutOfProcDisableCaching>::Create(
-          this, &ComServerModule::SignalObjectCountZero);
+  auto& module = mswr::Module<mswr::OutOfProcDisableCaching>::Create(
+      this, &ComServerModule::SignalObjectCountZero);
 
   // Usually COM module classes statically define their CLSID at compile time
   // through the use of various macros, and WRL::Module internals takes care of
@@ -74,11 +75,11 @@ HRESULT ComServerModule::RegisterClassObjects() {
   // register the same object with different CLSIDs depending on a runtime
   // setting, so we handle that logic here.
 
-  Microsoft::WRL::ComPtr<IUnknown> factory;
-  unsigned int flags = Microsoft::WRL::ModuleType::OutOfProcDisableCaching;
+  mswr::ComPtr<IUnknown> factory;
+  unsigned int flags = mswr::ModuleType::OutOfProcDisableCaching;
 
-  HRESULT hr = Microsoft::WRL::Details::CreateClassFactory<
-      Microsoft::WRL::SimpleClassFactory<NotificationActivator>>(
+  HRESULT hr = mswr::Details::CreateClassFactory<
+      mswr::SimpleClassFactory<NotificationActivator>>(
       &flags, nullptr, __uuidof(IClassFactory), &factory);
   if (FAILED(hr)) {
     LogComServerModuleHistogram(ComServerModuleStatus::FACTORY_CREATION_FAILED);
@@ -86,7 +87,7 @@ HRESULT ComServerModule::RegisterClassObjects() {
     return hr;
   }
 
-  Microsoft::WRL::ComPtr<IClassFactory> class_factory;
+  mswr::ComPtr<IClassFactory> class_factory;
   hr = factory.As(&class_factory);
   if (FAILED(hr)) {
     LogComServerModuleHistogram(
@@ -117,8 +118,7 @@ HRESULT ComServerModule::RegisterClassObjects() {
 }
 
 HRESULT ComServerModule::UnregisterClassObjects() {
-  auto& module = Microsoft::WRL::Module<
-      Microsoft::WRL::OutOfProcDisableCaching>::GetModule();
+  auto& module = mswr::Module<mswr::OutOfProcDisableCaching>::GetModule();
   HRESULT hr =
       module.UnregisterCOMObject(nullptr, cookies_, arraysize(cookies_));
   if (FAILED(hr)) {

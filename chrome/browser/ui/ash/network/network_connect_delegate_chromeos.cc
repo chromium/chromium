@@ -51,7 +51,7 @@ void NetworkConnectDelegateChromeOS::ShowMobileSetupDialog(
     const std::string& network_id) {
   if (!IsUIAvailable())
     return;
-  MobileSetupDialog::ShowByNetworkId(network_id);
+  chromeos::MobileSetupDialog::ShowByNetworkId(network_id);
 }
 
 void NetworkConnectDelegateChromeOS::ShowNetworkConnectError(

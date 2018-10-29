@@ -182,7 +182,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         run(new Runnable() {
             @Override
             public void run() {
-                if (IntentHandler.isIntentChromeOrFirstParty(intent)) {
+                if (IntentHandler.wasIntentSenderChrome(intent)) {
                     handleAction(intent);
                 } else {
                     SearchWidgetProvider.super.onReceive(context, intent);

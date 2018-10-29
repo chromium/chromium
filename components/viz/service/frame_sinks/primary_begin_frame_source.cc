@@ -75,6 +75,11 @@ bool PrimaryBeginFrameSource::IsThrottled() const {
              : true;
 }
 
+void PrimaryBeginFrameSource::OnGpuNoLongerBusy() {
+  // PrimaryBeginFrameSource does not hold back the begin frames. So it doesn't
+  // need to do anything here.
+}
+
 void PrimaryBeginFrameSource::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (needs_begin_frames_ == needs_begin_frames)
     return;

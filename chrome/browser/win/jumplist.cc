@@ -131,7 +131,7 @@ bool CreateIconFile(const gfx::ImageSkia& image_skia,
       gfx::ImageSkiaRep image_skia_rep = image_skia.GetRepresentation(scale);
       if (!image_skia_rep.is_null()) {
         image_family.Add(
-            gfx::Image::CreateFrom1xBitmap(image_skia_rep.sk_bitmap()));
+            gfx::Image::CreateFrom1xBitmap(image_skia_rep.GetBitmap()));
       }
     }
   }
@@ -862,8 +862,8 @@ int JumpList::CreateIconFiles(const base::FilePath& icon_dir,
   int icons_created = 0;
 
   // Reuse icons for urls that already present in the current JumpList.
-  for (ShellLinkItemList::const_iterator iter = item_list.begin();
-       iter != item_list.end() && max_items > 0; ++iter, --max_items) {
+  for (auto iter = item_list.begin(); iter != item_list.end() && max_items > 0;
+       ++iter, --max_items) {
     ShellLinkItem* item = iter->get();
     auto cache_iter = icon_cur.find(item->url());
     if (cache_iter != icon_cur.end()) {

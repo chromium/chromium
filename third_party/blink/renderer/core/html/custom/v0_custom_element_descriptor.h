@@ -42,7 +42,7 @@ struct V0CustomElementDescriptorHash;
 // A Custom Element descriptor is everything necessary to match a
 // Custom Element instance to a definition.
 class V0CustomElementDescriptor {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   V0CustomElementDescriptor(const AtomicString& type,

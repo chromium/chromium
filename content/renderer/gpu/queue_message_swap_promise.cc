@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/gpu/frame_swap_message_queue.h"
@@ -62,7 +62,7 @@ void QueueMessageSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
     FrameSwapMessageQueue::TransferMessages(&messages, &messages_to_send);
     if (!messages_to_send.empty()) {
       metadata->send_frame_token_to_embedder = true;
-      message_sender_->Send(new ViewHostMsg_FrameSwapMessages(
+      message_sender_->Send(new WidgetHostMsg_FrameSwapMessages(
           message_queue_->routing_id(), metadata->frame_token,
           messages_to_send));
     }

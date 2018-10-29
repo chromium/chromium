@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -57,7 +58,8 @@ class SyncEngine : public ModelTypeConfigurer {
     scoped_refptr<base::SequencedTaskRunner> sync_task_runner;
     SyncEngineHost* host = nullptr;
     std::unique_ptr<SyncBackendRegistrar> registrar;
-    std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
+    std::vector<std::unique_ptr<SyncEncryptionHandler::Observer>>
+        encryption_observer_proxies;
     scoped_refptr<ExtensionsActivity> extensions_activity;
     WeakHandle<JsEventHandler> event_handler;
     GURL service_url;
@@ -99,8 +101,8 @@ class SyncEngine : public ModelTypeConfigurer {
   virtual void TriggerRefresh(const ModelTypeSet& types) = 0;
 
   // Updates the engine's SyncCredentials. The credentials must be fully
-  // specified (account ID, sync token and scope). To invalidate the credentials
-  // use InvalisateCredentials() instead.
+  // specified (account ID, email, and sync token). To invalidate the
+  // credentials, use InvalidateCredentials() instead.
   virtual void UpdateCredentials(const SyncCredentials& credentials) = 0;
 
   // Invalidates the SyncCredentials.
@@ -119,15 +121,8 @@ class SyncEngine : public ModelTypeConfigurer {
   // Asynchronously set a new passphrase for encryption. Note that it is an
   // error to call SetEncryptionPassphrase under the following circumstances:
   // - An explicit passphrase has already been set
-  // - |is_explicit| is true and we have pending keys.
-  // When |is_explicit| is false, a couple of things could happen:
-  // - If there are pending keys, we try to decrypt them. If decryption works,
-  //   this acts like a call to SetDecryptionPassphrase. If not, the GAIA
-  //   passphrase passed in is cached so we can re-encrypt with it in future.
-  // - If there are no pending keys, data is encrypted with |passphrase| (this
-  //   is a no-op if data was already encrypted with |passphrase|.)
-  virtual void SetEncryptionPassphrase(const std::string& passphrase,
-                                       bool is_explicit) = 0;
+  // - We have pending keys.
+  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
 
   // Use the provided passphrase to asynchronously attempt decryption. If new
   // encrypted keys arrive during the asynchronous call, OnPassphraseRequired

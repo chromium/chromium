@@ -83,6 +83,18 @@
       }
     ]
   },
+  "declarativeNetRequest": {
+    "Permissions": [
+      {
+        "class": "code",
+        "text": "\"declarativeNetRequest\""
+      },
+      {
+        "link": "declare_permissions#host-permissions",
+        "text": "host permissions"
+      }
+    ]
+  },
   "declarativeWebRequest": {
     "Permissions": [
       {

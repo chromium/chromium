@@ -1,0 +1,135 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/icons.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<dom-module id="start-setup-page">
+  <template>
+    <style include="multidevice-setup-shared">
+      #selector-and-details-container {
+        @apply --layout-horizontal;
+        margin-top: 48px;
+        min-height: 246px;
+      }
+
+      #singleDeviceName {
+        color: var(--google-grey-900);
+        margin-top: 16px;
+      }
+
+      #deviceDropdown {
+        margin-top: 16px;
+      }
+
+      #page-icon-container {
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
+      }
+
+      #page-icon {
+        background-image: -webkit-image-set(url(start_setup_icon_1x.png) 1x,
+                                            url(start_setup_icon_2x.png) 2x);
+        height: 116px;
+        margin-top: 10px;
+        width: 320px;
+      }
+
+      #deviceSelectionContainer {
+        color: var(--paper-grey-600);
+      }
+
+      #feature-details-container {
+        @apply --layout-vertical;
+        @apply --layout-center-justified;
+        border-left: 1px solid rgb(218, 220, 224);
+        padding-left: 24px;
+      }
+
+      #feature-details-container-header {
+        margin-bottom: 18px;
+      }
+
+      .feature-detail {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        box-sizing: border-box;
+        min-height: 64px;
+        padding: 10px 0;
+      }
+
+      .feature-detail iron-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        min-width: 20px;
+      }
+
+      .feature-detail span {
+        margin-left: 8px;
+      }
+
+      #footnote {
+        color: var(--paper-grey-600);
+        margin-top: 12px;
+      }
+    </style>
+
+    <ui-page header-text="[[headerText]]" icon-name="google-g">
+      <span slot="message" id="multidevice-summary-message" inner-h-t-m-l="[[messageHtml]]"></span>
+      <div slot="additional-content">
+        <div id="selector-and-details-container">
+          <div id="deviceSelectionContainer" class="flex">
+            [[getDeviceSelectionHeader_(devices)]]
+            <div class="flex"></div>
+            <div id="singleDeviceName"
+                hidden$="[[!doesDeviceListHaveOneElement_(devices)]]">
+              [[getFirstDeviceNameInList_(devices)]]
+            </div>
+            <div hidden$="[[!doesDeviceListHaveMultipleElements_(devices)]]">
+              <select id="deviceDropdown"
+                  class="md-select"
+                  on-change="onDeviceDropdownSelectionChanged_">
+                <template is="dom-repeat" items="[[devices]]">
+                  <option value$="[[item.deviceId]]">
+                    [[item.deviceName]]
+                  </option>
+                </template>
+              </select>
+            </div>
+            <div id="page-icon-container">
+              <div id="page-icon"></div>
+            </div>
+          </div>
+          <div id="feature-details-container" class="flex">
+            <div id="feature-details-container-header">
+              [[i18n('startSetupPageFeatureListHeader')]]
+            </div>
+            <div class="feature-detail">
+              <iron-icon icon="multidevice-setup-icons-20:messages"></iron-icon>
+              <span id="awm-summary-message" inner-h-t-m-l="
+                  [[i18nAdvanced('startSetupPageFeatureListAwm')]]">
+              </span>
+            </div>
+            <div class="feature-detail">
+              <iron-icon icon="multidevice-setup-icons-20:downloads">
+              </iron-icon>
+              <span>[[i18n('startSetupPageFeatureListInstallApps')]]</span>
+            </div>
+            <div class="feature-detail">
+              <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
+              <span>[[i18n('startSetupPageFeatureListAddFeatures')]]</span>
+            </div>
+          </div>
+        </div>
+        <div id="footnote">[[i18n('startSetupPageFootnote')]]</div>
+      </div>
+    </ui-page>
+  </template>
+  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_page.js">
+  </script>
+</dom-module>

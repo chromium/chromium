@@ -2,7 +2,6 @@ Test that CSS selector queries on duplicate Ids respect scope.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.querySelectorAll('#duplicateId1').length is 6
 PASS document.querySelectorAll('#duplicateId2').length is 2
 PASS scopeDiv.querySelectorAll('#duplicateId1').length is 4

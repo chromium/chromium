@@ -21,4 +21,15 @@ specific_include_rules = {
   "^open_in_controller_unittest\.mm$": [
     "+ios/web/web_state/ui/crw_web_controller.h",
   ],
+
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "browser_view_controller_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "keyboard_commands_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
 }

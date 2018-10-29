@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.contacts_picker;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
 
@@ -31,9 +31,8 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
 
         TextView up = (TextView) mNumberRollView.findViewById(R.id.up);
         TextView down = (TextView) mNumberRollView.findViewById(R.id.down);
-        // TODO(finnur): Change this to use pre-defined styles.
-        up.setTextColor(Color.BLACK);
-        down.setTextColor(Color.BLACK);
+        ApiCompatibilityUtils.setTextAppearance(up, R.style.BlackHeadline);
+        ApiCompatibilityUtils.setTextAppearance(down, R.style.BlackHeadline);
     }
 
     /**

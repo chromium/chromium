@@ -74,16 +74,20 @@ typedef ACCESS_MASK REGSAM;
 #define CHROME_DECLARE_HANDLE(name) \
   struct name##__;                  \
   typedef struct name##__* name
+CHROME_DECLARE_HANDLE(HDESK);
 CHROME_DECLARE_HANDLE(HGLRC);
 CHROME_DECLARE_HANDLE(HICON);
 CHROME_DECLARE_HANDLE(HINSTANCE);
 CHROME_DECLARE_HANDLE(HKEY);
 CHROME_DECLARE_HANDLE(HKL);
 CHROME_DECLARE_HANDLE(HMENU);
+CHROME_DECLARE_HANDLE(HWINSTA);
 CHROME_DECLARE_HANDLE(HWND);
-typedef HINSTANCE HMODULE;
 #undef CHROME_DECLARE_HANDLE
 
+typedef LPVOID HINTERNET;
+typedef HINSTANCE HMODULE;
+typedef PVOID LSA_HANDLE;
 
 // Forward declare some Windows struct/typedef sets.
 
@@ -104,6 +108,8 @@ typedef struct _FILETIME FILETIME;
 typedef struct tagMENUITEMINFOW MENUITEMINFOW, MENUITEMINFO;
 
 typedef struct tagNMHDR NMHDR;
+
+typedef PVOID PSID;
 
 // Declare Chrome versions of some Windows structures. These are needed for
 // when we need a concrete type but don't want to pull in Windows.h. We can't

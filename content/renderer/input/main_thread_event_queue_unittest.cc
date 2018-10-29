@@ -55,7 +55,9 @@ class HandledTask {
 class HandledEvent : public HandledTask {
  public:
   explicit HandledEvent(const blink::WebCoalescedInputEvent& event)
-      : event_(event.Event(), event.GetCoalescedEventsPointers()) {}
+      : event_(event.Event(),
+               event.GetCoalescedEventsPointers(),
+               event.GetPredictedEventsPointers()) {}
   ~HandledEvent() override {}
 
   blink::WebCoalescedInputEvent* taskAsEvent() override { return &event_; }

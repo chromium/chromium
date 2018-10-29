@@ -1,2 +1,2 @@
-This text should render without crashing 
+This text should render without crashing
 ...

@@ -93,6 +93,9 @@ class DialogPlate : public views::View,
                              AssistantVisibility old_visibility,
                              AssistantSource source) override;
 
+  // Returns the first focusable view or nullptr to defer to views::FocusSearch.
+  views::View* FindFirstFocusableView();
+
  private:
   void InitLayout();
   void InitKeyboardLayoutContainer();

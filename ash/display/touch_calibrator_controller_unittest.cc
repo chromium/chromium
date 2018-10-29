@@ -38,7 +38,7 @@ ui::TouchscreenDevice GetInternalTouchDevice(int touch_device_id) {
 
 ui::TouchscreenDevice GetExternalTouchDevice(int touch_device_id) {
   return ui::TouchscreenDevice(
-      touch_device_id, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      touch_device_id, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("test external touch device"), gfx::Size(1000, 1000), 1);
 }
 
@@ -152,12 +152,12 @@ class TouchCalibratorControllerTest : public AshTestBase {
         ui::ET_TOUCH_PRESSED, location, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 12, 1.0f,
                            1.0f, 0.0f),
-        0, 0.0f);
+        0);
     ui::TouchEvent release_touch_event(
         ui::ET_TOUCH_RELEASED, location, ui::EventTimeForNow(),
         ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 12, 1.0f,
                            1.0f, 0.0f),
-        0, 0.0f);
+        0);
 
     press_touch_event.set_source_device_id(touch_device_id);
     release_touch_event.set_source_device_id(touch_device_id);
@@ -338,7 +338,7 @@ TEST_F(TouchCalibratorControllerTest, CustomCalibrationInvalidTouchId) {
       display_manager()->GetDisplayInfo(touch_display.id());
 
   ui::TouchscreenDevice random_touchdevice(
-      15, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      15, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("random touch device"), gfx::Size(123, 456), 1);
   EXPECT_EQ(calibration_data, touch_device_manager()->GetCalibrationData(
                                   random_touchdevice, info.id()));
@@ -400,7 +400,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
       kInternalTouchId, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       std::string("internal touch device"), gfx::Size(1000, 1000), 1);
   ui::TouchscreenDevice external_touchdevice(
-      kExternalTouchId, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      kExternalTouchId, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("external touch device"), gfx::Size(1000, 1000), 1);
 
   ws::InputDeviceClientTestApi().SetTouchscreenDevices(
@@ -492,7 +492,7 @@ TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
       kInternalTouchId, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       std::string("internal touch device"), gfx::Size(1000, 1000), 1);
   ui::TouchscreenDevice external_touchdevice(
-      kExternalTouchId, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      kExternalTouchId, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("external touch device"), gfx::Size(1000, 1000), 1);
 
   ws::InputDeviceClientTestApi().SetTouchscreenDevices(

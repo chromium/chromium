@@ -226,10 +226,7 @@ class CrossThreadPersistent : public PtrEdge {
 class Collection : public Edge {
  public:
   typedef std::vector<Edge*> Members;
-  Collection(RecordInfo* info, bool on_heap, bool is_root)
-      : info_(info),
-        on_heap_(on_heap),
-        is_root_(is_root) {}
+  Collection(RecordInfo* info, bool on_heap) : info_(info), on_heap_(on_heap) {}
   ~Collection() {
     for (Members::iterator it = members_.begin(); it != members_.end(); ++it) {
       assert(*it && "Collection-edge members must be non-null");
@@ -237,9 +234,8 @@ class Collection : public Edge {
     }
   }
   bool IsCollection() override { return true; }
-  LivenessKind Kind() override { return is_root_ ? kRoot : kStrong; }
+  LivenessKind Kind() override { return kStrong; }
   bool on_heap() { return on_heap_; }
-  bool is_root() { return is_root_; }
   Members& members() { return members_; }
   void Accept(EdgeVisitor* visitor) override { visitor->VisitCollection(this); }
   void AcceptMembers(EdgeVisitor* visitor) {
@@ -248,8 +244,6 @@ class Collection : public Edge {
   }
   bool NeedsFinalization() override;
   TracingStatus NeedsTracing(NeedsTracingOption) override {
-    if (is_root_)
-      return TracingStatus::Unneeded();
     if (on_heap_)
       return TracingStatus::Needed();
     // For off-heap collections, determine tracing status of members.
@@ -265,7 +259,6 @@ class Collection : public Edge {
   RecordInfo* info_;
   Members members_;
   bool on_heap_;
-  bool is_root_;
 };
 
 // An iterator edge is a direct edge to some iterator type.

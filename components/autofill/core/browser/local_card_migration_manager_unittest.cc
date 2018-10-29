@@ -695,6 +695,44 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(local_card_migration_manager_->MainPromptWasShown());
 }
 
+// Verify that when triggering from submitted form, intermediate prompt and main
+// prompt are not triggered as user previously rejected the prompt.
+TEST_F(LocalCardMigrationManagerTest,
+       MigrateCreditCard_DontTriggerFromSubmittedForm) {
+  EnableAutofillCreditCardLocalCardMigrationExperiment();
+
+  // Set the billing_customer_number Priority Preference to designate
+  // existence of a Payments account.
+  autofill_client_.GetPrefs()->SetDouble(prefs::kAutofillBillingCustomerNumber,
+                                         12345);
+
+  // Set that previously user rejected this prompt.
+  prefs::SetLocalCardMigrationPromptPreviouslyCancelled(
+      autofill_client_.GetPrefs(), true);
+
+  // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
+  // enter below.
+  AddLocalCrediCard(personal_data_, "Flo Master", "4111111111111111", "11",
+                    test::NextYear().c_str(), "1", "guid1");
+  // Add another local credit card, so it will trigger migration.
+  AddLocalCrediCard(personal_data_, "Flo Master", "5555555555554444", "11",
+                    test::NextYear().c_str(), "1", "guid2");
+
+  // Set up our credit card form data.
+  FormData credit_card_form;
+  test::CreateTestCreditCardFormData(&credit_card_form, true, false);
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  EditCreditCardFrom(credit_card_form, "Flo Master", "4111111111111111", "11",
+                     test::NextYear().c_str(), "123");
+  // Migration should not be offered because user previously rejected
+  // migration prompt.
+  FormSubmitted(credit_card_form);
+  EXPECT_FALSE(local_card_migration_manager_->IntermediatePromptWasShown());
+  EXPECT_FALSE(local_card_migration_manager_->MainPromptWasShown());
+}
+
 // Verify that given the parsed response from the payments client, the migration
 // status is correctly set.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {

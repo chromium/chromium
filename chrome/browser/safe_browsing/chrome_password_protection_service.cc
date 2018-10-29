@@ -24,9 +24,11 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/browser_sync/profile_sync_service.h"
@@ -48,7 +50,6 @@
 #include "components/safe_browsing/web_ui/safe_browsing_ui.h"
 #include "components/signin/core/browser/account_info.h"
 #include "components/signin/core/browser/account_tracker_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/user_events/user_event_service.h"
@@ -60,7 +61,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -115,6 +118,8 @@ PasswordReuseLookup::ReputationVerdict GetVerdictToLogFromResponse(
 // Given a |web_contents|, returns the navigation id of its last committed
 // navigation.
 int64_t GetLastCommittedNavigationID(const content::WebContents* web_contents) {
+  if (!web_contents)
+    return 0;
   content::NavigationEntry* navigation =
       web_contents->GetController().GetLastCommittedEntry();
   return navigation
@@ -415,14 +420,17 @@ void ChromePasswordProtectionService::OnModalWarningShownForSignInPassword(
     OnPolicySpecifiedPasswordReuseDetected(web_contents->GetLastCommittedURL(),
                                            /*is_phishing_url=*/true);
   }
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kSafeBrowsingUnhandledSyncPasswordReuses);
-  // Since base::Value doesn't support int64_t type, we convert the navigation
-  // ID to string format and store it in the preference dictionary.
-  update->SetKey(
-      Origin::Create(web_contents->GetLastCommittedURL()).Serialize(),
-      base::Value(
-          base::Int64ToString(GetLastCommittedNavigationID(web_contents))));
+
+  if (!IsIncognito()) {
+    DictionaryPrefUpdate update(
+        profile_->GetPrefs(), prefs::kSafeBrowsingUnhandledSyncPasswordReuses);
+    // Since base::Value doesn't support int64_t type, we convert the navigation
+    // ID to string format and store it in the preference dictionary.
+    update->SetKey(
+        Origin::Create(web_contents->GetLastCommittedURL()).Serialize(),
+        base::Value(
+            base::Int64ToString(GetLastCommittedNavigationID(web_contents))));
+  }
 
   UpdateSecurityState(SB_THREAT_TYPE_SIGN_IN_PASSWORD_REUSE,
                       PasswordReuseEvent::SIGN_IN_PASSWORD, web_contents);
@@ -967,11 +975,11 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfileIfExists(profile_);
+  auto* identity_manager = IdentityManagerFactory::GetForProfileIfExists(
+      profile_->GetOriginalProfile());
 
-  return signin_manager ? signin_manager->GetAuthenticatedAccountInfo()
-                        : AccountInfo();
+  return identity_manager ? identity_manager->GetPrimaryAccountInfo()
+                          : AccountInfo();
 }
 
 GURL ChromePasswordProtectionService::GetEnterpriseChangePasswordURL() const {
@@ -1028,15 +1036,10 @@ void ChromePasswordProtectionService::HandleUserActionOnModalWarning(
               content::Referrer(),
               /*in_new_tab=*/true);
       web_contents_with_unhandled_enterprise_reuses_.erase(web_contents);
-      // TODO(jialiul): Remove web_contents pointer when it is closed.
     } else {
-      // Opens chrome://settings page in a new tab.
-      OpenUrl(web_contents, GURL(chrome::kChromeUISettingsURL),
-              content::Referrer(),
+      // Opens accounts.google.com in a new tab.
+      OpenUrl(web_contents, GetDefaultChangePasswordURL(), content::Referrer(),
               /*in_new_tab=*/true);
-      LogWarningAction(WarningUIType::CHROME_SETTINGS, WarningAction::SHOWN,
-                       PasswordReuseEvent::SIGN_IN_PASSWORD,
-                       GetSyncAccountType());
     }
   } else if (action == WarningAction::IGNORE_WARNING) {
     // No need to change state.
@@ -1074,12 +1077,9 @@ void ChromePasswordProtectionService::HandleUserActionOnPageInfo(
       return;
     }
 
-    // For sync password reuse, open chrome://settings page in a new tab.
-    OpenUrl(web_contents, GURL(chrome::kChromeUISettingsURL),
-            content::Referrer(), /*in_new_tab=*/true);
-    LogWarningAction(WarningUIType::CHROME_SETTINGS, WarningAction::SHOWN,
-                     PasswordReuseEvent::SIGN_IN_PASSWORD,
-                     GetSyncAccountType());
+    // For sync password reuse, open accounts.google.com page in a new tab.
+    OpenUrl(web_contents, GetDefaultChangePasswordURL(), content::Referrer(),
+            /*in_new_tab=*/true);
     return;
   }
 
@@ -1118,7 +1118,7 @@ void ChromePasswordProtectionService::HandleUserActionOnSettings(
   // Opens change password page in a new tab for user to change password.
   OpenUrl(web_contents, GetDefaultChangePasswordURL(),
           content::Referrer(web_contents->GetLastCommittedURL(),
-                            blink::kWebReferrerPolicyDefault),
+                            network::mojom::ReferrerPolicy::kDefault),
           /*in_new_tab=*/true);
 }
 
@@ -1129,7 +1129,7 @@ void ChromePasswordProtectionService::HandleResetPasswordOnInterstitial(
   // password.
   OpenUrl(web_contents, GetEnterpriseChangePasswordURL(),
           content::Referrer(web_contents->GetLastCommittedURL(),
-                            blink::kWebReferrerPolicyDefault),
+                            network::mojom::ReferrerPolicy::kDefault),
           /*in_new_tab=*/false);
 }
 
@@ -1307,6 +1307,12 @@ bool ChromePasswordProtectionService::CanShowInterstitial(
 
 bool ChromePasswordProtectionService::IsUnderAdvancedProtection() {
   return AdvancedProtectionStatusManager::IsUnderAdvancedProtection(profile_);
+}
+
+gfx::Size ChromePasswordProtectionService::GetCurrentContentAreaSize() const {
+  return BrowserView::GetBrowserViewForBrowser(
+             BrowserList::GetInstance()->GetLastActive())
+      ->GetContentsSize();
 }
 
 }  // namespace safe_browsing

@@ -6,8 +6,8 @@
 
 #include "ash/ime/ime_controller.h"
 #include "ash/ime/ime_switch_type.h"
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/keyboard/virtual_keyboard_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/interfaces/ime_info.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -55,7 +55,7 @@ class ImeListItemView : public ActionableView {
       : ActionableView(nullptr, TrayPopupInkDropStyle::FILL_BOUNDS),
         ime_list_view_(list_view),
         selected_(selected) {
-    SetInkDropMode(InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
     AddChildView(tri_view);
@@ -187,7 +187,7 @@ class KeyboardStatusRow : public views::View {
 };
 
 ImeListView::ImeListView(DetailedViewDelegate* delegate)
-    : ImeListView(delegate, features::IsSystemTrayUnifiedEnabled()) {}
+    : ImeListView(delegate, true) {}
 
 ImeListView::ImeListView(DetailedViewDelegate* delegate, bool use_unified_theme)
     : TrayDetailedView(delegate),
@@ -330,7 +330,10 @@ void ImeListView::HandleButtonPressed(views::Button* sender,
                                       const ui::Event& event) {
   DCHECK_EQ(sender, keyboard_status_row_->toggle());
 
-  Shell::Get()->virtual_keyboard_controller()->ToggleIgnoreExternalKeyboard();
+  Shell::Get()
+      ->ash_keyboard_controller()
+      ->virtual_keyboard_controller()
+      ->ToggleIgnoreExternalKeyboard();
   last_selected_item_id_.clear();
   last_item_selected_with_keyboard_ = false;
 }

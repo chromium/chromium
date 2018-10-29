@@ -82,10 +82,10 @@ CSSSelectorList CSSSelectorParser::ConsumeComplexSelectorList(
   Vector<std::unique_ptr<CSSParserSelector>> selector_list;
 
   while (true) {
-    const size_t selector_offset_start = stream.LookAheadOffset();
+    const wtf_size_t selector_offset_start = stream.LookAheadOffset();
     CSSParserTokenRange complex_selector =
         stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken, kCommaToken>();
-    const size_t selector_offset_end = stream.LookAheadOffset();
+    const wtf_size_t selector_offset_end = stream.LookAheadOffset();
 
     if (stream.UncheckedAtEnd())
       return CSSSelectorList();
@@ -549,8 +549,8 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
-    case CSSSelector::kPseudoIS: {
-      if (!RuntimeEnabledFeatures::CSSPseudoISEnabled())
+    case CSSSelector::kPseudoWhere: {
+      if (!RuntimeEnabledFeatures::CSSPseudoWhereEnabled())
         break;
 
       DisallowPseudoElementsScope scope(this);
@@ -573,7 +573,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeCompoundSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd() ||
-          selector_list->HasPseudoMatches() || selector_list->HasPseudoIS())
+          selector_list->HasPseudoMatches() || selector_list->HasPseudoWhere())
         return nullptr;
       selector->SetSelectorList(std::move(selector_list));
       return selector;
@@ -606,7 +606,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       block.ConsumeWhitespace();
       if (!inner_selector || !block.AtEnd() ||
           inner_selector->GetPseudoType() == CSSSelector::kPseudoMatches ||
-          inner_selector->GetPseudoType() == CSSSelector::kPseudoIS)
+          inner_selector->GetPseudoType() == CSSSelector::kPseudoWhere)
         return nullptr;
       Vector<std::unique_ptr<CSSParserSelector>> selector_vector;
       selector_vector.push_back(std::move(inner_selector));
@@ -958,9 +958,9 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
         case CSSSelector::kPseudoWebkitAnyLink:
           feature = WebFeature::kCSSSelectorPseudoWebkitAnyLink;
           break;
-        case CSSSelector::kPseudoIS:
-          DCHECK(RuntimeEnabledFeatures::CSSPseudoISEnabled());
-          feature = WebFeature::kCSSSelectorPseudoIS;
+        case CSSSelector::kPseudoWhere:
+          DCHECK(RuntimeEnabledFeatures::CSSPseudoWhereEnabled());
+          feature = WebFeature::kCSSSelectorPseudoWhere;
           break;
         case CSSSelector::kPseudoUnresolved:
           feature = WebFeature::kCSSSelectorPseudoUnresolved;
@@ -1160,10 +1160,8 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           break;
       }
       if (feature != WebFeature::kNumberOfFeatures) {
-        if (!Deprecation::DeprecationMessage(feature).IsEmpty() &&
-            style_sheet_ && style_sheet_->AnyOwnerDocument()) {
-          Deprecation::CountDeprecation(*style_sheet_->AnyOwnerDocument(),
-                                        feature);
+        if (!Deprecation::DeprecationMessage(feature).IsEmpty()) {
+          context_->CountDeprecation(feature);
         } else {
           context_->Count(feature);
         }

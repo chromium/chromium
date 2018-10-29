@@ -70,6 +70,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnKioskInstanceReady(mojom::KioskInstancePtr kiosk_ptr) override;
   void OnLockScreenInstanceReady(
       mojom::LockScreenInstancePtr lock_screen_ptr) override;
+  void OnMediaSessionInstanceReady(
+      mojom::MediaSessionInstancePtr media_session_ptr) override;
   void OnMetricsInstanceReady(mojom::MetricsInstancePtr metrics_ptr) override;
   void OnMidisInstanceReady(mojom::MidisInstancePtr midis_ptr) override;
   void OnNetInstanceReady(mojom::NetInstancePtr net_ptr) override;

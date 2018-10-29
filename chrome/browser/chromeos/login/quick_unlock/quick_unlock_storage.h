@@ -11,7 +11,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class PrefService;
+class Profile;
 
 namespace base {
 class Time;
@@ -29,7 +29,7 @@ namespace quick_unlock {
 // authentication used by Settings).
 class QuickUnlockStorage : public KeyedService {
  public:
-  explicit QuickUnlockStorage(PrefService* pref_service);
+  explicit QuickUnlockStorage(Profile* profile);
   ~QuickUnlockStorage() override;
 
   // Mark that the user has had a strong authentication. This means
@@ -44,7 +44,12 @@ class QuickUnlockStorage : public KeyedService {
   // called if HasStrongAuth returns false.
   base::TimeDelta TimeSinceLastStrongAuth() const;
 
+  // Returns the time until next strong authentication required. This should
+  // not be called if HasStrongAuth returns false.
+  base::TimeDelta TimeUntilNextStrongAuth() const;
+
   // Returns true if fingerprint unlock is currently available.
+  // This checks whether there's fingerprint setup, as well as HasStrongAuth.
   bool IsFingerprintAuthenticationAvailable() const;
 
   // Returns true if PIN unlock is currently available.
@@ -84,7 +89,7 @@ class QuickUnlockStorage : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  PrefService* pref_service_;
+  Profile* const profile_;
   base::TimeTicks last_strong_auth_;
   std::unique_ptr<FingerprintStorage> fingerprint_storage_;
   std::unique_ptr<PinStoragePrefs> pin_storage_prefs_;

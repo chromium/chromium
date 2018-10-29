@@ -148,6 +148,11 @@ class CORE_EXPORT Range final : public ScriptWrappable {
   void NodeChildrenWillBeRemoved(ContainerNode&);
   void NodeWillBeRemoved(Node&);
 
+  // They are special fixups only for sequential focus navigation
+  // starting point.
+  void FixupRemovedChildrenAcrossShadowBoundary(ContainerNode& container);
+  void FixupRemovedNodeAcrossShadowBoundary(Node& node);
+
   void DidInsertText(const CharacterData&, unsigned offset, unsigned length);
   void DidRemoveText(const CharacterData&, unsigned offset, unsigned length);
   void DidMergeTextNodes(const NodeWithIndex& old_node, unsigned offset);

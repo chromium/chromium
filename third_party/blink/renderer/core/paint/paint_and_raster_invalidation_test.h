@@ -61,8 +61,11 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
     }
   }
 
-  const DisplayItemClient* ViewScrollingContentsDisplayItemClient() const {
-    return GetLayoutView().Layer()->GraphicsLayerBacking();
+  void SetPreferCompositingToLCDText(bool enable) {
+    GetDocument()
+        .GetFrame()
+        ->GetSettings()
+        ->SetPreferCompositingToLCDTextEnabled(enable);
   }
 
  private:

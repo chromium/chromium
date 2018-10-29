@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
@@ -51,8 +50,6 @@ ValueStore::StatusCode LevelDbToValueStoreStatusCode(
 }
 
 leveldb::Status DeleteValue(leveldb::DB* db, const std::string& key) {
-  base::AssertBlockingAllowed();
-
   leveldb::WriteBatch batch;
   batch.Delete(key);
 
@@ -85,13 +82,10 @@ LazyLevelDb::LazyLevelDb(const std::string& uma_client_name,
       base::Histogram::kUmaTargetedHistogramFlag);
 }
 
-LazyLevelDb::~LazyLevelDb() {
-  base::AssertBlockingAllowed();
-}
+LazyLevelDb::~LazyLevelDb() = default;
 
 ValueStore::Status LazyLevelDb::Read(const std::string& key,
                                      std::unique_ptr<base::Value>* value) {
-  base::AssertBlockingAllowed();
   DCHECK(value);
 
   std::string value_as_json;
@@ -117,8 +111,6 @@ ValueStore::Status LazyLevelDb::Read(const std::string& key,
 }
 
 ValueStore::Status LazyLevelDb::Delete(const std::string& key) {
-  base::AssertBlockingAllowed();
-
   ValueStore::Status status = EnsureDbIsOpen();
   if (!status.ok())
     return status;
@@ -153,7 +145,6 @@ ValueStore::BackingStoreRestoreStatus LazyLevelDb::LogRestoreStatus(
 
 ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
     const std::string* key) {
-  base::AssertBlockingAllowed();
   leveldb::Status s;
   if (key && db_) {
     s = DeleteValue(db_.get(), *key);
@@ -219,8 +210,6 @@ ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
 }
 
 ValueStore::Status LazyLevelDb::EnsureDbIsOpen() {
-  base::AssertBlockingAllowed();
-
   if (db_)
     return ValueStore::Status();
 
@@ -262,7 +251,6 @@ ValueStore::Status LazyLevelDb::ToValueStoreError(
 }
 
 bool LazyLevelDb::DeleteDbFile() {
-  base::AssertBlockingAllowed();
   db_.reset();  // Close the database.
 
   leveldb::Status s =

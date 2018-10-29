@@ -31,6 +31,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/container/internal/test_instance_tracker.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 
@@ -1788,4 +1789,5 @@ TEST(AllocatorSupportTest, SizeAllocConstructor) {
     EXPECT_THAT(v, AllOf(SizeIs(len), Each(0)));
   }
 }
+
 }  // anonymous namespace

@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_query.h"
 
+#include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/record_rdata.h"
@@ -20,9 +21,26 @@ std::tuple<char*, size_t> AsTuple(const IOBufferWithSize* buf) {
   return std::make_tuple(buf->data(), buf->size());
 }
 
+bool ParseAndCreateDnsQueryFromRawPacket(const uint8_t* data,
+                                         size_t length,
+                                         std::unique_ptr<DnsQuery>* out) {
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(length);
+  memcpy(packet->data(), data, length);
+  out->reset(new DnsQuery(packet));
+  return (*out)->Parse(length);
+}
+
+// This includes \0 at the end.
+const char kQNameData[] =
+    "\x03"
+    "www"
+    "\x07"
+    "example"
+    "\x03"
+    "com";
+
 TEST(DnsQueryTest, Constructor) {
   // This includes \0 at the end.
-  const char qname_data[] = "\x03""www""\x07""example""\x03""com";
   const uint8_t query_data[] = {
       // Header
       0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
@@ -38,7 +56,7 @@ TEST(DnsQueryTest, Constructor) {
       0x00, 0x01,  // QCLASS: IN class.
   };
 
-  base::StringPiece qname(qname_data, sizeof(qname_data));
+  base::StringPiece qname(kQNameData, sizeof(kQNameData));
   DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
@@ -50,9 +68,7 @@ TEST(DnsQueryTest, Constructor) {
 }
 
 TEST(DnsQueryTest, Clone) {
-  // This includes \0 at the end.
-  const char qname_data[] = "\x03""www""\x07""example""\x03""com";
-  base::StringPiece qname(qname_data, sizeof(qname_data));
+  base::StringPiece qname(kQNameData, sizeof(kQNameData));
 
   DnsQuery q1(0, qname, dns_protocol::kTypeA);
   EXPECT_EQ(0, q1.id());
@@ -64,14 +80,6 @@ TEST(DnsQueryTest, Clone) {
 }
 
 TEST(DnsQueryTest, EDNS0) {
-  // This includes \0 at the end.
-  const char qname_data[] =
-      "\x03"
-      "www"
-      "\x07"
-      "example"
-      "\x03"
-      "com";
   const uint8_t query_data[] = {
       // Header
       0xbe, 0xef, 0x01, 0x00,  // Flags -- set RD (recursion desired) bit.
@@ -96,7 +104,7 @@ TEST(DnsQueryTest, EDNS0) {
       0xDE, 0xAD, 0xBE, 0xEF   // OPT data
   };
 
-  base::StringPiece qname(qname_data, sizeof(qname_data));
+  base::StringPiece qname(kQNameData, sizeof(kQNameData));
   OptRecordRdata opt_rdata;
   opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
   DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA, &opt_rdata);
@@ -107,6 +115,126 @@ TEST(DnsQueryTest, EDNS0) {
   base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
                              21);
   EXPECT_EQ(question, q1.question());
+}
+
+TEST(DnsQueryParseTest, SingleQuestionForTypeARecord) {
+  const uint8_t query_data[] = {
+      0x12, 0x34,  // ID
+      0x00, 0x00,  // flags
+      0x00, 0x01,  // number of questions
+      0x00, 0x00,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w', 'w', 0x07, 'e', 'x', 'a',
+      'm',  'p',  'l', 'e', 0x03, 'c', 'o', 'm',
+      0x00,        // null label
+      0x00, 0x01,  // type A Record
+      0x00, 0x01,  // class IN
+  };
+  std::unique_ptr<DnsQuery> query;
+  EXPECT_TRUE(ParseAndCreateDnsQueryFromRawPacket(query_data,
+                                                  sizeof(query_data), &query));
+  EXPECT_EQ(0x1234, query->id());
+  base::StringPiece qname(kQNameData, sizeof(kQNameData));
+  EXPECT_EQ(qname, query->qname());
+  EXPECT_EQ(dns_protocol::kTypeA, query->qtype());
+}
+
+TEST(DnsQueryParseTest, SingleQuestionForTypeAAAARecord) {
+  const uint8_t query_data[] = {
+      0x12, 0x34,  // ID
+      0x00, 0x00,  // flags
+      0x00, 0x01,  // number of questions
+      0x00, 0x00,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w', 'w', 0x07, 'e', 'x', 'a',
+      'm',  'p',  'l', 'e', 0x03, 'c', 'o', 'm',
+      0x00,        // null label
+      0x00, 0x1c,  // type AAAA Record
+      0x00, 0x01,  // class IN
+  };
+  std::unique_ptr<DnsQuery> query;
+  EXPECT_TRUE(ParseAndCreateDnsQueryFromRawPacket(query_data,
+                                                  sizeof(query_data), &query));
+  EXPECT_EQ(0x1234, query->id());
+  base::StringPiece qname(kQNameData, sizeof(kQNameData));
+  EXPECT_EQ(qname, query->qname());
+  EXPECT_EQ(dns_protocol::kTypeAAAA, query->qtype());
+}
+
+const uint8_t kQueryTruncatedQuestion[] = {
+    0x12, 0x34,  // ID
+    0x00, 0x00,  // flags
+    0x00, 0x02,  // number of questions
+    0x00, 0x00,  // number of answer rr
+    0x00, 0x00,  // number of name server rr
+    0x00, 0x00,  // number of additional rr
+    0x03, 'w',  'w', 'w', 0x07, 'e', 'x', 'a',
+    'm',  'p',  'l', 'e', 0x03, 'c', 'o', 'm',
+    0x00,        // null label
+    0x00, 0x01,  // type A Record
+    0x00,        // class IN, truncated
+};
+
+const uint8_t kQueryTwoQuestions[] = {
+    0x12, 0x34,  // ID
+    0x00, 0x00,  // flags
+    0x00, 0x02,  // number of questions
+    0x00, 0x00,  // number of answer rr
+    0x00, 0x00,  // number of name server rr
+    0x00, 0x00,  // number of additional rr
+    0x03, 'w',  'w', 'w', 0x07, 'e', 'x', 'a', 'm',  'p', 'l', 'e',
+    0x03, 'c',  'o', 'm',
+    0x00,        // null label
+    0x00, 0x01,  // type A Record
+    0x00, 0x01,  // class IN
+    0x07, 'e',  'x', 'a', 'm',  'p', 'l', 'e', 0x03, 'o', 'r', 'g',
+    0x00,        // null label
+    0x00, 0x1c,  // type AAAA Record
+    0x00, 0x01,  // class IN
+};
+
+const uint8_t kQueryInvalidDNSDomainName1[] = {
+    0x12, 0x34,            // ID
+    0x00, 0x00,            // flags
+    0x00, 0x01,            // number of questions
+    0x00, 0x00,            // number of answer rr
+    0x00, 0x00,            // number of name server rr
+    0x00, 0x00,            // number of additional rr
+    0x02, 'w',  'w', 'w',  // wrong label length
+    0x07, 'e',  'x', 'a', 'm', 'p', 'l', 'e', 0x03, 'c', 'o', 'm',
+    0x00,        // null label
+    0x00, 0x01,  // type A Record
+    0x00, 0x01,  // class IN
+};
+
+const uint8_t kQueryInvalidDNSDomainName2[] = {
+    0x12, 0x34,  // ID
+    0x00, 0x00,  // flags
+    0x00, 0x01,  // number of questions
+    0x00, 0x00,  // number of answer rr
+    0x00, 0x00,  // number of name server rr
+    0x00, 0x00,  // number of additional rr
+    0xc0, 0x02,  // illegal name pointer
+    0x00, 0x01,  // type A Record
+    0x00, 0x01,  // class IN
+};
+
+TEST(DnsQueryParseTest, FailsInvalidQueries) {
+  const struct TestCase {
+    const uint8_t* data;
+    size_t size;
+  } testcases[] = {
+      {kQueryTruncatedQuestion, base::size(kQueryTruncatedQuestion)},
+      {kQueryTwoQuestions, base::size(kQueryTwoQuestions)},
+      {kQueryInvalidDNSDomainName1, base::size(kQueryInvalidDNSDomainName1)},
+      {kQueryInvalidDNSDomainName2, base::size(kQueryInvalidDNSDomainName2)}};
+  std::unique_ptr<DnsQuery> query;
+  for (const auto& testcase : testcases) {
+    EXPECT_FALSE(ParseAndCreateDnsQueryFromRawPacket(testcase.data,
+                                                     testcase.size, &query));
+  }
 }
 
 }  // namespace

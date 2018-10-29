@@ -267,7 +267,8 @@ class MultiUserWindowManagerChromeOSTest : public AshTestBase {
 
 void MultiUserWindowManagerChromeOSTest::SetUp() {
   chromeos::DeviceSettingsService::Initialize();
-  chromeos::CrosSettings::Initialize();
+  chromeos::CrosSettings::Initialize(
+      TestingBrowserProcess::GetGlobal()->local_state());
   ash_test_helper()->set_test_shell_delegate(new TestShellDelegateChromeOS);
   AshTestBase::SetUp();
   profile_manager_.reset(

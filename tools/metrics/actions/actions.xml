@@ -440,7 +440,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AboutFlags_top-chrome-md@1">
-  <obsolete>Deprecated in favor of  Launch.FlagsAtStartup histogram.</obsolete>
+  <obsolete>Deprecated in favor of Launch.FlagsAtStartup histogram.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <owner>tdanderson@chromium.org</owner>
   <description>
@@ -450,7 +450,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AboutFlags_top-chrome-md@2">
-  <obsolete>Deprecated in favor of  Launch.FlagsAtStartup histogram.</obsolete>
+  <obsolete>Deprecated in favor of Launch.FlagsAtStartup histogram.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <owner>tdanderson@chromium.org</owner>
   <description>
@@ -460,7 +460,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AboutFlags_top-chrome-md@3">
-  <obsolete>Deprecated in favor of  Launch.FlagsAtStartup histogram.</obsolete>
+  <obsolete>Deprecated in favor of Launch.FlagsAtStartup histogram.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <owner>tdanderson@chromium.org</owner>
   <description>
@@ -920,6 +920,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Show_Keyboard_Overlay">
+  <obsolete>
+    Deprecated 10/2018. The keyboard overlay was removed and replaced by
+    keyboard shortcut viewer.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
@@ -1156,6 +1160,42 @@ should be able to be added at any place in this file.
 <action name="AcceptedKeywordHint">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Accessibility.Autoclick.DoubleClick">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has used autoclick to perform a double click action.
+  </description>
+</action>
+
+<action name="Accessibility.Autoclick.DragAndDrop">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has used autoclick to perform a drag and drop action.
+  </description>
+</action>
+
+<action name="Accessibility.Autoclick.LeftClick">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has used autoclick to perform a left click action.
+  </description>
+</action>
+
+<action name="Accessibility.Autoclick.RightClick">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has used autoclick to perform a right click action.
+  </description>
 </action>
 
 <action name="Accessibility.ChromeVox.Jump">
@@ -1589,6 +1629,27 @@ should be able to be added at any place in this file.
   <description>User opened a download from download home.</description>
 </action>
 
+<action name="Android.DownloadManager.List.Selection.Menu.Images.Action">
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    User triggered a menu action on the images section header of download home.
+  </description>
+</action>
+
+<action name="Android.DownloadManager.List.View.Action">
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    User triggered actions on an offline item in download home.
+  </description>
+</action>
+
+<action name="Android.DownloadManager.Menu.Action">
+  <owner>dtrainor@chromium.org</owner>
+  <description>
+    User triggered actions on the top level menu in download home.
+  </description>
+</action>
+
 <action name="Android.DownloadManager.Open">
   <owner>dtrainor@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
@@ -1606,6 +1667,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.RemoveItem">
+  <obsolete>
+    Deprecated in favor of Android.DownloadManager.List.View.Action.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
@@ -1616,6 +1680,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.Search">
+  <obsolete>
+    Deprecated in favor of Android.DownloadManager.Menu.Action.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>User initiated a search of their downloads.</description>
@@ -1631,6 +1698,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.Settings">
+  <obsolete>
+    Deprecated in favor of Android.DownloadManager.Menu.Action.
+  </obsolete>
   <owner>jming@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1644,6 +1714,18 @@ should be able to be added at any place in this file.
   <owner>twellington@chromium.org</owner>
   <description>
     User chose to &quot;undo&quot; the deletion of one or more download items.
+  </description>
+</action>
+
+<action name="Android.ExploreSitesNTP.Opened">
+  <owner>dimich@chromium.org</owner>
+  <description>User opened NTP with enabled ExploreSites section.</description>
+</action>
+
+<action name="Android.ExploreSitesPage.Open">
+  <owner>dimich@chromium.org</owner>
+  <description>
+    User opened ExploreSites page, typically by clicking on a NTP category icon.
   </description>
 </action>
 
@@ -5130,6 +5212,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ExploreSites.ContextMenu">
+  <owner>chili@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <description>
+    Android: user used the context menu on a suggested item in the explore sites
+    native page UI.
+  </description>
+</action>
+
 <action name="ExtensionNotFound_ED">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -5705,6 +5796,11 @@ should be able to be added at any place in this file.
 <action name="HarmfulInterstitial.Show">
   <owner>felt@chromium.org</owner>
   <description>User saw the UwS (harmful) interstitial.</description>
+</action>
+
+<action name="HatsBubble.Show">
+  <owner>jeffreycohen@chromium.org</owner>
+  <description>User saw a Happiness Tracking Survey.</description>
 </action>
 
 <action name="HiliteColor">
@@ -9932,6 +10028,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManagementPageViewed">
+  <owner>hunyadym@chromium.org</owner>
+  <description>The chrome://management page was viewed.</description>
+</action>
+
 <action name="MaxButton_Clk_ExitFS">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -10478,8 +10579,8 @@ should be able to be added at any place in this file.
   <owner>donnd@chromium.org</owner>
   <description>
     User chose to process text using one of the assist actions available in the
-    mobile action bar.  These actions trigger an intent to interacte with
-    another activity, e.g. Translate.
+    mobile action bar. These actions trigger an intent to interacte with another
+    activity, e.g. Translate.
   </description>
 </action>
 
@@ -10626,22 +10727,21 @@ should be able to be added at any place in this file.
 <action name="MobileComeToForeground">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    Chrome has come to the foreground.  Only emitted if the foreground content
-    is an Activity that views web content, e.g., not settings.  This will be
-    emitted everytime the Activity goes from entirely hidden to at least
-    partially visible.  Partially visible means that at least some portion of
-    the Activity is visible, but the Activity is not interactable, e.g. being
-    covered by the share dialog, javascript alert dialogs, the voice input
-    dialog, etc.
+    Chrome has come to the foreground. Only emitted if the foreground content is
+    an Activity that views web content, e.g., not settings. This will be emitted
+    everytime the Activity goes from entirely hidden to at least partially
+    visible. Partially visible means that at least some portion of the Activity
+    is visible, but the Activity is not interactable, e.g. being covered by the
+    share dialog, javascript alert dialogs, the voice input dialog, etc.
 
     Please note, this has the potential to be called many times for a given
-    session.  For further details, see the Android activity concept of onPause
+    session. For further details, see the Android activity concept of onPause
     and onResume for a better understanding of what circumstances can trigger
     this.
 
     Session tracking is based on the same visibility concept, but a session can
     span multiple live Android Activities, while this metric will be logged when
-    each applicable Activity goes to the foreground (per above).  Since session
+    each applicable Activity goes to the foreground (per above). Since session
     tracking uses onPause and onResume, this metric is also tied to that to
     ensure we capture the event.
   </description>
@@ -10805,7 +10905,7 @@ should be able to be added at any place in this file.
   <description>
     Records when the system started a VIEW intent on a navigation click. This
     happens when there is another application in the system that's not a browser
-    and that can handle this URL (e.g. Maps app for  http://maps.google.com/
+    and that can handle this URL (e.g. Maps app for http://maps.google.com/
     url).
   </description>
 </action>
@@ -10816,6 +10916,11 @@ should be able to be added at any place in this file.
     Records when a user was given a choice between using Chrome and an installed
     app and chose Chrome.
   </description>
+</action>
+
+<action name="MobileFakeboxNTPTapped">
+  <owner>stkhapugin@chromium.org</owner>
+  <description>User pressed the fakebox on NTP. iOS only.</description>
 </action>
 
 <action name="MobileFirstEditInOmnibox">
@@ -10871,7 +10976,7 @@ should be able to be added at any place in this file.
 <action name="MobileFreTOSLinkTapped">
   <owner>justincohen@chromium.org</owner>
   <description>
-    User tapped on the TOS link on the first run welcome view.  This metric is
+    User tapped on the TOS link on the first run welcome view. This metric is
     only recorded if and after the TOS are accepted. This metric is specific to
     iOS.
   </description>
@@ -10880,22 +10985,22 @@ should be able to be added at any place in this file.
 <action name="MobileGoToBackground">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    Chrome has gone to the background.  Only emitted if the previously
+    Chrome has gone to the background. Only emitted if the previously
     foregrounded content was an Activity that views web content, e.g., not
-    settings.  Chrome may be partially visible at this point, but is not
-    directly in the foreground/interactable.  Partially visible means that at
-    least some portion of the Activity is visible, but the Activity is not
-    interactable, e.g. being covered by the share dialog, javascript alert
-    dialogs, the voice input dialog, etc.
+    settings. Chrome may be partially visible at this point, but is not directly
+    in the foreground/interactable. Partially visible means that at least some
+    portion of the Activity is visible, but the Activity is not interactable,
+    e.g. being covered by the share dialog, javascript alert dialogs, the voice
+    input dialog, etc.
 
     Please note, this has the potential to be called many times for a given
-    session.  For further details, see the Android activity concept of onPause
+    session. For further details, see the Android activity concept of onPause
     and onResume for a better understanding of what circumstances can trigger
     this.
 
     Session tracking is based on the same visibility concept, but a session can
     span multiple live Android Activities, while this metric will be logged when
-    each applicable Activity goes to the background (per above).  Since session
+    each applicable Activity goes to the background (per above). Since session
     tracking uses onPause and onResume, this metric is also tied to that to
     ensure we capture the event.
   </description>
@@ -11066,9 +11171,9 @@ should be able to be added at any place in this file.
 <action name="MobileMenuReload">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    User pressed the reload option in the app menu.  This was added in M55.
-    Prior to M55, the menu reload counts were combined with the toolbar counts,
-    which were all reported as MobileToolbarReload.
+    User pressed the reload option in the app menu. This was added in M55. Prior
+    to M55, the menu reload counts were combined with the toolbar counts, which
+    were all reported as MobileToolbarReload.
   </description>
 </action>
 
@@ -11117,6 +11222,11 @@ should be able to be added at any place in this file.
 <action name="MobileMenuStop">
   <owner>tedchoc@chromium.org</owner>
   <description>User pressed the stop option in the app menu.</description>
+</action>
+
+<action name="MobileMenuTranslate">
+  <owner>frechette@chromium.org</owner>
+  <description>User pressed the 'Translate' in the app menu.</description>
 </action>
 
 <action name="MobileMenuVoiceSearch">
@@ -11353,6 +11463,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxFocused">
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    Omnibox focused (either directly or through one of the shortcuts). iOS only.
+  </description>
+</action>
+
 <action name="MobileOmniboxRefineSuggestion">
   <obsolete>
     Deprecated 07/2017. Replaced by MobileOmniboxRefineSuggestion.Query and
@@ -11380,13 +11497,13 @@ should be able to be added at any place in this file.
 
 <action name="MobileOmniboxSearch">
   <obsolete>
-    Removed Sep 2016 because the name kept misleading people.  Replaced with
+    Removed Sep 2016 because the name kept misleading people. Replaced with
     MobileOmniboxUse, which has the same semantics.
   </obsolete>
   <owner>mpearson@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <description>
-    User used the omnibox to go somewhere.  The action doesn't have to lead to a
+    User used the omnibox to go somewhere. The action doesn't have to lead to a
     search page (except on iOS, where this is only recorded for search-type
     navigations).
   </description>
@@ -11396,7 +11513,7 @@ should be able to be added at any place in this file.
   <owner>mpearson@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <description>
-    User used the omnibox to go somewhere.  The action doesn't have to lead to a
+    User used the omnibox to go somewhere. The action doesn't have to lead to a
     search page.
   </description>
 </action>
@@ -11540,9 +11657,9 @@ should be able to be added at any place in this file.
 <action name="MobileReceivedExternalIntent">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    A VIEW intent was received by the tabbed mode activity.  This will combine
-    intents sent by external application as well as Chrome itself.  This does
-    not cover all intent types handled by Chrome.  Use
+    A VIEW intent was received by the tabbed mode activity. This will combine
+    intents sent by external application as well as Chrome itself. This does not
+    cover all intent types handled by Chrome. Use
     MobileTabbedModeViewIntentFromApp and MobileTabbedModeViewIntentFromChrome
     for a complete picture.
   </description>
@@ -11559,7 +11676,7 @@ should be able to be added at any place in this file.
 <action name="MobileReceivedExternalIntent.Chrome">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    A VIEW intent was received by the tabbed mode activity from Chrome.  This is
+    A VIEW intent was received by the tabbed mode activity from Chrome. This is
     only recorded for intent types that are also allowed from external apps.
   </description>
 </action>
@@ -11735,7 +11852,7 @@ should be able to be added at any place in this file.
 <action name="MobileStartup.MainIntentReceived">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    An ACTION_MAIN intent was received by Chrome.  This is the best indicator we
+    An ACTION_MAIN intent was received by Chrome. This is the best indicator we
     have to signal the user tapped on the Chrome icon from the launcher.
   </description>
 </action>
@@ -11927,8 +12044,8 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarReload">
   <owner>tedchoc@chromium.org</owner>
   <description>
-    User pressed the reload icon in the toolbar.  Pre-M55, MobileToolbarReload
-    accounted for all reload actions.  M55+, this metric only refers to reloads
+    User pressed the reload icon in the toolbar. Pre-M55, MobileToolbarReload
+    accounted for all reload actions. M55+, this metric only refers to reloads
     that occurred from the toolbar.
   </description>
 </action>
@@ -14793,11 +14910,11 @@ should be able to be added at any place in this file.
   <owner>vasilii@chromium.org</owner>
   <description>
     The user submitted a password form, but the website appeared to reject the
-    credentials.  This action reflects the password manager component's logic
-    for whether or not to offer to save a password.  At the time of writing,
-    failure means that either the form submission was canceled with a failure
-    message, or the form submission succeeded, but the user was directed back to
-    a page that still contained a login form.
+    credentials. This action reflects the password manager component's logic for
+    whether or not to offer to save a password. At the time of writing, failure
+    means that either the form submission was canceled with a failure message,
+    or the form submission succeeded, but the user was directed back to a page
+    that still contained a login form.
   </description>
 </action>
 
@@ -14815,8 +14932,8 @@ should be able to be added at any place in this file.
   <owner>vasilii@chromium.org</owner>
   <description>
     The user submitted a password form and the website appeared to accept the
-    credentials.  This action reflects the password manager component's logic
-    for whether or not to offer to save a password.
+    credentials. This action reflects the password manager component's logic for
+    whether or not to offer to save a password.
   </description>
 </action>
 
@@ -17895,6 +18012,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signout_FromUserMenu">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    Recorded when the user is signed into Chrome, but not syncing, and clicks
+    the sign out button in the user menu. This is only recorded when Desktop
+    Identity Consistency is enabled.
+  </description>
+</action>
+
 <action name="Signin_Undo_Signin">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -18656,12 +18784,57 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="StatusArea_NightLight_Disabled">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User disabled NightLight from the feature button in the system menu.
+  </description>
+</action>
+
+<action name="StatusArea_NightLight_Enabled">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User enabled NightLight from the feature button in the system menu.
+  </description>
+</action>
+
+<action name="StatusArea_NightLight_Settings">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User opened NightLight WebUI settings from the feature button in the system
+    menu.
+  </description>
+</action>
+
+<action name="StatusArea_Notifications_ClearAll">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User removed all notifications from the Clear All button in the system menu.
+  </description>
+</action>
+
 <action name="StatusArea_OS_Update_Default_Selected">
   <owner>bruthig@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user selects the update row in the system
     menu.
+  </description>
+</action>
+
+<action name="StatusArea_QuietMode_Disabled">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User disabled Quiet Mode (Do not disturb) from the feature button in the
+    system menu.
+  </description>
+</action>
+
+<action name="StatusArea_QuietMode_Enabled">
+  <owner>tetsui@chromium.org</owner>
+  <description>
+    User enabled Quiet Mode (Do not disturb) from the feature button in the
+    system menu.
   </description>
 </action>
 
@@ -19343,7 +19516,7 @@ should be able to be added at any place in this file.
   <description>
     User hit the &quot;X&quot; button to close the tab. The return button is an
     explicit &quot;close this tab and return to the previous app&quot; button
-    that may appear to the left of the Omnibox.  This is different from regular
+    that may appear to the left of the Omnibox. This is different from regular
     tab closing buttons because those doesn't send the user back to the previous
     app.
   </description>
@@ -20397,6 +20570,9 @@ should be able to be added at any place in this file.
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="For NewTabPageButton feature."/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
+  <suffix name="PreviewsOmniboxUI"
+      label="For the Previews UI in the Android Omnibox feature."/>
+  <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
   <affected-action name="InProductHelp.NotifyUsedEvent.IPH"/>
   <affected-action name="InProductHelp.ShouldTriggerHelpUI.IPH"/>
@@ -20419,7 +20595,39 @@ should be able to be added at any place in this file.
   <suffix name="RemoveItem" label="Remove a suggested item."/>
   <suffix name="Shown" label="Context menu is opened."/>
   <affected-action name="ContextualSuggestions.ContextMenu"/>
+  <affected-action name="ExploreSites.ContextMenu"/>
   <affected-action name="Suggestions.ContextMenu"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="DeleteAll" label="Delete all items in a section."/>
+  <suffix name="ShareAll" label="Share all items in a section."/>
+  <suffix name="StartSelecting"
+      label="Enter multi-select mode from the section menu."/>
+  <affected-action
+      name="Android.DownloadManager.List.Selection.Menu.Images.Action"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Cancel" label="User canceled downloading an offline item."/>
+  <suffix name="MenuDelete" label="User deleted a specific offline item."/>
+  <suffix name="MenuShare" label="User shared a specific offline item."/>
+  <suffix name="Open" label="User opened an offline item."/>
+  <suffix name="Pause" label="User paused downloading an offline item."/>
+  <suffix name="Resume" label="User resumed downloading an offline item."/>
+  <affected-action name="Android.DownloadManager.List.View.Action"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Close"
+      label="User closed the download manager from the top menu."/>
+  <suffix name="MultiDelete"
+      label="User deleted multiple files from the top menu."/>
+  <suffix name="MultiShare"
+      label="User shared multiple files from the top menu."/>
+  <suffix name="Search" label="User started searching from the top menu."/>
+  <suffix name="Settings" label="User entered settings from the top menu."/>
+  <affected-action name="Android.DownloadManager.Menu.Action"/>
 </action-suffix>
 
 </actions>

@@ -7,6 +7,8 @@
 #include <numeric>
 #include <sstream>
 
+#include "base/logging.h"
+
 namespace media {
 
 namespace {
@@ -37,14 +39,83 @@ std::vector<VideoFrameLayout::Plane> PlanesFromStrides(
 
 }  // namespace
 
-VideoFrameLayout::VideoFrameLayout(VideoPixelFormat format,
-                                   const gfx::Size& coded_size,
-                                   std::vector<int32_t> strides,
-                                   std::vector<size_t> buffer_sizes)
-    : format_(format),
-      coded_size_(coded_size),
-      planes_(PlanesFromStrides(strides)),
-      buffer_sizes_(std::move(buffer_sizes)) {}
+// static
+size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_UYVY:
+    case PIXEL_FORMAT_YUY2:
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_RGB24:
+    case PIXEL_FORMAT_RGB32:
+    case PIXEL_FORMAT_MJPEG:
+    case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
+      return 1;
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_MT21:
+      return 2;
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_YV12:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_YUV420P9:
+    case PIXEL_FORMAT_YUV422P9:
+    case PIXEL_FORMAT_YUV444P9:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV444P12:
+      return 3;
+    case PIXEL_FORMAT_I420A:
+      return 4;
+    case PIXEL_FORMAT_UNKNOWN:
+      // Note: PIXEL_FORMAT_UNKNOWN is used for end-of-stream frame.
+      // Set its NumPlanes() to zero to avoid NOTREACHED().
+      return 0;
+  }
+  NOTREACHED() << "Unsupported video frame format: " << format;
+  return 0;
+}
+
+// static
+base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size) {
+  return CreateWithStrides(format, coded_size,
+                           std::vector<int32_t>(NumPlanes(format), 0));
+}
+
+// static
+base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    std::vector<int32_t> strides,
+    std::vector<size_t> buffer_sizes) {
+  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides),
+                          std::move(buffer_sizes));
+}
+
+// static
+base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    std::vector<Plane> planes,
+    std::vector<size_t> buffer_sizes) {
+  // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
+  // TODO(crbug.com/896135): Return base::nullopt,
+  // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
+  // TODO(crbug.com/896135): Return base::nullopt,
+  // if (planes.size() != NumPlanes(format))
+  // TODO(crbug.com/896135): Return base::nullopt,
+  // if (buffer_sizes.size() > planes.size())
+  return VideoFrameLayout(format, coded_size, std::move(planes),
+                          std::move(buffer_sizes));
+}
 
 VideoFrameLayout::VideoFrameLayout(VideoPixelFormat format,
                                    const gfx::Size& coded_size,
@@ -54,11 +125,6 @@ VideoFrameLayout::VideoFrameLayout(VideoPixelFormat format,
       coded_size_(coded_size),
       planes_(std::move(planes)),
       buffer_sizes_(std::move(buffer_sizes)) {}
-
-VideoFrameLayout::VideoFrameLayout()
-    : format_(PIXEL_FORMAT_UNKNOWN),
-      planes_(kDefaultPlaneCount),
-      buffer_sizes_(kDefaultBufferCount, 0) {}
 
 VideoFrameLayout::~VideoFrameLayout() = default;
 VideoFrameLayout::VideoFrameLayout(const VideoFrameLayout&) = default;

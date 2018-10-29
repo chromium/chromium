@@ -33,7 +33,7 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/forward.h"  // nogncheck
 #endif
 
 namespace blink {

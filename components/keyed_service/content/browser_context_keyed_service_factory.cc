@@ -15,35 +15,32 @@
 
 void BrowserContextKeyedServiceFactory::SetTestingFactory(
     content::BrowserContext* context,
-    TestingFactoryFunction testing_factory) {
+    TestingFactory testing_factory) {
   KeyedServiceFactory::TestingFactory wrapped_factory;
   if (testing_factory) {
     wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
+        [](const TestingFactory& testing_factory,
            base::SupportsUserData* context) {
-          return testing_factory(
+          return testing_factory.Run(
               static_cast<content::BrowserContext*>(context));
         },
-        testing_factory);
+        std::move(testing_factory));
   }
   KeyedServiceFactory::SetTestingFactory(context, std::move(wrapped_factory));
 }
 
 KeyedService* BrowserContextKeyedServiceFactory::SetTestingFactoryAndUse(
     content::BrowserContext* context,
-    TestingFactoryFunction testing_factory) {
-  KeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
-           base::SupportsUserData* context) {
-          return testing_factory(
-              static_cast<content::BrowserContext*>(context));
-        },
-        testing_factory);
-  }
+    TestingFactory testing_factory) {
+  DCHECK(testing_factory);
   return KeyedServiceFactory::SetTestingFactoryAndUse(
-      context, std::move(wrapped_factory));
+      context, base::BindRepeating(
+                   [](const TestingFactory& testing_factory,
+                      base::SupportsUserData* context) {
+                     return testing_factory.Run(
+                         static_cast<content::BrowserContext*>(context));
+                   },
+                   std::move(testing_factory)));
 }
 
 BrowserContextKeyedServiceFactory::BrowserContextKeyedServiceFactory(

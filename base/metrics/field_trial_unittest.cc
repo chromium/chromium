@@ -19,10 +19,17 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_shared_memory_util.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
+
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+#include "base/metrics/field_trial_memory_mac.h"
+#endif
 
 namespace base {
 
@@ -1426,33 +1433,66 @@ TEST(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   EXPECT_EQ("value2", shm_params["key2"]);
 }
 
-#if !defined(OS_NACL)
+#if !defined(OS_NACL) && !defined(OS_IOS)
+MULTIPROCESS_TEST_MAIN(SerializeSharedMemoryHandleMetadata) {
+  std::string serialized =
+      CommandLine::ForCurrentProcess()->GetSwitchValueASCII("field_trials");
+  std::string guid_string =
+      CommandLine::ForCurrentProcess()->GetSwitchValueASCII("guid");
+
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
+  SharedMemoryHandle deserialized =
+      FieldTrialList::DeserializeSharedMemoryHandleMetadata(serialized);
+#else
+  // Use the arbitrary value selected below.
+  SharedMemoryHandle deserialized =
+      FieldTrialList::DeserializeSharedMemoryHandleMetadata(42, serialized);
+#endif
+  CHECK_EQ(deserialized.GetGUID().ToString(), guid_string);
+  CHECK(!deserialized.GetGUID().is_empty());
+
+  return 0;
+}
+
 TEST(FieldTrialListTest, SerializeSharedMemoryHandleMetadata) {
   std::unique_ptr<SharedMemory> shm(new SharedMemory());
   shm->CreateAndMapAnonymous(4 << 10);
 
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+  FieldTrialMemoryServer mach_server(shm->handle().GetMemoryObject());
+  ASSERT_TRUE(mach_server.Start());
+#endif
+
   std::string serialized =
       FieldTrialList::SerializeSharedMemoryHandleMetadata(shm->handle());
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-  SharedMemoryHandle deserialized =
-      FieldTrialList::DeserializeSharedMemoryHandleMetadata(serialized);
-#else
-  // Use a valid-looking arbitrary number for the file descriptor. It's not
-  // being used in this unittest, but needs to pass sanity checks in the
-  // handle's constructor.
-  SharedMemoryHandle deserialized =
-      FieldTrialList::DeserializeSharedMemoryHandleMetadata(42, serialized);
+
+  LaunchOptions options;
+#if defined(OS_POSIX) && (!defined(OS_MACOSX) && !defined(OS_IOS))
+  // Pick an arbitrary FD number to use for the shmem FD in the child.
+  options.fds_to_remap.emplace_back(
+      std::make_pair(shm->handle().GetHandle(), 42));
 #endif
-  EXPECT_EQ(deserialized.GetGUID(), shm->handle().GetGUID());
-  EXPECT_FALSE(deserialized.GetGUID().is_empty());
+  CommandLine cmd_line = GetMultiProcessTestChildBaseCommandLine();
+  cmd_line.AppendSwitchASCII("field_trials", serialized);
+  cmd_line.AppendSwitchASCII("guid", shm->handle().GetGUID().ToString());
+
+  Process process = SpawnMultiProcessTestChild(
+      "SerializeSharedMemoryHandleMetadata", cmd_line, options);
+
+  int exit_code;
+  EXPECT_TRUE(WaitForMultiprocessTestChildExit(
+      process, TestTimeouts::action_timeout(), &exit_code));
+  EXPECT_EQ(0, exit_code);
 }
 #endif  // !defined(OS_NACL)
 
 // Verify that the field trial shared memory handle is really read-only, and
-// does not allow writable mappings. Test disabled on NaCl, Windows and Fuchsia
-// which don't support/implement GetFieldTrialHandle(). For Fuchsia, see
-// crbug.com/752368
-#if !defined(OS_NACL) && !defined(OS_WIN) && !defined(OS_FUCHSIA)
+// does not allow writable mappings. Test disabled on NaCl, Windows, Fuchsia,
+// and Mac, which don't support/implement GetFieldTrialHandle(). For Fuchsia,
+// see crbug.com/752368
+#if !defined(OS_NACL) && !defined(OS_WIN) && !defined(OS_FUCHSIA) && \
+    (!defined(OS_MACOSX) && !defined(OS_IOS))
 TEST(FieldTrialListTest, CheckReadOnlySharedMemoryHandle) {
   FieldTrialList field_trial_list(nullptr);
   FieldTrialList::CreateFieldTrial("Trial1", "Group1");

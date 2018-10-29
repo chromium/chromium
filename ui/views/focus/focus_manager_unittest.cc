@@ -154,14 +154,14 @@ TEST_F(FocusManagerTest, WidgetFocusChangeListener) {
   gfx::NativeView native_view1 = widget1->GetNativeView();
   test::WidgetTest::SimulateNativeActivate(widget1.get());
   ASSERT_EQ(2u, widget_listener.focus_changes().size());
-  EXPECT_EQ(nullptr, widget_listener.focus_changes()[0]);
+  EXPECT_EQ(gfx::kNullNativeView, widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view1, widget_listener.focus_changes()[1]);
 
   widget_listener.ClearFocusChanges();
   gfx::NativeView native_view2 = widget2->GetNativeView();
   test::WidgetTest::SimulateNativeActivate(widget2.get());
   ASSERT_EQ(2u, widget_listener.focus_changes().size());
-  EXPECT_EQ(nullptr, widget_listener.focus_changes()[0]);
+  EXPECT_EQ(gfx::kNullNativeView, widget_listener.focus_changes()[0]);
   EXPECT_EQ(native_view2, widget_listener.focus_changes()[1]);
 }
 
@@ -930,6 +930,13 @@ TEST_F(FocusManagerTest, NavigateIntoAnchoredDialog) {
   GetWidget()->GetRootView()->AddChildView(parent2);
   GetWidget()->GetRootView()->AddChildView(parent3);
   GetWidget()->GetRootView()->AddChildView(parent4);
+
+  // Add an unfocusable child view to the dialog anchor view. This is a
+  // regression test that makes sure focus is able to navigate past unfocusable
+  // children and try to go into the anchored dialog. |kAnchoredDialogKey| was
+  // previously not checked if a recursive search to find a focusable child view
+  // was attempted (and failed), so the dialog would previously be skipped.
+  parent3->AddChildView(new View());
 
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(parent3);

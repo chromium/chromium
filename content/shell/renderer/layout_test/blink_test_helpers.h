@@ -28,9 +28,6 @@ void ExportLayoutTestSpecificPreferences(
 // Applies settings that differ between layout tests and regular mode.
 void ApplyLayoutTestDefaultPreferences(WebPreferences* prefs);
 
-// Returns the root of the Blink checkout.
-base::FilePath GetWebKitRootDirFilePath();
-
 // The build directory of the Blink checkout.
 base::FilePath GetBuildDirectory();
 

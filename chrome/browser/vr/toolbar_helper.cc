@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "components/toolbar/toolbar_model_impl.h"
+#include "components/omnibox/browser/toolbar_model_impl.h"
 
 class ToolbarModelDelegate;
 

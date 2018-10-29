@@ -14,6 +14,8 @@ source_set("lib") {
     "identity_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/signin/core/browser",

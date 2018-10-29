@@ -3,14 +3,6 @@
 <grit-part>
   <!-- Begin of Bookmarks Bar strings-->
   <if expr="not is_android">
-    <!-- The following two strings are shown when the user has no bookmarks yet. -->
-    <message name="IDS_BOOKMARKS_NO_ITEMS" desc="Text shown when the user has no bookmarks">
-      For quick access, place your bookmarks here on the bookmarks bar.
-    </message>
-    <message name="IDS_BOOKMARK_BAR_IMPORT_LINK" desc="text shown for importing ">
-      Import bookmarks now...
-    </message>
-
     <!-- The special folders created when importing from other other browsers. -->
     <if expr="is_win">
       <message name="IDS_BOOKMARK_GROUP_FROM_IE" desc="The group name of bookmarks from Internet Explorer">

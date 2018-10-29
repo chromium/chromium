@@ -89,12 +89,12 @@ LocalSiteCharacteristicsDataStore::GetAllInMemoryOrigins() {
 
 void LocalSiteCharacteristicsDataStore::GetDatabaseSize(
     DatabaseSizeCallback on_have_data) {
-  // TODO(siggi): implement me.
-  std::move(on_have_data).Run(base::nullopt, base::nullopt);
+  database_->GetDatabaseSize(std::move(on_have_data));
 }
 
-bool LocalSiteCharacteristicsDataStore::GetaDataForOrigin(
+bool LocalSiteCharacteristicsDataStore::GetDataForOrigin(
     const url::Origin& origin,
+    bool* is_dirty,
     std::unique_ptr<SiteCharacteristicsProto>* data) {
   DCHECK_NE(nullptr, data);
   const auto it = origin_data_map_.find(origin);
@@ -104,6 +104,7 @@ bool LocalSiteCharacteristicsDataStore::GetaDataForOrigin(
   std::unique_ptr<SiteCharacteristicsProto> ret =
       std::make_unique<SiteCharacteristicsProto>();
   ret->CopyFrom(it->second->FlushStateToProto());
+  *is_dirty = it->second->is_dirty();
   *data = std::move(ret);
   return true;
 }

@@ -243,6 +243,67 @@ bool ParseHelper(Extension* extension,
   return true;
 }
 
+void RemoveOverlappingAPIPermissions(
+    Extension* extension,
+    const APIPermissionSet& required_api_permissions,
+    APIPermissionSet* optional_api_permissions) {
+  APIPermissionSet overlapping_api_permissions;
+  APIPermissionSet::Intersection(required_api_permissions,
+                                 *optional_api_permissions,
+                                 &overlapping_api_permissions);
+
+  if (overlapping_api_permissions.empty())
+    return;
+
+  std::vector<InstallWarning> install_warnings;
+  install_warnings.reserve(overlapping_api_permissions.size());
+
+  for (const auto* api_permission : overlapping_api_permissions) {
+    install_warnings.emplace_back(
+        ErrorUtils::FormatErrorMessage(
+            manifest_errors::kPermissionMarkedOptionalAndRequired,
+            api_permission->name()),
+        keys::kOptionalPermissions, api_permission->name());
+  }
+
+  extension->AddInstallWarnings(std::move(install_warnings));
+
+  APIPermissionSet new_optional_api_permissions;
+  APIPermissionSet::Difference(*optional_api_permissions,
+                               required_api_permissions,
+                               &new_optional_api_permissions);
+
+  *optional_api_permissions = new_optional_api_permissions;
+}
+
+void RemoveOverlappingHostPermissions(
+    Extension* extension,
+    const URLPatternSet& required_host_permissions,
+    URLPatternSet* optional_host_permissions) {
+  URLPatternSet new_optional_host_permissions;
+  std::vector<InstallWarning> install_warnings;
+
+  for (const URLPattern& host_permission : *optional_host_permissions) {
+    if (required_host_permissions.ContainsPattern(host_permission)) {
+      // We have detected a URLPattern in the optional hosts permission set that
+      // is a strict subset of at least one URLPattern in the required hosts
+      // permission set so we add an install warning.
+      install_warnings.emplace_back(
+          ErrorUtils::FormatErrorMessage(
+              manifest_errors::kPermissionMarkedOptionalAndRequired,
+              host_permission.GetAsString()),
+          keys::kOptionalPermissions);
+    } else {
+      new_optional_host_permissions.AddPattern(host_permission);
+    }
+  }
+
+  if (!install_warnings.empty())
+    extension->AddInstallWarnings(std::move(install_warnings));
+
+  *optional_host_permissions = new_optional_host_permissions;
+}
+
 }  // namespace
 
 struct PermissionsParser::InitialPermissions {
@@ -276,6 +337,17 @@ bool PermissionsParser::Parse(Extension* extension, base::string16* error) {
                    error)) {
     return false;
   }
+
+  // If permissions are specified as both required and optional
+  // add an install warning for each permission and remove them from the
+  // optional set while keeping them in the required set.
+  RemoveOverlappingAPIPermissions(
+      extension, initial_required_permissions_->api_permissions,
+      &initial_optional_permissions_->api_permissions);
+
+  RemoveOverlappingHostPermissions(
+      extension, initial_required_permissions_->host_permissions,
+      &initial_optional_permissions_->host_permissions);
 
   return true;
 }

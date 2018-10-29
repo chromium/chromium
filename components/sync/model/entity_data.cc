@@ -10,6 +10,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -34,6 +35,8 @@ EntityData::EntityData() = default;
 EntityData::EntityData(EntityData&& other)
     : id(std::move(other.id)),
       client_tag_hash(std::move(other.client_tag_hash)),
+      originator_cache_guid(std::move(other.originator_cache_guid)),
+      originator_client_item_id(std::move(other.originator_client_item_id)),
       server_defined_unique_tag(std::move(other.server_defined_unique_tag)),
       non_unique_name(std::move(other.non_unique_name)),
       creation_time(other.creation_time),
@@ -51,6 +54,8 @@ EntityData::~EntityData() = default;
 EntityData& EntityData::operator=(EntityData&& other) {
   id = std::move(other.id);
   client_tag_hash = std::move(other.client_tag_hash);
+  originator_cache_guid = std::move(other.originator_cache_guid);
+  originator_client_item_id = std::move(other.originator_client_item_id);
   server_defined_unique_tag = std::move(other.server_defined_unique_tag);
   non_unique_name = std::move(other.non_unique_name);
   creation_time = other.creation_time;
@@ -102,7 +107,7 @@ EntityDataPtr EntityData::UpdateSpecifics(
 
 std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   // This is used when debugging at sync-internals page. The code in
-  // sync_node_browser.js is expecing certain fields names. e.g. CTIME, MTIME,
+  // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
   base::Time ctime = creation_time;
   base::Time mtime = modification_time;
@@ -111,6 +116,8 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   dict->Set("SPECIFICS", EntitySpecificsToValue(specifics));
   ADD_TO_DICT(dict, id);
   ADD_TO_DICT(dict, client_tag_hash);
+  ADD_TO_DICT(dict, originator_cache_guid);
+  ADD_TO_DICT(dict, originator_client_item_id);
   ADD_TO_DICT(dict, server_defined_unique_tag);
   ADD_TO_DICT(dict, non_unique_name);
   ADD_TO_DICT(dict, parent_id);
@@ -129,6 +136,8 @@ size_t EntityData::EstimateMemoryUsage() const {
   size_t memory_usage = 0;
   memory_usage += EstimateMemoryUsage(id);
   memory_usage += EstimateMemoryUsage(client_tag_hash);
+  memory_usage += EstimateMemoryUsage(originator_cache_guid);
+  memory_usage += EstimateMemoryUsage(originator_client_item_id);
   memory_usage += EstimateMemoryUsage(server_defined_unique_tag);
   memory_usage += EstimateMemoryUsage(non_unique_name);
   memory_usage += EstimateMemoryUsage(specifics);
@@ -146,8 +155,8 @@ bool EntityDataTraits::HasValue(const EntityData& value) {
 }
 
 const EntityData& EntityDataTraits::DefaultValue() {
-  CR_DEFINE_STATIC_LOCAL(EntityData, default_instance, ());
-  return default_instance;
+  static base::NoDestructor<EntityData> default_instance;
+  return *default_instance;
 }
 
 void PrintTo(const EntityData& entity_data, std::ostream* os) {
@@ -156,7 +165,10 @@ void PrintTo(const EntityData& entity_data, std::ostream* os) {
       *syncer::EntitySpecificsToValue(entity_data.specifics),
       base::JSONWriter::OPTIONS_PRETTY_PRINT, &specifics);
   *os << "{ id: '" << entity_data.id << "', client_tag_hash: '"
-      << entity_data.client_tag_hash << "', server_defined_unique_tag: '"
+      << entity_data.client_tag_hash << "', originator_cache_guid: '"
+      << entity_data.originator_cache_guid << "', originator_client_item_id: '"
+      << entity_data.originator_client_item_id
+      << "', server_defined_unique_tag: '"
       << entity_data.server_defined_unique_tag << "', specifics: " << specifics
       << "}";
 }

@@ -30,10 +30,7 @@ namespace syncer {
 
 class BaseTransaction;
 class JsController;
-class LocalDeviceInfoProvider;
-class GlobalIdMapper;
 class ProtocolEventObserver;
-class SyncClient;
 class SyncCycleSnapshot;
 struct SyncTokenStatus;
 class TypeDebugInfoObserver;
@@ -117,14 +114,6 @@ class SyncService : public DataTypeEncryptionHandler, public KeyedService {
     // data types might be disabled or might have failed to start (check
     // GetActiveDataTypes()).
     ACTIVE
-  };
-
-  // Used to specify the kind of passphrase with which sync data is encrypted.
-  enum PassphraseType {
-    IMPLICIT,  // The user did not provide a custom passphrase for encryption.
-               // We implicitly use the GAIA password in such cases.
-    EXPLICIT,  // The user selected the "use custom passphrase" radio button
-               // during sync setup and provided a passphrase.
   };
 
   // Passed as an argument to RequestStop to control whether or not the sync
@@ -313,6 +302,12 @@ class SyncService : public DataTypeEncryptionHandler, public KeyedService {
   // preferred state of a datatype, and is not persisted across restarts.
   virtual void ReenableDatatype(ModelType type) = 0;
 
+  // Informs the data type manager that the ready-for-start status of a
+  // controller has changed. If the controller is not ready any more, it will
+  // stop |type|. Otherwise, it will trigger reconfiguration so that |type| gets
+  // started again.
+  virtual void ReadyForStartChanged(ModelType type) = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS
   //////////////////////////////////////////////////////////////////////////////
@@ -352,10 +347,7 @@ class SyncService : public DataTypeEncryptionHandler, public KeyedService {
   // Asynchronously sets the passphrase to |passphrase| for encryption. |type|
   // specifies whether the passphrase is a custom passphrase or the GAIA
   // password being reused as a passphrase.
-  // TODO(atwilson): Change this so external callers can only set an EXPLICIT
-  // passphrase with this API.
-  virtual void SetEncryptionPassphrase(const std::string& passphrase,
-                                       PassphraseType type) = 0;
+  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
 
   // Asynchronously decrypts pending keys using |passphrase|. Returns false
   // immediately if the passphrase could not be used to decrypt a locally cached
@@ -372,9 +364,6 @@ class SyncService : public DataTypeEncryptionHandler, public KeyedService {
   // ACCESS TO INNER OBJECTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // TODO(crbug.com/865936): Move this down into ProfileSyncService.
-  virtual SyncClient* GetSyncClient() const = 0;
-
   // Return the active OpenTabsUIDelegate. If open/proxy tabs is not enabled or
   // not currently syncing, returns nullptr.
   virtual sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
@@ -384,12 +373,6 @@ class SyncService : public DataTypeEncryptionHandler, public KeyedService {
   // directly, figure out how to expose this to tests, and remove this
   // function.
   virtual UserShare* GetUserShare() const = 0;
-
-  // TODO(mastiz): Get rid of this, e.g. by moving it to SyncClient.
-  virtual const LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() const = 0;
-
-  // TODO(crbug.com/865936): Move this down into ProfileSyncService.
-  virtual GlobalIdMapper* GetGlobalIdMapper() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // DETAILED STATE FOR DEBUG UI

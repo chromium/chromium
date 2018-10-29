@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-Found 1976 tests; 1506 PASS, 470 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1976 tests; 1536 PASS, 440 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -11,7 +11,7 @@ PASS [["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedl
 FAIL [["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo[bar]baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo[bar]baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo[bar]baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobarbaz</li></ul>" but got "<ul><li>foobarbaz<br></li></ul>"
+PASS [["insertunorderedlist",""]] "foo[bar]baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "foo[bar]baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo[bar]baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo[bar]baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -20,7 +20,7 @@ PASS [["insertunorderedlist",""]] "foo[bar]baz" queryCommandState("insertunorder
 FAIL [["insertunorderedlist",""]] "foo[bar]baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo<br>[bar]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<br>[bar]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<br>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ul><li>bar</li></ul>" but got "foo<br><ul><li>bar<br></li></ul>"
+FAIL [["insertunorderedlist",""]] "foo<br>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ul><li>bar</li></ul>" but got "foo<br><ul><li>bar</li></ul>"
 PASS [["insertunorderedlist",""]] "foo<br>[bar]" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo<br>[bar]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<br>[bar]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -29,7 +29,7 @@ PASS [["insertunorderedlist",""]] "foo<br>[bar]" queryCommandState("insertunorde
 FAIL [["insertunorderedlist",""]] "foo<br>[bar]" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul>baz" but got "<ul><li>foo<br></li><li>bar<br></li></ul>baz"
+PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -38,7 +38,7 @@ PASS [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" queryCommandState("inser
 FAIL [["insertunorderedlist",""]] "f[oo<br>b]ar<br>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><p>bar</p>" but got "<p><ul><li>foo<br></li></ul>bar</p>"
+FAIL [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><p>bar</p>" but got "<p><ul><li>foo</li></ul>bar</p>"
 PASS [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -47,7 +47,7 @@ PASS [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" queryCommandState("inser
 FAIL [["insertunorderedlist",""]] "<p>[foo]<br>bar</p>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul>baz" but got "<ul><li>foo<br></li><li>bar</li></ul>baz"
+PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -56,7 +56,7 @@ PASS [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" queryCommandState("
 FAIL [["insertunorderedlist",""]] "[foo<ol><li>bar]</ol>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ul><li>bar</li><li>baz</li></ul>" but got "foo<ul><li>bar</li><li>baz<br></li></ul>"
+PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" compare innerHTML
 PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -65,7 +65,7 @@ PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" queryCommandState("
 FAIL [["insertunorderedlist",""]] "foo<ol><li>[bar</ol>baz]" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul>baz" but got "<ul><li>foo<br></li><li>bar</li></ul>baz"
+PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" compare innerHTML
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" queryCommandIndeterm("insertunorderedlist") before assert_equals: Wrong result returned expected true but got false
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -74,7 +74,7 @@ PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" queryCommandState("
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ul><li>bar</li><li>baz</li></ul>" but got "foo<br>bar<br><ul><li>baz<br></li></ul>"
+FAIL [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ul><li>bar</li><li>baz</li></ul>" but got "foo<br>bar<br><ul><li>baz</li></ul>"
 FAIL [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" queryCommandIndeterm("insertunorderedlist") before assert_equals: Wrong result returned expected true but got false
 PASS [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<ul><li>[bar</ul>baz]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -101,7 +101,7 @@ PASS [["insertunorderedlist",""]] "foo<ol><li>[bar</ol><ul><li>baz]</ul>quz" que
 FAIL [["insertunorderedlist",""]] "foo<ol><li>[bar</ol><ul><li>baz]</ul>quz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td><ul><li>bar</li></ul></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td><ul><li>bar<br></li></ul></td><td>baz</td></tr></tbody></table>"
+PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -110,7 +110,7 @@ PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</ta
 FAIL [["insertunorderedlist",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><ul><li>foo</li></ul></td><td><ul><li>bar</li></ul></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td><ul><li>foo<br></li></ul></td><td><ul><li>bar<br></li></ul></td><td>baz</td></tr></tbody></table>"
+PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<table><tbody><tr><td>fo[o<td>b]ar<td>baz</table>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -129,7 +129,7 @@ FAIL [["insertunorderedlist",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" q
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ul><li>bar</li></ul><p>baz</p>" but got "<p>foo</p><p><ul><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ul><li>bar</li></ul><p>baz</p>" but got "<p>foo</p><p><ul><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -145,7 +145,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<p>
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ul><li>bar</li></ul><p>baz</p>" but got "<p>foo</p><p><ul><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ul><li>bar</li></ul><p>baz</p>" but got "<p>foo</p><p><ul><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -160,7 +160,7 @@ PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[b
 FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<p>[bar]<p>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<p>foo</p><blockquote><ul><li>bar<br></li></ul></blockquote><p>baz</p>"
+PASS [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<p>foo<blockquote>[bar]</blockquote><p>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -188,7 +188,7 @@ FAIL [["insertunorderedlist",""]] "<dl><dt>foo<dd>bar<dt>[baz]<dd>quz</dl>" quer
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -204,7 +204,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<p
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>bar]<p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -220,7 +220,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<p>b
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -236,7 +236,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<b
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote>bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -270,7 +270,7 @@ FAIL [["insertunorderedlist",""]] "<dl><dt>foo<dd>[bar<dt>baz]<dd>quz</dl>" quer
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote><p>baz</p></blockquote>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><blockquote><p>baz</p></blockquote>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote><p>baz</p></blockquote>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><blockquote><p>baz</p></blockquote>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
@@ -286,7 +286,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<b
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote><p>baz</p></blockquote>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><blockquote><p>baz</p></blockquote>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote><p>baz</p></blockquote>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><blockquote><p>baz</p></blockquote>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
@@ -301,7 +301,7 @@ PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blo
 FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]<p>baz</blockquote>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><li>baz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li></ul><ol><li>baz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -310,7 +310,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryComman
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li></ul>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -319,7 +319,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" queryCommandState("ins
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><li>bar</li></ol>" but got "<ul><li>foo<br></li></ul><ol><li>bar</li></ol>"
+PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -328,7 +328,7 @@ PASS [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" queryCommandState("ins
 FAIL [["insertunorderedlist",""]] "[foo]<ol><li>bar</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><li>baz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li></ul><ol><li>baz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -346,7 +346,7 @@ PASS [["insertunorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" queryCommandStat
 FAIL [["insertunorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "<ul><li>foo<br></li></ul>bar<br><ol><li>baz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul>bar<br><ol><li>baz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -355,7 +355,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryComman
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<br>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "foo<br><ul><li>bar<br></li></ul><ol><li>baz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<br>bar</li></ul><ol><li>baz</li></ol>" but got "foo<br><ul><li>bar</li></ul><ol><li>baz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -364,7 +364,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryComman
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<br>[bar]<li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li><div>foo</div>bar</li></ul><ol><li>baz</li></ol>" but got "<ul><li><div style=\"display:inline !important\">foo</div>bar<br></li></ul><ol><li>baz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li><div>foo</div>bar</li></ul><ol><li>baz</li></ol>" but got "<ul><li><div style=\"display:inline !important\">foo</div>bar</li></ul><ol><li>baz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -373,7 +373,7 @@ PASS [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" quer
 FAIL [["insertunorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ul><li>bar</li></ul><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<ul><li>bar<br></li></ul><ol><li>baz</li></ol></li><li>quz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ul><li>bar</li></ul><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<ul><li>bar</li></ul><ol><li>baz</li></ol></li><li>quz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -382,7 +382,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><ul><li>baz</li></ul><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><ul><li>baz<br></li></ul></li><li>quz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><ul><li>baz</li></ul><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><ul><li>baz</li></ul></li><li>quz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -391,7 +391,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ul><li>bar</li></ul><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li><ul><li>bar<br></li></ul><ol><li>baz</li></ol><li>quz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -400,7 +400,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><ul><li>baz</li></ul><li>quz</li></ol>" but got "<ol><li>foo</li><ol><li>bar</li></ol><ul><li>baz<br></li></ul><li>quz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -409,7 +409,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo<br></li></ul><ol><li>bar</li></ol><ol><li>baz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol><ol><li>baz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -418,7 +418,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" qu
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo<br></li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -427,7 +427,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li></ul><ol><li>baz</li></ol><ol><li>quz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><li>baz</li></ol><ol><li>quz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -436,7 +436,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li></ul><ol><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li></ul><ol><ol><li>baz</li></ol><li>quz</li></ol>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -445,7 +445,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><ul><li>quz</li></ul>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><ul><li>quz<br></li></ul>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -454,7 +454,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><ul><li>quz</li></ul>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><ul><li>quz<br></li></ul>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -463,7 +463,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[q
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><li>bar</li><li>baz</li></ul>" but got "<ol><li>foo</li></ol><ul><li>bar<br></li><li>baz</li></ul>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -472,7 +472,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryComman
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo<br></li><li>bar<br></li></ul><ol><li>baz</li></ol>"
+FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li><li>bar</li></ul><ol><li>baz</li></ol>"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -481,7 +481,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" qu
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><ul><li>bar</li></ul><li>baz</li></ul>" but got "<ol><li>foo<ul><li>bar<br></li></ul></li></ol><ul><li>baz<br></li></ul>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><ul><ul><li>bar</li></ul><li>baz</li></ul>" but got "<ol><li>foo<ul><li>bar</li></ul></li></ol><ul><li>baz</li></ul>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -499,7 +499,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>e
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo<br></li></ul><ol><li>bar</li></ol>baz<br>"
+FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol>baz<br>"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -517,7 +517,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryC
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><ul><li>baz</li></ul>" but got "foo<ol><li>bar</li></ol><ul><li>baz<br></li></ul>"
+FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><ul><li>baz</li></ul>" but got "foo<ol><li>bar</li></ol><ul><li>baz</li></ul>"
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -526,7 +526,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryC
 FAIL [["insertunorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo<br></li><li>bar<br></li></ul>baz<br>"
+FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><ol><li>baz</li></ol>" but got "<ul><li>foo</li><li>bar</li></ul>baz<br>"
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -567,7 +567,7 @@ PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo
 FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo<li>[bar]<li>baz</ul>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul>"
+PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -576,7 +576,7 @@ PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" queryCommandState("ins
 FAIL [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul>" but got "<ul><li>foo<br></li><li>bar</li></ul>"
+PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" compare innerHTML
 PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -585,7 +585,7 @@ PASS [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" queryCommandState("ins
 FAIL [["insertunorderedlist",""]] "[foo]<ul><li>bar</ul>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li><li>baz</li></ul>" but got "<ul><li>foo</li><li>bar<br></li><li>baz</li></ul>"
+PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ul><li>foo</ul>[bar]<ul><li>baz</ul>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1192,7 +1192,7 @@ PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "foo<ol><li>
 FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz]</ul>quz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ol><li>bar</li></ol><ul><li>baz</li><li>quz</li></ul>" but got "foo<ol><li>bar</li></ol>baz<br><ul><li>quz<br></li></ul>"
+FAIL [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<ol><li>bar</li></ol><ul><li>baz</li><li>quz</li></ul>" but got "foo<ol><li>bar</li></ol>baz<br><ul><li>quz</li></ul>"
 FAIL [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" queryCommandIndeterm("insertunorderedlist") before assert_equals: Wrong result returned expected true but got false
 PASS [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<ol><li>bar</ol><ul><li>[baz</ul>quz]" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1233,7 +1233,7 @@ PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "foo<ul><li>
 FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "foo<ul><li>[bar]</ul><ol><li>baz</ol>quz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li>bar</li></ul><ol><li>baz</li></ol>quz" but got "<ul><li>foo<br></li><li>bar</li></ul><ol><li>baz</li></ol>quz"
+PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" compare innerHTML
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" queryCommandIndeterm("insertunorderedlist") before assert_equals: Wrong result returned expected true but got false
 PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1242,7 +1242,7 @@ PASS [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" que
 FAIL [["insertunorderedlist",""]] "[foo<ul><li>bar]</ul><ol><li>baz</ol>quz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote>bar</blockquote>baz" but got "<ul><li>foo<br></li></ul><blockquote>bar</blockquote>baz"
+PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1251,7 +1251,7 @@ PASS [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" queryCo
 FAIL [["insertunorderedlist",""]] "[foo]<blockquote>bar</blockquote>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<blockquote><ul><li>bar</li></ul></blockquote>baz" but got "foo<blockquote><ul><li>bar<br></li></ul></blockquote>baz"
+PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1260,7 +1260,7 @@ PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" queryCo
 FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]</blockquote>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul>baz" but got "<ul><li>foo<br></li><li>bar<br></li></ul>baz"
+FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul>baz" but got "<ul><li>foo</li><li>bar</li></ul>baz"
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1269,7 +1269,7 @@ PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" queryCo
 FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]</blockquote>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul></blockquote>baz" but got "<ol><li>foo</li></ol><blockquote><ul><li>bar<br></li></ul></blockquote>baz"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1278,7 +1278,7 @@ PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]</blockquote>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote><ol><li>bar</li></ol></blockquote>baz" but got "<ul><li>foo<br></li></ul><blockquote><ol><li>bar</li></ol></blockquote>baz"
+PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" compare innerHTML
 PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1287,7 +1287,7 @@ PASS [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote
 FAIL [["insertunorderedlist",""]] "[foo]<blockquote><ol><li>bar</ol></blockquote>baz" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<blockquote><ul><li>bar</li></ul>baz</blockquote>" but got "foo<blockquote><ul><li>bar<br></li></ul>baz</blockquote>"
+PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" compare innerHTML
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1296,7 +1296,7 @@ PASS [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" que
 FAIL [["insertunorderedlist",""]] "foo<blockquote>[bar]<br>baz</blockquote>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote>baz</blockquote>" but got "<ul><li>foo<br></li><li>bar<br></li></ul><blockquote>baz</blockquote>"
+FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><blockquote>baz</blockquote>" but got "<ul><li>foo</li><li>bar</li></ul><blockquote>baz</blockquote>"
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1305,7 +1305,7 @@ PASS [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" que
 FAIL [["insertunorderedlist",""]] "[foo<blockquote>bar]<br>baz</blockquote>" queryCommandValue("insertunorderedlist") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>": execCommand("insertunorderedlist", false, "") return value
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" checks for modifications to non-editable content
-FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul>baz</blockquote>" but got "<ol><li>foo</li></ol><blockquote><ul><li>bar<br></li></ul>baz</blockquote>"
+PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" compare innerHTML
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" queryCommandIndeterm("insertunorderedlist") before
 PASS [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" queryCommandState("insertunorderedlist") before
 FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blockquote>" queryCommandValue("insertunorderedlist") before assert_equals: Wrong result returned expected "" but got "false"
@@ -1315,7 +1315,7 @@ FAIL [["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote>[bar]<br>baz</blo
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote><p>bar</p></blockquote><p>baz</p>" but got "<p><ul><li>foo<br></li></ul></p><blockquote><p>bar</p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote><p>bar</p></blockquote><p>baz</p>" but got "<p><ul><li>foo</li></ul></p><blockquote><p>bar</p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1331,7 +1331,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote><p>bar</p></blockquote><p>baz</p>" but got "<p><ul><li>foo<br></li></ul></p><blockquote><p>bar</p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><blockquote><p>bar</p></blockquote><p>baz</p>" but got "<p><ul><li>foo</li></ul></p><blockquote><p>bar</p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<blockquote><p>bar</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1347,7 +1347,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]<bl
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<p>foo</p><blockquote><p><ul><li>bar<br></li></ul></p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<p>foo</p><blockquote><p><ul><li>bar</li></ul></p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1363,7 +1363,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>foo<bl
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<p>foo</p><blockquote><p><ul><li>bar<br></li></ul></p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<p>foo</p><blockquote><p><ul><li>bar</li></ul></p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<blockquote><p>[bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1379,7 +1379,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>foo<bloc
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1395,7 +1395,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo<b
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo<br></li><li>bar<br></li></ul></p><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><ul><li>bar</li></ul></ul><p>baz</p>" but got "<p><ul><li>foo</li><li>bar</li></ul></p><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blockquote><p>bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1411,7 +1411,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo<blo
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<ol><li>foo</li></ol><blockquote><p><ul><li>bar<br></li></ul></p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<ol><li>foo</li></ol><blockquote><p><ul><li>bar</li></ul></p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1427,7 +1427,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ol><li>f
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<ol><li>foo</li></ol><blockquote><p><ul><li>bar<br></li></ul></p></blockquote><p>baz</p>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><blockquote><ul><li>bar</li></ul></blockquote><p>baz</p>" but got "<ol><li>foo</li></ol><blockquote><p><ul><li>bar</li></ul></p></blockquote><p>baz</p>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ol><li>foo</ol><blockquote><p>[bar]</blockquote><p>baz" queryCommandValue("defaultparagraphseparator") before
@@ -1851,7 +1851,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul style=t
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul> "
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got "<ul><li>foo</li><li>bar</li></ul> "
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandValue("defaultparagraphseparator") before
@@ -1867,7 +1867,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>f
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul> "
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got "<ul><li>foo</li><li>bar</li></ul> "
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]" queryCommandValue("defaultparagraphseparator") before
@@ -1883,7 +1883,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got " <ul><li>foo<br></li><li>bar</li></ul>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got " <ul><li>foo</li><li>bar</li></ul>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandValue("defaultparagraphseparator") before
@@ -1899,7 +1899,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<p>[foo]<
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got " <ul><li>foo<br></li><li>bar</li></ul>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li></ul>" but got " <ul><li>foo</li><li>bar</li></ul>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p> <ul><li>bar</ul>" queryCommandValue("defaultparagraphseparator") before
@@ -1915,7 +1915,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<p>[foo]</p
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li> <li>baz</li></ul>" but got "<ul><li>foo</li><li>bar<br></li><li>baz</li></ul>  "
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li> <li>baz</li></ul>" but got "<ul><li>foo</li><li>bar</li><li>baz</li></ul>  "
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandValue("defaultparagraphseparator") before
@@ -1931,7 +1931,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "<ul><li>f
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li> <li>baz</li></ul>" but got "<ul><li>foo</li><li>bar<br></li><li>baz</li></ul>  "
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li> <li>bar</li> <li>baz</li></ul>" but got "<ul><li>foo</li><li>bar</li><li>baz</li></ul>  "
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo</ul> <p>[bar]</p> <ul><li>baz</ul>" queryCommandValue("defaultparagraphseparator") before
@@ -1947,7 +1947,7 @@ FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "<ul><li>foo
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li style=\"font-size:1.3em\">1</li><li style=\"font-size:1.1em\">2</li></ul>" but got "<div style=\"font-size:1.3em\"><ul><li>1<br></li><li>2<br></li></ul></div>"
+FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li style=\"font-size:1.3em\">1</li><li style=\"font-size:1.1em\">2</li></ul>" but got "<div style=\"font-size:1.3em\"><ul><li>1</li><li>2</li></ul></div>"
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandValue("defaultparagraphseparator") before
@@ -1963,7 +1963,7 @@ FAIL [["defaultparagraphseparator","div"],["insertunorderedlist",""]] "{<div sty
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}": execCommand("insertunorderedlist", false, "") return value
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li style=\"font-size:1.3em\">1</li><li style=\"font-size:1.1em\">2</li></ul>" but got "<div style=\"font-size:1.3em\"><ul><li>1<br></li><li>2<br></li></ul></div>"
+FAIL [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li style=\"font-size:1.3em\">1</li><li style=\"font-size:1.1em\">2</li></ul>" but got "<div style=\"font-size:1.3em\"><ul><li>1</li><li>2</li></ul></div>"
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["insertunorderedlist",""]] "{<div style=\"font-size: 1.3em\">1</div><div style=\"font-size: 1.1em\">2</div>}" queryCommandValue("defaultparagraphseparator") before

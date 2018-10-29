@@ -127,7 +127,7 @@ void DistillerImpl::DistillPage(const GURL& url,
 
 void DistillerImpl::DistillNextPage() {
   if (!waiting_pages_.empty()) {
-    std::map<int, GURL>::iterator front = waiting_pages_.begin();
+    auto front = waiting_pages_.begin();
     int page_num = front->first;
     const GURL url = front->second;
 
@@ -382,9 +382,8 @@ const ArticleDistillationUpdate DistillerImpl::CreateDistillationUpdate()
 
   std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto> >
       update_pages;
-  for (std::map<int, size_t>::const_iterator it = finished_pages_index_.begin();
-       it != finished_pages_index_.end();
-       ++it) {
+  for (auto it = finished_pages_index_.begin();
+       it != finished_pages_index_.end(); ++it) {
     update_pages.push_back(pages_[it->second]->distilled_page_proto);
   }
   return ArticleDistillationUpdate(update_pages, has_next_page, has_prev_page);
@@ -397,7 +396,7 @@ void DistillerImpl::RunDistillerCallbackIfDone() {
     std::unique_ptr<DistilledArticleProto> article_proto(
         new DistilledArticleProto());
     // Stitch the pages back into the article.
-    for (std::map<int, size_t>::iterator it = finished_pages_index_.begin();
+    for (auto it = finished_pages_index_.begin();
          it != finished_pages_index_.end();) {
       DistilledPageData* page_data = GetPageAtIndex(it->second);
       *(article_proto->add_pages()) = page_data->distilled_page_proto->data;

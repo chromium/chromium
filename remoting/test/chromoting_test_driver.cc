@@ -165,6 +165,8 @@ int main(int argc, char* argv[]) {
 
   // Do not retry if tests fails.
   command_line->AppendSwitchASCII(switches::kTestLauncherRetryLimit, "0");
+  command_line->AppendSwitchASCII(
+      switches::kIsolatedScriptTestLauncherRetryLimit, "0");
 
   // Different tests may require access to the same host if run in parallel.
   // To avoid shared resource contention, tests will be run one at a time.

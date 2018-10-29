@@ -238,7 +238,7 @@ void PepperWebPluginImpl::DidReceiveResponse(
   instance_->HandleDocumentLoad(response);
 }
 
-void PepperWebPluginImpl::DidReceiveData(const char* data, int data_length) {
+void PepperWebPluginImpl::DidReceiveData(const char* data, size_t data_length) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
   if (!instance_)

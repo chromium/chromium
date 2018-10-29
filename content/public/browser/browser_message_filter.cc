@@ -11,10 +11,12 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
+#include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "ipc/ipc_sync_message.h"
@@ -73,8 +75,8 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
       return DispatchMessage(message);
     }
 
-    BrowserThread::PostTask(
-        thread, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {thread},
         base::BindOnce(base::IgnoreResult(&Internal::DispatchMessage), this,
                        message));
     return true;
@@ -144,8 +146,8 @@ bool BrowserMessageFilter::Send(IPC::Message* message) {
   }
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(base::IgnoreResult(&BrowserMessageFilter::Send), this,
                        message));
     return true;

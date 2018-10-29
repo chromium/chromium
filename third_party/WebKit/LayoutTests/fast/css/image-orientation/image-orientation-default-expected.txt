@@ -4,14 +4,15 @@ The images should not rotate respecting their EXIF orientation since no image-or
 Normal 
 Flipped horizontally 
 Rotated 180° 
-Flipped vertically 
+Flipped vertically
 
 Rotated 90° CCW and flipped vertically 
 Rotated 90° CCW 
-Rotated 90° CW and flipped vertically  
-Rotated 90° CW 
+Rotated 90° CW and flipped vertically 
+Rotated 90° CW
 
-Undefined (invalid value) 
+Undefined (invalid value)
+
 img1 size = 100px by 50px
 img2 size = 100px by 50px
 img3 size = 100px by 50px

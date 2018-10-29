@@ -30,11 +30,11 @@
 #include "base/optional.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_http_header_map.h"
 #include "third_party/blink/public/platform/web_http_header_set.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_request.h"
 
 namespace blink {
 
@@ -50,8 +50,7 @@ BLINK_PLATFORM_EXPORT bool IsOnAccessControlResponseHeaderWhitelist(
     const WebString&);
 
 // Checks whether request mode 'no-cors' is allowed for a certain context.
-BLINK_PLATFORM_EXPORT bool IsNoCORSAllowedContext(
-    WebURLRequest::RequestContext);
+BLINK_PLATFORM_EXPORT bool IsNoCORSAllowedContext(mojom::RequestContextType);
 
 }  // namespace WebCORS
 

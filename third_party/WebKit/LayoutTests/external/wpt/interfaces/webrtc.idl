@@ -297,6 +297,7 @@ dictionary RTCRtpSendParameters : RTCRtpParameters {
              required DOMString transactionId;
              required sequence<RTCRtpEncodingParameters> encodings;
              RTCDegradationPreference degradationPreference = "balanced";
+             RTCPriorityType priority = "low";
 };
 
 dictionary RTCRtpReceiveParameters : RTCRtpParameters {
@@ -314,7 +315,6 @@ dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
              octet codecPayloadType;
              RTCDtxStatus dtx;
              boolean active = true;
-             RTCPriorityType priority = "low";
              unsigned long ptime;
              unsigned long maxBitrate;
              double maxFramerate;
@@ -520,6 +520,7 @@ enum RTCSctpTransportState {
     readonly        attribute RTCPriorityType priority;
     readonly        attribute RTCDataChannelState readyState;
     readonly        attribute unsigned long bufferedAmount;
+                    [EnforceRange]
                     attribute unsigned long bufferedAmountLowThreshold;
                     attribute EventHandler onopen;
                     attribute EventHandler onbufferedamountlow;
@@ -536,7 +537,9 @@ enum RTCSctpTransportState {
 
 dictionary RTCDataChannelInit {
              boolean ordered = true;
+             [EnforceRange]
              unsigned short maxPacketLifeTime;
+             [EnforceRange]
              unsigned short maxRetransmits;
              USVString protocol = "";
              boolean negotiated = false;

@@ -4,8 +4,10 @@
 
 #include "content/browser/loader/loader_io_thread_notifier.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -28,8 +30,8 @@ LoaderIOThreadNotifier::~LoaderIOThreadNotifier() {}
 
 void LoaderIOThreadNotifier::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&NotifyRenderFrameDeletedOnIO,
                      static_cast<RenderFrameHostImpl*>(render_frame_host)
                          ->GetGlobalFrameRoutingId()));

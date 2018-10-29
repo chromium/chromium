@@ -8,11 +8,13 @@
 #include "base/bind_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/view_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 
 namespace content {
 namespace {
@@ -39,7 +41,7 @@ RenderWidgetHelper::~RenderWidgetHelper() {
 
   // Delete this RWH from the map if it is found.
   WidgetHelperMap& widget_map = g_widget_helpers.Get();
-  WidgetHelperMap::iterator it = widget_map.find(render_process_id_);
+  auto it = widget_map.find(render_process_id_);
   if (it != widget_map.end() && it->second == this)
     widget_map.erase(it);
 }
@@ -50,9 +52,9 @@ void RenderWidgetHelper::Init(
   render_process_id_ = render_process_id;
   resource_dispatcher_host_ = resource_dispatcher_host;
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&AddWidgetHelper, render_process_id_,
-                                         base::WrapRefCounted(this)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&AddWidgetHelper, render_process_id_,
+                                          base::WrapRefCounted(this)));
 }
 
 int RenderWidgetHelper::GetNextRoutingID() {
@@ -73,8 +75,8 @@ void RenderWidgetHelper::CreateNewWidget(int opener_id,
                                          int* route_id) {
   *route_id = GetNextRoutingID();
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RenderWidgetHelper::OnCreateWidgetOnUI, this, opener_id,
                      *route_id, widget.PassInterface()));
 }
@@ -83,8 +85,8 @@ void RenderWidgetHelper::CreateNewFullscreenWidget(int opener_id,
                                                    mojom::WidgetPtr widget,
                                                    int* route_id) {
   *route_id = GetNextRoutingID();
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RenderWidgetHelper::OnCreateFullscreenWidgetOnUI, this,
                      opener_id, *route_id, widget.PassInterface()));
 }

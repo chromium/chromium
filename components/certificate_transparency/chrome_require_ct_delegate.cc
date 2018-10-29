@@ -232,8 +232,7 @@ bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname,
     return false;
 
   // Determine the overall policy by determining the most specific policy.
-  std::map<url_matcher::URLMatcherConditionSet::ID, Filter>::const_iterator it =
-      filters_.begin();
+  auto it = filters_.begin();
   const Filter* active_filter = nullptr;
   for (const auto& match : matching_ids) {
     // Because both |filters_| and |matching_ids| are sorted on the ID,

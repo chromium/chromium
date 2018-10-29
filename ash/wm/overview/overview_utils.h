@@ -79,6 +79,9 @@ gfx::Rect GetTargetBoundsInScreen(aura::Window* window);
 // adjusted for the transient child windows.
 void SetTransform(aura::Window* window, const gfx::Transform& transform);
 
+// Checks if we are currently in sliding up on the shelf to hide overview mode.
+bool IsSlidingOutOverviewFromShelf();
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_UTILS_H_

@@ -17,9 +17,9 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/devices/input_device.h"
-#include "ui/events/devices/input_device_manager.h"
 #include "ui/events/event.h"
+#include "ui/keyboard/keyboard_controller.h"
+#include "ui/keyboard/keyboard_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace exo {
@@ -112,17 +112,9 @@ bool ConsumedByIme(Surface* focus, const ui::KeyEvent* event) {
   return false;
 }
 
-bool IsPhysicalKeyboardEnabled() {
-  // The internal keyboard is enabled if tablet mode is not enabled.
-  if (!WMHelper::GetInstance()->IsTabletModeWindowManagerEnabled())
-    return true;
-
-  for (auto& keyboard :
-       ui::InputDeviceManager::GetInstance()->GetKeyboardDevices()) {
-    if (keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
-      return true;
-  }
-  return false;
+bool IsVirtualKeyboardEnabled() {
+  return keyboard::GetAccessibilityKeyboardEnabled() ||
+         keyboard::GetTouchKeyboardEnabled();
 }
 
 bool IsReservedAccelerator(const ui::KeyEvent* event) {
@@ -165,11 +157,9 @@ Keyboard::Keyboard(KeyboardDelegate* delegate, Seat* seat)
       expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
           kExpirationDelayForPendingKeyAcksMs)),
       weak_ptr_factory_(this) {
-  auto* helper = WMHelper::GetInstance();
   AddEventHandler();
   seat_->AddObserver(this);
-  helper->AddTabletModeObserver(this);
-  helper->AddInputDeviceEventObserver(this);
+  keyboard::KeyboardController::Get()->AddObserver(this);
   OnSurfaceFocused(seat_->GetFocusedSurface());
 }
 
@@ -178,11 +168,9 @@ Keyboard::~Keyboard() {
     observer.OnKeyboardDestroying(this);
   if (focus_)
     focus_->RemoveSurfaceObserver(this);
-  auto* helper = WMHelper::GetInstance();
   RemoveEventHandler();
   seat_->RemoveObserver(this);
-  helper->RemoveTabletModeObserver(this);
-  helper->RemoveInputDeviceEventObserver(this);
+  keyboard::KeyboardController::Get()->RemoveObserver(this);
 }
 
 bool Keyboard::HasDeviceConfigurationDelegate() const {
@@ -192,7 +180,7 @@ bool Keyboard::HasDeviceConfigurationDelegate() const {
 void Keyboard::SetDeviceConfigurationDelegate(
     KeyboardDeviceConfigurationDelegate* delegate) {
   device_configuration_delegate_ = delegate;
-  OnKeyboardDeviceConfigurationChanged();
+  OnKeyboardEnabledChanged(IsVirtualKeyboardEnabled());
 }
 
 void Keyboard::AddObserver(KeyboardObserver* observer) {
@@ -331,29 +319,6 @@ void Keyboard::OnSurfaceDestroying(Surface* surface) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ui::InputDeviceEventObserver overrides:
-
-void Keyboard::OnKeyboardDeviceConfigurationChanged() {
-  if (device_configuration_delegate_) {
-    device_configuration_delegate_->OnKeyboardTypeChanged(
-        IsPhysicalKeyboardEnabled());
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ash::TabletModeObserver overrides:
-
-void Keyboard::OnTabletModeStarted() {
-  OnKeyboardDeviceConfigurationChanged();
-}
-
-void Keyboard::OnTabletModeEnding() {}
-
-void Keyboard::OnTabletModeEnded() {
-  OnKeyboardDeviceConfigurationChanged();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // SeatObserver overrides:
 
 void Keyboard::OnSurfaceFocusing(Surface* gaining_focus) {}
@@ -365,6 +330,19 @@ void Keyboard::OnSurfaceFocused(Surface* gained_focus) {
           : nullptr;
   if (gained_focus_surface != focus_)
     SetFocus(gained_focus_surface);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// keyboard::KeyboardControllerObserver overrides:
+
+void Keyboard::OnKeyboardEnabledChanged(bool enabled) {
+  if (device_configuration_delegate_) {
+    // Ignore kAndroidDisabled which affects |enabled| and just test for a11y
+    // and touch enabled keyboards. TODO(yhanada): Fix this using an Android
+    // specific KeyboardUI implementation. https://crbug.com/897655.
+    bool is_physical = !IsVirtualKeyboardEnabled();
+    device_configuration_delegate_->OnKeyboardTypeChanged(is_physical);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

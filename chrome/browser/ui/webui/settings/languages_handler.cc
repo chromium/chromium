@@ -16,6 +16,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/base/locale_util.h"
+#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -70,25 +71,19 @@ void LanguagesHandler::HandleSetProspectiveUILanguage(
   std::string language_code;
   CHECK(args->GetString(0, &language_code));
 
-#if defined(OS_CHROMEOS)
-  // check if prospectiveUILanguage is allowed by policy (AllowedUILocales)
-  if (!chromeos::locale_util::IsAllowedUILocale(language_code,
-                                                profile_->GetPrefs())) {
-    return;
-  }
-#endif
-
 #if defined(OS_WIN)
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(language::prefs::kApplicationLocale, language_code);
 #elif defined(OS_CHROMEOS)
-  // Secondary users and public session users cannot change the locale.
+  // Secondary users and public session users (except for demo session users)
+  // cannot change the locale.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user &&
       user->GetAccountId() == user_manager->GetPrimaryUser()->GetAccountId() &&
-      user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+      (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+       chromeos::DemoSession::IsDeviceInDemoMode())) {
     profile_->ChangeAppLocale(language_code,
                               Profile::APP_LOCALE_CHANGED_VIA_SETTINGS);
   }

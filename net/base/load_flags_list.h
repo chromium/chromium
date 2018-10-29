@@ -62,9 +62,6 @@ LOAD_FLAG(DO_NOT_SEND_COOKIES, 1 << 8)
 // https://crbug.com/799935.
 LOAD_FLAG(DO_NOT_SEND_AUTH_DATA, 1 << 9)
 
-// This should only be used for testing (set by HttpNetworkTransaction).
-LOAD_FLAG(IGNORE_ALL_CERT_ERRORS, 1 << 10)
-
 // DO NOT USE THIS FLAG
 // The network stack should not have frame level knowledge.  Any pre-connect
 // or pre-resolution requiring that knowledge should be done from the
@@ -72,32 +69,32 @@ LOAD_FLAG(IGNORE_ALL_CERT_ERRORS, 1 << 10)
 // Indicate that this is a top level frame, so that we don't assume it is a
 // subresource and speculatively pre-connect or pre-resolve when a referring
 // page is loaded.
-LOAD_FLAG(MAIN_FRAME_DEPRECATED, 1 << 11)
+LOAD_FLAG(MAIN_FRAME_DEPRECATED, 1 << 10)
 
 // Indicates that this load was motivated by the rel=prefetch feature,
 // and is (in theory) not intended for the current frame.
-LOAD_FLAG(PREFETCH, 1 << 12)
+LOAD_FLAG(PREFETCH, 1 << 11)
 
 // Indicates that this load could cause deadlock if it has to wait for another
 // request. Overrides socket limits. Must always be used with MAXIMUM_PRIORITY.
-LOAD_FLAG(IGNORE_LIMITS, 1 << 13)
+LOAD_FLAG(IGNORE_LIMITS, 1 << 12)
 
 // Indicates that the operation is somewhat likely to be due to an
 // explicit user action. This can be used as a hint to treat the
 // request with higher priority.
-LOAD_FLAG(MAYBE_USER_GESTURE, 1 << 14)
+LOAD_FLAG(MAYBE_USER_GESTURE, 1 << 13)
 
 // Indicates that the username:password portion of the URL should not
 // be honored, but that other forms of authority may be used.
-LOAD_FLAG(DO_NOT_USE_EMBEDDED_IDENTITY, 1 << 15)
+LOAD_FLAG(DO_NOT_USE_EMBEDDED_IDENTITY, 1 << 14)
 
 // Indicates that this request is not to be migrated to a cellular network when
 // QUIC connection migration is enabled.
-LOAD_FLAG(DISABLE_CONNECTION_MIGRATION_TO_CELLULAR, 1 << 16)
+LOAD_FLAG(DISABLE_CONNECTION_MIGRATION_TO_CELLULAR, 1 << 15)
 
 // Indicates that the cache should not check that the request matches the
 // response's vary header.
-LOAD_FLAG(SKIP_VARY_CHECK, 1 << 17)
+LOAD_FLAG(SKIP_VARY_CHECK, 1 << 16)
 
 // The creator of this URLRequest wishes to receive stale responses when allowed
 // by the "Cache-Control: stale-while-revalidate" directive and is able to issue
@@ -107,4 +104,4 @@ LOAD_FLAG(SKIP_VARY_CHECK, 1 << 17)
 // resource by issuing a new request without this flag set. If the revalidation
 // does not complete in 60 seconds, the cache treat the stale resource as
 // invalid, as it did not specify stale-while-revalidate.
-LOAD_FLAG(SUPPORT_ASYNC_REVALIDATION, 1 << 18)
+LOAD_FLAG(SUPPORT_ASYNC_REVALIDATION, 1 << 17)

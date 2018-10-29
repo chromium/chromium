@@ -30,8 +30,9 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   // being setup.
   void Initialize(const base::FilePath& path, int max_bytes);
 
-  // Call on the IO thread to get the code cache instance.
-  GeneratedCodeCache* generated_code_cache() const;
+  // Call on the IO thread to get the code cache instances.
+  GeneratedCodeCache* generated_js_code_cache() const;
+  GeneratedCodeCache* generated_wasm_code_cache() const;
 
  private:
   friend class base::RefCountedThreadSafe<GeneratedCodeCacheContext>;
@@ -41,7 +42,9 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
 
   // Created, used and deleted on the IO thread.
   std::unique_ptr<GeneratedCodeCache, BrowserThread::DeleteOnIOThread>
-      generated_code_cache_;
+      generated_js_code_cache_;
+  std::unique_ptr<GeneratedCodeCache, BrowserThread::DeleteOnIOThread>
+      generated_wasm_code_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCacheContext);
 };

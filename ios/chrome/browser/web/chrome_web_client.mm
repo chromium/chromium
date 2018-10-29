@@ -11,7 +11,6 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
@@ -187,9 +186,7 @@ NSString* ChromeWebClient::GetDocumentStartScriptForMainFrame(
     [scripts addObject:GetPageScript(@"credential_manager")];
   }
 
-  if (base::FeatureList::IsEnabled(payments::features::kWebPayments)) {
-    [scripts addObject:GetPageScript(@"payment_request")];
-  }
+  [scripts addObject:GetPageScript(@"payment_request")];
 
   return [scripts componentsJoinedByString:@";"];
 }
@@ -214,6 +211,15 @@ void ChromeWebClient::PrepareErrorPage(NSError* error,
                                        bool is_off_the_record,
                                        NSString** error_html) {
   DCHECK(error);
+
+  // Return an empty page for the NTP.
+  NSString* url_spec = error.userInfo[NSURLErrorFailingURLStringErrorKey];
+  GURL url(base::SysNSStringToUTF16(url_spec));
+  if (url.GetOrigin() == kChromeUINewTabURL) {
+    *error_html = @"";
+    return;
+  }
+
   *error_html = GetErrorPage(error, is_post, is_off_the_record);
 }
 

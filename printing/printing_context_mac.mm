@@ -111,7 +111,7 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
   // Set the print job title text.
   gfx::NativeView parent_view = delegate_->GetParentView();
   if (parent_view) {
-    NSString* job_title = [[parent_view window] title];
+    NSString* job_title = [[parent_view.GetNativeNSView() window] title];
     if (job_title) {
       PMPrintSettings printSettings =
           (PMPrintSettings)[printInfo PMPrintSettings];

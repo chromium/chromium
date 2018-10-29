@@ -46,7 +46,6 @@ class FakeFlingScheduler : public FlingScheduler {
 };
 
 class FlingSchedulerTest : public testing::Test,
-                           public GestureEventQueueClient,
                            public FlingControllerEventSenderClient {
  public:
   FlingSchedulerTest() {}
@@ -55,10 +54,8 @@ class FlingSchedulerTest : public testing::Test,
     widget_host_->SetView(view_);
 
     fling_scheduler_ = std::make_unique<FakeFlingScheduler>(widget_host_);
-    queue_ = std::make_unique<GestureEventQueue>(
-        this, this, fling_scheduler_.get(), GestureEventQueue::Config());
     fling_controller_ = std::make_unique<FlingController>(
-        queue_.get(), this, fling_scheduler_.get(), FlingController::Config());
+        this, fling_scheduler_.get(), FlingController::Config());
   }
 
   void TearDown() override {
@@ -103,13 +100,6 @@ class FlingSchedulerTest : public testing::Test,
       fling_controller_->ProcessGestureFlingCancel(fling_cancel_with_latency);
   }
 
-  // GestureEventQueueClient
-  void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) override {}
-  void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
-                         InputEventAckSource ack_source,
-                         InputEventAckState ack_result) override {}
-
   // FlingControllerEventSenderClient
   void SendGeneratedWheelEvent(
       const MouseWheelEventWithLatencyInfo& wheel_event) override {}
@@ -121,7 +111,6 @@ class FlingSchedulerTest : public testing::Test,
 
  private:
   TestBrowserThreadBundle thread_bundle_;
-  std::unique_ptr<GestureEventQueue> queue_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   RenderWidgetHostImpl* widget_host_;
   MockRenderProcessHost* process_host_;

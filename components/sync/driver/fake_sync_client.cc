@@ -59,6 +59,10 @@ history::HistoryService* FakeSyncClient::GetHistoryService() {
   return nullptr;
 }
 
+sync_sessions::SessionSyncService* FakeSyncClient::GetSessionSyncService() {
+  return nullptr;
+}
+
 bool FakeSyncClient::HasPasswordStore() {
   return false;
 }
@@ -88,10 +92,6 @@ invalidation::InvalidationService* FakeSyncClient::GetInvalidationService() {
 
 scoped_refptr<ExtensionsActivity> FakeSyncClient::GetExtensionsActivity() {
   return scoped_refptr<ExtensionsActivity>();
-}
-
-sync_sessions::SyncSessionsClient* FakeSyncClient::GetSyncSessionsClient() {
-  return nullptr;
 }
 
 base::WeakPtr<SyncableService> FakeSyncClient::GetSyncableServiceForType(

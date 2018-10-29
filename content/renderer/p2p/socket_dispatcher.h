@@ -63,7 +63,8 @@ class CONTENT_EXPORT P2PSocketDispatcher
   void RemoveNetworkListObserver(
       NetworkListObserver* network_list_observer) override;
 
-  network::mojom::P2PSocketManager* GetP2PSocketManager();
+  scoped_refptr<network::mojom::ThreadSafeP2PSocketManagerPtr>
+  GetP2PSocketManager();
 
  private:
   friend class base::RefCountedThreadSafe<P2PSocketDispatcher>;
@@ -79,6 +80,8 @@ class CONTENT_EXPORT P2PSocketDispatcher
   void RequestInterfaceIfNecessary();
   void RequestNetworkEventsIfNecessary();
 
+  void OnConnectionError();
+
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<base::ObserverListThreadSafe<NetworkListObserver>>
@@ -87,6 +90,7 @@ class CONTENT_EXPORT P2PSocketDispatcher
   network::mojom::P2PSocketManagerRequest p2p_socket_manager_request_;
   scoped_refptr<network::mojom::ThreadSafeP2PSocketManagerPtr>
       thread_safe_p2p_socket_manager_;
+  base::Lock p2p_socket_manager_lock_;
 
   // Cached from last |NetworkListChanged| call.
   std::vector<net::NetworkInterface> networks_;

@@ -32,7 +32,6 @@ class WebContents;
 
 namespace gfx {
 class Rect;
-class Size;
 }
 
 namespace printing {
@@ -49,11 +48,6 @@ class PrintPreviewMessageHandler
   // content::WebContentsObserver implementation.
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* render_frame_host) override;
-
-  // Gets a symmetrical printable area.  It is defined as a static function to
-  // make writing unit tests easier.
-  static gfx::Rect GetSymmetricalPrintableArea(const gfx::Size& page_size,
-                                               const gfx::Rect& printable_area);
 
  private:
   friend class content::WebContentsUserData<PrintPreviewMessageHandler>;

@@ -113,15 +113,15 @@ PP_Bool PPB_CharSet_Shared::UTF16ToCharSet(
 
   // Setup our error handler.
   switch (on_error) {
-    case PP_CHARSET_CONVERSIONERROR_FAIL:
+    case PP_CHARSET_TRUSTED_CONVERSIONERROR_FAIL:
       ucnv_setFromUCallBack(converter, UCNV_FROM_U_CALLBACK_STOP, 0,
                             NULL, NULL, &status);
       break;
-    case PP_CHARSET_CONVERSIONERROR_SKIP:
+    case PP_CHARSET_TRUSTED_CONVERSIONERROR_SKIP:
       ucnv_setFromUCallBack(converter, UCNV_FROM_U_CALLBACK_SKIP, 0,
                             NULL, NULL, &status);
       break;
-    case PP_CHARSET_CONVERSIONERROR_SUBSTITUTE: {
+    case PP_CHARSET_TRUSTED_CONVERSIONERROR_SUBSTITUTE: {
       // ICU sets the substitution char for some character sets (like latin1)
       // to be the ASCII "substitution character" (26). We want to use '?'
       // instead for backwards-compat with Windows behavior.

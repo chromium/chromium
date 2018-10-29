@@ -27,8 +27,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.asynctask.CustomShadowAsyncTask;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -151,7 +151,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testStop() throws Exception {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.stop();
         Intent intent = getOnlyIntent();
         validateIntentComponent(intent);
@@ -166,7 +166,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testEnsureStartedAndUpdateRegisteredTypes() {
-        InvalidationController controller = new InvalidationController(false);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Intent intent = getOnlyIntent();
 
@@ -183,7 +183,7 @@ public class InvalidationControllerTest {
         Assert.assertEquals("test@example.com", intentAccount.name);
 
         // Validate registered types.
-        Assert.assertEquals(mAllTypes, getRegisterIntentRegisterTypes(intent));
+        Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(intent));
         Assert.assertNull(InvalidationIntentProtocol.getRegisteredObjectIds(intent));
     }
 
@@ -196,7 +196,7 @@ public class InvalidationControllerTest {
     public void testPauseAndResumeMainActivityWithSyncDisabled() throws Exception {
         AndroidSyncSettings.disableChromeSync();
 
-        InvalidationController controller = new InvalidationController(false);
+        InvalidationController controller = new InvalidationController();
         controller.onApplicationStateChange(ApplicationState.HAS_PAUSED_ACTIVITIES);
         controller.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
         assertNoNewIntents();
@@ -211,7 +211,7 @@ public class InvalidationControllerTest {
     public void testNullProfileSyncService() throws Exception {
         ProfileSyncService.overrideForTests(null);
 
-        InvalidationController controller = new InvalidationController(false);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         assertNoNewIntents();
     }
@@ -225,7 +225,7 @@ public class InvalidationControllerTest {
         final AtomicBoolean listenerCallbackCalled = new AtomicBoolean();
 
         // Create instance.
-        new InvalidationController(true) {
+        new InvalidationController() {
             @Override
             public void onApplicationStateChange(int newState) {
                 listenerCallbackCalled.set(true);
@@ -241,37 +241,13 @@ public class InvalidationControllerTest {
     }
 
     /**
-     * Test that the controller registers for session invalidations and stays registered when
-     * disabling session invalidations is prohibited.
-     */
-    @Test
-    @Feature({"Sync"})
-    public void testCannotToggleSessionInvalidations() {
-        InvalidationController controller = new InvalidationController(false);
-        controller.ensureStartedAndUpdateRegisteredTypes();
-        Assert.assertEquals(mAllTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
-
-        controller.onRecentTabsPageOpened();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertNoNewIntents();
-
-        controller.onRecentTabsPageClosed();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertNoNewIntents();
-    }
-
-    /**********************************************************************************************
-     * Tests for when session invalidations can be disabled.
-     */
-
-    /**
      * Test that an intent is sent to register for session invalidations after the RecentTabsPage is
      * opened.
      */
     @Test
     @Feature({"Sync"})
     public void testRecentTabsPageShown() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
 
@@ -292,7 +268,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testStartWhileRecentTabsPageShown() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.onRecentTabsPageOpened();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertNoNewIntents();
@@ -313,7 +289,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testMultipleRecentTabsPages() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
 
@@ -340,7 +316,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testOpenCloseRecentTabsPageQuickly() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
 
@@ -370,7 +346,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testDisableSessionInvalidationsOnStart() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
         controller.onRecentTabsPageOpened();
@@ -396,7 +372,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testDisableSessionInvalidationsOnResume() {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
         controller.onRecentTabsPageOpened();
@@ -421,7 +397,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testPauseAndResumeMainActivity() throws Exception {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
         controller.onRecentTabsPageOpened();
@@ -445,7 +421,7 @@ public class InvalidationControllerTest {
     @Test
     @Feature({"Sync"})
     public void testPauseAndResumeMainActivityAfterStop() throws Exception {
-        InvalidationController controller = new InvalidationController(true);
+        InvalidationController controller = new InvalidationController();
         controller.ensureStartedAndUpdateRegisteredTypes();
         Assert.assertEquals(mNonSessionTypes, getRegisterIntentRegisterTypes(getOnlyIntent()));
 

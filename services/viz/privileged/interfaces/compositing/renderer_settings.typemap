@@ -9,6 +9,9 @@ traits_headers = [ "//services/viz/privileged/interfaces/compositing/renderer_se
 deps = [
   "//cc",
 ]
+public_deps = [
+  "//ui/gfx/geometry/mojo",
+]
 sources = [
   "renderer_settings_struct_traits.cc",
 ]

@@ -37,6 +37,7 @@ class QUIC_EXPORT_PRIVATE QuartcSession
  public:
   QuartcSession(std::unique_ptr<QuicConnection> connection,
                 const QuicConfig& config,
+                const ParsedQuicVersionVector& supported_versions,
                 const QuicString& unique_remote_server_id,
                 Perspective perspective,
                 QuicConnectionHelperInterface* helper,
@@ -51,7 +52,7 @@ class QUIC_EXPORT_PRIVATE QuartcSession
 
   const QuicCryptoStream* GetCryptoStream() const override;
 
-  QuartcStream* CreateOutgoingDynamicStream() override;
+  QuartcStream* CreateOutgoingBidirectionalStream();
 
   void OnCryptoHandshakeEvent(CryptoHandshakeEvent event) override;
 
@@ -135,7 +136,7 @@ class QUIC_EXPORT_PRIVATE QuartcSession
 
  protected:
   // QuicSession override.
-  QuicStream* CreateIncomingDynamicStream(QuicStreamId id) override;
+  QuicStream* CreateIncomingStream(QuicStreamId id) override;
 
   std::unique_ptr<QuartcStream> CreateDataStream(QuicStreamId id,
                                                  spdy::SpdyPriority priority);

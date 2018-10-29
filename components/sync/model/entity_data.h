@@ -53,6 +53,16 @@ struct EntityData {
   // SyncEntity::client_defined_unique_tag.
   std::string client_tag_hash;
 
+  // A GUID that identifies the the sync client who initially committed this
+  // entity. It's relevant only for bookmarks. See the definition in sync.proto
+  // for more details.
+  std::string originator_cache_guid;
+
+  // The local item id of this entry from the client that initially committed
+  // this entity. It's relevant only for bookmarks. See the definition in
+  // sync.proto for more details.
+  std::string originator_client_item_id;
+
   // This tag identifies this item as being a uniquely instanced item.  An item
   // can't have both a client_defined_unique_tag and a
   // server_defined_unique_tag. Sent to the server as

@@ -423,4 +423,86 @@ class LayerTreeHostProxyTestCommitWaitsForActivationMFBA
 
 MULTI_THREAD_TEST_F(LayerTreeHostProxyTestCommitWaitsForActivationMFBA);
 
+// Tests that SingleThreadProxy correctly reports pending animations when
+// requested from the impl-side.
+class LayerTreeHostProxyTestImplFrameCausesAnimatePending
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestImplFrameCausesAnimatePending() = default;
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->sync_tree()->source_frame_number()) {
+      case 0: {
+        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        host_impl->SetNeedsOneBeginImplFrame();
+        EXPECT_TRUE(proxy()->RequestedAnimatePending());
+        PostSetNeedsCommitToMainThread();
+        break;
+      }
+      case 1: {
+        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        EndTest();
+        break;
+      }
+      default: { NOTREACHED(); }
+    }
+  }
+
+  void AfterTest() override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(LayerTreeHostProxyTestImplFrameCausesAnimatePending);
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostProxyTestImplFrameCausesAnimatePending);
+
+// Test that the SingleThreadProxy correctly records and clears commit requests
+// from the impl-side.
+class LayerTreeHostProxyTestNeedsCommitFromImpl
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestNeedsCommitFromImpl() = default;
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    switch (host_impl->sync_tree()->source_frame_number()) {
+      case 0: {
+        host_impl->SetNeedsCommit();
+        MainThreadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&LayerTreeHostProxyTestNeedsCommitFromImpl::
+                               CheckCommitRequested,
+                           base::Unretained(this)));
+        break;
+      }
+      case 1: {
+        MainThreadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&LayerTreeHostProxyTestNeedsCommitFromImpl::
+                               CheckRequestClearedAndEnd,
+                           base::Unretained(this)));
+        break;
+      }
+      default: { NOTREACHED(); }
+    }
+  }
+
+  void CheckCommitRequested() { EXPECT_TRUE(proxy()->CommitRequested()); }
+
+  void CheckRequestClearedAndEnd() {
+    EXPECT_FALSE(proxy()->CommitRequested());
+    EndTest();
+  }
+
+  void AfterTest() override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(LayerTreeHostProxyTestNeedsCommitFromImpl);
+};
+
+SINGLE_THREAD_TEST_F(LayerTreeHostProxyTestNeedsCommitFromImpl);
+
 }  // namespace cc

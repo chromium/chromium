@@ -2,7 +2,6 @@ Test importing an EC key for ECDSA.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing a public key...
 
 Importing a private key...

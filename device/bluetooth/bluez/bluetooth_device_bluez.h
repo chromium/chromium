@@ -273,6 +273,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                      const std::string& error_name,
                      const std::string& error_message);
 
+  void UnpauseDiscovery();
+
   // The dbus object path of the device object.
   dbus::ObjectPath object_path_;
 

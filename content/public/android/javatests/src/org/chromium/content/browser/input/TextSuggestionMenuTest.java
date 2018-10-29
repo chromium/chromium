@@ -290,6 +290,25 @@ public class TextSuggestionMenuTest {
         waitForMenuToHide(webContents);
     }
 
+    @Test
+    @LargeTest
+    public void testAutoCorrectionSuggestionSpan() throws InterruptedException, Throwable {
+        WebContents webContents = mRule.getWebContents();
+
+        DOMUtils.focusNode(webContents, "div");
+
+        SpannableString textToCommit = new SpannableString("hello");
+        SuggestionSpan suggestionSpan = new SuggestionSpan(
+                mRule.getActivity(), new String[0], SuggestionSpan.FLAG_AUTO_CORRECTION);
+        textToCommit.setSpan(suggestionSpan, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mRule.commitText(textToCommit, 1);
+
+        Assert.assertEquals("1",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents,
+                        "internals.markerCountForNode("
+                                + "document.getElementById('div').firstChild, 'suggestion')"));
+    }
+
     private void waitForMenuToShow(WebContents webContents) {
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override

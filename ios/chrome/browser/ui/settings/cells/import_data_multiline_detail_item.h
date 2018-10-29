@@ -29,7 +29,7 @@
 // subclass containing two text labels: a "main" label and a "detail" label.
 // The two labels are laid out on top of each other. The detail text can span
 // multiple lines.
-// This is to be used with a SettingsDetailItem.
+// This is to be used with a ImportDataMultilineDetailItem.
 @interface ImportDataMultilineDetailCell : MDCCollectionViewCell
 
 // UILabels corresponding to |text| and |detailText| from the item.

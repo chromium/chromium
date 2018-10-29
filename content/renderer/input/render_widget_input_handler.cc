@@ -18,6 +18,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/input_event_ack_state.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/renderer/browser_plugin/browser_plugin.h"
 #include "content/renderer/gpu/layer_tree_view.h"
 #include "content/renderer/ime_event_guard.h"
 #include "content/renderer/input/render_widget_input_handler_delegate.h"
@@ -155,7 +156,8 @@ void LogAllPassiveEventListenersUma(const WebInputEvent& input_event,
 
 blink::WebCoalescedInputEvent GetCoalescedWebPointerEventForTouch(
     const WebPointerEvent& pointer_event,
-    std::vector<const WebInputEvent*> coalesced_events) {
+    std::vector<const WebInputEvent*> coalesced_events,
+    std::vector<const WebInputEvent*> predicted_events) {
   std::vector<WebPointerEvent> related_pointer_events;
   for (const WebInputEvent* event : coalesced_events) {
     DCHECK(WebInputEvent::IsTouchEventType(event->GetType()));
@@ -169,7 +171,32 @@ blink::WebCoalescedInputEvent GetCoalescedWebPointerEventForTouch(
       }
     }
   }
-  return blink::WebCoalescedInputEvent(pointer_event, related_pointer_events);
+  std::vector<WebPointerEvent> predicted_pointer_events;
+  for (const WebInputEvent* event : predicted_events) {
+    DCHECK(WebInputEvent::IsTouchEventType(event->GetType()));
+    const WebTouchEvent& touch_event =
+        static_cast<const WebTouchEvent&>(*event);
+    for (unsigned i = 0; i < touch_event.touches_length; ++i) {
+      if (touch_event.touches[i].id == pointer_event.id &&
+          touch_event.touches[i].state != WebTouchPoint::kStateStationary) {
+        predicted_pointer_events.push_back(
+            WebPointerEvent(touch_event, touch_event.touches[i]));
+      }
+    }
+  }
+
+  return blink::WebCoalescedInputEvent(pointer_event, related_pointer_events,
+                                       predicted_pointer_events);
+}
+
+viz::FrameSinkId GetRemoteFrameSinkId(const blink::WebNode& node) {
+  blink::WebFrame* result_frame = blink::WebFrame::FromFrameOwnerElement(node);
+  if (result_frame && result_frame->IsWebRemoteFrame()) {
+    return RenderFrameProxy::FromWebFrame(result_frame->ToWebRemoteFrame())
+        ->frame_sink_id();
+  }
+  auto* plugin = BrowserPlugin::GetFromNode(node);
+  return plugin ? plugin->frame_sink_id() : viz::FrameSinkId();
 }
 
 }  // namespace
@@ -191,7 +218,7 @@ RenderWidgetInputHandler::RenderWidgetInputHandler(
 RenderWidgetInputHandler::~RenderWidgetInputHandler() {}
 
 viz::FrameSinkId RenderWidgetInputHandler::GetFrameSinkIdAtPoint(
-    const gfx::Point& point,
+    const gfx::PointF& point,
     gfx::PointF* local_point) {
   gfx::PointF point_in_pixel(point);
   if (widget_->compositor_deps()->IsUseZoomForDSFEnabled()) {
@@ -199,7 +226,7 @@ viz::FrameSinkId RenderWidgetInputHandler::GetFrameSinkIdAtPoint(
         widget_->GetOriginalScreenInfo().device_scale_factor, point_in_pixel);
   }
   blink::WebHitTestResult result = widget_->GetWebWidget()->HitTestResultAt(
-      blink::WebPoint(point_in_pixel.x(), point_in_pixel.y()));
+      blink::WebPoint(ToRoundedPoint(point_in_pixel)));
 
   blink::WebNode result_node = result.GetNode();
   *local_point = gfx::PointF(point);
@@ -213,20 +240,16 @@ viz::FrameSinkId RenderWidgetInputHandler::GetFrameSinkIdAtPoint(
                             widget_->routing_id());
   }
 
-  blink::WebFrame* result_frame =
-      blink::WebFrame::FromFrameOwnerElement(result_node);
-  if (result_frame && result_frame->IsWebRemoteFrame()) {
-    viz::FrameSinkId frame_sink_id =
-        RenderFrameProxy::FromWebFrame(result_frame->ToWebRemoteFrame())
-            ->frame_sink_id();
+  viz::FrameSinkId frame_sink_id = GetRemoteFrameSinkId(result_node);
+  if (frame_sink_id.is_valid()) {
     *local_point = gfx::PointF(result.LocalPointWithoutContentBoxOffset());
     if (widget_->compositor_deps()->IsUseZoomForDSFEnabled()) {
       *local_point = gfx::ConvertPointToDIP(
           widget_->GetOriginalScreenInfo().device_scale_factor, *local_point);
     }
-    if (frame_sink_id.is_valid())
-      return frame_sink_id;
+    return frame_sink_id;
   }
+
   // Return the FrameSinkId for the current widget if the point did not hit
   // test to a remote frame, or the remote frame doesn't have a valid
   // FrameSinkId yet.
@@ -256,7 +279,8 @@ WebInputEventResult RenderWidgetInputHandler::HandleTouchEvent(
           WebPointerEvent(touch_event, touch_point);
       const blink::WebCoalescedInputEvent& coalesced_pointer_event =
           GetCoalescedWebPointerEventForTouch(
-              pointer_event, coalesced_event.GetCoalescedEventsPointers());
+              pointer_event, coalesced_event.GetCoalescedEventsPointers(),
+              coalesced_event.GetPredictedEventsPointers());
       widget_->GetWebWidget()->HandleInputEvent(coalesced_pointer_event);
     }
   }

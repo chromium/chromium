@@ -8,10 +8,6 @@
 
 namespace content {
 
-bool BrowserMainParts::ShouldContentCreateFeatureList() {
-  return true;
-}
-
 int BrowserMainParts::PreEarlyInitialization() {
   return service_manager::RESULT_CODE_NORMAL_EXIT;
 }

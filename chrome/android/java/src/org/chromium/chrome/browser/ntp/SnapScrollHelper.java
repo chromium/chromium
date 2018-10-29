@@ -23,6 +23,7 @@ public class SnapScrollHelper {
     private final NewTabPageManager mManager;
     private final NewTabPageLayout mNewTabPageLayout;
     private final Runnable mSnapScrollRunnable;
+    private final Runnable mUpdateSearchBoxOnScrollRunnable;
     private final int mToolbarHeight;
     private final int mSearchBoxTransitionLength;
 
@@ -40,6 +41,7 @@ public class SnapScrollHelper {
         mManager = manager;
         mNewTabPageLayout = newTabPageLayout;
         mSnapScrollRunnable = new SnapScrollRunnable();
+        mUpdateSearchBoxOnScrollRunnable = mNewTabPageLayout::updateSearchBoxOnScroll;
 
         Resources res = newTabPageLayout.getResources();
         mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
@@ -86,6 +88,18 @@ public class SnapScrollHelper {
             mView.postDelayed(mSnapScrollRunnable, SNAP_SCROLL_DELAY_MS);
         }
         mNewTabPageLayout.updateSearchBoxOnScroll();
+    }
+
+    /**
+     * Resets any pending callbacks to update the search box position, and add new callback to
+     * update the search box position if necessary. This is used whenever {@link #handleScroll()} is
+     * not reliable (e.g. when an item is dismissed, the items at the top of the viewport might not
+     * move, and onScrolled() might not be called).
+     * @param update Whether a new callback to update search box should be posted to {@link #mView}.
+     */
+    public void resetSearchBoxOnScroll(boolean update) {
+        mView.removeCallbacks(mUpdateSearchBoxOnScrollRunnable);
+        if (update) mView.post(mUpdateSearchBoxOnScrollRunnable);
     }
 
     /**

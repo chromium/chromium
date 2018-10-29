@@ -49,13 +49,13 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     private final String mErrorMessage;
 
-    private PrintingContextInterface mPrintingContext;
+    private PrintingContext mPrintingContext;
 
     private int mRenderProcessId;
     private int mRenderFrameId;
 
     /** The file descriptor into which the PDF will be written.  Provided by the framework. */
-    private int mFileDescriptor;
+    private ParcelFileDescriptor mFileDescriptor;
 
     /** Dots per inch, as provided by the framework. */
     private int mDpi;
@@ -143,7 +143,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     @Override
     public int getFileDescriptor() {
-        return mFileDescriptor;
+        return mFileDescriptor.getFd();
     }
 
     @Override
@@ -167,7 +167,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     }
 
     @Override
-    public void setPrintingContext(final PrintingContextInterface printingContext) {
+    public void setPrintingContext(final PrintingContext printingContext) {
         mPrintingContext = printingContext;
     }
 
@@ -215,8 +215,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     public void pdfWritingDone(int pageCount) {
         if (mPrintingState == PRINTING_STATE_FINISHED) return;
         mPrintingState = PRINTING_STATE_READY;
-        closeFileDescriptor(mFileDescriptor);
-        mFileDescriptor = -1;
+        closeFileDescriptor();
         if (pageCount > 0) {
             PageRange[] pageRanges = convertIntegerArrayToPageRanges(mPages, pageCount);
             mOnWriteCallback.onWriteFinished(pageRanges);
@@ -279,8 +278,14 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         mOnWriteCallback = callback;
 
         assert mPrintingState == PRINTING_STATE_READY;
-
-        mFileDescriptor = destination.getFd();
+        assert mFileDescriptor == null;
+        try {
+            mFileDescriptor = destination.dup();
+        } catch (IOException e) {
+            mOnWriteCallback.onWriteFailed("ParcelFileDescriptor.dup() failed: " + e.toString());
+            resetCallbacks();
+            return;
+        }
         mPages = convertPageRangesToIntegerArray(ranges);
 
         // mRenderProcessId and mRenderFrameId could be invalid values, in this case we are going to
@@ -299,18 +304,14 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     @Override
     public void onFinish() {
         mPages = null;
-        if (mPrintingContext != null) {
-            mPrintingContext.updatePrintingContextMap(mFileDescriptor, true);
-            mPrintingContext = null;
-        }
+        mPrintingContext = null;
 
         mRenderProcessId = -1;
         mRenderFrameId = -1;
 
         mPrintingState = PRINTING_STATE_FINISHED;
 
-        closeFileDescriptor(mFileDescriptor);
-        mFileDescriptor = -1;
+        closeFileDescriptor();
 
         resetCallbacks();
         // The printmanager contract is that onFinish() is always called as the last
@@ -323,12 +324,14 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         mOnLayoutCallback = null;
     }
 
-    private static void closeFileDescriptor(int fd) {
-        ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.adoptFd(fd);
+    private void closeFileDescriptor() {
+        if (mFileDescriptor == null) return;
         try {
-            fileDescriptor.close();
+            mFileDescriptor.close();
         } catch (IOException ioe) {
             /* ignore */
+        } finally {
+            mFileDescriptor = null;
         }
     }
 

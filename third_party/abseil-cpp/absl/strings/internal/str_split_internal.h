@@ -51,7 +51,7 @@ namespace strings_internal {
 
 // This class is implicitly constructible from everything that absl::string_view
 // is implicitly constructible from. If it's constructed from a temporary
-// std::string, the data is moved into a data member so its lifetime matches that of
+// string, the data is moved into a data member so its lifetime matches that of
 // the ConvertibleToStringView instance.
 class ConvertibleToStringView {
  public:
@@ -102,7 +102,7 @@ ConvertibleToStringView(std::string&& s)  // NOLINT(runtime/explicit)
   absl::string_view value_;
 };
 
-// An iterator that enumerates the parts of a std::string from a Splitter. The text
+// An iterator that enumerates the parts of a string from a Splitter. The text
 // to be split, the Delimiter, and the Predicate are all taken from the given
 // Splitter object. Iterators may only be compared if they refer to the same
 // Splitter instance.
@@ -159,7 +159,7 @@ class SplitIterator {
       }
       const absl::string_view text = splitter_->text();
       const absl::string_view d = delimiter_.Find(text, pos_);
-      if (d.data() == text.end()) state_ = kLastState;
+      if (d.data() == text.data() + text.size()) state_ = kLastState;
       curr_ = text.substr(pos_, d.data() - (text.data() + pos_));
       pos_ += curr_.size() + d.size();
     } while (!predicate_(curr_));

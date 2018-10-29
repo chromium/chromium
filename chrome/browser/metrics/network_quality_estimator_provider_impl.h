@@ -8,26 +8,35 @@
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics/net/network_metrics_provider.h"
-
-class IOThread;
+#include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace metrics {
 
 // Implements NetworkMetricsProvider::NetworkQualityEstimatorProvider. Provides
-// NetworkQualityEstimator by querying the IOThread. Lives on UI thread.
+// network quality estimates. Lives on UI thread.
 class NetworkQualityEstimatorProviderImpl
-    : public NetworkMetricsProvider::NetworkQualityEstimatorProvider {
+    : public NetworkMetricsProvider::NetworkQualityEstimatorProvider,
+      public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
  public:
-  explicit NetworkQualityEstimatorProviderImpl(IOThread* io_thread);
+  NetworkQualityEstimatorProviderImpl();
   ~NetworkQualityEstimatorProviderImpl() override;
 
  private:
   // NetworkMetricsProvider::NetworkQualityEstimatorProvider:
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() override;
-  void PostReplyNetworkQualityEstimator(
-      base::Callback<void(net::NetworkQualityEstimator*)> io_callback) override;
+  void PostReplyOnNetworkQualityChanged(
+      base::RepeatingCallback<void(net::EffectiveConnectionType)> callback)
+      override;
 
-  IOThread* io_thread_;
+  // network::NetworkQualityTracker::EffectiveConnectionTypeObserver:
+  void OnEffectiveConnectionTypeChanged(
+      net::EffectiveConnectionType type) override;
+
+  void AddEffectiveConnectionTypeObserverNow(
+      base::RepeatingCallback<void(net::EffectiveConnectionType)> callback);
+
+  // |callback_| is invoked every time there is a change in the network quality
+  // estimate. May be null.
+  base::RepeatingCallback<void(net::EffectiveConnectionType)> callback_;
 
   base::ThreadChecker thread_checker_;
 

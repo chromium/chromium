@@ -95,8 +95,8 @@ bool LayerIsAbove(Window* upper, Window* lower) {
 
 std::string ChildWindowIDsAsString(aura::Window* parent) {
   std::string result;
-  for (Window::Windows::const_iterator i = parent->children().begin();
-       i != parent->children().end(); ++i) {
+  for (auto i = parent->children().begin(); i != parent->children().end();
+       ++i) {
     if (!result.empty())
       result += " ";
     result += base::IntToString((*i)->id());

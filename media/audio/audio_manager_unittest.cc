@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/sys_info.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -54,6 +56,7 @@
 #if defined(USE_CRAS)
 #include "chromeos/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/dbus/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_cras.h"
@@ -264,6 +267,12 @@ class AudioManagerTest : public ::testing::Test {
   }
 
   void SetUpCrasAudioHandlerWithTestingNodes(const AudioNodeList& audio_nodes) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      // Ensure a FakeCrasAudioClient is created, even on a real device or VM.
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          chromeos::switches::kDbusStub);
+    }
+
     chromeos::DBusThreadManager::Initialize();
     audio_client_ = static_cast<chromeos::FakeCrasAudioClient*>(
         chromeos::DBusThreadManager::Get()->GetCrasAudioClient());
@@ -285,7 +294,7 @@ class AudioManagerTest : public ::testing::Test {
       const AudioDeviceDescriptions& device_descriptions) {
     DVLOG(2) << "Got " << device_descriptions.size() << " audio devices.";
     if (!device_descriptions.empty()) {
-      AudioDeviceDescriptions::const_iterator it = device_descriptions.begin();
+      auto it = device_descriptions.begin();
 
       // The first device in the list should always be the default device.
       EXPECT_EQ(std::string(AudioDeviceDescription::kDefaultDeviceId),
@@ -710,6 +719,20 @@ TEST_F(AudioManagerTest, DefaultCommunicationsLabelsContainRealLabels) {
   AudioDeviceDescriptions outputs;
   device_info_accessor_->GetAudioOutputDeviceDescriptions(&outputs);
   CheckDescriptionLabels(outputs, default_output_id, communications_output_id);
+}
+
+// GetPreferredOutputStreamParameters() can make changes to its input_params,
+// ensure that creating a stream with the default parameters always works.
+TEST_F(AudioManagerTest, CheckMakeOutputStreamWithPreferredParameters) {
+  ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
+
+  AudioParameters params;
+  GetDefaultOutputStreamParameters(&params);
+  ASSERT_TRUE(params.IsValid());
+
+  AudioOutputStream* stream =
+      audio_manager_->MakeAudioOutputStreamProxy(params, "");
+  ASSERT_TRUE(stream);
 }
 
 #if defined(OS_MACOSX) || defined(USE_CRAS)

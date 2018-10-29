@@ -260,7 +260,6 @@ void NotificationViewMDTest::UpdateNotificationViews(
     // created by the method.
     notification_view_ = std::make_unique<NotificationViewMD>(notification);
     notification_view_->AddObserver(this);
-    notification_view_->SetIsNested();
     notification_view_->set_owned_by_client();
 
     views::Widget::InitParams init_params(
@@ -566,7 +565,7 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
 
   // Nothing should be submitted at this point.
   EXPECT_EQ(-1, delegate_->clicked_button_index());
-  EXPECT_EQ(base::EmptyString16(), delegate_->submitted_reply_string());
+  EXPECT_EQ(base::string16(), delegate_->submitted_reply_string());
 
   // Click the button again and focus on the inline textfield.
   generator.ClickLeftButton();
@@ -585,6 +584,55 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
   generator.ClickLeftButton();
   EXPECT_EQ(1, delegate_->clicked_button_index());
   EXPECT_EQ(base::ASCIIToUTF16("test"), delegate_->submitted_reply_string());
+}
+
+TEST_F(NotificationViewMDTest, TestInlineReplyRemovedByUpdate) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+
+  std::vector<ButtonInfo> buttons = CreateButtons(2);
+  buttons[1].placeholder = base::string16();
+  notification->set_buttons(buttons);
+  UpdateNotificationViews(*notification);
+  widget()->Show();
+
+  ui::test::EventGenerator generator(widget()->GetNativeWindow());
+
+  // Action buttons are hidden by collapsed state.
+  if (!notification_view()->expanded_)
+    notification_view()->ToggleExpanded();
+  EXPECT_TRUE(notification_view()->actions_row_->visible());
+
+  // Now construct a mouse click event 1 pixel inside the boundary of the action
+  // button.
+  gfx::Point cursor_location(1, 1);
+  views::View::ConvertPointToScreen(notification_view()->action_buttons_[1],
+                                    &cursor_location);
+  generator.MoveMouseTo(cursor_location);
+  generator.ClickLeftButton();
+
+  // Nothing should be submitted at this point.
+  EXPECT_EQ(-1, delegate_->clicked_button_index());
+
+  EXPECT_TRUE(notification_view()->inline_reply_->visible());
+  EXPECT_FALSE(notification_view()->action_buttons_row_->visible());
+
+  buttons[1].placeholder = base::nullopt;
+  notification->set_buttons(buttons);
+  UpdateNotificationViews(*notification);
+
+  EXPECT_FALSE(notification_view()->inline_reply_->visible());
+  EXPECT_TRUE(notification_view()->action_buttons_row_->visible());
+
+  // Now it emits click event.
+  delegate_->set_expecting_button_click(true);
+  generator.ClickLeftButton();
+  EXPECT_EQ(1, delegate_->clicked_button_index());
+
+  buttons.clear();
+  notification->set_buttons(buttons);
+  UpdateNotificationViews(*notification);
+
+  EXPECT_FALSE(notification_view()->actions_row_->visible());
 }
 
 TEST_F(NotificationViewMDTest, SlideOut) {
@@ -610,6 +658,7 @@ TEST_F(NotificationViewMDTest, SlideOut) {
 }
 
 TEST_F(NotificationViewMDTest, SlideOutNested) {
+  notification_view()->SetIsNested();
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -657,6 +706,7 @@ TEST_F(NotificationViewMDTest, DisableSlideForcibly) {
 #if defined(OS_CHROMEOS)
 
 TEST_F(NotificationViewMDTest, SlideOutPinned) {
+  notification_view()->SetIsNested();
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -673,6 +723,7 @@ TEST_F(NotificationViewMDTest, SlideOutPinned) {
 }
 
 TEST_F(NotificationViewMDTest, Pinned) {
+  notification_view()->SetIsNested();
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
 
   // Visible at the initial state.

@@ -53,7 +53,7 @@ class ExceptionState;
 // terminated). In such cases operations will silently fail, so you should not
 // use promises for critical use such as releasing a resource.
 class CORE_EXPORT ScriptPromise final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Constructs an empty promise.

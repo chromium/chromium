@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -167,6 +168,7 @@ void PermissionContextBase::RequestPermission(
         break;
       case PermissionStatusSource::INSECURE_ORIGIN:
       case PermissionStatusSource::UNSPECIFIED:
+      case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
         break;
     }
 
@@ -228,6 +230,31 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
       !PermissionAllowedByFeaturePolicy(render_frame_host)) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
                             PermissionStatusSource::FEATURE_POLICY);
+  }
+
+  if (render_frame_host) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+
+    // Automatically deny all HTTP or HTTPS requests where the virtual URL and
+    // the loaded URL are for different origins. The loaded URL is the one
+    // actually in the renderer, but the virtual URL is the one
+    // seen by the user. This may be very confusing for a user to see in a
+    // permissions request.
+    const content::NavigationEntry* entry =
+        web_contents->GetController().GetLastCommittedEntry();
+    if (entry) {
+      const GURL virtual_url = entry->GetVirtualURL();
+      const GURL loaded_url = entry->GetURL();
+      if (virtual_url.SchemeIsHTTPOrHTTPS() &&
+          loaded_url.SchemeIsHTTPOrHTTPS() &&
+          !url::Origin::Create(virtual_url)
+               .IsSameOriginWith(url::Origin::Create(loaded_url))) {
+        return PermissionResult(
+            CONTENT_SETTING_BLOCK,
+            PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);
+      }
+    }
   }
 
   ContentSetting content_setting = GetPermissionStatusInternal(

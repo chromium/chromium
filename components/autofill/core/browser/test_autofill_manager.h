@@ -60,7 +60,6 @@ class TestAutofillManager : public AutofillManager {
       const base::TimeTicks& timestamp,
       bool observed_submission) override;
   void UploadFormDataAsyncCallback(const FormStructure* submitted_form,
-                                   const base::TimeTicks& load_time,
                                    const base::TimeTicks& interaction_time,
                                    const base::TimeTicks& submission_time,
                                    bool observed_submission) override;

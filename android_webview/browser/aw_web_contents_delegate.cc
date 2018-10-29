@@ -21,12 +21,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/file_chooser_file_info.h"
 #include "content/public/common/media_stream_request.h"
 #include "jni/AwWebContentsDelegate_jni.h"
 #include "net/base/escape.h"
@@ -36,6 +36,8 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using blink::mojom::FileChooserFileInfo;
+using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
 using content::WebContents;
 
@@ -88,11 +90,14 @@ void AwWebContentsDelegate::CanDownload(
 
 void AwWebContentsDelegate::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const FileChooserParams& params) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
-  if (!java_delegate.obj())
+  if (!java_delegate.obj()) {
+    listener->FileSelectionCanceled();
     return;
+  }
 
   int mode_flags = 0;
   if (params.mode == FileChooserParams::Mode::kOpenMultiple) {
@@ -102,12 +107,14 @@ void AwWebContentsDelegate::RunFileChooser(
     mode_flags |= kFileChooserModeOpenMultiple | kFileChooserModeOpenFolder;
   } else if (params.mode == FileChooserParams::Mode::kSave) {
     // Save not supported, so cancel it.
-    render_frame_host->FilesSelectedInChooser(
-        std::vector<content::FileChooserFileInfo>(), params.mode);
+    listener->FileSelectionCanceled();
     return;
   } else {
     DCHECK_EQ(FileChooserParams::Mode::kOpen, params.mode);
   }
+  DCHECK(!file_select_listener_)
+      << "Multiple concurrent FileChooser requests are not supported.";
+  file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetID(),
       render_frame_host->GetRoutingID(), mode_flags,
@@ -275,6 +282,11 @@ void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
     intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
 }
 
+std::unique_ptr<content::FileSelectListener>
+AwWebContentsDelegate::TakeFileSelectListener() {
+  return std::move(file_select_listener_);
+}
+
 static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     JNIEnv* env,
     const JavaParamRef<jclass>& clazz,
@@ -285,17 +297,29 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     const JavaParamRef<jobjectArray>& display_names) {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(process_id, render_id);
-  if (!rfh)
+  auto* web_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
     return;
+  auto* delegate =
+      static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
+  if (!delegate)
+    return;
+  std::unique_ptr<content::FileSelectListener> listener =
+      delegate->TakeFileSelectListener();
+
+  if (!file_paths.obj()) {
+    listener->FileSelectionCanceled();
+    return;
+  }
 
   std::vector<std::string> file_path_str;
-  std::vector<std::string> display_name_str;
+  std::vector<base::string16> display_name_str;
   // Note file_paths maybe NULL, but this will just yield a zero-length vector.
   base::android::AppendJavaStringArrayToStringVector(env, file_paths,
                                                      &file_path_str);
   base::android::AppendJavaStringArrayToStringVector(env, display_names,
                                                      &display_name_str);
-  std::vector<content::FileChooserFileInfo> files;
+  std::vector<FileChooserFileInfoPtr> files;
   files.reserve(file_path_str.size());
   for (size_t i = 0; i < file_path_str.size(); ++i) {
     GURL url(file_path_str[i]);
@@ -308,11 +332,11 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
                                   net::UnescapeRule::
                                       URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)
             : file_path_str[i]);
-    content::FileChooserFileInfo file_info;
-    file_info.file_path = path;
+    auto file_info = blink::mojom::NativeFileInfo::New();
+    file_info->file_path = path;
     if (!display_name_str[i].empty())
-      file_info.display_name = display_name_str[i];
-    files.push_back(file_info);
+      file_info->display_name = display_name_str[i];
+    files.push_back(FileChooserFileInfo::NewNativeFile(std::move(file_info)));
   }
   FileChooserParams::Mode mode;
   if (mode_flags & kFileChooserModeOpenFolder) {
@@ -324,7 +348,7 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   }
   DVLOG(0) << "File Chooser result: mode = " << mode
            << ", file paths = " << base::JoinString(file_path_str, ":");
-  rfh->FilesSelectedInChooser(files, mode);
+  listener->FileSelected(std::move(files), mode);
 }
 
 }  // namespace android_webview

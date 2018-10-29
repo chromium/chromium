@@ -11,7 +11,7 @@
 
 namespace blink {
 
-// https://html.spec.whatwg.org/multipage/webappapis.html#creating-a-module-script
+// <specdef href="https://html.spec.whatwg.org/#creating-a-module-script">
 ModuleScript* ModuleScript::Create(const ParkableString& original_source_text,
                                    Modulator* modulator,
                                    const KURL& source_url,
@@ -72,7 +72,7 @@ ModuleScript* ModuleScript::Create(const ParkableString& original_source_text,
   for (const auto& requested :
        modulator->ModuleRequestsFromScriptModule(result)) {
     // <spec step="9.1">Let url be the result of resolving a module specifier
-    // given script and requested.</spec>
+    // given script's base URL and requested.</spec>
     //
     // <spec step="9.2">If url is failure, then:</spec>
     String failure_reason;
@@ -107,7 +107,7 @@ ModuleScript* ModuleScript::CreateForTest(Modulator* modulator,
                         base_url, options, TextPosition::MinimumPosition());
 }
 
-// https://html.spec.whatwg.org/multipage/webappapis.html#creating-a-module-script
+// <specdef href="https://html.spec.whatwg.org/#creating-a-module-script">
 ModuleScript* ModuleScript::CreateInternal(const ParkableString& source_text,
                                            Modulator* modulator,
                                            ScriptModule result,

@@ -1301,7 +1301,7 @@ TEST_F(NavigatorTestWithBrowserSideNavigation, FeaturePolicyNewChild) {
   blink::FeaturePolicy* subframe_feature_policy =
       subframe_rfh->feature_policy();
   ASSERT_TRUE(subframe_feature_policy);
-  ASSERT_FALSE(subframe_feature_policy->GetOriginForTest().unique());
+  ASSERT_FALSE(subframe_feature_policy->GetOriginForTest().opaque());
 }
 
 TEST_F(NavigatorTestWithBrowserSideNavigation, TwoNavigationsRacingCommit) {

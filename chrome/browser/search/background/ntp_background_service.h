@@ -76,6 +76,11 @@ class NtpBackgroundService : public KeyedService {
   void AddObserver(NtpBackgroundServiceObserver* observer);
   void RemoveObserver(NtpBackgroundServiceObserver* observer);
 
+  // Check that url is contained in collection_images.
+  bool IsValidBackdropUrl(const GURL& url) const;
+
+  void AddValidBackdropUrlForTesting(const GURL& url);
+
   // Returns the currently cached CollectionInfo, if any.
   const std::vector<CollectionInfo>& collection_info() const {
     return collection_info_;

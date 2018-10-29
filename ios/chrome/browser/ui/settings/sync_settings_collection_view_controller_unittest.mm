@@ -166,10 +166,12 @@ class SyncSettingsCollectionViewControllerTest
  protected:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                                       &CreateSyncSetupService);
-    test_cbs_builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                                       &CreateProfileSyncService);
+    test_cbs_builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateSyncSetupService));
+    test_cbs_builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateProfileSyncService));
     test_cbs_builder.SetPrefService(CreatePrefService());
     chrome_browser_state_ = test_cbs_builder.Build();
     CollectionViewControllerTest::SetUp();

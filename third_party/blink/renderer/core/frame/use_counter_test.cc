@@ -100,7 +100,7 @@ void UseCounterTest::HistogramBasicTest(
   // After a page load, the histograms will be updated, even when the URL
   // scheme is internal
   UseCounter use_counter1(context);
-  SetURL(URLTestHelpers::ToKURL(url));
+  SetURL(url_test_helpers::ToKURL(url));
   did_commit_load(GetFrame(), use_counter1);
   histogram_tester_.ExpectBucketCount(histogram, histogram_map(item), 1);
   histogram_tester_.ExpectBucketCount(histogram, histogram_map(second_item), 1);
@@ -150,15 +150,15 @@ TEST_F(UseCounterTest, SVGImageContextFeatures) {
       kSvgUrl, UseCounter::kSVGImageContext);
 }
 
-TEST_F(UseCounterTest, CSSSelectorPseudoIS) {
+TEST_F(UseCounterTest, CSSSelectorPseudoWhere) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       DummyPageHolder::Create(IntSize(800, 600));
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   Document& document = dummy_page_holder->GetDocument();
-  WebFeature feature = WebFeature::kCSSSelectorPseudoIS;
+  WebFeature feature = WebFeature::kCSSSelectorPseudoWhere;
   EXPECT_FALSE(UseCounter::IsCounted(document, feature));
   document.documentElement()->SetInnerHTMLFromString(
-      "<style>.a+:is(.b, .c+.d) { color: red; }</style>");
+      "<style>.a+:where(.b, .c+.d) { color: red; }</style>");
   EXPECT_TRUE(UseCounter::IsCounted(document, feature));
 }
 
@@ -319,6 +319,46 @@ TEST_F(UseCounterTest, CSSGridLayoutPercentageRowIndefiniteHeight) {
       "</div>");
   document.View()->UpdateAllLifecyclePhases();
   EXPECT_TRUE(UseCounter::IsCounted(document, feature));
+}
+
+TEST_F(UseCounterTest, CSSFlexibleBox) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      DummyPageHolder::Create(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kCSSFlexibleBox;
+  EXPECT_FALSE(UseCounter::IsCounted(document, feature));
+  document.documentElement()->SetInnerHTMLFromString(
+      "<div style='display: flex;'>flexbox</div>");
+  document.View()->UpdateAllLifecyclePhases();
+  EXPECT_TRUE(UseCounter::IsCounted(document, feature));
+}
+
+TEST_F(UseCounterTest, CSSFlexibleBoxInline) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      DummyPageHolder::Create(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kCSSFlexibleBox;
+  EXPECT_FALSE(UseCounter::IsCounted(document, feature));
+  document.documentElement()->SetInnerHTMLFromString(
+      "<div style='display: inline-flex;'>flexbox</div>");
+  document.View()->UpdateAllLifecyclePhases();
+  EXPECT_TRUE(UseCounter::IsCounted(document, feature));
+}
+
+TEST_F(UseCounterTest, CSSFlexibleBoxButton) {
+  // LayoutButton is a subclass of LayoutFlexibleBox, however we don't want it
+  // to be counted as usage of flexboxes as it's an implementation detail.
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      DummyPageHolder::Create(IntSize(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kCSSFlexibleBox;
+  EXPECT_FALSE(UseCounter::IsCounted(document, feature));
+  document.documentElement()->SetInnerHTMLFromString("<button>button</button>");
+  document.View()->UpdateAllLifecyclePhases();
+  EXPECT_FALSE(UseCounter::IsCounted(document, feature));
 }
 
 class DeprecationTest : public testing::Test {

@@ -25,6 +25,9 @@ class InputPredictor {
     base::TimeTicks time_stamp;
   };
 
+  // Returns the name of the predictor.
+  virtual const char* GetName() const = 0;
+
   // Reset should be called each time when a new line start.
   virtual void Reset() = 0;
 

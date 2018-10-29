@@ -72,6 +72,10 @@ class TestRunnerForSpecificView {
   base::OnceClosure CreateClosureThatPostsV8Callback(
       const v8::Local<v8::Function>& callback);
 
+  void UpdateAllLifecyclePhasesAndComposite();
+  void UpdateAllLifecyclePhasesAndCompositeThen(
+      v8::Local<v8::Function> callback);
+
   void LayoutAndPaintAsync();
   void LayoutAndPaintAsyncThen(v8::Local<v8::Function> callback);
 

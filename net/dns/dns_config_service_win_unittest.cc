@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/dns/dns_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

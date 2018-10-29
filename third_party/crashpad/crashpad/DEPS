@@ -30,7 +30,7 @@ deps = {
       '5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '8d641e30a8b12088649606b912c2bc4947419ccc',
+      '3577ffda752e26e506bb4971a8fb8bc67189ad1e',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -211,11 +211,6 @@ hooks = [
     'action': [
       'crashpad/build/install_linux_sysroot.py',
     ],
-  },
-  {
-    'name': 'gyp',
-    'pattern': '\.gypi?$',
-    'action': ['python', 'crashpad/build/gyp_crashpad.py'],
   },
 ]
 

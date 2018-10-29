@@ -3,8 +3,11 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/md_select_css.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+
 
 <!--
   Offline UI for the AD Domain joining and User authentication.
@@ -18,7 +21,6 @@
     'unlockPasswordStep' - Whether the unlock password step should be shown.
     'realm' - The AD realm the device is managed by.
     'userRealm' - Autocomplete realm for the user input.
-    'userNameLabel' - Label for the user input.
     'disabled' - Whether the UI disabled. Could be used to disable the UI
                  during blocking IO operations.
     'adWelcomeMessage' - Welcome message on top of the UI.
@@ -41,110 +43,162 @@
     'setUserMachine' - Accepts arguments |user| and |machineName|. Both are
                        optional. If user passed, the password input would be
                        invalidated.
-
-TODO(rsorokin): Switch to the new UI (see https://crbug.com/811556)
 -->
 <dom-module id="offline-ad-login">
-  <link rel="stylesheet" href="offline_gaia.css">
-  <link rel="stylesheet" href="oobe_flex_layout.css">
-  <link rel="stylesheet" href="gaia_card_parameters.css">
-  <link rel="stylesheet" href="offline_ad_login.css">
   <template>
-    <style include="md-select"></style>
-    <gaia-card id="gaiaCard" class="fit">
-      <div slot="header" class="flex vertical layout end-justified start">
-        <h1 id="welcomeMsg" class="welcome-message">[[adWelcomeMessage]]
-        </h1>
+    <style include="md-select iron-flex iron-flex-alignment iron-positioning">
+    </style>
+    <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
+    <link rel="stylesheet" href="offline_ad_login.css">
+    <oobe-dialog id="unlockStep" hidden="[[!unlockPasswordStep]]"
+        aria-label$="[[adWelcomeMessage]]" has-buttons>
+      <hd-iron-icon slot="oobe-icon" icon1x="oobe-enrollment-32:briefcase"
+          icon2x="oobe-enrollment-64:briefcase">
+      </hd-iron-icon>
+      <h1 slot="title" class="welcome-message">
+        [[i18nDynamic(locale, 'adUnlockTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'adUnlockSubtitle')]]
       </div>
-      <div slot="footer" class="flex vertical layout">
-        <gaia-input-form on-submit="onUnlockPasswordEntered_"
-            disabled="[[disabled]]"
-            i18n-values="button-text:adUnlockButton"
-            hidden="[[!unlockPasswordStep]]">
-          <gaia-input id="unlockPasswordInput" type="password" slot="inputs"
-              required>
-            <div slot="label" i18n-content="adUnlockPassword"></div>
-            <div slot="error" i18n-content="adUnlockIncorrectPassword"></div>
-          </gaia-input>
-          <gaia-button id="skipButton" on-tap="onSkipClicked_">
-            $i18n{adUnlockPasswordSkip}
-          </gaia-button>
-        </gaia-input-form>
-        <div class="layout horizontal justified" hidden id="joinConfig">
-          <div>
-            $i18n{selectConfiguration}
-          </div>
-          <div class="md-select-wrapper">
+      <div slot="footer" id="adUnlock">
+        <cr-input id="unlockPasswordInput" type="password" slot="inputs"
+            invalid="{{unlockPasswordInvalid}}"
+            label="[[i18nDynamic(locale, 'adUnlockPassword')]]"
+            error-message="[[i18nDynamic(locale, 'adUnlockIncorrectPassword')]]"
+            disabled="[[disabled]]" on-keydown="onKeydownUnlockPassword_"
+            required>
+        </cr-input>
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <oobe-text-button id="skipButton" on-click="onSkipClicked_">
+          <div>[[i18nDynamic(locale, 'adUnlockPasswordSkip')]]</div>
+        </oobe-text-button>
+        <oobe-next-button id="unlockButton"
+            on-click="onUnlockPasswordEntered_"></oobe-next-button>
+      </div>
+    </oobe-dialog>
+    <oobe-dialog id="credsStep" hidden="[[unlockPasswordStep]]"
+        aria-label$="[[adWelcomeMessage]]" has-buttons>
+      <hd-iron-icon slot="oobe-icon" icon1x="oobe-enrollment-32:briefcase"
+          icon2x="oobe-enrollment-64:briefcase">
+      </hd-iron-icon>
+      <h1 slot="title" id="welcomeMsg"
+          class="welcome-message">[[adWelcomeMessage]]</h1>
+      <div slot="subtitle" hidden="[[isDomainJoin]]">
+        [[i18nDynamic(locale, 'enterpriseInfoMessage', realm)]]
+      </div>
+      <paper-progress slot="progress" hidden="[[!loading]]" indeterminate>
+      </paper-progress>
+      <div slot="footer" hidden="[[loading]]">
+        <div class="layout vertical" hidden id="joinConfig">
+          <span class="select-divider-line top-line"></span>
+          <div class="layout horizontal justified">
+            <div class="flex self-center select-title">
+              [[i18nDynamic(locale, 'selectConfiguration')]]
+            </div>
             <select id="joinConfigSelect" class="md-select">
             </select>
-            <span class="md-select-underline"></span>
+          </div>
+          <span class="select-divider-line bottom-line"></span>
+        </div>
+        <div class="vertical layout">
+          <cr-input slot="inputs" id="machineNameInput" required
+              hidden="[[!isDomainJoin]]" value="[[machineName]]"
+              disabled="[[disabled]]" invalid="[[machineNameInvalid]]"
+              pattern="[[machineNameInputPattern_]]"
+              label="[[i18nDynamic(locale, 'oauthEnrollAdMachineNameInput')]]"
+              on-keydown="onKeydownMachineNameInput_"
+              error-message="[[getMachineNameError_(locale, errorState,
+                  selectedConfigOption_)]]">
+          </cr-input>
+          <cr-input slot="inputs" id="userInput" required
+              invalid="[[userInvalid]]" domain="[[userRealm]]"
+                                        value="{{userName}}"
+              disabled="[[isInputDisabled_('ad_username',
+                                           selectedConfigOption_, disabled)]]"
+              label="[[i18nDynamic(locale, 'adAuthLoginUsername')]]"
+              on-keydown="onKeydownUserInput_"
+              error-message="[[i18nDynamic(locale, 'adLoginInvalidUsername')]]">
+            <span slot="suffix" hidden="[[domainHidden(userRealm, userName)]]">
+              [[userRealm]]
+            </span>
+          </cr-input>
+          <cr-input slot="inputs" id="passwordInput" type="password" required
+              invalid="[[authPasswordInvalid]]"
+              disabled="[[isInputDisabled_('ad_password',
+                                           selectedConfigOption_, disabled)]]"
+              value="[[calculateInputValue_('passwordInput', 'ad_password',
+                                            selectedConfigOption_)]]"
+              label="[[i18nDynamic(locale, 'adLoginPassword')]]"
+              on-keydown="onKeydownAuthPasswordInput_"
+              error-message="[[i18nDynamic(locale, 'adLoginInvalidPassword')]]">
+          </cr-input>
+          <div class="flex layout horizontal start-justified">
+            <gaia-button id="moreOptionsBtn" type="link"
+                on-click="onMoreOptionsClicked_" hidden="[[!isDomainJoin]]"
+                disabled="[[disabled]]">
+              [[i18nDynamic(locale, 'adJoinMoreOptions')]]
+            </gaia-button>
           </div>
         </div>
-        <gaia-input-form on-submit="onSubmit_" id="adCreds"
-            disabled="[[disabled]]"
-            i18n-values="button-text:offlineLoginNextBtn"
-            hidden="[[unlockPasswordStep]]">
-          <gaia-input id="machineNameInput" required slot="inputs"
-              hidden="[[!isDomainJoin]]">
-            <div slot="label" i18n-content="oauthEnrollAdMachineNameInput">
-            </div>
-            <div slot="error">[[machineNameError]]</div>
-          </gaia-input>
-          <gaia-input slot="inputs" id="userInput" type="email" required
-              domain="[[userRealm]]">
-            <div slot="label">[[userNameLabel]]</div>
-            <div slot="error" i18n-content="adLoginInvalidUsername"></div>
-          </gaia-input>
-          <gaia-input slot="inputs" id="passwordInput" type="password" required>
-            <div slot="label" i18n-content="adLoginPassword"></div>
-            <div slot="error" i18n-content="adLoginInvalidPassword"></div>
-          </gaia-input>
-          <gaia-button id="backToUnlockButton" on-tap="onBackToUnlock_"
-              type="link" hidden>
-            $i18n{adUnlockPassword}
-          </gaia-button>
-          <gaia-button id="moreOptionsBtn" type="link"
-              on-tap="onMoreOptionsClicked_" hidden="[[!isDomainJoin]]">
-            $i18n{adJoinMoreOptions}
-          </gaia-button>
-        </gaia-input-form>
       </div>
-    </gaia-card>
+      <div slot="bottom-buttons" class="layout horizontal" hidden="[[loading]]">
+        <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock_"
+            disabled="[[disabled]]" hidden></oobe-back-button>
+        <oobe-back-button id="backButton" on-click="onBackButton_"
+            hidden="[[isDomainJoin]]"></oobe-back-button>
+        <div class="flex"></div>
+        <oobe-next-button id="nextButton" on-click="onSubmit_"
+            disabled="[[disabled]]"></oobe-next-button>
+      </div>
+    </oobe-dialog>
 
     <cr-dialog id="moreOptionsDlg" on-close="onMoreOptionsClosed_">
       <div slot="title">
-        $i18n{adJoinMoreOptions}
+        [[i18nDynamic(locale, 'adJoinMoreOptions')]]
       </div>
       <div slot="body">
-        <gaia-input id="orgUnitInput" required>
-          <div slot="label" i18n-content="adJoinOrgUnit"></div>
-        </gaia-input>
+        <cr-input id="orgUnitInput"
+            disabled="[[isInputDisabled_('computer_ou',
+                                         selectedConfigOption_)]]"
+            label="[[i18nDynamic(locale, 'adJoinOrgUnit')]]"
+            value="[[calculateInputValue_('orgUnitInput', 'computer_ou',
+                                          selectedConfigOption_)]]">
+        </cr-input>
       </div>
       <div slot="body">
-        <div class="flex layout center horizontal justified">
-          <div class="layout vertical center-justified">
-            $i18n{selectEncryption}
+        <div class="flex layout center horizontal start-justified
+            encryption-select-row">
+          <div class="self-center select-title">
+            [[i18nDynamic(locale, 'selectEncryption')]]
           </div>
-          <select id="encryptionList" aria-label$="$i18{selectEncryption}"
-              class="md-select">
+          <select id="encryptionList"
+              aria-label$="[[i18nDynamic(locale, 'selectEncryption')]]"
+              class="md-select"
+              disabled="[[isInputDisabled_('encryption_types',
+                                           selectedConfigOption_)]]"
+              value="[[encryptionValue_]]">
           </select>
         </div>
-        <div class="flex layout center horizontal end-justified">
-          <iron-icon id="encryptionWarningIcon" icon="cr:warning" hidden>
+        <div class="flex layout center horizontal start-justified
+            encryption-subtitle">
+          <iron-icon id="encryptionWarningIcon" icon="cr:warning"
+              hidden="[[isEncryptionStrong_(encryptionValue_)]]">
           </iron-icon>
-          <div id="encryptionSubtitle" class="advanced-option-subtitle">
+          <div id="encryptionSubtitle">
+            [[encryptionSubtitle_(locale, encryptionValue_)]]
           </div>
         </div>
       </div>
       <div slot="button-container">
-        <paper-button autofocus on-tap="onMoreOptionsCancelTap_"
-            class="action-button">
-          $i18n{adJoinCancel}
-        </paper-button>
-        <paper-button autofocus on-tap="onMoreOptionsConfirmTap_"
-            class="action-button">
-          $i18n{adJoinConfirm}
-        </paper-button>
+        <oobe-text-button on-click="onMoreOptionsCancelTap_" autofocus>
+          <div>[[i18nDynamic(locale, 'adJoinCancel')]]</div>
+        </oobe-text-button>
+        <oobe-text-button id="moreOptionsSave"
+            on-click="onMoreOptionsConfirmTap_" inverse>
+          <div>[[i18nDynamic(locale, 'adJoinSave')]]</div>
+        </oobe-text-button>
       </div>
     </cr-dialog>
   </template>

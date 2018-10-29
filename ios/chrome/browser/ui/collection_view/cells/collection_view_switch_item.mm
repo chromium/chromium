@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
 
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -22,11 +23,19 @@ const CGFloat kHorizontalPadding = 16;
 const CGFloat kVerticalPadding = 16;
 }  // namespace
 
+@interface CollectionViewSwitchCell ()
+
+// Sets dynamic types if they are available (iOS 11+)
+- (void)useScaledFont:(BOOL)useScaledFont;
+
+@end
+
 @implementation CollectionViewSwitchItem
 
 @synthesize text = _text;
 @synthesize on = _on;
 @synthesize enabled = _enabled;
+@synthesize useScaledFont = _useScaledFont;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -46,6 +55,7 @@ const CGFloat kVerticalPadding = 16;
   cell.switchView.on = self.isOn;
   cell.textLabel.textColor =
       [CollectionViewSwitchCell defaultTextColorForState:cell.switchView.state];
+  [cell useScaledFont:_useScaledFont];
 }
 
 @end
@@ -64,7 +74,6 @@ const CGFloat kVerticalPadding = 16;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_textLabel];
 
-    _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
     _textLabel.textColor = [[MDCPalette greyPalette] tint900];
     _textLabel.numberOfLines = 0;
 
@@ -74,6 +83,8 @@ const CGFloat kVerticalPadding = 16;
     _switchView.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
+
+    [self useScaledFont:NO];
 
     // Set up the constraints.
     [NSLayoutConstraint activateConstraints:@[
@@ -96,6 +107,11 @@ const CGFloat kVerticalPadding = 16;
     ]];
   }
   return self;
+}
+
+- (void)useScaledFont:(BOOL)useScaledFont {
+  MaybeSetUILabelScaledFont(useScaledFont, _textLabel,
+                            [[MDCTypography fontLoader] mediumFontOfSize:14]);
 }
 
 + (UIColor*)defaultTextColorForState:(UIControlState)state {

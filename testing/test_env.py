@@ -178,8 +178,8 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   """
   print('Running %r in %r (env: %r)' % (argv, cwd, env))
   assert stdoutfile
-  with io.open(stdoutfile, 'w') as writer, io.open(stdoutfile, 'r', 1) as \
-      reader:
+  with io.open(stdoutfile, 'wb') as writer, \
+      io.open(stdoutfile, 'rb', 1) as reader:
     process = subprocess.Popen(argv, env=env, cwd=cwd, stdout=writer,
         stderr=subprocess.STDOUT)
     forward_signals([process])

@@ -25,8 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
-#if defined(TOOLKIT_VIEWS) && \
-    (!defined(OS_MACOSX) || defined(MAC_VIEWS_BROWSER))
+#if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/media_router/media_remoting_dialog_view.h"
 #endif
 
@@ -139,16 +138,18 @@ CastRemotingConnector* CastRemotingConnector::Get(
         media_router::MediaRouterFactory::GetApiForBrowserContext(
             contents->GetBrowserContext()),
         SessionTabHelper::IdForTab(contents),
-#if defined(TOOLKIT_VIEWS) && \
-    (!defined(OS_MACOSX) || defined(MAC_VIEWS_BROWSER))
+#if defined(TOOLKIT_VIEWS)
         base::BindRepeating(
             [](content::WebContents* contents,
                PermissionResultCallback result_callback) {
               if (media_router::ShouldUseViewsDialog()) {
                 media_router::MediaRemotingDialogView::GetPermission(
                     contents, std::move(result_callback));
-                return base::BindOnce(
-                    &media_router::MediaRemotingDialogView::HideDialog);
+                return media_router::MediaRemotingDialogView::IsShowing()
+                           ? base::BindOnce(
+                                 &media_router::MediaRemotingDialogView::
+                                     HideDialog)
+                           : CancelPermissionRequestCallback();
               } else {
                 std::move(result_callback).Run(true);
                 return CancelPermissionRequestCallback();

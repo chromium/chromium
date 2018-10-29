@@ -28,13 +28,10 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.chrome.browser.omnibox.QueryInOmnibox;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ColorUtils;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -48,29 +45,21 @@ import java.net.URISyntaxException;
  * Provides a way of accessing toolbar data and state.
  */
 public class ToolbarModel implements ToolbarDataProvider {
-    public static final String NTP_BUTTON_NEWS_FEED_VARIANT = "news_feed";
-    public static final String NTP_BUTTON_HOME_VARIANT = "home";
-    public static final String NTP_BUTTON_CHROME_VARIANT = "chrome";
-
     private final Context mContext;
-    private final BottomSheet mBottomSheet;
 
     private Tab mTab;
     private boolean mIsIncognito;
     private int mPrimaryColor;
     private boolean mIsUsingBrandColor;
-    private boolean mIsNativeLibraryReady;
 
     private long mNativeToolbarModelAndroid;
 
     /**
      * Default constructor for this class.
      * @param context The Context used for styling the toolbar visuals.
-     * @param bottomSheet The {@link BottomSheet} for the activity displaying this toolbar.
      */
-    public ToolbarModel(Context context, @Nullable BottomSheet bottomSheet) {
+    public ToolbarModel(Context context) {
         mContext = context;
-        mBottomSheet = bottomSheet;
         mPrimaryColor = ColorUtils.getDefaultThemeColor(context.getResources(), false);
     }
 
@@ -79,7 +68,6 @@ public class ToolbarModel implements ToolbarDataProvider {
      */
     public void initializeWithNative() {
         mNativeToolbarModelAndroid = nativeInit();
-        mIsNativeLibraryReady = true;
     }
 
     /**
@@ -89,7 +77,6 @@ public class ToolbarModel implements ToolbarDataProvider {
         if (mNativeToolbarModelAndroid == 0) return;
         nativeDestroy(mNativeToolbarModelAndroid);
         mNativeToolbarModelAndroid = 0;
-        mIsNativeLibraryReady = false;
     }
 
     /**
@@ -175,9 +162,14 @@ public class ToolbarModel implements ToolbarDataProvider {
             return buildUrlBarData(url, formattedUrl);
         }
 
+        if (isPreview()) {
+            // Strip the scheme from the original URL for the Previews UI.
+            return buildUrlBarData(url, UrlUtilities.stripScheme(url));
+        }
+
         if (isOfflinePage()) {
             String originalUrl = mTab.getOriginalUrl();
-            formattedUrl = OfflinePageUtils.stripSchemeFromOnlineUrl(
+            formattedUrl = UrlUtilities.stripScheme(
                     DomDistillerTabUtils.getFormattedUrlFromOriginalDistillerUrl(originalUrl));
 
             // Clear the editing text for untrusted offline pages.
@@ -194,12 +186,9 @@ public class ToolbarModel implements ToolbarDataProvider {
             return buildUrlBarData(url, searchTerms);
         }
 
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.OMNIBOX_HIDE_SCHEME_DOMAIN_IN_STEADY_STATE)) {
-            String urlForDisplay = getUrlForDisplay();
-            if (!urlForDisplay.equals(formattedUrl)) {
-                return buildUrlBarData(url, urlForDisplay, formattedUrl);
-            }
+        String urlForDisplay = getUrlForDisplay();
+        if (!urlForDisplay.equals(formattedUrl)) {
+            return buildUrlBarData(url, urlForDisplay, formattedUrl);
         }
 
         return buildUrlBarData(url, formattedUrl);
@@ -310,7 +299,7 @@ public class ToolbarModel implements ToolbarDataProvider {
 
     @Override
     public boolean isUsingBrandColor() {
-        return mIsUsingBrandColor && mBottomSheet == null;
+        return mIsUsingBrandColor;
     }
 
     @Override
@@ -409,9 +398,16 @@ public class ToolbarModel implements ToolbarDataProvider {
         if (isIncognito() || needLightIcon) {
             // For a dark theme color, use light icons.
             list = AppCompatResources.getColorStateList(mContext, R.color.light_mode_tint);
+        } else if (isPreview()) {
+            // There will never be a preview in incognito. Always use the darker color rather than
+            // incorporating with the block above.
+            list = AppCompatResources.getColorStateList(
+                    mContext, R.color.locationbar_status_preview_color);
         } else if (!hasTab() || isUsingBrandColor()
                 || ChromeFeatureList.isEnabled(
-                           ChromeFeatureList.OMNIBOX_HIDE_SCHEME_DOMAIN_IN_STEADY_STATE)) {
+                           ChromeFeatureList.OMNIBOX_HIDE_SCHEME_IN_STEADY_STATE)
+                || ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.OMNIBOX_HIDE_TRIVIAL_SUBDOMAINS_IN_STEADY_STATE)) {
             // For theme colors which are not dark and are also not
             // light enough to warrant an opaque URL bar, use dark
             // icons.
@@ -468,39 +464,6 @@ public class ToolbarModel implements ToolbarDataProvider {
     public String getUrlForDisplay() {
         if (mNativeToolbarModelAndroid == 0) return "";
         return nativeGetURLForDisplay(mNativeToolbarModelAndroid);
-    }
-
-    @Override
-    public int getHomeButtonIcon() {
-        int iconResId = R.drawable.btn_toolbar_home;
-        if (!FeatureUtilities.isNewTabPageButtonEnabled()) return iconResId;
-        // Check for a cached icon variant in shared preferences.
-        String iconVariant = ChromePreferenceManager.getInstance().getNewTabPageButtonVariant();
-
-        // If there is no cached icon variant and the native library is ready, try to retrieve the
-        // icon variant from variations associated data.
-        if (TextUtils.isEmpty(iconVariant) && mIsNativeLibraryReady) {
-            iconVariant = FeatureUtilities.getNTPButtonVariant();
-        }
-
-        // Return if no icon variant is found.
-        if (TextUtils.isEmpty(iconVariant)) return iconResId;
-
-        switch (iconVariant) {
-            case NTP_BUTTON_HOME_VARIANT:
-                iconResId = R.drawable.ic_home;
-                break;
-            case NTP_BUTTON_NEWS_FEED_VARIANT:
-                iconResId = R.drawable.ic_library_news_feed;
-                break;
-            case NTP_BUTTON_CHROME_VARIANT:
-                iconResId = R.drawable.ic_chrome;
-                break;
-            default:
-                break;
-        }
-
-        return iconResId;
     }
 
     private native long nativeInit();

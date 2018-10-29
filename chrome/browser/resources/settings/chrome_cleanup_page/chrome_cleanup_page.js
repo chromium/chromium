@@ -77,8 +77,18 @@ settings.ChromeCleanupCardActionButton;
 settings.ChromeCleanupCardComponents;
 
 /**
+ * Represents the file path structure of a base::FilePath.
+ * dirname ends with a separator.
  * @typedef {{
- *   files: Array<string>,
+ *   dirname: string,
+ *   basename: string,
+ * }}
+ */
+settings.ChromeCleanupFilePath;
+
+/**
+ * @typedef {{
+ *   files: Array<settings.ChromeCleanupFilePath>,
  *   registryKeys: Array<string>,
  *   extensions: Array<string>,
  * }}
@@ -740,5 +750,24 @@ Polymer({
         },
       ],
     ]);
+  },
+
+  /**
+   * @param {!Array<string>} list
+   * @return {!Array<settings.ChromeCleanupRemovalListItem>}
+   * @private
+   */
+  getListEntriesFromStrings_: function(list) {
+    return list.map(entry => ({text: entry, highlightSuffix: null}));
+  },
+
+  /**
+   * @param {!Array<settings.ChromeCleanupFilePath>} paths
+   * @return {!Array<settings.ChromeCleanupRemovalListItem>}
+   * @private
+   */
+  getListEntriesFromFilePaths_: function(paths) {
+    return paths.map(
+        path => ({text: path.dirname, highlightSuffix: path.basename}));
   },
 });

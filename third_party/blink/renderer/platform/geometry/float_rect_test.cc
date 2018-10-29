@@ -31,107 +31,107 @@ TEST(FloatRectTest, SquaredDistanceToTest) {
 
   // `1` case
   FloatPoint p1(80, 80);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p1),
-                      800.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p1), 800.f);
 
   FloatPoint p2(-10, -10);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p2),
-                      24200.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p2), 24200.f);
 
   FloatPoint p3(80, -10);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p3),
-                      12500.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p3), 12500.f);
 
   // `2` case
   FloatPoint p4(110, 80);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p4),
-                      400.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p4), 400.f);
 
   FloatPoint p5(150, 0);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p5),
-                      10000.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p5), 10000.f);
 
   FloatPoint p6(180, -10);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p6),
-                      12100.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p6), 12100.f);
 
   // `3` case
   FloatPoint p7(400, 80);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p7),
-                      2900.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p7), 2900.f);
 
   FloatPoint p8(360, -10);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p8),
-                      12200.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p8), 12200.f);
 
   // `4` case
   FloatPoint p9(80, 110);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, r1.SquaredDistanceTo(p9),
-                      400.f);
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
+                      r1.SquaredDistanceTo(p9), 400.f);
 
   FloatPoint p10(-10, 180);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p10), 12100.f);
 
   // `5`(& In) case
   FloatPoint p11(100, 100);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p11), 0.f);
 
   FloatPoint p12(150, 100);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p12), 0.f);
 
   FloatPoint p13(350, 100);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p13), 0.f);
 
   FloatPoint p14(350, 150);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p14), 0.f);
 
   FloatPoint p15(350, 250);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p15), 0.f);
 
   FloatPoint p16(150, 250);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p16), 0.f);
 
   FloatPoint p17(100, 250);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p17), 0.f);
 
   FloatPoint p18(100, 150);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p18), 0.f);
 
   FloatPoint p19(150, 150);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p19), 0.f);
 
   // `6` case
   FloatPoint p20(380, 150);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p20), 900.f);
 
   // `7` case
   FloatPoint p21(80, 280);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p21), 1300.f);
 
   FloatPoint p22(-10, 300);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p22), 14600.f);
 
   // `8` case
   FloatPoint p23(180, 300);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p23), 2500.f);
 
   // `9` case
   FloatPoint p24(450, 450);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual,
                       r1.SquaredDistanceTo(p24), 50000.f);
 }
 

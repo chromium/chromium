@@ -1,2 +1,0 @@
-Move
-Button is clicked.

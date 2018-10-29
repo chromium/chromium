@@ -3,6 +3,7 @@ This is the WebKit version of CSS 2.1 Test Suite: dynamic changes to 'counter-in
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Before the dynamic change:
 PASS internals.counterValue(document.getElementById('one')) is '1'
 PASS internals.counterValue(document.getElementById('two')) is '3'
@@ -12,5 +13,5 @@ PASS internals.counterValue(document.getElementById('one')) is '1'
 PASS internals.counterValue(document.getElementById('two')) is '2'
 PASS internals.counterValue(document.getElementById('three')) is '3'
 
-TEST COMPLETE
 
+TEST COMPLETE

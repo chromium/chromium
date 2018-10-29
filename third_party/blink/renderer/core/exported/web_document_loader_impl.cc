@@ -48,18 +48,6 @@
 
 namespace blink {
 
-WebDocumentLoaderImpl* WebDocumentLoaderImpl::Create(
-    LocalFrame* frame,
-    const ResourceRequest& request,
-    const SubstituteData& data,
-    ClientRedirectPolicy client_redirect_policy,
-    const base::UnguessableToken& devtools_navigation_token) {
-  DCHECK(frame);
-
-  return new WebDocumentLoaderImpl(frame, request, data, client_redirect_policy,
-                                   devtools_navigation_token);
-}
-
 const WebURLRequest& WebDocumentLoaderImpl::OriginalRequest() const {
   return original_request_wrapper_;
 }
@@ -114,12 +102,18 @@ WebDocumentLoaderImpl::WebDocumentLoaderImpl(
     const ResourceRequest& request,
     const SubstituteData& data,
     ClientRedirectPolicy client_redirect_policy,
-    const base::UnguessableToken& devtools_navigation_token)
+    const base::UnguessableToken& devtools_navigation_token,
+    WebFrameLoadType load_type,
+    WebNavigationType navigation_type,
+    std::unique_ptr<WebNavigationParams> navigation_params)
     : DocumentLoader(frame,
                      request,
                      data,
                      client_redirect_policy,
-                     devtools_navigation_token),
+                     devtools_navigation_token,
+                     load_type,
+                     navigation_type,
+                     std::move(navigation_params)),
       original_request_wrapper_(DocumentLoader::OriginalRequest()),
       request_wrapper_(DocumentLoader::GetRequest()),
       response_wrapper_(DocumentLoader::GetResponse()) {}

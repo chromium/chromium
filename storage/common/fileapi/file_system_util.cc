@@ -341,35 +341,6 @@ base::FilePath StringToFilePath(const std::string& file_path_string) {
 #endif
 }
 
-blink::WebFileError FileErrorToWebFileError(
-    base::File::Error error_code) {
-  switch (error_code) {
-    case base::File::FILE_ERROR_NOT_FOUND:
-      return blink::kWebFileErrorNotFound;
-    case base::File::FILE_ERROR_INVALID_OPERATION:
-    case base::File::FILE_ERROR_EXISTS:
-    case base::File::FILE_ERROR_NOT_EMPTY:
-      return blink::kWebFileErrorInvalidModification;
-    case base::File::FILE_ERROR_NOT_A_DIRECTORY:
-    case base::File::FILE_ERROR_NOT_A_FILE:
-      return blink::kWebFileErrorTypeMismatch;
-    case base::File::FILE_ERROR_ACCESS_DENIED:
-      return blink::kWebFileErrorNoModificationAllowed;
-    case base::File::FILE_ERROR_FAILED:
-      return blink::kWebFileErrorInvalidState;
-    case base::File::FILE_ERROR_ABORT:
-      return blink::kWebFileErrorAbort;
-    case base::File::FILE_ERROR_SECURITY:
-      return blink::kWebFileErrorSecurity;
-    case base::File::FILE_ERROR_NO_SPACE:
-      return blink::kWebFileErrorQuotaExceeded;
-    case base::File::FILE_ERROR_INVALID_URL:
-      return blink::kWebFileErrorEncoding;
-    default:
-      return blink::kWebFileErrorInvalidModification;
-  }
-}
-
 bool GetFileSystemPublicType(
     const std::string type_string,
     blink::WebFileSystemType* type) {

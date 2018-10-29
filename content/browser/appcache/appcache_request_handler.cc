@@ -570,10 +570,12 @@ void AppCacheRequestHandler::MaybeCreateLoader(
 }
 
 bool AppCacheRequestHandler::MaybeCreateLoaderForResponse(
+    const GURL& request_url,
     const network::ResourceResponseHead& response,
     network::mojom::URLLoaderPtr* loader,
     network::mojom::URLLoaderClientRequest* client_request,
-    ThrottlingURLLoader* url_loader) {
+    ThrottlingURLLoader* url_loader,
+    bool* skip_other_interceptors) {
   // The sync interface of this method is inherited from the
   // NavigationLoaderInterceptor class. The LoaderCallback created here is
   // invoked synchronously in fallback cases, and only when there really is
@@ -600,6 +602,8 @@ bool AppCacheRequestHandler::MaybeCreateLoaderForResponse(
     return false;
   }
   DCHECK(was_called);
+  if (IsMainResourceType(resource_type_))
+    should_create_subresource_loader_ = true;
   return true;
 }
 

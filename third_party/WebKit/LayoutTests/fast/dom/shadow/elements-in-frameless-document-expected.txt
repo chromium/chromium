@@ -2,7 +2,6 @@ This test ensure that the shadow related elements are instantiated even inside f
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing on the frame-less document.
 PASS window.HTMLContentElement is content.constructor
 PASS window.HTMLShadowElement is shadow.constructor
@@ -12,4 +11,5 @@ PASS window.HTMLShadowElement is shadow.constructor
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 x+

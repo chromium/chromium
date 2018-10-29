@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/common",
+  "+chrome/installer/util",
+  "+google_apis",
+]
+

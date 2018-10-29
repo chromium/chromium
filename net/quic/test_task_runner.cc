@@ -50,14 +50,41 @@ const std::vector<PostedTask>& TestTaskRunner::GetPostedTasks() const {
   return tasks_;
 }
 
+quic::QuicTime::Delta TestTaskRunner::NextPendingTaskDelay() {
+  if (tasks_.empty())
+    return quic::QuicTime::Delta::Infinite();
+
+  auto next = FindNextTask();
+  return quic::QuicTime::Delta::FromMicroseconds(
+      (next->GetTimeToRun() - NowInTicks(*clock_)).InMicroseconds());
+}
+
 void TestTaskRunner::RunNextTask() {
-  std::vector<PostedTask>::iterator next = FindNextTask();
+  auto next = FindNextTask();
   DCHECK(next != tasks_.end());
   clock_->AdvanceTime(quic::QuicTime::Delta::FromMicroseconds(
       (next->GetTimeToRun() - NowInTicks(*clock_)).InMicroseconds()));
   PostedTask task = std::move(*next);
   tasks_.erase(next);
   std::move(task.task).Run();
+}
+
+void TestTaskRunner::FastForwardBy(quic::QuicTime::Delta delta) {
+  DCHECK_GE(delta, quic::QuicTime::Delta::Zero());
+
+  quic::QuicTime end_timestamp = clock_->Now() + delta;
+
+  while (NextPendingTaskDelay() <= end_timestamp - clock_->Now()) {
+    RunNextTask();
+  }
+
+  if (clock_->Now() != end_timestamp)
+    clock_->AdvanceTime(end_timestamp - clock_->Now());
+
+  while (NextPendingTaskDelay() <= quic::QuicTime::Delta::Zero()) {
+    RunNextTask();
+  }
+  return;
 }
 
 void TestTaskRunner::RunUntilIdle() {

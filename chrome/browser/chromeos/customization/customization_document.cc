@@ -43,6 +43,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/load_flags.h"
@@ -638,9 +639,8 @@ void ServicesCustomizationDocument::OnSimpleLoaderComplete(
   } else {
     if (num_retries_ < kMaxFetchRetries) {
       num_retries_++;
-      content::BrowserThread::PostDelayedTask(
-          content::BrowserThread::UI,
-          FROM_HERE,
+      base::PostDelayedTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::Bind(&ServicesCustomizationDocument::StartFileFetch,
                      weak_ptr_factory_.GetWeakPtr()),
           base::TimeDelta::FromSeconds(kRetriesDelayInSec));

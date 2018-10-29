@@ -13,6 +13,7 @@
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -33,16 +34,12 @@
 #include "chrome/test/chromedriver/chrome_launcher.h"
 #include "chrome/test/chromedriver/command_listener.h"
 #include "chrome/test/chromedriver/logging.h"
-#include "chrome/test/chromedriver/net/url_request_context_getter.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
 #include "chrome/test/chromedriver/version.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace {
-
-// The minimium chrome build no that supports window management devtools
-// commands.
-const int kBrowserWindowDevtoolsBuildNo = 3076;
 
 const int kWifiMask = 0x2;
 const int k4GMask = 0x8;
@@ -90,11 +87,10 @@ Status EvaluateScriptAndIgnoreResult(Session* session, std::string expression) {
 
 }  // namespace
 
-InitSessionParams::InitSessionParams(
-    scoped_refptr<URLRequestContextGetter> context_getter,
-    const SyncWebSocketFactory& socket_factory,
-    DeviceManager* device_manager)
-    : context_getter(context_getter),
+InitSessionParams::InitSessionParams(network::mojom::URLLoaderFactory* factory,
+                                     const SyncWebSocketFactory& socket_factory,
+                                     DeviceManager* device_manager)
+    : url_loader_factory(factory),
       socket_factory(socket_factory),
       device_manager(device_manager) {}
 
@@ -134,8 +130,9 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
   caps->SetBoolean("acceptInsecureCerts", capabilities.accept_insecure_certs);
   caps->SetBoolean("nativeEvents", true);
   caps->SetBoolean("hasTouchScreen", session->chrome->HasTouchScreen());
-  caps->SetString("unexpectedAlertBehaviour",
-                  session->unexpected_alert_behaviour);
+  caps->SetString(session->w3c_compliant ? "unhandledPromptBehavior"
+                                         : "unexpectedAlertBehaviour",
+                  session->unhandled_prompt_behavior);
 
   // add setWindowRect based on whether we are desktop/android/remote
   if (capabilities.IsAndroid() || capabilities.IsRemoteBrowser()) {
@@ -220,39 +217,14 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   session->driver_log.reset(
       new WebDriverLog(WebDriverLog::kDriverType, Log::kAll));
   const base::DictionaryValue* desired_caps;
-  const base::DictionaryValue empty_dict;
   base::DictionaryValue merged_caps;
 
   session->w3c_compliant = GetW3CSetting(params);
   if (session->w3c_compliant) {
-    if (!params.GetDictionary("capabilities.alwaysMatch", &desired_caps))
-      desired_caps = &empty_dict;
-
-    // TODO(johnchen): Handle capabilities.firstMatch. Currently, we're just
-    // merging, not validating or matching as per the spec.
-    const base::ListValue* first_match_list;
-    std::unique_ptr<base::ListValue> tmp_list;
-    if (!(params.GetList("capabilities.firstMatch", &first_match_list))) {
-      // if no firstMatch, make first_match_list a list with an empty dictionary
-      tmp_list = std::unique_ptr<base::ListValue>(new base::ListValue());
-      std::unique_ptr<base::DictionaryValue> inner(new base::DictionaryValue());
-      tmp_list->Append(std::move(inner));
-      first_match_list = tmp_list.get();
-    }
-    for (size_t i = 0; i < first_match_list->GetSize(); ++i) {
-      const base::DictionaryValue* first_match;
-      if (!first_match_list->GetDictionary(i, &first_match)) {
-        continue;
-      }
-      if (!MergeCapabilities(desired_caps, first_match, &merged_caps)) {
-        return Status(kSessionNotCreated, "Invalid capabilities");
-      }
-      if (MatchCapabilities(&merged_caps)) {
-        // If a match is found, we want to use these matched setcapabilities.
-        desired_caps = &merged_caps;
-        break;
-      }
-    }
+    Status status = ProcessCapabilities(params, &merged_caps);
+    if (status.IsError())
+      return status;
+    desired_caps = &merged_caps;
   } else if (!params.GetDictionary("desiredCapabilities", &desired_caps)) {
     return Status(kSessionNotCreated,
                   "Missing or invalid capabilities");
@@ -262,9 +234,15 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   Status status = capabilities.Parse(*desired_caps);
   if (status.IsError())
     return status;
+  status = capabilities.CheckSupport();
+  if (status.IsError())
+    return status;
 
-  desired_caps->GetString("unexpectedAlertBehaviour",
-                           &session->unexpected_alert_behaviour);
+  session->unhandled_prompt_behavior = capabilities.unhandled_prompt_behavior;
+
+  session->implicit_wait = capabilities.implicit_wait_timeout;
+  session->page_load_timeout = capabilities.page_load_timeout;
+  session->script_timeout = capabilities.script_timeout;
 
   Log::Level driver_level = Log::kWarning;
   if (capabilities.logging_prefs.count(WebDriverLog::kDriverType))
@@ -288,10 +266,10 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   session->command_listeners.swap(command_listeners);
 
   status =
-      LaunchChrome(bound_params.context_getter.get(),
-                   bound_params.socket_factory, bound_params.device_manager,
-                   capabilities, std::move(devtools_event_listeners),
-                   &session->chrome, session->w3c_compliant);
+      LaunchChrome(bound_params.url_loader_factory, bound_params.socket_factory,
+                   bound_params.device_manager, capabilities,
+                   std::move(devtools_event_listeners), &session->chrome,
+                   session->w3c_compliant);
   if (status.IsError())
     return status;
 
@@ -344,9 +322,9 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
   return true;
 }
 
-bool MatchCapabilities(base::DictionaryValue* capabilities) {
-  // attempt to match the capabilities requested to the actual capabilities
-  // reject if they don't match
+bool MatchCapabilities(const base::DictionaryValue* capabilities) {
+  // Attempt to match the capabilities requested to the actual capabilities.
+  // Reject if they don't match.
   if (capabilities->HasKey("browserName")) {
     std::string name;
     capabilities->GetString("browserName", &name);
@@ -355,6 +333,106 @@ bool MatchCapabilities(base::DictionaryValue* capabilities) {
     }
   }
   return true;
+}
+
+// Implementation of "process capabilities", as defined in W3C spec at
+// https://www.w3.org/TR/webdriver/#processing-capabilities. Step numbers in
+// the comments correspond to the step numbers in the spec.
+Status ProcessCapabilities(const base::DictionaryValue& params,
+                           base::DictionaryValue* result_capabilities) {
+  // 1. Get the property "capabilities" from parameters.
+  const base::DictionaryValue* capabilities_request;
+  if (!params.GetDictionary("capabilities", &capabilities_request))
+    return Status(kInvalidArgument, "'capabilities' must be a JSON object");
+
+  // 2. Get the property "alwaysMatch" from capabilities request.
+  const base::DictionaryValue empty_object;
+  const base::DictionaryValue* required_capabilities;
+  const base::Value* required_capabilities_value =
+      capabilities_request->FindKey("alwaysMatch");
+  if (required_capabilities_value == nullptr) {
+    required_capabilities = &empty_object;
+  } else if (required_capabilities_value->GetAsDictionary(
+                 &required_capabilities)) {
+    Capabilities cap;
+    Status status = cap.Parse(*required_capabilities);
+    if (status.IsError())
+      return status;
+  } else {
+    return Status(kInvalidArgument, "'alwaysMatch' must be a JSON object");
+  }
+
+  // 3. Get the property "firstMatch" from capabilities request.
+  base::ListValue default_list;
+  const base::ListValue* all_first_match_capabilities;
+  const base::Value* all_first_match_capabilities_value =
+      capabilities_request->FindKey("firstMatch");
+  if (all_first_match_capabilities_value == nullptr) {
+    default_list.Append(std::make_unique<base::DictionaryValue>());
+    all_first_match_capabilities = &default_list;
+  } else if (all_first_match_capabilities_value->GetAsList(
+                 &all_first_match_capabilities)) {
+    if (all_first_match_capabilities->GetSize() < 1)
+      return Status(kInvalidArgument,
+                    "'firstMatch' must contain at least one entry");
+  } else {
+    return Status(kInvalidArgument, "'firstMatch' must be a JSON list");
+  }
+
+  // 4. Let validated first match capabilities be an empty JSON List.
+  std::vector<const base::DictionaryValue*> validated_first_match_capabilities;
+
+  // 5. Validate all first match capabilities.
+  for (size_t i = 0; i < all_first_match_capabilities->GetSize(); ++i) {
+    const base::DictionaryValue* first_match;
+    if (!all_first_match_capabilities->GetDictionary(i, &first_match)) {
+      return Status(kInvalidArgument,
+                    base::StringPrintf(
+                        "entry %zu of 'firstMatch' must be a JSON object", i));
+    }
+    Capabilities cap;
+    Status status = cap.Parse(*first_match);
+    if (status.IsError())
+      return Status(
+          kInvalidArgument,
+          base::StringPrintf("entry %zu of 'firstMatch' is invalid", i),
+          status);
+    validated_first_match_capabilities.push_back(first_match);
+  }
+
+  // 6. Let merged capabilities be an empty List.
+  std::vector<base::DictionaryValue> merged_capabilities;
+
+  // 7. Merge capabilities.
+  for (size_t i = 0; i < validated_first_match_capabilities.size(); ++i) {
+    const base::DictionaryValue* first_match_capabilities =
+        validated_first_match_capabilities[i];
+    base::DictionaryValue merged;
+    if (!MergeCapabilities(required_capabilities, first_match_capabilities,
+                           &merged)) {
+      return Status(
+          kInvalidArgument,
+          base::StringPrintf(
+              "unable to merge 'alwaysMatch' with entry %zu of 'firstMatch'",
+              i));
+    }
+    merged_capabilities.emplace_back();
+    merged_capabilities.back().Swap(&merged);
+  }
+
+  // 8. Match capabilities.
+  for (auto& capabilities : merged_capabilities) {
+    if (MatchCapabilities(&capabilities)) {
+      capabilities.Swap(result_capabilities);
+      return Status(kOk);
+    }
+  }
+
+  // 9. The spec says "return success with data null", but then the caller is
+  // instructed to return error when the data is null. Since we don't have a
+  // convenient way to return data null, we will take a shortcut and return an
+  // error directly.
+  return Status(kSessionNotCreated, "No matching capabilities found");
 }
 
 Status ExecuteInitSession(const InitSessionParams& bound_params,
@@ -395,7 +473,9 @@ Status ExecuteGetCurrentWindowHandle(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
-
+  status = web_view->ConnectIfNecessary();
+  if (status.IsError())
+    return status;
   value->reset(new base::Value(WebViewIdToWindowHandle(web_view->GetId())));
   return Status(kOk);
 }
@@ -862,22 +942,9 @@ Status ExecuteSetWindowPosition(Session* session,
   if (!params.GetDouble("x", &x) || !params.GetDouble("y", &y))
     return Status(kUnknownError, "missing or invalid 'x' or 'y'");
 
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
-  if (desktop->GetBrowserInfo()->build_no >= kBrowserWindowDevtoolsBuildNo) {
-    return desktop->SetWindowPosition(session->window, static_cast<int>(x),
-                                      static_cast<int>(y));
-  }
-
-  AutomationExtension* extension = NULL;
-  status = desktop->GetAutomationExtension(&extension, session->w3c_compliant);
-  if (status.IsError())
-    return status;
-
-  return extension->SetWindowPosition(static_cast<int>(x), static_cast<int>(y));
+  return session->chrome->SetWindowPosition(session->window,
+                                            static_cast<int>(x),
+                                            static_cast<int>(y));
 }
 
 Status ExecuteGetWindowSize(Session* session,
@@ -905,11 +972,6 @@ Status ExecuteSetWindowRect(Session* session,
   double x = 0;
   double y = 0;
 
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
   // to pass to the set window rect command
   base::DictionaryValue rect_params;
 
@@ -923,7 +985,7 @@ Status ExecuteSetWindowRect(Session* session,
     rect_params.SetInteger("width", static_cast<int>(width));
     rect_params.SetInteger("height", static_cast<int>(height));
   }
-  status = desktop->SetWindowRect(session->window, rect_params);
+  Status status = session->chrome->SetWindowRect(session->window, rect_params);
   if (status.IsError())
     return status;
 
@@ -940,34 +1002,15 @@ Status ExecuteSetWindowSize(Session* session,
       !params.GetDouble("height", &height))
     return Status(kUnknownError, "missing or invalid 'width' or 'height'");
 
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
-  if (desktop->GetBrowserInfo()->build_no >= kBrowserWindowDevtoolsBuildNo) {
-    return desktop->SetWindowSize(session->window, static_cast<int>(width),
-                                  static_cast<int>(height));
-  }
-
-  AutomationExtension* extension = NULL;
-  status = desktop->GetAutomationExtension(&extension, session->w3c_compliant);
-  if (status.IsError())
-    return status;
-
-  return extension->SetWindowSize(
-      static_cast<int>(width), static_cast<int>(height));
+  return session->chrome->SetWindowSize(session->window,
+                                        static_cast<int>(width),
+                                        static_cast<int>(height));
 }
 
 Status ExecuteMaximizeWindow(Session* session,
                              const base::DictionaryValue& params,
                              std::unique_ptr<base::Value>* value) {
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
-  status = desktop->MaximizeWindow(session->window);
+  Status status = session->chrome->MaximizeWindow(session->window);
   if (status.IsError())
     return status;
 
@@ -977,12 +1020,7 @@ Status ExecuteMaximizeWindow(Session* session,
 Status ExecuteMinimizeWindow(Session* session,
                              const base::DictionaryValue& params,
                              std::unique_ptr<base::Value>* value) {
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
-  status = desktop->MinimizeWindow(session->window);
+  Status status = session->chrome->MinimizeWindow(session->window);
   if (status.IsError())
     return status;
 
@@ -992,12 +1030,7 @@ Status ExecuteMinimizeWindow(Session* session,
 Status ExecuteFullScreenWindow(Session* session,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value) {
-  ChromeDesktopImpl* desktop = NULL;
-  Status status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsError())
-    return status;
-
-  status = desktop->FullScreenWindow(session->window);
+  Status status = session->chrome->FullScreenWindow(session->window);
   if (status.IsError())
     return status;
 
@@ -1147,5 +1180,27 @@ Status ExecuteDeleteScreenOrientation(Session* session,
   status = web_view->DeleteScreenOrientation();
   if (status.IsError())
     return status;
+  return Status(kOk);
+}
+
+Status ExecuteGenerateTestReport(Session* session,
+                                 const base::DictionaryValue& params,
+                                 std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError())
+    return status;
+
+  std::string message, group;
+  if (!params.GetString("message", &message))
+    return Status(kInvalidArgument, "missing parameter 'message'");
+  if (!params.GetString("group", &group))
+    group = "default";
+
+  base::DictionaryValue body;
+  body.SetString("message", message);
+  body.SetString("group", group);
+
+  web_view->SendCommandAndGetResult("Page.generateTestReport", body, value);
   return Status(kOk);
 }

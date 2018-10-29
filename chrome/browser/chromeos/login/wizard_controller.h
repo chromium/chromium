@@ -12,14 +12,14 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/enrollment/auto_enrollment_controller.h"
-#include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
 #include "chrome/browser/chromeos/login/screens/controller_pairing_screen.h"
@@ -60,8 +60,7 @@ class WizardController : public BaseScreenDelegate,
                          public ControllerPairingScreen::Delegate,
                          public HostPairingScreen::Delegate,
                          public WelcomeScreen::Delegate,
-                         public HIDDetectionScreen::Delegate,
-                         public OobeConfiguration::Observer {
+                         public HIDDetectionScreen::Delegate {
  public:
   WizardController();
   ~WizardController() override;
@@ -114,7 +113,11 @@ class WizardController : public BaseScreenDelegate,
   //    chromeos::OobeScreen::SCREEN_OOBE_DEMO_SETUP
   void StartDemoModeSetup();
 
-  void SimulateDemoModeSetupForTesting();
+  // Simulates demo mode setup environment. If |demo_config| has a value, it
+  // is explicitly set on DemoSetupController and going through demo settings
+  // screens can be skipped.
+  void SimulateDemoModeSetupForTesting(
+      base::Optional<DemoSession::DemoModeConfig> demo_config = base::nullopt);
 
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting(const LoginScreenContext& context);
@@ -194,6 +197,7 @@ class WizardController : public BaseScreenDelegate,
   void ShowWaitForContainerReadyScreen();
   void ShowUpdateRequiredScreen();
   void ShowAssistantOptInFlowScreen();
+  void ShowMultiDeviceSetupScreen();
   void ShowDiscoverScreen();
   void ShowMarketingOptInScreen();
 
@@ -211,12 +215,12 @@ class WizardController : public BaseScreenDelegate,
   void OnOfflineDemoModeSetup();
   void OnConnectionFailed();
   void OnUpdateCompleted();
+  void OnUpdateOverCellularRejected();
   void OnEulaAccepted();
   void OnEulaBack();
   void OnUpdateErrorCheckingForUpdate();
   void OnUpdateErrorUpdating(bool is_critical_update);
   void OnUserImageSelected();
-  void OnUserImageSkipped();
   void OnEnrollmentDone();
   void OnDeviceModificationCanceled();
   void OnKioskAutolaunchCanceled();
@@ -226,6 +230,7 @@ class WizardController : public BaseScreenDelegate,
   void OnTermsOfServiceDeclined();
   void OnTermsOfServiceAccepted();
   void OnSyncConsentFinished();
+  void OnDiscoverScreenFinished();
   void OnFingerprintSetupFinished();
   void OnArcTermsOfServiceSkipped();
   void OnArcTermsOfServiceAccepted();
@@ -243,6 +248,7 @@ class WizardController : public BaseScreenDelegate,
   void OnDemoPreferencesCanceled();
   void OnWaitForContainerReadyFinished();
   void OnAssistantOptInFlowFinished();
+  void OnMultiDeviceSetupFinished();
   void OnOobeFlowFinished();
   void OnMarketingOptInFinished();
 
@@ -256,6 +262,9 @@ class WizardController : public BaseScreenDelegate,
   // Shows update screen and starts update process.
   void InitiateOOBEUpdate();
   void StartOOBEUpdate();
+
+  // Retrieve filtered OOBE configuration and apply relevant values.
+  void UpdateOobeConfiguration();
 
   // Actions that should be done right after EULA is accepted,
   // before update check.
@@ -293,9 +302,6 @@ class WizardController : public BaseScreenDelegate,
 
   // Override from HIDDetectionScreen::Delegate
   void OnHIDScreenNecessityCheck(bool screen_needed) override;
-
-  // Overridden from OobeConfiguration::Observer
-  void OnOobeConfigurationChanged() override;
 
   // Notification of a change in the state of an accessibility setting.
   void OnAccessibilityStatusChanged(
@@ -460,6 +466,7 @@ class WizardController : public BaseScreenDelegate,
 
   friend class DemoSetupTest;
   friend class EnterpriseEnrollmentConfigurationTest;
+  friend class HandsOffEnrollmentTest;
   friend class WizardControllerBrokenLocalStateTest;
   friend class WizardControllerDemoSetupTest;
   friend class WizardControllerDeviceStateTest;

@@ -78,8 +78,6 @@ Polymer({
   /** @protected */
   currentRouteChanged: function() {
     if (settings.getCurrentRoute() == settings.routes.MANAGE_PROFILE) {
-      this.$.name.value = this.profileName;
-
       if (loadTimeData.getBoolean('profileShortcutsEnabled')) {
         this.browserProxy_.getProfileShortcutStatus().then(status => {
           if (status == ProfileShortcutStatus.PROFILE_SHORTCUT_SETTING_HIDDEN) {

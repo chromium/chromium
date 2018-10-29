@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -74,8 +75,9 @@ class DesktopIOSPromotionUtilTest : public testing::Test {
     RegisterUserProfilePrefs(pref_service->registry());
     TestingProfile::Builder profile_builder;
     profile_builder.SetPrefService(std::move(pref_service));
-    profile_builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                                      &BuildFakeSyncService);
+    profile_builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSyncService));
     profile_ = profile_builder.Build();
     sync_service_ = static_cast<TestSyncService*>(
         ProfileSyncServiceFactory::GetForProfile(profile_.get()));

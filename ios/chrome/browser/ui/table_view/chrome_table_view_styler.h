@@ -17,6 +17,9 @@
 // opaque color, cells can choose to make themselves opaque and draw their own
 // background as a performance optimization.
 @property(nonatomic, readwrite, strong) UIColor* tableViewBackgroundColor;
+// The background color for the cell. It overrides |tableViewBackgroundColor|
+// for the cell background if it is not nil.
+@property(nonatomic, readwrite, strong) UIColor* cellBackgroundColor;
 // Text colors.
 @property(nonatomic, readwrite, strong) UIColor* cellTitleColor;
 @property(nonatomic, readwrite, strong) UIColor* headerFooterTitleColor;

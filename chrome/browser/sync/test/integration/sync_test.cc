@@ -34,6 +34,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/invalidation/deprecated_profile_invalidation_provider_factory.h"
+#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -78,6 +79,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_browser_thread.h"
@@ -181,7 +183,8 @@ std::unique_ptr<KeyedService> BuildP2PProfileInvalidationProvider(
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
       std::make_unique<invalidation::P2PInvalidationService>(
-          profile->GetRequestContext(), notification_target),
+          profile->GetRequestContext(), content::GetNetworkConnectionTracker(),
+          notification_target),
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)));
 }
@@ -329,6 +332,8 @@ bool SyncTest::CreateGaiaAccount(const std::string& username,
       << entry->GetHttpStatusCode();
   return entry->GetHttpStatusCode() == 200;
 }
+
+void SyncTest::BeforeSetupClient(int index) {}
 
 bool SyncTest::CreateProfile(int index) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -572,6 +577,7 @@ bool SyncTest::SetupClients() {
 #endif
 
   for (int i = 0; i < num_clients_; ++i) {
+    BeforeSetupClient(i);
     if (!CreateProfile(i)) {
       return false;
     }
@@ -640,6 +646,20 @@ void SyncTest::DisableNotificationsForClient(int index) {
   fake_server_->RemoveObserver(fake_server_invalidation_services_[index]);
 }
 
+void SyncTest::SetEncryptionPassphraseForClient(int index,
+                                                const std::string& passphrase) {
+  // Must be called before client initialization.
+  DCHECK(clients_.empty());
+  client_encryption_passphrases_[index] = passphrase;
+}
+
+void SyncTest::SetDecryptionPassphraseForClient(int index,
+                                                const std::string& passphrase) {
+  // Must be called before client initialization.
+  DCHECK(clients_.empty());
+  client_decryption_passphrases_[index] = passphrase;
+}
+
 void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
   ChromeSigninClient* signin_client = static_cast<ChromeSigninClient*>(
       ChromeSigninClientFactory::GetForProfile(profile));
@@ -647,6 +667,8 @@ void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
 }
 
 void SyncTest::SetUpInvalidations(int index) {
+  bool fcm_invalidations_enabled =
+      base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations);
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER:
       // DO NOTHING. External live sync servers use GCM to notify profiles of
@@ -655,12 +677,24 @@ void SyncTest::SetUpInvalidations(int index) {
       break;
 
     case IN_PROCESS_FAKE_SERVER: {
-      KeyedService* test_factory =
-          invalidation::DeprecatedProfileInvalidationProviderFactory::
-              GetInstance()
-                  ->SetTestingFactoryAndUse(
-                      GetProfile(index),
-                      BuildFakeServerProfileInvalidationProvider);
+      KeyedService* test_factory;
+      if (fcm_invalidations_enabled) {
+        test_factory =
+            invalidation::ProfileInvalidationProviderFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    GetProfile(index),
+                    base::BindRepeating(
+                        &BuildFakeServerProfileInvalidationProvider));
+
+      } else {
+        test_factory =
+            invalidation::DeprecatedProfileInvalidationProviderFactory::
+                GetInstance()
+                    ->SetTestingFactoryAndUse(
+                        GetProfile(index),
+                        base::BindRepeating(
+                            &BuildFakeServerProfileInvalidationProvider));
+      }
       invalidation::InvalidationService* invalidation_service =
           static_cast<invalidation::ProfileInvalidationProvider*>(test_factory)
               ->GetInvalidationService();
@@ -678,18 +712,30 @@ void SyncTest::SetUpInvalidations(int index) {
     }
     case SERVER_TYPE_UNDECIDED:
     case LOCAL_PYTHON_SERVER:
-      BrowserContextKeyedServiceFactory::TestingFactoryFunction
-          invalidation_provider =
+      BrowserContextKeyedServiceFactory::TestingFactory invalidation_provider =
+          base::BindRepeating(
               TestUsesSelfNotifications()
-                  ? BuildSelfNotifyingP2PProfileInvalidationProvider
-                  : BuildRealisticP2PProfileInvalidationProvider;
-      invalidation::DeprecatedProfileInvalidationProviderFactory::GetInstance()
-          ->SetTestingFactoryAndUse(GetProfile(index), invalidation_provider);
+                  ? &BuildSelfNotifyingP2PProfileInvalidationProvider
+                  : &BuildRealisticP2PProfileInvalidationProvider);
+      if (fcm_invalidations_enabled) {
+        invalidation::ProfileInvalidationProviderFactory::GetInstance()
+            ->SetTestingFactoryAndUse(GetProfile(index),
+                                      std::move(invalidation_provider));
+      } else {
+        invalidation::DeprecatedProfileInvalidationProviderFactory::
+            GetInstance()
+                ->SetTestingFactoryAndUse(GetProfile(index),
+                                          std::move(invalidation_provider));
+      }
   }
 }
 
 void SyncTest::InitializeInvalidations(int index) {
-  configuration_refresher_ = std::make_unique<ConfigurationRefresher>();
+  // Lazily create |configuration_refresher_| the first time we get here (or the
+  // first time after a previous call to StopConfigurationRefresher).
+  if (!configuration_refresher_) {
+    configuration_refresher_ = std::make_unique<ConfigurationRefresher>();
+  }
 
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER:
@@ -704,10 +750,20 @@ void SyncTest::InitializeInvalidations(int index) {
     }
     case SERVER_TYPE_UNDECIDED:
     case LOCAL_PYTHON_SERVER:
-      invalidation::InvalidationService* invalidation_service =
-          invalidation::DeprecatedProfileInvalidationProviderFactory::
-              GetForProfile(GetProfile(index))
-                  ->GetInvalidationService();
+      bool fcm_invalidations_enabled = base::FeatureList::IsEnabled(
+          invalidation::switches::kFCMInvalidations);
+      invalidation::InvalidationService* invalidation_service;
+      if (fcm_invalidations_enabled) {
+        invalidation_service =
+            invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+                GetProfile(index))
+                ->GetInvalidationService();
+      } else {
+        invalidation_service =
+            invalidation::DeprecatedProfileInvalidationProviderFactory::
+                GetForProfile(GetProfile(index))
+                    ->GetInvalidationService();
+      }
       invalidation::P2PInvalidationService* p2p_invalidation_service =
           static_cast<invalidation::P2PInvalidationService*>(
               invalidation_service);
@@ -743,8 +799,35 @@ bool SyncTest::SetupSync() {
 
   // Sync each of the profiles.
   for (; clientIndex < num_clients_; clientIndex++) {
+    ProfileSyncServiceHarness* client = GetClient(clientIndex);
     DVLOG(1) << "Setting up " << clientIndex << " client";
-    if (!GetClient(clientIndex)->SetupSync()) {
+
+    auto decryption_passphrase_it =
+        client_decryption_passphrases_.find(clientIndex);
+    auto encryption_passphrase_it =
+        client_encryption_passphrases_.find(clientIndex);
+    bool decryption_passphrase_provided =
+        (decryption_passphrase_it != client_decryption_passphrases_.end());
+    bool encryption_passphrase_provided =
+        (encryption_passphrase_it != client_encryption_passphrases_.end());
+    if (decryption_passphrase_provided && encryption_passphrase_provided) {
+      LOG(FATAL) << "Both an encryption and decryption passphrase were "
+                    "provided for the client. This is disallowed.";
+      return false;
+    }
+
+    bool setup_succeeded;
+    if (encryption_passphrase_provided) {
+      setup_succeeded = client->SetupSyncWithEncryptionPassphrase(
+          syncer::UserSelectableTypes(), encryption_passphrase_it->second);
+    } else if (decryption_passphrase_provided) {
+      setup_succeeded = client->SetupSyncWithDecryptionPassphrase(
+          syncer::UserSelectableTypes(), decryption_passphrase_it->second);
+    } else {
+      setup_succeeded = client->SetupSync(syncer::UserSelectableTypes());
+    }
+
+    if (!setup_succeeded) {
       LOG(FATAL) << "SetupSync() failed.";
       return false;
     }

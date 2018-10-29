@@ -33,7 +33,6 @@ source_set("popup_menu") {
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/reading_list",
-    "//ios/chrome/browser/ui/tools_menu/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/public/provider/chrome/browser",
@@ -48,21 +47,16 @@ source_set("popup_menu_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "popup_menu_consumer.h",
-    "popup_menu_controller.h",
-    "popup_menu_controller.mm",
     "popup_menu_presenter.h",
     "popup_menu_presenter.mm",
     "popup_menu_table_view_controller.h",
     "popup_menu_table_view_controller.mm",
     "popup_menu_table_view_controller_commands.h",
-    "popup_menu_view.h",
-    "popup_menu_view.mm",
     "popup_menu_view_controller.h",
     "popup_menu_view_controller.mm",
   ]
   deps = [
     ":constants",
-    "resources:popup_background",
     "resources:popup_menu_add_bookmark",
     "resources:popup_menu_bookmarks",
     "resources:popup_menu_close_tab",
@@ -143,4 +137,26 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "popup_menu_egtest.mm",
+    "request_desktop_mobile_site_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:ui_internal",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+  ]
 }

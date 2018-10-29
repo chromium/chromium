@@ -9,7 +9,7 @@
         {
           "object": "LayoutView #document",
           "rect": [0, 0, 800, 600],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutSVGRoot svg",

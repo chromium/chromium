@@ -17,11 +17,6 @@ source_set("libfuzzer") {
     "src/FuzzerDataFlowTrace.cpp",
     "src/FuzzerDriver.cpp",
     "src/FuzzerExtFunctionsDlsym.cpp",
-
-    # Don't compile FuzzerExtFunctionsDlsymWin.cpp since it prevents use of
-    # LLVMFuzzerInitialize and LLVMFuzzerCustom* in non-component fuzzer builds
-    # on Windows and component fuzzer builds are not supported on Windows.
-    # See https://reviews.llvm.org/D51700 for more details.
     "src/FuzzerExtFunctionsWeak.cpp",
     "src/FuzzerExtFunctionsWeakAlias.cpp",
     "src/FuzzerExtraCounters.cpp",
@@ -46,7 +41,11 @@ source_set("libfuzzer") {
   ]
 
   configs -= fuzzing_engine_remove_configs
-  configs += fuzzing_engine_add_configs
+  if (!is_win) {
+    # TODO(crbug.com/883948): Remove the check for is_win when libFuzzer on
+    # Windows handles the nosanitize attribute properly.
+    configs += fuzzing_engine_add_configs
+  }
 }
 
 source_set("afl_driver") {

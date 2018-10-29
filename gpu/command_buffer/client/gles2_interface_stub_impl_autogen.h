@@ -952,8 +952,6 @@ void GLES2InterfaceStub::CopySubTextureCHROMIUM(
     GLboolean /* unpack_flip_y */,
     GLboolean /* unpack_premultiply_alpha */,
     GLboolean /* unpack_unmultiply_alpha */) {}
-void GLES2InterfaceStub::CompressedCopyTextureCHROMIUM(GLuint /* source_id */,
-                                                       GLuint /* dest_id */) {}
 void GLES2InterfaceStub::DrawArraysInstancedANGLE(GLenum /* mode */,
                                                   GLint /* first */,
                                                   GLsizei /* count */,
@@ -968,6 +966,11 @@ void GLES2InterfaceStub::VertexAttribDivisorANGLE(GLuint /* index */,
 void GLES2InterfaceStub::ProduceTextureDirectCHROMIUM(GLuint /* texture */,
                                                       GLbyte* /* mailbox */) {}
 GLuint GLES2InterfaceStub::CreateAndConsumeTextureCHROMIUM(
+    const GLbyte* /* mailbox */) {
+  return 0;
+}
+GLuint GLES2InterfaceStub::CreateAndTexStorage2DSharedImageCHROMIUM(
+    GLenum /* internalFormat */,
     const GLbyte* /* mailbox */) {
   return 0;
 }
@@ -1059,6 +1062,7 @@ void GLES2InterfaceStub::ScheduleDCLayerCHROMIUM(
     const GLfloat* /* bounds_rect */,
     GLuint /* filter */,
     bool /* is_protected_video */) {}
+void GLES2InterfaceStub::SetActiveURLCHROMIUM(const char* /* url */) {}
 void GLES2InterfaceStub::MatrixLoadfCHROMIUM(GLenum /* matrixMode */,
                                              const GLfloat* /* m */) {}
 void GLES2InterfaceStub::MatrixLoadIdentityCHROMIUM(GLenum /* matrixMode */) {}

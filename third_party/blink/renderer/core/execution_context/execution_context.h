@@ -135,6 +135,8 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
 
   virtual bool IsContextThread() const { return true; }
 
+  virtual bool ShouldInstallV8Extensions() const { return false; }
+
   const SecurityOrigin* GetSecurityOrigin();
   SecurityOrigin* GetMutableSecurityOrigin();
 

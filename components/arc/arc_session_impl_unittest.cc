@@ -628,19 +628,6 @@ INSTANTIATE_TEST_CASE_P(,
                         ArcSessionImplPackagesCacheModeTest,
                         ::testing::ValuesIn(kPackagesCacheModeStates));
 
-TEST_F(ArcSessionImplTest, IsChild) {
-  auto arc_session = CreateArcSession();
-  arc_session->StartMiniInstance();
-
-  ArcSession::UpgradeParams params;
-  params.is_child = true;
-  params.locale = kDefaultLocale;
-  arc_session->RequestUpgrade(std::move(params));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetSessionManagerClient()->last_upgrade_arc_request().is_child());
-}
-
 TEST_F(ArcSessionImplTest, DemoSession) {
   auto arc_session = CreateArcSession();
   arc_session->StartMiniInstance();

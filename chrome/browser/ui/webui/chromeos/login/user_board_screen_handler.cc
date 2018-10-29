@@ -22,8 +22,6 @@ void UserBoardScreenHandler::DeclareLocalizedValues(
 void UserBoardScreenHandler::RegisterMessages() {
   AddCallback("attemptUnlock", &UserBoardScreenHandler::HandleAttemptUnlock);
   AddCallback("hardlockPod", &UserBoardScreenHandler::HandleHardlockPod);
-  AddCallback("recordClickOnLockIcon",
-              &UserBoardScreenHandler::HandleRecordClickOnLockIcon);
 }
 
 void UserBoardScreenHandler::Initialize() {
@@ -39,12 +37,6 @@ void UserBoardScreenHandler::HandleHardlockPod(const AccountId& account_id) {
 void UserBoardScreenHandler::HandleAttemptUnlock(const AccountId& account_id) {
   CHECK(screen_);
   screen_->AttemptEasyUnlock(account_id);
-}
-
-void UserBoardScreenHandler::HandleRecordClickOnLockIcon(
-    const AccountId& account_id) {
-  CHECK(screen_);
-  screen_->RecordClickOnLockIcon(account_id);
 }
 
 //----------------- API

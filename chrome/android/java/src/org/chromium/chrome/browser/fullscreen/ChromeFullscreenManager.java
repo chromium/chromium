@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.fullscreen.FullscreenHtmlApiHandler.FullscreenHtmlApiDelegate;
+import org.chromium.chrome.browser.tab.BrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType;
@@ -50,8 +51,9 @@ public class ChromeFullscreenManager
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     @ControlsPosition private final int mControlsPosition;
     private final boolean mExitFullscreenOnStop;
+    private final TokenHolder mHidingTokenHolder = new TokenHolder(this::scheduleVisibilityUpdate);
 
-    private ControlContainer mControlContainer;
+    @Nullable private ControlContainer mControlContainer;
     private int mTopControlContainerHeight;
     private int mBottomControlContainerHeight;
     private boolean mControlsResizeView;
@@ -68,8 +70,6 @@ public class ChromeFullscreenManager
 
     private boolean mInGesture;
     private boolean mContentViewScrolling;
-
-    private boolean mBrowserControlsAndroidViewHidden;
 
     private final ArrayList<FullscreenListener> mListeners = new ArrayList<>();
 
@@ -225,6 +225,7 @@ public class ChromeFullscreenManager
 
         mRendererTopContentOffset = mTopControlContainerHeight;
         updateControlOffset();
+        scheduleVisibilityUpdate();
     }
 
     /**
@@ -333,6 +334,13 @@ public class ChromeFullscreenManager
     }
 
     /**
+     * @return True if the browser controls are currently completely visible.
+     */
+    public boolean areBrowserControlsFullyVisible() {
+        return getBrowserControlHiddenRatio() == 0.f;
+    }
+
+    /**
      * @return Whether the browser controls should be drawn as a texture.
      */
     public boolean drawControlsAsTexture() {
@@ -391,8 +399,9 @@ public class ChromeFullscreenManager
     }
 
     /**
-     * @return The toolbar control container.
+     * @return The toolbar control container, null until {@link #initialize} is called.
      */
+    @Nullable
     public ControlContainer getControlContainer() {
         return mControlContainer;
     }
@@ -479,6 +488,9 @@ public class ChromeFullscreenManager
      * animation, preventing message loop stalls due to untimely invalidation.
      */
     private void scheduleVisibilityUpdate() {
+        if (mControlContainer == null) {
+            return;
+        }
         final int desiredVisibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
         if (mControlContainer.getView().getVisibility() == desiredVisibility) return;
         mControlContainer.getView().removeCallbacks(mUpdateVisibilityRunnable);
@@ -532,21 +544,42 @@ public class ChromeFullscreenManager
     }
 
     /**
-     * @param hide Whether or not to force the browser controls Android view to hide.  If this is
-     *             {@code false} the browser controls Android view will show/hide based on position,
-     *             if it is {@code true} the browser controls Android view will always be hidden.
+     * Forces the Android controls to hide. While there are acquired tokens the browser controls
+     * Android view will always be hidden, otherwise they will show/hide based on position.
+     *
+     * NB: this only affects the Android controls. For controlling composited toolbar visibility,
+     * implement {@link BrowserControlsVisibilityDelegate#canShowBrowserControls()}.
      */
-    public void setHideBrowserControlsAndroidView(boolean hide) {
-        if (mBrowserControlsAndroidViewHidden == hide) return;
-        mBrowserControlsAndroidViewHidden = hide;
-        scheduleVisibilityUpdate();
+    public int hideAndroidControls() {
+        return mHidingTokenHolder.acquireToken();
+    }
+
+    /** Similar to {@link #hideAndroidControls}, but also replaces an old token */
+    public int hideAndroidControlsAndClearOldToken(int oldToken) {
+        int newToken = hideAndroidControls();
+        mHidingTokenHolder.releaseToken(oldToken);
+        return newToken;
+    }
+
+    /** Release a hiding token. */
+    public void releaseAndroidControlsHidingToken(int token) {
+        mHidingTokenHolder.releaseToken(token);
     }
 
     private boolean shouldShowAndroidControls() {
-        if (mBrowserControlsAndroidViewHidden) return false;
-        if (getTab() != null
-                && TabBrowserControlsOffsetHelper.from(getTab()).isControlsOffsetOverridden()) {
-            return true;
+        if (mHidingTokenHolder.hasTokens()) {
+            return false;
+        }
+
+        Tab tab = getTab();
+        if (tab != null) {
+            if (tab.isInitialized()) {
+                if (TabBrowserControlsOffsetHelper.from(tab).isControlsOffsetOverridden()) {
+                    return true;
+                }
+            } else {
+                assert false : "Accessing a destroyed tab, setTab should have been called";
+            }
         }
 
         boolean showControls = !drawControlsAsTexture();
@@ -665,5 +698,11 @@ public class ChromeFullscreenManager
     public void onContentViewScrollingStateChanged(boolean scrolling) {
         mContentViewScrolling = scrolling;
         if (!scrolling) updateVisuals();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        mBrowserVisibilityDelegate.destroy();
     }
 }

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
 #include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -30,59 +30,59 @@ namespace {
 // This function maps from Blink's internal "request context" concept to Fetch's
 // notion of a request's "destination":
 // https://fetch.spec.whatwg.org/#concept-request-destination.
-const char* GetDestinationFromContext(WebURLRequest::RequestContext context) {
+const char* GetDestinationFromContext(mojom::RequestContextType context) {
   switch (context) {
-    case WebURLRequest::kRequestContextUnspecified:
-    case WebURLRequest::kRequestContextBeacon:
-    case WebURLRequest::kRequestContextDownload:
-    case WebURLRequest::kRequestContextEventSource:
-    case WebURLRequest::kRequestContextFetch:
-    case WebURLRequest::kRequestContextPing:
-    case WebURLRequest::kRequestContextXMLHttpRequest:
-    case WebURLRequest::kRequestContextSubresource:
-    case WebURLRequest::kRequestContextPrefetch:
-      return "\"\"";
-    case WebURLRequest::kRequestContextCSPReport:
+    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::RequestContextType::BEACON:
+    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::RequestContextType::EVENT_SOURCE:
+    case mojom::RequestContextType::FETCH:
+    case mojom::RequestContextType::PING:
+    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::RequestContextType::PREFETCH:
+      return "";
+    case mojom::RequestContextType::CSP_REPORT:
       return "report";
-    case WebURLRequest::kRequestContextAudio:
+    case mojom::RequestContextType::AUDIO:
       return "audio";
-    case WebURLRequest::kRequestContextEmbed:
+    case mojom::RequestContextType::EMBED:
       return "embed";
-    case WebURLRequest::kRequestContextFont:
+    case mojom::RequestContextType::FONT:
       return "font";
-    case WebURLRequest::kRequestContextFrame:
-    case WebURLRequest::kRequestContextHyperlink:
-    case WebURLRequest::kRequestContextIframe:
-    case WebURLRequest::kRequestContextLocation:
-    case WebURLRequest::kRequestContextForm:
+    case mojom::RequestContextType::FRAME:
+    case mojom::RequestContextType::HYPERLINK:
+    case mojom::RequestContextType::IFRAME:
+    case mojom::RequestContextType::LOCATION:
+    case mojom::RequestContextType::FORM:
       return "document";
-    case WebURLRequest::kRequestContextImage:
-    case WebURLRequest::kRequestContextFavicon:
-    case WebURLRequest::kRequestContextImageSet:
+    case mojom::RequestContextType::IMAGE:
+    case mojom::RequestContextType::FAVICON:
+    case mojom::RequestContextType::IMAGE_SET:
       return "image";
-    case WebURLRequest::kRequestContextManifest:
+    case mojom::RequestContextType::MANIFEST:
       return "manifest";
-    case WebURLRequest::kRequestContextObject:
+    case mojom::RequestContextType::OBJECT:
       return "object";
-    case WebURLRequest::kRequestContextScript:
+    case mojom::RequestContextType::SCRIPT:
       return "script";
-    case WebURLRequest::kRequestContextServiceWorker:
+    case mojom::RequestContextType::SERVICE_WORKER:
       return "serviceworker";
-    case WebURLRequest::kRequestContextSharedWorker:
+    case mojom::RequestContextType::SHARED_WORKER:
       return "sharedworker";
-    case WebURLRequest::kRequestContextStyle:
+    case mojom::RequestContextType::STYLE:
       return "style";
-    case WebURLRequest::kRequestContextTrack:
+    case mojom::RequestContextType::TRACK:
       return "track";
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::VIDEO:
       return "video";
-    case WebURLRequest::kRequestContextWorker:
+    case mojom::RequestContextType::WORKER:
       return "worker";
-    case WebURLRequest::kRequestContextXSLT:
+    case mojom::RequestContextType::XSLT:
       return "xslt";
-    case WebURLRequest::kRequestContextImport:
-    case WebURLRequest::kRequestContextInternal:
-    case WebURLRequest::kRequestContextPlugin:
+    case mojom::RequestContextType::IMPORT:
+    case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::PLUGIN:
       return "unknown";
   }
   NOTREACHED();
@@ -105,6 +105,10 @@ MessageSource ConvertLogSourceToMessageSource(FetchContext::LogSource source) {
 }
 
 }  // namespace
+
+BaseFetchContext::BaseFetchContext(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : FetchContext(std::move(task_runner)) {}
 
 void BaseFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request,
                                                    FetchResourceType type) {
@@ -146,9 +150,15 @@ void BaseFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request,
   if (blink::RuntimeEnabledFeatures::SecMetadataEnabled()) {
     const char* destination_value =
         GetDestinationFromContext(request.GetRequestContext());
+
+    // If the request's destination is the empty string (e.g. `fetch()`), then
+    // we'll use the identifier "empty" instead.
+    if (strlen(destination_value) == 0)
+      destination_value = "empty";
+
     // We'll handle adding the header to navigations outside of Blink.
     if (strncmp(destination_value, "document", 8) != 0 &&
-        request.GetRequestContext() != WebURLRequest::kRequestContextInternal) {
+        request.GetRequestContext() != mojom::RequestContextType::INTERNAL) {
       const char* site_value = "cross-site";
       if (SecurityOrigin::Create(request.Url())
               ->IsSameSchemeHostPort(GetSecurityOrigin())) {
@@ -209,7 +219,7 @@ void BaseFetchContext::AddErrorConsoleMessage(const String& message,
 bool BaseFetchContext::IsAdResource(
     const KURL& resource_url,
     ResourceType type,
-    WebURLRequest::RequestContext request_context) const {
+    mojom::RequestContextType request_context) const {
   SubresourceFilter* filter = GetSubresourceFilter();
 
   // We do not need main document tagging currently so skipping main resources.
@@ -243,7 +253,7 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
 
 base::Optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequest(
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     const KURL& url,
     const ResourceLoaderOptions& options,
     SecurityViolationReportingPolicy reporting_policy,
@@ -255,7 +265,7 @@ BaseFetchContext::CheckCSPForRequest(
 
 base::Optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequestInternal(
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     const KURL& url,
     const ResourceLoaderOptions& options,
     SecurityViolationReportingPolicy reporting_policy,
@@ -294,11 +304,16 @@ BaseFetchContext::CanRequestInternal(
   if (ShouldBlockRequestByInspector(resource_request.Url()))
     return ResourceRequestBlockedReason::kInspector;
 
-  const SecurityOrigin* security_origin = options.security_origin.get();
-  if (!security_origin)
-    security_origin = GetSecurityOrigin();
+  scoped_refptr<const SecurityOrigin> origin =
+      resource_request.RequestorOrigin();
 
-  if (security_origin && !security_origin->CanDisplay(url)) {
+  const auto request_mode = resource_request.GetFetchRequestMode();
+  // On navigation cases, Context().GetSecurityOrigin() may return nullptr, so
+  // the request's origin may be nullptr.
+  // TODO(yhirano): Figure out if it's actually fine.
+  DCHECK(request_mode == network::mojom::FetchRequestMode::kNavigate || origin);
+  if (request_mode != network::mojom::FetchRequestMode::kNavigate &&
+      !origin->CanDisplay(url)) {
     if (reporting_policy == SecurityViolationReportingPolicy::kReport) {
       AddErrorConsoleMessage(
           "Not allowed to load local resource: " + url.GetString(), kJSSource);
@@ -308,9 +323,8 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  const auto request_mode = resource_request.GetFetchRequestMode();
   if (request_mode == network::mojom::FetchRequestMode::kSameOrigin &&
-      CORS::CalculateCORSFlag(url, security_origin, request_mode)) {
+      CORS::CalculateCORSFlag(url, origin.get(), request_mode)) {
     PrintAccessDeniedMessage(url);
     return ResourceRequestBlockedReason::kOrigin;
   }
@@ -324,7 +338,7 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  WebURLRequest::RequestContext request_context =
+  mojom::RequestContextType request_context =
       resource_request.GetRequestContext();
 
   // We check the 'report-only' headers before upgrading the request (in

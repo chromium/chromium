@@ -13,7 +13,7 @@ suite('SettingsSlider', function() {
    */
   let crSlider;
 
-  const tickValues = [2, 4, 8, 16, 32, 64, 128];
+  const ticks = [2, 4, 8, 16, 32, 64, 128];
 
   setup(function() {
     PolymerTest.clearBody();
@@ -25,6 +25,38 @@ suite('SettingsSlider', function() {
     document.body.appendChild(slider);
     crSlider = slider.$$('cr-slider');
   });
+
+  function pressArrowRight() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+  }
+
+  function pressArrowLeft() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+  }
+
+  function pressPageUp() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
+  }
+
+  function pressPageDown() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
+  }
+
+  function pressArrowUp() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
+  }
+
+  function pressArrowDown() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
+  }
+
+  function pressHome() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
+  }
+
+  function pressEnd() {
+    MockInteractions.pressAndReleaseKeyOn(crSlider, 35, [], 'End');
+  }
 
   test('enforce value', function() {
     // Test that the indicator is not present until after the pref is
@@ -43,85 +75,106 @@ suite('SettingsSlider', function() {
   });
 
   test('set value', function() {
-    slider.tickValues = tickValues;
+    slider.ticks = ticks;
     slider.set('pref.value', 16);
+    Polymer.dom.flush();
     expectEquals(6, crSlider.max);
     expectEquals(3, crSlider.value);
-    expectEquals(3, crSlider.immediateValue);
 
     // settings-slider only supports snapping to a range of tick values.
     // Setting to an in-between value should snap to an indexed value.
     slider.set('pref.value', 70);
     expectEquals(5, crSlider.value);
-    expectEquals(5, crSlider.immediateValue);
     expectEquals(64, slider.pref.value);
 
     // Setting the value out-of-range should clamp the slider.
     slider.set('pref.value', -100);
     expectEquals(0, crSlider.value);
-    expectEquals(0, crSlider.immediateValue);
     expectEquals(2, slider.pref.value);
   });
 
   test('move slider', function() {
-    slider.tickValues = tickValues;
+    slider.ticks = ticks;
     slider.set('pref.value', 30);
     expectEquals(4, crSlider.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 39 /* right */);
+    pressArrowRight();
     expectEquals(5, crSlider.value);
     expectEquals(64, slider.pref.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 39 /* right */);
+    pressArrowRight();
     expectEquals(6, crSlider.value);
     expectEquals(128, slider.pref.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 39 /* right */);
+    pressArrowRight();
     expectEquals(6, crSlider.value);
     expectEquals(128, slider.pref.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 37 /* left */);
+    pressArrowLeft();
     expectEquals(5, crSlider.value);
     expectEquals(64, slider.pref.value);
-  });
 
-  test('findNearestIndex_', function() {
-    const slider = document.createElement('settings-slider');
-    const testArray = [80, 20, 350, 1000, 200, 100];
-    const testFindNearestIndex = function(expectedIndex, value) {
-      expectEquals(expectedIndex, slider.findNearestIndex_(testArray, value));
-    };
-    testFindNearestIndex(0, 51);
-    testFindNearestIndex(0, 80);
-    testFindNearestIndex(0, 89);
-    testFindNearestIndex(1, -100);
-    testFindNearestIndex(1, 20);
-    testFindNearestIndex(1, 49);
-    testFindNearestIndex(2, 400);
-    testFindNearestIndex(2, 350);
-    testFindNearestIndex(2, 300);
-    testFindNearestIndex(3, 200000);
-    testFindNearestIndex(3, 1000);
-    testFindNearestIndex(3, 700);
-    testFindNearestIndex(4, 220);
-    testFindNearestIndex(4, 200);
-    testFindNearestIndex(4, 151);
-    testFindNearestIndex(5, 149);
-    testFindNearestIndex(5, 100);
-    testFindNearestIndex(5, 91);
+    pressPageUp();
+    expectEquals(6, crSlider.value);
+    expectEquals(128, slider.pref.value);
+
+    pressPageDown();
+    expectEquals(5, crSlider.value);
+    expectEquals(64, slider.pref.value);
+
+    pressHome();
+    expectEquals(0, crSlider.value);
+    expectEquals(2, slider.pref.value);
+
+    pressArrowDown();
+    expectEquals(0, crSlider.value);
+    expectEquals(2, slider.pref.value);
+
+    pressArrowUp();
+    expectEquals(1, crSlider.value);
+    expectEquals(4, slider.pref.value);
+
+    pressEnd();
+    expectEquals(6, crSlider.value);
+    expectEquals(128, slider.pref.value);
   });
 
   test('scaled slider', function() {
-    slider.scale = 10;
     slider.set('pref.value', 2);
-    expectEquals(20, crSlider.value);
+    expectEquals(2, crSlider.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 39 /* right */);
-    expectEquals(21, crSlider.value);
-    expectEquals(2.1, slider.pref.value);
+    slider.scale = 10;
+    slider.max = 4;
+    pressArrowRight();
+    expectEquals(3, crSlider.value);
+    expectEquals(.3, slider.pref.value);
 
-    MockInteractions.pressAndReleaseKeyOn(crSlider.$.slider, 39 /* right */);
-    expectEquals(22, crSlider.value);
-    expectEquals(2.2, slider.pref.value);
+    pressArrowRight();
+    expectEquals(4, crSlider.value);
+    expectEquals(.4, slider.pref.value);
+
+    pressArrowRight();
+    expectEquals(4, crSlider.value);
+    expectEquals(.4, slider.pref.value);
+
+    pressHome();
+    expectEquals(0, crSlider.value);
+    expectEquals(0, slider.pref.value);
+
+    pressEnd();
+    expectEquals(4, crSlider.value);
+    expectEquals(.4, slider.pref.value);
+
+    slider.set('pref.value', .25);
+    expectEquals(2.5, crSlider.value);
+    expectEquals(.25, slider.pref.value);
+
+    pressPageUp();
+    expectEquals(3.5, crSlider.value);
+    expectEquals(.35, slider.pref.value);
+
+    pressPageUp();
+    expectEquals(4, crSlider.value);
+    expectEquals(.4, slider.pref.value);
   });
 });

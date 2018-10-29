@@ -2,7 +2,6 @@ Check that targeted class invalidation works for type selectors.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(children[0][0], null).backgroundColor is transparent
 PASS getComputedStyle(children[0][1], null).backgroundColor is transparent
 PASS getComputedStyle(children[0][2], null).backgroundColor is transparent

@@ -4,6 +4,7 @@
 
 #include "ash/wm/always_on_top_controller.h"
 
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -56,7 +57,6 @@ class TestLayoutManager : public WorkspaceLayoutManager {
 // Verifies that the always on top controller is notified of keyboard bounds
 // changing events.
 TEST_F(VirtualKeyboardAlwaysOnTopControllerTest, NotifyKeyboardBoundsChanging) {
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   aura::Window* always_on_top_container =
       Shell::GetContainer(root_window, kShellWindowId_AlwaysOnTopContainer);
@@ -64,14 +64,15 @@ TEST_F(VirtualKeyboardAlwaysOnTopControllerTest, NotifyKeyboardBoundsChanging) {
   TestLayoutManager* manager = new TestLayoutManager(always_on_top_container);
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   // Deactivates keyboard to unregister existing listeners.
-  controller->DeactivateKeyboard(keyboard_controller);
+  Shell::Get()->ash_keyboard_controller()->DeactivateKeyboard();
   AlwaysOnTopController* always_on_top_controller =
       controller->always_on_top_controller();
   always_on_top_controller->SetLayoutManagerForTest(base::WrapUnique(manager));
   // Activate keyboard. This triggers keyboard listeners to be registered.
-  controller->ActivateKeyboard(keyboard_controller);
+  Shell::Get()->ash_keyboard_controller()->ActivateKeyboard();
 
   // Show the keyboard.
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
   keyboard_controller->ShowKeyboard(false /* locked */);
   const int kKeyboardHeight = 200;
   gfx::Rect keyboard_bounds = keyboard::KeyboardBoundsFromRootBounds(

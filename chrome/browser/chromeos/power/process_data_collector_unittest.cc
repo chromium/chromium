@@ -358,8 +358,6 @@ class ProcessDataCollectorTest : public testing::Test {
   // Represents the root of the simulated procfs.
   base::ScopedTempDir proc_dir_;
 
-  // Makes sure that the |base::AssertBlockingAllowed| calls from
-  // |ProcessDataCollector| work.
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 
   // The current time step, used in testing functions.

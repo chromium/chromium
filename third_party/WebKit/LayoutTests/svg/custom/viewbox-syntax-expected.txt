@@ -1,0 +1,10 @@
+CONSOLE ERROR: line 20: Error: <svg> attribute viewBox: Unexpected end of attribute. Expected number, "0".
+CONSOLE ERROR: line 23: Error: <svg> attribute viewBox: Unexpected end of attribute. Expected number, "0 0".
+CONSOLE ERROR: line 26: Error: <svg> attribute viewBox: Unexpected end of attribute. Expected number, "0 0 30".
+CONSOLE ERROR: line 29: Error: <svg> attribute viewBox: Trailing garbage, "0 0 30 40 50".
+CONSOLE ERROR: line 32: Error: <svg> attribute viewBox: Trailing garbage, "0 0 30 40,".
+CONSOLE ERROR: line 35: Error: <svg> attribute viewBox: Expected number, ",0 0 30 40".
+CONSOLE ERROR: line 38: Error: <svg> attribute viewBox: A negative value is not valid. ("0 0 -30 40")
+CONSOLE ERROR: line 41: Error: <svg> attribute viewBox: A negative value is not valid. ("0 0 30 -40")
+CONSOLE ERROR: line 44: Error: <svg> attribute viewBox: Expected number, "0 0 30, , 40".
+CONSOLE ERROR: line 47: Error: <svg> attribute viewBox: Expected number, "0 0 30% 40".

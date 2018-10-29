@@ -27,11 +27,14 @@ ScriptPromise NavigatorWakeLock::getWakeLock(ScriptState* script_state,
 
 ScriptPromise NavigatorWakeLock::getWakeLock(ScriptState* script_state,
                                              String lock_type) {
-  // TODO(crbug.com/873030): Handle 'system' Wake Lock
   if (lock_type == "screen") {
     if (!wake_lock_screen_)
       wake_lock_screen_ = WakeLock::CreateScreenWakeLock(script_state);
     return wake_lock_screen_->GetPromise(script_state);
+  } else if (lock_type == "system") {
+    if (!wake_lock_system_)
+      wake_lock_system_ = WakeLock::CreateSystemWakeLock(script_state);
+    return wake_lock_system_->GetPromise(script_state);
   }
 
   return ScriptPromise::RejectWithDOMException(
@@ -51,6 +54,7 @@ NavigatorWakeLock& NavigatorWakeLock::From(Navigator& navigator) {
 
 void NavigatorWakeLock::Trace(blink::Visitor* visitor) {
   visitor->Trace(wake_lock_screen_);
+  visitor->Trace(wake_lock_system_);
   Supplement<Navigator>::Trace(visitor);
 }
 

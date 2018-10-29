@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -64,7 +64,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceDocumentV8Internal {
+namespace test_interface_document_v8_internal {
 
 static void locationAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -97,12 +97,12 @@ static void locationAttributeSetter(v8::Local<v8::Value> v8Value, const v8::Func
     return;
 }
 
-} // namespace TestInterfaceDocumentV8Internal
+}  // namespace test_interface_document_v8_internal
 
 void V8TestInterfaceDocument::locationAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceDocument_location_Getter");
 
-  TestInterfaceDocumentV8Internal::locationAttributeGetter(info);
+  test_interface_document_v8_internal::locationAttributeGetter(info);
 }
 
 void V8TestInterfaceDocument::locationAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -110,7 +110,7 @@ void V8TestInterfaceDocument::locationAttributeSetterCallback(const v8::Function
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceDocumentV8Internal::locationAttributeSetter(v8Value, info);
+  test_interface_document_v8_internal::locationAttributeSetter(v8Value, info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestInterfaceDocumentAccessors[] = {

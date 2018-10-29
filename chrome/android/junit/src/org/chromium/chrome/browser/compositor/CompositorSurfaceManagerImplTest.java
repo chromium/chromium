@@ -389,8 +389,8 @@ public class CompositorSurfaceManagerImplTest {
     @Test
     @Feature("Compositor")
     @Config(shadows = {MyShadowSurfaceView.class})
-    public void testJellyBeanWorkaround() {
-        // See if recreateSurfaceForJellyBean destroys / re-creates the surface.
+    public void testRecreateSurface() {
+        // See if recreateSurface destroys / re-creates the surface.
         // should get a synthetic 'created', but a real 'changed' callback.
         SurfaceView opaque = requestThenCreateSurface(PixelFormat.OPAQUE);
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
@@ -398,7 +398,7 @@ public class CompositorSurfaceManagerImplTest {
 
         // We should be notified that the surface was destroyed via synthetic callback, and the
         // surface should be detached.
-        mManager.recreateSurfaceForJellyBean();
+        mManager.recreateSurface();
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
         assertEquals(0, mLayout.getChildCount());

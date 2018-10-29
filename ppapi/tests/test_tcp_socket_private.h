@@ -30,6 +30,15 @@ class TestTCPSocketPrivate : public TestCase {
   std::string TestSetOption();
   std::string TestLargeRead();
 
+  // The higher level test fixture is responsible for making socket methods
+  // behave in the expected manner.  The *Fails tests expect the specified event
+  // to fail with PP_ERROR_FAILED, and the *Hangs test expects the specified
+  // operation to never complete, at least until teardown starts.
+  std::string TestSSLHandshakeFails();
+  std::string TestSSLHandshakeHangs();
+  std::string TestSSLWriteFails();
+  std::string TestSSLReadFails();
+
   int32_t ReadFirstLineFromSocket(pp::TCPSocketPrivate* socket, std::string* s);
   int32_t WriteStringToSocket(pp::TCPSocketPrivate* socket,
                               const std::string& s);

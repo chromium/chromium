@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -66,7 +67,9 @@ class RecentArcMediaSourceTest : public testing::Test {
     runner_ = static_cast<arc::ArcFileSystemOperationRunner*>(
         arc::ArcFileSystemOperationRunner::GetFactory()
             ->SetTestingFactoryAndUse(
-                profile_.get(), &CreateFileSystemOperationRunnerForTesting));
+                profile_.get(),
+                base::BindRepeating(
+                    &CreateFileSystemOperationRunnerForTesting)));
 
     // Mount ARC file systems.
     arc::ArcFileSystemMounter::GetForBrowserContext(profile_.get());

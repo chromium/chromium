@@ -33,6 +33,7 @@
 
 #include <cstdint>
 #include "base/callback_forward.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 
 class GrContext;
 
@@ -76,7 +77,7 @@ class WebGraphicsContext3DProvider {
   virtual void SetLostContextCallback(base::RepeatingClosure) = 0;
   virtual void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char* msg, int32_t id)>) = 0;
-  virtual cc::ImageDecodeCache* ImageDecodeCache() = 0;
+  virtual cc::ImageDecodeCache* ImageDecodeCache(SkColorType) = 0;
 };
 
 }  // namespace blink

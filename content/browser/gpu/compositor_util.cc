@@ -177,6 +177,16 @@ const GpuFeatureData GetGpuFeatureData(
        "Native GpuMemoryBuffers have been disabled, either via about:flags or "
        "command line.",
        true, true},
+      {"surface_control",
+       SafeGetFeatureStatus(gpu_feature_info,
+                            gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL),
+#if defined(OS_ANDROID)
+       !base::FeatureList::IsEnabled(features::kAndroidSurfaceControl),
+#else
+       false,
+#endif
+       "Surface Control has been disabled by Finch trial or command line.",
+       false, false},
       {"surface_synchronization", gpu::kGpuFeatureStatusEnabled,
        !features::IsSurfaceSynchronizationEnabled(),
        "Surface synchronization has been disabled by Finch trial or command "

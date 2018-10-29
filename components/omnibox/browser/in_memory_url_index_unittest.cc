@@ -318,8 +318,7 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
 void InMemoryURLIndexTest::CheckTerm(
     const URLIndexPrivateData::SearchTermCacheMap& cache,
     base::string16 term) const {
-  URLIndexPrivateData::SearchTermCacheMap::const_iterator cache_iter(
-      cache.find(term));
+  auto cache_iter(cache.find(term));
   ASSERT_TRUE(cache.end() != cache_iter)
       << "Cache does not contain '" << term << "' but should.";
   URLIndexPrivateData::SearchTermCacheItem cache_item = cache_iter->second;
@@ -356,15 +355,15 @@ void InMemoryURLIndexTest::ExpectPrivateDataEmpty(
 template<typename T>
 void ExpectMapOfContainersIdentical(const T& expected, const T& actual) {
   ASSERT_EQ(expected.size(), actual.size());
-  for (typename T::const_iterator expected_iter = expected.begin();
-       expected_iter != expected.end(); ++expected_iter) {
-    typename T::const_iterator actual_iter = actual.find(expected_iter->first);
+  for (auto expected_iter = expected.begin(); expected_iter != expected.end();
+       ++expected_iter) {
+    auto actual_iter = actual.find(expected_iter->first);
     ASSERT_TRUE(actual.end() != actual_iter);
     typename T::mapped_type const& expected_values(expected_iter->second);
     typename T::mapped_type const& actual_values(actual_iter->second);
     ASSERT_EQ(expected_values.size(), actual_values.size());
-    for (typename T::mapped_type::const_iterator set_iter =
-         expected_values.begin(); set_iter != expected_values.end(); ++set_iter)
+    for (auto set_iter = expected_values.begin();
+         set_iter != expected_values.end(); ++set_iter)
       EXPECT_EQ(actual_values.count(*set_iter),
                 expected_values.count(*set_iter));
   }
@@ -394,11 +393,9 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
   ExpectMapOfContainersIdentical(expected.history_id_word_map_,
                                  actual.history_id_word_map_);
 
-  for (HistoryInfoMap::const_iterator expected_info =
-      expected.history_info_map_.begin();
-      expected_info != expected.history_info_map_.end(); ++expected_info) {
-    HistoryInfoMap::const_iterator actual_info =
-        actual.history_info_map_.find(expected_info->first);
+  for (auto expected_info = expected.history_info_map_.begin();
+       expected_info != expected.history_info_map_.end(); ++expected_info) {
+    auto actual_info = actual.history_info_map_.find(expected_info->first);
     // NOTE(yfriedman): ASSERT_NE can't be used due to incompatibility between
     // gtest and STLPort in the Android build. See
     // http://code.google.com/p/googletest/issues/detail?id=359
@@ -420,12 +417,9 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
     }
   }
 
-  for (WordStartsMap::const_iterator expected_starts =
-      expected.word_starts_map_.begin();
-      expected_starts != expected.word_starts_map_.end();
-      ++expected_starts) {
-    WordStartsMap::const_iterator actual_starts =
-        actual.word_starts_map_.find(expected_starts->first);
+  for (auto expected_starts = expected.word_starts_map_.begin();
+       expected_starts != expected.word_starts_map_.end(); ++expected_starts) {
+    auto actual_starts = actual.word_starts_map_.find(expected_starts->first);
     // NOTE(yfriedman): ASSERT_NE can't be used due to incompatibility between
     // gtest and STLPort in the Android build. See
     // http://code.google.com/p/googletest/issues/detail?id=359
@@ -1117,7 +1111,7 @@ TEST_F(InMemoryURLIndexTest, ReadVisitsFromHistory) {
   // assume that if the count and transitions show up with the right
   // information, we're getting the right information from the history
   // database file.)
-  HistoryInfoMap::const_iterator entry = history_info_map.find(1);
+  auto entry = history_info_map.find(1);
   ASSERT_TRUE(entry != history_info_map.end());
   {
     const VisitInfoVector& visits = entry->second.visits;

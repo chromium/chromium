@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_sync/profile_sync_service.h"
@@ -216,10 +217,8 @@ void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 
 void SearchTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                     const GURL& /* validated_url */) {
-  if (!render_frame_host->GetParent()) {
-    if (search::IsInstantNTP(web_contents_))
-      RecordNewTabLoadTime(web_contents_);
-  }
+  if (!render_frame_host->GetParent() && search::IsInstantNTP(web_contents_))
+    RecordNewTabLoadTime(web_contents_);
 }
 
 void SearchTabHelper::NavigationEntryCommitted(
@@ -319,6 +318,16 @@ void SearchTabHelper::OnUndoCustomLinkAction() {
 void SearchTabHelper::OnResetCustomLinks() {
   if (instant_service_)
     instant_service_->ResetCustomLinks();
+}
+
+void SearchTabHelper::OnDoesUrlResolve(
+    const GURL& url,
+    chrome::mojom::EmbeddedSearch::DoesUrlResolveCallback callback) {
+  DCHECK(!url.is_empty());
+  if (instant_service_)
+    instant_service_->DoesUrlResolve(url, std::move(callback));
+  else
+    std::move(callback).Run(/*resolves=*/true, /*timeout=*/false);
 }
 
 void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,

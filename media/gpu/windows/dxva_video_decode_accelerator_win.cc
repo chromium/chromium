@@ -346,8 +346,7 @@ namespace media {
 
 static const VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE, H264PROFILE_MAIN,    H264PROFILE_HIGH,
-    VP8PROFILE_ANY,       VP9PROFILE_PROFILE0, VP9PROFILE_PROFILE1,
-    VP9PROFILE_PROFILE2,  VP9PROFILE_PROFILE3};
+    VP8PROFILE_ANY,       VP9PROFILE_PROFILE0, VP9PROFILE_PROFILE2};
 
 CreateDXGIDeviceManager
     DXVAVideoDecodeAccelerator::create_dxgi_device_manager_ = NULL;
@@ -622,45 +621,7 @@ class VP9ConfigChangeDetector : public ConfigChangeDetector {
     Vp9FrameHeader fhdr;
     while (parser_.ParseNextFrame(&fhdr) == Vp9Parser::kOk) {
       visible_rect_ = gfx::Rect(fhdr.render_width, fhdr.render_height);
-
-      // TODO(hubbe): move the conversion from Vp9FrameHeader to VideoColorSpace
-      // into a common, reusable location.
-      color_space_.range = fhdr.color_range ? gfx::ColorSpace::RangeID::FULL
-                                            : gfx::ColorSpace::RangeID::INVALID;
-      color_space_.primaries = VideoColorSpace::PrimaryID::INVALID;
-      color_space_.transfer = VideoColorSpace::TransferID::INVALID;
-      color_space_.matrix = VideoColorSpace::MatrixID::INVALID;
-      switch (fhdr.color_space) {
-        case Vp9ColorSpace::RESERVED:
-        case Vp9ColorSpace::UNKNOWN:
-          break;
-        case Vp9ColorSpace::BT_601:
-        case Vp9ColorSpace::SMPTE_170:
-          color_space_.primaries = VideoColorSpace::PrimaryID::SMPTE170M;
-          color_space_.transfer = VideoColorSpace::TransferID::SMPTE170M;
-          color_space_.matrix = VideoColorSpace::MatrixID::SMPTE170M;
-          break;
-        case Vp9ColorSpace::BT_709:
-          color_space_.primaries = VideoColorSpace::PrimaryID::BT709;
-          color_space_.transfer = VideoColorSpace::TransferID::BT709;
-          color_space_.matrix = VideoColorSpace::MatrixID::BT709;
-          break;
-        case Vp9ColorSpace::SMPTE_240:
-          color_space_.primaries = VideoColorSpace::PrimaryID::SMPTE240M;
-          color_space_.transfer = VideoColorSpace::TransferID::SMPTE240M;
-          color_space_.matrix = VideoColorSpace::MatrixID::SMPTE240M;
-          break;
-        case Vp9ColorSpace::BT_2020:
-          color_space_.primaries = VideoColorSpace::PrimaryID::BT2020;
-          color_space_.transfer = VideoColorSpace::TransferID::BT2020_10;
-          color_space_.matrix = VideoColorSpace::MatrixID::BT2020_NCL;
-          break;
-        case Vp9ColorSpace::SRGB:
-          color_space_.primaries = VideoColorSpace::PrimaryID::BT709;
-          color_space_.transfer = VideoColorSpace::TransferID::IEC61966_2_1;
-          color_space_.matrix = VideoColorSpace::MatrixID::BT709;
-          break;
-      }
+      color_space_ = fhdr.GetColorSpace();
 
       gfx::Size new_size(fhdr.frame_width, fhdr.frame_height);
       if (!size_.IsEmpty() && !pending_config_changed_ && !config_changed_ &&
@@ -776,7 +737,7 @@ DXVAVideoDecodeAccelerator::~DXVAVideoDecodeAccelerator() {
 
 bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
                                             Client* client) {
-  if (get_gl_context_cb_.is_null() || make_context_current_cb_.is_null()) {
+  if (!get_gl_context_cb_ || !make_context_current_cb_) {
     NOTREACHED() << "GL callbacks are required for this VDA";
     return false;
   }

@@ -13,8 +13,11 @@
 #include "base/mac/mac_logging.h"
 #import "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace platform_util {
@@ -55,8 +58,8 @@ namespace internal {
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
   switch (type) {
     case OPEN_FILE:
-      content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                       base::Bind(&OpenFileOnMainThread, path));
+      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                               base::Bind(&OpenFileOnMainThread, path));
       return;
     case OPEN_FOLDER:
       NSString* path_string = base::SysUTF8ToNSString(path.value());
@@ -81,29 +84,50 @@ void OpenExternal(Profile* profile, const GURL& url) {
 }
 
 gfx::NativeWindow GetTopLevel(gfx::NativeView view) {
-  return [view window];
+  return gfx::NativeWindow([view.GetNativeNSView() window]);
 }
 
-gfx::NativeView GetViewForWindow(gfx::NativeWindow window) {
+gfx::NativeView GetViewForWindow(gfx::NativeWindow native_window) {
+  NSWindow* window = native_window.GetNativeNSWindow();
   DCHECK(window);
   DCHECK([window contentView]);
-  return [window contentView];
+  return gfx::NativeView([window contentView]);
 }
 
 gfx::NativeView GetParent(gfx::NativeView view) {
-  return nil;
+  return gfx::NativeView(nil);
 }
 
-bool IsWindowActive(gfx::NativeWindow window) {
+bool IsWindowActive(gfx::NativeWindow native_window) {
+  // If |window| is a doppelganger NSWindow being used to track an NSWindow that
+  // is being hosted in another process, then use the views::Widget interface to
+  // interact with it.
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  if (widget)
+    return widget->IsActive();
+
+  NSWindow* window = native_window.GetNativeNSWindow();
   return [window isKeyWindow] || [window isMainWindow];
 }
 
-void ActivateWindow(gfx::NativeWindow window) {
+void ActivateWindow(gfx::NativeWindow native_window) {
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  if (widget)
+    return widget->Activate();
+
+  NSWindow* window = native_window.GetNativeNSWindow();
   [window makeKeyAndOrderFront:nil];
 }
 
-bool IsVisible(gfx::NativeView view) {
+bool IsVisible(gfx::NativeView native_view) {
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(native_view);
+  if (widget)
+    return widget->IsVisible();
+
   // A reasonable approximation of how you'd expect this to behave.
+  NSView* view = native_view.GetNativeNSView();
   return (view &&
           ![view isHiddenOrHasHiddenAncestor] &&
           [view window] &&

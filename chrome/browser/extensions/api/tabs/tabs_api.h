@@ -145,7 +145,6 @@ class TabsUpdateFunction : public UIThreadExtensionFunction {
   ~TabsUpdateFunction() override {}
   bool UpdateURL(const std::string& url,
                  int tab_id,
-                 bool* is_async,
                  std::string* error);
   ResponseValue GetResult();
 

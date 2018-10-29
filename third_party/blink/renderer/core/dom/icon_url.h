@@ -45,7 +45,7 @@ enum IconType {
 };
 
 struct IconURL {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   IconType icon_type_;
   Vector<IntSize> sizes_;
   String mime_type_;

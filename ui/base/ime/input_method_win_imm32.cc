@@ -89,6 +89,7 @@ bool InputMethodWinImm32::OnUntranslatedIMEMessage(
 
 void InputMethodWinImm32::OnTextInputTypeChanged(
     const TextInputClient* client) {
+  InputMethodBase::OnTextInputTypeChanged(client);
   if (!IsTextInputClientFocused(client) || !IsWindowFocused(client))
     return;
   imm32_manager_.CancelIME(toplevel_window_handle_);

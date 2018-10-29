@@ -2,7 +2,6 @@ Tests navigator.clipboard.writeText() permission failure.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS PermissionsHelper.setPermission is defined.
 PASS navigator.clipboard is non-null.
 PASS clipboard.writeText() fail (as expected).

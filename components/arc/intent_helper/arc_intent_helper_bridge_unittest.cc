@@ -38,6 +38,7 @@ class ArcIntentHelperTest : public testing::Test {
 
     // OpenUrlDelegate:
     void OpenUrlFromArc(const GURL& url) override { last_opened_url_ = url; }
+    void OpenWebAppFromArc(const GURL& url) override { last_opened_url_ = url; }
 
     GURL TakeLastOpenedUrl() {
       GURL result = std::move(last_opened_url_);
@@ -284,6 +285,16 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl) {
             test_open_url_delegate_->TakeLastOpenedUrl());
 
   instance_->OnOpenUrl("https://google.com");
+  EXPECT_EQ(GURL("https://google.com"),
+            test_open_url_delegate_->TakeLastOpenedUrl());
+}
+
+// Tests that OnOpenWebApp opens only HTTPS URLs.
+TEST_F(ArcIntentHelperTest, TestOnOpenWebApp) {
+  instance_->OnOpenWebApp("http://google.com");
+  EXPECT_EQ(GURL(), test_open_url_delegate_->TakeLastOpenedUrl());
+
+  instance_->OnOpenWebApp("https://google.com");
   EXPECT_EQ(GURL("https://google.com"),
             test_open_url_delegate_->TakeLastOpenedUrl());
 }

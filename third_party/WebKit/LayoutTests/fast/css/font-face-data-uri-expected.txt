@@ -5,10 +5,12 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById('ref0').offsetWidth is document.getElementById('test0').offsetWidth
 PASS document.getElementById('ref1').offsetWidth is document.getElementById('test1').offsetWidth
 Proper data URI
 Proper data URI
+
 Data ends with EOT
 Data ends with EOT
 

@@ -27,53 +27,53 @@ namespace {
 using WebLoadPolicy = blink::WebDocumentSubresourceFilter::LoadPolicy;
 
 proto::ElementType ToElementType(
-    blink::WebURLRequest::RequestContext request_context) {
+    blink::mojom::RequestContextType request_context) {
   switch (request_context) {
-    case blink::WebURLRequest::kRequestContextAudio:
-    case blink::WebURLRequest::kRequestContextVideo:
-    case blink::WebURLRequest::kRequestContextTrack:
+    case blink::mojom::RequestContextType::AUDIO:
+    case blink::mojom::RequestContextType::VIDEO:
+    case blink::mojom::RequestContextType::TRACK:
       return proto::ELEMENT_TYPE_MEDIA;
-    case blink::WebURLRequest::kRequestContextBeacon:
-    case blink::WebURLRequest::kRequestContextPing:
+    case blink::mojom::RequestContextType::BEACON:
+    case blink::mojom::RequestContextType::PING:
       return proto::ELEMENT_TYPE_PING;
-    case blink::WebURLRequest::kRequestContextEmbed:
-    case blink::WebURLRequest::kRequestContextObject:
-    case blink::WebURLRequest::kRequestContextPlugin:
+    case blink::mojom::RequestContextType::EMBED:
+    case blink::mojom::RequestContextType::OBJECT:
+    case blink::mojom::RequestContextType::PLUGIN:
       return proto::ELEMENT_TYPE_OBJECT;
-    case blink::WebURLRequest::kRequestContextEventSource:
-    case blink::WebURLRequest::kRequestContextFetch:
-    case blink::WebURLRequest::kRequestContextXMLHttpRequest:
+    case blink::mojom::RequestContextType::EVENT_SOURCE:
+    case blink::mojom::RequestContextType::FETCH:
+    case blink::mojom::RequestContextType::XML_HTTP_REQUEST:
       return proto::ELEMENT_TYPE_XMLHTTPREQUEST;
-    case blink::WebURLRequest::kRequestContextFavicon:
-    case blink::WebURLRequest::kRequestContextImage:
-    case blink::WebURLRequest::kRequestContextImageSet:
+    case blink::mojom::RequestContextType::FAVICON:
+    case blink::mojom::RequestContextType::IMAGE:
+    case blink::mojom::RequestContextType::IMAGE_SET:
       return proto::ELEMENT_TYPE_IMAGE;
-    case blink::WebURLRequest::kRequestContextFont:
+    case blink::mojom::RequestContextType::FONT:
       return proto::ELEMENT_TYPE_FONT;
-    case blink::WebURLRequest::kRequestContextFrame:
-    case blink::WebURLRequest::kRequestContextForm:
-    case blink::WebURLRequest::kRequestContextHyperlink:
-    case blink::WebURLRequest::kRequestContextIframe:
-    case blink::WebURLRequest::kRequestContextInternal:
-    case blink::WebURLRequest::kRequestContextLocation:
+    case blink::mojom::RequestContextType::FRAME:
+    case blink::mojom::RequestContextType::FORM:
+    case blink::mojom::RequestContextType::HYPERLINK:
+    case blink::mojom::RequestContextType::IFRAME:
+    case blink::mojom::RequestContextType::INTERNAL:
+    case blink::mojom::RequestContextType::LOCATION:
       return proto::ELEMENT_TYPE_SUBDOCUMENT;
-    case blink::WebURLRequest::kRequestContextScript:
-    case blink::WebURLRequest::kRequestContextServiceWorker:
-    case blink::WebURLRequest::kRequestContextSharedWorker:
+    case blink::mojom::RequestContextType::SCRIPT:
+    case blink::mojom::RequestContextType::SERVICE_WORKER:
+    case blink::mojom::RequestContextType::SHARED_WORKER:
       return proto::ELEMENT_TYPE_SCRIPT;
-    case blink::WebURLRequest::kRequestContextStyle:
-    case blink::WebURLRequest::kRequestContextXSLT:
+    case blink::mojom::RequestContextType::STYLE:
+    case blink::mojom::RequestContextType::XSLT:
       return proto::ELEMENT_TYPE_STYLESHEET;
 
-    case blink::WebURLRequest::kRequestContextPrefetch:
-    case blink::WebURLRequest::kRequestContextSubresource:
+    case blink::mojom::RequestContextType::PREFETCH:
+    case blink::mojom::RequestContextType::SUBRESOURCE:
       return proto::ELEMENT_TYPE_OTHER;
 
-    case blink::WebURLRequest::kRequestContextCSPReport:
-    case blink::WebURLRequest::kRequestContextDownload:
-    case blink::WebURLRequest::kRequestContextImport:
-    case blink::WebURLRequest::kRequestContextManifest:
-    case blink::WebURLRequest::kRequestContextUnspecified:
+    case blink::mojom::RequestContextType::CSP_REPORT:
+    case blink::mojom::RequestContextType::DOWNLOAD:
+    case blink::mojom::RequestContextType::IMPORT:
+    case blink::mojom::RequestContextType::MANIFEST:
+    case blink::mojom::RequestContextType::UNSPECIFIED:
     default:
       return proto::ELEMENT_TYPE_UNSPECIFIED;
   }
@@ -116,7 +116,7 @@ WebDocumentSubresourceFilterImpl::WebDocumentSubresourceFilterImpl(
 
 WebLoadPolicy WebDocumentSubresourceFilterImpl::GetLoadPolicy(
     const blink::WebURL& resourceUrl,
-    blink::WebURLRequest::RequestContext request_context) {
+    blink::mojom::RequestContextType request_context) {
   return getLoadPolicyImpl(resourceUrl, ToElementType(request_context));
 }
 

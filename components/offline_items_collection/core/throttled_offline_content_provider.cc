@@ -157,7 +157,7 @@ void ThrottledOfflineContentProvider::OnItemUpdated(const OfflineItem& item) {
 
 void ThrottledOfflineContentProvider::UpdateItemIfPresent(
     const OfflineItem& item) {
-  OfflineItemMap::iterator it = updates_.find(item.id);
+  auto it = updates_.find(item.id);
   if (it != updates_.end())
     it->second = item;
 }

@@ -91,8 +91,8 @@ void PEMTokenizer::Init(
 
   // Construct PEM header/footer strings for all the accepted types, to
   // reduce parsing later.
-  for (std::vector<std::string>::const_iterator it =
-       allowed_block_types.begin(); it != allowed_block_types.end(); ++it) {
+  for (auto it = allowed_block_types.begin(); it != allowed_block_types.end();
+       ++it) {
     PEMType allowed_type;
     allowed_type.type = *it;
     allowed_type.header = base::StringPrintf(kPEMBeginBlock, it->c_str());

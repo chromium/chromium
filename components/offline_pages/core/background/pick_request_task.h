@@ -9,20 +9,20 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
+#include "components/offline_pages/core/background/device_conditions.h"
 #include "components/offline_pages/core/background/request_queue_results.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/task/task.h"
 
 namespace offline_pages {
 
-class DeviceConditions;
 class OfflinerPolicy;
 class PickRequestTask;
 class RequestQueueStore;
 
 typedef bool (PickRequestTask::*RequestCompareFunction)(
-    const SavePageRequest* left,
-    const SavePageRequest* right);
+    const SavePageRequest& left,
+    const SavePageRequest& right);
 
 class PickRequestTask : public Task {
  public:
@@ -45,9 +45,9 @@ class PickRequestTask : public Task {
                   RequestPickedCallback picked_callback,
                   RequestNotPickedCallback not_picked_callback,
                   RequestCountCallback request_count_callback,
-                  DeviceConditions& device_conditions,
+                  DeviceConditions device_conditions,
                   const std::set<int64_t>& disabled_requests,
-                  base::circular_deque<int64_t>& prioritized_requests);
+                  base::circular_deque<int64_t>* prioritized_requests);
 
   ~PickRequestTask() override;
 
@@ -65,30 +65,30 @@ class PickRequestTask : public Task {
   // Helper functions.
 
   // Determine if this request has device conditions appropriate for running it.
-  bool RequestConditionsSatisfied(const SavePageRequest* request);
+  bool RequestConditionsSatisfied(const SavePageRequest& request);
 
   // Determine if the new request is preferred under current policies.
-  bool IsNewRequestBetter(const SavePageRequest* oldRequest,
-                          const SavePageRequest* newRequest,
+  bool IsNewRequestBetter(const SavePageRequest& oldRequest,
+                          const SavePageRequest& newRequest,
                           RequestCompareFunction comparator);
 
   // Returns true if the left hand side is better.
-  bool RetryCountFirstCompareFunction(const SavePageRequest* left,
-                                      const SavePageRequest* right);
+  bool RetryCountFirstCompareFunction(const SavePageRequest& left,
+                                      const SavePageRequest& right);
 
   // Returns true if the left hand side is better.
-  bool RecencyFirstCompareFunction(const SavePageRequest* left,
-                                   const SavePageRequest* right);
+  bool RecencyFirstCompareFunction(const SavePageRequest& left,
+                                   const SavePageRequest& right);
 
   // Compare left and right side, returning 1 if the left side is better
   // (preferred by policy), 0 if the same, and -1 if the right side is better.
-  int CompareRetryCount(const SavePageRequest* left,
-                        const SavePageRequest* right);
+  int CompareRetryCount(const SavePageRequest& left,
+                        const SavePageRequest& right);
 
   // Compare left and right side, returning 1 if the left side is better
   // (preferred by policy), 0 if the same, and -1 if the right side is better.
-  int CompareCreationTime(const SavePageRequest* left,
-                          const SavePageRequest* right);
+  int CompareCreationTime(const SavePageRequest& left,
+                          const SavePageRequest& right);
 
   // Member variables, all pointers are not owned here.
   RequestQueueStore* store_;
@@ -96,9 +96,11 @@ class PickRequestTask : public Task {
   RequestPickedCallback picked_callback_;
   RequestNotPickedCallback not_picked_callback_;
   RequestCountCallback request_count_callback_;
-  std::unique_ptr<DeviceConditions> device_conditions_;
+  DeviceConditions device_conditions_;
   const std::set<int64_t>& disabled_requests_;
-  base::circular_deque<int64_t>& prioritized_requests_;
+  // TODO(harringtond): This object is owned by the caller, and mutating it
+  // directly here seems dangerous.
+  base::circular_deque<int64_t>* prioritized_requests_;
   // Allows us to pass a weak pointer to callbacks.
   base::WeakPtrFactory<PickRequestTask> weak_ptr_factory_;
 };

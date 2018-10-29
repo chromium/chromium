@@ -72,6 +72,9 @@
 - (void)updateConstraints;
 // Clear the overscroll actions.
 - (void)clearOverscroll;
+// Sets the collection contentOffset to |offset|, or caches the value and
+// applies it after the first layout.
+- (void)setContentOffset:(CGFloat)offset;
 
 // Returns the accessibility identifier of the collection.
 + (NSString*)collectionAccessibilityIdentifier;

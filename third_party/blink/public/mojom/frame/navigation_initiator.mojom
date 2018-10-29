@@ -1,0 +1,66 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Represents the disposition of a CSP violation's policy as defined in:
+// https://w3c.github.io/webappsec-csp/#policy-disposition
+enum WebContentSecurityPolicyType {
+  WebContentSecurityPolicyTypeReport,
+  WebContentSecurityPolicyTypeEnforce
+};
+
+// Represents the source location of a CSP violation which contains the
+// three fields in:
+// https://w3c.github.io/webappsec-csp/#violation-source-file
+// https://w3c.github.io/webappsec-csp/#violation-line-number
+// https://w3c.github.io/webappsec-csp/#violation-column-number
+struct SourceLocation {
+  string url;
+  uint32 line_number;
+  uint32 column_number;
+};
+
+// Roughly represents the necessary information to build a CSP violation
+// event and send it, as defined in:
+// https://w3c.github.io/webappsec-csp/#violation-events
+struct CSPViolationParams {
+
+  // The name of the directive that violates the policy.
+  string directive;
+
+  // The name of the effective directive that was checked against.
+  string effective_directive;
+
+  // The console message to be displayed to the user.
+  string console_message;
+
+  // The URL that was blocked by the policy.
+  string blocked_url;
+
+  // The set of endpoints where a report of the violation should be sent.
+  // Based on 'use_reporting_api' it can be either a set of group_names (when
+  // 'use_reporting_api' = true) or a set of URLs. This means that it's not
+  // possible to use both methods of reporting. This is by design.
+  array<string> report_endpoints;
+
+  // Whether to use the reporting api or not.
+  bool use_reporting_api;
+
+  // The raw content security policy header that was violated.
+  string header;
+
+  // The associated disposition, which is either "enforce" or "report".
+  WebContentSecurityPolicyType disposition;
+
+  // Whether or not the violation happened after a redirect.
+  bool after_redirect;
+
+  // The source code location that triggered the blocked navigation.
+  SourceLocation source_location;
+};
+
+interface NavigationInitiator {
+  SendViolationReport(CSPViolationParams violation_params);
+};

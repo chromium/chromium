@@ -29,7 +29,7 @@ class OffscreenCanvas;
 
 enum ImageBitmapPixelFormat {
   kImageBitmapPixelFormat_Default,
-  kImageBitmapPixelFormat_8888,
+  kImageBitmapPixelFormat_Uint8,
 };
 
 class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
@@ -164,6 +164,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               bool is_image_bitmap_premultiplied,
               bool is_image_bitmap_origin_clean,
               const CanvasColorParams&);
+  void UpdateImageBitmapMemoryUsage();
   static void ResolvePromiseOnOriginalThread(ScriptPromiseResolver*,
                                              sk_sp<SkImage>,
                                              bool origin_clean,
@@ -175,6 +176,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                                std::unique_ptr<ParsedOptions>);
   scoped_refptr<StaticBitmapImage> image_;
   bool is_neutered_ = false;
+  int32_t memory_usage_ = 0;
 };
 
 }  // namespace blink

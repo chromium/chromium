@@ -11,8 +11,9 @@ go/chrome-security-bugs](http://go/chrome-security-bugs).
 
 [Security Labels](security-labels.md).
 
-[Sheriff Handoff Log](http://go/chrome-security-sheriff-handoff) (Googlers
-only).
+[Current Sheriffs](http://go/whos-the-sheriff).
+
+[Sheriff Handoff Log](http://go/chrome-security-sheriff-handoff).
 
 You might also like the [HOWTO: Be A Security Sheriff
 deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p).
@@ -20,16 +21,27 @@ deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d
 ## What Is A Security Sheriff?
 
 A security sheriff is a member of a rotation that occurs in 1-week time slots,
-starting on Tuesdays and ending the following Monday. [Here is the rotation
+starting on Tuesdays and ending the following Monday. All sheriffs are Googlers
+and so some links on this page might not be externally accessible (or indeed
+locked down to just Chrome Security Googlers).
+
+[Here is the rotation
 schedule](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0).
 
 Sheriffs ensure that all incoming security issues are triaged quickly and
-correctly. We aim to have get every bug triaged and assigned within 48 hours
+correctly. We aim to have get every bug triaged and assigned **within 48 hours**
 (preferably 24). This includes weekends, so it's good for sheriffs to check in
-once on a weekend and see if there are any emergencies.
+once on a weekend and see if there are any emergencies that need immediate action.
 
 Sheriffing is not an on-call rotation, however. Sheriffs don't have to work
 nights or to do more than a few minutes' work on weekends.
+
+## When Am I The Security Sheriff?
+
+You should get a calendar invite. Please accept it to acknowledge. If you need to
+swap shifts, ask around for a volunteer and then just update the
+[rotation sheet](https://docs.google.com/spreadsheets/d/10sLYZbi6QfLcXrhO-j5eSc82uc7NKnBz_o1pR9y8h7U/edit#gid=0)
+and wait 10 minutes for the calendar invites to be updated.
 
 ## I'm The Security Sheriff. What Do I Do?
 
@@ -80,7 +92,8 @@ sheriff), and remember you may be called upon during emergencies.
 Do as much as you can for the week to triage, shepherd, and wrap up open
 security bugs. What follows are the details of what that entails, but it
 practically means turning all the red cells in the dashboard to green. **If
-you're ever stuck or in doubt, ask for help on #chrome-security!**
+you're ever stuck or in doubt, ask for help on #chrome-security! or the
+[Chrome Security Chat](http://go/chrome-security-chat).**
 
 ![alt text](apf-right-a-wrong.png "felt: a lot of Chrome vuln reports come from
 well-meaning people who clearly went out of their way to try to right a wrong.
@@ -124,6 +137,15 @@ Browsing list:**
 team should still track the issue (e.g. security features).
 * **If the report doesn't have enough information**, ask the reporter for more
 information, add the **Needs-Feedback** label and wait for 24 hours for a response.
+	* The [security bug template](https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug)
+asks reporters to attach files directly, not in zip or other archives, and attach
+the source of any online demos they've created.  If they've not done so, please make
+sure all files needed to reproduce the issue are downloaded and attached.
+* **If the bug is a security bug, but is only applicable to Chrome OS**:
+	* The Chrome OS Security team now has their own sheriffing rotation. To get bugs
+into their triage queue, just set OS to the single value of "Chrome". No other steps
+or labels are needed.
+	* If you need to ping or ask about Chrome OS bug, [ask their current sheriff](go/whos-the-chromeos-sheriff).
 * **If the report smells like a vulnerability, keep going.**
 
 ### Verify And Label The Bug
@@ -170,6 +192,11 @@ the main bug as the severity/priority of the full chain, and mark child bugs as
 being blockers of the parent bug each with their own separate severity. Each
 child bug can have its own priority. Examples of this in action are [issue
 352369](https://crbug.com/352369) and [issue 453937](https://crbug.com/453937).
+
+Even after initial triage, re-assess the severity while you're looking at a security
+bug update: does it have new information in the bug that could change the assessment?
+Be especially on the lookout for Highs that are really Criticals, and Lows that are
+really Mediums (make sure to account for process types and sandbox boundaries).
 
 #### Step 3. [Label, label, label](security-labels.md).
 

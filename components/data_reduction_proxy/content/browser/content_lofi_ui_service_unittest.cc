@@ -12,6 +12,8 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -46,8 +48,8 @@ class ContentLoFiUIServiceTest : public content::RenderViewHostTestHarness {
     context.Init();
 
     content_lofi_ui_service_.reset(new ContentLoFiUIService(
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI),
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI}),
         base::Bind(&ContentLoFiUIServiceTest::OnLoFiResponseReceivedCallback,
                    base::Unretained(this))));
 
@@ -56,8 +58,8 @@ class ContentLoFiUIServiceTest : public content::RenderViewHostTestHarness {
 
     content_lofi_ui_service_->OnLoFiReponseReceived(*request);
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&base::RunLoop::Quit, base::Unretained(ui_run_loop)));
   }
 
@@ -102,8 +104,8 @@ class ContentLoFiUIServiceTest : public content::RenderViewHostTestHarness {
 
 TEST_F(ContentLoFiUIServiceTest, OnLoFiResponseReceived) {
   base::RunLoop ui_run_loop;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ContentLoFiUIServiceTest::RunTestOnIOThread,
                      base::Unretained(this), &ui_run_loop));
   ui_run_loop.Run();

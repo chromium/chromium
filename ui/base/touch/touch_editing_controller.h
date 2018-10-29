@@ -92,13 +92,12 @@ class UI_BASE_EXPORT TouchEditingControllerDeprecated {
 
 class UI_BASE_EXPORT TouchEditingControllerFactory {
  public:
+  virtual ~TouchEditingControllerFactory() {}
+
   static void SetInstance(TouchEditingControllerFactory* instance);
 
   virtual TouchEditingControllerDeprecated* Create(TouchEditable* client_view)
       = 0;
-
- protected:
-  virtual ~TouchEditingControllerFactory() {}
 };
 
 }  // namespace ui

@@ -9,12 +9,13 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
+#include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/tray/actionable_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray_drag_controller.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace ash {
 class Shelf;
@@ -29,7 +30,8 @@ class TrayEventFilter;
 class ASH_EXPORT TrayBackgroundView : public ActionableView,
                                       public ui::ImplicitAnimationObserver,
                                       public ShelfBackgroundAnimatorObserver,
-                                      public views::TrayBubbleView::Delegate {
+                                      public TrayBubbleView::Delegate,
+                                      public VirtualKeyboardModel::Observer {
  public:
   static const char kViewClassName[];
 
@@ -60,9 +62,12 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // TrayBubbleView::Delegate:
   void ProcessGestureEventForBubble(ui::GestureEvent* event) override;
 
+  // VirtualKeyboardModel::Observer:
+  void OnVirtualKeyboardVisibilityChanged() override;
+
   // Returns the associated tray bubble view, if one exists. Otherwise returns
   // nullptr.
-  virtual views::TrayBubbleView* GetBubbleView();
+  virtual TrayBubbleView* GetBubbleView();
 
   // Closes the associated tray bubble view if it exists and is currently
   // showing.
@@ -86,18 +91,18 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   virtual base::string16 GetAccessibleNameForTray() = 0;
 
   // Called when the bubble is resized.
-  virtual void BubbleResized(const views::TrayBubbleView* bubble_view);
+  virtual void BubbleResized(const TrayBubbleView* bubble_view);
 
   // Hides the bubble associated with |bubble_view|. Called when the widget
   // is closed.
-  virtual void HideBubbleWithView(const views::TrayBubbleView* bubble_view) = 0;
+  virtual void HideBubbleWithView(const TrayBubbleView* bubble_view) = 0;
 
   // Called by the bubble wrapper when a click event occurs outside the bubble.
   // May close the bubble.
   virtual void ClickedOutsideBubble() = 0;
 
   // Returns the bubble anchor alignment based on |shelf_alignment_|.
-  views::TrayBubbleView::AnchorAlignment GetAnchorAlignment() const;
+  TrayBubbleView::AnchorAlignment GetAnchorAlignment() const;
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
@@ -107,7 +112,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   Shelf* shelf() { return shelf_; }
 
   // Updates the arrow visibility based on the launcher visibility.
-  void UpdateBubbleViewArrow(views::TrayBubbleView* bubble_view);
+  void UpdateBubbleViewArrow(TrayBubbleView* bubble_view);
 
   // ShelfBackgroundAnimatorObserver:
   void UpdateShelfItemBackground(SkColor color) override;
@@ -156,6 +161,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
     drag_controller_ = std::move(drag_controller);
   }
 
+  void set_show_with_virtual_keyboard(bool show_with_virtual_keyboard) {
+    show_with_virtual_keyboard_ = show_with_virtual_keyboard;
+  }
+
  private:
   class TrayWidgetObserver;
 
@@ -187,6 +196,14 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // Visibility of this tray's separator which is a line of 1x32px and 4px to
   // right of tray.
   bool separator_visible_;
+
+  // During virtual keyboard is shown, visibility changes to TrayBackgroundView
+  // are ignored. In such case, preferred visibility is reflected after the
+  // virtual keyboard is hidden.
+  bool visible_preferred_;
+
+  // If true, the view always shows up when virtual keyboard is visible.
+  bool show_with_virtual_keyboard_;
 
   // Handles touch drag gestures on the tray area and its associated bubble.
   std::unique_ptr<TrayDragController> drag_controller_;

@@ -61,7 +61,7 @@ bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
   if (image_skia_rep.scale() != 1.0f)
     return false;
 
-  const SkBitmap& bitmap = image_skia_rep.sk_bitmap();
+  const SkBitmap& bitmap = image_skia_rep.GetBitmap();
   if (!bitmap.readyToDraw())
     return false;
 
@@ -74,7 +74,7 @@ void GetVisibleMargins(const ImageSkia& image, int* left, int* right) {
   *right = 0;
   if (!image.HasRepresentation(1.f))
     return;
-  const SkBitmap& bitmap = image.GetRepresentation(1.f).sk_bitmap();
+  const SkBitmap& bitmap = image.GetRepresentation(1.f).GetBitmap();
   if (bitmap.drawsNothing() || bitmap.isOpaque())
     return;
 

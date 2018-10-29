@@ -109,7 +109,9 @@ TEST_F(LocalSiteCharacteristicsNonRecordingDataStoreTest, InspectorWorks) {
   // We expect an empty data store at the outset.
   EXPECT_EQ(0U, inspector->GetAllInMemoryOrigins().size());
   std::unique_ptr<SiteCharacteristicsProto> data;
-  EXPECT_FALSE(inspector->GetaDataForOrigin(kTestOrigin, &data));
+  bool is_dirty = false;
+  EXPECT_FALSE(inspector->GetDataForOrigin(kTestOrigin, &is_dirty, &data));
+  EXPECT_FALSE(is_dirty);
   EXPECT_EQ(nullptr, data.get());
 
   {
@@ -119,8 +121,13 @@ TEST_F(LocalSiteCharacteristicsNonRecordingDataStoreTest, InspectorWorks) {
         kTestOrigin, TabVisibility::kBackground);
 
     EXPECT_EQ(1U, inspector->GetAllInMemoryOrigins().size());
-    EXPECT_TRUE(inspector->GetaDataForOrigin(kTestOrigin, &data));
+    EXPECT_TRUE(inspector->GetDataForOrigin(kTestOrigin, &is_dirty, &data));
+    EXPECT_FALSE(is_dirty);
     ASSERT_NE(nullptr, data.get());
+
+    // Touch the underlying data, see that the dirty bit updates.
+    writer->NotifySiteLoaded();
+    EXPECT_TRUE(inspector->GetDataForOrigin(kTestOrigin, &is_dirty, &data));
   }
 
   // Make sure the interface is unregistered from the profile on destruction.

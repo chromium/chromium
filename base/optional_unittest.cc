@@ -1899,34 +1899,39 @@ TEST(OptionalTest, NotEqualsNull) {
 
 TEST(OptionalTest, MakeOptional) {
   {
-    Optional<float> o = make_optional(32.f);
+    // Use qualified base::make_optional here and elsewhere to avoid the name
+    // confliction to std::make_optional.
+    // The name conflict happens only for types in std namespace, such as
+    // std::string. The other qualified base::make_optional usages are just for
+    // consistency.
+    Optional<float> o = base::make_optional(32.f);
     EXPECT_TRUE(o);
     EXPECT_EQ(32.f, *o);
 
     float value = 3.f;
-    o = make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(o);
     EXPECT_EQ(3.f, *o);
   }
 
   {
-    Optional<std::string> o = make_optional(std::string("foo"));
+    Optional<std::string> o = base::make_optional(std::string("foo"));
     EXPECT_TRUE(o);
     EXPECT_EQ("foo", *o);
 
     std::string value = "bar";
-    o = make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(o);
     EXPECT_EQ(std::string("bar"), *o);
   }
 
   {
-    Optional<TestObject> o = make_optional(TestObject(3, 0.1));
+    Optional<TestObject> o = base::make_optional(TestObject(3, 0.1));
     EXPECT_TRUE(!!o);
     EXPECT_TRUE(TestObject(3, 0.1) == *o);
 
     TestObject value = TestObject(0, 0.42);
-    o = make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(!!o);
     EXPECT_TRUE(TestObject(0, 0.42) == *o);
     EXPECT_EQ(TestObject::State::MOVED_FROM, value.state());
@@ -1945,7 +1950,7 @@ TEST(OptionalTest, MakeOptional) {
       bool c;
     };
 
-    Optional<Test> o = make_optional<Test>(1, 2.0, true);
+    Optional<Test> o = base::make_optional<Test>(1, 2.0, true);
     EXPECT_TRUE(!!o);
     EXPECT_EQ(1, o->a);
     EXPECT_EQ(2.0, o->b);
@@ -1953,11 +1958,11 @@ TEST(OptionalTest, MakeOptional) {
   }
 
   {
-    auto str1 = make_optional<std::string>({'1', '2', '3'});
+    auto str1 = base::make_optional<std::string>({'1', '2', '3'});
     EXPECT_EQ("123", *str1);
 
-    auto str2 =
-        make_optional<std::string>({'a', 'b', 'c'}, std::allocator<char>());
+    auto str2 = base::make_optional<std::string>({'a', 'b', 'c'},
+                                                 std::allocator<char>());
     EXPECT_EQ("abc", *str2);
   }
 }

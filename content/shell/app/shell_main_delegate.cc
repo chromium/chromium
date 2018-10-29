@@ -79,9 +79,10 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+
 #include <initguid.h>
 #include "base/logging_win.h"
-#include "content/shell/common/v8_breakpad_support_win.h"
+#include "content/shell/common/v8_crashpad_support_win.h"
 #endif
 
 #if defined(OS_POSIX) && !defined(OS_MACOSX)
@@ -163,7 +164,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   // Enable trace control and transport through event tracing for Windows.
   logging::LogEventProvider::Initialize(kContentShellProviderName);
 
-  v8_breakpad_support::SetUp();
+  v8_crashpad_support::SetUp();
 #endif
 #if defined(OS_LINUX)
   breakpad::SetFirstChanceExceptionHandler(v8::V8::TryHandleSignal);
@@ -208,10 +209,16 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
       return true;
     }
 #endif
-    command_line.AppendSwitch(switches::kDisableResizeLock);
     command_line.AppendSwitch(cc::switches::kEnableGpuBenchmarking);
     command_line.AppendSwitch(switches::kEnableLogging);
     command_line.AppendSwitch(switches::kAllowFileAccessFromFiles);
+#if !defined(OS_ANDROID)
+    // TODO(crbug/567947) Enable display compositor pixel dumps for Android
+    // once testing becomes possible on post-kitkat OSes, and once we've
+    // had a chance to debug the layout test failures that occur when this
+    // flag is present.
+    command_line.AppendSwitch(switches::kEnableDisplayCompositorPixelDump);
+#endif
     // only default to a software GL if the flag isn't already specified.
     if (!command_line.HasSwitch(switches::kUseGpuInTests) &&
         !command_line.HasSwitch(switches::kUseGL)) {
@@ -246,7 +253,9 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
     // checker imaging, since it's imcompatible with single threaded compositor
     // and display compositor pixel dumps.
     if (command_line.HasSwitch(switches::kEnableDisplayCompositorPixelDump)) {
-      command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
+      // TODO(crbug.com/894613) Add kRunAllCompositorStagesBeforeDraw back here
+      // once you figure out why it causes so much layout test flakiness.
+      // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
       command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
     }
 

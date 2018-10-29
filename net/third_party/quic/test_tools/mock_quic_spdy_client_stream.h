@@ -16,7 +16,9 @@ namespace test {
 
 class MockQuicSpdyClientStream : public QuicSpdyClientStream {
  public:
-  MockQuicSpdyClientStream(QuicStreamId id, QuicSpdyClientSession* session);
+  MockQuicSpdyClientStream(QuicStreamId id,
+                           QuicSpdyClientSession* session,
+                           StreamType type);
   ~MockQuicSpdyClientStream() override;
 
   MOCK_METHOD1(OnStreamFrame, void(const QuicStreamFrame& frame));

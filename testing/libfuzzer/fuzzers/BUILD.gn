@@ -426,19 +426,17 @@ fuzzer_test("v8_fully_instrumented_fuzzer") {
   libfuzzer_options = [ "only_ascii=1" ]
 }
 
-if (!is_win) {
-  fuzzer_test("skia_image_filter_proto_fuzzer") {
-    sources = [
-      "skia_image_filter_proto_fuzzer.cc",
-    ]
+fuzzer_test("skia_image_filter_proto_fuzzer") {
+  sources = [
+    "skia_image_filter_proto_fuzzer.cc",
+  ]
 
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//skia",
-      "//testing/libfuzzer/proto:skia_image_filter_converter",
-      "//testing/libfuzzer/proto:skia_image_filter_proto",
-      "//third_party/libprotobuf-mutator",
-    ]
-  }
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/libfuzzer/proto:skia_image_filter_converter",
+    "//testing/libfuzzer/proto:skia_image_filter_proto",
+    "//third_party/libprotobuf-mutator",
+  ]
 }

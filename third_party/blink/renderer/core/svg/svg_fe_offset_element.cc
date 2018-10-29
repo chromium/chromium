@@ -27,10 +27,10 @@
 namespace blink {
 
 inline SVGFEOffsetElement::SVGFEOffsetElement(Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feOffsetTag, document),
-      dx_(SVGAnimatedNumber::Create(this, SVGNames::dxAttr, 0.0f)),
-      dy_(SVGAnimatedNumber::Create(this, SVGNames::dyAttr, 0.0f)),
-      in1_(SVGAnimatedString::Create(this, SVGNames::inAttr)) {
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEOffsetTag, document),
+      dx_(SVGAnimatedNumber::Create(this, svg_names::kDxAttr, 0.0f)),
+      dy_(SVGAnimatedNumber::Create(this, svg_names::kDyAttr, 0.0f)),
+      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)) {
   AddToPropertyMap(dx_);
   AddToPropertyMap(dy_);
   AddToPropertyMap(in1_);
@@ -46,8 +46,8 @@ void SVGFEOffsetElement::Trace(blink::Visitor* visitor) {
 DEFINE_NODE_FACTORY(SVGFEOffsetElement)
 
 void SVGFEOffsetElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::inAttr || attr_name == SVGNames::dxAttr ||
-      attr_name == SVGNames::dyAttr) {
+  if (attr_name == svg_names::kInAttr || attr_name == svg_names::kDxAttr ||
+      attr_name == svg_names::kDyAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;

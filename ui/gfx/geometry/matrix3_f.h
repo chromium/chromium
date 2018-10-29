@@ -10,7 +10,7 @@
 
 namespace gfx {
 
-class GFX_EXPORT Matrix3F {
+class GEOMETRY_EXPORT Matrix3F {
  public:
   ~Matrix3F();
 
@@ -131,8 +131,10 @@ inline Matrix3F operator-(const Matrix3F& lhs, const Matrix3F& rhs) {
   return lhs.Subtract(rhs);
 }
 
-GFX_EXPORT Matrix3F MatrixProduct(const Matrix3F& lhs, const Matrix3F& rhs);
-GFX_EXPORT Vector3dF MatrixProduct(const Matrix3F& lhs, const Vector3dF& rhs);
+GEOMETRY_EXPORT Matrix3F MatrixProduct(const Matrix3F& lhs,
+                                       const Matrix3F& rhs);
+GEOMETRY_EXPORT Vector3dF MatrixProduct(const Matrix3F& lhs,
+                                        const Vector3dF& rhs);
 
 }  // namespace gfx
 

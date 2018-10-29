@@ -33,6 +33,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   void Drag(const gfx::Point& location, int event_flags) override;
   void CompleteDrag() override;
   void RevertDrag() override;
+  void FlingOrSwipe(ui::GestureEvent* event) override;
 
   WindowResizer* next_window_resizer_for_testing() {
     return next_window_resizer_.get();
@@ -49,6 +50,10 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
 
   // Returns true if we should allow the mouse pointer to warp.
   bool ShouldAllowMouseWarp();
+
+  // Do the real work of ending a drag. If the drag ends in a different display,
+  // move the dragged window to that display.
+  void EndDragImpl();
 
   std::unique_ptr<WindowResizer> next_window_resizer_;
 

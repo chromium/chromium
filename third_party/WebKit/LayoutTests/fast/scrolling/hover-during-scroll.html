@@ -68,12 +68,14 @@
       let y = centerOfDivAtIndex(0);
       // Move cursor to 1st element.
       await mouseMoveTo(x, y);
+      await waitFor( () => { return array[0].innerHTML == textWhenHovered;}, 'wait for move to 1st element');
       assert_equals(array[0].innerHTML, textWhenHovered);
       assert_equals(array[1].innerHTML, textWhenNotHovered);
 
       // Move cursor to 2nd element.
       y = centerOfDivAtIndex(1);
       await mouseMoveTo(x, y);
+      await waitFor( () => { return array[1].innerHTML == textWhenHovered;}, 'wait for move to 2nd element');
       assert_equals(array[0].innerHTML, textWhenWasHovered);
       assert_equals(array[1].innerHTML, textWhenHovered);
       assert_equals(array[2].innerHTML, textWhenNotHovered);
@@ -88,12 +90,15 @@
       assert_equals(array[2].innerHTML, textWhenNotHovered);
       assert_equals(array[3].innerHTML, textWhenHovered);
       assert_equals(array[4].innerHTML, textWhenNotHovered);
-      assert_equals(document.scrollingElement.scrollTop, 2 * elementHeight);
+      assert_approx_equals(document.scrollingElement.scrollTop, 2 * elementHeight, 2);
 
       // Hide cursor and scroll end up at 5th element. No hover state should update.
       internals.setIsCursorVisible(document, false);
-      await smoothScroll(elementHeight, x, y, mouse, 'down', SPEED_INSTANT);
-      await waitFor( () => { return document.scrollingElement.scrollTop == 3 * elementHeight;}, 'wait for scroll stop at 5th element');
+      await smoothScroll(elementHeight, x, y, mouse, 'down', SPEED_INSTANT, true /* precise_scrolling_deltas */, false /* scroll_by_page */, false /* cursor_visible */);
+      await waitFor( () => {
+        return document.scrollingElement.scrollTop >= 3 * elementHeight - 10 && document.scrollingElement.scrollTop <= 3 * elementHeight + 10;}, 'wait for scroll stop at 5th element');
+      // Wait enough time to see if we fire a fake mouse move event to update the hover state.
+      await waitForAnimationEnd(() => { return document.scrollingElement.scrollTop; }, 200, 60);
       assert_equals(array[0].innerHTML, textWhenWasHovered);
       assert_equals(array[1].innerHTML, textWhenWasHovered);
       assert_equals(array[2].innerHTML, textWhenNotHovered);

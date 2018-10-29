@@ -4,26 +4,44 @@
      found in the LICENSE file. -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <ListView android:id="@android:id/list"
+    <org.chromium.ui.widget.OptimizedFrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
 
-    <TextView android:id="@android:id/empty"
+        <ListView android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_shadow_height"
+            android:layout_gravity="bottom"
+            android:background="@drawable/modern_toolbar_shadow"
+            android:scaleY="-1"
+            tools:ignore="ContentDescription" />
+    </org.chromium.ui.widget.OptimizedFrameLayout>
+
+    <TextView
+        android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <Button android:id="@+id/clear_button"
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/clear_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:text="@string/storage_clear_button_title"
-        style="@style/FlushFooterButton"/>
+        style="@style/TextButton" />
 </LinearLayout>

@@ -7,12 +7,12 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
-
-@protocol ApplicationCommands;
+#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 
 // Root class for collection view controllers in settings.
 @interface SettingsRootCollectionViewController
-    : CollectionViewController<CollectionViewFooterLinkDelegate>
+    : CollectionViewController<CollectionViewFooterLinkDelegate,
+                               SettingsRootViewControlling>
 
 // Creates an autoreleased Edit button for the collection view.  Calls
 // |editButtonEnabled| to determine if the button should be enabled.
@@ -37,9 +37,6 @@
 
 // The collection view accessibility identifier to be set on |viewDidLoad|.
 @property(nonatomic, copy) NSString* collectionViewAccessibilityIdentifier;
-
-// The dispatcher used by this ViewController.
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
 
 @end
 

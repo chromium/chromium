@@ -8,9 +8,9 @@
 #include <array>
 #include <string>
 
+#include "chrome/browser/vr/gl_bindings.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gl/gl_bindings.h"
 
 #define SHADER(Src) "#version 100\n" #Src
 #define OEIE_SHADER(Src) \

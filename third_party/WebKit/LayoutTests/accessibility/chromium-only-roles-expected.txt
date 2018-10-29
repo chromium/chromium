@@ -2,7 +2,6 @@ This test makes sure that a generic focusable div can get accessibility focus.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axContainer.childAtIndex(0).role is "AXRole: AXSplitter"
 PASS axContainer.childAtIndex(1).role is "AXRole: AXParagraph"
 PASS axContainer.childAtIndex(2).role is "AXRole: AXLabel"

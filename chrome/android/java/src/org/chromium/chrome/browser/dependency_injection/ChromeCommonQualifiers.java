@@ -10,4 +10,7 @@ package org.chromium.chrome.browser.dependency_injection;
  */
 public interface ChromeCommonQualifiers {
     String LAST_USED_PROFILE = "LAST_USED_PROFILE";
+
+    String ACTIVITY_CONTEXT = "ACTIVITY_CONTEXT";
+    String APP_CONTEXT = "APP_CONTEXT";
 }

@@ -22,9 +22,10 @@
 // A table view cell which contains a button and holds an action block, which
 // is called when the button is touched.
 @interface ManualFillActionCell : UITableViewCell
-
 // Updates the cell with the passed title and action block.
-- (void)setUpWithTitle:(NSString*)title action:(void (^)(void))action;
+- (void)setUpWithTitle:(NSString*)title
+       accessibilityID:(NSString*)accessibilityID
+                action:(void (^)(void))action;
 
 @end
 

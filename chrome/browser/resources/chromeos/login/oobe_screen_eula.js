@@ -191,7 +191,8 @@ login.createScreen('EulaScreen', 'eula', function() {
       var TERMS_URL = 'chrome://terms';
 
       var loadBundledEula = function() {
-        WebViewHelper.loadUrlToWebview(webview, TERMS_URL);
+        WebViewHelper.loadUrlContentToWebView(
+            webview, TERMS_URL, WebViewHelper.ContentType.HTML);
       };
 
       webview.addContentScripts([{

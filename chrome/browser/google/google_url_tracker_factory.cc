@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "chrome/browser/google/chrome_google_url_tracker_client.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -49,9 +50,9 @@ std::unique_ptr<KeyedService> BuildGoogleURLTracker(
 }  // namespace
 
 // static
-BrowserContextKeyedServiceFactory::TestingFactoryFunction
+BrowserContextKeyedServiceFactory::TestingFactory
 GoogleURLTrackerFactory::GetDefaultFactory() {
-  return &BuildGoogleURLTracker;
+  return base::BindRepeating(&BuildGoogleURLTracker);
 }
 
 GoogleURLTrackerFactory::GoogleURLTrackerFactory()

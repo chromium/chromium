@@ -5,6 +5,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/fallback_video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -58,7 +60,13 @@ void FallbackVideoDecoder::FallbackInitialize(
   }
 
   did_fallback_ = true;
-  preferred_decoder_.reset();
+  // Post destruction of |preferred_decoder_| so that we don't destroy the
+  // object during the callback.  DeleteSoon doesn't handle custom deleters, so
+  // we post a do-nothing task instead.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::DoNothing::Once<std::unique_ptr<VideoDecoder>>(),
+                     std::move(preferred_decoder_)));
   selected_decoder_ = fallback_decoder_.get();
   fallback_decoder_->Initialize(config, low_delay, cdm_context, init_cb,
                                 output_cb, waiting_for_decryption_key_cb);

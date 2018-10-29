@@ -28,11 +28,11 @@
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/program_cache.h"
-#include "gpu/command_buffer/service/progress_reporter.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
 
 using base::TimeDelta;
 using base::TimeTicks;
@@ -2597,7 +2597,7 @@ ProgramManager::ProgramManager(ProgramCache* program_cache,
                                uint32_t max_vertex_attribs,
                                const GpuPreferences& gpu_preferences,
                                FeatureInfo* feature_info,
-                               ProgressReporter* progress_reporter)
+                               gl::ProgressReporter* progress_reporter)
     : program_count_(0),
       have_context_(true),
       program_cache_(program_cache),

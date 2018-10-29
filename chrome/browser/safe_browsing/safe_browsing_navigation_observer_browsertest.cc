@@ -83,6 +83,9 @@ const char kLandingReferrerURLWithQuery[] =
 const char kPageBeforeLandingReferrerURL[] =
     "/safe_browsing/download_protection/navigation_observer/"
     "page_before_landing_referrer.html";
+const char kCreateIframeElementURL[] =
+    "/safe_browsing/download_protection/navigation_observer/"
+    "create_iframe_element.html";
 
 class DownloadItemCreatedObserver : public DownloadManager::Observer {
  public:
@@ -2490,6 +2493,32 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, ReloadNotRecorded) {
   ASSERT_TRUE(nav_list);
   // Verifies navigations caused by reload are ignored.
   EXPECT_EQ(1U, nav_list->Size());
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       CreateIframeElementGetsReferrerChain) {
+  GURL initial_url = embedded_test_server()->GetURL(kCreateIframeElementURL);
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ClickTestLink("do_download", 1, initial_url);
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
+  ASSERT_EQ(2, referrer_chain.size());
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       SetWindowLocationGetsReferrerChain) {
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.location='../signed.exe'"));
+  base::RunLoop().RunUntilIdle();
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
+  ASSERT_EQ(2, referrer_chain.size());
 }
 
 }  // namespace safe_browsing

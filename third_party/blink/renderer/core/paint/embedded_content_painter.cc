@@ -30,10 +30,6 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
       paint_offset +
       layout_embedded_content_.ReplacedContentRect().Location()));
 
-  // Views don't support painting with a paint offset, but instead
-  // offset themselves using the frame rect location. To paint Views at
-  // our desired location, we need to apply paint offset as a transform, with
-  // the frame rect neutralized.
   IntSize view_paint_offset =
       paint_location - embedded_content_view->FrameRect().Location();
   CullRect adjusted_cull_rect(paint_info.GetCullRect(), -view_paint_offset);

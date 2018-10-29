@@ -48,10 +48,6 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   void SetTabIdGetterForTesting(
       OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter);
 
-  using ShouldAllowPreviewCallback = base::RepeatingCallback<bool(void)>;
-  void SetShouldAllowPreviewCallbackForTesting(
-      ShouldAllowPreviewCallback should_allow_preview_callback);
-
  private:
   OfflinePageURLLoader(
       content::NavigationUIData* navigation_ui_data,
@@ -116,7 +112,7 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
   OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter_;
-  ShouldAllowPreviewCallback should_allow_preview_callback_;
+  bool is_offline_preview_allowed_;
 
   base::WeakPtrFactory<OfflinePageURLLoader> weak_ptr_factory_;
 

@@ -41,12 +41,18 @@ InternalAppResult::InternalAppResult(Profile* profile,
                                      const std::string& app_id,
                                      AppListControllerDelegate* controller,
                                      bool is_recommendation)
-    : AppResult(profile, app_id, controller, is_recommendation) {
+    : AppResult(profile, app_id, controller, is_recommendation),
+      weak_factory_(this) {
   set_id(app_id);
   SetResultType(ResultType::kInternalApp);
   SetIcon(GetIconForResourceId(
       GetIconResourceIdByAppId(app_id),
       AppListConfig::instance().search_tile_icon_dimension()));
+  if (display_type() == ash::SearchResultDisplayType::kRecommendation) {
+    SetChipIcon(GetIconForResourceId(
+        GetIconResourceIdByAppId(app_id),
+        AppListConfig::instance().suggestion_chip_icon_dimension()));
+  }
 
   if (id() == kInternalAppIdContinueReading) {
     large_icon_service_ =
@@ -101,7 +107,8 @@ void InternalAppResult::UpdateContinueReadingFavicon(
         url_for_continuous_reading_, min_source_size_in_pixel,
         desired_size_in_pixel,
         base::BindRepeating(&InternalAppResult::OnGetFaviconFromCacheFinished,
-                            base::Unretained(this), continue_to_google_server),
+                            weak_factory_.GetWeakPtr(),
+                            continue_to_google_server),
         &task_tracker_);
   }
 }
@@ -110,7 +117,8 @@ void InternalAppResult::OnGetFaviconFromCacheFinished(
     bool continue_to_google_server,
     const favicon_base::LargeIconImageResult& image_result) {
   if (!image_result.image.IsEmpty()) {
-    SetIcon(*image_result.image.ToImageSkia());
+    // Continue Reading app will only be shown in suggestion chip.
+    SetChipIcon(*image_result.image.ToImageSkia());
     // Update the time when the icon was last requested to postpone the
     // automatic eviction of the favicon from the favicon database.
     large_icon_service_->TouchIconFromGoogleServer(image_result.icon_url);
@@ -147,7 +155,7 @@ void InternalAppResult::OnGetFaviconFromCacheFinished(
           /*may_page_url_be_private=*/false, traffic_annotation,
           base::BindRepeating(
               &InternalAppResult::OnGetFaviconFromGoogleServerFinished,
-              base::Unretained(this)));
+              weak_factory_.GetWeakPtr()));
 }
 
 void InternalAppResult::OnGetFaviconFromGoogleServerFinished(

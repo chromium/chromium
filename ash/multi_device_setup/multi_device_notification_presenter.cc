@@ -62,15 +62,11 @@ void MultiDeviceNotificationPresenter::OpenUiDelegate::
 }
 
 void MultiDeviceNotificationPresenter::OpenUiDelegate::
-    OpenChangeConnectedPhoneSettings() {
-  // TODO(jordynass): Open the "Settings/Connected Devices/Change Device"
-  // subpage once it has been implemented
-}
-
-void MultiDeviceNotificationPresenter::OpenUiDelegate::
     OpenConnectedDevicesSettings() {
-  // TODO(jordynass): Open the "Settings/Connected Devices" subpage once it
-  // has been implemented
+  Shell::Get()
+      ->system_tray_model()
+      ->client_ptr()
+      ->ShowConnectedDevicesSettings();
 }
 
 // static
@@ -121,20 +117,28 @@ void MultiDeviceNotificationPresenter::OnPotentialHostExistsForNewUser() {
   ShowNotification(Status::kNewUserNotificationVisible, title, message);
 }
 
+void MultiDeviceNotificationPresenter::OnNoLongerNewUser() {
+  if (notification_status_ != Status::kNewUserNotificationVisible)
+    return;
+  RemoveMultiDeviceSetupNotification();
+}
+
 void MultiDeviceNotificationPresenter::OnConnectedHostSwitchedForExistingUser(
     const std::string& new_host_device_name) {
   base::string16 title = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_TITLE,
-      base::UTF8ToUTF16(new_host_device_name));
+      base::ASCIIToUTF16(new_host_device_name));
   base::string16 message = l10n_util::GetStringUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_MESSAGE);
   ShowNotification(Status::kExistingUserHostSwitchedNotificationVisible, title,
                    message);
 }
 
-void MultiDeviceNotificationPresenter::OnNewChromebookAddedForExistingUser() {
-  base::string16 title = l10n_util::GetStringUTF16(
-      IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_TITLE);
+void MultiDeviceNotificationPresenter::OnNewChromebookAddedForExistingUser(
+    const std::string& new_host_device_name) {
+  base::string16 title = l10n_util::GetStringFUTF16(
+      IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_TITLE,
+      base::ASCIIToUTF16(new_host_device_name));
   base::string16 message = l10n_util::GetStringUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROMEBOOK_ADDED_MESSAGE);
   ShowNotification(Status::kExistingUserNewChromebookNotificationVisible, title,
@@ -179,7 +183,10 @@ void MultiDeviceNotificationPresenter::ObserveMultiDeviceSetupIfPossible() {
     return;
 
   std::string service_user_id = user_session->user_info->service_user_id;
-  DCHECK(!service_user_id.empty());
+
+  // Cannot proceed if there is no service user ID.
+  if (service_user_id.empty())
+    return;
 
   connector_->BindInterface(
       service_manager::Identity(
@@ -207,8 +214,9 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked() {
       open_ui_delegate_->OpenMultiDeviceSetupUi();
       break;
     case Status::kExistingUserHostSwitchedNotificationVisible:
-      open_ui_delegate_->OpenChangeConnectedPhoneSettings();
-      break;
+      // Clicks on the 'host switched' and 'Chromebook added' notifications have
+      // the same effect, i.e. opening the Settings subpage.
+      FALLTHROUGH;
     case Status::kExistingUserNewChromebookNotificationVisible:
       open_ui_delegate_->OpenConnectedDevicesSettings();
       break;

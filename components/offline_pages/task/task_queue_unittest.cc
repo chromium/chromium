@@ -5,6 +5,7 @@
 #include "components/offline_pages/task/task_queue.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/test/test_simple_task_runner.h"
@@ -59,10 +60,11 @@ TEST_F(OfflineTaskQueueTest, AddAndRunSingleTask) {
   TestTask* task_ptr = task.get();
   TaskQueue queue(this);
   EXPECT_FALSE(on_idle_called());
-  EXPECT_EQ(TaskState::NOT_STARTED, task_ptr->state());
   queue.AddTask(std::move(task));
   EXPECT_TRUE(queue.HasPendingTasks());
   EXPECT_TRUE(queue.HasRunningTask());
+  EXPECT_EQ(TaskState::NOT_STARTED, task_ptr->state());
+  PumpLoop();  // Start running the task.
   EXPECT_EQ(TaskState::STEP_1, task_ptr->state());
   EXPECT_TRUE(resource.HasNextStep());
   resource.CompleteStep();
@@ -88,12 +90,13 @@ TEST_F(OfflineTaskQueueTest, AddAndRunMultipleTasks) {
   TestTask* task_2_ptr = task_2.get();
 
   TaskQueue queue(this);
-  EXPECT_EQ(TaskState::NOT_STARTED, task_1_ptr->state());
-  EXPECT_EQ(TaskState::NOT_STARTED, task_2_ptr->state());
   queue.AddTask(std::move(task_1));
   queue.AddTask(std::move(task_2));
   EXPECT_TRUE(queue.HasPendingTasks());
   EXPECT_TRUE(queue.HasRunningTask());
+  EXPECT_EQ(TaskState::NOT_STARTED, task_1_ptr->state());
+  EXPECT_EQ(TaskState::NOT_STARTED, task_2_ptr->state());
+  PumpLoop();  // Start running the task 1.
   EXPECT_EQ(TaskState::STEP_1, task_1_ptr->state());
   EXPECT_EQ(TaskState::NOT_STARTED, task_2_ptr->state());
   resource.CompleteStep();
@@ -115,10 +118,11 @@ TEST_F(OfflineTaskQueueTest, LeaveEarly) {
       new TestTask(&resource, true /* leave early */));
   TestTask* task_ptr = task.get();
   TaskQueue queue(this);
-  EXPECT_EQ(TaskState::NOT_STARTED, task_ptr->state());
   queue.AddTask(std::move(task));
   EXPECT_TRUE(queue.HasPendingTasks());
   EXPECT_TRUE(queue.HasRunningTask());
+  EXPECT_EQ(TaskState::NOT_STARTED, task_ptr->state());
+  PumpLoop();  // Start running the task.
   EXPECT_EQ(TaskState::STEP_1, task_ptr->state());
   EXPECT_TRUE(resource.HasNextStep());
   resource.CompleteStep();

@@ -48,7 +48,8 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
         max_results, profile_.get(), controller_.get());
   }
 
-  scoped_refptr<extensions::Extension> CreateExtension(const std::string& id) {
+  scoped_refptr<const extensions::Extension> CreateExtension(
+      const std::string& id) {
     return extensions::ExtensionBuilder("test").SetID(id).Build();
   }
 

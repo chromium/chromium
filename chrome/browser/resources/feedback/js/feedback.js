@@ -100,6 +100,20 @@ const cantConnectRegEx = new RegExp(
     'i');
 
 /**
+ * Regular expression to check for "tether" or "tethering". Case insensitive
+ * matching.
+ * @type {RegExp}
+ */
+const tetherRegEx = new RegExp('tether(ing)?', 'i');
+
+/**
+ * Regular expression to check for "Smart (Un)lock" or "Easy (Un)lock" with or
+ * without space between the words. Case insensitive matching.
+ * @type {RegExp}
+ */
+const smartLockRegEx = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
+
+/**
  * The callback used by the sys_info_page to receive the event that the system
  * information is ready.
  * @type {function(sysInfo)}
@@ -187,7 +201,9 @@ function openSlowTraceWindow() {
  */
 function checkForBluetoothKeywords(inputEvent) {
   var isRelatedToBluetooth = btRegEx.test(inputEvent.target.value) ||
-      cantConnectRegEx.test(inputEvent.target.value);
+      cantConnectRegEx.test(inputEvent.target.value) ||
+      tetherRegEx.test(inputEvent.target.value) ||
+      smartLockRegEx.test(inputEvent.target.value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
 }
 

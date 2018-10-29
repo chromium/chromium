@@ -37,8 +37,7 @@ void ReportAccessHistogram(int64_t offline_id,
   if (statement.Step()) {
     std::string name_space = statement.ColumnString(0);
     UMA_HISTOGRAM_ENUMERATION("OfflinePages.AccessPageCount",
-                              model_utils::ToNamespaceEnum(name_space),
-                              OfflinePagesNamespaceEnumeration::RESULT_COUNT);
+                              model_utils::ToNamespaceEnum(name_space));
 
     base::Time last_access_time =
         store_utils::FromDatabaseTime(statement.ColumnInt64(1));

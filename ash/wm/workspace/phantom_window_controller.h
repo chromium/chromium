@@ -34,6 +34,8 @@ class ASH_EXPORT PhantomWindowController {
   // Shows the phantom window and animates shrinking it to |bounds_in_screen|.
   void Show(const gfx::Rect& bounds_in_screen);
 
+  aura::Window* window() { return window_; }
+
  private:
   // Creates, shows and returns a phantom widget at |bounds|
   // with kShellWindowId_ShelfContainer in |root_window| as a parent.

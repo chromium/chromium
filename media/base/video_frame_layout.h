@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -47,34 +48,40 @@ class MEDIA_EXPORT VideoFrameLayout {
     size_t offset = 0;
   };
 
-  enum {
-    kDefaultPlaneCount = 4,
-    kDefaultBufferCount = 4,
-  };
+  // Factory functions.
+  // |format| and |coded_size| must be specified.
+  // |strides|, |planes| and |buffer_sizes| are optional, whereas they should
+  //  be specified if |buffer_sizes| are given.
+  // The size of |buffer_sizes| must be less than or equal to |planes|.
+  // Unless they are specified, num_planes() is NumPlanes(|format|) and
+  // num_buffers() is 0.
+  // The returned base::Optional will be base::nullopt if the configured values
+  // are invalid.
+  static base::Optional<VideoFrameLayout> Create(VideoPixelFormat format,
+                                                 const gfx::Size& coded_size);
 
-  // Constructor with strides and buffers' size.
-  // If strides and buffer_sizes are not assigned, strides, offsets and
-  // buffer_sizes are {0, 0, 0, 0}.
-  VideoFrameLayout(VideoPixelFormat format,
-                   const gfx::Size& coded_size,
-                   std::vector<int32_t> strides =
-                       std::vector<int32_t>(kDefaultPlaneCount, 0),
-                   std::vector<size_t> buffer_sizes =
-                       std::vector<size_t>(kDefaultBufferCount, 0));
+  // The size of |strides| must be NumPlanes(|format|). Planes' offset will be
+  // 0.
+  static base::Optional<VideoFrameLayout> CreateWithStrides(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      std::vector<int32_t> strides,
+      std::vector<size_t> buffer_sizes = {});
 
-  // Constructor with plane's stride/offset, and buffers' size.
-  // If buffer_sizes are not assigned, it is {0, 0, 0, 0}.
-  VideoFrameLayout(VideoPixelFormat format,
-                   const gfx::Size& coded_size,
-                   std::vector<Plane> planes,
-                   std::vector<size_t> buffer_sizes =
-                       std::vector<size_t>(kDefaultBufferCount, 0));
+  // The size of |planes| must be NumPlanes(|format|).
+  static base::Optional<VideoFrameLayout> CreateWithPlanes(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      std::vector<Plane> planes,
+      std::vector<size_t> buffer_sizes = {});
 
-  VideoFrameLayout();
+  VideoFrameLayout() = delete;
   VideoFrameLayout(const VideoFrameLayout&);
   VideoFrameLayout(VideoFrameLayout&&);
   VideoFrameLayout& operator=(const VideoFrameLayout&);
   ~VideoFrameLayout();
+
+  static size_t NumPlanes(VideoPixelFormat format);
 
   VideoPixelFormat format() const { return format_; }
   const gfx::Size& coded_size() const { return coded_size_; }
@@ -94,10 +101,12 @@ class MEDIA_EXPORT VideoFrameLayout {
   // Composes VideoFrameLayout as human readable string.
   std::string ToString() const;
 
-  // Returns false if it is invalid.
-  bool IsValid() const { return format_ != PIXEL_FORMAT_UNKNOWN; }
-
  private:
+  VideoFrameLayout(VideoPixelFormat format,
+                   const gfx::Size& coded_size,
+                   std::vector<Plane> planes,
+                   std::vector<size_t> buffer_sizes);
+
   VideoPixelFormat format_;
 
   // Width and height of the video frame in pixels. This must include pixel

@@ -39,7 +39,7 @@ bool AndroidContentSuggestionsNotifier::SendNotification(
     base::Time timeout_at,
     int priority) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  SkBitmap skimage = image.AsImageSkia().GetRepresentation(1.0f).sk_bitmap();
+  SkBitmap skimage = image.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
   if (skimage.empty())
     return false;
 

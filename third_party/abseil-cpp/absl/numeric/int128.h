@@ -192,6 +192,12 @@ class
   // Returns the highest value for a 128-bit unsigned integer.
   friend constexpr uint128 Uint128Max();
 
+  // Support for absl::Hash.
+  template <typename H>
+  friend H AbslHashValue(H h, uint128 v) {
+    return H::combine(std::move(h), Uint128High64(v), Uint128Low64(v));
+  }
+
  private:
   constexpr uint128(uint64_t high, uint64_t low);
 

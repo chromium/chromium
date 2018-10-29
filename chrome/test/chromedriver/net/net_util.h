@@ -7,7 +7,11 @@
 
 #include <string>
 
-class URLRequestContextGetter;
+namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}
+}  // namespace network
 
 class NetAddress {
  public:
@@ -32,7 +36,7 @@ class NetAddress {
 // Synchronously fetches data from a GET HTTP request to the given URL.
 // Returns true if response is 200 OK and sets response body to |response|.
 bool FetchUrl(const std::string& url,
-              URLRequestContextGetter* getter,
+              network::mojom::URLLoaderFactory* factory,
               std::string* response);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_NET_UTIL_H_

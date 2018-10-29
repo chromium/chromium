@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_DOM_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_DOM_AGENT_H_
 
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base/observer_list.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_base_agent.h"
@@ -31,7 +36,6 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   protocol::Response disable() override;
   protocol::Response getDocument(
       std::unique_ptr<protocol::DOM::Node>* out_root) override;
-  protocol::Response hideHighlight() override;
   protocol::Response pushNodesByBackendIdsToFrontend(
       std::unique_ptr<protocol::Array<int>> backend_node_ids,
       std::unique_ptr<protocol::Array<int>>* result) override;
@@ -45,7 +49,7 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   void AddObserver(DOMAgentObserver* observer);
   void RemoveObserver(DOMAgentObserver* observer);
   UIElement* GetElementFromNodeId(int node_id) const;
-  UIElement* element_root() const { return element_root_.get(); };
+  UIElement* element_root() const { return element_root_.get(); }
 
   // Returns parent id of the element with id |node_id|. Returns 0 if parent
   // does not exist.
@@ -73,7 +77,6 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   void RemoveDomNode(UIElement* ui_element);
   void Reset();
 
-  bool is_building_tree_ = false;
   std::unique_ptr<UIElement> element_root_;
   std::unordered_map<int, UIElement*> node_id_to_ui_element_;
 

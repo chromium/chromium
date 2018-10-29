@@ -83,9 +83,7 @@ std::vector<StorageInfo> StorageMonitor::GetAllAvailableStorages() const {
   std::vector<StorageInfo> results;
 
   base::AutoLock lock(storage_lock_);
-  for (StorageMap::const_iterator it = storage_map_.begin();
-       it != storage_map_.end();
-       ++it) {
+  for (auto it = storage_map_.begin(); it != storage_map_.end(); ++it) {
     results.push_back(it->second);
   }
   return results;
@@ -159,8 +157,7 @@ StorageMonitor::Receiver* StorageMonitor::receiver() const {
 
 void StorageMonitor::MarkInitialized() {
   initialized_ = true;
-  for (std::vector<base::Closure>::iterator iter =
-           on_initialize_callbacks_.begin();
+  for (auto iter = on_initialize_callbacks_.begin();
        iter != on_initialize_callbacks_.end(); ++iter) {
     iter->Run();
   }
@@ -189,7 +186,7 @@ void StorageMonitor::ProcessDetach(const std::string& id) {
   StorageInfo info;
   {
     base::AutoLock lock(storage_lock_);
-    StorageMap::iterator it = storage_map_.find(id);
+    auto it = storage_map_.find(id);
     if (it == storage_map_.end())
       return;
     info = it->second;

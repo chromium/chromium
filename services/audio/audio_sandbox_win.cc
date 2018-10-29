@@ -43,6 +43,13 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
   policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                         sandbox::USER_NON_ADMIN);
   policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+
+  // Custom default policy allowing audio drivers to read device properties
+  // (https://crbug.com/883326).
+  policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  policy->SetLockdownDefaultDacl();
+  policy->SetAlternateDesktop(true);
+
   return true;
 }
 

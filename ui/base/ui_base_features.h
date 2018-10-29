@@ -68,17 +68,11 @@ UI_BASE_EXPORT bool IsMultiProcessMash();
 UI_BASE_EXPORT bool IsSingleProcessMash();
 
 #if defined(OS_MACOSX)
+UI_BASE_EXPORT extern const base::Feature kHostWindowsInAppShimProcess;
+
 // Returns true if the NSWindows for apps will be created in the app's process,
 // and will forward input to the browser process.
 UI_BASE_EXPORT bool HostWindowsInAppShimProcess();
-
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-UI_BASE_EXPORT extern const base::Feature kViewsBrowserWindows;
-
-// Returns whether a Views-capable browser build should use the Cocoa browser
-// UI.
-UI_BASE_EXPORT bool IsViewsBrowserCocoa();
-#endif  //  BUILDFLAG(MAC_VIEWS_BROWSER)
 #endif  //  defined(OS_MACOSX)
 
 // Use mojo communication in the drm platform instead of paramtraits. Remove
@@ -87,6 +81,10 @@ UI_BASE_EXPORT bool IsViewsBrowserCocoa();
 // TODO(rjkroege): Remove in http://crbug.com/806092.
 UI_BASE_EXPORT extern const base::Feature kEnableOzoneDrmMojo;
 UI_BASE_EXPORT bool IsOzoneDrmMojo();
+
+// Whether default UI should use a dark mode color scheme, if enabled on
+// macOS Mojave/Windows 10.
+UI_BASE_EXPORT extern const base::Feature kDarkMode;
 
 }  // namespace features
 

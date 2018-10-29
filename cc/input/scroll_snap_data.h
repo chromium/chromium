@@ -14,6 +14,8 @@
 
 namespace cc {
 
+class SnapSelectionStrategy;
+
 // See https://www.w3.org/TR/css-scroll-snap-1/#snap-axis
 enum class SnapAxis : unsigned {
   kBoth,
@@ -63,30 +65,30 @@ struct ScrollSnapType {
 
 struct ScrollSnapAlign {
   ScrollSnapAlign()
-      : alignment_inline(SnapAlignment::kNone),
-        alignment_block(SnapAlignment::kNone) {}
+      : alignment_block(SnapAlignment::kNone),
+        alignment_inline(SnapAlignment::kNone) {}
 
   explicit ScrollSnapAlign(SnapAlignment alignment)
-      : alignment_inline(alignment), alignment_block(alignment) {}
+      : alignment_block(alignment), alignment_inline(alignment) {}
 
-  ScrollSnapAlign(SnapAlignment i, SnapAlignment b)
-      : alignment_inline(i), alignment_block(b) {}
+  ScrollSnapAlign(SnapAlignment b, SnapAlignment i)
+      : alignment_block(b), alignment_inline(i) {}
 
   bool operator==(const ScrollSnapAlign& other) const {
-    return alignment_inline == other.alignment_inline &&
-           alignment_block == other.alignment_block;
+    return alignment_block == other.alignment_block &&
+           alignment_inline == other.alignment_inline;
   }
 
   bool operator!=(const ScrollSnapAlign& other) const {
     return !(*this == other);
   }
 
-  SnapAlignment alignment_inline;
   SnapAlignment alignment_block;
+  SnapAlignment alignment_inline;
 };
 
-// We should really use gfx::RangeF. However, it includes windows.h which would
-// bring in complexity to the compilation. https://crbug.com/855717
+// TODO(sunyunjia): Use gfx::RangeF as windows.h has already been removed from
+// range.h.
 class SnapVisibleRange {
  public:
   SnapVisibleRange() {}
@@ -196,9 +198,7 @@ class CC_EXPORT SnapContainerData {
     return !(*this == other);
   }
 
-  bool FindSnapPosition(const gfx::ScrollOffset& current_position,
-                        bool should_snap_on_x,
-                        bool should_snap_on_y,
+  bool FindSnapPosition(const SnapSelectionStrategy& strategy,
                         gfx::ScrollOffset* snap_position) const;
 
   void AddSnapAreaData(SnapAreaData snap_area_data);
@@ -222,8 +222,8 @@ class CC_EXPORT SnapContainerData {
   gfx::ScrollOffset proximity_range() const { return proximity_range_; }
 
  private:
-  // Finds the best SnapArea candidate that minimizes the distance between
-  // current and candidate positions, while satisfying two invariants:
+  // Finds the best SnapArea candidate that's optimal for the given selection
+  // strategy, while satisfying two invariants:
   // - |candidate.snap_offset| is within |cross_axis_snap_result|'s visible
   // range on |axis|.
   // - |cross_axis_snap_result.snap_offset| is within |candidate|'s visible
@@ -234,7 +234,7 @@ class CC_EXPORT SnapContainerData {
   // |snap_offset| and its visible range on the cross axis.
   base::Optional<SnapSearchResult> FindClosestValidArea(
       SearchAxis axis,
-      float current_offset,
+      const SnapSelectionStrategy& strategy,
       const SnapSearchResult& cross_axis_snap_result) const;
 
   // Returns all the info needed to snap at this area on the given axis,

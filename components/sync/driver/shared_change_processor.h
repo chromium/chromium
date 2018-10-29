@@ -114,9 +114,6 @@ class SharedChangeProcessor
                                          const std::string& message);
 
   // Calls local_service_->StopSyncing() and releases our reference to it.
-  // TODO(crbug.com/880029): As a speculative fix for the bug, this call also
-  // tells the generic change processor to stop talking to the syncable service.
-  // Remove if it does not work or if a deeper root cause is found.
   void StopLocalService();
 
   ChangeProcessor* generic_change_processor();

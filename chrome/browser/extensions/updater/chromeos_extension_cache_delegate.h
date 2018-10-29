@@ -9,19 +9,21 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "chrome/browser/extensions/updater/extension_cache_delegate.h"
+#include "base/time/time.h"
 
 namespace extensions {
 
 // Chrome OS-specific implementation, which has a pre-defined extension cache
 // path and a policy-configurable maximum cache size.
-class ChromeOSExtensionCacheDelegate : public ExtensionCacheDelegate {
+class ChromeOSExtensionCacheDelegate {
  public:
   ChromeOSExtensionCacheDelegate();
   explicit ChromeOSExtensionCacheDelegate(const base::FilePath& cache_dir);
 
-  const base::FilePath& GetCacheDir() const override;
-  size_t GetMaximumCacheSize() const override;
+  const base::FilePath& GetCacheDir() const;
+  size_t GetMinimumCacheSize() const;
+  size_t GetMaximumCacheSize() const;
+  base::TimeDelta GetMaximumCacheAge() const;
 
  private:
   base::FilePath cache_dir_;

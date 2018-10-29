@@ -30,7 +30,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "components/toolbar/vector_icons.h"  // nogncheck
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
 namespace autofill {
@@ -201,7 +201,7 @@ ui::NativeTheme::ColorId AutofillPopupLayoutModel::GetValueFontColorIDForRow(
   std::vector<autofill::Suggestion> suggestions = delegate_->GetSuggestions();
   switch (suggestions[index].frontend_id) {
     case POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-      return ui::NativeTheme::kColorId_ResultsTableNormalDimmedText;
+      return ui::NativeTheme::kColorId_ResultsTableDimmedText;
     default:
       return ui::NativeTheme::kColorId_ResultsTableNormalText;
   }
@@ -221,11 +221,11 @@ gfx::ImageSkia AutofillPopupLayoutModel::GetIconImage(size_t index) const {
   // For http warning message, get icon images from VectorIcon, which is the
   // same as security indicator icons in location bar.
   if (icon_str == base::ASCIIToUTF16("httpWarning")) {
-    return gfx::CreateVectorIcon(toolbar::kHttpIcon, kIconSize,
+    return gfx::CreateVectorIcon(omnibox::kHttpIcon, kIconSize,
                                  gfx::kChromeIconGrey);
   }
   if (icon_str == base::ASCIIToUTF16("httpsInvalid")) {
-    return gfx::CreateVectorIcon(toolbar::kHttpsInvalidIcon, kIconSize,
+    return gfx::CreateVectorIcon(omnibox::kHttpsInvalidIcon, kIconSize,
                                  gfx::kGoogleRed700);
   }
   if (icon_str == base::ASCIIToUTF16("keyIcon"))

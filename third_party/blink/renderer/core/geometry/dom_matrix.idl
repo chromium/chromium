@@ -8,7 +8,8 @@
     Constructor(optional (DOMString or sequence<unrestricted double>) init),
     RaisesException=Constructor,
     ConstructorCallWith=ExecutionContext,
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker),
+    Serializable
 ] interface DOMMatrix : DOMMatrixReadOnly {
     [RaisesException, NewObject] static DOMMatrix fromMatrix(optional DOMMatrixInit other);
     [RaisesException, NewObject] static DOMMatrix fromFloat32Array(Float32Array array32);

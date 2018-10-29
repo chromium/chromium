@@ -99,12 +99,30 @@ public class ManualFillingCoordinator {
         mMediator.registerPasswordProvider(itemProvider);
     }
 
+    public void showWhenKeyboardIsVisible() {
+        mMediator.showWhenKeyboardIsVisible();
+    }
+
+    public void hide() {
+        mMediator.hide();
+    }
+
     public void onResume() {
         mMediator.resume();
     }
 
     public void onPause() {
         mMediator.pause();
+    }
+
+    /**
+     * Returns a size manager that allows to access the combined height of
+     * {@link KeyboardAccessoryCoordinator} and {@link AccessorySheetCoordinator}, and to be
+     * notified when it changes.
+     * @return A {@link KeyboardExtensionSizeManager}.
+     */
+    public KeyboardExtensionSizeManager getKeyboardExtensionSizeManager() {
+        return mMediator.getKeyboardExtensionSizeManager();
     }
 
     // TODO(fhorschig): Should be @VisibleForTesting.
@@ -120,5 +138,13 @@ public class ManualFillingCoordinator {
     @VisibleForTesting
     ManualFillingMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    /**
+     * Returns whether - at this very moment - the Keyboard is replaced by an accessory sheet.
+     * @return True if an accessory sheet is open and replacing the keyboard.
+     */
+    public boolean isFillingViewShown() {
+        return mMediator.isFillingViewShown();
     }
 }

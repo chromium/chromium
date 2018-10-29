@@ -1129,6 +1129,8 @@ cr.define('print_preview', function() {
       this.autoSelectTimeout_ = setTimeout(
           this.selectDefaultDestination_.bind(this),
           DestinationStore.AUTO_SELECT_TIMEOUT_);
+      cr.dispatchSimpleEvent(
+          this, DestinationStore.EventType.DESTINATIONS_RESET);
     }
 
 
@@ -1354,6 +1356,7 @@ cr.define('print_preview', function() {
     DESTINATION_SEARCH_STARTED:
         'print_preview.DestinationStore.DESTINATION_SEARCH_STARTED',
     DESTINATION_SELECT: 'print_preview.DestinationStore.DESTINATION_SELECT',
+    DESTINATIONS_RESET: 'print_preview.DestinationStore.DESTINATIONS_RESET',
     DESTINATIONS_INSERTED:
         'print_preview.DestinationStore.DESTINATIONS_INSERTED',
     PROVISIONAL_DESTINATION_RESOLVED:

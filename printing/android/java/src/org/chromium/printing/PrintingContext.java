@@ -4,9 +4,6 @@
 
 package org.chromium.printing;
 
-import android.print.PrintDocumentAdapter;
-import android.util.SparseArray;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -18,17 +15,8 @@ import org.chromium.base.annotations.JNINamespace;
  * to talk to the framework.
  */
 @JNINamespace("printing")
-public class PrintingContext implements PrintingContextInterface {
-    private static final String TAG = "cr.printing";
-    /**
-     * Mapping from a file descriptor (as originally provided from
-     * {@link PrintDocumentAdapter#onWrite}) to a PrintingContext.
-     *
-     * This is static because a static method of the native code (inside PrintingContextAndroid)
-     * needs to find Java PrintingContext class corresponding to a file descriptor.
-     **/
-    private static final SparseArray<PrintingContext> PRINTING_CONTEXT_MAP =
-            new SparseArray<PrintingContext>();
+public class PrintingContext {
+    private static final String TAG = "Printing";
 
     /** The controller this object interacts with, which in turn communicates with the framework. */
     private final PrintingController mController;
@@ -39,22 +27,6 @@ public class PrintingContext implements PrintingContextInterface {
     private PrintingContext(long ptr) {
         mController = PrintingControllerImpl.getInstance();
         mNativeObject = ptr;
-    }
-
-    /**
-     * Updates PRINTING_CONTEXT_MAP to map from the file descriptor to this object.
-     * @param fileDescriptor The file descriptor passed down from
-     *                       {@link PrintDocumentAdapter#onWrite}.
-     * @param delete If true, delete the entry (if it exists). If false, add it to the map.
-     */
-    @Override
-    public void updatePrintingContextMap(int fileDescriptor, boolean delete) {
-        ThreadUtils.assertOnUiThread();
-        if (delete) {
-            PRINTING_CONTEXT_MAP.remove(fileDescriptor);
-        } else {
-            PRINTING_CONTEXT_MAP.put(fileDescriptor, this);
-        }
     }
 
     @CalledByNative
@@ -91,7 +63,7 @@ public class PrintingContext implements PrintingContextInterface {
     @CalledByNative
     public void showPrintDialog() {
         ThreadUtils.assertOnUiThread();
-        if (mController != null) {  // The native side doesn't check if printing is enabled
+        if (mController != null) { // The native side doesn't check if printing is enabled
             mController.startPendingPrint();
         }
         // Reply to native side with |CANCEL| since there is no printing settings available yet at
@@ -100,16 +72,12 @@ public class PrintingContext implements PrintingContextInterface {
     }
 
     @CalledByNative
-    public static void pdfWritingDone(int fd, int pageCount) {
+    public static void pdfWritingDone(int pageCount) {
         ThreadUtils.assertOnUiThread();
-        // TODO(cimamoglu): Do something when fd == -1.
-        if (PRINTING_CONTEXT_MAP.get(fd) != null) {
-            ThreadUtils.assertOnUiThread();
-            PrintingContext printingContext = PRINTING_CONTEXT_MAP.get(fd);
-            printingContext.mController.pdfWritingDone(pageCount);
-            PRINTING_CONTEXT_MAP.remove(fd);
+        if (PrintingControllerImpl.getInstance() != null) {
+            PrintingControllerImpl.getInstance().pdfWritingDone(pageCount);
         } else {
-            Log.d(TAG, "No PrintingContext found for fd %d, can't notify print completion.", fd);
+            Log.d(TAG, "No PrintingController, can't notify print completion.");
         }
     }
 
@@ -129,7 +97,6 @@ public class PrintingContext implements PrintingContextInterface {
             askUserForSettingsReply(false);
         } else {
             mController.setPrintingContext(this);
-            updatePrintingContextMap(mController.getFileDescriptor(), /* delete = */ false);
             askUserForSettingsReply(true);
         }
     }

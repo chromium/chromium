@@ -43,8 +43,6 @@ class CastExtensionHost : public extensions::ExtensionHost,
   void ActivateContents(content::WebContents* contents) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
   bool DidAddMessageToConsole(content::WebContents* source,
                               int32_t level,
                               const base::string16& message,

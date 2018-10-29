@@ -117,6 +117,10 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
                                const viz::SharedBitmapId& id) override = 0;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override = 0;
 
+  // Ensure next CompositorFrame is submitted to a new surface. Only used when
+  // surface synchronization is off.
+  virtual void ForceAllocateNewId() {}
+
  protected:
   class ContextLostForwarder;
 

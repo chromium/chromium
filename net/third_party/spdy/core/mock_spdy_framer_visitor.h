@@ -5,9 +5,6 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_MOCK_SPDY_FRAMER_VISITOR_H_
 #define NET_THIRD_PARTY_SPDY_CORE_MOCK_SPDY_FRAMER_VISITOR_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <cstdint>
 #include <memory>
 

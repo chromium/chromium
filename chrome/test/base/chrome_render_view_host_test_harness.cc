@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
@@ -75,6 +76,6 @@ content::BrowserContext*
 ChromeRenderViewHostTestHarness::CreateBrowserContext() {
   TestingProfile::Builder builder;
   builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                            BuildSigninManagerFake);
+                            base::BindRepeating(&BuildSigninManagerFake));
   return builder.Build().release();
 }

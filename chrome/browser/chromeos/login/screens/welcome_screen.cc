@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/login/screens/screen_exit_code.h"
 #include "chrome/browser/chromeos/login/screens/welcome_view.h"
 #include "chrome/browser/chromeos/login/ui/input_events_blocker.h"
+#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -154,8 +155,12 @@ void WelcomeScreen::Show() {
   if (!timezone_subscription_)
     InitializeTimezoneObserver();
 
-  if (view_)
+  // Automatically continue if we are using hands-off enrollment.
+  if (WizardController::UsingHandsOffEnrollment()) {
+    OnUserAction(kUserActionContinueButtonClicked);
+  } else if (view_) {
     view_->Show();
+  }
 }
 
 void WelcomeScreen::Hide() {

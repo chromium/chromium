@@ -3,10 +3,9 @@ offsetWidth of a fixed width element should cause a style recalc if host styles 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS div.offsetWidth is 100
 PASS div.offsetWidth is 0
-

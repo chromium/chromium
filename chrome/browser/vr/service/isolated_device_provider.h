@@ -36,9 +36,11 @@ class IsolatedVRDeviceProvider
   void OnDeviceAdded(
       device::mojom::XRRuntimePtr device,
       device::mojom::IsolatedXRGamepadProviderFactoryPtr gamepad_factory,
+      device::mojom::XRCompositorHostPtr compositor_host,
       device::mojom::VRDisplayInfoPtr display_info) override;
   void OnDeviceRemoved(device::mojom::XRDeviceId id) override;
   void OnDevicesEnumerated() override;
+  void OnServerError();
 
   bool initialized_ = false;
   device::mojom::IsolatedXRRuntimeProviderPtr device_provider_;
@@ -50,7 +52,7 @@ class IsolatedVRDeviceProvider
   base::RepeatingCallback<void(device::mojom::XRDeviceId)>
       remove_device_callback_;
   base::OnceClosure initialization_complete_;
-  std::set<device::mojom::XRDeviceId> registered_gamepads_;
+  std::set<device::mojom::XRDeviceId> registered_devices_;
   mojo::Binding<device::mojom::IsolatedXRRuntimeProviderClient> binding_;
 };
 

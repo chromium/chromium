@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxSelectionUtilUnitTest() {}
+function ChromeVoxSelectionUtilUnitTest() {}
 
-CvoxSelectionUtilUnitTest.prototype = {
+ChromeVoxSelectionUtilUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -21,7 +21,7 @@ CvoxSelectionUtilUnitTest.prototype = {
   ]
 };
 
-TEST_F('CvoxSelectionUtilUnitTest', 'SimpleFindPos', function() {
+TEST_F('ChromeVoxSelectionUtilUnitTest', 'SimpleFindPos', function() {
   this.loadDoc(function() {/*!
     <div id="foo" style="position:absolute;top:50px">
     </div>

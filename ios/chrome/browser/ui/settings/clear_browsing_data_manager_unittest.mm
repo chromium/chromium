@@ -53,12 +53,15 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     // Setup identity services.
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(std::move(prefs));
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                              &BuildMockProfileSyncService);
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              &BuildFakeOAuth2TokenService);
-    builder.AddTestingFactory(ios::SigninManagerFactory::GetInstance(),
-                              &ios::BuildFakeSigninManager);
+    builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockProfileSyncService));
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeOAuth2TokenService));
+    builder.AddTestingFactory(
+        ios::SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&ios::BuildFakeSigninManager));
     browser_state_ = builder.Build();
 
     model_ = [[CollectionViewModel alloc] init];

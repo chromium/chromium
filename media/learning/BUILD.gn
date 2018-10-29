@@ -1,0 +1,41 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("learning") {
+  # Do not expand the visibility here without double-checking with OWNERS, this
+  # is a roll-up target which is part of the //media component. Most other DEPs
+  # should be using //media and not directly DEP this roll-up target.
+  visibility = [ "//media" ]
+
+  sources = [
+    "instance.cc",
+    "instance.h",
+    "learner.h",
+    "learner_factory.h",
+    "learning_task.cc",
+    "learning_task.h",
+    "value.cc",
+    "value.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media/base",
+  ]
+
+  configs += [ "//media:subcomponent_config" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "value_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//media:test_support",
+    "//testing/gtest",
+  ]
+}

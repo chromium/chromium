@@ -4,7 +4,7 @@
 
 package org.chromium.chromecast.shell;
 
-import org.chromium.base.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chromecast.base.Consumer;
 import org.chromium.chromecast.base.Scope;
 import org.chromium.chromecast.base.Supplier;
@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
  * Runs a task on a worker thread, then run the callback with the result on the UI thread.
  *
  * This is a slightly less verbose way of doing asynchronous work than using
- * org.chromium.base.AsyncTask directly.
+ * org.chromium.base.task.AsyncTask directly.
  */
 public class AsyncTaskRunner {
     private final Executor mExecutor;

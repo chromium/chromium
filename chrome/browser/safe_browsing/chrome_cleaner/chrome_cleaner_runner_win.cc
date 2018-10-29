@@ -22,10 +22,13 @@
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "extensions/browser/extension_system.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
+using extensions::ExtensionService;
 using chrome_cleaner::mojom::ChromePrompt;
 using chrome_cleaner::mojom::ChromePromptRequest;
 using content::BrowserThread;
@@ -46,6 +49,7 @@ ChromeCleanerRunner::ProcessStatus::ProcessStatus(LaunchStatus launch_status,
 
 // static
 void ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
+    ExtensionService* extension_service,
     const base::FilePath& cleaner_executable_path,
     const SwReporterInvocation& reporter_invocation,
     ChromeMetricsStatus metrics_status,
@@ -54,9 +58,10 @@ void ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
     ChromeCleanerRunner::ProcessDoneCallback on_process_done,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto cleaner_runner = base::WrapRefCounted(new ChromeCleanerRunner(
-      cleaner_executable_path, reporter_invocation, metrics_status,
-      std::move(on_prompt_user), std::move(on_connection_closed),
-      std::move(on_process_done), std::move(task_runner)));
+      extension_service, cleaner_executable_path, reporter_invocation,
+      metrics_status, std::move(on_prompt_user),
+      std::move(on_connection_closed), std::move(on_process_done),
+      std::move(task_runner)));
   auto launch_and_wait = base::BindOnce(
       &ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread,
       cleaner_runner);
@@ -73,6 +78,7 @@ void ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
 }
 
 ChromeCleanerRunner::ChromeCleanerRunner(
+    ExtensionService* extension_service,
     const base::FilePath& cleaner_executable_path,
     const SwReporterInvocation& reporter_invocation,
     ChromeMetricsStatus metrics_status,
@@ -84,7 +90,8 @@ ChromeCleanerRunner::ChromeCleanerRunner(
       cleaner_command_line_(cleaner_executable_path),
       on_prompt_user_(std::move(on_prompt_user)),
       on_connection_closed_(std::move(on_connection_closed)),
-      on_process_done_(std::move(on_process_done)) {
+      on_process_done_(std::move(on_process_done)),
+      extension_service_(extension_service) {
   DCHECK(on_prompt_user_);
   DCHECK(on_connection_closed_);
   DCHECK(on_process_done_);
@@ -181,7 +188,7 @@ ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread() {
   // ChromePromptImpl tasks will need to run on the IO thread. There is no
   // need to synchronize its creation, since the client end will wait for this
   // initialization to be done before sending requests.
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&ChromeCleanerRunner::CreateChromePromptImpl,
                                 base::RetainedRef(this),
@@ -212,7 +219,7 @@ void ChromeCleanerRunner::CreateChromePromptImpl(
   // Cannot use std::make_unique() since it does not support creating
   // std::unique_ptrs with custom deleters.
   chrome_prompt_impl_.reset(new ChromePromptImpl(
-      std::move(chrome_prompt_request),
+      extension_service_, std::move(chrome_prompt_request),
       base::Bind(&ChromeCleanerRunner::OnConnectionClosed,
                  base::RetainedRef(this)),
       base::Bind(&ChromeCleanerRunner::OnPromptUser, base::RetainedRef(this))));

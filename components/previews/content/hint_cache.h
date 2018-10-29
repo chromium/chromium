@@ -41,7 +41,7 @@ class HintCache {
   void LoadHint(const std::string& host, HintLoadedCallback callback);
 
   // Returns whether there is hint data available for |host| in memory.
-  bool IsHintLoaded(const std::string& host);
+  bool IsHintLoaded(const std::string& host) const;
 
   // Returns the hint data for |host| found in memory, otherwise nullptr.
   const optimization_guide::proto::Hint* GetHint(const std::string& host) const;

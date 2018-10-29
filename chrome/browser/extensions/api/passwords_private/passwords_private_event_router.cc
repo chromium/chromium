@@ -70,10 +70,10 @@ void PasswordsPrivateEventRouter::SendPasswordExceptionListToListeners() {
 }
 
 void PasswordsPrivateEventRouter::OnPlaintextPasswordFetched(
-    size_t index,
+    int id,
     const std::string& plaintext_password) {
   api::passwords_private::PlaintextPasswordEventParameters params;
-  params.index = index;
+  params.id = id;
   params.plaintext_password = plaintext_password;
 
   auto event_value = std::make_unique<base::ListValue>();

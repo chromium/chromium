@@ -36,8 +36,6 @@ component("os_crypt") {
     "encryption_key_creation_util_ios.h",
     "encryption_key_creation_util_mac.cc",
     "encryption_key_creation_util_mac.h",
-    "ie7_password_win.cc",
-    "ie7_password_win.h",
     "keychain_password_mac.h",
     "keychain_password_mac.mm",
     "os_crypt.h",
@@ -162,7 +160,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ie7_password_win_unittest.cc",
     "keychain_password_mac_unittest.mm",
     "os_crypt_unittest.cc",
   ]

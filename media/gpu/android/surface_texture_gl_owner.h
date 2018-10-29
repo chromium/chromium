@@ -35,6 +35,8 @@ class MEDIA_GPU_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   void IgnorePendingRelease() override;
   bool IsExpectingFrameAvailable() override;
   void WaitForFrameAvailable() override;
+  std::unique_ptr<gl::GLImage::ScopedHardwareBuffer> GetAHardwareBuffer()
+      override;
 
  private:
   friend class TextureOwner;

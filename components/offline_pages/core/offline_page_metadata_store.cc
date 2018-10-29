@@ -35,8 +35,7 @@ namespace {
 #define OFFLINE_PAGES_TABLE_NAME "offlinepages_v1"
 
 void ReportStoreEvent(OfflinePagesStoreEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.SQLStorage.StoreEvent", event,
-                            OfflinePagesStoreEvent::STORE_EVENT_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("OfflinePages.SQLStorage.StoreEvent", event);
 }
 
 bool CreateOfflinePagesTable(sql::Database* db) {
@@ -410,14 +409,14 @@ void OfflinePageMetadataStore::InitializeInternal(
   DCHECK_EQ(state_, StoreState::NOT_LOADED);
 
   if (!last_closing_time_.is_null()) {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_REOPENED);
+    ReportStoreEvent(OfflinePagesStoreEvent::kReopened);
     UMA_HISTOGRAM_CUSTOM_TIMES("OfflinePages.SQLStorage.TimeFromCloseToOpen",
                                base::Time::Now() - last_closing_time_,
                                base::TimeDelta::FromMilliseconds(10),
                                base::TimeDelta::FromMinutes(10),
                                50 /* buckets */);
   } else {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_OPENED_FIRST_TIME);
+    ReportStoreEvent(OfflinePagesStoreEvent::kOpenedFirstTime);
   }
 
   state_ = StoreState::INITIALIZING;
@@ -462,13 +461,13 @@ void OfflinePageMetadataStore::OnInitializeInternalDone(
 
 void OfflinePageMetadataStore::CloseInternal() {
   if (state_ != StoreState::LOADED) {
-    ReportStoreEvent(OfflinePagesStoreEvent::STORE_CLOSE_SKIPPED);
+    ReportStoreEvent(OfflinePagesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this, "Open");
 
   last_closing_time_ = base::Time::Now();
-  ReportStoreEvent(OfflinePagesStoreEvent::STORE_CLOSED);
+  ReportStoreEvent(OfflinePagesStoreEvent::kClosed);
 
   state_ = StoreState::NOT_LOADED;
   background_task_runner_->PostTask(

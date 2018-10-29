@@ -236,14 +236,20 @@ HEVCBitstreamConverter::HEVCBitstreamConverter(
 HEVCBitstreamConverter::~HEVCBitstreamConverter() {
 }
 
-bool HEVCBitstreamConverter::ConvertFrame(
+bool HEVCBitstreamConverter::ConvertAndAnalyzeFrame(
     std::vector<uint8_t>* frame_buf,
     bool is_keyframe,
-    std::vector<SubsampleEntry>* subsamples) const {
+    std::vector<SubsampleEntry>* subsamples,
+    AnalysisResult* analysis_result) const {
   RCHECK(AVC::ConvertFrameToAnnexB(hevc_config_->lengthSizeMinusOne + 1,
                                    frame_buf, subsamples));
+  // |is_keyframe| may be incorrect. Analyze the frame to see if it is a
+  // keyframe. |is_keyframe| will be used if the analysis is inconclusive.
+  // Also, provide the analysis result to the caller via out parameter
+  // |analysis_result|.
+  *analysis_result = Analyze(frame_buf, subsamples);
 
-  if (is_keyframe) {
+  if (analysis_result->is_keyframe.value_or(is_keyframe)) {
     // If this is a keyframe, we (re-)inject HEVC params headers at the start of
     // a frame. If subsample info is present, we also update the clear byte
     // count for that first subsample.

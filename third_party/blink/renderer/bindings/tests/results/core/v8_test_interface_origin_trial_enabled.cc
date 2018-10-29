@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -62,7 +62,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceOriginTrialEnabledV8Internal {
+namespace test_interface_origin_trial_enabled_v8_internal {
 
 static void doubleAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -111,7 +111,7 @@ static void conditionalLongAttributeAttributeSetter(v8::Local<v8::Value> v8Value
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestInterfaceOriginTrialEnabled", "conditionalLongAttribute");
 
   // Prepare the value to be set.
-  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kNormalConversion);
+  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -217,12 +217,12 @@ static void voidMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::V
   exceptionState.ThrowTypeError("No function was found that matched the signature provided.");
 }
 
-} // namespace TestInterfaceOriginTrialEnabledV8Internal
+}  // namespace test_interface_origin_trial_enabled_v8_internal
 
 void V8TestInterfaceOriginTrialEnabled::doubleAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_doubleAttribute_Getter");
 
-  TestInterfaceOriginTrialEnabledV8Internal::doubleAttributeAttributeGetter(info);
+  test_interface_origin_trial_enabled_v8_internal::doubleAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::doubleAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -230,13 +230,13 @@ void V8TestInterfaceOriginTrialEnabled::doubleAttributeAttributeSetterCallback(c
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceOriginTrialEnabledV8Internal::doubleAttributeAttributeSetter(v8Value, info);
+  test_interface_origin_trial_enabled_v8_internal::doubleAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::conditionalLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_conditionalLongAttribute_Getter");
 
-  TestInterfaceOriginTrialEnabledV8Internal::conditionalLongAttributeAttributeGetter(info);
+  test_interface_origin_trial_enabled_v8_internal::conditionalLongAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::conditionalLongAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -244,19 +244,19 @@ void V8TestInterfaceOriginTrialEnabled::conditionalLongAttributeAttributeSetterC
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceOriginTrialEnabledV8Internal::conditionalLongAttributeAttributeSetter(v8Value, info);
+  test_interface_origin_trial_enabled_v8_internal::conditionalLongAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::conditionalReadOnlyLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_conditionalReadOnlyLongAttribute_Getter");
 
-  TestInterfaceOriginTrialEnabledV8Internal::conditionalReadOnlyLongAttributeAttributeGetter(info);
+  test_interface_origin_trial_enabled_v8_internal::conditionalReadOnlyLongAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::staticStringAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_staticStringAttribute_Getter");
 
-  TestInterfaceOriginTrialEnabledV8Internal::staticStringAttributeAttributeGetter(info);
+  test_interface_origin_trial_enabled_v8_internal::staticStringAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::staticStringAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -264,25 +264,25 @@ void V8TestInterfaceOriginTrialEnabled::staticStringAttributeAttributeSetterCall
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceOriginTrialEnabledV8Internal::staticStringAttributeAttributeSetter(v8Value, info);
+  test_interface_origin_trial_enabled_v8_internal::staticStringAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::staticConditionalReadOnlyLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_staticConditionalReadOnlyLongAttribute_Getter");
 
-  TestInterfaceOriginTrialEnabledV8Internal::staticConditionalReadOnlyLongAttributeAttributeGetter(info);
+  test_interface_origin_trial_enabled_v8_internal::staticConditionalReadOnlyLongAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::voidMethodDoubleArgFloatArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_voidMethodDoubleArgFloatArg");
 
-  TestInterfaceOriginTrialEnabledV8Internal::voidMethodDoubleArgFloatArgMethod(info);
+  test_interface_origin_trial_enabled_v8_internal::voidMethodDoubleArgFloatArgMethod(info);
 }
 
 void V8TestInterfaceOriginTrialEnabled::voidMethodPartialOverloadMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceOriginTrialEnabled_voidMethodPartialOverload");
 
-  TestInterfaceOriginTrialEnabledV8Internal::voidMethodPartialOverloadMethod(info);
+  test_interface_origin_trial_enabled_v8_internal::voidMethodPartialOverloadMethod(info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestInterfaceOriginTrialEnabledAccessors[] = {

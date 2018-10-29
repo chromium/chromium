@@ -5,17 +5,20 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_H_
 
-#include <pthread.h>
+#include <map>
+#include <memory>
+#include <string>
 
-#include "javascript_message_sender_interface.h"
-#include "javascript_requestor_interface.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_archive.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
 #include "ppapi/utility/completion_callback_factory.h"
 #include "ppapi/utility/threading/lock.h"
 #include "ppapi/utility/threading/simple_thread.h"
-#include "volume_archive.h"
+
+class JavaScriptMessageSenderInterface;
+class JavaScriptRequestorInterface;
 
 // A factory that creates VolumeArchive(s). Useful for testing.
 class VolumeArchiveFactoryInterface {
@@ -23,7 +26,8 @@ class VolumeArchiveFactoryInterface {
   virtual ~VolumeArchiveFactoryInterface() {}
 
   // Creates a new VolumeArchive.
-  virtual VolumeArchive* Create(VolumeReader* reader) = 0;
+  virtual std::unique_ptr<VolumeArchive> Create(
+      std::unique_ptr<VolumeReader> reader) = 0;
 };
 
 // A factory that creates VolumeReader(s). Useful for testing.
@@ -32,9 +36,7 @@ class VolumeReaderFactoryInterface {
   virtual ~VolumeReaderFactoryInterface() {}
 
   // Creates a new VolumeReader. Returns nullptr if failed.
-  // Passes VolumeReader ownership to the implementation of
-  // VolumeArchiveInterfaceInterface.
-  virtual VolumeReader* Create(int64_t archive_size) = 0;
+  virtual std::unique_ptr<VolumeReader> Create(int64_t archive_size) = 0;
 };
 
 // Handles all operations like reading metadata and reading files from a single
@@ -51,8 +53,8 @@ class Volume {
   Volume(const pp::InstanceHandle& instance_handle /* Used for workers. */,
          const std::string& file_system_id,
          JavaScriptMessageSenderInterface* message_sender,
-         VolumeArchiveFactoryInterface* volume_archive_factory,
-         VolumeReaderFactoryInterface* volume_reader_factory);
+         std::unique_ptr<VolumeArchiveFactoryInterface> volume_archive_factory,
+         std::unique_ptr<VolumeReaderFactoryInterface> volume_reader_factory);
 
   virtual ~Volume();
 
@@ -100,7 +102,7 @@ class Volume {
                 const pp::VarDictionary& dictionary);
 
   JavaScriptMessageSenderInterface* message_sender() { return message_sender_; }
-  JavaScriptRequestorInterface* requestor() { return requestor_; }
+  JavaScriptRequestorInterface* requestor() { return requestor_.get(); }
   std::string file_system_id() { return file_system_id_; }
 
  private:
@@ -136,12 +138,12 @@ class Volume {
   void ClearJob();
 
   // Minizip wrapper instance per volume, shared across all operations.
-  VolumeArchive* volume_archive_;
+  std::unique_ptr<VolumeArchive> volume_archive_;
 
   // The file system id for this volume.
-  std::string file_system_id_;
+  const std::string file_system_id_;
 
-  // An object that sends messages to JavaScript.
+  // An object that sends messages to JavaScript. Not owned.
   JavaScriptMessageSenderInterface* message_sender_;
 
   // A worker for jobs that require blocking operations or a lot of processing
@@ -174,13 +176,13 @@ class Volume {
   pp::Lock job_lock_;  // A lock for guarding members related to jobs.
 
   // A requestor for making calls to JavaScript.
-  JavaScriptRequestorInterface* requestor_;
+  std::unique_ptr<JavaScriptRequestorInterface> requestor_;
 
   // A factory for creating VolumeArchive.
-  VolumeArchiveFactoryInterface* volume_archive_factory_;
+  std::unique_ptr<VolumeArchiveFactoryInterface> volume_archive_factory_;
 
   // A factory for creating VolumeReader.
-  VolumeReaderFactoryInterface* volume_reader_factory_;
+  std::unique_ptr<VolumeReaderFactoryInterface> volume_reader_factory_;
 
   // A map that converts index of file in the volume to pathname.
   std::map<int, std::string> index_to_pathname_;

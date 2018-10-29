@@ -31,7 +31,7 @@ class ShaderClearHelper;
 class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
  public:
   using ShaderLoadedCallback =
-      base::Callback<void(const std::string&, const std::string&)>;
+      base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
   void set_shader_loaded_callback(const ShaderLoadedCallback& callback) {
     shader_loaded_callback_ = callback;
@@ -118,14 +118,14 @@ class ShaderCacheFactory : public base::ThreadChecker {
   void ClearByPath(const base::FilePath& path,
                    const base::Time& begin_time,
                    const base::Time& end_time,
-                   const base::Closure& callback);
+                   base::OnceClosure callback);
 
   // Same as ClearByPath, but looks up the cache by |client_id|. The |callback|
   // will be executed when the clear is complete.
   void ClearByClientId(int32_t client_id,
                        const base::Time& begin_time,
                        const base::Time& end_time,
-                       const base::Closure& callback);
+                       base::OnceClosure callback);
 
   // Retrieve the shader disk cache for the provided |client_id|.
   scoped_refptr<ShaderDiskCache> Get(int32_t client_id);

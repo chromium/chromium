@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/download_protection_util.h"
+#include "chrome/common/safe_browsing/download_type_util.h"
 #include "chrome/common/safe_browsing/file_type_policies.h"
 #include "third_party/unrar/src/unrar_wrapper.h"
 
@@ -83,7 +83,7 @@ void AnalyzeRarFile(base::File rar_file,
       if (is_utf8_valid_basename)
         archived_binary->set_file_basename(basename_utf8);
       archived_binary->set_download_type(
-          download_protection_util::GetDownloadType(file_path));
+          download_type_util::GetDownloadType(file_path));
       archived_binary->set_length(unpacked_size);
     }
     results->archived_archive_filenames.assign(

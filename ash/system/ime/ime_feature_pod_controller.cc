@@ -22,7 +22,8 @@ bool IsButtonVisible() {
   DCHECK(Shell::Get());
   ImeController* ime_controller = Shell::Get()->ime_controller();
   size_t ime_count = ime_controller->available_imes().size();
-  return ime_count > 1;
+  return !ime_controller->is_menu_active() &&
+         (ime_count > 1 || ime_controller->managed_by_policy());
 }
 
 base::string16 GetLabelString() {
@@ -85,7 +86,7 @@ void IMEFeaturePodController::OnIMERefresh() {
   Update();
 }
 
-void IMEFeaturePodController::OnIMEMenuActivationChanged(bool is_activated) {
+void IMEFeaturePodController::OnIMEMenuActivationChanged(bool is_active) {
   Update();
 }
 

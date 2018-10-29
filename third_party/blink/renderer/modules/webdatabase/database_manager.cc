@@ -49,7 +49,7 @@ DatabaseManager& DatabaseManager::Manager() {
   return *g_database_manager;
 }
 
-DatabaseManager::DatabaseManager() = default;
+DatabaseManager::DatabaseManager() : context_map_(new ContextMap) {}
 
 DatabaseManager::~DatabaseManager() = default;
 
@@ -61,7 +61,7 @@ DatabaseContext* DatabaseManager::ExistingDatabaseContextFor(
   DCHECK_LE(database_context_registered_count_,
             database_context_instance_count_);
 #endif
-  return context_map_.at(context);
+  return context_map_->at(context);
 }
 
 DatabaseContext* DatabaseManager::DatabaseContextFor(
@@ -74,7 +74,7 @@ DatabaseContext* DatabaseManager::DatabaseContextFor(
 void DatabaseManager::RegisterDatabaseContext(
     DatabaseContext* database_context) {
   ExecutionContext* context = database_context->GetExecutionContext();
-  context_map_.Set(context, database_context);
+  context_map_->Set(context, database_context);
 #if DCHECK_IS_ON()
   database_context_registered_count_++;
 #endif
@@ -83,11 +83,11 @@ void DatabaseManager::RegisterDatabaseContext(
 void DatabaseManager::UnregisterDatabaseContext(
     DatabaseContext* database_context) {
   ExecutionContext* context = database_context->GetExecutionContext();
-  DCHECK(context_map_.at(context));
+  DCHECK(context_map_->at(context));
 #if DCHECK_IS_ON()
   database_context_registered_count_--;
 #endif
-  context_map_.erase(context);
+  context_map_->erase(context);
 }
 
 #if DCHECK_IS_ON()

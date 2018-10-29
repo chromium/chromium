@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/offline_page_url_loader.h"
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -12,6 +13,7 @@
 #include "components/offline_pages/core/offline_page_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/previews_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
 #include "net/url_request/url_request.h"
@@ -86,6 +88,8 @@ OfflinePageURLLoader::OfflinePageURLLoader(
       transition_type_(tentative_resource_request.transition_type),
       loader_callback_(std::move(callback)),
       binding_(this),
+      is_offline_preview_allowed_(tentative_resource_request.previews_state &
+                                  content::OFFLINE_PAGE_ON),
       weak_ptr_factory_(this) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -104,11 +108,6 @@ OfflinePageURLLoader::~OfflinePageURLLoader() {}
 void OfflinePageURLLoader::SetTabIdGetterForTesting(
     OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter) {
   tab_id_getter_ = tab_id_getter;
-}
-
-void OfflinePageURLLoader::SetShouldAllowPreviewCallbackForTesting(
-    ShouldAllowPreviewCallback should_allow_preview_callback) {
-  should_allow_preview_callback_ = should_allow_preview_callback;
 }
 
 void OfflinePageURLLoader::FollowRedirect(
@@ -210,11 +209,7 @@ void OfflinePageURLLoader::SetOfflinePageNavigationUIData(
 }
 
 bool OfflinePageURLLoader::ShouldAllowPreview() const {
-  // TODO(jianli): This is a temporary hack to make the tests pass. The real
-  // logic needs to be implemented.
-  if (!should_allow_preview_callback_.is_null())
-    return should_allow_preview_callback_.Run();
-  return false;
+  return is_offline_preview_allowed_;
 }
 
 int OfflinePageURLLoader::GetPageTransition() const {

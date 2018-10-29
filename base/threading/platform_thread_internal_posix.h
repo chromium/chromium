@@ -6,6 +6,7 @@
 #define BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 
 #include "base/base_export.h"
+#include "base/optional.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
@@ -30,16 +31,20 @@ int ThreadPriorityToNiceValue(ThreadPriority priority);
 // specific implementation of kThreadPriorityToNiceValueMap.
 BASE_EXPORT ThreadPriority NiceValueToThreadPriority(int nice_value);
 
+// If non-nullopt, this return value will be used as the platform-specific
+// result of CanIncreaseThreadPriority().
+Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
+    ThreadPriority priority);
+
 // Allows platform specific tweaks to the generic POSIX solution for
-// SetCurrentThreadPriority. Returns true if the platform-specific
+// SetCurrentThreadPriority(). Returns true if the platform-specific
 // implementation handled this |priority| change, false if the generic
 // implementation should instead proceed.
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority);
 
-// Returns true if there is a platform-specific ThreadPriority set on the
-// current thread (and returns the actual ThreadPriority via |priority|).
-// Returns false otherwise, leaving |priority| untouched.
-bool GetCurrentThreadPriorityForPlatform(ThreadPriority* priority);
+// If non-null, this return value will be used as the platform-specific result
+// of CanIncreaseThreadPriority().
+Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform();
 
 }  // namespace internal
 

@@ -14,4 +14,3 @@ Sending left click
 PASS click_triggered in iframe
 Sending right click
 PASS context_menu_triggered in iframe
-

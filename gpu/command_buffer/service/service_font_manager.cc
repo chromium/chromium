@@ -171,8 +171,11 @@ bool ServiceFontManager::Deserialize(
   if (!deserializer.Read<uint64_t>(&skia_data_size))
     return false;
 
-  if (!deserializer.ReadStrikeData(strike_client_.get(), skia_data_size))
-    return false;
+  {
+    base::AutoUnlock release(lock_);
+    if (!deserializer.ReadStrikeData(strike_client_.get(), skia_data_size))
+      return false;
+  }
 
   return true;
 }

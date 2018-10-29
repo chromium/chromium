@@ -142,7 +142,8 @@ std::vector<int> DumpAccessibilityTestBase::DiffLines(
 void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     const std::string& test_html,
     std::vector<Filter>* filters,
-    std::vector<std::string>* wait_for) {
+    std::vector<std::string>* wait_for,
+    std::vector<std::string>* run_until) {
   for (const std::string& line :
        base::SplitString(test_html, "\n", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_ALL)) {
@@ -150,6 +151,7 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     const std::string& allow_str = formatter_->GetAllowString();
     const std::string& deny_str = formatter_->GetDenyString();
     const std::string& wait_str = "@WAIT-FOR:";
+    const std::string& until_str = "@RUN-UNTIL-EVENT:";
     if (base::StartsWith(line, allow_empty_str,
                          base::CompareCase::SENSITIVE)) {
       filters->push_back(
@@ -168,14 +170,17 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     } else if (base::StartsWith(line, wait_str,
                                 base::CompareCase::SENSITIVE)) {
       wait_for->push_back(line.substr(wait_str.size()));
+    } else if (base::StartsWith(line, until_str,
+                                base::CompareCase::SENSITIVE)) {
+      run_until->push_back(line.substr(until_str.size()));
     }
   }
 }
 
-AccessibilityTreeFormatter*
-    DumpAccessibilityTestBase::CreateAccessibilityTreeFormatter() {
+std::unique_ptr<AccessibilityTreeFormatter>
+DumpAccessibilityTestBase::CreateAccessibilityTreeFormatter() {
   if (is_blink_pass_)
-    return new AccessibilityTreeFormatterBlink();
+    return std::make_unique<AccessibilityTreeFormatterBlink>();
   else
     return AccessibilityTreeFormatter::Create();
 }
@@ -194,7 +199,7 @@ void DumpAccessibilityTestBase::RunTest(
 
 void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path, const char* file_dir) {
-  formatter_.reset(CreateAccessibilityTreeFormatter());
+  formatter_ = CreateAccessibilityTreeFormatter();
 
   // Disable the "hot tracked" state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
@@ -254,9 +259,10 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   // Parse filters and other directives in the test file.
   std::vector<std::string> wait_for;
+  std::vector<std::string> run_until;
   filters_.clear();
   AddDefaultFilters(&filters_);
-  ParseHtmlForExtraDirectives(html_contents, &filters_, &wait_for);
+  ParseHtmlForExtraDirectives(html_contents, &filters_, &wait_for, &run_until);
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL(
@@ -354,7 +360,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
 
   // Call the subclass to dump the output.
-  std::vector<std::string> actual_lines = Dump();
+  std::vector<std::string> actual_lines = Dump(run_until);
   std::string actual_contents_for_output =
       base::JoinString(actual_lines, "\n") + "\n";
 

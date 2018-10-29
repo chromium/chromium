@@ -149,6 +149,16 @@ SDK.HARLog.Entry = class {
     for (const t of [timings.blocked, timings.dns, timings.connect, timings.send, timings.wait, timings.receive])
       time += Math.max(t, 0);
 
+    const initiator = harEntry._request.initiator();
+    const exportedInitiator = {};
+    exportedInitiator.type = initiator.type;
+    if (initiator.url !== undefined)
+      exportedInitiator.url = initiator.url;
+    if (initiator.lineNumber !== undefined)
+      exportedInitiator.lineNumber = initiator.lineNumber;
+    if (initiator.stack)
+      exportedInitiator.stack = initiator.stack;
+
     const entry = {
       startedDateTime: SDK.HARLog.pseudoWallTime(harEntry._request, harEntry._request.issueTime()).toJSON(),
       time: time,
@@ -157,7 +167,9 @@ SDK.HARLog.Entry = class {
       cache: {},  // Not supported yet.
       timings: timings,
       // IPv6 address should not have square brackets per (https://tools.ietf.org/html/rfc2373#section-2.2).
-      serverIPAddress: ipAddress.replace(/\[\]/g, '')
+      serverIPAddress: ipAddress.replace(/\[\]/g, ''),
+      _initiator: exportedInitiator,
+      _priority: harEntry._request.priority()
     };
 
     // Chrome specific.
@@ -241,7 +253,7 @@ SDK.HARLog.Entry = class {
     const result = {blocked: -1, dns: -1, ssl: -1, connect: -1, send: 0, wait: 0, receive: 0, _blocked_queueing: -1};
 
     const queuedTime = (issueTime < startTime) ? startTime - issueTime : -1;
-    result.blocked = queuedTime;
+    result.blocked = SDK.HARLog.Entry._toMilliseconds(queuedTime);
     result._blocked_queueing = SDK.HARLog.Entry._toMilliseconds(queuedTime);
 
     let highestTime = 0;
@@ -291,7 +303,7 @@ SDK.HARLog.Entry = class {
     result.wait = waitEnd - waitStart;
 
     const receiveStart = waitEnd;
-    const receiveEnd = SDK.HARLog.Entry._toMilliseconds(this._request.endTime - issueTime);
+    const receiveEnd = SDK.HARLog.Entry._toMilliseconds(this._request.endTime - requestTime);
     result.receive = Math.max(receiveEnd - receiveStart, 0);
 
     return result;

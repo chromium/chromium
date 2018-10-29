@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/partial_interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/partial_interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -34,7 +34,7 @@
 
 namespace blink {
 
-namespace TestInterfaceImplementationPartialV8Internal {
+namespace test_interface_implementation_partial_v8_internal {
 
 static void partial4LongAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -56,7 +56,7 @@ static void partial4LongAttributeAttributeSetter(v8::Local<v8::Value> v8Value, c
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestInterface", "partial4LongAttribute");
 
   // Prepare the value to be set.
-  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kNormalConversion);
+  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -77,7 +77,7 @@ static void partial4StaticLongAttributeAttributeSetter(v8::Local<v8::Value> v8Va
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestInterface", "partial4StaticLongAttribute");
 
   // Prepare the value to be set.
-  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kNormalConversion);
+  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -376,12 +376,12 @@ static void partial4StaticVoidMethodMethod(const v8::FunctionCallbackInfo<v8::Va
   TestInterfacePartial4::partial4StaticVoidMethod();
 }
 
-} // namespace TestInterfaceImplementationPartialV8Internal
+}  // namespace test_interface_implementation_partial_v8_internal
 
 void V8TestInterfacePartial::partial4LongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partial4LongAttribute_Getter");
 
-  TestInterfaceImplementationPartialV8Internal::partial4LongAttributeAttributeGetter(info);
+  test_interface_implementation_partial_v8_internal::partial4LongAttributeAttributeGetter(info);
 }
 
 void V8TestInterfacePartial::partial4LongAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -389,13 +389,13 @@ void V8TestInterfacePartial::partial4LongAttributeAttributeSetterCallback(const 
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceImplementationPartialV8Internal::partial4LongAttributeAttributeSetter(v8Value, info);
+  test_interface_implementation_partial_v8_internal::partial4LongAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfacePartial::partial4StaticLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partial4StaticLongAttribute_Getter");
 
-  TestInterfaceImplementationPartialV8Internal::partial4StaticLongAttributeAttributeGetter(info);
+  test_interface_implementation_partial_v8_internal::partial4StaticLongAttributeAttributeGetter(info);
 }
 
 void V8TestInterfacePartial::partial4StaticLongAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -403,43 +403,43 @@ void V8TestInterfacePartial::partial4StaticLongAttributeAttributeSetterCallback(
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestInterfaceImplementationPartialV8Internal::partial4StaticLongAttributeAttributeSetter(v8Value, info);
+  test_interface_implementation_partial_v8_internal::partial4StaticLongAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestInterfacePartial::partialVoidTestEnumModulesArgMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partialVoidTestEnumModulesArgMethod");
 
-  TestInterfaceImplementationPartialV8Internal::partialVoidTestEnumModulesArgMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::partialVoidTestEnumModulesArgMethodMethod(info);
 }
 
 void V8TestInterfacePartial::partial2VoidTestEnumModulesRecordMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partial2VoidTestEnumModulesRecordMethod");
 
-  TestInterfaceImplementationPartialV8Internal::partial2VoidTestEnumModulesRecordMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::partial2VoidTestEnumModulesRecordMethodMethod(info);
 }
 
 void V8TestInterfacePartial::unscopableVoidMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_unscopableVoidMethod");
 
-  TestInterfaceImplementationPartialV8Internal::unscopableVoidMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::unscopableVoidMethodMethod(info);
 }
 
 void V8TestInterfacePartial::unionWithTypedefMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_unionWithTypedefMethod");
 
-  TestInterfaceImplementationPartialV8Internal::unionWithTypedefMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::unionWithTypedefMethodMethod(info);
 }
 
 void V8TestInterfacePartial::partial4VoidMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partial4VoidMethod");
 
-  TestInterfaceImplementationPartialV8Internal::partial4VoidMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::partial4VoidMethodMethod(info);
 }
 
 void V8TestInterfacePartial::partial4StaticVoidMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceImplementation_partial4StaticVoidMethod");
 
-  TestInterfaceImplementationPartialV8Internal::partial4StaticVoidMethodMethod(info);
+  test_interface_implementation_partial_v8_internal::partial4StaticVoidMethodMethod(info);
 }
 
 static const V8DOMConfiguration::MethodConfiguration V8TestInterfaceMethods[] = {
@@ -591,12 +591,12 @@ void V8TestInterfacePartial::initialize() {
       nullptr,
       &V8TestInterfacePartial::InstallRuntimeEnabledFeaturesOnTemplate,
       V8TestInterfacePartial::InstallConditionalFeatures);
-  V8TestInterface::registerVoidMethodPartialOverloadMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::voidMethodPartialOverloadMethod);
-  V8TestInterface::registerStaticVoidMethodPartialOverloadMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::staticVoidMethodPartialOverloadMethod);
-  V8TestInterface::registerPromiseMethodPartialOverloadMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::promiseMethodPartialOverloadMethod);
-  V8TestInterface::registerStaticPromiseMethodPartialOverloadMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::staticPromiseMethodPartialOverloadMethod);
-  V8TestInterface::registerPartial2VoidMethodMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::partial2VoidMethodMethod);
-  V8TestInterface::registerPartial2StaticVoidMethodMethodForPartialInterface(&TestInterfaceImplementationPartialV8Internal::partial2StaticVoidMethodMethod);
+  V8TestInterface::registerVoidMethodPartialOverloadMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::voidMethodPartialOverloadMethod);
+  V8TestInterface::registerStaticVoidMethodPartialOverloadMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::staticVoidMethodPartialOverloadMethod);
+  V8TestInterface::registerPromiseMethodPartialOverloadMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::promiseMethodPartialOverloadMethod);
+  V8TestInterface::registerStaticPromiseMethodPartialOverloadMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::staticPromiseMethodPartialOverloadMethod);
+  V8TestInterface::registerPartial2VoidMethodMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::partial2VoidMethodMethod);
+  V8TestInterface::registerPartial2StaticVoidMethodMethodForPartialInterface(&test_interface_implementation_partial_v8_internal::partial2StaticVoidMethodMethod);
 }
 
 }  // namespace blink

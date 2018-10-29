@@ -20,7 +20,6 @@ class Point;
 
 namespace ui {
 class Event;
-class EventHandler;
 }
 
 namespace ash {
@@ -94,19 +93,6 @@ ASH_EXPORT void SetChildrenUseExtendedHitRegionForWindow(aura::Window* window);
 // Requests the |window| to close and destroy itself. This is intended to
 // forward to an associated widget.
 ASH_EXPORT void CloseWidgetForWindow(aura::Window* window);
-
-// Adds or removes a handler to receive events targeted at this window, before
-// this window handles the events itself; the handler does not receive events
-// from embedded windows. This only supports windows with internal widgets;
-// see ash::GetInternalWidgetForWindow(). Ownership of the handler is not
-// transferred.
-//
-// Also note that the target of these events is always an aura::Window.
-ASH_EXPORT void AddLimitedPreTargetHandlerForWindow(ui::EventHandler* handler,
-                                                    aura::Window* window);
-ASH_EXPORT void RemoveLimitedPreTargetHandlerForWindow(
-    ui::EventHandler* handler,
-    aura::Window* window);
 
 // Installs a resize handler on the window that makes it easier to resize
 // the window.

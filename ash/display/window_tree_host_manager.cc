@@ -18,12 +18,10 @@
 #include "ash/host/root_window_transformer.h"
 #include "ash/magnifier/magnification_controller.h"
 #include "ash/magnifier/partial_magnification_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/tray/system_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
 #include "ash/ws/window_service_owner.h"
@@ -532,19 +530,11 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
     RootWindowController* new_root_window_controller =
         ash::Shell::Get()->GetPrimaryRootWindowController();
     TrayBackgroundView* old_tray =
-        features::IsSystemTrayUnifiedEnabled()
-            ? static_cast<TrayBackgroundView*>(
-                  old_root_window_controller->GetStatusAreaWidget()
-                      ->unified_system_tray())
-            : static_cast<TrayBackgroundView*>(
-                  old_root_window_controller->GetSystemTray());
+        old_root_window_controller->GetStatusAreaWidget()
+            ->unified_system_tray();
     TrayBackgroundView* new_tray =
-        features::IsSystemTrayUnifiedEnabled()
-            ? static_cast<TrayBackgroundView*>(
-                  new_root_window_controller->GetStatusAreaWidget()
-                      ->unified_system_tray())
-            : static_cast<TrayBackgroundView*>(
-                  new_root_window_controller->GetSystemTray());
+        new_root_window_controller->GetStatusAreaWidget()
+            ->unified_system_tray();
     if (old_tray->GetWidget()->IsVisible()) {
       new_tray->SetVisible(true);
       new_tray->GetWidget()->Show();
@@ -770,7 +760,8 @@ display::DisplayConfigurator* WindowTreeHostManager::display_configurator() {
 }
 
 ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(
-    ui::KeyEvent* event) {
+    ui::KeyEvent* event,
+    base::OnceCallback<void(bool)> ack_callback) {
   aura::Window* root_window = nullptr;
   if (event->target()) {
     root_window = static_cast<aura::Window*>(event->target())->GetRootWindow();
@@ -783,7 +774,8 @@ ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(
     root_window = active_window ? active_window->GetRootWindow()
                                 : Shell::GetPrimaryRootWindow();
   }
-  return root_window->GetHost()->DispatchKeyEventPostIME(event);
+  return root_window->GetHost()->DispatchKeyEventPostIME(
+      event, std::move(ack_callback));
 }
 
 AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(

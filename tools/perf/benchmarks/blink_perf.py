@@ -371,6 +371,7 @@ class BlinkPerfAccessibility(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(
+    component='Blink>Bindings',
     emails=['jbroman@chromium.org', 'yukishiino@chromium.org',
             'haraken@chromium.org'],
     documentation_url='https://bit.ly/blink-perf-benchmarks')
@@ -382,8 +383,9 @@ class BlinkPerfBindings(_BlinkPerfBenchmark):
     return 'blink_perf.bindings'
 
 
-@benchmark.Info(emails=['futhark@chromium.org'],
-                documentation_url='https://bit.ly/blink-perf-benchmarks')
+@benchmark.Info(emails=['futhark@chromium.org', 'andruud@chromium.org'],
+                documentation_url='https://bit.ly/blink-perf-benchmarks',
+                component='Blink>CSS')
 class BlinkPerfCSS(_BlinkPerfBenchmark):
   subdir = 'css'
 
@@ -394,7 +396,8 @@ class BlinkPerfCSS(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(emails=['fserb@chromium.org'],
-                documentation_url='https://bit.ly/blink-perf-benchmarks')
+                documentation_url='https://bit.ly/blink-perf-benchmarks',
+                component='Blink>Canvas')
 class BlinkPerfCanvas(_BlinkPerfBenchmark):
   subdir = 'canvas'
 
@@ -415,9 +418,10 @@ class BlinkPerfCanvas(_BlinkPerfBenchmark):
     return story_set
 
 
-@benchmark.Info(emails=['jbroman@chromium.org',
-                         'yukishiino@chromium.org',
-                         'haraken@chromium.org'],
+@benchmark.Info(emails=['hayato@chromium.org',
+                        'tkent@chromium.org',
+                        'yosin@chromium.org'],
+                component='Blink>DOM',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfDOM(_BlinkPerfBenchmark):
   subdir = 'dom'
@@ -439,6 +443,7 @@ class BlinkPerfEvents(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(emails=['cblume@chromium.org'],
+                component='Internals>Images>Codecs',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfImageDecoder(_BlinkPerfBenchmark):
   tag = 'image_decoder'
@@ -484,6 +489,7 @@ class BlinkPerfOWPStorage(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(emails=['wangxianzhu@chromium.org'],
+                component='Blink>Paint',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfPaint(_BlinkPerfBenchmark):
   subdir = 'paint'
@@ -493,7 +499,8 @@ class BlinkPerfPaint(_BlinkPerfBenchmark):
     return 'blink_perf.paint'
 
 
-@benchmark.Info(emails=['jbroman@chromium.org',
+@benchmark.Info(component='Blink>Bindings',
+                emails=['jbroman@chromium.org',
                          'yukishiino@chromium.org',
                          'haraken@chromium.org'],
                 documentation_url='https://bit.ly/blink-perf-benchmarks')

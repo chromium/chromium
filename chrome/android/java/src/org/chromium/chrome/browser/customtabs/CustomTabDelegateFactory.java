@@ -16,6 +16,7 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler;
 import org.chromium.chrome.browser.fullscreen.ComposedBrowserControlsVisibilityDelegate;
@@ -124,6 +125,14 @@ public class CustomTabDelegateFactory extends TabDelegateFactory {
                 IntentUtils.logTransactionTooLargeOrRethrow(e, intent);
             }
             return false;
+        }
+
+        @Override
+        public boolean isIntentForTrustedCallingApp(Intent intent) {
+            if (TextUtils.isEmpty(mClientPackageName)) return false;
+            if (!ExternalAuthUtils.getInstance().isGoogleSigned(mClientPackageName)) return false;
+
+            return isPackageSpecializedHandler(mClientPackageName, intent);
         }
 
         /**

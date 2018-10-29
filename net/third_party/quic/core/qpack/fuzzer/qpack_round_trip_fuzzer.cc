@@ -5,7 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "net/third_party/quic/core/qpack/qpack_test_utils.h"
+#include "net/third_party/quic/core/qpack/qpack_decoder_test_utils.h"
+#include "net/third_party/quic/core/qpack/qpack_encoder_test_utils.h"
 #include "net/third_party/quic/platform/api/quic_fuzzed_data_provider.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 #include "net/third_party/spdy/core/spdy_header_block.h"
@@ -123,12 +124,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Encode header list.
   QuicString encoded_header_block =
-      QpackTestUtils::Encode(fragment_size_generator, &header_list);
+      QpackEncode(fragment_size_generator, &header_list);
 
   // Decode header block.
   TestHeadersHandler handler;
-  QpackTestUtils::Decode(&handler, fragment_size_generator,
-                         encoded_header_block);
+  QpackDecode(&handler, fragment_size_generator, encoded_header_block);
 
   // Since header block has been produced by encoding a header list, it must be
   // valid.

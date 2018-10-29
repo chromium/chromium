@@ -102,8 +102,8 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
 
     const extensions::URLPatternSet& web_extent = (*extension)->web_extent();
     // Add patterns from web extent.
-    for (extensions::URLPatternSet::const_iterator pattern = web_extent.begin();
-         pattern != web_extent.end(); ++pattern) {
+    for (auto pattern = web_extent.begin(); pattern != web_extent.end();
+         ++pattern) {
       std::string url_pattern = pattern->GetAsString();
       site_settings::AddExceptionForHostedApp(
           url_pattern, *extension->get(), exceptions);
@@ -123,7 +123,7 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
 bool PatternAppliesToSingleOrigin(const ContentSettingPatternSource& pattern) {
   const GURL url(pattern.primary_pattern.ToString());
   // Default settings and other patterns apply to multiple origins.
-  if (url::Origin::Create(url).unique())
+  if (url::Origin::Create(url).opaque())
     return false;
   // Embedded content settings only when |url| is embedded in another origin, so
   // ignore non-wildcard secondary patterns that are different to the primary.

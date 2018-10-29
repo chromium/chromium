@@ -199,7 +199,9 @@ void OmniboxPopupModel::SetSelectedLineState(LineState state) {
   }
 
   if (state == TAB_SWITCH) {
-    DCHECK(match.has_tab_match);
+    // TODO(orinj): If in-suggestion Pedals are kept, refactor a bit
+    // so that button presence doesn't always assume tab switching use case.
+    DCHECK(match.has_tab_match || match.pedal);
     old_focused_url_ = current_destination;
   }
 
@@ -322,8 +324,7 @@ gfx::Image OmniboxPopupModel::GetMatchIcon(const AutocompleteMatch& match,
   }
 
   const auto& vector_icon_type = AutocompleteMatch::TypeToVectorIcon(
-      match.type, IsStarredMatch(match), match.has_tab_match,
-      match.document_type);
+      match.type, IsStarredMatch(match), match.document_type);
 
   return edit_model_->client()->GetSizedIcon(vector_icon_type,
                                              vector_icon_color);

@@ -4,7 +4,18 @@
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("accessibility_test_framework_java") {
+android_java_prebuilt("accessibility_test_framework_java") {
+  # Uses wrong version of proto (not protolite).
+  enable_bytecode_checks = false
   testonly = true
   jar_path = "lib/accessibility-test-framework.jar"
+  deps = [
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:com_android_support_support_core_ui_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+  ]
+
+  # TODO(smaier): remove this - crbug.com/898861
+  proguard_configs =
+      [ "//third_party/accessibility_test_framework/proguard.flags" ]
 }

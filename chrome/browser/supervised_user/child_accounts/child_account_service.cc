@@ -39,6 +39,8 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#else
+#include "chrome/browser/signin/signin_util.h"
 #endif
 
 const char kGaiaCookieManagerSource[] = "child_account_service";
@@ -195,7 +197,7 @@ bool ChildAccountService::SetActive(bool active) {
     // This is also used by user policies (UserPolicySigninService), but since
     // child accounts can not also be Dasher accounts, there shouldn't be any
     // problems.
-    SigninManagerFactory::GetForProfile(profile_)->ProhibitSignout(true);
+    signin_util::SetUserSignoutAllowedForProfile(profile_, false);
 #endif
 
     // TODO(treib): Maybe store the last update time in a pref, so we don't
@@ -227,7 +229,7 @@ bool ChildAccountService::SetActive(bool active) {
 #endif
 
 #if !defined(OS_CHROMEOS)
-    SigninManagerFactory::GetForProfile(profile_)->ProhibitSignout(false);
+    signin_util::SetUserSignoutAllowedForProfile(profile_, true);
 #endif
 
     CancelFetchingFamilyInfo();
@@ -237,8 +239,10 @@ bool ChildAccountService::SetActive(bool active) {
   // The logic to do this lives in the SupervisedUserSyncDataTypeController.
   browser_sync::ProfileSyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_);
-  if (sync_service->IsFirstSetupComplete())
-    sync_service->ReconfigureDatatypeManager();
+  if (sync_service->IsFirstSetupComplete()) {
+    sync_service->ReconfigureDatatypeManager(
+        /*bypass_setup_in_progress_check=*/false);
+  }
 
   return true;
 }

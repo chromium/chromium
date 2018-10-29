@@ -22,7 +22,7 @@ using SystemNetworkApiUnitTest = extensions::ApiUnitTest;
 TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   scoped_refptr<SystemNetworkGetNetworkInterfacesFunction> socket_function(
       new SystemNetworkGetNetworkInterfacesFunction());
-  scoped_refptr<Extension> empty_extension(
+  scoped_refptr<const Extension> empty_extension(
       extensions::ExtensionBuilder("Test").Build());
 
   socket_function->set_extension(empty_extension.get());

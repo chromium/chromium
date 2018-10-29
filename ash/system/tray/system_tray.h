@@ -14,9 +14,9 @@
 #include "ash/system/tray/system_tray_view.h"
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -143,22 +143,22 @@ class ASH_EXPORT SystemTray : public TrayBackgroundView,
   void UpdateAfterShelfAlignmentChange() override;
   void AnchorUpdated() override;
   base::string16 GetAccessibleNameForTray() override;
-  void BubbleResized(const views::TrayBubbleView* bubble_view) override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override;
+  void BubbleResized(const TrayBubbleView* bubble_view) override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
   void ShowBubble(bool show_by_click) override;
-  views::TrayBubbleView* GetBubbleView() override;
+  TrayBubbleView* GetBubbleView() override;
   void SetVisible(bool visible) override;
 
-  // views::TrayBubbleView::Delegate:
+  // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
   base::string16 GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
-  void HideBubble(const views::TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // TimeToClickRecorder::Delegate:
   void RecordTimeToClick() override;

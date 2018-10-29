@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "ui/display/display.h"
 
 namespace aura {
@@ -186,6 +187,7 @@ class ASH_EXPORT ScreenRotationAnimator {
   std::unique_ptr<ui::LayerTreeOwner> new_layer_tree_owner_;
   std::unique_ptr<ui::LayerTreeOwner> mask_layer_tree_owner_;
   std::unique_ptr<ScreenRotationRequest> last_pending_request_;
+  base::Optional<ScreenRotationRequest> current_async_rotation_request_;
   bool has_switch_ash_disable_smooth_screen_rotation_;
   display::Display::Rotation target_rotation_ = display::Display::ROTATE_0;
   base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_;

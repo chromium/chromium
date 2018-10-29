@@ -12,12 +12,15 @@
   </head>
   <body>
     <script id="layout-test-code">
-      let context = new AudioContext();
+      let context;
 
       let audit = Audit.createTaskRunner();
 
       audit.define('initialize', (task, should) => {
-        context = initializeContext(should);
+        // Need AudioContext, not OfflineAudioContext, for these tests.
+        should(() => {
+          context = new AudioContext();
+        }, 'context = new AudioContext()').notThrow();
         task.done();
       });
 

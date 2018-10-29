@@ -7,6 +7,7 @@ module ui.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "ui/events/mojo/event_constants.mojom";
 import "ui/events/mojo/keyboard_codes.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/latency/mojo/latency_info.mojom";
 
 struct KeyData {
@@ -49,68 +50,10 @@ struct KeyData {
 };
 
 struct LocationData {
-  // |x| and |y| are in the coordinate system of the View.
-  // Typically, this will be an integer-valued translation w.r.t.
-  // the screen and in this case, |x| and |y| are in units of physical
-  // pixels. However, some View embedders may apply arbitrary transformations
-  // of a view w.r.t. the screen.
-  float x;
-  float y;
-  // |screen_x| and |screen_y| are in screen coordinates in units of
-  // physical pixels.
-  float screen_x;
-  float screen_y;
-};
-
-// TODO(rjkroege,sadrul): Add gesture representation.
-struct PointerData {
-  int32 pointer_id;
-  int32 changed_button_flags;
-  PointerKind kind;
-  LocationData location;
-  // Some devices (e.g. pen, finger) can extend across multiple pixels
-  // at once. |brush_data| provides additional data for this case and
-  // is available when |kind| is PEN or TOUCH.
-  BrushData? brush_data;
-  // Only set for |WHEEL| events.
-  WheelData? wheel_data;
-};
-
-// Information payload to support
-// https://developer.mozilla.org/en-US/docs/Web/Events/wheel.
-// TODO(rjkroege): Handle MacOS momentum scrolling.
-struct WheelData {
-  WheelMode mode;
-  // |delta_x|, |delta_y|, |delta_z| can be in units of pixels, lines, pages
-  // or control scaling as controlled by |mode|. Pixel scroll is physical
-  // pixels in the coordinate system of the target View.
-  float delta_x;
-  float delta_y;
-  float delta_z;
-};
-
-// Supplementary data to support pointers where the pointer can
-// cover multiple pixels per http://www.w3.org/TR/pointerevents/
-struct BrushData {
-  // |width| and |height| are in CSS pixels in the coordinate system of
-  // the target View.
-  float width;
-  float height;
-  // |pressure| range is [0,1]. For devices like mice buttons where the
-  // pressure is not available, it will be set to 0.5 if the button is down.
-  float pressure;
-  // |tilt_x| and |tilt_y| are in degrees. See comments in ui::PointerDetails
-  // for more information.
-  float tilt_x;
-  float tilt_y;
-  // The normalized tangential pressure (or barrel pressure), typically set by
-  // an additional control of the stylus, which has a range of [-1,1], where 0
-  // is the neutral position of the control. Always 0 if the device does not
-  // support it.
-  float tangential_pressure;
-  // The clockwise rotation of a pen stylus around its own major axis, in
-  // degrees in the range [0,359]. Always 0 if the device does not support it.
-  int32 twist;
+  // |relative_location| is in the coordinate system of the target and in DIPs.
+  gfx.mojom.PointF relative_location;
+  // |root_location| is relative to the client's root and in dips.
+  gfx.mojom.PointF root_location;
 };
 
 // Data to support gesture events.
@@ -140,13 +83,42 @@ struct ScrollData {
   ScrollEventPhase scroll_event_phase;
 };
 
+// This mirrors the C++ class of the same name, see it for details.
+struct PointerDetails {
+  PointerKind pointer_type;
+  float radius_x;
+  float radius_y;
+  float force;
+  float tilt_x;
+  float tilt_y;
+  float tangential_pressure;
+  float twist;
+  int32 id;
+  int32 offset_x;
+  int32 offset_y;
+};
+
+struct MouseData {
+  int32 changed_button_flags;
+  LocationData location;
+  PointerDetails pointer_details;
+  // Only used for mouse wheel.
+  gfx.mojom.Vector2d wheel_offset;
+};
+
+// This is used for TouchEvents.
+struct TouchData {
+  bool may_cause_scrolling;
+  bool hovering;
+  LocationData location;
+  PointerDetails pointer_details;
+};
+
 struct Event {
   // TODO(sky): rename to type.
   EventType action;
   // A bitfield of kEventFlag* and kMouseEventFlag* values in
   // input_event_constants.mojom.
-  //
-  // TODO(sky): parts of this should move to PointerData.
   int32 flags;
   // This value accurately orders events w.r.t. to each other but does not
   // position them at an absolute time since the TimeTicks origin is only
@@ -154,8 +126,9 @@ struct Event {
   mojo_base.mojom.TimeTicks time_stamp;
   LatencyInfo latency;
   KeyData? key_data;
-  PointerData? pointer_data;
   GestureData? gesture_data;
   ScrollData? scroll_data;
+  TouchData? touch_data;
+  MouseData? mouse_data;
   map<string, array<uint8>>? properties;
 };

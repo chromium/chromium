@@ -118,9 +118,8 @@ class FileSystemApiTest : public PlatformAppBrowserTest {
         "test_temp", temp_dir_.GetPath());
 
     std::vector<base::FilePath> result;
-    for (std::vector<std::string>::const_iterator it =
-             destination_names.begin();
-         it != destination_names.end(); ++it) {
+    for (auto it = destination_names.cbegin(); it != destination_names.cend();
+         ++it) {
       base::FilePath destination = temp_dir_.GetPath().AppendASCII(*it);
       if (copy_gold) {
         base::FilePath source = test_root_folder_.AppendASCII("gold.txt");

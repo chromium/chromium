@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
@@ -28,6 +29,7 @@
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -54,8 +56,8 @@ void SubresourceFilterTestHarness::SetUp() {
 
   system_request_context_getter_ =
       base::MakeRefCounted<net::TestURLRequestContextGetter>(
-          content::BrowserThread::GetTaskRunnerForThread(
-              content::BrowserThread::IO));
+          base::CreateSingleThreadTaskRunnerWithTraits(
+              {content::BrowserThread::IO}));
   TestingBrowserProcess::GetGlobal()->SetSystemRequestContext(
       system_request_context_getter_.get());
 

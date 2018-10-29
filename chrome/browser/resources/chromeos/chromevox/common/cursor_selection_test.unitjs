@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxCursorSelectionUnitTest() {}
+function ChromeVoxCursorSelectionUnitTest() {}
 
-CvoxCursorSelectionUnitTest.prototype = {
+ChromeVoxCursorSelectionUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -21,7 +21,7 @@ CvoxCursorSelectionUnitTest.prototype = {
   ]
 };
 
-TEST_F('CvoxCursorSelectionUnitTest', 'Reverse', function() {
+TEST_F('ChromeVoxCursorSelectionUnitTest', 'Reverse', function() {
   this.loadDoc(function() {/*!
      <div>
        <p id="a">a</p>
@@ -65,7 +65,7 @@ TEST_F('CvoxCursorSelectionUnitTest', 'Reverse', function() {
 
 
 /** Tests correctness of collapsing selections.  */
-TEST_F('CvoxCursorSelectionUnitTest', 'Collapse', function() {
+TEST_F('ChromeVoxCursorSelectionUnitTest', 'Collapse', function() {
   this.loadDoc(function() {/*!
     <p id='1'>This is a test.</p>
   */});

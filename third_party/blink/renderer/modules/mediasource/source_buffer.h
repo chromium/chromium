@@ -171,7 +171,7 @@ class SourceBuffer final : public EventTargetWithInlineData,
   bool first_initialization_segment_received_;
 
   Vector<unsigned char> pending_append_data_;
-  size_t pending_append_data_offset_;
+  wtf_size_t pending_append_data_offset_;
   Member<AsyncMethodRunner<SourceBuffer>> append_buffer_async_part_runner_;
 
   double pending_remove_start_;

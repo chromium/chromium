@@ -52,12 +52,13 @@ message DeviceRegisterRequest {
   // client has been registered properly.  For example, a client must
   // register with type DEVICE in order to retrieve device policies.
   enum Type {
+    reserved 5;
+
     TT   = 0;             // Register for TT release.
     USER = 1;             // Register for Chrome OS user polices.
     DEVICE = 2;           // Register for Chrome OS device policies.
     BROWSER = 3;          // Register for desktop Chrome browser user policies.
     ANDROID_BROWSER = 4;  // Register for Android Chrome browser user policies.
-    IOS_BROWSER = 5;      // Register for iOS Chrome browser user policies.
   }
   // NOTE: we also use this field to detect client version.  If this
   // field is missing, then the request comes from TT.  We will remove
@@ -144,6 +145,9 @@ message DeviceRegisterRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 12;
+
+  // Previous DMToken that should be reused for re-registration.
+  optional string reregistration_dm_token = 13;
 }
 
 // Response from server to device register request.
@@ -273,7 +277,6 @@ message PolicyFetchRequest {
   //   google/chrome/machine-level-extension => ExternalPolicyData
   //   google/chromeos/signinextension => ExternalPolicyData
   //   google/android/user => ChromeSettingsProto
-  //   google/ios/user => ChromeSettingsProto
   optional string policy_type = 1;
 
   // This is the last policy timestamp that client received from server. The
@@ -838,6 +841,12 @@ message DeviceStatusReportRequest {
 
   // Release channel (stable, beta, etc.).
   optional Channel channel = 22;
+
+  // TPM status information.
+  optional TpmStatusInfo tpm_status_info = 23;
+
+  // Whether hardware write protect switch is on.
+  optional bool write_protect_switch = 24;
 }
 
 message OsUpdateStatus {
@@ -1073,6 +1082,14 @@ message AndroidStatus {
   optional string droid_guard_info = 2;
 }
 
+message CrostiniStatus {
+  // Time stamp of last launch of a Crostini app with three day granularity,
+  // The timestamp is milliseconds since Epoch in UTC timezone (Java time).
+  optional int64 last_launch_time_window_start_timestamp = 1;
+  // The VM image version at the time of the last launch.
+  optional string last_launch_vm_image_version = 2;
+}
+
 // Report current active session (a user on one device) level status.
 message SessionStatusReportRequest {
   reserved 1, 2, 3, 6;
@@ -1094,6 +1111,9 @@ message SessionStatusReportRequest {
   // Format of the id is as specified in tz database e.g. Pacific/Honolulu. For
   // more details check third_party/icu/source/i18n/unicode/timezone.h.
   optional string time_zone = 9;
+
+  // Information about Crostini status.
+  optional CrostiniStatus crostini_status = 10;
 }
 
 // Response from DMServer to update devices' status.
@@ -1260,6 +1280,9 @@ message DeviceInitialEnrollmentStateResponse {
     INITIAL_ENROLLMENT_MODE_NONE = 0;
     // Enterprise enrollment is enforced and cannot be skipped.
     INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED = 1;
+    // Zero-Touch (attestation-based) enrollment is enforced and cannot be
+    // skipped.
+    INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED = 2;
   };
   // The server-indicated initial enrollment mode.
   optional InitialEnrollmentMode initial_enrollment_mode = 1
@@ -1382,6 +1405,9 @@ message RemoteCommand {
 
     // Start Chrome Remote Desktop session (limited to Kiosk sessions only).
     DEVICE_START_CRD_SESSION = 6;
+
+    // Wipe the device (perform a powerwash).
+    DEVICE_REMOTE_POWERWASH = 7;
   }
 
   // The command type.
@@ -1655,6 +1681,25 @@ message TpmVersionInfo {
   optional uint32 tpm_model = 4;
   optional uint64 firmware_version = 5;
   optional string vendor_specific = 6;
+}
+
+// Contains status of the TPM unit.  These fields come from GetTpmStatusReply
+// proto message from Chrome OS side (dbus/cryptohome/rpc.proto).
+message TpmStatusInfo {
+  optional bool enabled = 1;
+  optional bool owned = 2;
+  // This field was previously named "initialized", but that's not a valid name
+  // for a proto field since it generates isInitialized method for the Java
+  // binding which collides with the isInitialized method that exists for all
+  // Java protos.
+  optional bool tpm_initialized = 3;
+  optional bool attestation_prepared = 4;
+  optional bool attestation_enrolled = 5;
+  optional int32 dictionary_attack_counter = 6;
+  optional int32 dictionary_attack_threshold = 7;
+  optional bool dictionary_attack_lockout_in_effect = 8;
+  optional int32 dictionary_attack_lockout_seconds_remaining = 9;
+  optional bool boot_lockbox_finalized = 10;
 }
 
 // System state included with some log events.
@@ -1976,9 +2021,14 @@ message DeviceManagementRequest {
 // 200 OK: valid response is returned to client.
 // 400 Bad Request: invalid argument.
 // 401 Unauthorized: invalid auth cookie or DM token.
+// 402 Missing licenses.
 // 403 Forbidden: device management is not allowed.
 // 404 Not Found: the request URL is invalid.
+// 405 Invalid serial number.
+// 409 Device id conflict.
 // 410 Device Not Found: the device id is not found.
+// 412 Pending approval.
+// 417 Consumer account with packaged license.
 // 491 Request Pending: the request is pending approval.
 // 500 Internal Server Error: most likely a bug in DM server.
 // 503 Service Unavailable: most likely a backend error.
@@ -1986,36 +2036,7 @@ message DeviceManagementRequest {
 // 903 Deprovisioned: the device has been deprovisioned.
 // 904 Arc Disabled: ARC is not enabled on the domain.
 message DeviceManagementResponse {
-  reserved 24;
-
-  // TODO(hong): move error handling to HTTP level.
-  // Error code to client.
-  enum ErrorCode {
-    SUCCESS = 0;
-    // Returned for register request when device management is not supported
-    // for the domain.
-    DEVICE_MANAGEMENT_NOT_SUPPORTED = 1;
-    // Returned when the device is not found.
-    DEVICE_NOT_FOUND  = 2;
-    // Returned when passed in device management token doesn't match the token
-    // on server side.
-    DEVICE_MANAGEMENT_TOKEN_INVALID  = 3;
-    // Returned when device registration is pending approval (if required).
-    ACTIVATION_PENDING = 4;
-    // Returned when the policy is not found.
-    POLICY_NOT_FOUND  = 5;
-  }
-
-  // Error code for this response.
-  //
-  // For responses to TT clients, this field MUST be set, since it WAS
-  // a required field.  For special error code listed above, we return
-  // 200 in HTTP Status Code and set the real error code here.
-  //
-  // For release clients, we plan to move all error code to HTTP
-  // Status Code, so it is much easier for log analysis.  If possible,
-  // we plan to remove this field once Chrome OS TT phase is over.
-  optional ErrorCode error = 1 [default = SUCCESS];
+  reserved 1, 24;
 
   // Error message.
   optional string error_message = 2;

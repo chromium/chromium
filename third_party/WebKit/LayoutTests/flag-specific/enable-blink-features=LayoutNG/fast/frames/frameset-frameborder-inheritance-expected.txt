@@ -7,27 +7,22 @@ missing frameborder attribute should inherit it
 PASS frames[0].offsetWidth is 150
 PASS frames[1].offsetWidth is 150
 
-
 inherited frameborder=no should inherit border=0
 PASS frames[0].offsetWidth is 150
 PASS frames[1].offsetWidth is 150
-
 
 frameborder=yes and border should override inherited value
 PASS frames[0].offsetWidth is 145
 PASS frames[1].offsetWidth is 145
 
-
 inherited frameborder=0 should have border=0 even if specified differently
 PASS frames[0].offsetWidth is 150
 PASS frames[1].offsetWidth is 150
-
 
 bordercolor should inherit even if frameborder=0
 PASS frames[0].offsetWidth is 145
 PASS frames[1].offsetWidth is 145
 PASS getComputedStyle(frameset).borderColor is "rgb(0, 128, 0)"
-
 
 PASS successfullyParsed is true
 

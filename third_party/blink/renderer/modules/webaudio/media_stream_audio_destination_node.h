@@ -33,7 +33,7 @@
 
 namespace blink {
 
-class BaseAudioContext;
+class AudioContext;
 
 class MediaStreamAudioDestinationHandler final
     : public AudioBasicInspectorHandler {
@@ -78,17 +78,17 @@ class MediaStreamAudioDestinationNode final : public AudioBasicInspectorNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MediaStreamAudioDestinationNode* Create(BaseAudioContext&,
+  static MediaStreamAudioDestinationNode* Create(AudioContext&,
                                                  size_t number_of_channels,
                                                  ExceptionState&);
-  static MediaStreamAudioDestinationNode* Create(BaseAudioContext*,
+  static MediaStreamAudioDestinationNode* Create(AudioContext*,
                                                  const AudioNodeOptions&,
                                                  ExceptionState&);
 
   MediaStream* stream() const;
 
  private:
-  MediaStreamAudioDestinationNode(BaseAudioContext&, size_t number_of_channels);
+  MediaStreamAudioDestinationNode(AudioContext&, size_t number_of_channels);
 };
 
 }  // namespace blink

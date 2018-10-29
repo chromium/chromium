@@ -158,10 +158,6 @@ class UI_BASE_EXPORT ResourceBundle {
   // Check if the .pak for the given locale exists.
   bool LocaleDataPakExists(const std::string& locale);
 
-  // Inserts |data_pack| to |data_pack_| and updates |max_scale_factor_|
-  // accordingly.
-  void AddDataPack(std::unique_ptr<DataPack> data_pack);
-
   // Registers additional data pack files with this ResourceBundle.  When
   // looking for a DataResource, we will search these files after searching the
   // main module. |path| should be the complete path to the pack file if known
@@ -241,9 +237,9 @@ class UI_BASE_EXPORT ResourceBundle {
   base::StringPiece GetRawDataResourceForScale(int resource_id,
                                                ScaleFactor scale_factor) const;
 
-  // Get a localized string given a message id.  Returns an empty
-  // string if the message_id is not found.
-  base::string16 GetLocalizedString(int message_id);
+  // Get a localized string given a message id.  Returns an empty string if the
+  // resource_id is not found.
+  base::string16 GetLocalizedString(int resource_id);
 
   // Get a localized resource (for example, localized image logo) given a
   // resource id.
@@ -276,11 +272,11 @@ class UI_BASE_EXPORT ResourceBundle {
 
   // Overrides a localized string resource with the given string. If no delegate
   // is present, the |string| will be returned when getting the localized string
-  // |message_id|. If |ReloadLocaleResources| is called, all overrides are
+  // |resource_id|. If |ReloadLocaleResources| is called, all overrides are
   // cleared. This is intended to be used in conjunction with field trials and
   // the variations service to experiment with different UI strings. This method
   // is not thread safe!
-  void OverrideLocaleStringResource(int message_id,
+  void OverrideLocaleStringResource(int resource_id,
                                     const base::string16& string);
 
   // Returns the full pathname of the locale file to load.  May return an empty
@@ -297,10 +293,21 @@ class UI_BASE_EXPORT ResourceBundle {
   // Returns true if |scale_factor| is supported by this platform.
   static bool IsScaleFactorSupported(ScaleFactor scale_factor);
 
+  // Checks whether overriding locale strings is supported. This will fail with
+  // a DCHECK if the first string resource has already been queried.
+  void CheckCanOverrideStringResources();
+
   // Sets whether this ResourceBundle should mangle localized strings or not.
   void set_mangle_localized_strings_for_test(bool mangle) {
     mangle_localized_strings_ = mangle;
   }
+
+#if DCHECK_IS_ON()
+  // Gets whether overriding locale strings is supported.
+  bool get_can_override_locale_string_resources_for_test() {
+    return can_override_locale_string_resources_;
+  }
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetPathForLocalePack);
@@ -340,6 +347,10 @@ class UI_BASE_EXPORT ResourceBundle {
   void AddDataPackFromPathInternal(const base::FilePath& path,
                                    ScaleFactor scale_factor,
                                    bool optional);
+
+  // Inserts |data_pack| to |data_pack_| and updates |max_scale_factor_|
+  // accordingly.
+  void AddDataPack(std::unique_ptr<DataPack> data_pack);
 
   // Try to load the locale specific strings from an external data module.
   // Returns the locale that is loaded.
@@ -404,6 +415,13 @@ class UI_BASE_EXPORT ResourceBundle {
   // visible and returns the mangled string. If not, returns |str|.
   base::string16 MaybeMangleLocalizedString(const base::string16& str);
 
+  // An internal implementation of |GetLocalizedString()| without setting the
+  // flag of whether overriding locale strings is supported to false. We don't
+  // update this flag only in |InitDefaultFontList()| which is called earlier
+  // than the overriding. This is okay, because the font list doesn't need to be
+  // overridden by variations.
+  base::string16 GetLocalizedStringImpl(int resource_id);
+
   // This pointer is guaranteed to outlive the ResourceBundle instance and may
   // be NULL.
   Delegate* delegate_;
@@ -435,6 +453,10 @@ class UI_BASE_EXPORT ResourceBundle {
   base::FilePath overridden_pak_path_;
 
   IdToStringMap overridden_locale_strings_;
+
+#if DCHECK_IS_ON()
+  bool can_override_locale_string_resources_ = true;
+#endif
 
   bool is_test_resources_ = false;
   bool mangle_localized_strings_ = false;

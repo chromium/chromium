@@ -390,4 +390,26 @@ public class VrBrowserControllerInputTest {
                     > navigationTimestamp;
         });
     }
+
+    /**
+     * Tests that pressing the app button on the Daydream controller exits omnibox text input mode.
+     */
+    @Test
+    @MediumTest
+    public void testAppButtonExitsOmniboxTextInput() throws InterruptedException {
+        // We should always have the keyboard installed and up to date during automated testing, so
+        // this isn't strictly required. However, it may prevent weird issues when running locally
+        // if you don't have the keyboard installed for some reason.
+        NativeUiUtils.enableMockedKeyboard();
+        NativeUiUtils.clickElementAndWaitForUiQuiescence(UserFriendlyElementName.URL, new PointF());
+        // This acts as an assert that we're actually in omnibox text input mode. If the omnibox
+        // is not actually visible, we'll hit a DCHECK in the native code.
+        NativeUiUtils.clickElementAndWaitForUiQuiescence(
+                UserFriendlyElementName.OMNIBOX_TEXT_FIELD, new PointF());
+        NativeUiUtils.revertToRealInput();
+        // Wait for the URL bar to re-appear, which we take as a signal that we've exited omnibox
+        // text input mode.
+        NativeUiUtils.performActionAndWaitForVisibilityChange(
+                UserFriendlyElementName.URL, () -> { mController.pressReleaseAppButton(); });
+    }
 }

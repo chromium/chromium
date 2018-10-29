@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_promo_item.h"
 
+#include "components/unified_consent/feature.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_configurator.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,8 +41,13 @@ const CGFloat kSignInPromoViewPadding = 10;
 
 - (void)configureCell:(SigninPromoCell*)cell {
   [super configureCell:cell];
-  cell.signinPromoView.textLabel.text =
-      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS);
+  if (unified_consent::IsUnifiedConsentFeatureEnabled()) {
+    cell.signinPromoView.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
+  } else {
+    cell.signinPromoView.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS);
+  }
   [_configurator configureSigninPromoView:cell.signinPromoView];
 }
 

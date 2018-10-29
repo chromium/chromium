@@ -31,7 +31,7 @@ mouseMoveTo(shadowRoot.firstChild);
 eventSender.mouseDown();
 mouseMoveTo(shadowRoot.firstChild.nextSibling);
 eventSender.mouseUp();
-shouldBe('lastClickTarget', 'host');
+shouldBeNull('lastClickTarget');
 debug('');
 
 lastClickTarget = null;

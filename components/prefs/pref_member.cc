@@ -133,8 +133,7 @@ bool PrefMemberVectorStringUpdate(const base::Value& value,
   const base::ListValue* list = static_cast<const base::ListValue*>(&value);
 
   std::vector<std::string> local_vector;
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end(); ++it) {
+  for (auto it = list->begin(); it != list->end(); ++it) {
     std::string string_value;
     if (!it->GetAsString(&string_value))
       return false;

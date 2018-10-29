@@ -27,10 +27,6 @@ using content::Referrer;
 
 namespace {
 
-// Menus more than this many pixels wide will get trimmed
-// TODO(jrg): ask UI dudes what a good value is.
-const NSUInteger kMaximumMenuPixelsWide = 300;
-
 // Returns the NSMenuItem in |submenu|'s supermenu that holds |submenu|.
 NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   NSArray* parent_items = [[submenu supermenu] itemArray];
@@ -46,13 +42,6 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
 @implementation BookmarkMenuCocoaController {
  @private
   BookmarkMenuBridge* bridge_;  // Weak. Owns |self|.
-}
-
-+ (NSString*)menuTitleForNode:(const BookmarkNode*)node {
-  base::string16 title =
-      [MenuControllerCocoa elideMenuTitle:node->GetTitle()
-                                  toWidth:kMaximumMenuPixelsWide];
-  return base::SysUTF16ToNSString(title);
 }
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {

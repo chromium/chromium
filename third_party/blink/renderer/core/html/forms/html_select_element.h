@@ -233,9 +233,9 @@ class CORE_EXPORT HTMLSelectElement final
   bool HasPlaceholderLabelOption() const;
 
   enum SelectOptionFlag {
-    kDeselectOtherOptions = 1 << 0,
-    kDispatchInputAndChangeEvent = 1 << 1,
-    kMakeOptionDirty = 1 << 2,
+    kDeselectOtherOptionsFlag = 1 << 0,
+    kDispatchInputAndChangeEventFlag = 1 << 1,
+    kMakeOptionDirtyFlag = 1 << 2,
   };
   typedef unsigned SelectOptionFlags;
   void SelectOption(HTMLOptionElement*, SelectOptionFlags);
@@ -250,9 +250,9 @@ class CORE_EXPORT HTMLSelectElement final
   bool ShouldOpenPopupForKeyPressEvent(const KeyboardEvent&);
   void ListBoxDefaultEventHandler(Event&);
   void SetOptionsChangedOnLayoutObject();
-  size_t SearchOptionsForValue(const String&,
-                               size_t list_index_start,
-                               size_t list_index_end) const;
+  wtf_size_t SearchOptionsForValue(const String&,
+                                   wtf_size_t list_index_start,
+                                   wtf_size_t list_index_end) const;
   void UpdateListBoxSelection(bool deselect_other_options, bool scroll = true);
   void SetIndexToSelectOnCancel(int list_index);
   void SetSuggestedOption(HTMLOptionElement*);
@@ -285,7 +285,7 @@ class CORE_EXPORT HTMLSelectElement final
   void ObserveTreeMutation();
   void UnobserveTreeMutation();
 
-  // m_listItems contains HTMLOptionElement, HTMLOptGroupElement, and
+  // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.
   mutable ListItems list_items_;
   Vector<bool> last_on_change_selection_;

@@ -5,7 +5,6 @@
 
 var TestConstants = {
   isPowerwashed: 0,
-  isUsingNewWallpaperPicker: false,
   wallpaperUrl: 'https://test.com/test.jpg',
   highResolutionSuffix: 'suffix',
   // A dummy string which is used to mock an image.
@@ -269,7 +268,6 @@ var chrome = {
   wallpaperPrivate: {
     getStrings: function(callback) {
       callback({
-        useNewWallpaperPicker: TestConstants.isUsingNewWallpaperPicker,
         highResolutionSuffix: TestConstants.highResolutionSuffix
       });
     },
@@ -292,12 +290,7 @@ var chrome = {
           {imageUrl: TestConstants.wallpaperUrl}, null /*nextResumeToken=*/);
     }
   },
-  runtime: {lastError: null},
-  commandLinePrivate: {
-    hasSwitch: function(arg, callback) {
-      callback(TestConstants.isUsingNewWallpaperPicker);
-    }
-  }
+  runtime: {lastError: null}
 };
 
 (function (exports) {

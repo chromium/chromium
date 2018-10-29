@@ -16,6 +16,7 @@ jumbo_component("geometry") {
     "cubic_bezier.h",
     "dip_util.cc",
     "dip_util.h",
+    "geometry_export.h",
     "insets.cc",
     "insets.h",
     "insets_f.cc",
@@ -59,11 +60,10 @@ jumbo_component("geometry") {
     "vector3d_f.h",
   ]
 
-  defines = [ "GFX_IMPLEMENTATION" ]
+  defines = [ "GEOMETRY_IMPLEMENTATION" ]
 
   deps = [
     "//base",
-    "//ui/gfx:gfx_export",
   ]
 
   if (is_android && !is_debug) {

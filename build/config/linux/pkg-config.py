@@ -124,6 +124,8 @@ def main():
                     dest='atleast_version', type='string')
   parser.add_option('--libdir', action='store_true', dest='libdir')
   parser.add_option('--dridriverdir', action='store_true', dest='dridriverdir')
+  parser.add_option('--version-as-components', action='store_true',
+                    dest='version_as_components')
   (options, args) = parser.parse_args()
 
   # Make a list of regular expressions to strip out.
@@ -150,6 +152,17 @@ def main():
     else:
       print "false"
     return 0
+
+  if options.version_as_components:
+    cmd = [options.pkg_config, "--modversion"] + args
+    try:
+      version_string = subprocess.check_output(cmd)
+    except:
+      sys.stderr.write('Error from pkg-config.\n')
+      return 1
+    print json.dumps(list(map(int, version_string.strip().split("."))))
+    return 0
+
 
   if options.libdir:
     cmd = [options.pkg_config, "--variable=libdir"] + args

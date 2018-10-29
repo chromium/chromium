@@ -23,9 +23,11 @@ class ArcAuthCodeFetcher : public ArcFetcherBase {
   // Fetch() should be called once per instance, and it is expected that
   // the inflight operation is cancelled without calling the |callback|
   // when the instance is deleted.
+  // TODO(sinhak): Consider moving to |base::Optional<std::string>| for the
+  // |auth_code| to avoid meaningless auth_code on error.
   using FetchCallback =
-      base::Callback<void(bool success, const std::string& auth_code)>;
-  virtual void Fetch(const FetchCallback& callback) = 0;
+      base::OnceCallback<void(bool success, const std::string& auth_code)>;
+  virtual void Fetch(FetchCallback callback) = 0;
 };
 
 }  // namespace arc

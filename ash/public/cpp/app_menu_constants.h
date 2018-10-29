@@ -30,6 +30,10 @@ enum CommandId {
   // Used by AppMenuModelAdapter.
   NOTIFICATION_CONTAINER = 9,
 
+  // Used by CrostiniShelfContextMenu.
+  CROSTINI_USE_LOW_DENSITY = 10,
+  CROSTINI_USE_HIGH_DENSITY = 11,
+
   // Used by AppContextMenu.
   LAUNCH_NEW = 100,
   TOGGLE_PIN = 101,
@@ -51,6 +55,10 @@ enum CommandId {
   // menu for Android app. Used by AppContextMenu and LauncherContextMenu.
   LAUNCH_APP_SHORTCUT_FIRST = 1000,
   LAUNCH_APP_SHORTCUT_LAST = 1999,
+
+  // Command for stopping an app, or stopping a VM via an associated app. Used
+  // by AppContextMenu and LauncherContextMenu.
+  STOP_APP = 2000,
   COMMAND_ID_COUNT
 };
 

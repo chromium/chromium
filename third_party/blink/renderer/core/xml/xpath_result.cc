@@ -33,7 +33,7 @@
 
 namespace blink {
 
-using namespace XPath;
+using namespace xpath;
 
 XPathResult::XPathResult(EvaluationContext& context, const Value& value)
     : value_(value), node_set_position_(0), dom_tree_version_(0) {

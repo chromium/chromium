@@ -27,6 +27,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -99,6 +100,8 @@ std::unique_ptr<TracedValue> DocumentLoadTiming::GetNavigationStartTracingData()
                   document_loader_ ? document_loader_->Url().GetString() : "");
   data->SetBoolean("isLoadingMainFrame",
                    GetFrame() ? GetFrame()->IsMainFrame() : false);
+  data->SetString("navigationId",
+                  IdentifiersFactory::LoaderId(document_loader_));
   return data;
 }
 

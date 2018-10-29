@@ -27,7 +27,7 @@ class MockAssistant : public mojom::Assistant {
 
   MOCK_METHOD0(StartVoiceInteraction, void());
 
-  MOCK_METHOD0(StopActiveInteraction, void());
+  MOCK_METHOD1(StopActiveInteraction, void(bool));
 
   MOCK_METHOD1(SendTextQuery, void(const std::string&));
 

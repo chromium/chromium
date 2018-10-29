@@ -72,8 +72,11 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
       v8::Local<v8::FunctionTemplate> unreachable_function =
           gin::CreateFunctionTemplate(isolate,
                                       base::Bind(SetToTrue, callback_invoked));
-      return new GCCallback(script_context, object,
-                            unreachable_function->GetFunction(), fallback);
+      v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+      return new GCCallback(
+          script_context, object,
+          unreachable_function->GetFunction(v8_context).ToLocalChecked(),
+          fallback);
     }
     return new GCCallback(script_context, object,
                           base::Bind(SetToTrue, callback_invoked), fallback);

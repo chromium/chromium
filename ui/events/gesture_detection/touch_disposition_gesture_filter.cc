@@ -172,8 +172,8 @@ TouchDispositionGestureFilter::OnGesturePacket(
   }
 
   // Check the packet's unique_touch_event_id is valid and unique with the
-  // exception of TOUCH_TIMEOUT packets which have the unique_touch_event_id_
-  // of 0. |TOUCH_TIMEOUT| packets don't wait for an ack, they are dispatched
+  // exception of TOUCH_TIMEOUT packets which may share an id with other events.
+  // |TOUCH_TIMEOUT| packets don't wait for an ack, they are dispatched
   // as soon as they reach the head of the queue, in |SendAckedEvents|.
   if (!Tail().empty()) {
     DCHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT)
@@ -181,9 +181,9 @@ TouchDispositionGestureFilter::OnGesturePacket(
                     Tail().back().unique_touch_event_id()));
   }
   if (!Head().empty()) {
-    DCHECK_NE(packet.unique_touch_event_id(),
-              Head().front().unique_touch_event_id());
-
+    DCHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT) ||
+           packet.unique_touch_event_id() !=
+               Head().front().unique_touch_event_id());
   }
 
   Tail().push(packet);
@@ -201,8 +201,11 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
   if (Head().empty())
     PopGestureSequence();
 
+  // If the tail's event_source is TOUCH_TIMEOUT, then it may share a
+  // unique_touch_event_id() with another event; in this case don't ack it here.
   if (!Tail().empty() &&
-      Tail().back().unique_touch_event_id() == unique_touch_event_id) {
+      Tail().back().unique_touch_event_id() == unique_touch_event_id &&
+      Tail().back().gesture_source() != GestureEventDataPacket::TOUCH_TIMEOUT) {
     Tail().back().Ack(event_consumed, is_source_touch_event_set_non_blocking);
     if (sequences_.size() == 1 && Tail().size() == 1)
       SendAckedEvents();
@@ -254,6 +257,10 @@ void TouchDispositionGestureFilter::SendAckedEvents() {
 
 bool TouchDispositionGestureFilter::IsEmpty() const {
   return sequences_.empty();
+}
+
+void TouchDispositionGestureFilter::ResetGestureHandlingState() {
+  state_ = GestureHandlingState();
 }
 
 void TouchDispositionGestureFilter::FilterAndSendPacket(

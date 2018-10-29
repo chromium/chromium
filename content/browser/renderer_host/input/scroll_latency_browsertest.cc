@@ -62,7 +62,7 @@ namespace content {
 
 class ScrollLatencyBrowserTest : public ContentBrowserTest {
  public:
-  ScrollLatencyBrowserTest() : loop_(base::MessageLoop::TYPE_UI) {}
+  ScrollLatencyBrowserTest() {}
   ~ScrollLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -140,7 +140,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::MessageLoop loop_;
   std::unique_ptr<MainThreadFrameObserver> frame_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollLatencyBrowserTest);

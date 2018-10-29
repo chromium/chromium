@@ -70,13 +70,10 @@ UpdatePasswordInfoBarDelegate::UpdatePasswordInfoBarDelegate(
     : infobar_response_(password_manager::metrics_util::NO_DIRECT_INTERACTION),
       is_smartlock_branding_enabled_(is_smartlock_branding_enabled) {
   base::string16 message;
-  gfx::Range message_link_range = gfx::Range();
   GetSavePasswordDialogTitleTextAndLinkRange(
       web_contents->GetVisibleURL(), form_to_update->GetOrigin(),
-      is_smartlock_branding_enabled, PasswordTitleType::UPDATE_PASSWORD,
-      &message, &message_link_range);
+      PasswordTitleType::UPDATE_PASSWORD, &message);
   SetMessage(message);
-  SetMessageLinkRange(message_link_range);
   if (is_smartlock_branding_enabled)
     SetDetailsMessage(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER));
 

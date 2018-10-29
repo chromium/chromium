@@ -20,20 +20,6 @@
 
 namespace media {
 
-InMemoryVideoDecodeStatsDBFactory::InMemoryVideoDecodeStatsDBFactory(
-    VideoDecodeStatsDBProvider* seed_db_provider)
-    : seed_db_provider_(seed_db_provider) {
-  DVLOG(2) << __func__ << " has_seed_provider:" << !!seed_db_provider_;
-}
-
-InMemoryVideoDecodeStatsDBFactory::~InMemoryVideoDecodeStatsDBFactory() =
-    default;
-
-std::unique_ptr<VideoDecodeStatsDB>
-InMemoryVideoDecodeStatsDBFactory::CreateDB() {
-  return std::make_unique<InMemoryVideoDecodeStatsDBImpl>(seed_db_provider_);
-}
-
 InMemoryVideoDecodeStatsDBImpl::InMemoryVideoDecodeStatsDBImpl(
     VideoDecodeStatsDBProvider* seed_db_provider)
     : seed_db_provider_(seed_db_provider), weak_ptr_factory_(this) {
@@ -202,7 +188,7 @@ void InMemoryVideoDecodeStatsDBImpl::OnGotSeedEntry(
   std::move(get_stats_cb).Run(true, std::move(seed_entry));
 }
 
-void InMemoryVideoDecodeStatsDBImpl::DestroyStats(
+void InMemoryVideoDecodeStatsDBImpl::ClearStats(
     base::OnceClosure destroy_done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;

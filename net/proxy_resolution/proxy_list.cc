@@ -57,8 +57,7 @@ void ProxyList::DeprioritizeBadProxies(
 
   std::vector<ProxyServer>::const_iterator iter = proxies_.begin();
   for (; iter != proxies_.end(); ++iter) {
-    ProxyRetryInfoMap::const_iterator bad_proxy =
-        proxy_retry_info.find(iter->ToURI());
+    auto bad_proxy = proxy_retry_info.find(iter->ToURI());
     if (bad_proxy != proxy_retry_info.end()) {
       // This proxy is bad. Check if it's time to retry.
       if (bad_proxy->second.bad_until >= TimeTicks::Now()) {
@@ -78,8 +77,7 @@ void ProxyList::DeprioritizeBadProxies(
 }
 
 void ProxyList::RemoveProxiesWithoutScheme(int scheme_bit_field) {
-  for (std::vector<ProxyServer>::iterator it = proxies_.begin();
-       it != proxies_.end(); ) {
+  for (auto it = proxies_.begin(); it != proxies_.end();) {
     if (!(scheme_bit_field & it->scheme())) {
       it = proxies_.erase(it);
       continue;
@@ -135,7 +133,7 @@ void ProxyList::SetFromPacString(const std::string& pac_string) {
 
 std::string ProxyList::ToPacString() const {
   std::string proxy_list;
-  std::vector<ProxyServer>::const_iterator iter = proxies_.begin();
+  auto iter = proxies_.begin();
   for (; iter != proxies_.end(); ++iter) {
     if (!proxy_list.empty())
       proxy_list += ";";
@@ -176,7 +174,7 @@ void ProxyList::AddProxyToRetryList(ProxyRetryInfoMap* proxy_retry_info,
   // Mark this proxy as bad.
   TimeTicks bad_until = TimeTicks::Now() + retry_delay;
   std::string proxy_key = proxy_to_retry.ToURI();
-  ProxyRetryInfoMap::iterator iter = proxy_retry_info->find(proxy_key);
+  auto iter = proxy_retry_info->find(proxy_key);
   if (iter == proxy_retry_info->end() || bad_until > iter->second.bad_until) {
     ProxyRetryInfo retry_info;
     retry_info.current_delay = retry_delay;

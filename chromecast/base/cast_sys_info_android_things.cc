@@ -7,6 +7,7 @@
 #include "base/android/jni_string.h"
 #include "chromecast/chromecast_buildflags.h"
 #if BUILDFLAG(IS_ANDROID_THINGS_NON_PUBLIC)
+#include "base/android/jni_array.h"
 #include "jni/CastSysInfoAndroidThings_jni.h"
 #endif
 
@@ -53,6 +54,18 @@ std::string CastSysInfoAndroidThings::GetSystemReleaseChannel() {
 #else
   return "";
 #endif
+}
+
+// static
+std::vector<std::string> CastSysInfo::GetFactoryLocaleList() {
+  std::vector<std::string> locale_list;
+#if BUILDFLAG(IS_ANDROID_THINGS_NON_PUBLIC)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::AppendJavaStringArrayToStringVector(
+      env, Java_CastSysInfoAndroidThings_getFactoryLocaleList(env),
+      &locale_list);
+#endif
+  return locale_list;
 }
 
 }  // namespace chromecast

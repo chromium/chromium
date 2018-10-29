@@ -159,6 +159,14 @@ TEST_F(LoopbackServerTest, GetUpdateCommand) {
   EXPECT_EQ(3, response.get_updates().entries_size());
 }
 
+TEST_F(LoopbackServerTest, GetUpdateCommandShouldFilterByDataType) {
+  ClientToServerResponse response =
+      GetUpdatesForType(EntitySpecifics::kPreferenceFieldNumber);
+  // Expect bookmark nodes to be ignored.
+  EXPECT_EQ(0, response.get_updates().entries_size());
+  EXPECT_EQ(1, response.get_updates().new_progress_marker_size());
+}
+
 TEST_F(LoopbackServerTest, ClearServerDataCommand) {
   ClientToServerMessage msg;
   SyncerProtoUtil::SetProtocolVersion(&msg);

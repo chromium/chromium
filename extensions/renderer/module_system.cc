@@ -122,7 +122,7 @@ bool ContextNeedsMojoBindings(ScriptContext* context) {
   //
   // Prefer to use Mojo from C++ if possible rather than adding to this list.
   static const char* const kApisRequiringMojo[] = {
-      "mimeHandlerPrivate", "mojoPrivate",
+      "mediaPerceptionPrivate", "mimeHandlerPrivate", "mojoPrivate",
   };
 
   for (const auto* api : kApisRequiringMojo) {
@@ -612,7 +612,7 @@ v8::MaybeLocal<v8::Object> ModuleSystem::RequireNativeFromString(
     return value.As<v8::Object>();
   }
 
-  NativeHandlerMap::iterator i = native_handler_map_.find(native_name);
+  auto i = native_handler_map_.find(native_name);
   if (i == native_handler_map_.end()) {
     Fatal(context_,
           "Couldn't find native for requireNative(" + native_name + ")");
@@ -808,7 +808,7 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
 }
 
 void ModuleSystem::ClobberExistingNativeHandler(const std::string& name) {
-  NativeHandlerMap::iterator existing_handler = native_handler_map_.find(name);
+  auto existing_handler = native_handler_map_.find(name);
   if (existing_handler != native_handler_map_.end()) {
     clobbered_native_handlers_.push_back(std::move(existing_handler->second));
     native_handler_map_.erase(existing_handler);

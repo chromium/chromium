@@ -18,10 +18,10 @@
 // -----------------------------------------------------------------------------
 //
 // This header file contains functions for joining a range of elements and
-// returning the result as a std::string. StrJoin operations are specified by passing
-// a range, a separator std::string to use between the elements joined, and an
+// returning the result as a string. StrJoin operations are specified by passing
+// a range, a separator string to use between the elements joined, and an
 // optional Formatter responsible for converting each argument in the range to a
-// std::string. If omitted, a default `AlphaNumFormatter()` is called on the elements
+// string. If omitted, a default `AlphaNumFormatter()` is called on the elements
 // to be joined, using the same formatting that `absl::StrCat()` uses. This
 // package defines a number of default formatters, and you can define your own
 // implementations.
@@ -29,7 +29,7 @@
 // Ranges are specified by passing a container with `std::begin()` and
 // `std::end()` iterators, container-specific `begin()` and `end()` iterators, a
 // brace-initialized `std::initializer_list`, or a `std::tuple` of heterogeneous
-// objects. The separator std::string is specified as an `absl::string_view`.
+// objects. The separator string is specified as an `absl::string_view`.
 //
 // Because the default formatter uses the `absl::AlphaNum` class,
 // `absl::StrJoin()`, like `absl::StrCat()`, will work out-of-the-box on
@@ -37,8 +37,8 @@
 //
 // Example:
 //
-//   std::vector<std::string> v = {"foo", "bar", "baz"};
-//   std::string s = absl::StrJoin(v, "-");
+//   std::vector<string> v = {"foo", "bar", "baz"};
+//   string s = absl::StrJoin(v, "-");
 //   EXPECT_EQ("foo-bar-baz", s);
 //
 // See comments on the `absl::StrJoin()` function for more examples.
@@ -52,6 +52,7 @@
 #include <iterator>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 
 #include "absl/base/macros.h"
@@ -65,16 +66,16 @@ namespace absl {
 // -----------------------------------------------------------------------------
 //
 // A Formatter is a function object that is responsible for formatting its
-// argument as a std::string and appending it to a given output std::string. Formatters
+// argument as a string and appending it to a given output string. Formatters
 // may be implemented as function objects, lambdas, or normal functions. You may
 // provide your own Formatter to enable `absl::StrJoin()` to work with arbitrary
 // types.
 //
 // The following is an example of a custom Formatter that simply uses
-// `std::to_string()` to format an integer as a std::string.
+// `std::to_string()` to format an integer as a string.
 //
 //   struct MyFormatter {
-//     void operator()(std::string* out, int i) const {
+//     void operator()(string* out, int i) const {
 //       out->append(std::to_string(i));
 //     }
 //   };
@@ -83,7 +84,7 @@ namespace absl {
 // argument to `absl::StrJoin()`:
 //
 //   std::vector<int> v = {1, 2, 3, 4};
-//   std::string s = absl::StrJoin(v, "-", MyFormatter());
+//   string s = absl::StrJoin(v, "-", MyFormatter());
 //   EXPECT_EQ("1-2-3-4", s);
 //
 // The following standard formatters are provided within this file:
@@ -155,10 +156,10 @@ DereferenceFormatter() {
 // StrJoin()
 // -----------------------------------------------------------------------------
 //
-// Joins a range of elements and returns the result as a std::string.
-// `absl::StrJoin()` takes a range, a separator std::string to use between the
+// Joins a range of elements and returns the result as a string.
+// `absl::StrJoin()` takes a range, a separator string to use between the
 // elements joined, and an optional Formatter responsible for converting each
-// argument in the range to a std::string.
+// argument in the range to a string.
 //
 // If omitted, the default `AlphaNumFormatter()` is called on the elements to be
 // joined.
@@ -166,22 +167,22 @@ DereferenceFormatter() {
 // Example 1:
 //   // Joins a collection of strings. This pattern also works with a collection
 //   // of `absl::string_view` or even `const char*`.
-//   std::vector<std::string> v = {"foo", "bar", "baz"};
-//   std::string s = absl::StrJoin(v, "-");
+//   std::vector<string> v = {"foo", "bar", "baz"};
+//   string s = absl::StrJoin(v, "-");
 //   EXPECT_EQ("foo-bar-baz", s);
 //
 // Example 2:
 //   // Joins the values in the given `std::initializer_list<>` specified using
 //   // brace initialization. This pattern also works with an initializer_list
 //   // of ints or `absl::string_view` -- any `AlphaNum`-compatible type.
-//   std::string s = absl::StrJoin({"foo", "bar", "baz"}, "-");
+//   string s = absl::StrJoin({"foo", "bar", "baz"}, "-");
 //   EXPECT_EQ("foo-bar-baz", s);
 //
 // Example 3:
 //   // Joins a collection of ints. This pattern also works with floats,
 //   // doubles, int64s -- any `StrCat()`-compatible type.
 //   std::vector<int> v = {1, 2, 3, -4};
-//   std::string s = absl::StrJoin(v, "-");
+//   string s = absl::StrJoin(v, "-");
 //   EXPECT_EQ("1-2-3--4", s);
 //
 // Example 4:
@@ -192,7 +193,7 @@ DereferenceFormatter() {
 //   // `std::vector<int*>`.
 //   int x = 1, y = 2, z = 3;
 //   std::vector<int*> v = {&x, &y, &z};
-//   std::string s = absl::StrJoin(v, "-");
+//   string s = absl::StrJoin(v, "-");
 //   EXPECT_EQ("1-2-3", s);
 //
 // Example 5:
@@ -201,42 +202,42 @@ DereferenceFormatter() {
 //   v.emplace_back(new int(1));
 //   v.emplace_back(new int(2));
 //   v.emplace_back(new int(3));
-//   std::string s = absl::StrJoin(v, "-");
+//   string s = absl::StrJoin(v, "-");
 //   EXPECT_EQ("1-2-3", s);
 //
 // Example 6:
 //   // Joins a `std::map`, with each key-value pair separated by an equals
 //   // sign. This pattern would also work with, say, a
 //   // `std::vector<std::pair<>>`.
-//   std::map<std::string, int> m = {
+//   std::map<string, int> m = {
 //       std::make_pair("a", 1),
 //       std::make_pair("b", 2),
 //       std::make_pair("c", 3)};
-//   std::string s = absl::StrJoin(m, ",", absl::PairFormatter("="));
+//   string s = absl::StrJoin(m, ",", absl::PairFormatter("="));
 //   EXPECT_EQ("a=1,b=2,c=3", s);
 //
 // Example 7:
 //   // These examples show how `absl::StrJoin()` handles a few common edge
 //   // cases:
-//   std::vector<std::string> v_empty;
+//   std::vector<string> v_empty;
 //   EXPECT_EQ("", absl::StrJoin(v_empty, "-"));
 //
-//   std::vector<std::string> v_one_item = {"foo"};
+//   std::vector<string> v_one_item = {"foo"};
 //   EXPECT_EQ("foo", absl::StrJoin(v_one_item, "-"));
 //
-//   std::vector<std::string> v_empty_string = {""};
+//   std::vector<string> v_empty_string = {""};
 //   EXPECT_EQ("", absl::StrJoin(v_empty_string, "-"));
 //
-//   std::vector<std::string> v_one_item_empty_string = {"a", ""};
+//   std::vector<string> v_one_item_empty_string = {"a", ""};
 //   EXPECT_EQ("a-", absl::StrJoin(v_one_item_empty_string, "-"));
 //
-//   std::vector<std::string> v_two_empty_string = {"", ""};
+//   std::vector<string> v_two_empty_string = {"", ""};
 //   EXPECT_EQ("-", absl::StrJoin(v_two_empty_string, "-"));
 //
 // Example 8:
 //   // Joins a `std::tuple<T...>` of heterogeneous types, converting each to
-//   // a std::string using the `absl::AlphaNum` class.
-//   std::string s = absl::StrJoin(std::make_tuple(123, "abc", 0.456), "-");
+//   // a string using the `absl::AlphaNum` class.
+//   string s = absl::StrJoin(std::make_tuple(123, "abc", 0.456), "-");
 //   EXPECT_EQ("123-abc-0.456", s);
 
 template <typename Iterator, typename Formatter>

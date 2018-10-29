@@ -15,6 +15,7 @@ from page_sets.system_health import system_health_story
 
 from page_sets.login_helpers import facebook_login
 from page_sets.login_helpers import pinterest_login
+from page_sets.login_helpers import tumblr_login
 
 from telemetry.util import js_template
 
@@ -178,12 +179,29 @@ class FlipboardDesktopStory(_ArticleBrowsingStory):
   TAGS = [story_tags.YEAR_2016]
 
 
+class FlipboardDesktopStory2018(_ArticleBrowsingStory):
+  NAME = 'browse:news:flipboard:2018'
+  URL = 'https://flipboard.com/explore'
+  IS_SINGLE_PAGE_APP = True
+  ITEM_SELECTOR = '.cover-image'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
+
+
 class HackerNewsDesktopStory(_ArticleBrowsingStory):
   NAME = 'browse:news:hackernews'
   URL = 'https://news.ycombinator.com'
   ITEM_SELECTOR = '.athing .title > a'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2016]
+
+
+class HackerNewsDesktopStory2018(_ArticleBrowsingStory):
+  NAME = 'browse:news:hackernews:2018'
+  URL = 'https://news.ycombinator.com'
+  ITEM_SELECTOR = '.athing .title > a'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
 
 
 class NytimesDesktopStory(_ArticleBrowsingStory):
@@ -194,6 +212,20 @@ class NytimesDesktopStory(_ArticleBrowsingStory):
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   COMPLETE_STATE_WAIT_TIMEOUT = 150  # crbug.com/865247
   TAGS = [story_tags.YEAR_2016]
+
+
+class NytimesDesktopStory2018(_ArticleBrowsingStory):
+  """
+  The third top website in http://www.alexa.com/topsites/category/News
+  Known Replay Errors:
+  - window.EventTracker is not loaded
+  - all network errors are related to ads
+  """
+  NAME = 'browse:news:nytimes:2018'
+  URL = 'http://www.nytimes.com'
+  ITEM_SELECTOR = "a[href*='/2018/']"
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
 
 
 # Desktop qq.com opens a news item in a separate tab, for which the back button
@@ -214,6 +246,16 @@ class RedditDesktopStory(_ArticleBrowsingStory):
   ITEM_SELECTOR = '.thing .title > a'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2016]
+
+
+class RedditDesktopStory2018(_ArticleBrowsingStory):
+  """The top website in http://www.alexa.com/topsites/category/News"""
+  NAME = 'browse:news:reddit:2018'
+  URL = 'https://www.reddit.com/r/news/top/?sort=top&t=week'
+  IS_SINGLE_PAGE_APP = True
+  ITEM_SELECTOR = 'article'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
 
 
 class RedditMobileStory(_ArticleBrowsingStory):
@@ -242,6 +284,15 @@ class TwitterDesktopStory(_ArticleBrowsingStory):
   ITEM_SELECTOR = '.tweet-text'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2016]
+
+
+class TwitterDesktopStory2018(_ArticleBrowsingStory):
+  NAME = 'browse:social:twitter:2018'
+  URL = 'https://www.twitter.com/nasa'
+  IS_SINGLE_PAGE_APP = True
+  ITEM_SELECTOR = '.tweet-text'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
 
 
 class WashingtonPostMobileStory(_ArticleBrowsingStory):
@@ -422,6 +473,45 @@ class GoogleIndiaDesktopStory(_ArticleBrowsingStory):
     action_runner.ScrollPage()
 
 
+class GoogleIndiaDesktopStory2018(_ArticleBrowsingStory):
+  """
+  A typical google search story in India:
+    1. Start at self.URL
+    2. Scroll down the page.
+    3. Refine the query & click search box
+    4. Scroll down the page.
+    5. Click the next page result
+    6. Scroll the search result page.
+
+  """
+  NAME = 'browse:search:google_india:2018'
+  URL = 'https://www.google.co.in/search?q=%E0%A4%AB%E0%A5%82%E0%A4%B2&hl=hi'
+  _SEARCH_BOX_SELECTOR = 'input[name="q"]'
+  _SEARCH_BUTTON_SELECTOR = 'button[name="btnG"]'
+  _SEARCH_PAGE_2_SELECTOR = 'a[aria-label="Page 2"]'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
+
+  def _DidLoadDocument(self, action_runner):
+    # Refine search query in the search box.
+    action_runner.WaitForElement(self._SEARCH_BOX_SELECTOR)
+    action_runner.ExecuteJavaScript(
+        'document.querySelector({{ selector }}).select()',
+        selector=self._SEARCH_BOX_SELECTOR)
+    action_runner.Wait(1)
+    action_runner.EnterText(u'वितरण', character_delay_ms=250)
+    action_runner.Wait(2)
+    action_runner.ClickElement(selector=self._SEARCH_BUTTON_SELECTOR)
+
+    # Scroll down & click next search result page.
+    action_runner.Wait(2)
+    action_runner.ScrollPageToElement(selector=self._SEARCH_PAGE_2_SELECTOR)
+    action_runner.Wait(2)
+    action_runner.ClickElement(selector=self._SEARCH_PAGE_2_SELECTOR)
+    action_runner.Wait(2)
+    action_runner.ScrollPage()
+
+
 ##############################################################################
 # Media browsing stories.
 ##############################################################################
@@ -550,6 +640,28 @@ class TumblrDesktopStory(_MediaBrowsingStory):
     action_runner.Wait(5)  # Give the lightbox time to appear
     action_runner.MouseClick(selector='#tumblr_lightbox_center_image')
     action_runner.Wait(1)  # To make browsing more realistic.
+
+
+class TumblrDesktopStory2018(_MediaBrowsingStory):
+  NAME = 'browse:media:tumblr:2018'
+  URL = 'https://tumblr.com/search/gifs'
+  ITEM_SELECTOR = '.post_media'
+  IS_SINGLE_PAGE_APP = True
+  ITEMS_TO_VISIT = 8
+  INCREMENT_INDEX_AFTER_EACH_ITEM = True
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2018]
+
+  def _Login(self, action_runner):
+    tumblr_login.LoginDesktopAccount(action_runner, 'tumblr')
+    action_runner.Wait(3)
+
+  def _ViewMediaItem(self, action_runner, index):
+    super(TumblrDesktopStory2018, self)._ViewMediaItem(action_runner, index)
+    action_runner.WaitForElement(selector='#tumblr_lightbox')
+    action_runner.MouseClick(selector='#tumblr_lightbox')
+    action_runner.Wait(1)  # To make browsing more realistic.
+
 
 class PinterestDesktopStory(_MediaBrowsingStory):
   NAME = 'browse:media:pinterest'
@@ -1063,3 +1175,10 @@ class TwitterScrollDesktopStory(_InfiniteScrollStory):
   URL = 'https://twitter.com/taylorswift13'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2016]
+
+
+class TwitterScrollDesktopStory2018(_InfiniteScrollStory):
+  NAME = 'browse:social:twitter_infinite_scroll:2018'
+  URL = 'https://twitter.com/NASA'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2018]

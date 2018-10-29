@@ -37,9 +37,11 @@ class ProcessorEntityTracker;
 
 // A sync component embedded on the model type's thread that tracks entity
 // metadata in the model store and coordinates communication between sync and
-// model type threads. See
-// //docs/sync/uss/client_tag_based_model_type_processor.md for a more thorough
-// description.
+// model type threads. All changes in flight (either incoming from the server
+// or local changes reported by the bridge) must specify a client tag.
+//
+// See //docs/sync/uss/client_tag_based_model_type_processor.md for a more
+// thorough description.
 class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                                          public ModelTypeChangeProcessor,
                                          public ModelTypeControllerDelegate {
@@ -69,7 +71,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   void OnModelStarting(ModelTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() override;
+  std::string TrackedAccountId() override;
   void ReportError(const ModelError& error) override;
+  base::Optional<ModelError> GetError() const override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
 
   // ModelTypeProcessor implementation.
@@ -94,6 +98,8 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   size_t EstimateMemoryUsage() const;
 
   bool HasLocalChangesForTest() const;
+
+  bool IsModelReadyToSyncForTest() const;
 
  private:
   friend class ModelTypeDebugInfo;
@@ -126,8 +132,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                                            EntityChangeList* changes);
 
   // Recommit all entities for encryption except those in |already_updated|.
-  void RecommitAllForEncryption(std::unordered_set<std::string> already_updated,
-                                MetadataChangeList* metadata_changes);
+  void RecommitAllForEncryption(
+      const std::unordered_set<std::string>& already_updated,
+      MetadataChangeList* metadata_changes);
 
   // Validates the update specified by the input parameters and returns whether
   // it should get further processed. If the update is incorrect, this function
@@ -174,7 +181,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // with |data| if the lookup finds nothing. Does not update the storage key to
   // client tag hash mapping.
   std::string GetClientTagHash(const std::string& storage_key,
-                               const EntityData& data);
+                               const EntityData& data) const;
 
   // Gets the entity for the given storage key, or null if there isn't one.
   ProcessorEntityTracker* GetEntityForStorageKey(

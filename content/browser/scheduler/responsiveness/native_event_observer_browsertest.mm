@@ -25,21 +25,17 @@ class FakeNativeEventObserver : public NativeEventObserver {
     ASSERT_FALSE(will_run_id_);
     will_run_id_ = opaque_identifier;
   }
-  void DidRunNativeEvent(const void* opaque_identifier,
-                         base::TimeTicks creation_time) override {
+  void DidRunNativeEvent(const void* opaque_identifier) override {
     ASSERT_FALSE(did_run_id_);
     did_run_id_ = opaque_identifier;
-    creation_time_ = creation_time;
   }
 
   const void* will_run_id() { return will_run_id_; }
   const void* did_run_id() { return did_run_id_; }
-  base::TimeTicks creation_time() { return creation_time_; }
 
  private:
   const void* will_run_id_ = nullptr;
   const void* did_run_id_ = nullptr;
-  base::TimeTicks creation_time_;
 };
 
 }  // namespace
@@ -53,19 +49,12 @@ IN_PROC_BROWSER_TEST_F(ResponsivenessNativeEventObserverBrowserTest,
 
   EXPECT_FALSE(observer.will_run_id());
   EXPECT_FALSE(observer.did_run_id());
-  base::TimeTicks time_at_creation = base::TimeTicks::Now();
   NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(kVK_Return, '\r',
                                                                NSKeyDown, 0);
   [NSApp sendEvent:event];
 
   EXPECT_EQ(observer.will_run_id(), event);
   EXPECT_EQ(observer.did_run_id(), event);
-
-  // time_at_creation should be really similar to creation_time. As a sanity
-  // check, make sure they're within a second of each other.
-  EXPECT_LT(
-      fabs((observer.creation_time() - time_at_creation).InMilliseconds()),
-      1000);
 }
 
 }  // namespace responsiveness

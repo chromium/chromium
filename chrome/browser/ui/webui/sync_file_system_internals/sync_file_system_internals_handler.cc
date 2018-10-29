@@ -13,14 +13,14 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/values.h"
+#include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
-#include "chrome/browser/extensions/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/logger.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/sync_file_system/sync_service_state.h"
-#include "chrome/common/extensions/api/sync_file_system.h"
+#include "chrome/common/apps/platform_apps/api/sync_file_system.h"
 #include "components/drive/drive_notification_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
@@ -78,8 +78,8 @@ void SyncFileSystemInternalsHandler::OnSyncStateUpdated(
     const GURL& app_origin,
     sync_file_system::SyncServiceState state,
     const std::string& description) {
-  std::string state_string = extensions::api::sync_file_system::ToString(
-        extensions::SyncServiceStateToExtensionEnum(state));
+  std::string state_string = chrome_apps::api::sync_file_system::ToString(
+      chrome_apps::api::SyncServiceStateToExtensionEnum(state));
   if (!description.empty())
     state_string += " (" + description + ")";
 
@@ -118,8 +118,8 @@ void SyncFileSystemInternalsHandler::GetServiceStatus(
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (sync_service)
     state_enum = sync_service->GetSyncServiceState();
-  const std::string state_string = extensions::api::sync_file_system::ToString(
-      extensions::SyncServiceStateToExtensionEnum(state_enum));
+  const std::string state_string = chrome_apps::api::sync_file_system::ToString(
+      chrome_apps::api::SyncServiceStateToExtensionEnum(state_enum));
   web_ui()->CallJavascriptFunctionUnsafe("SyncService.onGetServiceStatus",
                                          base::Value(state_string));
 }
@@ -147,9 +147,7 @@ void SyncFileSystemInternalsHandler::GetLog(
 
   // Collate events which haven't been sent to WebUI yet.
   base::ListValue list;
-  for (std::vector<EventLogger::Event>::const_iterator log_entry = log.begin();
-       log_entry != log.end();
-       ++log_entry) {
+  for (auto log_entry = log.begin(); log_entry != log.end(); ++log_entry) {
     if (log_entry->id <= last_log_id_sent)
       continue;
 

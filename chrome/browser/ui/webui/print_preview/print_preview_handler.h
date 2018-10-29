@@ -229,6 +229,7 @@ class PrintPreviewHandler
 
   // Brings up Chrome printing setting page to allow the user to configure local
   // printers or Google Cloud printers. |args| is unused.
+  // TODO (rbpotter): Remove this when the old Print Preview page is deleted.
   void HandleManagePrinters(const base::ListValue* args);
 
   // Gathers UMA stats when the print preview dialog is about to close.
@@ -246,6 +247,7 @@ class PrintPreviewHandler
   // Javascript's "window.open" opens a new window popup (since initiated from
   // async HTTP request) and worse yet, on Windows and Chrome OS, the opened
   // window opens behind the initiator window.
+  // TODO(rbpotter): Remove this when the old Print Preview page is deleted.
   void HandleForceOpenNewTab(const base::ListValue* args);
 
   void SendInitialSettings(const std::string& callback_id,

@@ -63,7 +63,6 @@ class V0CustomElementRegistry final {
       Document*,
       V0CustomElementConstructorBuilder*,
       const AtomicString& name,
-      V0CustomElement::NameSet valid_names,
       ExceptionState&);
   V0CustomElementDefinition* Find(const V0CustomElementDescriptor&) const;
 

@@ -15,26 +15,24 @@ namespace autofill_assistant {
 class ClientMemory {
  public:
   ClientMemory();
-  ~ClientMemory();
+  virtual ~ClientMemory();
 
   // GUID of the currently selected credit card, if any. It will be an empty
   // optional if user didn't select anything, empty string if user selected
   // 'Fill manually', or the guid of a selected card.
-  base::Optional<std::string> selected_card();
+  virtual base::Optional<std::string> selected_card();
 
   // GUID of the currently selected address for |name|. It will be an empty
   // optional if user didn't select anything, empty string if user selected
   // 'Fill manually', or the guid of a selected address.
-  base::Optional<std::string> selected_address(const std::string& name);
+  virtual base::Optional<std::string> selected_address(const std::string& name);
 
   // Set the |guid| of the selected card.
-  void set_selected_card(const std::string& guid);
+  virtual void set_selected_card(const std::string& guid);
 
   // Set the |guid| of the selected address for |name|.
-  void set_selected_address(const std::string& name, const std::string& guid);
-
-  // TODO(crbug.com/806868): Add a clear() method that resets the memory and
-  // call it when necessary (TBD).
+  virtual void set_selected_address(const std::string& name,
+                                    const std::string& guid);
 
  private:
   base::Optional<std::string> selected_card_;

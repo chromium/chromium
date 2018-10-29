@@ -15,6 +15,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -130,9 +131,9 @@ void DetectAndStartProxyConfigUtil(int render_process_id,
 
   if (launched)
     return;
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&ShowLinuxProxyConfigUrl,
-                                         render_process_id, render_view_id));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&ShowLinuxProxyConfigUrl,
+                                          render_process_id, render_view_id));
 }
 
 }  // namespace

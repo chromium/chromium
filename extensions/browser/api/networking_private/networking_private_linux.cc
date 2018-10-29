@@ -13,7 +13,9 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "components/onc/onc_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -958,7 +960,7 @@ void NetworkingPrivateLinux::AddOrUpdateAccessPoint(
   access_point->GetString(kAccessPointInfoName, &ssid);
   access_point->SetString(kAccessPointInfoGuid, network_guid);
 
-  NetworkMap::iterator existing_access_point_iter = network_map->find(ssid);
+  auto existing_access_point_iter = network_map->find(ssid);
 
   if (existing_access_point_iter == network_map->end()) {
     // Unseen access point. Add it to the map.
@@ -1153,8 +1155,7 @@ bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
     const std::string& connection_state) {
   AssertOnDBusThread();
 
-  NetworkMap::iterator network_iter =
-      network_map_->find(base::UTF8ToUTF16(ssid));
+  auto network_iter = network_map_->find(base::UTF8ToUTF16(ssid));
   if (network_iter == network_map_->end()) {
     return false;
   }
@@ -1216,8 +1217,8 @@ void NetworkingPrivateLinux::PostOnNetworksChangedToUIThread(
     std::unique_ptr<GuidList> guid_list) {
   AssertOnDBusThread();
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&NetworkingPrivateLinux::OnNetworksChangedEventTask,
                  base::Unretained(this), base::Passed(&guid_list)));
 }

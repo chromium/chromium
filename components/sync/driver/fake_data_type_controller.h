@@ -31,10 +31,10 @@ class FakeDataTypeController : public DirectoryDataTypeController {
   bool ShouldLoadModelBeforeConfigure() const override;
   void LoadModels(const ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  void RegisterWithBackend(base::Callback<void(bool)> set_downloaded,
+  void RegisterWithBackend(base::OnceCallback<void(bool)> set_downloaded,
                            ModelTypeConfigurer* configurer) override;
-  void StartAssociating(const StartCallback& start_callback) override;
-  void Stop(SyncStopMetadataFate metadata_fate) override;
+  void StartAssociating(StartCallback start_callback) override;
+  void Stop(ShutdownReason shutdown_reason) override;
   ChangeProcessor* GetChangeProcessor() const override;
   State state() const override;
   bool ReadyForStart() const override;

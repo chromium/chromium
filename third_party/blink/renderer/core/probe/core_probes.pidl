@@ -1,0 +1,169 @@
+/*
+ * Copyright (C) 2013 Google Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the
+ * distribution.
+ *     * Neither the name of Google Inc. nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * make_instrumenting_probes.py uses this file as a source to generate
+ * core_probes_inl.h, core_probes_impl.cc and core_probe_sink.h.
+ *
+ * The code below is not a correct IDL but a mix of IDL and C++.
+ *
+ * The syntax for an instrumentation method is as follows:
+ *
+ *    returnValue methodName([paramAttr1] param1, [paramAttr2] param2, ...)
+ *
+ * Where:
+ *   paramAttr - optional attribute controlling the parameters handling (one attribute per parameter max).
+ *       Keep - pass first parameter (used to access the CoreProbeSink instance) to agents.
+ *
+ *   returnValue: "void" for instant probes.
+ *                Omitted for the scoped probes.
+ *
+ *   methodName: C++ name for the public instrumentation method and agents methods.
+ *
+ *   paramList: C++ parameter list with optional names. Names will be deduced from types if omitted but you have to
+ *        specify explicit names for multiple parameters of the same type.
+ */
+
+interface CoreProbes {
+
+  class ConsoleMessage;
+  class FontCustomPlatformData;
+  class FontFace;
+  class HTMLDocumentParser;
+  class ScheduledNavigation;
+  class ThreadableLoaderClient;
+  class WorkerInspectorProxy;
+  class XMLHttpRequest;
+
+  void didClearDocumentOfWindowObject([Keep] LocalFrame*);
+  void willInsertDOMNode([Keep] Node* parent);
+  void didInsertDOMNode([Keep] Node*);
+  void willRemoveDOMNode([Keep] Node*);
+  void willModifyDOMAttr([Keep] Element*, const AtomicString& oldValue, const AtomicString& newValue);
+  void didModifyDOMAttr([Keep] Element*, const QualifiedName& name, const AtomicString& value);
+  void didRemoveDOMAttr([Keep] Element*, const QualifiedName& name);
+  void willChangeStyleElement([Keep] Element*);
+  void characterDataModified([Keep] CharacterData*);
+  void didInvalidateStyleAttr([Keep] Node*);
+  void didPerformElementShadowDistribution([Keep] Element*);
+  void didPerformSlotDistribution([Keep] HTMLSlotElement*);
+  void documentDetached([Keep] Document*);
+  void activeStyleSheetsUpdated([Keep] Document*);
+  void fontsUpdated(ExecutionContext*, const FontFace* face, const String& src, const FontCustomPlatformData* fontCustomPlatformData);
+  void mediaQueryResultChanged(Document*);
+  void didPushShadowRoot([Keep] Element* host, ShadowRoot*);
+  void willPopShadowRoot([Keep] Element* host, ShadowRoot*);
+  void willSendXMLHttpOrFetchNetworkRequest(ExecutionContext*, const String& url);
+  void didCreateCanvasContext(Document*);
+  void didFireWebGLError(Element*, const String& errorName);
+  void didFireWebGLWarning(Element*);
+  void didFireWebGLErrorOrWarning(Element*, const String& message);
+  void didResizeMainFrame(LocalFrame*);
+  void didPaint(LocalFrame*, const GraphicsLayer*, GraphicsContext&, const LayoutRect&);
+  void applyAcceptLanguageOverride(LocalFrame*, String* acceptLanguage);
+  void applyUserAgentOverride(ExecutionContext*, String* userAgent);
+  void didBlockRequest([Keep] ExecutionContext*, const ResourceRequest&, DocumentLoader*, const FetchInitiatorInfo&, ResourceRequestBlockedReason, ResourceType);
+  void didChangeResourcePriority(LocalFrame*, DocumentLoader*, unsigned long identifier, ResourceLoadPriority loadPriority);
+  void willSendRequest([Keep] ExecutionContext*, unsigned long identifier, DocumentLoader*, ResourceRequest&, const ResourceResponse& redirectResponse, const FetchInitiatorInfo&, ResourceType);
+  void markResourceAsCached(LocalFrame*, DocumentLoader*, unsigned long identifier);
+  void didReceiveResourceResponse(ExecutionContext*, unsigned long identifier, DocumentLoader*, const ResourceResponse&, Resource*);
+  void didReceiveData(ExecutionContext*, unsigned long identifier, DocumentLoader*, const char* data, int dataLength);
+  void didReceiveBlob(ExecutionContext*, unsigned long identifier, DocumentLoader*, BlobDataHandle*);
+  void didReceiveEncodedDataLength(ExecutionContext*, DocumentLoader* loader, unsigned long identifier, int encodedDataLength);
+  void didFinishLoading(ExecutionContext*, unsigned long identifier, DocumentLoader*, TimeTicks finishTime, int64_t encoded_data_length, int64_t decodedBodyLength, bool should_report_corb_blocking);
+  void didReceiveCORSRedirectResponse(ExecutionContext*, unsigned long identifier, DocumentLoader*, const ResourceResponse&, Resource*);
+  void didFailLoading(ExecutionContext*, unsigned long identifier, DocumentLoader*, const ResourceError&);
+  void willSendEventSourceRequest(ExecutionContext*, ThreadableLoaderClient* eventSource);
+  void willDispatchEventSourceEvent(ExecutionContext*, unsigned long identifier, const AtomicString& eventName, const AtomicString& eventId, const String& data);
+  void willLoadXHR(ExecutionContext*, XMLHttpRequest* xhr, ThreadableLoaderClient* client, const AtomicString& method, const KURL& url, bool async, const HTTPHeaderMap& headers, bool includeCredentials);
+  void didFinishXHR(ExecutionContext*, XMLHttpRequest* xhr);
+  void scriptImported(ExecutionContext*, unsigned long identifier, const String& sourceString);
+  void scriptExecutionBlockedByCSP(ExecutionContext*, const String& directiveText);
+  void didReceiveScriptResponse(ExecutionContext*, unsigned long identifier);
+  void domContentLoadedEventFired([Keep] LocalFrame*);
+  void loadEventFired([Keep] LocalFrame*);
+  void frameAttachedToParent([Keep] LocalFrame*);
+  void frameDetachedFromParent([Keep] LocalFrame*);
+  void didStartProvisionalLoad([Keep] LocalFrame*);
+  void didFailProvisionalLoad([Keep] LocalFrame*);
+  void willCommitLoad([Keep] LocalFrame*, DocumentLoader*);
+  void didCommitLoad([Keep] LocalFrame*, DocumentLoader*);
+  void didNavigateWithinDocument([Keep] LocalFrame*);
+  void frameDocumentUpdated([Keep] LocalFrame*);
+  void frameOwnerContentUpdated([Keep] LocalFrame*, HTMLFrameOwnerElement*);
+  void frameStartedLoading([Keep] LocalFrame*);
+  void frameStoppedLoading([Keep] LocalFrame*);
+  void frameScheduledNavigation([Keep] LocalFrame*, ScheduledNavigation*);
+  void frameClearedScheduledNavigation([Keep] LocalFrame*);
+  void didStartWorker(ExecutionContext*, WorkerInspectorProxy* proxy, bool waitingForDebugger);
+  void workerTerminated(ExecutionContext*, WorkerInspectorProxy* proxy);
+  void didCreateWebSocket([Keep] ExecutionContext*, unsigned long identifier, const KURL& requestURL, const String& protocol);
+  void willSendWebSocketHandshakeRequest([Keep] ExecutionContext*, unsigned long identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
+  void didReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, unsigned long identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
+  void didCloseWebSocket([Keep] ExecutionContext*, unsigned long identifier);
+  void didReceiveWebSocketFrame(ExecutionContext*, unsigned long identifier, int opCode, bool masked, const char* payload, size_t payloadLength);
+  void didSendWebSocketFrame(ExecutionContext*, unsigned long identifier, int opCode, bool masked, const char* payload, size_t payloadLength);
+  void didReceiveWebSocketFrameError(ExecutionContext*, unsigned long identifier, const String& errorMessage);
+  void networkStateChanged([Keep] LocalFrame*, bool online);
+  void updateApplicationCacheStatus([Keep] LocalFrame*);
+  void layerTreeDidChange(LocalFrame*);
+  void pseudoElementCreated([Keep] PseudoElement*);
+  void pseudoElementDestroyed([Keep] PseudoElement*);
+  void didCreateAnimation(Document*, unsigned);
+  void animationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState oldPlayState, Animation::AnimationPlayState newPlayState);
+  void windowOpen([Keep] Document*, const String& url, const AtomicString& windowName, const WebWindowFeatures& windowFeatures, bool userGestrue);
+  void consoleMessageAdded(ExecutionContext*, ConsoleMessage*);
+  void willRunJavaScriptDialog(LocalFrame* frame);
+  void didRunJavaScriptDialog(LocalFrame* frame);
+  void documentWriteFetchScript([Keep] Document*);
+  void didChangeViewport(LocalFrame* document);
+  void breakableLocation(ExecutionContext* context, const char* name);
+  RecalculateStyle(Document* document);
+  UpdateLayout(Document* document);
+  ExecuteScript([Keep] ExecutionContext* context, const String& script_url);
+  CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Function> function, int depth = 0);
+  UserCallback([Keep] ExecutionContext* context, const char* name, const AtomicString& atomicName, bool recurring, EventTarget* eventTarget = nullptr);
+  V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
+  ParseHTML(Document* document, HTMLDocumentParser* parser);
+  void forcePseudoState([Keep] Element* element, CSSSelector::PseudoType pseudoState, bool* result);
+  void shouldWaitForDebuggerOnWorkerStart(ExecutionContext* context, bool* result);
+  void shouldForceCORSPreflight(ExecutionContext*, bool* result);
+  void shouldBlockRequest(ExecutionContext*, const KURL&, bool* result);
+  void shouldBypassServiceWorker(ExecutionContext* context, bool* result);
+  void consoleTimeStamp(ExecutionContext*, const String& title);
+  void lifecycleEvent([Keep] LocalFrame*, DocumentLoader*, const char* name, double timestamp);
+  void paintTiming([Keep] Document*, const char* name, double timestamp);
+  void didCreateAudioContext(Document*);
+  void didCloseAudioContext(Document*);
+  void didResumeAudioContext(Document*);
+  void didSuspendAudioContext(Document*);
+  void produceCompilationCache(LocalFrame*, const ScriptSourceCode& source, v8::Local<v8::Script> script);
+  void consumeCompilationCache(ExecutionContext*, const ScriptSourceCode& source, v8::ScriptCompiler::CachedData** cached_data);
+}

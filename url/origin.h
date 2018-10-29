@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
+#include "ipc/ipc_param_traits.h"
 #include "url/scheme_host_port.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -23,12 +24,26 @@
 
 class GURL;
 
+namespace blink {
+class SecurityOrigin;
+}  // namespace blink
+
 namespace ipc_fuzzer {
 template <class T>
 struct FuzzTraits;
 }  // namespace ipc_fuzzer
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+struct UrlOriginAdapter;
+}  // namespace mojo
+
 namespace url {
+
+namespace mojom {
+class OriginDataView;
+}  // namespace mojom
 
 // Per https://html.spec.whatwg.org/multipage/origin.html#origin, an origin is
 // either:
@@ -94,7 +109,7 @@ namespace url {
 //     origin.scheme(); // "https"
 //     origin.host(); // "example.com"
 //     origin.port(); // 443
-//     origin.unique(); // false
+//     origin.opaque(); // false
 //
 // * To answer the question "Are |this| and |that| "same-origin" with each
 //   other?", use |Origin::IsSameOriginWith|:
@@ -161,15 +176,14 @@ class URL_EXPORT Origin {
 
   // For opaque origins, these return ("", "", 0).
   const std::string& scheme() const {
-    return !unique() ? tuple_.scheme() : base::EmptyString();
+    return !opaque() ? tuple_.scheme() : base::EmptyString();
   }
   const std::string& host() const {
-    return !unique() ? tuple_.host() : base::EmptyString();
+    return !opaque() ? tuple_.host() : base::EmptyString();
   }
-  uint16_t port() const { return !unique() ? tuple_.port() : 0; }
+  uint16_t port() const { return !opaque() ? tuple_.port() : 0; }
 
-  // TODO(dcheng): Rename this to opaque().
-  bool unique() const { return nonce_.has_value(); }
+  bool opaque() const { return nonce_.has_value(); }
 
   // An ASCII serialization of the Origin as per Section 6.2 of RFC 6454, with
   // the addition that all Origins with a 'file' scheme serialize to "file://".
@@ -218,7 +232,7 @@ class URL_EXPORT Origin {
   // URL (e.g. with a path component).
   GURL GetURL() const;
 
-  // Same as GURL::DomainIs. If |this| origin is unique, then returns false.
+  // Same as GURL::DomainIs. If |this| origin is opaque, then returns false.
   bool DomainIs(base::StringPiece canonical_domain) const;
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
@@ -244,8 +258,12 @@ class URL_EXPORT Origin {
   Origin DeriveNewOpaqueOrigin() const;
 
  private:
+  friend class blink::SecurityOrigin;
   friend class OriginTest;
+  friend struct mojo::UrlOriginAdapter;
   friend struct ipc_fuzzer::FuzzTraits<Origin>;
+  friend struct mojo::StructTraits<url::mojom::OriginDataView, url::Origin>;
+  friend IPC::ParamTraits<url::Origin>;
   friend URL_EXPORT std::ostream& operator<<(std::ostream& out,
                                              const Origin& origin);
 
@@ -331,7 +349,7 @@ class URL_EXPORT Origin {
   // given |nonce|.
   Origin(const Nonce& nonce, SchemeHostPort precursor);
 
-  // Get the nonce associated with this origin, if it is unique. This should be
+  // Get the nonce associated with this origin, if it is opaque. This should be
   // used only when trying to send an Origin across an IPC pipe.
   base::Optional<base::UnguessableToken> GetNonceForSerialization() const;
 

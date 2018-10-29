@@ -1,0 +1,10 @@
+Name: Shaderc
+Short Name: shaderc
+URL: https://github.com/google/shaderc
+Version: Unknown
+Security Critical: yes
+License: Apache 2.0
+License File: src/LICENSE
+
+Description:
+A collection of SPIR-V related tools/libraries.

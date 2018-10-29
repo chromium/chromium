@@ -1096,7 +1096,8 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(
   DeleteAutofillPopupProxy();
 
   g_autofill_popup_proxy_node = BrowserAccessibility::Create();
-  g_autofill_popup_proxy_node_ax_node = new ui::AXNode(nullptr, -1, -1);
+  g_autofill_popup_proxy_node_ax_node =
+      new ui::AXNode(nullptr, nullptr, -1, -1);
   ui::AXNodeData ax_node_data;
   ax_node_data.role = ax::mojom::Role::kMenu;
   ax_node_data.SetName("Autofill");

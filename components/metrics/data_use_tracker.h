@@ -36,9 +36,9 @@ class DataUseTracker {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Updates data usage tracking prefs with the specified values.
-  void UpdateMetricsUsagePrefs(const std::string& service_name,
-                               int message_size,
-                               bool is_cellular);
+  void UpdateMetricsUsagePrefs(int message_size,
+                               bool is_cellular,
+                               bool is_metrics_service_usage);
 
   // Returns whether a log with provided |log_bytes| can be uploaded according
   // to data use ratio and UMA quota provided by variations.

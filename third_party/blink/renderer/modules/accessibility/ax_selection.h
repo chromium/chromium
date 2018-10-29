@@ -26,7 +26,7 @@ enum class AXSelectionBehavior {
 };
 
 class MODULES_EXPORT AXSelection final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   class Builder;

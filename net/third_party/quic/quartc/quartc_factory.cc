@@ -5,6 +5,7 @@
 #include "net/third_party/quic/quartc/quartc_factory.h"
 
 #include "net/third_party/quic/core/crypto/quic_random.h"
+#include "net/third_party/quic/platform/api/quic_goog_cc_sender.h"
 #include "net/third_party/quic/platform/api/quic_ptr_util.h"
 #include "net/third_party/quic/platform/api/quic_socket_address.h"
 #include "net/third_party/quic/quartc/quartc_session.h"
@@ -31,11 +32,21 @@ std::unique_ptr<QuartcSession> QuartcFactory::CreateQuartcSession(
   // Fixes behavior of StopReading() with level-triggered stream sequencers.
   SetQuicReloadableFlag(quic_stop_reading_when_level_triggered, true);
 
+  // Quartc uses zombie streams -- we close the stream for read as soon as we
+  // create a stream -- this makes the stream a zombie stream. b/115323618
+  // revealed that closing zombie streams is problematic, and enabling this flag
+  // fixes it.
+  SetQuicReloadableFlag(quic_fix_reset_zombie_streams, true);
+
   std::unique_ptr<QuicConnection> quic_connection =
       CreateQuicConnection(perspective, writer.get());
 
   QuicTagVector copt;
   copt.push_back(kNSTP);
+
+  // Enable and request QUIC to include receive timestamps in ACK frames.
+  SetQuicReloadableFlag(quic_send_timestamps, true);
+  copt.push_back(kSTMP);
 
   // Enable ACK_DECIMATION_WITH_REORDERING. It requires ack_decimation to be
   // false.
@@ -45,8 +56,31 @@ std::unique_ptr<QuartcSession> QuartcFactory::CreateQuartcSession(
   // Enable time-based loss detection.
   copt.push_back(kTIME);
 
-  // Use BBR for congestion control.
-  copt.push_back(kTBBR);
+  switch (quartc_session_config.congestion_control_type) {
+    case kBBR:
+      copt.push_back(kTBBR);
+      break;
+    case kGoogCC: {
+      QuicSentPacketManager& sent_packet_manager =
+          quic_connection->sent_packet_manager();
+      SendAlgorithmInterface* sender = CreateGoogCcSender(
+          clock_, sent_packet_manager.GetRttStats(),
+          &sent_packet_manager.unacked_packets(), GetRandomGenerator(),
+          /*stats=*/nullptr, sent_packet_manager.initial_congestion_window(),
+          kDefaultMaxCongestionWindowPackets);
+      sent_packet_manager.SetSendAlgorithm(sender);
+      break;
+    }
+    case kCubicBytes:
+      QUIC_LOG(FATAL) << "kCubicBytes is not supported";
+      break;
+    case kRenoBytes:
+      QUIC_LOG(FATAL) << "kRenoBytes is not supported";
+      break;
+    case kPCC:
+      QUIC_LOG(FATAL) << "kPCC is not supported";
+      break;
+  }
 
   // Note: flag settings have no effect for Exoblaze builds since
   // SetQuicReloadableFlag() gets stubbed out.
@@ -107,8 +141,19 @@ std::unique_ptr<QuartcSession> QuartcFactory::CreateQuartcSession(
   // The ICE transport provides a unique 5-tuple for each connection. Save
   // overhead by omitting the connection id.
   quic_config.SetBytesForConnectionIdToSend(0);
+
+  // Allow up to 1000 incoming streams at once. Quartc streams typically contain
+  // one audio or video frame and close immediately. However, when a video frame
+  // becomes larger than one packet, there is some delay between the start and
+  // end of each stream. The default maximum of 100 only leaves about 1 second
+  // of headroom (Quartc sends ~30 video frames per second) before QUIC starts
+  // to refuse incoming streams. Back-pressure should clear backlogs of
+  // incomplete streams, but targets 1 second for recovery. Increasing the
+  // number of open streams gives sufficient headroom to recover before QUIC
+  // refuses new streams.
+  quic_config.SetMaxIncomingDynamicStreamsToSend(1000);
   return QuicMakeUnique<QuartcSession>(
-      std::move(quic_connection), quic_config,
+      std::move(quic_connection), quic_config, CurrentSupportedVersions(),
       quartc_session_config.unique_remote_server_id, perspective,
       this /*QuicConnectionHelperInterface*/, clock_, std::move(writer));
 }

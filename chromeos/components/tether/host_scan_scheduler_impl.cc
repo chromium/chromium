@@ -138,11 +138,7 @@ void HostScanSchedulerImpl::OnSessionStateChanged() {
   is_screen_locked_ = session_manager_->IsScreenLocked();
 
   if (is_screen_locked_) {
-    // If the screen is now locked, stop any ongoing scan. A scan during the
-    // lock screen could cause bad interactions with EasyUnlock. See
-    // https://crbug.com/763604.
-    // Note: Once the SecureChannel API is in use, the scan will no longer have
-    //       to stop.
+    // If the screen is now locked, stop any ongoing scan.
     host_scanner_->StopScan();
     if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi))
       delay_scan_after_unlock_timer_->Stop();
@@ -182,11 +178,9 @@ void HostScanSchedulerImpl::AttemptScan() {
   if (host_scanner_->IsScanActive())
     return;
 
-  // If the SecureChannel API is not present, and the screen is locked, a host
-  // scan should not occur.  A scan during the lock screen could cause bad
-  // interactions with EasyUnlock. See https://crbug.com/763604.
-  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
-      session_manager_->IsScreenLocked()) {
+  // If the screen is locked, a host scan should not occur.
+  if (session_manager_->IsScreenLocked()) {
+    PA_LOG(INFO) << "Skipping scan attempt because the screen is locked.";
     return;
   }
 

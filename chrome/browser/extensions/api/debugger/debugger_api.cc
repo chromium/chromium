@@ -22,6 +22,7 @@
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/infobars/core/infobar.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/notification_service.h"
@@ -147,6 +149,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                            bool is_webui) override;
   bool MayAttachToBrowser() override;
   bool MayDiscoverTargets() override;
+  bool MayAffectLocalFiles() override;
 
  private:
   using PendingRequests =
@@ -367,9 +370,8 @@ bool ExtensionDevToolsClientHost::MayAttachToRenderer(
   const GURL& site_instance_url =
       render_frame_host->GetSiteInstance()->GetSiteURL();
 
-  if (site_instance_url.is_empty()) {
-    // |site_instance_url| is empty for about:blank. Allow the extension to
-    // attach.
+  if (site_instance_url.is_empty() || site_instance_url == "about:") {
+    // Allow the extension to attach to about:blank.
     return true;
   }
 
@@ -382,6 +384,10 @@ bool ExtensionDevToolsClientHost::MayAttachToBrowser() {
 }
 
 bool ExtensionDevToolsClientHost::MayDiscoverTargets() {
+  return false;
+}
+
+bool ExtensionDevToolsClientHost::MayAffectLocalFiles() {
   return false;
 }
 
@@ -477,7 +483,7 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
   const std::string& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
   AttachedClientHosts& hosts = g_attached_client_hosts.Get();
-  AttachedClientHosts::iterator it = std::find_if(
+  auto it = std::find_if(
       hosts.begin(), hosts.end(),
       [&agent_host, &extension_id](ExtensionDevToolsClientHost* client_host) {
         return client_host->agent_host() == agent_host &&
@@ -658,8 +664,8 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() {
 
 bool DebuggerGetTargetsFunction::RunAsync() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&DebuggerGetTargetsFunction::SendTargetList, this, list));
   return true;
 }

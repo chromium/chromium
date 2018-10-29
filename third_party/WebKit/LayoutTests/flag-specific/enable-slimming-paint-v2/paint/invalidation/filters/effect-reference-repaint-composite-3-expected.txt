@@ -9,7 +9,7 @@
         {
           "object": "LayoutBlockFlow DIV class='box'",
           "rect": [0, 0, 328, 320],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

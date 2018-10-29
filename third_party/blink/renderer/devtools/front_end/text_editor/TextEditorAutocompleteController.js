@@ -291,7 +291,7 @@ TextEditor.TextEditorAutocompleteController = class {
       return;
     }
     const suffix = hint.substring(query.length).split('\n')[0];
-    this._hintElement.textContent = suffix;
+    this._hintElement.textContent = suffix.trimEnd(10000);
     const cursor = this._codeMirror.getCursor('to');
     if (this._hintMarker) {
       const position = this._hintMarker.position();

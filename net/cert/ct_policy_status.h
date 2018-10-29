@@ -27,7 +27,7 @@ enum class CTPolicyCompliance {
   // Compliance details for the connection are not available, e.g. because a
   // resource was loaded from disk cache.
   CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE = 4,
-  CT_POLICY_MAX
+  CT_POLICY_COUNT
 };
 
 }  // namespace ct

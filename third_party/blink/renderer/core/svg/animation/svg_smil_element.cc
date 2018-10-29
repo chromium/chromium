@@ -324,7 +324,7 @@ Node::InsertionNotificationRequest SVGSMILElement::InsertedInto(
 
   // "If no attribute is present, the default begin value (an offset-value of 0)
   // must be evaluated."
-  if (!FastHasAttribute(SVGNames::beginAttr))
+  if (!FastHasAttribute(svg_names::kBeginAttr))
     begin_times_.push_back(SMILTimeWithOrigin());
 
   if (is_waiting_for_first_interval_)
@@ -508,10 +508,10 @@ void SVGSMILElement::ParseBeginOrEnd(const String& parse_string,
 void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
-  if (name == SVGNames::beginAttr) {
+  if (name == svg_names::kBeginAttr) {
     if (!conditions_.IsEmpty()) {
       ClearConditions();
-      ParseBeginOrEnd(FastGetAttribute(SVGNames::endAttr), kEnd);
+      ParseBeginOrEnd(FastGetAttribute(svg_names::kEndAttr), kEnd);
     }
     ParseBeginOrEnd(value.GetString(), kBegin);
     if (isConnected()) {
@@ -520,10 +520,10 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
       BeginListChanged(Elapsed());
     }
     AnimationAttributeChanged();
-  } else if (name == SVGNames::endAttr) {
+  } else if (name == svg_names::kEndAttr) {
     if (!conditions_.IsEmpty()) {
       ClearConditions();
-      ParseBeginOrEnd(FastGetAttribute(SVGNames::beginAttr), kBegin);
+      ParseBeginOrEnd(FastGetAttribute(svg_names::kBeginAttr), kBegin);
     }
     ParseBeginOrEnd(value.GetString(), kEnd);
     if (isConnected()) {
@@ -532,23 +532,23 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
       EndListChanged(Elapsed());
     }
     AnimationAttributeChanged();
-  } else if (name == SVGNames::onbeginAttr) {
+  } else if (name == svg_names::kOnbeginAttr) {
     SetAttributeEventListener(EventTypeNames::beginEvent,
                               CreateAttributeEventListener(this, name, value));
-  } else if (name == SVGNames::onendAttr) {
+  } else if (name == svg_names::kOnendAttr) {
     SetAttributeEventListener(EventTypeNames::endEvent,
                               CreateAttributeEventListener(this, name, value));
-  } else if (name == SVGNames::onrepeatAttr) {
+  } else if (name == svg_names::kOnrepeatAttr) {
     SetAttributeEventListener(EventTypeNames::repeatEvent,
                               CreateAttributeEventListener(this, name, value));
-  } else if (name == SVGNames::restartAttr) {
+  } else if (name == svg_names::kRestartAttr) {
     if (value == "never")
       restart_ = kRestartNever;
     else if (value == "whenNotActive")
       restart_ = kRestartWhenNotActive;
     else
       restart_ = kRestartAlways;
-  } else if (name == SVGNames::fillAttr) {
+  } else if (name == svg_names::kFillAttr) {
     fill_ = value == "freeze" ? kFillFreeze : kFillRemove;
   } else {
     SVGElement::ParseAttribute(params);
@@ -556,18 +556,18 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
 }
 
 void SVGSMILElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::durAttr) {
+  if (attr_name == svg_names::kDurAttr) {
     cached_dur_ = kInvalidCachedTime;
-  } else if (attr_name == SVGNames::repeatDurAttr) {
+  } else if (attr_name == svg_names::kRepeatDurAttr) {
     cached_repeat_dur_ = kInvalidCachedTime;
-  } else if (attr_name == SVGNames::repeatCountAttr) {
+  } else if (attr_name == svg_names::kRepeatCountAttr) {
     cached_repeat_count_ = kInvalidCachedTime;
-  } else if (attr_name == SVGNames::minAttr) {
+  } else if (attr_name == svg_names::kMinAttr) {
     cached_min_ = kInvalidCachedTime;
-  } else if (attr_name == SVGNames::maxAttr) {
+  } else if (attr_name == svg_names::kMaxAttr) {
     cached_max_ = kInvalidCachedTime;
-  } else if (attr_name.Matches(SVGNames::hrefAttr) ||
-             attr_name.Matches(XLinkNames::hrefAttr)) {
+  } else if (attr_name.Matches(svg_names::kHrefAttr) ||
+             attr_name.Matches(xlink_names::kHrefAttr)) {
     // TODO(fs): Could be smarter here when 'href' is specified and 'xlink:href'
     // is changed.
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -647,7 +647,7 @@ bool SVGSMILElement::IsFrozen() const {
 SMILTime SVGSMILElement::Dur() const {
   if (cached_dur_ != kInvalidCachedTime)
     return cached_dur_;
-  const AtomicString& value = FastGetAttribute(SVGNames::durAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kDurAttr);
   SMILTime clock_value = ParseClockValue(value);
   return cached_dur_ = clock_value <= 0 ? SMILTime::Unresolved() : clock_value;
 }
@@ -655,7 +655,7 @@ SMILTime SVGSMILElement::Dur() const {
 SMILTime SVGSMILElement::RepeatDur() const {
   if (cached_repeat_dur_ != kInvalidCachedTime)
     return cached_repeat_dur_;
-  const AtomicString& value = FastGetAttribute(SVGNames::repeatDurAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kRepeatDurAttr);
   SMILTime clock_value = ParseClockValue(value);
   cached_repeat_dur_ = clock_value <= 0 ? SMILTime::Unresolved() : clock_value;
   return cached_repeat_dur_;
@@ -666,7 +666,7 @@ SMILTime SVGSMILElement::RepeatCount() const {
   if (cached_repeat_count_ != kInvalidCachedTime)
     return cached_repeat_count_;
   SMILTime computed_repeat_count = SMILTime::Unresolved();
-  const AtomicString& value = FastGetAttribute(SVGNames::repeatCountAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kRepeatCountAttr);
   if (!value.IsNull()) {
     DEFINE_STATIC_LOCAL(const AtomicString, indefinite_value, ("indefinite"));
     if (value == indefinite_value) {
@@ -685,7 +685,7 @@ SMILTime SVGSMILElement::RepeatCount() const {
 SMILTime SVGSMILElement::MaxValue() const {
   if (cached_max_ != kInvalidCachedTime)
     return cached_max_;
-  const AtomicString& value = FastGetAttribute(SVGNames::maxAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kMaxAttr);
   SMILTime result = ParseClockValue(value);
   return cached_max_ = (result.IsUnresolved() || result <= 0)
                            ? SMILTime::Indefinite()
@@ -695,7 +695,7 @@ SMILTime SVGSMILElement::MaxValue() const {
 SMILTime SVGSMILElement::MinValue() const {
   if (cached_min_ != kInvalidCachedTime)
     return cached_min_;
-  const AtomicString& value = FastGetAttribute(SVGNames::minAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kMinAttr);
   SMILTime result = ParseClockValue(value);
   return cached_min_ = (result.IsUnresolved() || result < 0) ? 0 : result;
 }

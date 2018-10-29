@@ -2,7 +2,6 @@ Bug 111011: getPropertyValue for -webkit-columns returns null, should compute th
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS webkitColumnsValue("columns1") is "10px auto"
 PASS webkitColumnsValue("columns2") is "auto 10"
 PASS webkitColumnsValue("columns3") is "10px auto"

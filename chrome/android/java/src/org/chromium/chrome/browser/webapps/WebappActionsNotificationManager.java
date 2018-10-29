@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.R;
@@ -67,7 +68,9 @@ class WebappActionsNotificationManager {
     }
 
     private Notification createNotification() {
-        int intentFlags = WebappLauncherActivity.getWebappActivityIntentFlags();
+        int intentFlags = Intent.FLAG_ACTIVITY_NEW_TASK
+                | ApiCompatibilityUtils.getActivityNewDocumentFlag()
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP;
         int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT;
 
         PendingIntent focusIntent = PendingIntent.getActivity(mWebappActivity, 0,

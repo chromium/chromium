@@ -39,7 +39,13 @@ class MockMediaSession : public content::MediaSession {
   MOCK_METHOD1(SetDuckingVolumeMultiplier, void(double));
   MOCK_METHOD1(DidReceiveAction, void(blink::mojom::MediaSessionAction));
   MOCK_METHOD1(AddObserver, void(content::MediaSessionObserver*));
+  MOCK_METHOD1(AddObserver,
+               void(media_session::mojom::MediaSessionObserverPtr));
   MOCK_METHOD1(RemoveObserver, void(content::MediaSessionObserver*));
+  MOCK_METHOD1(GetMediaSessionInfo, void(GetMediaSessionInfoCallback));
+  MOCK_METHOD1(GetDebugInfo, void(GetDebugInfoCallback));
+  MOCK_METHOD0(PreviousTrack, void());
+  MOCK_METHOD0(NextTrack, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMediaSession);

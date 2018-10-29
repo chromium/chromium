@@ -205,8 +205,8 @@ bool ChangeReorderBuffer::GetAllChangesInTreeOrder(
     }
 
     // Now add the children of |next| to |to_visit|.
-    Traversal::LinkSet::const_iterator j = traversal.begin_children(next);
-    Traversal::LinkSet::const_iterator end = traversal.end_children(next);
+    auto j = traversal.begin_children(next);
+    auto end = traversal.end_children(next);
     for (; j != end; ++j) {
       DCHECK(j->first == next);
       to_visit.push(j->second);

@@ -29,7 +29,7 @@ class Simulator;
 //    will not be called again unless Schedule() is called.
 class Actor {
  public:
-  Actor(Simulator* simulator, std::string name);
+  Actor(Simulator* simulator, QuicString name);
   virtual ~Actor();
 
   // Trigger all the events the actor can potentially handle at this point.
@@ -37,7 +37,7 @@ class Actor {
   // to schedule the next call manually.
   virtual void Act() = 0;
 
-  inline std::string name() const { return name_; }
+  inline QuicString name() const { return name_; }
   inline Simulator* simulator() const { return simulator_; }
 
  protected:
@@ -49,7 +49,7 @@ class Actor {
 
   Simulator* simulator_;
   const QuicClock* clock_;
-  std::string name_;
+  QuicString name_;
 
  private:
   // Since the Actor object registers itself with a simulator using a pointer to

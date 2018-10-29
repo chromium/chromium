@@ -133,9 +133,9 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 };
 
 inline bool IsSVGAnimateElement(const SVGElement& element) {
-  return element.HasTagName(SVGNames::animateTag) ||
-         element.HasTagName(SVGNames::animateTransformTag) ||
-         element.HasTagName(SVGNames::setTag);
+  return element.HasTagName(svg_names::kAnimateTag) ||
+         element.HasTagName(svg_names::kAnimateTransformTag) ||
+         element.HasTagName(svg_names::kSetTag);
 }
 
 DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGAnimateElement);

@@ -81,7 +81,7 @@ class PolicyCheckTest : public ExtensionsTest {
   }
 
  protected:
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
   PreloadCheckRunner runner_;
 
  private:

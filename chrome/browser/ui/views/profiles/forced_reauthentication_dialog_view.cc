@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/signin/core/browser/signin_manager.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -43,8 +44,9 @@ constexpr int kRefreshTitleTimer = 1;
 // finish sign in.
 constexpr int kCloseDirectlyTimer = 60;
 
-void Signout(SigninManager* signin_manager) {
-  signin_manager->SignOut(
+void Signout(identity::IdentityManager* identity_manager) {
+  identity_manager->ClearPrimaryAccount(
+      identity::IdentityManager::ClearAccountTokensAction::kDefault,
       signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
       signin_metrics::SignoutDelete::KEEPING);
 }
@@ -87,10 +89,10 @@ class PromptLabel : public views::StyledLabel {
 
 ForcedReauthenticationDialogView::ForcedReauthenticationDialogView(
     Browser* browser,
-    SigninManager* signin_manager,
+    identity::IdentityManager* identity_manager,
     base::TimeDelta countdown_duration)
     : browser_(browser),
-      signin_manager_(signin_manager),
+      identity_manager_(identity_manager),
       desired_close_time_(base::TimeTicks::Now() + countdown_duration),
       weak_factory_(this) {
   constrained_window::CreateBrowserModalDialogViews(
@@ -105,22 +107,22 @@ ForcedReauthenticationDialogView::~ForcedReauthenticationDialogView() {}
 // static
 ForcedReauthenticationDialogView* ForcedReauthenticationDialogView::ShowDialog(
     Profile* profile,
-    SigninManager* signin_manager,
+    identity::IdentityManager* identity_manager,
     base::TimeDelta countdown_duration) {
   Browser* browser = FindBrowserWithProfile(profile);
   if (browser == nullptr) {  // If there is no browser, we can just sign
                              // out profile directly.
-    Signout(signin_manager);
+    Signout(identity_manager);
     return nullptr;
   }
 
-  return new ForcedReauthenticationDialogView(browser, signin_manager,
+  return new ForcedReauthenticationDialogView(browser, identity_manager,
                                               countdown_duration);
 }
 
 bool ForcedReauthenticationDialogView::Accept() {
   if (GetTimeRemaining() < base::TimeDelta::FromSeconds(kCloseDirectlyTimer)) {
-    Signout(signin_manager_);
+    Signout(identity_manager_);
   } else {
     browser_->signin_view_controller()->ShowSignin(
         profiles::BubbleViewMode::BUBBLE_VIEW_MODE_GAIA_REAUTH, browser_,
@@ -163,7 +165,7 @@ void ForcedReauthenticationDialogView::AddedToWidget() {
           GetNativeTheme(), ui::kSigninConfirmationPromptBarBackgroundAlpha);
   // Create the prompt label.
   size_t offset;
-  std::string email = signin_manager_->GetAuthenticatedAccountInfo().email;
+  std::string email = identity_manager_->GetPrimaryAccountInfo().email;
   const base::string16 domain =
       base::ASCIIToUTF16(gaia::ExtractDomainName(email));
   const base::string16 prompt_text =
@@ -270,10 +272,10 @@ ForcedReauthenticationDialogImpl::~ForcedReauthenticationDialogImpl() {
 
 void ForcedReauthenticationDialogImpl::ShowDialog(
     Profile* profile,
-    SigninManager* signin_manager,
+    identity::IdentityManager* identity_manager,
     base::TimeDelta countdown_duration) {
   dialog_view_ = ForcedReauthenticationDialogView::ShowDialog(
-                     profile, signin_manager, countdown_duration)
+                     profile, identity_manager, countdown_duration)
                      ->AsWeakPtr();
 }
 

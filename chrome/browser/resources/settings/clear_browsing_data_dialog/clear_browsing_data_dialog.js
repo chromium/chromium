@@ -21,6 +21,13 @@ Polymer({
     },
 
     /**
+     * The current sync status, supplied by SyncBrowserProxy.
+     * TODO(dpapad): make |syncStatus| private.
+     * @type {?settings.SyncStatus}
+     */
+    syncStatus: Object,
+
+    /**
      * Results of browsing data counters, keyed by the suffix of
      * the corresponding data type deletion preference, as reported
      * by the C++ side.
@@ -94,6 +101,43 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    isSyncPaused_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeIsSyncPaused_(syncStatus)',
+    },
+
+    /** @private */
+    hasPassphraseError_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeHasPassphraseError_(syncStatus)',
+    },
+
+    /** @private */
+    hasOtherSyncError_: {
+      type: Boolean,
+      value: false,
+      computed:
+          'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
+    },
+
+    /**
+     * This flag is used to conditionally show the footer for the dialog.
+     * @private
+     */
+    diceEnabled_: {
+      type: Boolean,
+      value: function() {
+        let diceEnabled = false;
+        // <if expr="not chromeos">
+        diceEnabled = loadTimeData.getBoolean('diceEnabled');
+        // </if>
+        return diceEnabled;
+      },
+    },
+
     /**
      * Time in ms, when the dialog was opened.
      * @private
@@ -109,8 +153,17 @@ Polymer({
   /** @private {settings.ClearBrowsingDataBrowserProxy} */
   browserProxy_: null,
 
+  /** @private {?settings.SyncBrowserProxy} */
+  syncBrowserProxy_: null,
+
   /** @override */
   ready: function() {
+    this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+    this.syncBrowserProxy_.getSyncStatus().then(
+        this.handleSyncStatus_.bind(this));
+    this.addWebUIListener(
+        'sync-status-changed', this.handleSyncStatus_.bind(this));
+
     this.addWebUIListener(
         'update-sync-state', this.updateSyncState_.bind(this));
     this.addWebUIListener(
@@ -125,6 +178,15 @@ Polymer({
     this.browserProxy_.initialize().then(() => {
       this.$.clearBrowsingDataDialog.showModal();
     });
+  },
+
+  /**
+   * Handler for when the sync state is pushed from the browser.
+   * @param {?settings.SyncStatus} syncStatus
+   * @private
+   */
+  handleSyncStatus_: function(syncStatus) {
+    this.syncStatus = syncStatus;
   },
 
   /**
@@ -193,11 +255,11 @@ Polymer({
    * @private
    */
   browsingCheckboxLabel_: function(
-      isSignedIn, isSyncingHistory, historySummary, historySummarySignedIn,
-      historySummarySynced) {
-    if (isSyncingHistory) {
+      isSignedIn, isSyncingHistory, hasSyncError, historySummary,
+      historySummarySignedIn, historySummarySynced) {
+    if (isSyncingHistory && !hasSyncError) {
       return historySummarySynced;
-    } else if (isSignedIn) {
+    } else if (isSignedIn && !this.isSyncPaused_) {
       return historySummarySignedIn;
     }
     return historySummary;
@@ -317,5 +379,59 @@ Polymer({
       chrome.metricsPrivate.recordUserAction(
           'ClearBrowsingData_SwitchTo_AdvancedTab');
     }
+  },
+
+  /**
+   * Called when the user clicks the link in the footer.
+   * @param {!Event} e
+   * @private
+   */
+  onSyncDescriptionLinkClicked_: function(e) {
+    if (e.target.tagName === 'A') {
+      e.preventDefault();
+      if (!this.syncStatus.hasError) {
+        this.syncBrowserProxy_.pauseSync();
+      } else if (this.isSyncPaused_) {
+        this.syncBrowserProxy_.startSignIn();
+      } else {
+        // In any other error case, navigate to the sync page.
+        settings.navigateTo(settings.routes.SYNC);
+      }
+    }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsSyncPaused_: function() {
+    return !!this.syncStatus.hasError &&
+        this.syncStatus.statusAction === settings.StatusAction.REAUTHENTICATE;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasPassphraseError_: function() {
+    return !!this.syncStatus.hasError &&
+        this.syncStatus.statusAction === settings.StatusAction.ENTER_PASSPHRASE;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasOtherError_: function() {
+    return this.syncStatus !== undefined && !!this.syncStatus.hasError &&
+        !this.isSyncPaused_ && !this.hasPassphraseError_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowFooter_: function() {
+    return this.diceEnabled_ && !!this.syncStatus && !!this.syncStatus.signedIn;
   },
 });

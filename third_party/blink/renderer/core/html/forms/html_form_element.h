@@ -158,10 +158,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   RadioButtonGroupScope radio_button_group_scope_;
 
-  // Do not access m_listedElements directly. Use listedElements()
-  // instead.
+  // Do not access listed_elements_ directly. Use ListedElements() instead.
   ListedElement::List listed_elements_;
-  // Do not access m_imageElements directly. Use imageElements() instead.
+  // Do not access image_elements_ directly. Use ImageElements() instead.
   HeapVector<Member<HTMLImageElement>> image_elements_;
 
   // https://html.spec.whatwg.org/multipage/forms.html#planned-navigation

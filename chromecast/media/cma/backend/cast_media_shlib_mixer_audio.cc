@@ -7,6 +7,7 @@
 #include "chromecast/public/cast_media_shlib.h"
 
 #include <string>
+#include <utility>
 
 #include "chromecast/media/cma/backend/stream_mixer.h"
 
@@ -22,8 +23,8 @@ void CastMediaShlib::RemoveLoopbackAudioObserver(
   StreamMixer::Get()->RemoveLoopbackAudioObserver(observer);
 }
 
-void CastMediaShlib::ResetPostProcessors() {
-  StreamMixer::Get()->ResetPostProcessors();
+void CastMediaShlib::ResetPostProcessors(CastMediaShlib::ResultCallback cb) {
+  StreamMixer::Get()->ResetPostProcessors(std::move(cb));
 }
 
 void CastMediaShlib::SetPostProcessorConfig(const std::string& name,

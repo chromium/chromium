@@ -27,13 +27,11 @@ namespace {
 // The ShillDeviceClient implementation.
 class ShillDeviceClientImpl : public ShillDeviceClient {
  public:
-  ShillDeviceClientImpl()
-      : bus_(NULL) {
-  }
+  ShillDeviceClientImpl() : bus_(NULL) {}
 
   ~ShillDeviceClientImpl() override {
-    for (HelperMap::iterator iter = helpers_.begin();
-         iter != helpers_.end(); ++iter) {
+    for (HelperMap::iterator iter = helpers_.begin(); iter != helpers_.end();
+         ++iter) {
       // This *should* never happen, yet we're getting crash reports that
       // seem to imply that it does happen sometimes.  Adding CHECKs here
       // so we can determine more accurately where the problem lies.
@@ -75,9 +73,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     ShillClientHelper::AppendValueDataAsVariant(&writer, value);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(&method_call,
-                                                            callback,
-                                                            error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void ClearProperty(const dbus::ObjectPath& device_path,
@@ -100,8 +98,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(pin);
     writer.AppendBool(require);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void EnterPin(const dbus::ObjectPath& device_path,
@@ -112,8 +111,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kEnterPinFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(pin);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void UnblockPin(const dbus::ObjectPath& device_path,
@@ -126,8 +126,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(puk);
     writer.AppendString(pin);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void ChangePin(const dbus::ObjectPath& device_path,
@@ -140,8 +141,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(old_pin);
     writer.AppendString(new_pin);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void Register(const dbus::ObjectPath& device_path,
@@ -152,8 +154,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kRegisterFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(network_id);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void SetCarrier(const dbus::ObjectPath& device_path,
@@ -164,8 +167,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kSetCarrierFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(carrier);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void Reset(const dbus::ObjectPath& device_path,
@@ -173,8 +177,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
              const ErrorCallback& error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamDeviceInterface,
                                  shill::kResetFunction);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void PerformTDLSOperation(const dbus::ObjectPath& device_path,
@@ -187,15 +192,15 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(operation);
     writer.AppendString(peer);
-    GetHelper(device_path)->CallStringMethodWithErrorCallback(
-        &method_call, callback, error_callback);
+    GetHelper(device_path)
+        ->CallStringMethodWithErrorCallback(&method_call, callback,
+                                            error_callback);
   }
 
-  void AddWakeOnPacketConnection(
-      const dbus::ObjectPath& device_path,
-      const net::IPEndPoint& ip_endpoint,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override {
+  void AddWakeOnPacketConnection(const dbus::ObjectPath& device_path,
+                                 const net::IPEndPoint& ip_endpoint,
+                                 const base::Closure& callback,
+                                 const ErrorCallback& error_callback) override {
     if (ip_endpoint.address().empty()) {
       LOG(ERROR) << "AddWakeOnPacketConnection: null address";
       return;
@@ -204,9 +209,22 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kAddWakeOnPacketConnectionFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip_endpoint.ToStringWithoutPort());
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(&method_call,
-                                                            callback,
-                                                            error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
+  }
+
+  void AddWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
+                              const std::vector<std::string>& types,
+                              const base::Closure& callback,
+                              const ErrorCallback& error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamDeviceInterface,
+                                 shill::kAddWakeOnPacketOfTypesFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendArrayOfStrings(types);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void RemoveWakeOnPacketConnection(
@@ -222,9 +240,22 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kRemoveWakeOnPacketConnectionFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(ip_endpoint.ToStringWithoutPort());
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(&method_call,
-                                                            callback,
-                                                            error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
+  }
+
+  void RemoveWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
+                                 const std::vector<std::string>& types,
+                                 const base::Closure& callback,
+                                 const ErrorCallback& error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamDeviceInterface,
+                                 shill::kRemoveWakeOnPacketOfTypesFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendArrayOfStrings(types);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   void RemoveAllWakeOnPacketConnections(
@@ -234,9 +265,9 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     dbus::MethodCall method_call(
         shill::kFlimflamDeviceInterface,
         shill::kRemoveAllWakeOnPacketConnectionsFunction);
-    GetHelper(device_path)->CallVoidMethodWithErrorCallback(&method_call,
-                                                            callback,
-                                                            error_callback);
+    GetHelper(device_path)
+        ->CallVoidMethodWithErrorCallback(&method_call, callback,
+                                          error_callback);
   }
 
   TestInterface* GetTestInterface() override { return NULL; }

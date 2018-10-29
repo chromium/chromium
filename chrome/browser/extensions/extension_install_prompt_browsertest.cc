@@ -21,7 +21,7 @@ using extensions::ScopedTestDialogAutoConfirm;
 
 namespace {
 
-scoped_refptr<extensions::Extension> BuildTestExtension() {
+scoped_refptr<const extensions::Extension> BuildTestExtension() {
   return extensions::ExtensionBuilder("foo").Build();
 }
 
@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
   int web_contents_index = tab_strip_model->GetIndexOfWebContents(web_contents);
-  scoped_refptr<extensions::Extension> extension(BuildTestExtension());
+  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   // closed.
   CreateBrowser(browser()->profile());
 
-  scoped_refptr<extensions::Extension> extension(BuildTestExtension());
+  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
 // web contents or parent gfx::NativeWindow is passed to the
 // ExtensionInstallPrompt constructor.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest, NoParent) {
-  scoped_refptr<extensions::Extension> extension(BuildTestExtension());
+  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 

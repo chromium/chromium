@@ -33,6 +33,8 @@ class FakeRtpSender : public webrtc::RtpSenderInterface {
   cricket::MediaType media_type() const override;
   std::string id() const override;
   std::vector<std::string> stream_ids() const override;
+  std::vector<webrtc::RtpEncodingParameters> init_send_encodings()
+      const override;
   webrtc::RtpParameters GetParameters() override;
   webrtc::RTCError SetParameters(
       const webrtc::RtpParameters& parameters) override;
@@ -90,8 +92,6 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
   void Stop() override;
-  void SetCodecPreferences(
-      rtc::ArrayView<webrtc::RtpCodecCapability> codecs) override;
 
  private:
   cricket::MediaType media_type_;

@@ -8,9 +8,9 @@
   var NodeTracker = await testRunner.loadScript('../resources/node-tracker.js');
   var nodeTracker = new NodeTracker(dp);
 
-  dp.DOM.enable();
   var message = await dp.DOM.getNodeForLocation({x: 10, y: 10, includeUserAgentShadowDOM: false});
-  var nodeId = message.result.nodeId;
-  testRunner.log(nodeTracker.nodeForId(nodeId), 'Node: ');
+  var backendNodeId = message.result.backendNodeId;
+  await dp.DOM.enable();
+  testRunner.log(await nodeTracker.nodeForBackendId(backendNodeId), 'Node: ');
   testRunner.completeTest();
 })

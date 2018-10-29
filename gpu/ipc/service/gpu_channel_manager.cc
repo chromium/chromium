@@ -31,6 +31,7 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_share_group.h"
@@ -118,7 +119,7 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
         gpu_preferences_.disable_gpu_shader_disk_cache ||
         workarounds.disable_program_disk_cache;
 
-    // Use the EGL cache control extension for the passthrough decoder.
+    // Use the EGL blob cache extension for the passthrough decoder.
     if (gpu_preferences_.use_passthrough_cmd_decoder &&
         gles2::PassthroughCommandDecoderSupported()) {
       program_cache_.reset(new gles2::PassthroughProgramCache(
@@ -335,6 +336,7 @@ void GpuChannelManager::HandleMemoryPressure(
   if (program_cache_)
     program_cache_->HandleMemoryPressure(memory_pressure_level);
   discardable_manager_.HandleMemoryPressure(memory_pressure_level);
+  passthrough_discardable_manager_.HandleMemoryPressure(memory_pressure_level);
   if (raster_decoder_context_state_)
     raster_decoder_context_state_->PurgeMemory(memory_pressure_level);
   if (gr_shader_cache_)
@@ -422,7 +424,8 @@ GpuChannelManager::GetRasterDecoderContextState(ContextResult* result) {
       gpu::kGpuFeatureStatusEnabled;
   if (enable_raster_transport) {
     raster_decoder_context_state_->InitializeGrContext(
-        gpu_driver_bug_workarounds_, gr_shader_cache(), &activity_flags_);
+        gpu_driver_bug_workarounds_, gr_shader_cache(), &activity_flags_,
+        watchdog_);
   }
 
   gr_cache_controller_.emplace(raster_decoder_context_state_.get(),

@@ -322,9 +322,8 @@ template("test") {
       }
       bundle_deps += [ ":$_resources_bundle_data" ]
     }
-  } else if (is_chromeos && cros_board != "") {
-    # When the arg cros_board is set, assume we're in the cros chrome-sdk
-    # building simplechrome.
+  } else if (is_chromeos && is_chromeos_chrome) {
+    # Building for a cros board (ie: not linux-chromeos).
 
     _gen_runner_target = "${target_name}__runner"
     _runtime_deps_file =
@@ -334,7 +333,7 @@ template("test") {
     generate_vm_runner_script(_gen_runner_target) {
       testonly = true
       generated_script = "$root_build_dir/bin/run_" + invoker.target_name
-      test_exe = "$root_out_dir/" + get_label_info(invoker.target_name, "name")
+      test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
     }
 

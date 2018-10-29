@@ -8,8 +8,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/waitable_event.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -24,10 +24,10 @@ class ThreadSafeScriptContainerTest : public ::testing::Test {
  public:
   ThreadSafeScriptContainerTest()
       : writer_thread_(Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
+            ThreadCreationParams(WebThreadType::kTestThread)
                 .SetThreadNameForTest("writer_thread"))),
         reader_thread_(Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
+            ThreadCreationParams(WebThreadType::kTestThread)
                 .SetThreadNameForTest("reader_thread"))),
         container_(base::MakeRefCounted<ThreadSafeScriptContainer>()) {}
 
@@ -112,8 +112,8 @@ class ThreadSafeScriptContainerTest : public ::testing::Test {
   }
 
  private:
-  std::unique_ptr<WebThread> writer_thread_;
-  std::unique_ptr<WebThread> reader_thread_;
+  std::unique_ptr<Thread> writer_thread_;
+  std::unique_ptr<Thread> reader_thread_;
 
   WaitableEvent writer_waiter_;
   WaitableEvent reader_waiter_;

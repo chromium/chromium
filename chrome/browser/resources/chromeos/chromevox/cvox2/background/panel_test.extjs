@@ -12,25 +12,29 @@ GEN_INCLUDE(['../../testing/mock_feedback.js']);
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function PanelTest() {
+function ChromeVoxPanelTest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-PanelTest.prototype = {
+ChromeVoxPanelTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** @override */
   testGenCppIncludes: function() {
     ChromeVoxE2ETest.prototype.  testGenCppIncludes.call(this);
 
-    -// Flaky on dbg, see https://crbug.com/795840
+    // Flaky on dbg, see https://crbug.com/795840
     GEN_BLOCK(function() { /*!
 
 #if !defined(NDEBUG) || defined(MEMORY_SANITIZER)
 #define MAYBE_ActivateMenu DISABLED_ActivateMenu
-#define MAYBE_LinkMenu DISABLED_LinkMenu
 #else
 #define MAYBE_ActivateMenu ActivateMenu
+#endif
+
+#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_LinkMenu DISABLED_LinkMenu
+#else
 #define MAYBE_LinkMenu LinkMenu
 #endif
     */});
@@ -83,7 +87,7 @@ PanelTest.prototype = {
   */}
 };
 
-TEST_F('PanelTest', 'MAYBE_ActivateMenu', function() {
+TEST_F('ChromeVoxPanelTest', 'MAYBE_ActivateMenu', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.linksDoc, function(root) {
     var openMenus = new PanelCommand(PanelCommandType.OPEN_MENUS);
@@ -101,18 +105,18 @@ TEST_F('PanelTest', 'MAYBE_ActivateMenu', function() {
   });
 });
 
-TEST_F('PanelTest', 'MAYBE_LinkMenu', function() {
+TEST_F('ChromeVoxPanelTest', 'MAYBE_LinkMenu', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.linksDoc, function(root) {
     var openMenus = new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_link');
     mockFeedback.call(openMenus.send.bind(openMenus))
-        .expectSpeech('Link', 'Menu', 'apple Link ', 'Menu item', ' 1 of 3 ',)
+        .expectSpeech('Link', 'Menu', 'apple Link', 'Menu item', ' 1 of 3 ',)
         .call(this.fireMockEvent('ArrowLeft'))
-        .expectSpeech('Landmark', 'Menu', 'No items. ', 'Menu item', ' 1 of 1 ')
+        .expectSpeech('Landmark', 'Menu', 'No items.', 'Menu item', ' 1 of 1 ')
         .call(this.fireMockEvent('ArrowRight'))
-        .expectSpeech('Link', 'Menu', 'apple Link ', 'Menu item', ' 1 of 3 ')
+        .expectSpeech('Link', 'Menu', 'apple Link', 'Menu item', ' 1 of 3 ')
         .call(this.fireMockEvent('ArrowUp'))
-        .expectSpeech(  'banana Link ', 'Menu item', ' 3 of 3 ')
+        .expectSpeech(  'banana Link', 'Menu item', ' 3 of 3 ')
         .clearPendingOutput()
         .call(this.fireMockEvent('Enter'))
         .expectSpeech('banana', 'Link')

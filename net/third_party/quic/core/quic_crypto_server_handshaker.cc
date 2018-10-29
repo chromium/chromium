@@ -429,7 +429,7 @@ void QuicCryptoServerHandshaker::ProcessClientHello(
   crypto_config_->ProcessClientHello(
       result, /*reject_only=*/false, connection->connection_id(),
       connection->self_address(), GetClientAddress(), connection->version(),
-      connection->supported_versions(), use_stateless_rejects_in_crypto_config,
+      session()->supported_versions(), use_stateless_rejects_in_crypto_config,
       server_designated_connection_id, connection->clock(),
       connection->random_generator(), compressed_certs_cache_,
       crypto_negotiated_params_, signed_config_,

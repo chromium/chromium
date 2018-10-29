@@ -169,6 +169,15 @@ class OmniboxClient {
 
   // Discards the state for all pending and transient navigations.
   virtual void DiscardNonCommittedNavigations() {}
+
+  // Opens and shows a new incognito browser window.
+  virtual void NewIncognitoWindow() {}
+
+  // Presents translation prompt for current tab web contents.
+  virtual void PromptPageTranslation() {}
+
+  // Presents prompt to update Chrome.
+  virtual void OpenUpdateChromeDialog() {}
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

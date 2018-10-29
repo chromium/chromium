@@ -156,7 +156,7 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     buffer_info.type = gfx::SHARED_MEMORY_BUFFER;
     buffer_info.buffer_size_in_bytes =
         gfx::BufferSizeForBufferFormat(size, format);
-    buffer_info.shared_memory_guid = buffer_handle.handle.GetGUID();
+    buffer_info.shared_memory_guid = buffer_handle.region.GetGUID();
     allocated_buffers_[client_id].insert(
         std::make_pair(buffer_handle.id, buffer_info));
   }

@@ -1,0 +1,36 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "content/public/common/web_contents_ns_view_bridge.mojom";
+
+// Empty interface that is used by NSViewBridgeFactory in place of
+// RenderWidgetHostNSViewBridge and RenderWidgetHostNSViewClient (which are the
+// real interface that should be used). The reason that the correct interfaces
+// cannot be used directly is that they have dependencies on content-internal
+// mojo type serialization (in particular, content wrappings of Blink types).
+// TODO(ccameron): Migrate the interfaces RenderWidgetHostNSViewBridge and
+// RenderWidgetHostNSViewClient from content-internal types to ui types, and
+// then move the interfaces to content/public.
+// https://crbug.com/888290
+interface StubInterface {};
+
+interface NSViewBridgeFactory {
+  // Create and take ownership of the NSView for a RenderWidgetHostView. The
+  // resulting object will be destroyed when the connection is closed.
+  CreateRenderWidgetHostNSViewBridge(
+      associated StubInterface client,
+      associated StubInterface& bridge_request);
+
+  // Create and take ownership of the NSView for a WebContentsView. The
+  // resulting object will be destroyed when the connection is closed.
+  // The value of |view_id| may be used to look up the NSView (e.g, to add
+  // child NSViews.
+  CreateWebContentsNSViewBridge(
+      uint64 view_id,
+      associated WebContentsNSViewClient client,
+      associated WebContentsNSViewBridge& bridge_request);
+};
+

@@ -59,8 +59,10 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kInvalidWorldId = -1,
     kMainWorldId = 0,
 
-    kEmbedderWorldIdLimit = IsolatedWorldId::kEmbedderWorldIdLimit,
-    kIsolatedWorldIdLimit = IsolatedWorldId::kIsolatedWorldIdLimit,
+    kDOMWrapperWorldEmbedderWorldIdLimit =
+        IsolatedWorldId::kEmbedderWorldIdLimit,
+    kDOMWrapperWorldIsolatedWorldIdLimit =
+        IsolatedWorldId::kIsolatedWorldIdLimit,
 
     // Other worlds can use IDs after this. Don't manually pick up an ID from
     // this range. generateWorldIdForType() picks it up on behalf of you.
@@ -71,7 +73,6 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kMain,
     kIsolated,
     kInspectorIsolated,
-    kGarbageCollector,
     kRegExp,
     kTesting,
     kForV8ContextSnapshotNonMain,

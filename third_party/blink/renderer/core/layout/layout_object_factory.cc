@@ -6,12 +6,14 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_table_caption.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_table_cell.h"
@@ -90,6 +92,16 @@ LayoutTableCell* LayoutObjectFactory::CreateTableCell(
   if (ShouldUseNewLayout(node.GetDocument(), style))
     return new LayoutNGTableCell(element);
   return new LayoutTableCell(element);
+}
+
+LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
+                                                 const ComputedStyle& style) {
+  Element* element = GetElementForLayoutObject(node);
+  if (RuntimeEnabledFeatures::LayoutNGFieldsetEnabled() &&
+      ShouldUseNewLayout(node.GetDocument(), style)) {
+    return new LayoutNGFieldset(element);
+  }
+  return new LayoutFieldset(element);
 }
 
 }  // namespace blink

@@ -13,8 +13,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_task_environment.h"
-#include "components/payments/core/features.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/passwords/credential_manager_features.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #import "ios/web/public/test/error_test_util.h"
@@ -163,38 +163,18 @@ TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptCredentialManager) {
                              web_view, @"typeof navigator.credentials"));
 }
 
-// Tests that ChromeWebClient provides payment request script for WKWebView if
-// the feature is enabled.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptPaymentRequestEnabled) {
+// Tests that ChromeWebClient provides payment request script for WKWebView.
+TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptPaymentRequest) {
   // Chrome scripts rely on __gCrWeb object presence.
   WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
   web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
 
   web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(payments::features::kWebPayments);
   NSString* script =
       web_client.Get()->GetDocumentStartScriptForMainFrame(browser_state());
   web::test::ExecuteJavaScript(web_view, script);
   EXPECT_NSEQ(@"function", web::test::ExecuteJavaScript(
                                web_view, @"typeof window.PaymentRequest"));
-}
-
-// Tests that ChromeWebClient does not provide payment request script for
-// WKWebView if the feature is disabled.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptPaymentRequestDisabled) {
-  // Chrome scripts rely on __gCrWeb object presence.
-  WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
-  web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
-
-  web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(payments::features::kWebPayments);
-  NSString* script =
-      web_client.Get()->GetDocumentStartScriptForMainFrame(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"undefined", web::test::ExecuteJavaScript(
-                                web_view, @"typeof window.PaymentRequest"));
 }
 
 // Tests PrepareErrorPage wth non-post, not Off The Record error.
@@ -240,4 +220,21 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostOtr) {
                               /*is_off_the_record=*/true, &page);
   EXPECT_NSEQ(GetErrorPage(error, /*is_post=*/true, /*is_off_the_record=*/true),
               page);
+}
+
+// Tests PrepareErrorPage wth NTP and an empty string.
+TEST_F(ChromeWebClientTest, PrepareErrorPageNTP) {
+  ChromeWebClient web_client;
+  NSString* ntp_url = base::SysUTF8ToNSString(kChromeUINewTabURL);
+  NSDictionary* info = @{
+    NSURLErrorFailingURLStringErrorKey : ntp_url,
+  };
+  NSError* error = web::testing::CreateTestNetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNetworkConnectionLost
+             userInfo:info]);
+  NSString* page = nil;
+  web_client.PrepareErrorPage(error, /*is_post=*/false,
+                              /*is_off_the_record=*/false, &page);
+  EXPECT_NSEQ(@"", page);
 }

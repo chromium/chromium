@@ -27,11 +27,12 @@ void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
     bool use_tls,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojom::ProxyResolvingSocketRequest request,
+    mojom::SocketObserverPtr observer,
     CreateProxyResolvingSocketCallback callback) {
   auto socket = std::make_unique<ProxyResolvingSocketMojo>(
       factory_impl_.CreateSocket(url, use_tls),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
-      &tls_socket_factory_);
+      std::move(observer), &tls_socket_factory_);
   ProxyResolvingSocketMojo* socket_raw = socket.get();
   proxy_resolving_socket_bindings_.AddBinding(std::move(socket),
                                               std::move(request));

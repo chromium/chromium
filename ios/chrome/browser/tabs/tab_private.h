@@ -7,10 +7,6 @@
 
 #include "ios/net/request_tracker.h"
 
-namespace web {
-class NavigationManagerImpl;
-}
-
 @class CRWWebController;
 
 // Exposed private methods for testing purpose.
@@ -24,12 +20,6 @@ class NavigationManagerImpl;
 
 // Returns the Tab owning TabModel.
 - (TabModel*)parentTabModel;
-
-// Variant of -navigationManager that returns the NavigationManager as a
-// NavigationManagerImpl. This should only be used by tests and will be
-// removed when Tab can wrap TestWebState (see issue crbug.com/620465 for
-// progress).
-- (web::NavigationManagerImpl*)navigationManagerImpl;
 
 // The CRWWebController from the Tab's WebState. This should only be used
 // by tests and will be removed when Tab can wrap TestWebState (see issue

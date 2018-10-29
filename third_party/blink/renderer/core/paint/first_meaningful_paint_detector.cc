@@ -24,9 +24,6 @@ const int kBlankCharactersThreshold = 200;
 
 }  // namespace
 
-constexpr TimeDelta FirstMeaningfulPaintDetector::kNetwork2QuietWindowTimeout;
-constexpr TimeDelta FirstMeaningfulPaintDetector::kNetwork0QuietWindowTimeout;
-
 FirstMeaningfulPaintDetector& FirstMeaningfulPaintDetector::From(
     Document& document) {
   return PaintTiming::From(document).GetFirstMeaningfulPaintDetector();

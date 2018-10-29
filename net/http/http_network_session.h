@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -57,7 +56,7 @@ class HttpProxyClientSocketPool;
 class HttpResponseBodyDrainer;
 class HttpServerProperties;
 class NetLog;
-class NetworkQualityProvider;
+class NetworkQualityEstimator;
 class ProxyResolutionService;
 }  // namespace net
 namespace quic {
@@ -80,7 +79,7 @@ const uint32_t kSpdyMaxHeaderTableSize = 64 * 1024;
 const uint32_t kSpdyMaxConcurrentPushedStreams = 1000;
 
 // This class holds session objects used by HttpNetworkTransaction objects.
-class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
+class NET_EXPORT HttpNetworkSession {
  public:
   // Self-contained structure with all the simple configuration options
   // supported by the HttpNetworkSession.
@@ -192,6 +191,9 @@ class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
     // If true, a new connection may be kicked off on an alternate network when
     // a connection fails on the default network before handshake is confirmed.
     bool quic_retry_on_alternate_network_before_handshake;
+    // If true, the quic stream factory may race connection from stale dns
+    // result with the original dns resolution
+    bool quic_race_stale_dns_on_connection;
     // If true, the quic session may mark itself as GOAWAY on path degrading.
     bool quic_go_away_on_path_degrading;
     // Maximum time the session could be on the non-default network before
@@ -224,8 +226,6 @@ class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
     // If non-empty, QUIC will only be spoken to hosts in this list.
     base::flat_set<std::string> quic_host_whitelist;
 
-    // Enable support for Token Binding.
-    bool enable_token_binding;
     // Enable Channel ID. Channel ID is being deprecated.
     bool enable_channel_id;
 
@@ -257,7 +257,7 @@ class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
     HttpServerProperties* http_server_properties;
     NetLog* net_log;
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
-    NetworkQualityProvider* network_quality_provider;
+    NetworkQualityEstimator* network_quality_estimator;
 
     // Source of time for QUIC connections.
     quic::QuicClock* quic_clock;
@@ -274,7 +274,7 @@ class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
   };
 
   HttpNetworkSession(const Params& params, const Context& context);
-  ~HttpNetworkSession() override;
+  ~HttpNetworkSession();
 
   HttpAuthCache* http_auth_cache() { return &http_auth_cache_; }
   SSLClientAuthCache* ssl_client_auth_cache() {
@@ -371,9 +371,6 @@ class NET_EXPORT HttpNetworkSession : public base::MemoryCoordinatorClient {
   // Flush sockets on low memory notifications callback.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
-  // base::MemoryCoordinatorClient implementation:
-  void OnPurgeMemory() override;
 
   NetLog* const net_log_;
   HttpServerProperties* const http_server_properties_;

@@ -30,7 +30,7 @@ class FloatBox;
 
 bool ApproximatelyEqual(const float&, const float&);
 
-namespace FloatBoxTest {
+namespace float_box_test {
 bool ApproximatelyEqual(const float&, const float&);
 bool ApproximatelyEqual(const FloatBox&, const FloatBox&);
 testing::AssertionResult AssertAlmostEqual(const char*,
@@ -41,7 +41,7 @@ testing::AssertionResult AssertContains(const char*,
                                         const char*,
                                         const FloatBox&,
                                         const FloatBox&);
-}  // namespace FloatBoxTest
+}  // namespace float_box_test
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_BOX_TEST_HELPERS_H_

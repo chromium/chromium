@@ -32,7 +32,11 @@ void CdmProxyHandler::Initialize(InitCB init_cb) {
   cdm_proxy_->Initialize();
 }
 
-void CdmProxyHandler::SetKey(const std::vector<uint8_t>& response) {
+void CdmProxyHandler::SetKey(const std::vector<uint8_t>& response,
+                             SetKeyCB set_key_cb) {
+  DVLOG(2) << __func__;
+  DCHECK(!set_key_cb_);
+  set_key_cb_ = std::move(set_key_cb);
   cdm_proxy_->SetKey(crypto_session_id_, nullptr, 0,
                      cdm::CdmProxy::kDecryptAndDecode, response.data(),
                      response.size());
@@ -68,7 +72,7 @@ void CdmProxyHandler::OnInitialized(Status status,
 void CdmProxyHandler::OnProcessed(Status status,
                                   const uint8_t* output_data,
                                   uint32_t output_data_size) {
-  DVLOG(1) << __func__ << ": status = " << status;
+  DVLOG(2) << __func__ << ": status = " << status;
 
   if (status != Status::kOk ||
       !std::equal(output_data, output_data + output_data_size,
@@ -84,7 +88,7 @@ void CdmProxyHandler::OnProcessed(Status status,
 void CdmProxyHandler::OnMediaCryptoSessionCreated(Status status,
                                                   uint32_t crypto_session_id,
                                                   uint64_t output_data) {
-  DVLOG(1) << __func__ << ": status = " << status;
+  DVLOG(2) << __func__ << ": status = " << status;
 
   if (status != Status::kOk ||
       crypto_session_id != kClearKeyCdmProxyMediaCryptoSessionId) {
@@ -93,6 +97,18 @@ void CdmProxyHandler::OnMediaCryptoSessionCreated(Status status,
   }
 
   FinishInitialization(true);
+}
+
+void CdmProxyHandler::OnKeySet(Status status) {
+  DVLOG(2) << __func__ << ": status = " << status;
+  DCHECK(set_key_cb_);
+
+  std::move(set_key_cb_).Run(status == Status::kOk);
+}
+
+void CdmProxyHandler::OnKeyRemoved(Status status) {
+  DVLOG(2) << __func__;
+  NOTREACHED();
 }
 
 void CdmProxyHandler::NotifyHardwareReset() {

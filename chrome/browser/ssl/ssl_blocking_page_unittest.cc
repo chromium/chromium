@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ssl/ssl_blocking_page.h"
 
+#include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
@@ -34,8 +35,10 @@ class SSLBlockingPageTest : public ChromeRenderViewHostTestHarness {
     test_event_router_ =
         extensions::CreateAndUseTestEventRouter(browser_context());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(browser_context(),
-                            safe_browsing::BuildSafeBrowsingPrivateEventRouter);
+        ->SetTestingFactory(
+            browser_context(),
+            base::BindRepeating(
+                &safe_browsing::BuildSafeBrowsingPrivateEventRouter));
   }
 
   extensions::TestEventRouter* test_event_router() {

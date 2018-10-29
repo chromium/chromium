@@ -1,5 +1,13 @@
 # Updating clang
 
+We distribute prebuilt packages of LLVM binaries, including clang and lld, that
+all developers and bots pull at `gclient runhooks` time. These binaries are
+just regular LLVM binaries built at a fixed upstream revision. This document
+describes how to build a package at a newer revision and update Chromium to it.
+An archive of all packages built so far is at https://is.gd/chromeclang
+
+1.  Check that https://ci.chromium.org/p/chromium/g/chromium.clang/console
+    looks reasonably green.
 1.  Sync your Chromium tree to the latest revision to pick up any plugin
     changes
 1.  Run `python tools/clang/scripts/upload_revision.py NNNN`
@@ -40,11 +48,12 @@
 
     ```shell
     git cl try &&
-    git cl try -m tryserver.chromium.linux -b linux_chromium_cfi_rel_ng &&
     git cl try -m tryserver.blink -b linux_trusty_blink_rel &&
     git cl try -B luci.chromium.try -b ios-device -b mac_chromium_asan_rel_ng \
+      -b linux_chromium_cfi_rel_ng \
       -b linux_chromium_chromeos_asan_rel_ng -b linux_chromium_msan_rel_ng \
-      -b linux_chromium_chromeos_msan_rel_ng -b linux-chromeos-dbg
+      -b linux_chromium_chromeos_msan_rel_ng -b linux-chromeos-dbg \
+      -b win-asan
     ```
 
 1.  Optional: Start Pinpoint perf tryjobs. These are generally too noisy to
@@ -56,21 +65,49 @@
 
         $ PYTHONPATH=$(dirname $(which git-cl)) python -c"import auth;auth.OAUTH_CLIENT_ID='62121018386-h08uiaftreu4dr3c4alh3l7mogskvb7i.apps.googleusercontent.com';auth.OAUTH_CLIENT_SECRET='vc1fZfV1cZC6mgDSHV-KSPOz';print auth.get_authenticator_for_host('pinpoint',auth.make_auth_config()).login()"
 
-    a.  Generate a fresh Oath2 token:
+    b.  Generate a fresh Oauth2 token:
 
         $ TOKEN=$(PYTHONPATH=$(dirname $(which git-cl)) python -c"import auth;print auth.get_authenticator_for_host('pinpoint',auth.make_auth_config()).get_access_token().token")
 
-    a.  Launch Pinpoint job:
+    c.  Launch Pinpoint job:
 
         $ curl -H"Authorization: Bearer $TOKEN" -F configuration=chromium-rel-win7-gpu-nvidia \
-            -F target=telemetry_perf_tests -F benchmark=speedometer2 \
+            -F target=performance_test_suite -F benchmark=speedometer2 \
             -F patch=https://chromium-review.googlesource.com/c/chromium/src/+/$(git cl issue | cut -d' ' -f3) \
             -F start_git_hash=HEAD -F end_git_hash=HEAD https://pinpoint-dot-chromeperf.appspot.com/api/new
 
-    a.  Use the URL returned by the command above to see the progress and result
+    d.  Use the URL returned by the command above to see the progress and result
         of the tryjob, checking that it doesn't regress significantly (> 10%).
         Post the URL to the codereview.
 
 1.  Commit roll CL from the first step
 1.  The bots will now pull the prebuilt binary, and goma will have a matching
     binary, too.
+
+## Adding files to the clang package
+
+The clang package is downloaded unconditionally by all bots and devs. It's
+called "clang" for historical reasons, but nowadays also contains other
+mission-critical toolchain pieces besides clang.
+
+We try to limit the contents of the clang package. They should meet these
+criteria:
+
+- things that are used by most developers use most of the time (e.g. a
+  compiler, a linker, sanitizer runtimes)
+- things needed for doing official builds
+
+If you want to add something to the clang package that doesn't (yet?) meet
+these criteria, you can make package.py upload it to a separate zip file
+and then download it on an opt-in basis by requiring users to run a script
+to download the additional zip file. You can structure your script in a way that
+it downloads your additional zip automatically if the script detects an
+old version on disk, that way users have to run the download script just
+once. `tools/clang/scripts/download_lld_mac.py` is an example for this
+(It doesn't do the "only download if old version is on disk or if requested"
+bit, and hence doesn't run as a default DEPS hook. TODO(thakis): Make
+coverage stuff a better example and link to that.)
+
+If you're adding a new feature that you expect will meet the inclusion criteria
+eventually but doesn't yet, start by having your things in a separate zip
+and move it to the main zip once the criteria are met.

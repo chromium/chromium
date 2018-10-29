@@ -21,7 +21,9 @@
 #include "chrome/test/chromedriver/command_listener.h"
 
 static const char kAccept[] = "accept";
+static const char kAcceptAndNotify[] = "accept and notify";
 static const char kDismiss[] = "dismiss";
+static const char kDismissAndNotify[] = "dismiss and notify";
 static const char kIgnore[] = "ignore";
 
 // Controls whether ChromeDriver operates in W3C mode (when true) or legacy
@@ -48,6 +50,7 @@ struct FrameInfo {
 };
 
 struct Session {
+  static const base::TimeDelta kDefaultImplicitWaitTimeout;
   static const base::TimeDelta kDefaultPageLoadTimeout;
   static const base::TimeDelta kDefaultScriptTimeout;
 
@@ -104,7 +107,7 @@ struct Session {
   // |CommandListener|s might be |CommandListenerProxy|s that forward to
   // |DevToolsEventListener|s owned by |chrome|.
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
-  std::string unexpected_alert_behaviour;
+  std::string unhandled_prompt_behavior;
 };
 
 Session* GetThreadLocalSession();

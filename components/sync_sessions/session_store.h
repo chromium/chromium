@@ -14,14 +14,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/device_info/local_device_info_provider.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 
 namespace syncer {
-class SessionSyncPrefs;
+class DeviceInfo;
 }  // namespace syncer
 
 namespace sync_sessions {
@@ -40,26 +39,23 @@ class SessionStore {
   };
 
   // Creation factory. The instantiation process is quite complex because it
-  // loads state from disk in addition to other asynchronous dependencies like
-  // LocalDeviceInfoProvider.
+  // loads state from disk.
   using FactoryCompletionCallback = base::OnceCallback<void(
       const base::Optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
   using Factory =
-      base::RepeatingCallback<void(FactoryCompletionCallback callback)>;
+      base::RepeatingCallback<void(const syncer::DeviceInfo& device_info,
+                                   FactoryCompletionCallback callback)>;
   // Mimics signature of FaviconCache::UpdateMappingsFromForeignTab().
   using RestoredForeignTabCallback =
       base::RepeatingCallback<void(const sync_pb::SessionTab&, base::Time)>;
 
   // Creates a factory object that is capable of constructing instances of type
-  // |SessionStore| and handling the involved IO. All pointer arguments must not
-  // be null and must outlive the factory as well as the instantiated stores.
+  // |SessionStore| and handling the involved IO. |sessions_client| must not be
+  // null and must outlive the factory as well as the instantiated stores.
   static Factory CreateFactory(
       SyncSessionsClient* sessions_client,
-      syncer::SessionSyncPrefs* sync_prefs,
-      syncer::LocalDeviceInfoProvider* local_device_info_provider,
-      const syncer::RepeatingModelTypeStoreFactory& store_factory,
       const RestoredForeignTabCallback& restored_foreign_tab_callback);
 
   // Verifies whether a proto is malformed (e.g. required fields are missing).

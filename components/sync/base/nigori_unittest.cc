@@ -8,11 +8,36 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/tick_clock.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 namespace {
+
+class FakeTickClock : public base::TickClock {
+ public:
+  FakeTickClock() : call_count_(0) {}
+
+  // How much the mock clock advances after each call to the mocked
+  // base::TimeTicks::Now(). We do this because we are testing functions which
+  // call NowTicks() twice.
+  static constexpr base::TimeDelta kTicksAdvanceAfterEachCall =
+      base::TimeDelta::FromMilliseconds(250);
+
+  base::TimeTicks NowTicks() const override {
+    int current_call_count = call_count_;
+    ++call_count_;
+    return base::TimeTicks() + current_call_count * kTicksAdvanceAfterEachCall;
+  }
+
+  int call_count() const { return call_count_; }
+
+ private:
+  mutable int call_count_;
+};
+
+constexpr base::TimeDelta FakeTickClock::kTicksAdvanceAfterEachCall;
 
 TEST(SyncNigoriTest, Permute) {
   Nigori nigori;
@@ -260,26 +285,34 @@ TEST(SyncNigoriTest,
       KeyDerivationParams::CreateWithUnsupportedMethod(), "Passphrase!"));
 }
 
-// TODO(davidovic): Use an injected clock in the following tests in order to
-// verify that the duration is computed correctly.
 TEST(SyncNigoriTest, InitByDerivationShouldReportPbkdf2DurationInHistogram) {
+  FakeTickClock fake_tick_clock;
   Nigori nigori;
+  nigori.SetTickClockForTesting(&fake_tick_clock);
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(nigori.InitByDerivation(KeyDerivationParams::CreateForPbkdf2(),
                                       "Passphrase!"));
+  ASSERT_EQ(2, fake_tick_clock.call_count());
 
-  histogram_tester.ExpectTotalCount(
-      "Sync.Crypto.NigoriKeyDerivationDuration.Pbkdf2", /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.Crypto.NigoriKeyDerivationDuration.Pbkdf2",
+      /*sample=*/FakeTickClock::kTicksAdvanceAfterEachCall.InMilliseconds(),
+      /*count=*/1);
 }
 
 TEST(SyncNigoriTest, InitByDerivationShouldReportScryptDurationInHistogram) {
+  FakeTickClock fake_tick_clock;
   Nigori nigori;
+  nigori.SetTickClockForTesting(&fake_tick_clock);
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(nigori.InitByDerivation(
       KeyDerivationParams::CreateForScrypt("somesalt"), "Passphrase!"));
+  ASSERT_EQ(2, fake_tick_clock.call_count());
 
-  histogram_tester.ExpectTotalCount(
-      "Sync.Crypto.NigoriKeyDerivationDuration.Scrypt8192", /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.Crypto.NigoriKeyDerivationDuration.Scrypt8192",
+      /*sample=*/FakeTickClock::kTicksAdvanceAfterEachCall.InMilliseconds(),
+      /*count=*/1);
 }
 
 TEST(SyncNigoriTest, GenerateScryptSaltShouldReturnSaltOfCorrectSize) {

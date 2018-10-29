@@ -20,6 +20,11 @@ LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock*);
 // are certain layout objects that should be skipped for NG.
 LayoutObject* GetLayoutObjectForParentNode(LayoutObject*);
 
+// Return the layout object that should be the sibling NGLayoutInputNode of
+// |object|. Normally this will just be the next sibling layout object, but
+// there are certain layout objects that should be skipped for NG.
+LayoutObject* GetLayoutObjectForNextSiblingNode(LayoutObject*);
+
 // Return true if the NGLayoutInputNode children of the NGLayoutInputNode
 // established by |block| will be inline; see LayoutObject::ChildrenInline().
 bool AreNGBlockFlowChildrenInline(const LayoutBlock*);

@@ -4,12 +4,12 @@
 
 #include "ui/aura/mus/property_utils.h"
 
+#include "base/logging.h"
 #include "services/ws/public/cpp/property_type_converters.h"
 #include "services/ws/public/mojom/window_manager.mojom.h"
 #include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
-#include "ui/aura/window.h"
 
 namespace aura {
 namespace {
@@ -55,6 +55,38 @@ ws::mojom::WindowType GetWindowTypeFromProperties(
     return ws::mojom::WindowType::UNKNOWN;
   return static_cast<ws::mojom::WindowType>(
       mojo::ConvertTo<int32_t>(iter->second));
+}
+
+ws::mojom::OcclusionState WindowOcclusionStateToMojom(
+    Window::OcclusionState input) {
+  switch (input) {
+    case Window::OcclusionState::UNKNOWN:
+      return ws::mojom::OcclusionState::kUnknown;
+    case Window::OcclusionState::VISIBLE:
+      return ws::mojom::OcclusionState::kVisible;
+    case Window::OcclusionState::OCCLUDED:
+      return ws::mojom::OcclusionState::kOccluded;
+    case Window::OcclusionState::HIDDEN:
+      return ws::mojom::OcclusionState::kHidden;
+  }
+  NOTREACHED();
+  return ws::mojom::OcclusionState::kUnknown;
+}
+
+Window::OcclusionState WindowOcclusionStateFromMojom(
+    ws::mojom::OcclusionState input) {
+  switch (input) {
+    case ws::mojom::OcclusionState::kUnknown:
+      return Window::OcclusionState::UNKNOWN;
+    case ws::mojom::OcclusionState::kVisible:
+      return aura::Window::OcclusionState::VISIBLE;
+    case ws::mojom::OcclusionState::kOccluded:
+      return Window::OcclusionState::OCCLUDED;
+    case ws::mojom::OcclusionState::kHidden:
+      return Window::OcclusionState::HIDDEN;
+  }
+  NOTREACHED();
+  return Window::OcclusionState::UNKNOWN;
 }
 
 }  // namespace aura

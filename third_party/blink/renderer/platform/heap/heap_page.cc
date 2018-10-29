@@ -1786,8 +1786,9 @@ uint32_t ComputeRandomMagic() {
   // Get an ASLR'd address from one of our own DLLs/.sos, and then another from
   // a system DLL/.so:
 
-  const uint32_t random1 = ~(RotateLeft16(reinterpret_cast<uintptr_t>(
-      base::trace_event::MemoryAllocatorDump::kNameSize)));
+  const uint32_t random1 =
+      ~(RotateLeft16(static_cast<uint32_t>(reinterpret_cast<uintptr_t>(
+          base::trace_event::MemoryAllocatorDump::kNameSize))));
 
 #if defined(OS_WIN)
   uintptr_t random2 = reinterpret_cast<uintptr_t>(::ReadFile);
@@ -1811,7 +1812,7 @@ uint32_t ComputeRandomMagic() {
 #error architecture not supported
 #endif
 
-  random2 = ~(RotateLeft16(random2));
+  random2 = ~(RotateLeft16(static_cast<uint32_t>(random2)));
 
   // Combine the 2 values:
   const uint32_t random = (random1 & 0x0000FFFFUL) |

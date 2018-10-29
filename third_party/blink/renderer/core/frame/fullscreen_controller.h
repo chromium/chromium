@@ -93,9 +93,8 @@ class CORE_EXPORT FullscreenController {
   bool initial_background_color_override_enabled_ = false;
   RGBA32 initial_background_color_override_ = Color::kTransparent;
 
-  using PendingFullscreenSet =
-      PersistentHeapLinkedHashSet<WeakMember<LocalFrame>>;
-  PendingFullscreenSet pending_frames_;
+  using PendingFullscreenSet = HeapLinkedHashSet<WeakMember<LocalFrame>>;
+  Persistent<PendingFullscreenSet> pending_frames_;
 };
 
 }  // namespace blink

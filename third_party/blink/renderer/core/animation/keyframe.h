@@ -133,12 +133,13 @@ class CORE_EXPORT Keyframe : public GarbageCollectedFinalized<Keyframe> {
     // FIXME: Remove this once CompositorAnimations no longer depends on
     // AnimatableValues
     virtual bool PopulateAnimatableValue(
-        const CSSProperty&,
+        const PropertyHandle&,
         Element&,
         const ComputedStyle& base_style,
         const ComputedStyle* parent_style) const {
       return false;
     }
+
     virtual const AnimatableValue* GetAnimatableValue() const = 0;
 
     virtual bool IsAnimatableValuePropertySpecificKeyframe() const {

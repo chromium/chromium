@@ -22,7 +22,7 @@ cast_source_set("media") {
     "//components/cdm/renderer",
     "//content/public/renderer",
     "//media",
-    "//third_party/widevine/cdm:headers",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/gfx/geometry",
   ]
 }

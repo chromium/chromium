@@ -40,10 +40,6 @@ SyncState PasswordManagerClient::GetPasswordSyncState() const {
   return NOT_SYNCING;
 }
 
-SyncState PasswordManagerClient::GetHistorySyncState() const {
-  return NOT_SYNCING;
-}
-
 bool PasswordManagerClient::WasLastNavigationHTTPError() const {
   return false;
 }
@@ -93,6 +89,10 @@ PasswordManagerClient::GetPasswordRequirementsService() {
 
 favicon::FaviconService* PasswordManagerClient::GetFaviconService() {
   return nullptr;
+}
+
+bool PasswordManagerClient::IsUnderAdvancedProtection() const {
+  return false;
 }
 
 }  // namespace password_manager

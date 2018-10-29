@@ -34,12 +34,18 @@ class FakeAccessibilityHelperInstance
   void SetNativeChromeVoxArcSupportForFocusedWindow(
       bool enabled,
       SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) override;
+  void SetExploreByTouchEnabled(bool enabled) override;
 
   mojom::AccessibilityFilterType filter_type() { return filter_type_; }
+  bool explore_by_touch_enabled() { return explore_by_touch_enabled_; }
 
  private:
   mojom::AccessibilityFilterType filter_type_ =
       mojom::AccessibilityFilterType::OFF;
+
+  // Explore-by-touch is enabled by default in ARC++, so we default it to 'true'
+  // in this test as well.
+  bool explore_by_touch_enabled_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityHelperInstance);
 };

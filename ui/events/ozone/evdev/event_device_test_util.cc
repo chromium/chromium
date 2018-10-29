@@ -81,18 +81,18 @@ bool ParseBitfield(const std::string& bitfield,
 
 // Captured from HJC Game ZD - V gamepad.
 const DeviceAbsoluteAxis kHJCGamepadAbsAxes[] = {
-    {ABS_X, {128, 0, 255, 15, 0}}, {ABS_Y, {128, 0, 255, 15, 0}},
-    {ABS_Z, {128, 0, 255, 15, 0}}, {ABS_RZ, {128, 0, 255, 15, 0}},
-    {ABS_HAT0X, {0, -1, 1, 0, 0}}, {ABS_HAT0Y, {0, 1, 1, 0, 0}}};
-
+    {ABS_X, {0, 0, 255, 0, 15, 0}},   {ABS_Y, {0, 0, 255, 0, 15, 0}},
+    {ABS_Z, {0, 0, 255, 0, 15, 0}},   {ABS_RZ, {0, 0, 255, 0, 15, 0}},
+    {ABS_HAT0X, {0, -1, 1, 0, 0, 0}}, {ABS_HAT0Y, {0, -1, 1, 0, 0, 0}},
+};
 const DeviceCapabilities kHJCGamepad = {
     /* path */
-    "/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2.2/1-2.2:1.0/"
-    "input/input38/event11",
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/"
+    "0003:11C5:5506.0005/input/input11/event8",
     /* name */ "HJC Game ZD - V",
-    /* phys */ "usb-0000:00:14.0-2.2/input0",
+    /* phys */ "usb-0000:00:14.0-1/input0",
     /* uniq */ "",
-    /* bustype */ "0011",
+    /* bustype */ "0003",
     /* vendor */ "11c5",
     /* product */ "5506",
     /* version */ "0111",
@@ -111,23 +111,22 @@ const DeviceCapabilities kHJCGamepad = {
 
 // Captured from Xbox 360 gamepad.
 const DeviceAbsoluteAxis kXboxGamepadAbsAxes[] = {
-    {ABS_X, {0, -32768, 32767, 16, 128}},
-    {ABS_Y, {0, -32768, 32767, 16, 128}},
-    {ABS_Z, {0, 0, 255, 0, 0}},
-    {ABS_RX, {0, -32768, 32767, 16, 128}},
-    {ABS_RY, {0, -32768, 32767, 16, 128}},
-    {ABS_RZ, {0, 0, 255, 0, 0}},
-    {ABS_HAT0X, {0, -1, 1, 0, 0}},
-    {ABS_HAT0Y, {0, -1, 1, 0, 0}}};
-
+    {ABS_X, {0, -32768, 32767, 16, 128, 0}},
+    {ABS_Y, {0, -32768, 32767, 16, 128, 0}},
+    {ABS_Z, {0, 0, 255, 0, 0, 0}},
+    {ABS_RX, {0, -32768, 32767, 16, 128, 0}},
+    {ABS_RY, {0, -32768, 32767, 16, 128, 0}},
+    {ABS_RZ, {0, 0, 255, 0, 0, 0}},
+    {ABS_HAT0X, {0, -1, 1, 0, 0, 0}},
+    {ABS_HAT0Y, {0, -1, 1, 0, 0, 0}},
+};
 const DeviceCapabilities kXboxGamepad = {
     /* path */
-    "/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2.2/1-2.2:1.0/"
-    "input/input38/event11",
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/input/input9/event8",
     /* name */ "Microsoft X-Box 360 pad",
-    /* phys */ "usb-0000:00:14.0-2.2/input0",
+    /* phys */ "usb-0000:00:14.0-1/input0",
     /* uniq */ "",
-    /* bustype */ "0011",
+    /* bustype */ "0003",
     /* vendor */ "045e",
     /* product */ "028e",
     /* version */ "0114",
@@ -139,24 +138,24 @@ const DeviceCapabilities kXboxGamepad = {
     /* msc */ "0",
     /* sw */ "0",
     /* led */ "0",
-    /* ff */ "0",
+    /* ff */ "107030000 0",
     kXboxGamepadAbsAxes,
     arraysize(kXboxGamepadAbsAxes),
 };
 
 // Captured from iBuffalo gamepad.
 const DeviceAbsoluteAxis kiBuffaloGamepadAbsAxes[] = {
-    {ABS_X, {128, 0, 255, 0, 15}},
-    {ABS_Y, {128, 0, 255, 0, 15}}};
-
+    {ABS_X, {0, 0, 255, 0, 15, 0}},
+    {ABS_Y, {0, 0, 255, 0, 15, 0}},
+};
 const DeviceCapabilities kiBuffaloGamepad = {
     /* path */
-    "/devices/pci0000:00/0000:00:14.0/usb3/3-14/3-14:1.0/0003:0583:2060.0011/"
-    "input/input30/event14",
-    /* name */ "USB,2-axis 8-button gamepad",
-    /* phys */ "usb-0000:00:14.0-14/input0",
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/"
+    "1-1:1.0/0003:0583:2060.0004/input/input10/event8",
+    /* name */ "USB,2-axis 8-button gamepad  ",
+    /* phys */ "usb-0000:00:14.0-1/input0",
     /* uniq */ "",
-    /* bustype */ "0011",
+    /* bustype */ "0003",
     /* vendor */ "0583",
     /* product */ "2060",
     /* version */ "0110",
@@ -175,8 +174,8 @@ const DeviceCapabilities kiBuffaloGamepad = {
 
 // Captured from Pixelbook.
 const DeviceAbsoluteAxis kEveTouchScreenAbsAxes[] = {
-    {ABS_X, {4624, 0, 10368, 0, 0, 40}},
-    {ABS_Y, {2177, 0, 6912, 0, 0, 40}},
+    {ABS_X, {0, 0, 10368, 0, 0, 40}},
+    {ABS_Y, {0, 0, 6912, 0, 0, 40}},
     {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
     {ABS_MT_SLOT, {0, 0, 9, 0, 0, 0}},
     {ABS_MT_TOUCH_MAJOR, {0, 0, 255, 0, 0, 1}},
@@ -184,9 +183,10 @@ const DeviceAbsoluteAxis kEveTouchScreenAbsAxes[] = {
     {ABS_MT_ORIENTATION, {0, 0, 1, 0, 0, 0}},
     {ABS_MT_POSITION_X, {0, 0, 10368, 0, 0, 40}},
     {ABS_MT_POSITION_Y, {0, 0, 6912, 0, 0, 40}},
-    {ABS_MT_TOOL_TYPE, {0, 0, 2, 0, 0}},
-    {ABS_MT_PRESSURE, {0, 0, 255, 0, 0, 0}}};
-
+    {ABS_MT_TOOL_TYPE, {0, 0, 2, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 255, 0, 0, 0}},
+};
 const DeviceCapabilities kEveTouchScreen = {
     /* path */
     "/sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-6/"
@@ -627,19 +627,76 @@ const DeviceCapabilities kEveStylus = {
     arraysize(kEveStylusAbsAxes),
 };
 
-ui::InputDeviceType InputDeviceTypeFromBusType(int bustype) {
-  switch (bustype) {
-    case BUS_I8042:
-    case BUS_I2C:
-      return ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-    case BUS_USB:
-    case 0x1D:  // Used in kLogitechTouchKeyboardK400 but not listed in input.h.
-      return ui::InputDeviceType::INPUT_DEVICE_EXTERNAL;
-    default:
-      NOTREACHED() << "Unexpected bus type";
-      return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
-  }
-}
+const DeviceCapabilities kHammerKeyboard = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.0/0003:18D1:5030.0002/"
+    "input/input10/event9",
+    /* name */ "Google Inc. Hammer",
+    /* phys */ "usb-0000:00:14.0-7/input0",
+    /* uniq */ "410020000d57345436313920",
+    /* bustype */ "0003",
+    /* vendor */ "18d1",
+    /* product */ "5030",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "100013",
+    /* key */
+    "88 0 0 0 0 0 1000000000007 ff000000000007ff febeffdfffefffff "
+    "fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+const DeviceAbsoluteAxis kHammerTouchpadAbsAxes[] = {
+    {ABS_X, {0, 0, 2160, 0, 0, 21}},
+    {ABS_Y, {0, 0, 1080, 0, 0, 14}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 9, 0, 0, 0}},
+    {ABS_MT_TOUCH_MAJOR, {0, 0, 255, 0, 0, 3}},
+    {ABS_MT_TOUCH_MINOR, {0, 0, 255, 0, 0, 3}},
+    {ABS_MT_ORIENTATION, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 2160, 0, 0, 21}},
+    {ABS_MT_POSITION_Y, {0, 0, 1080, 0, 0, 14}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 255, 0, 0, 0}},
+};
+const DeviceCapabilities kHammerTouchpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.2/0003:18D1:5030.0003/"
+    "input/input11/event10",
+    /* name */ "Google Inc. Hammer Touchpad",
+    /* phys */ "usb-0000:00:14.0-7/input2",
+    /* uniq */ "410020000d57345436313920",
+    /* bustype */ "0003",
+    /* vendor */ "18d1",
+    /* product */ "5030",
+    /* version */ "0100",
+    /* prop */ "5",
+    /* ev */ "1b",
+    /* key */ "e520 10000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "673800001000003",
+    /* msc */ "20",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kHammerTouchpadAbsAxes,
+    arraysize(kHammerTouchpadAbsAxes),
+};
+
+// NB: Please use the capture_device_capabilities.py script to add more
+// test data here. This will help ensure the data matches what the kernel
+// reports for a real device and is entered correctly.
+//
+// For Chrome OS, you can run the script by installing a test image and running:
+//   DEVICE_IP=<your device IP>
+//   cd ui/events/ozone/evdev/
+//   scp capture_device_capabilities.py "root@${DEVICE_IP}:/tmp/"
+//   ssh "root@${DEVICE_IP}" /tmp/capture_device_capabilities.py
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
                               EventDeviceInfo* devinfo) {
@@ -695,17 +752,14 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
       devinfo->SetAbsMtSlots(code, zero_slots);
   }
 
-  int bustype = 0;
-  sscanf(capabilities.bustype, "%x", &bustype);
-  devinfo->SetDeviceType(InputDeviceTypeFromBusType(bustype));
+  input_id id = {};
+  sscanf(capabilities.vendor, "%" SCNx16, &id.vendor);
+  sscanf(capabilities.product, "%" SCNx16, &id.product);
+  sscanf(capabilities.bustype, "%" SCNx16, &id.bustype);
+  sscanf(capabilities.version, "%" SCNx16, &id.version);
+  devinfo->SetId(id);
+  devinfo->SetDeviceType(EventDeviceInfo::GetInputDeviceTypeFromId(id));
 
-  int vendor_id = 0;
-  int product_id = 0;
-
-  sscanf(capabilities.vendor, "%x", &vendor_id);
-  sscanf(capabilities.product, "%x", &product_id);
-  devinfo->SetId(static_cast<uint16_t>(vendor_id),
-                 static_cast<uint16_t>(product_id));
   return true;
 }
 

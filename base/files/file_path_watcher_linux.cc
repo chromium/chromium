@@ -35,6 +35,7 @@
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
@@ -47,14 +48,14 @@ class InotifyReader;
 
 class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
  public:
-  InotifyReaderThreadDelegate(int inotify_fd) : inotify_fd_(inotify_fd){};
-
+  explicit InotifyReaderThreadDelegate(int inotify_fd)
+      : inotify_fd_(inotify_fd) {}
   ~InotifyReaderThreadDelegate() override = default;
 
  private:
   void ThreadMain() override;
 
-  int inotify_fd_;
+  const int inotify_fd_;
 
   DISALLOW_COPY_AND_ASSIGN(InotifyReaderThreadDelegate);
 };
@@ -64,11 +65,11 @@ class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
 // http://crbug.com/38174
 class InotifyReader {
  public:
-  typedef int Watch;  // Watch descriptor used by AddWatch and RemoveWatch.
-  static const Watch kInvalidWatch = -1;
+  using Watch = int;  // Watch descriptor used by AddWatch() and RemoveWatch().
+  static constexpr Watch kInvalidWatch = -1;
 
   // Watch directory |path| for changes. |watcher| will be notified on each
-  // change. Returns kInvalidWatch on failure.
+  // change. Returns |kInvalidWatch| on failure.
   Watch AddWatch(const FilePath& path, FilePathWatcherImpl* watcher);
 
   // Remove |watch| if it's valid.
@@ -80,8 +81,6 @@ class InotifyReader {
  private:
   friend struct LazyInstanceTraitsBase<InotifyReader>;
 
-  typedef std::set<FilePathWatcherImpl*> WatcherSet;
-
   InotifyReader();
   // There is no destructor because |g_inotify_reader| is a
   // base::LazyInstace::Leaky object. Having a destructor causes build
@@ -90,11 +89,11 @@ class InotifyReader {
   // Returns true on successful thread creation.
   bool StartThread();
 
-  // We keep track of which delegates want to be notified on which watches.
-  std::unordered_map<Watch, WatcherSet> watchers_;
-
-  // Lock to protect watchers_.
+  // Lock to protect |watchers_|.
   Lock lock_;
+
+  // We keep track of which delegates want to be notified on which watches.
+  std::unordered_map<Watch, std::set<FilePathWatcherImpl*>> watchers_;
 
   // File descriptor returned by inotify_init.
   const int inotify_fd_;
@@ -103,7 +102,7 @@ class InotifyReader {
   InotifyReaderThreadDelegate thread_delegate_;
 
   // Flag set to true when startup was successful.
-  bool valid_;
+  bool valid_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(InotifyReader);
 };
@@ -158,7 +157,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
     FilePath::StringType subdir;
     FilePath::StringType linkname;
   };
-  typedef std::vector<WatchEntry> WatchVector;
 
   // Reconfigure to watch for the most specific parent directory of |target_|
   // that exists. Also calls UpdateRecursiveWatches() below.
@@ -195,12 +193,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // The file or directory we're supposed to watch.
   FilePath target_;
 
-  bool recursive_;
+  bool recursive_ = false;
 
   // The vector of watches and next component names for all path components,
   // starting at the root directory. The last entry corresponds to the watch for
   // |target_| and always stores an empty next component name in |subdir|.
-  WatchVector watches_;
+  std::vector<WatchEntry> watches_;
 
   std::unordered_map<InotifyReader::Watch, FilePath> recursive_paths_by_watch_;
   std::map<FilePath, InotifyReader::Watch> recursive_watches_by_path_;
@@ -229,6 +227,8 @@ void InotifyReaderThreadDelegate::ThreadMain() {
     fd_set rfds;
     FD_ZERO(&rfds);
     FD_SET(inotify_fd_, &rfds);
+
+    ScopedBlockingCall scoped_blocking_call(BlockingType::WILL_BLOCK);
 
     // Wait until some inotify events are available.
     int select_result =
@@ -269,9 +269,7 @@ void InotifyReaderThreadDelegate::ThreadMain() {
 }
 
 InotifyReader::InotifyReader()
-    : inotify_fd_(inotify_init()),
-      thread_delegate_(inotify_fd_),
-      valid_(false) {
+    : inotify_fd_(inotify_init()), thread_delegate_(inotify_fd_) {
   if (inotify_fd_ < 0) {
     PLOG(ERROR) << "inotify_init() failed";
     return;
@@ -296,6 +294,7 @@ InotifyReader::Watch InotifyReader::AddWatch(
 
   AutoLock auto_lock(lock_);
 
+  ScopedBlockingCall scoped_blocking_call(BlockingType::WILL_BLOCK);
   Watch watch = inotify_add_watch(inotify_fd_, path.value().c_str(),
                                   IN_ATTRIB | IN_CREATE | IN_DELETE |
                                   IN_CLOSE_WRITE | IN_MOVE |
@@ -319,6 +318,8 @@ void InotifyReader::RemoveWatch(Watch watch, FilePathWatcherImpl* watcher) {
 
   if (watchers_[watch].empty()) {
     watchers_.erase(watch);
+
+    ScopedBlockingCall scoped_blocking_call(BlockingType::WILL_BLOCK);
     inotify_rm_watch(inotify_fd_, watch);
   }
 }
@@ -330,19 +331,15 @@ void InotifyReader::OnInotifyEvent(const inotify_event* event) {
   FilePath::StringType child(event->len ? event->name : FILE_PATH_LITERAL(""));
   AutoLock auto_lock(lock_);
 
-  for (WatcherSet::iterator watcher = watchers_[event->wd].begin();
-       watcher != watchers_[event->wd].end();
-       ++watcher) {
-    (*watcher)->OnFilePathChanged(event->wd,
-                                  child,
-                                  event->mask & (IN_CREATE | IN_MOVED_TO),
-                                  event->mask & (IN_DELETE | IN_MOVED_FROM),
-                                  event->mask & IN_ISDIR);
+  auto& watcher_set = watchers_[event->wd];
+  for (FilePathWatcherImpl* watcher : watcher_set) {
+    watcher->OnFilePathChanged(
+        event->wd, child, event->mask & (IN_CREATE | IN_MOVED_TO),
+        event->mask & (IN_DELETE | IN_MOVED_FROM), event->mask & IN_ISDIR);
   }
 }
 
-FilePathWatcherImpl::FilePathWatcherImpl()
-    : recursive_(false), weak_factory_(this) {
+FilePathWatcherImpl::FilePathWatcherImpl() : weak_factory_(this) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -487,8 +484,8 @@ void FilePathWatcherImpl::Cancel() {
   set_cancelled();
   callback_.Reset();
 
-  for (size_t i = 0; i < watches_.size(); ++i)
-    g_inotify_reader.Get().RemoveWatch(watches_[i].watch, this);
+  for (const auto& watch : watches_)
+    g_inotify_reader.Get().RemoveWatch(watch.watch, this);
   watches_.clear();
   target_.clear();
   RemoveRecursiveWatches();
@@ -502,8 +499,7 @@ void FilePathWatcherImpl::UpdateWatches() {
 
   // Walk the list of watches and update them as we go.
   FilePath path(FILE_PATH_LITERAL("/"));
-  for (size_t i = 0; i < watches_.size(); ++i) {
-    WatchEntry& watch_entry = watches_[i];
+  for (WatchEntry& watch_entry : watches_) {
     InotifyReader::Watch old_watch = watch_entry.watch;
     watch_entry.watch = InotifyReader::kInvalidWatch;
     watch_entry.linkname.clear();
@@ -555,9 +551,8 @@ void FilePathWatcherImpl::UpdateRecursiveWatches(
       recursive_paths_by_watch_[fired_watch] :
       target_;
 
-  std::map<FilePath, InotifyReader::Watch>::iterator start_it =
-      recursive_watches_by_path_.lower_bound(changed_dir);
-  std::map<FilePath, InotifyReader::Watch>::iterator end_it = start_it;
+  auto start_it = recursive_watches_by_path_.lower_bound(changed_dir);
+  auto end_it = start_it;
   for (; end_it != recursive_watches_by_path_.end(); ++end_it) {
     const FilePath& cur_path = end_it->first;
     if (!changed_dir.IsParent(cur_path))

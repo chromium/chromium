@@ -288,10 +288,13 @@ LayoutTableRow* LayoutTableRow::CreateAnonymousWithParent(
 }
 
 void LayoutTableRow::ComputeOverflow() {
+  const auto& old_visual_rect = SelfVisualOverflowRect();
   ClearAllOverflows();
   AddVisualEffectOverflow();
   for (LayoutTableCell* cell = FirstCell(); cell; cell = cell->NextCell())
     AddOverflowFromCell(cell);
+  if (old_visual_rect != SelfVisualOverflowRect())
+    SetShouldCheckForPaintInvalidation();
 }
 
 void LayoutTableRow::AddOverflowFromCell(const LayoutTableCell* cell) {

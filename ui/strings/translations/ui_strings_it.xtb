@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuto fa}other{# minuti fa}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
 <translation id="1243314992276662751">Carica</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">APP CONSIGLIATE</translation>
 <translation id="1368832886055348810">Da sinistra a destra</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8210608804940886430">Pagina giù</translation>
 <translation id="8245914219290430011">Tabulazione</translation>
+<translation id="8259556432390118667">Valore del colore esadecimale</translation>
 <translation id="8328145009876646418">Margine sinistro</translation>
 <translation id="8331626408530291785">Scorri verso l'alto</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 anno}other{# anni}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8806053966018712535">Cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Annota immagine</translation>
+<translation id="8841375032071747811">Pulsante Indietro</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
 <translation id="9002566407876343676">apri</translation>
 <translation id="9038489124413477075">Cartella senza nome</translation>

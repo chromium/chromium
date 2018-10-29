@@ -13,9 +13,9 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
@@ -196,7 +196,7 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
   bool WillFollowRedirect(const blink::WebURL& new_url,
                           const blink::WebURL& new_site_for_cookies,
                           const blink::WebString& new_referrer,
-                          blink::WebReferrerPolicy new_referrer_policy,
+                          network::mojom::ReferrerPolicy new_referrer_policy,
                           const blink::WebString& new_method,
                           const blink::WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers) override {
@@ -240,11 +240,13 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
       loader_.reset();
   }
 
-  void DidFinishLoading(base::TimeTicks finishTime,
-                        int64_t totalEncodedDataLength,
-                        int64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength,
-                        bool should_report_corb_blocking) override {
+  void DidFinishLoading(
+      base::TimeTicks finishTime,
+      int64_t totalEncodedDataLength,
+      int64_t totalEncodedBodyLength,
+      int64_t totalDecodedBodyLength,
+      bool should_report_corb_blocking,
+      const std::vector<network::cors::PreflightTimingInfo>&) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);
@@ -314,7 +316,7 @@ class WebURLLoaderImplTest : public testing::Test {
 
   void DoStartAsyncRequest() {
     blink::WebURLRequest request{GURL(kTestURL)};
-    request.SetRequestContext(blink::WebURLRequest::kRequestContextInternal);
+    request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
     client()->loader()->LoadAsynchronously(request, client());
     ASSERT_TRUE(peer());
   }
@@ -322,7 +324,7 @@ class WebURLLoaderImplTest : public testing::Test {
   void DoStartAsyncRequestWithPriority(
       blink::WebURLRequest::Priority priority) {
     blink::WebURLRequest request{GURL(kTestURL)};
-    request.SetRequestContext(blink::WebURLRequest::kRequestContextInternal);
+    request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
     request.SetPriority(priority);
     client()->loader()->LoadAsynchronously(request, client());
     ASSERT_TRUE(peer());
@@ -408,10 +410,9 @@ class WebURLLoaderImplTest : public testing::Test {
   TestWebURLLoaderClient* client() { return client_.get(); }
   TestResourceDispatcher* dispatcher() { return &dispatcher_; }
   RequestPeer* peer() { return dispatcher()->peer(); }
-  base::MessageLoop* message_loop() { return &message_loop_; }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   TestResourceDispatcher dispatcher_;
   std::unique_ptr<TestWebURLLoaderClient> client_;
 };
@@ -640,7 +641,7 @@ TEST_F(WebURLLoaderImplTest, BrowserSideNavigationCommit) {
   const std::string kMimeType = "text/html";
   blink::WebURLRequest request(kNavigationURL);
   request.SetFrameType(network::mojom::RequestContextFrameType::kTopLevel);
-  request.SetRequestContext(blink::WebURLRequest::kRequestContextFrame);
+  request.SetRequestContext(blink::mojom::RequestContextType::FRAME);
   std::unique_ptr<NavigationResponseOverrideParameters> response_override(
       new NavigationResponseOverrideParameters());
   response_override->response.mime_type = kMimeType;
@@ -778,7 +779,7 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   const int kEncodedDataLength = 130;
   const GURL url(kTestURL);
   blink::WebURLRequest request(url);
-  request.SetRequestContext(blink::WebURLRequest::kRequestContextInternal);
+  request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
 
   // Prepare a mock response
   SyncLoadResponse sync_load_response;

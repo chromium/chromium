@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/common/page_state_serialization.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 
 namespace content {
 namespace {
@@ -46,7 +47,7 @@ void RecursivelyRemoveScrollOffset(ExplodedFrameState* state) {
 
 void RecursivelyRemoveReferrer(ExplodedFrameState* state) {
   state->referrer.reset();
-  state->referrer_policy = blink::kWebReferrerPolicyDefault;
+  state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
   for (std::vector<ExplodedFrameState>::iterator it = state->children.begin();
        it != state->children.end();
        ++it) {

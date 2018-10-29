@@ -1,8 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-]
-specific_include_rules = {
-  ".*test\.cc": [
-    "+content/public/test",
-  ],
-}

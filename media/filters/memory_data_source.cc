@@ -19,7 +19,7 @@ void MemoryDataSource::Read(int64_t position,
                             int size,
                             uint8_t* data,
                             const DataSource::ReadCB& read_cb) {
-  DCHECK(!read_cb.is_null());
+  DCHECK(read_cb);
 
   if (is_stopped_ || size < 0 || position < 0 ||
       static_cast<size_t>(position) > size_) {

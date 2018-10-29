@@ -2,7 +2,6 @@ Make sure the designMode attribute is exposed on non-HTML documents.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS xmlDocument.__proto__ is XMLDocument.prototype
 PASS xmlDocument.__proto__.__proto__ is Document.prototype
 PASS xmlDocument.designMode is "off"

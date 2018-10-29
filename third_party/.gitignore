@@ -8,6 +8,9 @@
 /amd/
 /android_build_tools/aapt2/aapt2
 /android_build_tools/aapt2/lib64/*.so
+/android_build_tools/art/dexlayout
+/android_build_tools/art/lib/*.so
+/android_build_tools/art/profman
 /android_build_tools/bundletool/*.jar
 /android_ndk/
 /android_sdk/public/
@@ -55,6 +58,7 @@
 /cros_system_api
 /custom_tabs_client/src
 /cygwin
+/dawn
 /depot_tools
 /devtools-node-modules
 /directxsdk
@@ -73,6 +77,7 @@
 /gestures/gestures
 /gles1_conform
 /gles2_conform
+/glfw/src
 /glslang/src
 /glslang-angle/src
 /gn/
@@ -110,7 +115,6 @@
 /jsr-305/src
 /junit/src
 /khronos_glcts
-/leakcanary/src
 /leveldatabase/src
 /leveldb
 /libaom/source/libaom
@@ -195,6 +199,7 @@
 /smhasher/src
 /snappy/src
 /speex
+/spirv-cross/spirv-cross
 /spirv-headers/src
 /SPIRV-Tools/src
 /spirv-tools-angle/src
@@ -208,7 +213,6 @@
 /usrsctp/usrsctplib
 /v8-i18n
 /valgrind
-/vulkan-validation-layers/src
 /visualmetrics
 /wayland/src
 /wayland-protocols/src

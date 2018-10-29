@@ -42,9 +42,9 @@ double CalculateScaleFactor(const gfx::Rect& content_rect,
 }
 
 void SetDefaultClipBox(bool rotated, PdfRectangle* clip_box) {
-  const int kDpi = 72;
-  const float kPaperWidth = 8.5 * kDpi;
-  const float kPaperHeight = 11 * kDpi;
+  constexpr int kDpi = 72;
+  constexpr float kPaperWidth = 8.5 * kDpi;
+  constexpr float kPaperHeight = 11 * kDpi;
   clip_box->left = 0;
   clip_box->bottom = 0;
   clip_box->right = rotated ? kPaperHeight : kPaperWidth;

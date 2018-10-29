@@ -556,7 +556,7 @@ static void HeapProfilerDumpSignal(int signal_number) {
 //----------------------------------------------------------------------
 // Initialization/finalization code
 //----------------------------------------------------------------------
-
+#if defined(ENABLE_PROFILING)
 // Initialization code
 static void HeapProfilerInit() {
   // Everything after this point is for setting up the profiler based on envvar
@@ -620,3 +620,4 @@ struct HeapProfileEndWriter {
 static const TCMallocGuard tcmalloc_initializer;
 REGISTER_MODULE_INITIALIZER(heapprofiler, HeapProfilerInit());
 static HeapProfileEndWriter heap_profile_end_writer;
+#endif  // defined(ENABLE_PROFILING)

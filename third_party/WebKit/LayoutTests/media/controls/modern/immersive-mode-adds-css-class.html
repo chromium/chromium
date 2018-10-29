@@ -34,7 +34,6 @@ async_test(t => {
     const buttonPanelStyle = getComputedStyle(buttonPanelElement(video));
     const timelineStyle = getComputedStyle(timelineElement(video));
     const thumbStyle = getComputedStyle(timelineThumb(video));
-    const overlayPlayButtonStyle = getComputedStyle(mediaControlsOverlayPlayButtonInternal(video));
 
     assert_equals('43px', muteButtonStyle.height, 'Mute button height is respected');
     assert_equals('24px', fullscreenButtonStyle['background-size'], 'Fullscreen button background size is respected');
@@ -45,7 +44,12 @@ async_test(t => {
     assert_equals('5px', timelineStyle.height, 'Timeline height is respected');
     assert_equals('471px', timelineStyle['max-width'], 'Timeline max-width is respected');
     assert_equals('16px', thumbStyle.width, 'Thumb width is respected');
-    assert_equals('64px', overlayPlayButtonStyle.height, 'Overlay play button height is respected');
+
+    if (internals.runtimeFlags.mediaControlsOverlayPlayButtonEnabled) {
+      const overlayPlayButtonStyle = getComputedStyle(mediaControlsOverlayPlayButtonInternal(video));
+      assert_equals('64px', overlayPlayButtonStyle.height, 'Overlay play button height is respected');
+    }
+
   }
 });
 </script>

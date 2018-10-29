@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.io.IOException;

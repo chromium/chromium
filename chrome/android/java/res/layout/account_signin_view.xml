@@ -6,7 +6,6 @@
 -->
 <org.chromium.chrome.browser.signin.AccountSigninView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -42,7 +41,7 @@
                     android:paddingEnd="@dimen/signin_chooser_padding"
                     android:paddingBottom="@dimen/signin_chooser_padding"
                     android:background="@color/signin_head_background"
-                    android:textAppearance="@style/BlackHeadline1"
+                    android:textAppearance="@style/BlackHeadline"
                     android:text="@string/sign_in_to_chrome"/>
 
                 <View style="@style/HorizontalDivider"/>
@@ -97,7 +96,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:textAppearance="@style/BlackHeadline1"
+                        android:textAppearance="@style/BlackHeadline"
                         android:ellipsize="end"
                         android:maxLines="1"/>
 
@@ -184,12 +183,13 @@
         android:orientation="horizontal" >
 
         <!--suppress ButtonStyle -->
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/negative_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:paddingStart="@dimen/fre_button_padding"
-            android:paddingEnd="@dimen/fre_button_padding" />
+            android:paddingEnd="@dimen/fre_button_padding"
+            style="@style/TextButton" />
 
         <View
             android:layout_width="0dp"
@@ -204,17 +204,16 @@
             android:layout_height="36dp"
             android:paddingStart="@dimen/fre_button_padding"
             android:paddingEnd="@dimen/fre_button_padding"
-            android:textAppearance="@style/WhiteButtonText"
-            app:buttonColor="@color/light_active_color"
-            app:buttonRaised="false"/>
+            style="@style/FilledButton.Flat" />
 
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/more_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:drawableEnd="@drawable/down_arrow"
             android:drawablePadding="8dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            style="@style/TextButton" />
 
         <View
             android:id="@+id/positive_button_end_padding"

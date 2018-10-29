@@ -69,7 +69,7 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
         base::ASCIIToUTF16("EVENT_OBJECT_FOCUS*DOCUMENT*"), Filter::DENY));
   }
 
-  std::vector<std::string> Dump() override;
+  std::vector<std::string> Dump(std::vector<std::string>& run_until) override;
 
   void OnDiffFailed() override;
   void RunEventTest(const base::FilePath::CharType* file_path);
@@ -79,13 +79,31 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   base::string16 final_tree_;
 };
 
-std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
+bool IsRecordingComplete(AccessibilityEventRecorder& event_recorder,
+                         std::vector<std::string>& run_until) {
+  // If no @RUN-UNTIL-EVENT directives, then having any events is enough.
+  if (run_until.empty())
+    return true;
+
+  std::vector<std::string> event_logs = event_recorder.event_logs();
+
+  for (size_t i = 0; i < event_logs.size(); ++i)
+    for (size_t j = 0; j < run_until.size(); ++j)
+      if (event_logs[i].find(run_until[j]) != std::string::npos)
+        return true;
+
+  return false;
+}
+
+std::vector<std::string> DumpAccessibilityEventsTest::Dump(
+    std::vector<std::string>& run_until) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       shell()->web_contents());
   base::ProcessId pid = base::GetCurrentProcId();
-  auto& event_recorder = AccessibilityEventRecorder::GetInstance(
-      web_contents->GetRootBrowserAccessibilityManager(), pid);
-  event_recorder.set_only_web_events(true);
+  std::unique_ptr<AccessibilityEventRecorder> event_recorder(
+      AccessibilityEventRecorder::Create(
+          web_contents->GetRootBrowserAccessibilityManager(), pid));
+  event_recorder->set_only_web_events(true);
 
   // Save a copy of the accessibility tree (as a text dump); we'll
   // log this for the user later if the test fails.
@@ -102,9 +120,11 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16("go()"));
 
-  // Wait for at least one accessibility event generated in response to
-  // that function.
-  waiter->WaitForNotification();
+  for (;;) {
+    waiter->WaitForNotification();  // Run at least once.
+    if (IsRecordingComplete(*event_recorder, run_until))
+      break;
+  }
 
   // More than one accessibility event could have been generated.
   // To make sure we've received all accessibility events, add a
@@ -123,7 +143,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
 
   // Dump the event logs, running them through any filters specified
   // in the HTML file.
-  std::vector<std::string> event_logs = event_recorder.event_logs();
+  std::vector<std::string> event_logs = event_recorder->event_logs();
   std::vector<std::string> result;
   for (size_t i = 0; i < event_logs.size(); ++i) {
     if (AccessibilityTreeFormatter::MatchesFilters(
@@ -266,6 +286,18 @@ IN_PROC_BROWSER_TEST_F(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_F(DumpAccessibilityEventsTest,
                        AccessibilityEventsCheckedStateChanged) {
   RunEventTest(FILE_PATH_LITERAL("checked-state-changed.html"));
+}
+
+// http:/crbug.com/889013
+IN_PROC_BROWSER_TEST_F(DumpAccessibilityEventsTest,
+                       DISABLED_AccessibilityEventsCaretHide) {
+  RunEventTest(FILE_PATH_LITERAL("caret-hide.html"));
+}
+
+// http:/crbug.com/889013
+IN_PROC_BROWSER_TEST_F(DumpAccessibilityEventsTest,
+                       DISABLED_AccessibilityEventsCaretMove) {
+  RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(DumpAccessibilityEventsTest,

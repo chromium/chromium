@@ -10,6 +10,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -518,7 +519,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         if (iconResourceId != 0 || iconBitmap != null) {
             iconView = new ImageView(context);
             if (iconResourceId != 0) {
-                iconView.setImageResource(iconResourceId);
+                iconView.setImageDrawable(AppCompatResources.getDrawable(context, iconResourceId));
             } else if (iconBitmap != null) {
                 iconView.setImageBitmap(iconBitmap);
             }

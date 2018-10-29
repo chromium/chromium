@@ -1,7 +1,8 @@
 # Getting Started with libFuzzer in Chromium
 
 *** note
-**Prerequisites:** libFuzzer in Chromium is supported on Linux and Mac only.
+**Prerequisites:** libFuzzer in Chromium is supported on Linux, Mac, and Windows
+only.
 ***
 
 This document will walk you through:
@@ -16,22 +17,22 @@ Use `use_libfuzzer` GN argument together with sanitizer to generate build files:
 
 *Notice*: current implementation also supports `use_afl` argument, but it is
 recommended to use libFuzzer for local development. Running libFuzzer locally
-doesn't require any special configuration and gives meaningful output quickly for
-speed, coverage and other parameters.
+doesn't require any special configuration and gives meaningful output quickly
+for speed, coverage and other parameters.
 
 ```bash
 # With address sanitizer
-gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true is_debug=false enable_nacl=false' --check
+gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true is_debug=false is_component_build=true' --check
 ```
 
 Supported sanitizer configurations are:
 
 | GN Argument | Description |
 |--------------|----|
-| `is_asan=true` | enables [Address Sanitizer] to catch problems like buffer overruns. |
-| `is_msan=true` | enables [Memory Sanitizer] to catch problems like uninitialized reads<sup>\[[*](reference.md#MSan)\]</sup>. |
-| `is_ubsan_security=true` | enables [Undefined Behavior Sanitizer] to catch<sup>\[[*](reference.md#UBSan)\]</sup> undefined behavior like integer overflow. |
-| | it is possible to run libfuzzer without any sanitizers; *probably not what you want*.|
+| `is_asan=true` | Enables [Address Sanitizer] to catch problems like buffer overruns. (only supported sanitizer on Windows and Mac)|
+| `is_msan=true` | Enables [Memory Sanitizer] to catch problems like uninitialized reads<sup>\[[*](reference.md#MSan)\]</sup>. |
+| `is_ubsan_security=true` | Enables [Undefined Behavior Sanitizer] to catch<sup>\[[*](reference.md#UBSan)\]</sup> undefined behavior like integer overflow. |
+| | It is possible to run libfuzzer without any sanitizers; *probably not what you want*.|
 
 Fuzz targets are built with minimal symbols by default. The symbol level
 can be adjusted in the usual way by setting `symbol_level`.
@@ -41,7 +42,8 @@ To get the exact GN configuration that are used on our builders, see
 
 ## Write Fuzz Target
 
-Create a new `<my_fuzzer>.cc` file and define a `LLVMFuzzerTestOneInput` function:
+Create a new `<my_fuzzer>.cc` file and define a `LLVMFuzzerTestOneInput`
+function:
 
 ```cpp
 #include <stddef.h>

@@ -203,6 +203,7 @@ if (host_toolchain == "") {
   } else if (host_os == "win") {
     # On Windows always use the target CPU for host builds for x86/x64. On the
     # configurations we support this will always work and it saves build steps.
+    # Windows ARM64 targets require an x64 host for cross build.
     if (target_cpu == "x86" || target_cpu == "x64") {
       if (is_clang) {
         host_toolchain = "//build/toolchain/win:win_clang_$target_cpu"

@@ -10,7 +10,7 @@ select hr {
 }
 
 option, optgroup {
-    -webkit-padding-end: 2px;
+    padding-inline-end: 2px;
 }
 
 .wrap option {

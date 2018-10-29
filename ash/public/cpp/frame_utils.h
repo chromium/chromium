@@ -9,10 +9,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
-class Canvas;
-class ImageSkia;
 class Point;
-class Rect;
 }  // namespace gfx
 
 namespace views {
@@ -25,18 +22,6 @@ namespace ash {
 ASH_PUBLIC_EXPORT int FrameBorderNonClientHitTest(
     views::NonClientFrameView* view,
     const gfx::Point& point_in_widget);
-
-// Paints the frame header images and background color for custom themes (i.e.
-// browser themes) into a canvas.
-ASH_PUBLIC_EXPORT void PaintThemedFrame(
-    gfx::Canvas* canvas,
-    const gfx::ImageSkia& frame_image,
-    const gfx::ImageSkia& frame_overlay_image,
-    SkColor background_color,
-    const gfx::Rect& bounds,
-    int image_inset_x,
-    int image_inset_y,
-    int alpha);
 
 }  // namespace ash
 

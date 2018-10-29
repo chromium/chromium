@@ -70,6 +70,9 @@ void P2PSocketDispatcherHost::BindRequest(
   if (!rph)
     return;
 
+  // In case the renderer was connected previously but the network process
+  // crashed.
+  binding_.Close();
   network::mojom::P2PTrustedSocketManagerClientPtr
       trusted_socket_manager_client;
   binding_.Bind(mojo::MakeRequest(&trusted_socket_manager_client));

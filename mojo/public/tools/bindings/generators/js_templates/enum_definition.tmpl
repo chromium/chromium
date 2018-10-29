@@ -10,6 +10,12 @@
   {{enum_name}}.{{field.name}} = {{enum_name}}.{{enum.fields[loop.index0 - 1].name}} + 1;
 {%-     endif %}
 {%-   endfor %}
+{%-   if enum.min_value is not none %}
+  {{enum_name}}.MIN_VALUE = {{enum.min_value}},
+{%-   endif %}
+{%-   if enum.max_value is not none %}
+  {{enum_name}}.MAX_VALUE = {{enum.max_value}},
+{%-   endif %}
 
   {{enum_name}}.isKnownEnumValue = function(value) {
 {%-   if enum.fields %}

@@ -210,8 +210,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
+// Disabled for flakiness crbug.com/849582.
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       PromptForFetchWithoutOnSubmit) {
+                       DISABLED_PromptForFetchWithoutOnSubmit) {
   NavigateToFile("/password/password_fetch_submit.html");
 
   // Verify that if Fetch navigation occurs and the form is properly filled out,
@@ -242,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
+// Disabled for flakiness crbug.com/849582.
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       AutofillPasswordFormWithoutUsernameField) {
+                       DISABLED_AutofillPasswordFormWithoutUsernameField) {
   std::string submit = "document.getElementById('submit-button').click();";
   VerifyPasswordIsSavedAndFilled("/password/form_with_only_password_field.html",
                                  std::string(), "password", submit);

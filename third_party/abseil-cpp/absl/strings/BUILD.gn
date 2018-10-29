@@ -59,6 +59,7 @@ source_set("strings") {
   deps = [
     ":internal",
     "../base",
+    "../base:bits",
     "../base:config",
     "../base:core_headers",
     "../base:endian",
@@ -81,7 +82,6 @@ source_set("internal") {
     "internal/utf8.cc",
   ]
   public = [
-    "internal/bits.h",
     "internal/char_map.h",
     "internal/ostringstream.h",
     "internal/resize_uninitialized.h",

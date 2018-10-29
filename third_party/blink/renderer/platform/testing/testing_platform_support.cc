@@ -43,7 +43,6 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/blink_resource_coordinator_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -97,7 +96,6 @@ TestingPlatformSupport::TestingPlatformSupport()
       interface_provider_(new TestingInterfaceProvider) {
   DCHECK(old_platform_);
   DCHECK(WTF::IsMainThread());
-  main_thread_ = old_platform_->CurrentThread();
 }
 
 TestingPlatformSupport::~TestingPlatformSupport() {
@@ -108,16 +106,8 @@ WebString TestingPlatformSupport::DefaultLocale() {
   return WebString::FromUTF8("en-US");
 }
 
-WebThread* TestingPlatformSupport::CurrentThread() {
-  return old_platform_ ? old_platform_->CurrentThread() : nullptr;
-}
-
 WebBlobRegistry* TestingPlatformSupport::GetBlobRegistry() {
   return old_platform_ ? old_platform_->GetBlobRegistry() : nullptr;
-}
-
-std::unique_ptr<WebIDBFactory> TestingPlatformSupport::CreateIdbFactory() {
-  return old_platform_ ? old_platform_->CreateIdbFactory() : nullptr;
 }
 
 WebURLLoaderMockFactory* TestingPlatformSupport::GetURLLoaderMockFactory() {
@@ -164,22 +154,29 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   base::DiscardableMemoryAllocator::SetInstance(
       discardable_memory_allocator_.get());
 
+  // TODO(yutak): The initialization steps below are essentially a subset of
+  // Platform::Initialize() steps with a few modifications for tests.
+  // We really shouldn't have those initialization steps in two places,
+  // because they are a very fragile piece of code (the initialization order
+  // is so sensitive) and we want it to be consistent between tests and
+  // production. Fix this someday.
   dummy_platform_ = std::make_unique<Platform>();
   Platform::SetCurrentPlatformForTesting(dummy_platform_.get());
 
   WTF::Partitions::Initialize(nullptr);
   WTF::Initialize(nullptr);
 
+  // This must be called after WTF::Initialize(), because ThreadSpecific<>
+  // used in this function depends on WTF::IsMainThread().
+  Platform::CreateMainThreadForTesting();
+
   testing_platform_support_ = std::make_unique<TestingPlatformSupport>();
   Platform::SetCurrentPlatformForTesting(testing_platform_support_.get());
 
-  if (BlinkResourceCoordinatorBase::IsEnabled()) {
-    dummy_renderer_resource_coordinator_ =
-        std::make_unique<DummyRendererResourceCoordinator>();
-    RendererResourceCoordinator::
-        SetCurrentRendererResourceCoordinatorForTesting(
-            dummy_renderer_resource_coordinator_.get());
-  }
+  dummy_renderer_resource_coordinator_ =
+      std::make_unique<DummyRendererResourceCoordinator>();
+  RendererResourceCoordinator::SetCurrentRendererResourceCoordinatorForTesting(
+      dummy_renderer_resource_coordinator_.get());
 
   ProcessHeap::Init();
   ThreadState::AttachMainThread();

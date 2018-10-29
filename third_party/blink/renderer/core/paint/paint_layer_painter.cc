@@ -229,35 +229,66 @@ static bool ShouldRepaintSubsequence(
   return needs_repaint;
 }
 
+static bool ShouldUseInfiniteDirtyRect(const GraphicsContext& context,
+                                       const PaintLayer& layer,
+                                       PaintLayerPaintingInfo& painting_info) {
+  // Cull rects and clips can't be propagated across a filter which moves
+  // pixels, since the input of the filter may be outside the cull rect /
+  // clips yet still result in painted output.
+  if (layer.HasFilterThatMovesPixels())
+    return true;
+
+  // Cull rect mapping doesn't work under perspective in some cases.
+  // See http://crbug.com/887558 for details.
+  if (painting_info.root_layer->GetLayoutObject().StyleRef().HasPerspective())
+    return true;
+
+  // We do not apply cull rect optimizations across transforms for two
+  // reasons:
+  //   1) Performance: We can optimize transform changes by not repainting.
+  //   2) Complexity: Difficulty updating clips when ancestor transforms
+  //      change.
+  // For these reasons, we use an infinite dirty rect here.
+  if (layer.PaintsWithTransform(painting_info.GetGlobalPaintFlags())) {
+    // The reasons don't apply for printing though, because when we enter and
+    // leaving printing mode, full invalidations occur.
+    return !context.Printing();
+  }
+
+  return false;
+}
+
 void PaintLayerPainter::AdjustForPaintProperties(
     const GraphicsContext& context,
     PaintLayerPaintingInfo& painting_info,
     PaintLayerFlags& paint_flags) {
   const auto& first_fragment = paint_layer_.GetLayoutObject().FirstFragment();
 
-  bool use_infinite_dirty_rect =
-      // Cull rects and clips can't be propagated across a filter which moves
-      // pixels, since the input of the filter may be outside the cull rect /
-      // clips yet still result in painted output.
-      paint_layer_.HasFilterThatMovesPixels() ||
-      // We do not apply cull rect optimizations across transforms for two
-      // reasons:
-      //   1) Performance: We can optimize transform changes by not repainting.
-      //   2) Complexity: Difficulty updating clips when ancestor transforms
-      //      change.
-      // For these reasons, we use an infinite dirty rect here.
-      // The reasons don't apply for printing though, because when we enter and
-      // leaving printing mode, full invalidations occur.
-      (!context.Printing() &&
-       paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()));
-
-  if (use_infinite_dirty_rect)
+  bool is_using_infinite_dirty_rect = painting_info.paint_dirty_rect ==
+                                      LayoutRect(LayoutRect::InfiniteIntRect());
+  bool should_use_infinite_dirty_rect =
+      ShouldUseInfiniteDirtyRect(context, paint_layer_, painting_info);
+  if (!is_using_infinite_dirty_rect && should_use_infinite_dirty_rect) {
     painting_info.paint_dirty_rect = LayoutRect(LayoutRect::InfiniteIntRect());
+    is_using_infinite_dirty_rect = true;
+  }
 
   if (painting_info.root_layer == &paint_layer_)
     return;
 
-  if (!use_infinite_dirty_rect) {
+  const auto& first_root_fragment =
+      painting_info.root_layer->GetLayoutObject().FirstFragment();
+  bool transform_changed =
+      first_root_fragment.LocalBorderBoxProperties().Transform() !=
+      first_fragment.LocalBorderBoxProperties().Transform();
+
+  // Will use the current layer as the new root layer if the layer requires
+  // infinite dirty rect or has different transform space from the current
+  // root layer.
+  if (!should_use_infinite_dirty_rect && !transform_changed)
+    return;
+
+  if (!is_using_infinite_dirty_rect && transform_changed) {
     // painting_info.paint_dirty_rect is currently in
     // |painting_info.root_layer|'s pixel-snapped border box space. We need to
     // adjust it into |paint_layer_|'s space.
@@ -266,11 +297,6 @@ void PaintLayerPainter::AdjustForPaintProperties(
     // - The current layer's transform state escapes the root layers contents
     //   transform, e.g. a fixed-position layer;
     // - Scroll offsets.
-    const auto& first_root_fragment =
-        painting_info.root_layer->GetLayoutObject().FirstFragment();
-    if (first_root_fragment.LocalBorderBoxProperties().Transform() ==
-        first_fragment.LocalBorderBoxProperties().Transform())
-      return;
     first_root_fragment.MapRectToFragment(first_fragment,
                                           painting_info.paint_dirty_rect);
   }
@@ -335,7 +361,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   bool should_paint_self_outline =
       is_self_painting_layer && !is_painting_overlay_scrollbars &&
       (is_painting_composited_decoration ||
-       (!is_painting_scrolling_content && !is_painting_mask)) &&
+       (!is_painting_overflow_contents && !is_painting_mask)) &&
       paint_layer_.GetLayoutObject().StyleRef().HasOutline();
 
   LayoutSize subpixel_accumulation =

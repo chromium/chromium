@@ -13,11 +13,13 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/frame_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/mhtml_extra_parts.h"
 #include "content/public/browser/render_frame_host.h"
@@ -328,8 +330,8 @@ class GenerateMHTMLAndExitRendererMessageFilter : public BrowserMessageFilter {
       //   execution at (Y?) and (Z?) instead is possible.  In practice,
       //   bouncing off of UI and download sequence does mean (Z) happens
       //   after (1).
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&GenerateMHTMLAndExitRendererMessageFilter::TaskX,
                          base::Unretained(this)));
     }
@@ -345,8 +347,8 @@ class GenerateMHTMLAndExitRendererMessageFilter : public BrowserMessageFilter {
   }
 
   void TaskY() {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&GenerateMHTMLAndExitRendererMessageFilter::TaskZ,
                        base::Unretained(this)));
   }

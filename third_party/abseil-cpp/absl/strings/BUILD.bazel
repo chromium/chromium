@@ -19,6 +19,7 @@ load(
     "ABSL_DEFAULT_COPTS",
     "ABSL_TEST_COPTS",
     "ABSL_EXCEPTIONS_FLAG",
+    "ABSL_EXCEPTIONS_FLAG_LINKOPTS",
 )
 
 package(
@@ -69,6 +70,7 @@ cc_library(
     deps = [
         ":internal",
         "//absl/base",
+        "//absl/base:bits",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
@@ -86,7 +88,6 @@ cc_library(
         "internal/utf8.cc",
     ],
     hdrs = [
-        "internal/bits.h",
         "internal/char_map.h",
         "internal/ostringstream.h",
         "internal/resize_uninitialized.h",
@@ -212,7 +213,6 @@ cc_test(
     visibility = ["//visibility:private"],
     deps = [
         ":internal",
-        ":strings",
         "//absl/base:core_headers",
         "@com_google_googletest//:gtest_main",
     ],
@@ -237,6 +237,7 @@ cc_test(
     size = "small",
     srcs = ["string_view_test.cc"],
     copts = ABSL_TEST_COPTS + ABSL_EXCEPTIONS_FLAG,
+    linkopts = ABSL_EXCEPTIONS_FLAG_LINKOPTS,
     visibility = ["//visibility:private"],
     deps = [
         ":strings",
@@ -373,7 +374,6 @@ cc_test(
     visibility = ["//visibility:private"],
     deps = [
         ":strings",
-        "//absl/memory",
         "@com_github_google_benchmark//:benchmark_main",
     ],
 )

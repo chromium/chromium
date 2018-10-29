@@ -14,3 +14,7 @@ FullscreenProvider::~FullscreenProvider() = default;
 
 void FullscreenProvider::InitializeFullscreen(
     FullscreenController* controller) {}
+
+bool FullscreenProvider::IsInitialized() const {
+  return false;
+}

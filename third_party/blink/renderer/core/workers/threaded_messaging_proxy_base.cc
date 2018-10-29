@@ -7,11 +7,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -64,21 +64,18 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
   KURL script_url = global_scope_creation_params->script_url.Copy();
 
   std::unique_ptr<WebWorkerFetchContext> web_worker_fetch_context;
-  if (execution_context_->IsDocument()) {
-    // |web_frame| is null in some unit tests.
-    if (WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(
-            ToDocument(GetExecutionContext())->GetFrame())) {
-      web_worker_fetch_context =
-          web_frame->Client()->CreateWorkerFetchContext();
-      DCHECK(web_worker_fetch_context);
+  if (auto* document = DynamicTo<Document>(execution_context_.Get())) {
+    LocalFrame* frame = document->GetFrame();
+    web_worker_fetch_context = frame->Client()->CreateWorkerFetchContext();
+    // |web_worker_fetch_context| is null in some unit tests.
+    if (web_worker_fetch_context) {
       web_worker_fetch_context->SetApplicationCacheHostID(
           GetExecutionContext()->Fetcher()->Context().ApplicationCacheHostID());
-      web_worker_fetch_context->SetIsOnSubframe(web_frame != web_frame->Top());
+      web_worker_fetch_context->SetIsOnSubframe(!frame->IsMainFrame());
     }
-  } else if (execution_context_->IsWorkerGlobalScope()) {
+  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
     web_worker_fetch_context =
-        static_cast<WorkerFetchContext&>(
-            ToWorkerGlobalScope(execution_context_)->Fetcher()->Context())
+        static_cast<WorkerFetchContext&>(scope->Fetcher()->Context())
             .GetWebWorkerFetchContext()
             ->CloneForNestedWorker();
   }
@@ -99,10 +96,8 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
   GetWorkerInspectorProxy()->WorkerThreadCreated(execution_context_,
                                                  GetWorkerThread(), script_url);
 
-  if (execution_context_->IsWorkerGlobalScope()) {
-    ToWorkerGlobalScope(execution_context_)
-        ->GetThread()
-        ->ChildThreadStartedOnWorkerThread(worker_thread_.get());
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
+    scope->GetThread()->ChildThreadStartedOnWorkerThread(worker_thread_.get());
   }
 }
 
@@ -147,10 +142,9 @@ void ThreadedMessagingProxyBase::WorkerThreadTerminated() {
   // Worker/Worklet object may still exist, and it assumes that the proxy
   // exists, too.
   asked_to_terminate_ = true;
-  WorkerThread* parent_thread =
-      execution_context_->IsWorkerGlobalScope()
-          ? ToWorkerGlobalScope(execution_context_)->GetThread()
-          : nullptr;
+  WorkerThread* parent_thread = nullptr;
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
+    parent_thread = scope->GetThread();
   std::unique_ptr<WorkerThread> child_thread = std::move(worker_thread_);
   worker_inspector_proxy_->WorkerThreadTerminated();
 

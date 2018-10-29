@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_READER_JAVASCRIPT_STREAM_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_READER_JAVASCRIPT_STREAM_H_
 
-#include <pthread.h>
+#include <cstdint>
+#include <memory>
+#include <string>
 
-#include "javascript_requestor_interface.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_reader.h"
 #include "ppapi/cpp/var_array_buffer.h"
-#include "volume_reader.h"
+
+class JavaScriptRequestorInterface;
 
 // A VolumeReader that reads the content of the volume's archive from
 // JavaScript. All methods including the constructor and destructor should be
@@ -23,7 +28,7 @@ class VolumeReaderJavaScriptStream : public VolumeReader {
   VolumeReaderJavaScriptStream(int64_t archive_size,
                                JavaScriptRequestorInterface* requestor);
 
-  virtual ~VolumeReaderJavaScriptStream();
+  ~VolumeReaderJavaScriptStream() override;
 
   // Sets the internal array buffer used for reads and signal the blocked
   // VolumeReaderJavaScriptStream::Read to continue execution. Must be done in
@@ -55,10 +60,10 @@ class VolumeReaderJavaScriptStream : public VolumeReader {
   // See volume_reader.h for description. This method blocks on
   // available_data_cond_. SetBufferAndSignal should unblock it from another
   // thread.
-  virtual int64_t Read(int64_t bytes_to_read, const void** destination_buffer);
+  int64_t Read(int64_t bytes_to_read, const void** destination_buffer) override;
 
   // See volume_reader.h for description.
-  virtual int64_t Seek(int64_t offset, int whence);
+  int64_t Seek(int64_t offset, base::File::Whence whence) override;
 
   // Sets the request Id to be used by the reader.
   void SetRequestId(const std::string& request_id);
@@ -66,11 +71,11 @@ class VolumeReaderJavaScriptStream : public VolumeReader {
   // See volume_reader.h for description. The method blocks on
   // available_passphrase_cond_. SetPassphraseAndSignal should unblock it from
   // another thread.
-  virtual std::unique_ptr<std::string> Passphrase();
+  std::unique_ptr<std::string> Passphrase() override;
 
-  virtual int64_t offset() { return offset_; }
+  int64_t offset() override;
 
-  int64_t archive_size() { return archive_size_; }
+  int64_t archive_size() override;
 
  private:
   // Request a chunk of length number of bytes from JavaScript starting from
@@ -90,14 +95,11 @@ class VolumeReaderJavaScriptStream : public VolumeReader {
   std::string available_passphrase_;  // Stores a passphrase from JavaScript.
   bool passphrase_error_;  // Marks an error in getting the passphrase.
 
-  // Must use POSIX mutexes instead of pp::Lock because there is no pp::Cond.
-  // pp::Lock uses POSIX mutexes anyway on Linux, but pp::Lock can also pe used
-  // on other operating systems as Windows. For now this is not an issue as this
-  // extension is used only on Chromebooks. The shared_state_lock_ is used to
-  // protect members which are accessed by more than one thread.
-  pthread_mutex_t shared_state_lock_;
-  pthread_cond_t available_data_cond_;
-  pthread_cond_t available_passphrase_cond_;
+  // The shared_state_lock_ is used to protect members which are accessed by
+  // more than one thread.
+  base::Lock shared_state_lock_;
+  base::ConditionVariable available_data_cond_;
+  base::ConditionVariable available_passphrase_cond_;
 
   int64_t offset_;  // The offset from where read should be done.
   int64_t last_read_chunk_offset_;  // The offset reached after last call to

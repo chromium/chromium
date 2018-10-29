@@ -20,8 +20,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/wincrypt_shim.h"
 #include "chrome/common/safe_browsing/pe_image_reader_win.h"
-#include "crypto/wincrypt_shim.h"
 
 // This must be after wincrypt and wintrust.
 #include <mscat.h>

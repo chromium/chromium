@@ -11,7 +11,6 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/manifest_permission.h"
 #include "extensions/common/permissions/manifest_permission_set.h"
@@ -87,7 +86,6 @@ bool ManifestHandler::ParseExtension(Extension* extension,
 bool ManifestHandler::ValidateExtension(const Extension* extension,
                                         std::string* error,
                                         std::vector<InstallWarning>* warnings) {
-  base::AssertBlockingAllowed();
   return ManifestHandlerRegistry::Get()->ValidateExtension(extension, error,
                                                            warnings);
 }
@@ -143,8 +141,7 @@ bool ManifestHandlerRegistry::ParseExtension(Extension* extension,
       handlers_by_priority[priority_map_[handler]] = handler;
     }
   }
-  for (std::map<int, ManifestHandler*>::iterator iter =
-           handlers_by_priority.begin();
+  for (auto iter = handlers_by_priority.begin();
        iter != handlers_by_priority.end(); ++iter) {
     if (!(iter->second)->Parse(extension, error))
       return false;
@@ -165,8 +162,7 @@ bool ManifestHandlerRegistry::ValidateExtension(
       handlers.insert(handler);
     }
   }
-  for (std::set<ManifestHandler*>::iterator iter = handlers.begin();
-       iter != handlers.end(); ++iter) {
+  for (auto iter = handlers.begin(); iter != handlers.end(); ++iter) {
     if (!(*iter)->Validate(extension, error, warnings))
       return false;
   }

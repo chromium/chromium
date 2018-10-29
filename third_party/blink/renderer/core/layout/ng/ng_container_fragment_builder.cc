@@ -12,41 +12,6 @@
 
 namespace blink {
 
-NGContainerFragmentBuilder::NGContainerFragmentBuilder(
-    scoped_refptr<const ComputedStyle> style,
-    WritingMode writing_mode,
-    TextDirection direction)
-    : NGBaseFragmentBuilder(std::move(style), writing_mode, direction) {}
-
-NGContainerFragmentBuilder::~NGContainerFragmentBuilder() = default;
-
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::SetInlineSize(
-    LayoutUnit inline_size) {
-  DCHECK_GE(inline_size, LayoutUnit());
-  size_.inline_size = inline_size;
-  return *this;
-}
-
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::SetEndMarginStrut(
-    const NGMarginStrut& end_margin_strut) {
-  end_margin_strut_ = end_margin_strut;
-  return *this;
-}
-
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::SetExclusionSpace(
-    NGExclusionSpace&& exclusion_space) {
-  exclusion_space_ = std::move(exclusion_space);
-  return *this;
-}
-
-NGContainerFragmentBuilder&
-NGContainerFragmentBuilder::SetUnpositionedListMarker(
-    const NGUnpositionedListMarker& marker) {
-  DCHECK(!unpositioned_list_marker_ || !marker);
-  unpositioned_list_marker_ = marker;
-  return *this;
-}
-
 NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddChild(
     const NGLayoutResult& child,
     const NGLogicalOffset& child_offset) {
@@ -104,7 +69,7 @@ NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddChild(
         has_last_resort_break_ = true;
     }
   }
-  children_.emplace_back(std::move(child), NGPhysicalOffset());
+  children_.emplace_back(std::move(child));
   offsets_.push_back(child_offset);
   return *this;
 }
@@ -194,7 +159,7 @@ void NGContainerFragmentBuilder::GetAndClearOutOfFlowDescendantCandidates(
   // The descendant may be a "position: absolute" which contains a "position:
   // fixed" for example. (This fragment isn't the containing block for the
   // fixed descendant).
-  oof_positioned_candidates_.clear();
+  oof_positioned_candidates_.Shrink(0);
 }
 
 void NGContainerFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants(

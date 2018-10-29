@@ -556,20 +556,20 @@ TEST_F(TransportSecurityStateTest, Expiration) {
 
   state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes(),
                 report_uri);
-  EXPECT_TRUE(TransportSecurityState::PKPStateIterator(state).HasNext());
+  EXPECT_TRUE(state.has_dynamic_pkp_state());
   EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
   // Querying |state| for a domain should flush out expired entries.
-  EXPECT_FALSE(TransportSecurityState::PKPStateIterator(state).HasNext());
+  EXPECT_FALSE(state.has_dynamic_pkp_state());
 
   state.AddHSTS("example1.test", older, false);
   state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes(),
                 report_uri);
   EXPECT_TRUE(TransportSecurityState::STSStateIterator(state).HasNext());
-  EXPECT_TRUE(TransportSecurityState::PKPStateIterator(state).HasNext());
+  EXPECT_TRUE(state.has_dynamic_pkp_state());
   EXPECT_FALSE(state.ShouldSSLErrorsBeFatal("example1.test"));
   // Querying |state| for a domain should flush out expired entries.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
-  EXPECT_FALSE(TransportSecurityState::PKPStateIterator(state).HasNext());
+  EXPECT_FALSE(state.has_dynamic_pkp_state());
 
   // Test that HSTS can outlive HPKP.
   state.AddHSTS("example1.test", expiry, false);
@@ -742,7 +742,7 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataSince) {
 
   // Dynamic data in |state| should be empty now.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
-  EXPECT_FALSE(TransportSecurityState::PKPStateIterator(state).HasNext());
+  EXPECT_FALSE(state.has_dynamic_pkp_state());
   EXPECT_FALSE(TransportSecurityState::ExpectCTStateIterator(state).HasNext());
 }
 

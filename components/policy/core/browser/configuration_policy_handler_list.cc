@@ -62,8 +62,7 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
   }
 
   if (details_callback_) {
-    for (PolicyMap::const_iterator it = filtered_policies->begin();
-         it != filtered_policies->end();
+    for (auto it = filtered_policies->begin(); it != filtered_policies->end();
          ++it) {
       const PolicyDetails* details = details_callback_.Run(it->first);
       if (details && details->is_deprecated)

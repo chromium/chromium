@@ -48,6 +48,7 @@ CASE 1, original layer tree
     }
   ]
 }
+
 CASE 2, hovering over the outer div
 {
   "layers": [
@@ -87,7 +88,7 @@ CASE 2, hovering over the outer div
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV class='box middle'",
           "rect": [0, 0, 142, 142],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }
@@ -105,6 +106,7 @@ CASE 2, hovering over the outer div
     }
   ]
 }
+
 CASE 3, hovering over the inner div
 {
   "layers": [
@@ -144,12 +146,12 @@ CASE 3, hovering over the inner div
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV class='box middle'",
           "rect": [0, 0, 142, 142],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='smallbox'",
           "rect": [32, 32, 71, 71],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

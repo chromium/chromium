@@ -21,6 +21,7 @@ namespace autofill {
 namespace features {
 
 // All features in alphabetical order.
+extern const base::Feature kAutofillAllowNonHttpActivation;
 extern const base::Feature kAutofillAddressNormalizer;
 extern const base::Feature kAutofillAlwaysFillAddresses;
 extern const base::Feature kAutofillCacheQueryResponses;
@@ -35,7 +36,6 @@ extern const base::Feature kAutofillDynamicForms;
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 extern const base::Feature kAutofillEnableCompanyName;
 extern const base::Feature kAutofillEnableIFrameSupportOniOS;
-extern const base::Feature kAutofillEnablePaymentsInteractionsOnAuthError;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForHeuristics;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForQuery;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForUpload;
@@ -46,13 +46,15 @@ extern const base::Feature kAutofillManualFallback;
 extern const base::Feature kAutofillManualFallbackPhaseTwo;
 extern const base::Feature kAutofillPreferServerNamePredictions;
 extern const base::Feature kAutofillNoLocalSaveOnUploadSuccess;
+extern const base::Feature kAutofillOverrideWithRaterConsensus;
 extern const base::Feature kAutofillPrefilledFields;
 extern const base::Feature kAutofillRationalizeFieldTypePredictions;
 extern const base::Feature kAutofillRationalizeRepeatedServerPredictions;
-extern const base::Feature kAutofillResetFullServerCardsOnAuthError;
 extern const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout;
 extern const base::Feature kAutofillSaveCardDialogUnlabeledExpirationDate;
 extern const base::Feature kAutofillSaveCardSignInAfterLocalSave;
+extern const base::Feature kAutofillSaveCreditCardUsesStrikeSystem;
+extern const base::Feature kAutofillSaveOnProbablySubmitted;
 extern const base::Feature kAutofillScanCardholderName;
 extern const base::Feature kAutofillSendExperimentIdsInPaymentsRPCs;
 extern const base::Feature kAutofillSendOnlyCountryInGetUploadDetails;
@@ -64,6 +66,7 @@ extern const base::Feature kAutofillSkipComparingInferredLabels;
 extern const base::Feature kAutofillSuggestInvalidProfileData;
 extern const base::Feature kAutofillSuppressDisusedAddresses;
 extern const base::Feature kAutofillSuppressDisusedCreditCards;
+extern const base::Feature kAutofillUploadThrottling;
 extern const base::Feature kAutofillUpstream;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
 extern const base::Feature kAutofillUpstreamAlwaysRequestCardholderName;
@@ -71,13 +74,10 @@ extern const base::Feature kAutofillUpstreamBlankCardholderNameField;
 extern const base::Feature kAutofillUpstreamDisallowElo;
 extern const base::Feature kAutofillUpstreamDisallowJcb;
 extern const base::Feature kAutofillUpstreamEditableCardholderName;
-extern const base::Feature kAutofillUpstreamUpdatePromptExplanation;
 extern const base::Feature kAutofillUpstreamUseGooglePayBrandingOnMobile;
 extern const base::Feature kAutofillUsePaymentsCustomerData;
-extern const base::Feature kAutofillVoteUsingInvalidProfileData;
 extern const base::Feature kAutomaticPasswordGeneration;
 extern const base::Feature kSingleClickAutofill;
-extern const base::Feature kAutofillCreditCardLocalCardMigration;
 extern const char kAutofillCreditCardLastUsedDateShowExpirationDateKey[];
 extern const char kAutofillLocalCardMigrationCloseButtonDelay[];
 extern const char kAutofillCreditCardLocalCardMigrationParameterName[];
@@ -87,12 +87,9 @@ extern const char
     kAutofillCreditCardLocalCardMigrationParameterWithoutSettingsPage[];
 
 #if defined(OS_ANDROID)
+extern const base::Feature kAutofillManualFallbackAndroid;
 extern const base::Feature kAutofillRefreshStyleAndroid;
 #endif  // OS_ANDROID
-
-#if defined(OS_MACOSX)
-extern const base::Feature kMacViewsAutofillPopup;
-#endif  // defined(OS_MACOSX)
 
 // Returns whether the Autofill credit card assist infobar should be shown.
 bool IsAutofillCreditCardAssistEnabled();
@@ -114,10 +111,6 @@ enum class LocalCardMigrationExperimentalFlag {
 // settings page migration.
 LocalCardMigrationExperimentalFlag GetLocalCardMigrationExperimentalFlag();
 
-// Returns the time delay for the local card migration dialog to show the close
-// button.
-base::TimeDelta GetTimeoutForMigrationPromptFeedbackCloseButton();
-
 // For testing purposes; not to be launched.  When enabled, Chrome Upstream
 // always requests that the user enters/confirms cardholder name in the
 // offer-to-save dialog, regardless of if it was present or if the user is a
@@ -137,16 +130,18 @@ bool IsAutofillUpstreamBlankCardholderNameFieldExperimentEnabled();
 // NOT a Google Payments customer.
 bool IsAutofillUpstreamEditableCardholderNameExperimentEnabled();
 
-// Returns whether the experiment is enbabled where upstream sends updated
-// prompt explanation which changes 'save this card' to 'save your card and
-// billing address.'
-bool IsAutofillUpstreamUpdatePromptExplanationExperimentEnabled();
-
 #if defined(OS_MACOSX)
 // Returns true if whether the views autofill popup feature is enabled or the
 // we're using the views browser.
 bool IsMacViewsAutofillPopupExperimentEnabled();
 #endif  // defined(OS_MACOSX)
+
+// Returns whether the UI for passwords in manual fallback is enabled.
+bool IsPasswordManualFallbackEnabled();
+
+// Returns whether the UI for addresses and credit cards in manual fallback is
+// enabled.
+bool IsAutofillManualFallbackEnabled();
 
 // Returns true if the native Views implementation of the Desktop dropdown
 // should be used. This will also be true if the kExperimentalUi flag is true,

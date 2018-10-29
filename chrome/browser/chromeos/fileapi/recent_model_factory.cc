@@ -18,36 +18,9 @@
 namespace chromeos {
 
 // static
-RecentModel* RecentModelFactory::model_for_test_ = nullptr;
-
-// static
 RecentModel* RecentModelFactory::GetForProfile(Profile* profile) {
   return static_cast<RecentModel*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-// static
-RecentModel* RecentModelFactory::SetForProfileAndUseForTest(
-    Profile* profile,
-    std::unique_ptr<RecentModel> model) {
-  DCHECK(model);
-  DCHECK(!model_for_test_);
-
-  RecentModel* saved_model = model.get();
-  model_for_test_ = model.release();
-
-  KeyedService* used_model = GetInstance()->SetTestingFactoryAndUse(
-      profile,
-      [](content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
-        std::unique_ptr<KeyedService> model(model_for_test_);
-        model_for_test_ = nullptr;
-        return model;
-      });
-
-  DCHECK_EQ(used_model, saved_model);
-  DCHECK(!model_for_test_);
-
-  return saved_model;
 }
 
 RecentModelFactory::RecentModelFactory()

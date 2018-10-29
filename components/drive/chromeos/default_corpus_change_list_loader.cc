@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/time/clock.h"
 #include "components/drive/chromeos/about_resource_root_folder_id_loader.h"
 #include "components/drive/file_system_core_util.h"
 
@@ -18,13 +19,16 @@ DefaultCorpusChangeListLoader::DefaultCorpusChangeListLoader(
     ResourceMetadata* resource_metadata,
     JobScheduler* scheduler,
     AboutResourceLoader* about_resource_loader,
-    LoaderController* apply_task_controller)
+    LoaderController* apply_task_controller,
+    const base::Clock* clock)
     : logger_(logger),
       blocking_task_runner_(blocking_task_runner),
       resource_metadata_(resource_metadata),
       scheduler_(scheduler),
       loader_controller_(apply_task_controller),
       weak_ptr_factory_(this) {
+  DCHECK(clock);
+
   root_folder_id_loader_ =
       std::make_unique<AboutResourceRootFolderIdLoader>(about_resource_loader);
 
@@ -41,7 +45,7 @@ DefaultCorpusChangeListLoader::DefaultCorpusChangeListLoader(
       logger_, blocking_task_runner_.get(), resource_metadata_, scheduler_,
       root_folder_id_loader_.get(), start_page_token_loader_.get(),
       loader_controller_, util::GetDriveMyDriveRootPath(),
-      util::kTeamDriveIdDefaultCorpus);
+      util::kTeamDriveIdDefaultCorpus, clock);
 
   team_drive_list_loader_ = std::make_unique<TeamDriveListLoader>(
       logger_, blocking_task_runner_.get(), resource_metadata, scheduler_,

@@ -1,0 +1,10 @@
+Name: eDistantObject
+Short Name: EDO
+URL: https://github.com/google/eDistantObject
+Version: 0
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+iOS remote method invocations (distant object) over Inter-process communication layer.

@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGResourceRadialGradient {radialGradient} [id="gradient1"] [gradientUnits=userSpaceOnUse] [spreadMethod=REFLECT] [stops=( #008000@0.00 #008000@1.00 )] [center=(360,288)] [focal=(400,312)] [radius=200.00] [focalRadius=0.00]
-    LayoutSVGRect {rect} at (0,0) size 100x100 [fill={[type=RADIAL-GRADIENT] [id="gradient1"]}] [x=0.00] [y=0.00] [width=100.00] [height=100.00]

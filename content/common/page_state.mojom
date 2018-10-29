@@ -6,7 +6,7 @@ module content.history.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/platform/referrer.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
 import "url/mojom/url.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
@@ -100,7 +100,7 @@ struct FrameState {
   ViewState? view_state@6;
   int64 item_sequence_number@7;
   int64 document_sequence_number@8;
-  blink.mojom.ReferrerPolicy referrer_policy@9;
+  network.mojom.ReferrerPolicy referrer_policy@9;
   HttpBody http_body@10;
   array<FrameState> children@11;
 };

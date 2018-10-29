@@ -98,9 +98,6 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Deletes item at |index| and signals observers.
   void DeleteItemAt(size_t index);
 
-  // Deletes all items. This is used in profile switches.
-  void DeleteAllItems();
-
   // If |item|->position() is not a valid ordinal, sets |item|->position()
   // to a valid ordinal after the last item in the list.
   void EnsureValidItemPosition(AppListItem* item);

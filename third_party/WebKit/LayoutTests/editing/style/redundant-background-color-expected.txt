@@ -2,4 +2,3 @@ This tests to make sure that WebKit removes redundant background-color property 
 | <ul>
 |   <li>
 |     "<#selection-anchor>Hello<#selection-focus>"
-|     <br>

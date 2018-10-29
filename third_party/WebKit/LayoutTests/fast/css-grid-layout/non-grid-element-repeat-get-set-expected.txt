@@ -2,7 +2,6 @@ Test that setting and getting grid-template-columns and grid-template-rows with 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-template-columns and grid-template-rows set through CSS
 PASS window.getComputedStyle(singleSingleTrackRepeat, '').getPropertyValue('grid-template-columns') is "15%"
 PASS window.getComputedStyle(singleSingleTrackRepeat, '').getPropertyValue('grid-template-rows') is "18px"
@@ -22,6 +21,7 @@ PASS window.getComputedStyle(mixRepeatAfterNonRepeat, '').getPropertyValue('grid
 PASS window.getComputedStyle(mixRepeatAfterNonRepeat, '').getPropertyValue('grid-template-rows') is "auto 10px 10px"
 PASS window.getComputedStyle(mixNonRepeatAfterRepeat, '').getPropertyValue('grid-template-columns') is "250px 250px 15% [last]"
 PASS window.getComputedStyle(mixNonRepeatAfterRepeat, '').getPropertyValue('grid-template-rows') is "10px 10px [end] auto"
+
 
 Test invalid repeat syntax.
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

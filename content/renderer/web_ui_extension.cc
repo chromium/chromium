@@ -74,13 +74,16 @@ void WebUIExtension::Install(blink::WebLocalFrame* frame) {
 
   v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate,
                                                           context->Global());
-  chrome->Set(gin::StringToSymbol(isolate, "send"),
-              gin::CreateFunctionTemplate(
-                  isolate, base::Bind(&WebUIExtension::Send))->GetFunction());
+  chrome->Set(
+      gin::StringToSymbol(isolate, "send"),
+      gin::CreateFunctionTemplate(isolate, base::Bind(&WebUIExtension::Send))
+          ->GetFunction(context)
+          .ToLocalChecked());
   chrome->Set(gin::StringToSymbol(isolate, "getVariableValue"),
               gin::CreateFunctionTemplate(
                   isolate, base::Bind(&WebUIExtension::GetVariableValue))
-                  ->GetFunction());
+                  ->GetFunction(context)
+                  .ToLocalChecked());
 }
 
 // static

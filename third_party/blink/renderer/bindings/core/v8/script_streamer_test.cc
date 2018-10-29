@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -56,7 +57,8 @@ class ScriptStreamingTest : public testing::Test {
         url, WrappedResourceResponse(ResourceResponse()), "");
     pending_script_ = ClassicPendingScript::Fetch(
         url, dummy_page_holder_->GetDocument(), ScriptFetchOptions(),
-        UTF8Encoding(), element, FetchParameters::kNoDefer);
+        kCrossOriginAttributeNotSet, UTF8Encoding(), element,
+        FetchParameters::kNoDefer);
     pending_script_->SetSchedulingType(ScriptSchedulingType::kParserBlocking);
     ScriptStreamer::SetSmallScriptThresholdForTesting(0);
     Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url);
@@ -114,7 +116,9 @@ class ScriptStreamingTest : public testing::Test {
   void AppendPadding() { AppendPadding(GetResource()); }
 
   void Finish() {
-    GetResource()->Loader()->DidFinishLoading(TimeTicks(), 0, 0, 0, false);
+    GetResource()->Loader()->DidFinishLoading(
+        TimeTicks(), 0, 0, 0, false,
+        std::vector<network::cors::PreflightTimingInfo>());
     GetResource()->SetStatus(ResourceStatus::kCached);
   }
 

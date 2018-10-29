@@ -251,7 +251,7 @@ void BlobURLRequestJob::DidCalculateSize(int result) {
     // TODO(horo): When the requester doesn't need the side data (ex:FileReader)
     // we should skip reading the side data.
     if (blob_reader_->has_side_data() &&
-        blob_reader_->ReadSideData(base::Bind(
+        blob_reader_->ReadSideData(base::BindOnce(
             &BlobURLRequestJob::DidReadMetadata, weak_factory_.GetWeakPtr())) ==
             BlobReader::Status::IO_PENDING) {
       return;

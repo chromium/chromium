@@ -124,20 +124,22 @@ struct HashAndUTF8CharactersTranslator {
   static void Translate(StringImpl*& location,
                         const HashAndUTF8Characters& buffer,
                         unsigned hash) {
-    UChar* target;
-    scoped_refptr<StringImpl> new_string =
-        StringImpl::CreateUninitialized(buffer.utf16_length, target);
+    scoped_refptr<StringImpl> new_string;
+    // If buffer contains only ASCII characters, the UTF-8 and UTF-16 lengths
+    // are the same.
+    bool is_all_ascii = buffer.utf16_length == buffer.length;
+    if (!is_all_ascii) {
+      UChar* target;
+      new_string = StringImpl::CreateUninitialized(buffer.utf16_length, target);
 
-    bool is_all_ascii;
-    const char* source = buffer.characters;
-    if (Unicode::ConvertUTF8ToUTF16(&source, source + buffer.length, &target,
-                                    target + buffer.utf16_length,
-                                    &is_all_ascii) != Unicode::kConversionOK)
-      NOTREACHED();
-
-    if (is_all_ascii)
+      const char* source = buffer.characters;
+      if (Unicode::ConvertUTF8ToUTF16(&source, source + buffer.length, &target,
+                                      target + buffer.utf16_length,
+                                      &is_all_ascii) != Unicode::kConversionOK)
+        NOTREACHED();
+    } else {
       new_string = StringImpl::Create(buffer.characters, buffer.length);
-
+    }
     new_string->AddRef();
     location = new_string.get();
     location->SetHash(hash);

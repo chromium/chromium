@@ -119,6 +119,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Called when tablet mode starts and ends.
+  void OnTabletModeChanged(bool started);
+
   // Sets |model| to use. Note this does not take ownership of |model|.
   void SetModel(AppListModel* model);
 
@@ -248,14 +251,14 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // returns true if this scroll would change pages.
   bool HandleScrollFromAppListView(int offset, ui::EventType type);
 
-  // Returns whether the event is within a slot that is occupied by an app icon.
-  bool IsEventNearAppIcon(const ui::LocatedEvent& event);
-
   // Returns the first app list item view in the selected page in the folder.
   AppListItemView* GetCurrentPageFirstItemViewInFolder();
 
   // Returns the last app list item view in the selected page in the folder.
   AppListItemView* GetCurrentPageLastItemViewInFolder();
+
+  // Returns true if tablet mode is active.
+  bool IsTabletMode() const;
 
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
@@ -299,10 +302,11 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   friend class test::AppsGridViewTestApi;
   friend class PagedViewStructure;
 
-  enum DropAttempt {
-    DROP_FOR_NONE,
-    DROP_FOR_REORDER,
-    DROP_FOR_FOLDER,
+  enum DropTargetRegion {
+    NO_TARGET,
+    ON_ITEM,
+    NEAR_ITEM,
+    BETWEEN_ITEMS,
   };
 
   // Updates suggestions from app list model.
@@ -359,20 +363,21 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   void ExtractDragLocation(const gfx::Point& root_location,
                            gfx::Point* drag_point);
 
-  // Updates |reorder_drop_target_|, |folder_drop_target_| and |drop_attempt_|
+  // Updates |drop_target_| and |drop_target_region_|
   // based on |drag_view_|'s position.
-  void CalculateDropTarget();
+  void UpdateDropTargetRegion();
 
-  // If |point| is a valid folder drop target, returns true and sets
-  // |drop_target| to the index of the view to do a folder drop for.
-  bool CalculateFolderDropTarget(const gfx::Point& point,
-                                 GridIndex* drop_target) const;
+  bool DropTargetIsValidFolder();
 
-  // Calculates the reorder target |point| and sets |drop_target| to the index
-  // of the view to reorder. Returns true if |drop_target| is calculated
-  // successfully.
-  bool CalculateReorderDropTarget(const gfx::Point& point,
-                                  GridIndex* drop_target) const;
+  // Updates |drop_target_| as a location for potential reordering after the
+  // currently dragged item is released.
+  void UpdateDropTargetForReorder(const gfx::Point& point);
+
+  // Returns true if the current drag is occurring within a certain range of the
+  // nearest item.
+  bool DragIsCloseToItem();
+
+  bool DragPointIsOverItem(const gfx::Point& point);
 
   // Prepares |drag_and_drop_host_| for dragging. |grid_location| contains
   // the drag point in this grid view's coordinates.
@@ -466,8 +471,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // If |hide| is set the view will get hidden, otherwise it gets shown.
   void SetViewHidden(AppListItemView* view, bool hide, bool immediate);
 
-  // Whether the folder drag-and-drop UI should be enabled.
-  bool EnableFolderDragDropUI();
+  // Returns true if the dragged item isn't a folder, the drag is not
+  // occurring inside a folder, and |drop_target_| is a valid index.
+  bool DraggedItemCanEnterFolder();
 
   // Returns the size of the entire tile grid.
   gfx::Size GetTileGridSize() const;
@@ -663,7 +669,7 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   Pointer drag_pointer_ = NONE;
 
   // The most recent reorder drop target.
-  GridIndex reorder_drop_target_;
+  GridIndex drop_target_;
 
   // The most recent folder drop target.
   GridIndex folder_drop_target_;
@@ -673,12 +679,12 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   GridIndex reorder_placeholder_;
 
   // The current action that ending a drag will perform.
-  DropAttempt drop_attempt_ = DROP_FOR_NONE;
+  DropTargetRegion drop_target_region_ = NO_TARGET;
 
-  // Timer for re-ordering the |drop_target_| and |drag_view_|.
+  // Timer for re-ordering the |drop_target_region_| and |drag_view_|.
   base::OneShotTimer reorder_timer_;
 
-  // Timer for dropping |drag_view_| into the folder containing
+  // Timer for dropping |drag_view_| into the folder represented by
   // the |drop_target_|.
   base::OneShotTimer folder_dropping_timer_;
 

@@ -162,7 +162,7 @@ H264VideoToolboxEncoder::H264VideoToolboxEncoder(
       power_suspended_(false),
       weak_factory_(this) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  DCHECK(!status_change_cb_.is_null());
+  DCHECK(status_change_cb_);
 
   OperationalStatus operational_status =
       H264VideoToolboxEncoder::IsSupported(video_config)

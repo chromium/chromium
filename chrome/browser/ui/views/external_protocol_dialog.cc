@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/ui_features.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
@@ -25,9 +24,6 @@
 
 using content::WebContents;
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-// This should be kept in sync with RunExternalProtocolDialogViews in
-// external_protocol_dialog_views_mac.mm.
 // static
 void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url, int render_process_host_id, int routing_id,
@@ -44,7 +40,6 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   new ExternalProtocolDialog(std::move(delegate), render_process_host_id,
                              routing_id);
 }
-#endif  // !OS_MACOSX || MAC_VIEWS_BROWSER
 
 ExternalProtocolDialog::~ExternalProtocolDialog() {}
 

@@ -31,6 +31,11 @@ class ArcInputMethodManagerBridgeImpl
                      EnableImeCallback callback) override;
   void SendSwitchImeTo(const std::string& ime_id,
                        SwitchImeToCallback callback) override;
+  void SendFocus(mojom::InputConnectionPtr connection,
+                 mojom::TextInputStatePtr state) override;
+  void SendUpdateTextInputState(mojom::TextInputStatePtr state) override;
+  void SendShowVirtualKeyboard() override;
+  void SendHideVirtualKeyboard() override;
 
   // ConnectionObserver<mojom::InputMethodManagerInstance> overrides:
   void OnConnectionClosed() override;

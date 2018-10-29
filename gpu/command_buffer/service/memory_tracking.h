@@ -15,7 +15,6 @@
 #include "base/trace_event/trace_event.h"
 
 namespace gpu {
-namespace gles2 {
 
 // A MemoryTracker is used to propagate per-ContextGroup memory usage
 // statistics to the global GpuMemoryManager.
@@ -70,7 +69,6 @@ class MemoryTypeTracker {
   DISALLOW_COPY_AND_ASSIGN(MemoryTypeTracker);
 };
 
-}  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_MEMORY_TRACKING_H_

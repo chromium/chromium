@@ -34,6 +34,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -183,18 +184,13 @@ content::StoragePartition* GetSigninPartition() {
   return signin_partition_manager->GetCurrentStoragePartition();
 }
 
-net::URLRequestContextGetter* GetSigninContext() {
+network::mojom::NetworkContext* GetSigninNetworkContext() {
   content::StoragePartition* signin_partition = GetSigninPartition();
-
-  // Special case for unit tests. There's no LoginDisplayHost thus no
-  // webview instance. See http://crbug.com/477402
-  if (!signin_partition && !LoginDisplayHost::default_host())
-    return ProfileHelper::GetSigninProfile()->GetRequestContext();
 
   if (!signin_partition)
     return nullptr;
 
-  return signin_partition->GetURLRequestContext();
+  return signin_partition->GetNetworkContext();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory() {

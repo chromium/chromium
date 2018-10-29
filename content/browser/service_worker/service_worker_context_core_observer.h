@@ -59,7 +59,7 @@ class ServiceWorkerContextCoreObserver {
     const GURL source_url;
   };
   virtual void OnNewLiveRegistration(int64_t registration_id,
-                                     const GURL& pattern) {}
+                                     const GURL& scope) {}
   virtual void OnNewLiveVersion(const ServiceWorkerVersionInfo& version_info) {}
   virtual void OnRunningStateChanged(int64_t version_id,
                                      EmbeddedWorkerStatus running_status) {}
@@ -90,16 +90,16 @@ class ServiceWorkerContextCoreObserver {
   // storage. The implementation cannot assume that the ServiceWorkerContextCore
   // will find the registration at this point.
   virtual void OnRegistrationCompleted(int64_t registration_id,
-                                       const GURL& pattern) {}
+                                       const GURL& scope) {}
   // Called after a service worker registration is persisted to storage.
   //
   // This happens after OnRegistrationCompleted(). The implementation can assume
   // that ServiceWorkerContextCore will find the registration, and can safely
   // add user data to the registration.
   virtual void OnRegistrationStored(int64_t registration_id,
-                                    const GURL& pattern) {}
+                                    const GURL& scope) {}
   virtual void OnRegistrationDeleted(int64_t registration_id,
-                                     const GURL& pattern) {}
+                                     const GURL& scope) {}
 
   // Notified when the storage corruption recovery is completed and all stored
   // data is wiped out.

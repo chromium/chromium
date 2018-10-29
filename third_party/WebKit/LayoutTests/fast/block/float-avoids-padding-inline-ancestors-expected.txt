@@ -1,18 +1,30 @@
-a Float
+a
+Float
 PASS
 
-a Float
+
+a
+Float
 PASS
 
-a Float
+
+a
+Float
 PASS
 
-a Float
+
+a
+Float
 PASS
 
-a Float
+
+a
+Float
 PASS
 
-a Float
+
+a
+Float
 PASS
+
 crbug.com/754136: Floats should account for border/padding/margin on inline ancestors when deciding when they fit.

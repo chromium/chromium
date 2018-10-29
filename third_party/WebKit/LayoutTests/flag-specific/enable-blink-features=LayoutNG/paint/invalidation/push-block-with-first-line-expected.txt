@@ -20,22 +20,22 @@
         {
           "object": "NGPhysicalBoxFragment LayoutInline (anonymous)",
           "rect": [8, 68, 140, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'JOCULAR'",
           "rect": [8, 68, 140, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutInline (anonymous)",
           "rect": [8, 8, 140, 20],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'JOCULAR'",
           "rect": [8, 8, 140, 20],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

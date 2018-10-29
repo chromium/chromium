@@ -25,6 +25,7 @@ js_type_check("closure_compile") {
     ":profile_info_browser_proxy",
     ":setup_fingerprint_dialog",
     ":setup_pin_dialog",
+    ":signout_dialog",
     ":sync_account_control",
     ":sync_browser_proxy",
     ":sync_page",
@@ -174,6 +175,7 @@ js_library("people_page") {
     ":lock_screen",
     ":lock_state_behavior",
     ":profile_info_browser_proxy",
+    ":signout_dialog",
     ":sync_browser_proxy",
     "..:page_visibility",
     "..:route",
@@ -211,6 +213,19 @@ js_library("setup_pin_dialog") {
     "..:route",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard",
     "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("signout_dialog") {
+  deps = [
+    ":profile_info_browser_proxy",
+    ":sync_browser_proxy",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 

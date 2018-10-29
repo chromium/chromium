@@ -5,6 +5,7 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 
 #include "base/feature_list.h"
+#include "base/time/default_tick_clock.h"
 #include "content/browser/loader/prefetch_url_loader.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/content_browser_client.h"
@@ -17,12 +18,13 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 struct PrefetchURLLoaderService::BindContext {
   BindContext(int frame_tree_node_id,
-              scoped_refptr<URLLoaderFactoryBundle> factory)
+              scoped_refptr<network::SharedURLLoaderFactory> factory)
       : frame_tree_node_id(frame_tree_node_id), factory(factory) {}
 
   explicit BindContext(const std::unique_ptr<BindContext>& other)
@@ -32,10 +34,13 @@ struct PrefetchURLLoaderService::BindContext {
   ~BindContext() = default;
 
   const int frame_tree_node_id;
-  scoped_refptr<URLLoaderFactoryBundle> factory;
+  scoped_refptr<network::SharedURLLoaderFactory> factory;
 };
 
-PrefetchURLLoaderService::PrefetchURLLoaderService() = default;
+PrefetchURLLoaderService::PrefetchURLLoaderService()
+    : signed_exchange_prefetch_metric_recorder_(
+          base::MakeRefCounted<SignedExchangePrefetchMetricRecorder>(
+              base::DefaultTickClock::GetInstance())) {}
 
 void PrefetchURLLoaderService::InitializeResourceContext(
     ResourceContext* resource_context,
@@ -50,10 +55,10 @@ void PrefetchURLLoaderService::InitializeResourceContext(
 void PrefetchURLLoaderService::GetFactory(
     network::mojom::URLLoaderFactoryRequest request,
     int frame_tree_node_id,
-    std::unique_ptr<URLLoaderFactoryBundleInfo> factories) {
+    std::unique_ptr<network::SharedURLLoaderFactoryInfo> factories) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   auto factory_bundle =
-      base::MakeRefCounted<URLLoaderFactoryBundle>(std::move(factories));
+      network::SharedURLLoaderFactory::Create(std::move(factories));
   loader_factory_bindings_.AddBinding(
       this, std::move(request),
       std::make_unique<BindContext>(frame_tree_node_id, factory_bundle));
@@ -88,7 +93,8 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
           base::BindRepeating(
               &PrefetchURLLoaderService::CreateURLLoaderThrottles, this,
               resource_request, frame_tree_node_id_getter),
-          resource_context_, request_context_getter_),
+          resource_context_, request_context_getter_,
+          signed_exchange_prefetch_metric_recorder_),
       std::move(request));
 }
 
@@ -103,7 +109,9 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     network::mojom::URLLoaderClientPtr client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
+  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService) ||
+         base::FeatureList::IsEnabled(
+             blink::features::kServiceWorkerServicification));
   const auto& dispatch_context = *loader_factory_bindings_.dispatch_context();
   int frame_tree_node_id = dispatch_context.frame_tree_node_id;
   CreateLoaderAndStart(

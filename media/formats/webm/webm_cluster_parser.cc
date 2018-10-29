@@ -64,9 +64,7 @@ WebMClusterParser::WebMClusterParser(
              media_log),
       ready_buffer_upper_bound_(kNoDecodeTimestamp()),
       media_log_(media_log) {
-  for (WebMTracksParser::TextTracks::const_iterator it = text_tracks.begin();
-       it != text_tracks.end();
-       ++it) {
+  for (auto it = text_tracks.begin(); it != text_tracks.end(); ++it) {
     text_track_map_.insert(std::make_pair(
         it->first,
         Track(it->first, TrackType::TEXT, kNoTimestamp, media_log_)));
@@ -818,18 +816,14 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
 
 void WebMClusterParser::ClearTextTrackReadyBuffers() {
   text_buffers_map_.clear();
-  for (TextTrackMap::iterator it = text_track_map_.begin();
-       it != text_track_map_.end();
-       ++it) {
+  for (auto it = text_track_map_.begin(); it != text_track_map_.end(); ++it) {
     it->second.ClearReadyBuffers();
   }
 }
 
 void WebMClusterParser::ResetTextTracks() {
   ClearTextTrackReadyBuffers();
-  for (TextTrackMap::iterator it = text_track_map_.begin();
-       it != text_track_map_.end();
-       ++it) {
+  for (auto it = text_track_map_.begin(); it != text_track_map_.end(); ++it) {
     it->second.Reset();
   }
 }
@@ -858,8 +852,7 @@ void WebMClusterParser::UpdateReadyBuffers() {
   // Prepare each track's ready buffers for retrieval.
   audio_.ExtractReadyBuffers(ready_buffer_upper_bound_);
   video_.ExtractReadyBuffers(ready_buffer_upper_bound_);
-  for (TextTrackMap::iterator itr = text_track_map_.begin();
-       itr != text_track_map_.end();
+  for (auto itr = text_track_map_.begin(); itr != text_track_map_.end();
        ++itr) {
     itr->second.ExtractReadyBuffers(ready_buffer_upper_bound_);
   }

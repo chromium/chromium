@@ -59,6 +59,8 @@ jumbo_component("cpp") {
     ]
   }
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":cpp_base",
     "//net",
@@ -82,6 +84,8 @@ jumbo_component("cpp_base") {
   sources = [
     "cors/cors_error_status.cc",
     "cors/cors_error_status.h",
+    "cors/preflight_timing_info.cc",
+    "cors/preflight_timing_info.h",
     "data_element.cc",
     "data_element.h",
     "http_raw_request_response_info.cc",
@@ -120,6 +124,8 @@ jumbo_component("cpp_base") {
     "network_ipc_param_traits.cc",
     "p2p_param_traits.cc",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//services/network/public/mojom:data_pipe_interfaces",
@@ -160,6 +166,7 @@ source_set("tests") {
     "cors/preflight_result_unittest.cc",
     "cross_thread_shared_url_loader_factory_info_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
+    "host_resolver_mojom_traits_unittest.cc",
     "mutable_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "network_connection_tracker_unittest.cc",

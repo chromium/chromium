@@ -2,7 +2,6 @@ Tests crypto.subtle.encrypt() using a BufferSource that is modified during algor
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing key...
 
 Encrypting (as a control group)...

@@ -10,18 +10,24 @@
 
 namespace ui {
 
+struct _AXPlatformAtkHyperlinkPrivate {
+  AXPlatformNodeAuraLinux* platform_node = nullptr;
+  base::Optional<int> end_index;
+  base::Optional<int> start_index;
+};
+
 static gpointer kAXPlatformAtkHyperlinkParentClass = nullptr;
 
 static AXPlatformNodeAuraLinux* ToAXPlatformNodeAuraLinux(
     AXPlatformAtkHyperlink* atk_hyperlink) {
   if (!atk_hyperlink)
     return nullptr;
-
-  return atk_hyperlink->m_object;
+  return atk_hyperlink->priv->platform_node;
 }
 
-static void AXPlatformAtkHyperlinkFinalize(GObject* atk_hyperlink) {
-  G_OBJECT_CLASS(kAXPlatformAtkHyperlinkParentClass)->finalize(atk_hyperlink);
+static void AXPlatformAtkHyperlinkFinalize(GObject* self) {
+  AX_PLATFORM_ATK_HYPERLINK(self)->priv->~AXPlatformAtkHyperlinkPrivate();
+  G_OBJECT_CLASS(kAXPlatformAtkHyperlinkParentClass)->finalize(self);
 }
 
 static gchar* AXPlatformAtkHyperlinkGetUri(AtkHyperlink* atk_hyperlink,
@@ -69,16 +75,30 @@ static gboolean AXPlatformAtkHyperlinkIsSelectedLink(
     AtkHyperlink* atk_hyperlink) {
   AXPlatformNodeAuraLinux* obj =
       ToAXPlatformNodeAuraLinux(AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink));
-
   if (!obj)
     return false;
 
   return obj->GetDelegate()->GetFocus() == obj->GetNativeViewAccessible();
 }
 
+static int AXPlatformAtkHyperlinkGetStartIndex(AtkHyperlink* atk_hyperlink) {
+  g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
+  AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
+  return link->priv->start_index ? *link->priv->start_index : 0;
+}
+
+static int AXPlatformAtkHyperlinkGetEndIndex(AtkHyperlink* atk_hyperlink) {
+  g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
+  AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
+  return link->priv->end_index ? *link->priv->end_index : 0;
+}
+
 static void AXPlatformAtkHyperlinkClassInit(AtkHyperlinkClass* klass) {
   GObjectClass* gobject_class = G_OBJECT_CLASS(klass);
   kAXPlatformAtkHyperlinkParentClass = g_type_class_peek_parent(klass);
+
+  g_type_class_add_private(gobject_class,
+                           sizeof(AXPlatformAtkHyperlinkPrivate));
 
   gobject_class->finalize = AXPlatformAtkHyperlinkFinalize;
   klass->get_uri = AXPlatformAtkHyperlinkGetUri;
@@ -86,8 +106,8 @@ static void AXPlatformAtkHyperlinkClassInit(AtkHyperlinkClass* klass) {
   klass->is_valid = AXPlatformAtkHyperlinkIsValid;
   klass->get_n_anchors = AXPlatformAtkHyperlinkGetNAnchors;
   klass->is_selected_link = AXPlatformAtkHyperlinkIsSelectedLink;
-  // TODO(jose.dapena) implement get_start_index and get_end_index methods
-  // that should provide the range of the link in the embedding text.
+  klass->get_start_index = AXPlatformAtkHyperlinkGetStartIndex;
+  klass->get_end_index = AXPlatformAtkHyperlinkGetEndIndex;
 }
 
 //
@@ -204,10 +224,27 @@ static void atk_action_interface_init(AtkActionIface* iface) {
   iface->get_localized_name = ax_platform_atk_hyperlink_get_localized_name;
 }
 
-void ax_platform_atk_hyperlink_set_object(AXPlatformAtkHyperlink* atk_hyperlink,
-                                          AXPlatformNodeAuraLinux* obj) {
+void ax_platform_atk_hyperlink_set_object(
+    AXPlatformAtkHyperlink* atk_hyperlink,
+    AXPlatformNodeAuraLinux* platform_node) {
   g_return_if_fail(AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink));
-  atk_hyperlink->m_object = obj;
+  atk_hyperlink->priv->platform_node = platform_node;
+}
+
+void ax_platform_atk_hyperlink_set_indices(
+    AXPlatformAtkHyperlink* atk_hyperlink,
+    int start_index,
+    int end_index) {
+  atk_hyperlink->priv->start_index = start_index;
+  atk_hyperlink->priv->end_index = end_index;
+}
+
+static void AXPlatformAtkHyperlinkInit(AXPlatformAtkHyperlink* self, gpointer) {
+  AXPlatformAtkHyperlinkPrivate* priv =
+      G_TYPE_INSTANCE_GET_PRIVATE(self, ax_platform_atk_hyperlink_get_type(),
+                                  AXPlatformAtkHyperlinkPrivate);
+  self->priv = priv;
+  new (priv) AXPlatformAtkHyperlinkPrivate();
 }
 
 GType ax_platform_atk_hyperlink_get_type() {
@@ -225,7 +262,7 @@ GType ax_platform_atk_hyperlink_get_type() {
         nullptr,                        /* class data */
         sizeof(AXPlatformAtkHyperlink), /* instance size */
         0,                              /* nb preallocs */
-        (GInstanceInitFunc) nullptr,
+        (GInstanceInitFunc)AXPlatformAtkHyperlinkInit,
         nullptr /* value table */
     };
 

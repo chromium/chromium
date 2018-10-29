@@ -11,11 +11,24 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
 CanvasRenderingContextHost::CanvasRenderingContextHost() = default;
+
+void CanvasRenderingContextHost::RecordCanvasSizeToUMA(unsigned width,
+                                                       unsigned height,
+                                                       bool isOffscreen) {
+  if (isOffscreen) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
+                                std::sqrt(width * height), 1, 5000, 100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
+                                std::sqrt(width * height), 1, 5000, 100);
+  }
+}
 
 scoped_refptr<StaticBitmapImage>
 CanvasRenderingContextHost::CreateTransparentImage(const IntSize& size) const {

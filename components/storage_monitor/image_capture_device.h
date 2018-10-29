@@ -66,7 +66,7 @@ class ImageCaptureDeviceListener {
   bool closing_;
 }
 
-- (id)initWithCameraDevice:(ICCameraDevice*)cameraDevice;
+- (instancetype)initWithCameraDevice:(ICCameraDevice*)cameraDevice;
 - (void)setListener:
         (base::WeakPtr<storage_monitor::ImageCaptureDeviceListener>)listener;
 - (void)open;

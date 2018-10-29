@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -11,11 +12,13 @@
 #include "base/sha1.h"
 #include "base/stl_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/entity_data.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
 
@@ -33,6 +36,9 @@ SyncedBookmarkTracker::Entity::Entity(
     const bookmarks::BookmarkNode* bookmark_node,
     std::unique_ptr<sync_pb::EntityMetadata> metadata)
     : bookmark_node_(bookmark_node), metadata_(std::move(metadata)) {
+  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
+  // Should be removed after figuring out the reason for the crash.
+  CHECK(metadata_);
   if (bookmark_node) {
     DCHECK(!metadata_->is_deleted());
   } else {
@@ -95,11 +101,66 @@ SyncedBookmarkTracker::SyncedBookmarkTracker(
       DCHECK(entity->metadata()->is_deleted());
       ordered_local_tombstones_.push_back(entity.get());
     }
+    // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
+    // Should be removed after figuring out the reason for the crash.
+    CHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
     sync_id_to_entities_map_[sync_id] = std::move(entity);
   }
 }
 
 SyncedBookmarkTracker::~SyncedBookmarkTracker() = default;
+
+// static
+bool SyncedBookmarkTracker::BookmarkModelMatchesMetadata(
+    const bookmarks::BookmarkModel* model,
+    const sync_pb::BookmarkModelMetadata& model_metadata) {
+  DCHECK(model_metadata.model_type_state().initial_sync_done());
+
+  // Collect ids of non-deletion entries in the metadata.
+  std::vector<int> metadata_node_ids;
+  for (const sync_pb::BookmarkMetadata& bookmark_metadata :
+       model_metadata.bookmarks_metadata()) {
+    if (!bookmark_metadata.metadata().has_server_id()) {
+      DLOG(ERROR) << "Error when decoding sync metadata: Entities must contain "
+                     "server id.";
+      return false;
+    }
+    if (bookmark_metadata.metadata().is_deleted() &&
+        bookmark_metadata.has_id()) {
+      DLOG(ERROR) << "Error when decoding sync metadata: Tombstones "
+                     "shouldn't have a bookmark id.";
+      return false;
+    }
+    if (!bookmark_metadata.metadata().is_deleted() &&
+        !bookmark_metadata.has_id()) {
+      DLOG(ERROR)
+          << "Error when decoding sync metadata: Bookmark id is missing.";
+      return false;
+    }
+    // The entry is valid. If it's not a tombstone, collect its node id to
+    // compare it later with the ids in the model.
+    if (!bookmark_metadata.metadata().is_deleted()) {
+      metadata_node_ids.push_back(bookmark_metadata.id());
+    }
+  }
+
+  // Collect ids of nodes in the model.
+  std::vector<int> model_node_ids;
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
+      model->root_node());
+  while (iterator.has_next()) {
+    const bookmarks::BookmarkNode* node = iterator.Next();
+    model_node_ids.push_back(node->id());
+  }
+
+  if (model_node_ids.size() != metadata_node_ids.size()) {
+    return false;
+  }
+  std::sort(model_node_ids.begin(), model_node_ids.end());
+  std::sort(metadata_node_ids.begin(), metadata_node_ids.end());
+  return std::equal(model_node_ids.begin(), model_node_ids.end(),
+                    metadata_node_ids.begin());
+}
 
 const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::GetEntityForSyncId(
     const std::string& sync_id) const {
@@ -133,6 +194,9 @@ void SyncedBookmarkTracker::Add(const std::string& sync_id,
   HashSpecifics(specifics, metadata->mutable_specifics_hash());
   auto entity = std::make_unique<Entity>(bookmark_node, std::move(metadata));
   bookmark_node_to_entities_map_[bookmark_node] = entity.get();
+  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
+  // Should be removed after figuring out the reason for the crash.
+  CHECK_EQ(0U, sync_id_to_entities_map_.count(sync_id));
   sync_id_to_entities_map_[sync_id] = std::move(entity);
 }
 
@@ -234,6 +298,16 @@ bool SyncedBookmarkTracker::HasLocalChanges() const {
 }
 
 std::vector<const SyncedBookmarkTracker::Entity*>
+SyncedBookmarkTracker::GetAllEntities() const {
+  std::vector<const SyncedBookmarkTracker::Entity*> entities;
+  for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
+       sync_id_to_entities_map_) {
+    entities.push_back(pair.second.get());
+  }
+  return entities;
+}
+
+std::vector<const SyncedBookmarkTracker::Entity*>
 SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
   std::vector<const SyncedBookmarkTracker::Entity*> entities_with_local_changes;
   // Entities with local non deletions should be sorted such that parent
@@ -306,6 +380,7 @@ void SyncedBookmarkTracker::TraverseAndAppend(
     const bookmarks::BookmarkNode* node,
     std::vector<const SyncedBookmarkTracker::Entity*>* ordered_entities) const {
   const SyncedBookmarkTracker::Entity* entity = GetEntityForBookmarkNode(node);
+  DCHECK(entity);
   DCHECK(entity->IsUnsynced());
   DCHECK(!entity->metadata()->is_deleted());
   ordered_entities->push_back(entity);
@@ -314,8 +389,9 @@ void SyncedBookmarkTracker::TraverseAndAppend(
     const bookmarks::BookmarkNode* child = node->GetChild(i);
     const SyncedBookmarkTracker::Entity* child_entity =
         GetEntityForBookmarkNode(child);
+    DCHECK(child_entity);
     if (!child_entity->IsUnsynced()) {
-      // If the entity has no local change, no need to check it's children. If
+      // If the entity has no local change, no need to check its children. If
       // any of the children would have a pending commit, it would be a root for
       // a separate tree in the forest built in
       // ReorderEntitiesWithLocalNonDeletions() and will be handled by another
@@ -353,12 +429,25 @@ void SyncedBookmarkTracker::UpdateUponCommitResponse(
     return;
   }
 
-  if (old_id != new_id) {
-    auto it = sync_id_to_entities_map_.find(old_id);
-    entity->metadata()->set_server_id(new_id);
-    sync_id_to_entities_map_[new_id] = std::move(it->second);
-    sync_id_to_entities_map_.erase(old_id);
+  UpdateSyncForLocalCreationIfNeeded(old_id, new_id);
+}
+
+void SyncedBookmarkTracker::UpdateSyncForLocalCreationIfNeeded(
+    const std::string& old_id,
+    const std::string& new_id) {
+  if (old_id == new_id) {
+    return;
   }
+  // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
+  // Should be removed after figuring out the reason for the crash.
+  CHECK_EQ(1U, sync_id_to_entities_map_.count(old_id));
+  CHECK_EQ(0U, sync_id_to_entities_map_.count(new_id));
+
+  std::unique_ptr<Entity> entity =
+      std::move(sync_id_to_entities_map_.at(old_id));
+  entity->metadata()->set_server_id(new_id);
+  sync_id_to_entities_map_[new_id] = std::move(entity);
+  sync_id_to_entities_map_.erase(old_id);
 }
 
 void SyncedBookmarkTracker::AckSequenceNumber(const std::string& sync_id) {

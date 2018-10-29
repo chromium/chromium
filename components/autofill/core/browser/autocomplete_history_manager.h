@@ -56,6 +56,34 @@ class AutocompleteHistoryManager : public WebDataServiceConsumer {
   void SendSuggestions(const std::vector<base::string16>* new_results);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteHistoryManagerTest,
+                           AutocompleteUMAQueryCreated);
+
+  // The class measure the percentage field that triggers the query and the
+  // percentage field that has the suggestion.
+  class UMARecorder {
+   public:
+    UMARecorder() = default;
+    ~UMARecorder() = default;
+
+    void OnGetAutocompleteSuggestions(
+        const base::string16& name,
+        WebDataServiceBase::Handle pending_query_handle);
+    void OnWebDataServiceRequestDone(
+        WebDataServiceBase::Handle pending_query_handle,
+        bool has_suggestion);
+
+   private:
+    // The query handle should be measured for UMA.
+    WebDataServiceBase::Handle measuring_query_handle_ = 0;
+
+    // The name of field that is currently measured, we don't repeatedly measure
+    // the query of the same field while user is filling the field.
+    base::string16 measuring_name_;
+
+    DISALLOW_COPY_AND_ASSIGN(UMARecorder);
+  };
+
   // WebDataServiceConsumer implementation.
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
@@ -80,6 +108,8 @@ class AutocompleteHistoryManager : public WebDataServiceConsumer {
 
   // Whether IPC is sent.
   bool send_ipc_;
+
+  UMARecorder uma_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteHistoryManager);
 };

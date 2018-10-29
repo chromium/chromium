@@ -114,12 +114,12 @@ void UnregisterAllURLsAndClearMemoryCache() {
 }
 
 void SetUpSuccessURL() {
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       SuccessURL(), test::CoreTestDataPath(kFileName), "text/html");
 }
 
 void SetUpErrorURL() {
-  URLTestHelpers::RegisterMockedErrorURLLoad(ErrorURL());
+  url_test_helpers::RegisterMockedErrorURLLoad(ErrorURL());
 }
 
 void SetUpRedirectURL() {
@@ -135,7 +135,7 @@ void SetUpRedirectURL() {
   response.AddHTTPHeaderField("Location", SuccessURL().GetString());
   response.AddHTTPHeaderField("Access-Control-Allow-Origin", "http://fake.url");
 
-  URLTestHelpers::RegisterMockedURLLoadWithCustomResponse(
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url, test::CoreTestDataPath(kFileName), response);
 }
 
@@ -152,7 +152,7 @@ void SetUpRedirectLoopURL() {
   response.AddHTTPHeaderField("Location", RedirectLoopURL().GetString());
   response.AddHTTPHeaderField("Access-Control-Allow-Origin", "http://fake.url");
 
-  URLTestHelpers::RegisterMockedURLLoadWithCustomResponse(
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url, test::CoreTestDataPath(kFileName), response);
 }
 
@@ -223,7 +223,7 @@ class ThreadableLoaderTest : public testing::Test {
                    network::mojom::FetchRequestMode fetch_request_mode =
                        network::mojom::FetchRequestMode::kNoCORS) {
     ResourceRequest request(url);
-    request.SetRequestContext(WebURLRequest::kRequestContextObject);
+    request.SetRequestContext(mojom::RequestContextType::OBJECT);
     request.SetFetchRequestMode(fetch_request_mode);
     request.SetFetchCredentialsMode(
         network::mojom::FetchCredentialsMode::kOmit);

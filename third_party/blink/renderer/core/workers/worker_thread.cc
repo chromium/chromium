@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
-#include "third_party/blink/renderer/core/workers/threaded_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -51,8 +50,8 @@
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/child/webthread_impl_for_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/waitable_event.h"
 #include "third_party/blink/renderer/platform/web_thread_supporting_gc.h"
@@ -244,14 +243,14 @@ void WorkerThread::TerminateAllWorkersForTesting() {
     thread->ClearWorkerBackingThread();
 }
 
-void WorkerThread::WillProcessTask() {
+void WorkerThread::WillProcessTask(const base::PendingTask& pending_task) {
   DCHECK(IsCurrentThread());
 
   // No tasks should get executed after we have closed.
   DCHECK(!GlobalScope()->IsClosing());
 }
 
-void WorkerThread::DidProcessTask() {
+void WorkerThread::DidProcessTask(const base::PendingTask& pending_task) {
   DCHECK(IsCurrentThread());
   Microtask::PerformCheckpoint(GetIsolate());
   GlobalScope()->ScriptController()->GetRejectedPromises()->ProcessQueue();
@@ -337,11 +336,6 @@ scheduler::WorkerScheduler* WorkerThread::GetScheduler() {
   return worker_scheduler_.get();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-WorkerThread::GetControlTaskRunner() {
-  return worker_scheduler_->GetWorkerThreadScheduler()->ControlTaskQueue();
-}
-
 void WorkerThread::ChildThreadStartedOnWorkerThread(WorkerThread* child) {
   DCHECK(IsCurrentThread());
 #if DCHECK_IS_ON()
@@ -420,13 +414,13 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
     base::WaitableEvent* waitable_event) {
   DCHECK(IsCurrentThread());
   DCHECK(!worker_scheduler_);
-  scheduler::WebThreadImplForWorkerScheduler& web_thread_for_worker =
-      static_cast<scheduler::WebThreadImplForWorkerScheduler&>(
+  scheduler::WorkerThread& worker_thread =
+      static_cast<scheduler::WorkerThread&>(
           GetWorkerBackingThread().BackingThread().PlatformThread());
   worker_scheduler_ = std::make_unique<scheduler::WorkerScheduler>(
       static_cast<scheduler::WorkerThreadScheduler*>(
-          web_thread_for_worker.GetNonMainThreadScheduler()),
-      web_thread_for_worker.worker_scheduler_proxy());
+          worker_thread.GetNonMainThreadScheduler()),
+      worker_thread.worker_scheduler_proxy());
   waitable_event->Signal();
 }
 
@@ -502,7 +496,7 @@ void WorkerThread::EvaluateClassicScriptOnWorkerThread(
     String source_code,
     std::unique_ptr<Vector<char>> cached_meta_data,
     const v8_inspector::V8StackTraceId& stack_id) {
-  ToWorkerGlobalScope(GlobalScope())
+  To<WorkerGlobalScope>(GlobalScope())
       ->EvaluateClassicScriptPausable(script_url, access_control_status,
                                       std::move(source_code),
                                       std::move(cached_meta_data), stack_id);
@@ -516,7 +510,7 @@ void WorkerThread::ImportModuleScriptOnWorkerThread(
   // Worklets have a different code path to import module scripts.
   // TODO(nhiroki): Consider excluding this code path from WorkerThread like
   // Worklets.
-  ToWorkerGlobalScope(GlobalScope())
+  To<WorkerGlobalScope>(GlobalScope())
       ->ImportModuleScriptPausable(script_url,
                                    new FetchClientSettingsObjectSnapshot(
                                        std::move(outside_settings_object)),

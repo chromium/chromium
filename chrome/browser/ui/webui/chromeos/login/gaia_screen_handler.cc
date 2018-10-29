@@ -67,6 +67,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -89,6 +90,9 @@ const char kAuthIframeParentName[] = "signin-frame";
 const char kRestrictiveProxyURL[] = "https://www.google.com/generate_204";
 
 const char kEndpointGen[] = "1.0";
+
+const char kOAUTHCodeCookie[] = "oauth_code";
+const char kGAPSCookie[] = "GAPS";
 
 // The possible modes that the Gaia signin screen can be in.
 enum GaiaScreenMode {
@@ -177,9 +181,8 @@ void UpdateAuthParams(base::DictionaryValue* params,
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = true;
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
-  params->SetBoolean(
-      "guestSignin",
-      chrome_user_manager_util::IsGuestSessionAllowed(cros_settings));
+  params->SetBoolean("guestSignin",
+                     user_manager::UserManager::Get()->IsGuestSessionAllowed());
 
   // nosignup flow if new users are not allowed.
   if (!allow_new_user || is_restrictive_proxy)
@@ -352,6 +355,38 @@ void GaiaScreenHandler::LoadGaia(const GaiaContext& context) {
 void GaiaScreenHandler::LoadGaiaWithPartition(
     const GaiaContext& context,
     const std::string& partition_name) {
+  auto callback =
+      base::BindOnce(&GaiaScreenHandler::OnSetCookieForLoadGaiaWithPartition,
+                     weak_factory_.GetWeakPtr(), context, partition_name);
+  if (context.gaps_cookie.empty()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // When the network service is enabled the webRequest API doesn't allow
+  // modification of the cookie header. So manually write the GAPS cookie into
+  // the CookieManager.
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  content::StoragePartition* partition =
+      signin_partition_manager->GetCurrentStoragePartition();
+
+  std::string gaps_cookie_value(kGAPSCookie);
+  gaps_cookie_value += "=" + context.gaps_cookie;
+  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
+      GaiaUrls::GetInstance()->gaia_url(), gaps_cookie_value, base::Time::Now(),
+      net::CookieOptions()));
+
+  partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
+      *cc.get(), true /* secure_source */, true /* modify_http_only */,
+      std::move(callback));
+}
+
+void GaiaScreenHandler::OnSetCookieForLoadGaiaWithPartition(
+    const GaiaContext& context,
+    const std::string& partition_name,
+    bool success) {
   std::unique_ptr<std::string> version = std::make_unique<std::string>();
   std::unique_ptr<bool> consent = std::make_unique<bool>();
   base::OnceClosure get_version_and_consent =
@@ -377,7 +412,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.SetString("gaiaId", context.gaia_id);
   params.SetBoolean("readOnlyEmail", true);
   params.SetString("email", context.email);
-  params.SetString("gapsCookie", context.gaps_cookie);
 
   UpdateAuthParams(&params, IsRestrictiveProxy());
 
@@ -744,12 +778,48 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     const std::string& gaia_id,
     const std::string& email,
     const std::string& password,
-    const std::string& auth_code,
     bool using_saml,
-    const std::string& gaps_cookie,
     const ::login::StringList& services) {
   if (!LoginDisplayHost::default_host())
     return;
+
+  // When the network service is enabled, the webRequest API doesn't expose
+  // cookie headers. So manually fetch the cookies for the GAIA URL from the
+  // CookieManager.
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  content::StoragePartition* partition =
+      signin_partition_manager->GetCurrentStoragePartition();
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+
+  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
+      GaiaUrls::GetInstance()->gaia_url(), cookie_options,
+      base::BindOnce(&GaiaScreenHandler::OnGetCookiesForCompleteAuthentication,
+                     weak_factory_.GetWeakPtr(), gaia_id, email, password,
+                     using_saml, services));
+}
+
+void GaiaScreenHandler::OnGetCookiesForCompleteAuthentication(
+    const std::string& gaia_id,
+    const std::string& email,
+    const std::string& password,
+    bool using_saml,
+    const ::login::StringList& services,
+    const std::vector<net::CanonicalCookie>& cookies) {
+  std::string auth_code, gaps_cookie;
+  for (const auto& cookie : cookies) {
+    if (cookie.Name() == kOAUTHCodeCookie)
+      auth_code = cookie.Value();
+    else if (cookie.Name() == kGAPSCookie)
+      gaps_cookie = cookie.Value();
+  }
+
+  if (auth_code.empty()) {
+    HandleCompleteLogin(gaia_id, email, password, using_saml);
+    return;
+  }
 
   DCHECK(!email.empty());
   DCHECK(!gaia_id.empty());
@@ -884,9 +954,6 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
                                         const std::string& typed_email,
                                         const std::string& password,
                                         bool using_saml) {
-  if (!LoginDisplayHost::default_host())
-    return;
-
   if (using_saml && !using_saml_api_)
     RecordSAMLScrapingVerificationResultInHistogram(true);
 
@@ -1132,7 +1199,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
             g_browser_process->platform_part()
                 ->browser_policy_connector_chromeos()
                 ->GetDeviceNetworkConfigurationUpdater()
-                ->GetAuthorityCertificates());
+                ->GetAllAuthorityCertificates());
   }
 
   LoadAuthExtension(!gaia_silent_load_ /* force */, false /* offline */);

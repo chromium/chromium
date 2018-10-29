@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_store_mac.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 using password_manager::MigrationStatus;
@@ -33,9 +34,13 @@ void PasswordStoreMac::ShutdownOnUIThread() {
 
 PasswordStoreMac::~PasswordStoreMac() = default;
 
-void PasswordStoreMac::InitOnBackgroundSequence(
+bool PasswordStoreMac::InitOnBackgroundSequence(
     const syncer::SyncableService::StartSyncFlare& flare) {
-  PasswordStoreDefault::InitOnBackgroundSequence(flare);
+  if (!PasswordStoreDefault::InitOnBackgroundSequence(flare))
+    return false;
+
+  if (!OSCrypt::IsEncryptionAvailable())
+    return false;
 
   if (login_db() && (initial_status_ == MigrationStatus::NOT_STARTED ||
                      initial_status_ == MigrationStatus::FAILED_ONCE ||
@@ -53,6 +58,8 @@ void PasswordStoreMac::InitOnBackgroundSequence(
       "PasswordManager.KeychainMigration.Status",
       static_cast<int>(initial_status_),
       static_cast<int>(MigrationStatus::MIGRATION_STATUS_COUNT));
+
+  return true;
 }
 
 void PasswordStoreMac::UpdateStatusPref(MigrationStatus status) {

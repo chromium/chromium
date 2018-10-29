@@ -102,9 +102,9 @@ class QuotaBackendImplTest : public testing::Test {
     in_memory_env_ = leveldb_chrome::NewMemEnv("quota");
     file_util_.reset(ObfuscatedFileUtil::CreateForTesting(
         nullptr, data_dir_.GetPath(), in_memory_env_.get()));
-    backend_.reset(new QuotaBackendImpl(file_task_runner(), file_util_.get(),
-                                        &file_system_usage_cache_,
-                                        quota_manager_proxy_.get()));
+    backend_ = std::make_unique<QuotaBackendImpl>(
+        file_task_runner(), file_util_.get(), &file_system_usage_cache_,
+        quota_manager_proxy_.get());
   }
 
   void TearDown() override {
@@ -166,16 +166,18 @@ TEST_F(QuotaBackendImplTest, ReserveQuota_Basic) {
 
   const int64_t kDelta1 = 1000;
   base::File::Error error = base::File::FILE_ERROR_FAILED;
-  backend_->ReserveQuota(kOrigin, type, kDelta1,
-                         base::Bind(&DidReserveQuota, true, &error, &delta));
+  backend_->ReserveQuota(
+      kOrigin, type, kDelta1,
+      base::BindOnce(&DidReserveQuota, true, &error, &delta));
   EXPECT_EQ(base::File::FILE_OK, error);
   EXPECT_EQ(kDelta1, delta);
   EXPECT_EQ(kDelta1, quota_manager_proxy_->usage());
 
   const int64_t kDelta2 = -300;
   error = base::File::FILE_ERROR_FAILED;
-  backend_->ReserveQuota(kOrigin, type, kDelta2,
-                         base::Bind(&DidReserveQuota, true, &error, &delta));
+  backend_->ReserveQuota(
+      kOrigin, type, kDelta2,
+      base::BindOnce(&DidReserveQuota, true, &error, &delta));
   EXPECT_EQ(base::File::FILE_OK, error);
   EXPECT_EQ(kDelta2, delta);
   EXPECT_EQ(kDelta1 + kDelta2, quota_manager_proxy_->usage());
@@ -192,8 +194,9 @@ TEST_F(QuotaBackendImplTest, ReserveQuota_NoSpace) {
 
   const int64_t kDelta = 1000;
   base::File::Error error = base::File::FILE_ERROR_FAILED;
-  backend_->ReserveQuota(kOrigin, type, kDelta,
-                         base::Bind(&DidReserveQuota, true, &error, &delta));
+  backend_->ReserveQuota(
+      kOrigin, type, kDelta,
+      base::BindOnce(&DidReserveQuota, true, &error, &delta));
   EXPECT_EQ(base::File::FILE_OK, error);
   EXPECT_EQ(100, delta);
   EXPECT_EQ(100, quota_manager_proxy_->usage());
@@ -210,8 +213,9 @@ TEST_F(QuotaBackendImplTest, ReserveQuota_Revert) {
 
   const int64_t kDelta = 1000;
   base::File::Error error = base::File::FILE_ERROR_FAILED;
-  backend_->ReserveQuota(kOrigin, type, kDelta,
-                         base::Bind(&DidReserveQuota, false, &error, &delta));
+  backend_->ReserveQuota(
+      kOrigin, type, kDelta,
+      base::BindOnce(&DidReserveQuota, false, &error, &delta));
   EXPECT_EQ(base::File::FILE_OK, error);
   EXPECT_EQ(kDelta, delta);
   EXPECT_EQ(0, quota_manager_proxy_->usage());

@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/frame_host/navigation_controller_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/navigation_params.h"
 #include "content/common/page_state_serialization.h"
@@ -613,8 +614,7 @@ void NavigationEntryImpl::SetExtraData(const std::string& key,
 
 bool NavigationEntryImpl::GetExtraData(const std::string& key,
                                        base::string16* data) const {
-  std::map<std::string, base::string16>::const_iterator iter =
-      extra_data_.find(key);
+  auto iter = extra_data_.find(key);
   if (iter == extra_data_.end())
     return false;
   *data = iter->second;
@@ -693,11 +693,8 @@ CommonNavigationParams NavigationEntryImpl::ConstructCommonNavigationParams(
       !IsViewSourceMode(), should_replace_entry(), GetBaseURLForDataURL(),
       GetHistoryURLForDataURL(), previews_state, navigation_start,
       frame_entry.method(), post_body ? post_body : post_data_,
-      base::Optional<SourceLocation>(),
-      CSPDisposition::CHECK /* should_check_main_world_csp */,
-      has_started_from_context_menu(), has_user_gesture(),
-      std::vector<ContentSecurityPolicy>() /* initiator_csp */,
-      CSPSource() /* initiator_self_source */, input_start);
+      base::Optional<SourceLocation>(), has_started_from_context_menu(),
+      has_user_gesture(), InitiatorCSPInfo(), input_start);
 }
 
 RequestNavigationParams NavigationEntryImpl::ConstructRequestNavigationParams(
@@ -736,18 +733,8 @@ RequestNavigationParams NavigationEntryImpl::ConstructRequestNavigationParams(
       intended_as_new_entry, pending_offset_to_send, current_offset_to_send,
       current_length_to_send, IsViewSourceMode(), should_clear_history_list());
 #if defined(OS_ANDROID)
-  if (GetDataURLAsString() &&
-      GetDataURLAsString()->size() <= kMaxLengthOfDataURLString) {
-    // The number of characters that is enough for validating a data: URI.  From
-    // the GURL's POV, the only important part here is scheme, it doesn't check
-    // the actual content. Thus we can take only the prefix of the url, to avoid
-    // unneeded copying of a potentially long string.
-    const size_t kDataUriPrefixMaxLen = 64;
-    GURL data_url(std::string(
-        GetDataURLAsString()->front_as<char>(),
-        std::min(GetDataURLAsString()->size(), kDataUriPrefixMaxLen)));
-    if (data_url.is_valid() && data_url.SchemeIs(url::kDataScheme))
-      request_params.data_url_as_string = GetDataURLAsString()->data();
+  if (NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
+    request_params.data_url_as_string = GetDataURLAsString()->data();
   }
 #endif
   return request_params;

@@ -175,7 +175,7 @@ cr.define('settings_autofill_section', function() {
           createAutofillSection([], {profile_enabled: {value: false}});
 
       assertFalse(section.$$('#autofillProfileToggle').disabled);
-      assertTrue(section.$$('#addAddress').disabled);
+      assertTrue(section.$$('#addAddress').hidden);
     });
 
     test('verifyAddressFields', function() {

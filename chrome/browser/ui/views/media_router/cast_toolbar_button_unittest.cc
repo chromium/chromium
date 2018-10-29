@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 
+#include "base/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
@@ -69,9 +70,9 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     MediaRouterFactory::GetInstance()->SetTestingFactory(
-        &profile_, &MockMediaRouter::Create);
+        &profile_, base::BindRepeating(&MockMediaRouter::Create));
     MediaRouterUIServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, &BuildUIService);
+        &profile_, base::BindRepeating(&BuildUIService));
 
     window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(&profile_, true);

@@ -109,7 +109,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // generate some using the include globs.
   auto matches = std::make_unique<base::ListValue>();
   if (!script.url_patterns().is_empty()) {
-    for (URLPatternSet::const_iterator i = script.url_patterns().begin();
+    for (auto i = script.url_patterns().begin();
          i != script.url_patterns().end(); ++i) {
       matches->AppendString(i->GetAsString());
     }
@@ -122,8 +122,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // Read the exclude matches, if any are present.
   auto exclude_matches = std::make_unique<base::ListValue>();
   if (!script.exclude_url_patterns().is_empty()) {
-    for (URLPatternSet::const_iterator i =
-         script.exclude_url_patterns().begin();
+    for (auto i = script.exclude_url_patterns().begin();
          i != script.exclude_url_patterns().end(); ++i) {
       exclude_matches->AppendString(i->GetAsString());
     }

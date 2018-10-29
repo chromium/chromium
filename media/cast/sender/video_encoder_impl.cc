@@ -64,7 +64,7 @@ VideoEncoderImpl::VideoEncoderImpl(
     const StatusChangeCallback& status_change_cb)
     : cast_environment_(cast_environment) {
   CHECK(cast_environment_->HasVideoThread());
-  DCHECK(!status_change_cb.is_null());
+  DCHECK(status_change_cb);
 
   if (video_config.codec == CODEC_VIDEO_VP8) {
     encoder_.reset(new Vp8Encoder(video_config));

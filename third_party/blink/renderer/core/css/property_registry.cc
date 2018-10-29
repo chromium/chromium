@@ -18,6 +18,16 @@ const PropertyRegistration* PropertyRegistry::Registration(
   return registrations_.at(name);
 }
 
+PropertyRegistry::RegistrationMap::const_iterator PropertyRegistry::begin()
+    const {
+  return registrations_.begin();
+}
+
+PropertyRegistry::RegistrationMap::const_iterator PropertyRegistry::end()
+    const {
+  return registrations_.end();
+}
+
 const CSSValue* PropertyRegistry::ParseIfRegistered(
     const Document& document,
     const AtomicString& property_name,
@@ -45,6 +55,21 @@ const CSSValue* PropertyRegistry::ParseIfRegistered(
       registration->Syntax(), document.GetSecureContextMode());
 
   return parsed_value ? parsed_value : value;
+}
+
+void PropertyRegistry::MarkReferenced(const AtomicString& property_name) const {
+  const PropertyRegistration* registration = Registration(property_name);
+  if (registration) {
+    registration->referenced_ = true;
+  }
+}
+
+bool PropertyRegistry::WasReferenced(const AtomicString& property_name) const {
+  const PropertyRegistration* registration = Registration(property_name);
+  if (!registration) {
+    return false;
+  }
+  return registration->referenced_;
 }
 
 }  // namespace blink

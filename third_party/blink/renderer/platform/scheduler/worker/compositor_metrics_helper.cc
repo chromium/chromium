@@ -16,7 +16,7 @@ CompositorMetricsHelper::~CompositorMetricsHelper() {}
 
 void CompositorMetricsHelper::RecordTaskMetrics(
     NonMainThreadTaskQueue* queue,
-    const base::sequence_manager::TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   if (ShouldDiscardTask(queue, task, task_timing))
     return;

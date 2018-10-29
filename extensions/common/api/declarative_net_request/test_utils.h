@@ -75,7 +75,7 @@ TestRule CreateGenericRule();
 // returned will have "background.js" as its background script.
 std::unique_ptr<base::DictionaryValue> CreateManifest(
     const std::string& json_rules_filename,
-    const std::vector<std::string>& hosts = {URLPattern::kAllUrlsPattern},
+    const std::vector<std::string>& hosts = {},
     bool has_background_script = false);
 
 // Returns a ListValue corresponding to a vector of strings.

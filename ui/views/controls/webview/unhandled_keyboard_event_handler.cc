@@ -16,12 +16,12 @@ UnhandledKeyboardEventHandler::UnhandledKeyboardEventHandler()
 UnhandledKeyboardEventHandler::~UnhandledKeyboardEventHandler() {
 }
 
-void UnhandledKeyboardEventHandler::HandleKeyboardEvent(
+bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
   if (!focus_manager) {
     NOTREACHED();
-    return;
+    return false;
   }
   // Previous calls to TranslateMessage can generate Char events as well as
   // RawKeyDown events, even if the latter triggered an accelerator.  In these
@@ -29,7 +29,7 @@ void UnhandledKeyboardEventHandler::HandleKeyboardEvent(
   if (event.GetType() == blink::WebInputEvent::kChar &&
       ignore_next_char_event_) {
     ignore_next_char_event_ = false;
-    return;
+    return false;
   }
   // It's necessary to reset this flag, because a RawKeyDown event may not
   // always generate a Char event.
@@ -45,9 +45,8 @@ void UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     // set the flag and fix it if no event was handled.
     ignore_next_char_event_ = true;
 
-    if (focus_manager->ProcessAccelerator(accelerator)) {
-      return;
-    }
+    if (focus_manager->ProcessAccelerator(accelerator))
+      return true;
 
     // ProcessAccelerator didn't handle the accelerator, so we know both
     // that |this| is still valid, and that we didn't want to set the flag.
@@ -55,7 +54,9 @@ void UnhandledKeyboardEventHandler::HandleKeyboardEvent(
   }
 
   if (event.os_event && !event.skip_in_browser)
-    HandleNativeKeyboardEvent(event.os_event, focus_manager);
+    return HandleNativeKeyboardEvent(event.os_event, focus_manager);
+
+  return false;
 }
 
 }  // namespace views

@@ -64,7 +64,7 @@ void WorkerAnimationFrameProvider::RegisterOffscreenCanvas(
 
 void WorkerAnimationFrameProvider::DeregisterOffscreenCanvas(
     OffscreenCanvas* offscreen_canvas) {
-  size_t pos = offscreen_canvases_.Find(offscreen_canvas);
+  wtf_size_t pos = offscreen_canvases_.Find(offscreen_canvas);
   if (pos != kNotFound) {
     offscreen_canvases_.EraseAt(pos);
   }

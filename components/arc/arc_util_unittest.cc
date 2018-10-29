@@ -239,7 +239,15 @@ TEST_F(ArcUtilTest, ArcStartModeDefault) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--arc-availability=installed"});
   EXPECT_FALSE(ShouldArcAlwaysStart());
-  EXPECT_TRUE(IsPlayStoreAvailable());
+  EXPECT_FALSE(ShouldArcAlwaysStartWithNoPlayStore());
+}
+
+TEST_F(ArcUtilTest, ArcStartModeAlwaysStart) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv(
+      {"", "--arc-availability=installed", "--arc-start-mode=always-start"});
+  EXPECT_TRUE(ShouldArcAlwaysStart());
+  EXPECT_FALSE(ShouldArcAlwaysStartWithNoPlayStore());
 }
 
 TEST_F(ArcUtilTest, ArcStartModeWithoutPlayStore) {
@@ -248,7 +256,7 @@ TEST_F(ArcUtilTest, ArcStartModeWithoutPlayStore) {
       {"", "--arc-availability=installed",
        "--arc-start-mode=always-start-with-no-play-store"});
   EXPECT_TRUE(ShouldArcAlwaysStart());
-  EXPECT_FALSE(IsPlayStoreAvailable());
+  EXPECT_TRUE(ShouldArcAlwaysStartWithNoPlayStore());
 }
 
 TEST_F(ArcUtilTest, ScaleFactorToDensity) {

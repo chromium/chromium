@@ -41,6 +41,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   // thread stops.
   void CloseChannel();
 
+  // Notify the BrowserGpuChannelHostFactory of visibility, used to prevent
+  // timeouts while backgrounded.
+  void SetApplicationVisible(bool is_visible);
+
   // Overridden from gpu::GpuChannelEstablishFactory:
   // The factory will return a null GpuChannelHost in the callback during
   // shutdown.
@@ -69,6 +73,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   std::unique_ptr<gpu::GpuMemoryBufferManager, BrowserThread::DeleteOnIOThread>
       gpu_memory_buffer_manager_;
   scoped_refptr<EstablishRequest> pending_request_;
+  bool is_visible_ = true;
 
   base::OneShotTimer timeout_;
 

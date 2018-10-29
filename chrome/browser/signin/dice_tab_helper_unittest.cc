@@ -31,7 +31,8 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
     simulator->Start();
     helper->InitializeSigninFlow(
         signin_url_, access_point, reason,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+        GURL::EmptyGURL());
     EXPECT_TRUE(helper->IsChromeSigninPage());
     simulator->Commit();
   }
@@ -127,8 +128,8 @@ TEST_F(DiceTabHelperTest, Metrics) {
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-      signin_metrics::PromoAction::
-          PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      GURL::EmptyGURL());
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_SigninPage_Loading"));
   EXPECT_EQ(0, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
@@ -157,7 +158,8 @@ TEST_F(DiceTabHelperTest, Metrics) {
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+      GURL::EmptyGURL());
   EXPECT_EQ(2, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
   EXPECT_EQ(2, ua_tester.GetActionCount("Signin_SigninPage_Loading"));
   h_tester.ExpectUniqueSample(

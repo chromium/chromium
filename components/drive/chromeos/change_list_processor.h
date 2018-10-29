@@ -47,7 +47,8 @@ class DirectoryFetchInfo {
   DirectoryFetchInfo(const std::string& local_id,
                      const std::string& resource_id,
                      const std::string& start_page_token,
-                     const base::FilePath& root_entry_path);
+                     const base::FilePath& root_entry_path,
+                     const base::FilePath& directory_path);
 
   DirectoryFetchInfo(const DirectoryFetchInfo& other);
 
@@ -67,6 +68,9 @@ class DirectoryFetchInfo {
   // The root path of the directory being fetched.
   const base::FilePath& root_entry_path() const { return root_entry_path_; }
 
+  // The directory path that we are fetching. Used for logging.
+  const base::FilePath& directory_path() const { return directory_path_; }
+
   // Returns a string representation of this object.
   std::string ToString() const;
 
@@ -75,6 +79,7 @@ class DirectoryFetchInfo {
   const std::string resource_id_;
   const std::string start_page_token_;
   const base::FilePath root_entry_path_;
+  const base::FilePath directory_path_;
 };
 
 // Class to represent a change list.

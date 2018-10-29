@@ -224,6 +224,11 @@ class time_zone {
     return !(lhs == rhs);
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, time_zone tz) {
+    return H::combine(std::move(h), &tz.effective_impl());
+  }
+
   class Impl;
 
  private:
@@ -279,7 +284,7 @@ bool parse(const std::string&, const std::string&, const time_zone&,
 }  // namespace detail
 
 // Formats the given time_point in the given cctz::time_zone according to
-// the provided format std::string. Uses strftime()-like formatting options,
+// the provided format string. Uses strftime()-like formatting options,
 // with the following extensions:
 //
 //   - %Ez  - RFC3339-compatible numeric UTC offset (+hh:mm or -hh:mm)
@@ -298,7 +303,7 @@ bool parse(const std::string&, const std::string&, const time_zone&,
 // more than four characters, just like %Y.
 //
 // Tip: Format strings should include the UTC offset (e.g., %z, %Ez, or %E*z)
-// so that the resulting std::string uniquely identifies an absolute time.
+// so that the resulting string uniquely identifies an absolute time.
 //
 // Example:
 //   cctz::time_zone lax;
@@ -314,7 +319,7 @@ inline std::string format(const std::string& fmt, const time_point<D>& tp,
   return detail::format(fmt, p.first, n, tz);
 }
 
-// Parses an input std::string according to the provided format std::string and
+// Parses an input string according to the provided format string and
 // returns the corresponding time_point. Uses strftime()-like formatting
 // options, with the same extensions as cctz::format(), but with the
 // exceptions that %E#S is interpreted as %E*S, and %E#f as %E*f. %Ez
@@ -328,7 +333,7 @@ inline std::string format(const std::string& fmt, const time_point<D>& tp,
 //
 //   "1970-01-01 00:00:00.0 +0000"
 //
-// For example, parsing a std::string of "15:45" (%H:%M) will return a time_point
+// For example, parsing a string of "15:45" (%H:%M) will return a time_point
 // that represents "1970-01-01 15:45:00.0 +0000".
 //
 // Note that parse() returns time instants, so it makes most sense to parse

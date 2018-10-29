@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -62,11 +63,21 @@ class ProfileSyncServiceHarness {
   // StopSyncService(), StartSyncService() directly after.
   bool SetupSyncForClearingServerData();
 
-  // Both SetupSync and SetupSyncForClearingServerData call into this method.
-  // Same as the above method, but enables sync only for the datatypes contained
-  // in |synced_datatypes|.
-  bool SetupSync(syncer::ModelTypeSet synced_datatypes,
-                 bool skip_passphrase_verification = false);
+  // Enables and configures sync only for the given |synced_datatypes|. Returns
+  // true only after sync has been fully initialized and authenticated, and we
+  // are ready to process changes.
+  bool SetupSync(syncer::ModelTypeSet synced_datatypes);
+
+  // Same as SetupSync(), but also sets the given encryption passphrase during
+  // setup.
+  bool SetupSyncWithEncryptionPassphrase(syncer::ModelTypeSet synced_datatypes,
+                                         const std::string& passphrase);
+
+  // Same as SetupSync(), but also sets the given decryption passphrase during
+  // setup. If the passphrase is incorrect, this method will still return true
+  // and Sync will be operational but with undecryptable datatypes disabled.
+  bool SetupSyncWithDecryptionPassphrase(syncer::ModelTypeSet synced_datatypes,
+                                         const std::string& passphrase);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
   // Typically SetupSync does this automatically, but if that returned false,
@@ -145,6 +156,16 @@ class ProfileSyncServiceHarness {
                             const std::string& username,
                             const std::string& password,
                             SigninType signin_type);
+
+  // If |encryption_passphrase| has a value, it will be set during setup. If
+  // not, no custom passphrase will be set. If |skip_passphrase_verification| is
+  // true and Sync requires a passphrase, FinishSyncSetup() will not be called,
+  // in order to give the caller a chance to provide the passphrase using
+  // SetDecryptionPassphrase(). After that, the caller needs to call
+  // FinishSyncSetup() manually.
+  bool SetupSyncImpl(syncer::ModelTypeSet synced_datatypes,
+                     bool skip_passphrase_verification,
+                     const base::Optional<std::string>& encryption_passphrase);
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();

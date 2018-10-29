@@ -178,7 +178,7 @@ std::string SysInfo::OperatingSystemName() {
 }
 #endif
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !(OS_CHROMEOS)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 // static
 std::string SysInfo::OperatingSystemVersion() {
   struct utsname info;

@@ -49,23 +49,21 @@ public class SigninView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mScrollView = (SigninScrollView) findViewById(R.id.signin_scroll_view);
-        mHeaderImage = (ImageView) findViewById(R.id.signin_header_image);
-        mTitle = (TextView) findViewById(R.id.signin_title);
+        mScrollView = findViewById(R.id.signin_scroll_view);
+        mHeaderImage = findViewById(R.id.signin_header_image);
+        mTitle = findViewById(R.id.signin_title);
         mAccountPicker = findViewById(R.id.signin_account_picker);
-        mAccountImage = (ImageView) findViewById(R.id.account_image);
-        mAccountTextPrimary = (TextView) findViewById(R.id.account_text_primary);
-        mAccountTextSecondary = (TextView) findViewById(R.id.account_text_secondary);
-        mAccountPickerEndImage = (ImageView) findViewById(R.id.account_picker_end_image);
-        mSyncDescription = (TextView) findViewById(R.id.signin_sync_description);
-        mPersonalizationDescription =
-                (TextView) findViewById(R.id.signin_personalization_description);
-        mGoogleServicesDescription =
-                (TextView) findViewById(R.id.signin_google_services_description);
-        mDetailsDescription = (TextView) findViewById(R.id.signin_details_description);
-        mAcceptButton = (ButtonCompat) findViewById(R.id.positive_button);
-        mRefuseButton = (Button) findViewById(R.id.negative_button);
-        mMoreButton = (Button) findViewById(R.id.more_button);
+        mAccountImage = findViewById(R.id.account_image);
+        mAccountTextPrimary = findViewById(R.id.account_text_primary);
+        mAccountTextSecondary = findViewById(R.id.account_text_secondary);
+        mAccountPickerEndImage = findViewById(R.id.account_picker_end_image);
+        mSyncDescription = findViewById(R.id.signin_sync_description);
+        mPersonalizationDescription = findViewById(R.id.signin_personalization_description);
+        mGoogleServicesDescription = findViewById(R.id.signin_google_services_description);
+        mDetailsDescription = findViewById(R.id.signin_details_description);
+        mAcceptButton = findViewById(R.id.positive_button);
+        mRefuseButton = findViewById(R.id.negative_button);
+        mMoreButton = findViewById(R.id.more_button);
         mAcceptButtonEndPadding = findViewById(R.id.positive_button_end_padding);
 
         mAnimationLooper = AnimationLooper.create(mHeaderImage.getDrawable());

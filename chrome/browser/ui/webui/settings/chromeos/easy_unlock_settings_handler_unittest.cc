@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -105,8 +106,9 @@ class EasyUnlockSettingsHandlerTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(EasyUnlockServiceFactory::GetInstance(),
-                              &CreateEasyUnlockServiceForTest);
+    builder.AddTestingFactory(
+        EasyUnlockServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateEasyUnlockServiceForTest));
     profile_ = builder.Build();
   }
 
@@ -119,8 +121,9 @@ class EasyUnlockSettingsHandlerTest : public testing::Test {
 
   void MakeEasyUnlockServiceNull() {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(EasyUnlockServiceFactory::GetInstance(),
-                              &CreateNullEasyUnlockServiceForTest);
+    builder.AddTestingFactory(
+        EasyUnlockServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateNullEasyUnlockServiceForTest));
     profile_ = builder.Build();
   }
 

@@ -154,7 +154,7 @@ void OffloadingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     const DecodeCB& decode_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buffer);
-  DCHECK(!decode_cb.is_null());
+  DCHECK(decode_cb);
 
   DecodeCB bound_decode_cb = BindToCurrentLoop(decode_cb);
   if (!offload_task_runner_) {

@@ -138,6 +138,51 @@ TEST_F(CrashMetricsReporterTest, GpuProcessOOM) {
       "GPU.GPUProcessDetailedExitStatus");
 }
 
+TEST_F(CrashMetricsReporterTest, UtilityProcessOOM) {
+  ChildExitObserver::TerminationInfo termination_info;
+  termination_info.process_host_id = 1;
+  termination_info.pid = base::kNullProcessHandle;
+  termination_info.process_type = content::PROCESS_TYPE_UTILITY;
+  termination_info.app_state =
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES;
+  termination_info.normal_termination = false;
+  termination_info.binding_state = base::android::ChildBindingState::STRONG;
+  termination_info.was_killed_intentionally_by_browser = false;
+  termination_info.was_oom_protected_status = true;
+  termination_info.renderer_has_visible_clients = true;
+
+  TestOomCrashProcessing(
+      termination_info,
+      {CrashMetricsReporter::ProcessedCrashCounts::kUtilityForegroundOom},
+      nullptr);
+}
+
+TEST_F(CrashMetricsReporterTest, UtilityProcessAll) {
+  ChildExitObserver::TerminationInfo termination_info;
+  termination_info.process_host_id = 1;
+  termination_info.pid = base::kNullProcessHandle;
+  termination_info.process_type = content::PROCESS_TYPE_UTILITY;
+  termination_info.app_state =
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES;
+  termination_info.normal_termination = false;
+  termination_info.binding_state = base::android::ChildBindingState::STRONG;
+  termination_info.was_killed_intentionally_by_browser = false;
+  termination_info.was_oom_protected_status = true;
+  termination_info.renderer_has_visible_clients = true;
+
+  CrashMetricsReporterObserver crash_dump_observer;
+  CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+
+  CrashMetricsReporter::GetInstance()->CrashDumpProcessed(
+      termination_info,
+      breakpad::CrashDumpManager::CrashDumpStatus::kValidDump);
+  crash_dump_observer.WaitForProcessed();
+
+  EXPECT_EQ(CrashMetricsReporter::ReportedCrashTypeSet(
+                {CrashMetricsReporter::ProcessedCrashCounts::kUtilityCrashAll}),
+            crash_dump_observer.recorded_crash_types());
+}
+
 TEST_F(CrashMetricsReporterTest, RendererSubframeOOM) {
   ChildExitObserver::TerminationInfo termination_info;
   termination_info.process_host_id = 1;

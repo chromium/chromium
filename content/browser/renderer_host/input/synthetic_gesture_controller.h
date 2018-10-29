@@ -52,7 +52,7 @@ class CONTENT_EXPORT SyntheticGestureController {
  private:
   friend class SyntheticGestureControllerTestBase;
 
-  void StartTimer();
+  void StartTimer(bool high_frequency);
   void StartGesture(const SyntheticGesture& gesture);
   void StopGesture(const SyntheticGesture& gesture,
                    OnGestureCompleteCallback completion_callback,

@@ -120,6 +120,15 @@ const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 // Accumulated bytes towards sample thread local key.
 TLSKey g_accumulated_bytes_tls;
 
+// A boolean used to distinguish first allocation on a thread.
+//   false - first allocation on the thread.
+//   true  - otherwise
+// Since g_accumulated_bytes_tls is initialized with zero the very first
+// allocation on a thread would always trigger the sample, thus skewing the
+// profile towards such allocations. To mitigate that we use the flag to
+// ensure the first allocation is properly accounted.
+TLSKey g_sampling_interval_initialized_tls;
+
 // Controls if sample intervals should not be randomized. Used for testing.
 bool g_deterministic;
 
@@ -294,6 +303,7 @@ void PoissonAllocationSampler::Init() {
     ReentryGuard::Init();
     TLSInit(&g_internal_reentry_guard);
     TLSInit(&g_accumulated_bytes_tls);
+    TLSInit(&g_sampling_interval_initialized_tls);
     return true;
   }();
   ignore_result(init_once);
@@ -410,6 +420,16 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
   } while (accumulated_bytes >= 0);
 
   TLSSetValue(g_accumulated_bytes_tls, accumulated_bytes);
+
+  if (UNLIKELY(!TLSGetValue(g_sampling_interval_initialized_tls))) {
+    TLSSetValue(g_sampling_interval_initialized_tls, true);
+    // This is the very first allocation on the thread. It always produces an
+    // extra sample because g_accumulated_bytes_tls is initialized with zero
+    // due to TLS semantics.
+    // Make sure we don't count this extra sample.
+    if (!--samples)
+      return;
+  }
 
   if (UNLIKELY(TLSGetValue(g_internal_reentry_guard)))
     return;

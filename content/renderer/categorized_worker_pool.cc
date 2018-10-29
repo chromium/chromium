@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -221,11 +222,9 @@ bool CategorizedWorkerPool::PostDelayedTask(const base::Location& from_here,
   DCHECK(completed_tasks_.empty());
   CollectCompletedTasksWithLockAcquired(namespace_token_, &completed_tasks_);
 
-  cc::Task::Vector::iterator end = std::remove_if(
+  auto end = std::remove_if(
       tasks_.begin(), tasks_.end(), [this](const scoped_refptr<cc::Task>& e) {
-        return std::find(this->completed_tasks_.begin(),
-                         this->completed_tasks_.end(),
-                         e) != this->completed_tasks_.end();
+        return base::ContainsValue(this->completed_tasks_, e);
       });
   tasks_.erase(end, tasks_.end());
 

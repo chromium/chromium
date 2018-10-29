@@ -95,7 +95,8 @@ class PLATFORM_EXPORT FetchContext
   // Extend this when needed.
   enum LogSource { kJSSource, kSecuritySource, kOtherSource };
 
-  static FetchContext& NullInstance();
+  static FetchContext& NullInstance(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   virtual ~FetchContext() = default;
 
@@ -146,7 +147,7 @@ class PLATFORM_EXPORT FetchContext
       unsigned long identifier,
       const ResourceResponse&,
       network::mojom::RequestContextFrameType,
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       Resource*,
       ResourceResponseType);
   virtual void DispatchDidReceiveData(unsigned long identifier,
@@ -189,7 +190,7 @@ class PLATFORM_EXPORT FetchContext
     return ResourceRequestBlockedReason::kOther;
   }
   virtual base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       const KURL&,
       const ResourceLoaderOptions&,
       SecurityViolationReportingPolicy,
@@ -264,7 +265,7 @@ class PLATFORM_EXPORT FetchContext
   // (after Detach() is called, this will return a generic timer suitable for
   // post-detach actions like keepalive requests.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() {
-    return Platform::Current()->CurrentThread()->GetTaskRunner();
+    return task_runner_;
   }
 
   // TODO(altimin): This is used when creating a URLLoader, and
@@ -291,10 +292,9 @@ class PLATFORM_EXPORT FetchContext
   }
 
   // Returns if the |resource_url| is identified as ad.
-  virtual bool IsAdResource(
-      const KURL& resource_url,
-      ResourceType type,
-      WebURLRequest::RequestContext request_context) const {
+  virtual bool IsAdResource(const KURL& resource_url,
+                            ResourceType type,
+                            mojom::RequestContextType request_context) const {
     return false;
   }
 
@@ -302,10 +302,12 @@ class PLATFORM_EXPORT FetchContext
   virtual void DispatchNetworkQuiet() {}
 
  protected:
-  FetchContext();
+  explicit FetchContext(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
   Member<PlatformProbeSink> platform_probe_sink_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace blink

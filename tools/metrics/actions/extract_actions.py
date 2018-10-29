@@ -32,7 +32,7 @@ import sys
 from xml.dom import minidom
 
 import action_utils
-import print_style
+import actions_print_style
 
 # Import the metrics/common module for pretty print xml.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
@@ -712,7 +712,7 @@ def PrettyPrint(actions_dict, comment_nodes, suffixes):
   for suffix_tag in suffixes:
     actions_element.appendChild(suffix_tag)
 
-  return print_style.GetPrintStyle().PrettyPrintXml(doc)
+  return actions_print_style.GetPrintStyle().PrettyPrintXml(doc)
 
 
 def UpdateXml(original_xml):

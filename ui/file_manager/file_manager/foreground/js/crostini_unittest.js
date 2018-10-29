@@ -2,9 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+window.metrics = {
+  recordSmallCount: function() {},
+};
+
+window.loadTimeData = {
+  getBoolean: function() {
+    return true;
+  }
+};
+
+let volumeManagerRootType = 'testroot';
 const volumeManager = {
   getLocationInfo: (entry) => {
-    return {root: 'testroot'};
+    return {rootType: volumeManagerRootType};
   },
 };
 
@@ -29,4 +40,48 @@ function testIsPathShared() {
 
   Crostini.unregisterSharedPath(foobar2, volumeManager);
   assertFalse(Crostini.isPathShared(foobar2, volumeManager));
+}
+
+
+function testCanSharePath() {
+  Crostini.IS_CROSTINI_FILES_ENABLED = true;
+
+  const mockFileSystem = new MockFileSystem('volumeId');
+  const root = new MockDirectoryEntry(mockFileSystem, '/');
+  const rootFile = new MockEntry(mockFileSystem, '/file');
+  const rootFolder = new MockDirectoryEntry(mockFileSystem, '/folder');
+  const fooFile = new MockEntry(mockFileSystem, '/foo/file');
+  const fooFolder = new MockDirectoryEntry(mockFileSystem, '/foo/folder');
+
+  assertFalse(Crostini.canSharePath(root, true, volumeManager));
+  assertFalse(Crostini.canSharePath(root, false, volumeManager));
+  assertFalse(Crostini.canSharePath(rootFile, true, volumeManager));
+  assertFalse(Crostini.canSharePath(rootFile, false, volumeManager));
+  assertFalse(Crostini.canSharePath(rootFolder, true, volumeManager));
+  assertFalse(Crostini.canSharePath(rootFolder, false, volumeManager));
+  assertFalse(Crostini.canSharePath(fooFile, true, volumeManager));
+  assertFalse(Crostini.canSharePath(fooFile, false, volumeManager));
+  assertFalse(Crostini.canSharePath(fooFolder, true, volumeManager));
+  assertFalse(Crostini.canSharePath(fooFolder, false, volumeManager));
+
+  for (type in Crostini.VALID_ROOT_TYPES_FOR_SHARE) {
+    volumeManagerRootType = type;
+    assertFalse(Crostini.canSharePath(root, true, volumeManager));
+    assertFalse(Crostini.canSharePath(root, false, volumeManager));
+    assertFalse(Crostini.canSharePath(rootFile, true, volumeManager));
+    assertTrue(Crostini.canSharePath(rootFile, false, volumeManager));
+    assertTrue(Crostini.canSharePath(rootFolder, true, volumeManager));
+    assertTrue(Crostini.canSharePath(rootFolder, false, volumeManager));
+    assertFalse(Crostini.canSharePath(fooFile, true, volumeManager));
+    assertTrue(Crostini.canSharePath(fooFile, false, volumeManager));
+    assertTrue(Crostini.canSharePath(fooFolder, true, volumeManager));
+    assertTrue(Crostini.canSharePath(fooFolder, false, volumeManager));
+  }
+}
+
+function testTaskRequiresSharing() {
+  assertTrue(Crostini.taskRequiresSharing({taskId: 'app|crostini|open-with'}));
+  assertTrue(
+      Crostini.taskRequiresSharing({taskId: 'appId|x|install-linux-package'}));
+  assertFalse(Crostini.taskRequiresSharing({taskId: 'appId|x|open-with'}));
 }

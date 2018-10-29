@@ -8,13 +8,16 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/net/nss_context.h"
-#include "chrome/browser/net/url_request_mock_util.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "crypto/nss_util_internal.h"
@@ -22,7 +25,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/cert/nss_cert_database.h"
-#include "net/test/url_request/url_request_mock_http_job.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -102,10 +106,8 @@ const unsigned char privateKeyPkcs8System[] = {
     0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38
 };
 
-const base::FilePath::CharType kTestExtensionDir[] =
-    FILE_PATH_LITERAL("extensions/api_test/enterprise_platform_keys");
-const base::FilePath::CharType kUpdateManifestFileName[] =
-    FILE_PATH_LITERAL("update_manifest.xml");
+const char kUpdateManifestPath[] =
+    "/extensions/api_test/enterprise_platform_keys/update_manifest.xml";
 
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
                                  size_t pkcs8_der_size,
@@ -164,6 +166,13 @@ class EnterprisePlatformKeysTest
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&EnterprisePlatformKeysTest::InterceptMockHttp,
+                            base::Unretained(this)));
+    PlatformKeysTestBase::SetUpOnMainThread();
+  }
+
   void DidGetCertDatabase(const base::Closure& done_callback,
                           net::NSSCertDatabase* cert_db) {
     // In order to use a prepared certificate, import a private key to the
@@ -178,10 +187,8 @@ class EnterprisePlatformKeysTest
     // Extensions that are force-installed come from an update URL, which
     // defaults to the webstore. Use a mock URL for this test with an update
     // manifest that includes the crx file of the test extension.
-    base::FilePath update_manifest_path =
-        base::FilePath(kTestExtensionDir).Append(kUpdateManifestFileName);
-    GURL update_manifest_url(net::URLRequestMockHTTPJob::GetMockUrl(
-        update_manifest_path.MaybeAsASCII()));
+    GURL update_manifest_url(
+        embedded_test_server()->GetURL(kUpdateManifestPath));
 
     std::unique_ptr<base::ListValue> forcelist(new base::ListValue);
     forcelist->AppendString(base::StringPrintf(
@@ -199,6 +206,34 @@ class EnterprisePlatformKeysTest
   }
 
  private:
+  // Replace "mock.http" with "127.0.0.1:<port>" on "update_manifest.xml" files.
+  // Host resolver doesn't work here because the test file doesn't know the
+  // correct port number.
+  std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
+      const net::test_server::HttpRequest& request) {
+    const std::string kFileNameToIntercept = "update_manifest.xml";
+    if (request.GetURL().ExtractFileName() != kFileNameToIntercept)
+      return nullptr;
+
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    // Remove the leading '/'.
+    std::string relative_manifest_path = request.GetURL().path().substr(1);
+    std::string manifest_response;
+    CHECK(base::ReadFileToString(test_data_dir.Append(relative_manifest_path),
+                                 &manifest_response));
+
+    base::ReplaceSubstringsAfterOffset(
+        &manifest_response, 0, "mock.http",
+        embedded_test_server()->host_port_pair().ToString());
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> response(
+        new net::test_server::BasicHttpResponse());
+    response->set_content_type("text/xml");
+    response->set_content(manifest_response);
+    return response;
+  }
+
   void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot) override {
     // Import a private key to the system slot.  The Javascript part of this
@@ -218,12 +253,6 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
 }
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
-  // Enable the URLRequestMock, which is required for force-installing the
-  // test extension through policy.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(chrome_browser_net::SetUrlRequestMocksEnabled, true));
-
   {
    base::RunLoop loop;
    GetNSSCertDatabaseForProfile(

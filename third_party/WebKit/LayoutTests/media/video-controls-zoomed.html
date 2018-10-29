@@ -22,7 +22,7 @@ async_test(function(t) {
             });
 
             // Find the play button and click the middle of its bounding box.
-            var playCoords = mediaControlsButtonCoordinates(video, "overlay-play-button");
+            var playCoords = elementCoordinates(enabledPlayButton(video));
 
             eventSender.mouseMoveTo(playCoords[0] * 1.5, playCoords[1] * 1.5);
             eventSender.mouseDown();

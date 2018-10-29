@@ -6,31 +6,47 @@
 <org.chromium.chrome.browser.autofill.keyboard_accessory.KeyboardAccessoryView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyboard_accessory"
     android:layout_gravity="start|bottom"
-    android:background="@color/modern_grey_100"
     android:contentDescription="@string/autofill_keyboard_accessory_content_description"
-    android:fillViewport="true"
     android:scrollbars="none"
     android:visibility="gone"
-    android:orientation="horizontal"
-    android:layout_height="@dimen/keyboard_accessory_height"
+    android:orientation="vertical"
+    android:layout_height="@dimen/keyboard_accessory_height_with_shadow"
     android:layout_width="match_parent"
     android:paddingEnd="0dp"
     android:clickable="true"
     android:focusable="true">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        app:tabIndicatorHeight="0dp"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+     <ImageView
+        android:id="@+id/accessory_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/keyboard_accessory_shadow"
+        android:src="@drawable/modern_toolbar_shadow"
+        android:scaleType="fitXY"
+        android:scaleY="-1"
+        tools:ignore="ContentDescription" />
 
-    <View style="@style/VerticalDivider" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/keyboard_accessory_height"
+        android:layout_gravity="start|bottom"
+        android:orientation="horizontal"
+        android:background="@color/modern_grey_100">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/actions_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            app:tabIndicatorHeight="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+
+        <View style="@style/VerticalDivider" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/actions_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
 </org.chromium.chrome.browser.autofill.keyboard_accessory.KeyboardAccessoryView>

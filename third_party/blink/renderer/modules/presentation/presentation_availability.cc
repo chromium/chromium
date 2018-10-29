@@ -35,7 +35,7 @@ PresentationAvailability::PresentationAvailability(
     const WTF::Vector<KURL>& urls,
     bool value)
     : PausableObject(execution_context),
-      PageVisibilityObserver(ToDocument(execution_context)->GetPage()),
+      PageVisibilityObserver(To<Document>(execution_context)->GetPage()),
       urls_(urls),
       value_(value),
       state_(State::kActive) {
@@ -107,7 +107,7 @@ void PresentationAvailability::UpdateListening() {
     return;
 
   if (state_ == State::kActive &&
-      (ToDocument(GetExecutionContext())->GetPageVisibilityState() ==
+      (To<Document>(GetExecutionContext())->GetPageVisibilityState() ==
        mojom::PageVisibilityState::kVisible))
     controller->GetAvailabilityState()->AddObserver(this);
   else

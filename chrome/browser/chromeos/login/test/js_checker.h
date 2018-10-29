@@ -43,6 +43,8 @@ class JSChecker {
   void ExpectNE(const std::string& expression, int result);
   void ExpectEQ(const std::string& expression, const std::string& result);
   void ExpectNE(const std::string& expression, const std::string& result);
+  void ExpectEQ(const std::string& expression, bool result);
+  void ExpectNE(const std::string& expression, bool result);
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;

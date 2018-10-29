@@ -7,6 +7,7 @@ import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 
 loadable_module("clear_key_cdm") {
+  testonly = true
   output_dir = "$root_out_dir/$clearkey_cdm_path"
   output_name = "clearkeycdm"
   sources = [
@@ -32,31 +33,23 @@ loadable_module("clear_key_cdm") {
   deps = [
     ":cdm_proxy_common",
     "//base",
-    "//media",  # For media::AudioTimestampHelper
+    "//media",
+    "//media:media_buildflags",
     "//media:shared_memory_support",  # For media::AudioBus.
     "//media/cdm:cdm_api",  # For content_decryption_module.h
     "//media/cdm/library_cdm:cdm_host_proxy",
+    "//third_party/libyuv",
     "//url",
   ]
 
+  # TODO(xhwang): Convert this to use media::FFmpegAudioDecoder.
   if (media_use_ffmpeg) {
     sources += [
       "ffmpeg_cdm_audio_decoder.cc",
       "ffmpeg_cdm_audio_decoder.h",
-      "ffmpeg_cdm_video_decoder.cc",
-      "ffmpeg_cdm_video_decoder.h",
     ]
     defines += [ "CLEAR_KEY_CDM_USE_FFMPEG_DECODER" ]
     deps += [ "//third_party/ffmpeg" ]
-  }
-
-  if (media_use_libvpx) {
-    sources += [
-      "libvpx_cdm_video_decoder.cc",
-      "libvpx_cdm_video_decoder.h",
-    ]
-    defines += [ "CLEAR_KEY_CDM_USE_LIBVPX_DECODER" ]
-    deps += [ "//third_party/libvpx" ]
   }
 }
 

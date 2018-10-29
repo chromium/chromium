@@ -25,6 +25,7 @@ include_rules = [
     "+net/http",
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/cors/preflight_result.h",
+    "+services/network/public/cpp/cors/preflight_timing_info.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
 
     # Enforce to use mojom-shared.h in blink/public so that it can compile
@@ -33,6 +34,7 @@ include_rules = [
     "+services/network/public/mojom/fetch_api.mojom-shared.h",
     "+services/network/public/mojom/request_context_frame_type.mojom-shared.h",
     "+services/network/public/mojom/restricted_cookie_manager.mojom-shared.h",
+    "+services/network/public/mojom/referrer_policy.mojom-shared.h",
 
     "+services/service_manager/public/mojom",
     "+third_party/blink/public/platform",

@@ -535,7 +535,7 @@ class VTTTextRunIterator : public TextRunIterator {
   }
 };
 
-// Almost the same as determineDirectionality in core/html/HTMLElement.cpp, but
+// Almost the same as determineDirectionality in core/html/html_element.cc, but
 // that one uses a "plain" TextRunIterator (which only checks for '\n').
 static TextDirection DetermineDirectionality(const String& value,
                                              bool& has_strong_directionality) {
@@ -692,7 +692,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
         NOTREACHED();
     }
   } else {
-    // Cases for m_writingDirection being VerticalGrowing{Left|Right}
+    // Cases for writing_direction_ being kVerticalGrowing{Left|Right}
     switch (computed_cue_alignment) {
       case kStart:
         display_parameters.position.SetY(computed_text_position);

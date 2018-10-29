@@ -25,17 +25,16 @@ class ProfileIdentityProvider : public IdentityProvider,
   bool IsActiveAccountAvailable() override;
   std::unique_ptr<ActiveAccountAccessTokenFetcher> FetchAccessToken(
       const std::string& oauth_consumer_name,
-      const OAuth2TokenService::ScopeSet& scopes,
+      const identity::ScopeSet& scopes,
       ActiveAccountAccessTokenCallback callback) override;
-  void InvalidateAccessToken(const OAuth2TokenService::ScopeSet& scopes,
+  void InvalidateAccessToken(const identity::ScopeSet& scopes,
                              const std::string& access_token) override;
   void SetActiveAccountId(const std::string& account_id) override;
 
   // identity::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(const AccountInfo& account_info,
                                        bool is_valid) override;
-  void OnRefreshTokenRemovedForAccount(
-      const AccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(const std::string& account_id) override;
 
  private:
   identity::IdentityManager* const identity_manager_;

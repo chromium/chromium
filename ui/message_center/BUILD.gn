@@ -134,8 +134,6 @@ jumbo_component("message_center") {
         "views/notification_control_buttons_view.h",
         "views/notification_header_view.cc",
         "views/notification_header_view.h",
-        "views/notification_swipe_control_view.cc",
-        "views/notification_swipe_control_view.h",
         "views/notification_view.cc",
         "views/notification_view.h",
         "views/notification_view_md.cc",
@@ -146,8 +144,6 @@ jumbo_component("message_center") {
         "views/popup_alignment_delegate.h",
         "views/proportional_image_view.cc",
         "views/proportional_image_view.h",
-        "views/slidable_message_view.cc",
-        "views/slidable_message_view.h",
         "views/slide_out_controller.cc",
         "views/slide_out_controller.h",
       ]

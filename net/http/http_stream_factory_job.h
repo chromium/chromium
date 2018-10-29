@@ -83,6 +83,9 @@ class HttpStreamFactory::Job {
                                 int status,
                                 const SSLConfig& used_ssl_config) = 0;
 
+    // Invoked when |job| fails on the default network.
+    virtual void OnFailedOnDefaultNetwork(Job* job) = 0;
+
     // Invoked when |job| has a certificate error for the HttpStreamRequest.
     virtual void OnCertificateError(Job* job,
                                     int status,
@@ -315,6 +318,9 @@ class HttpStreamFactory::Job {
   // resolution completes. It's called with the next result after host
   // resolution, not the result of host resolution itself.
   void OnQuicHostResolution(int result);
+
+  // Invoked when the underlying connection fails on the default network.
+  void OnFailedOnDefaultNetwork(int result);
 
   // Each of these methods corresponds to a State value.  Those with an input
   // argument receive the result from the previous state.  If a method returns

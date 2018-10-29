@@ -14,8 +14,10 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/android/jni_generator/jni_generator_helper.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/cfi_backtrace_android.h"
 #include "libunwind.h"
 
@@ -23,6 +25,22 @@ using base::trace_event::CFIBacktraceAndroid;
 using base::debug::MappedMemoryRegion;
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SamplingProfilerUnwindResult {
+  kFutexSignalFailed = 0,
+  kStackCopyFailed = 1,
+  kUnwindInitFailed = 2,
+  kHandlerUnwindFailed = 3,
+  kFirstFrameUnmapped = 4,
+  kMaxValue = kFirstFrameUnmapped,
+};
+
+void RecordUnwindResult(SamplingProfilerUnwindResult result) {
+  UMA_HISTOGRAM_ENUMERATION("BackgroundTracing.SamplingProfilerUnwindResult",
+                            result);
+}
 
 // Waitable event implementation with futex and without DCHECK(s), since signal
 // handlers cannot allocate memory or use pthread api.
@@ -65,6 +83,9 @@ class ScopedEventSignaller {
   AsyncSafeWaitableEvent* event_;
 };
 
+using JniMarker = jni_generator::JniJavaCallContextUnchecked;
+using JniMarkers = std::vector<const JniMarker*>;
+
 // Unwinds from given |cursor| readable by libunwind, and returns
 // the number of frames added to the output. This function can unwind through
 // android framework and then chrome functions. It cannot handle the cases when
@@ -75,13 +96,28 @@ class ScopedEventSignaller {
 size_t TraceStackWithContext(unw_cursor_t* cursor,
                              CFIBacktraceAndroid* cfi_unwinder,
                              const tracing::StackUnwinderAndroid* unwinder,
+                             const uintptr_t stack_segment_base,
+                             const JniMarkers& jni_markers,
                              const void** out_trace,
-                             size_t max_depth) {
+                             const size_t max_depth) {
   size_t depth = 0;
   unw_word_t ip = 0, sp = 0;
+  unw_get_reg(cursor, UNW_REG_SP, &sp);
+  const uintptr_t initial_sp = sp;
+  uintptr_t previous_sp = 0;
   do {
     unw_get_reg(cursor, UNW_REG_IP, &ip);
     unw_get_reg(cursor, UNW_REG_SP, &sp);
+    DCHECK_GE(sp, initial_sp);
+    if (stack_segment_base > 0)
+      DCHECK_LT(sp, stack_segment_base);
+
+    // If SP and IP did not change from previous frame, then unwinding failed.
+    if (previous_sp == sp &&
+        ip == reinterpret_cast<uintptr_t>(out_trace[depth - 1])) {
+      break;
+    }
+    previous_sp = sp;
 
     // If address is in chrome library, then use CFI unwinder since chrome might
     // not have EHABI unwind tables.
@@ -100,9 +136,29 @@ size_t TraceStackWithContext(unw_cursor_t* cursor,
   if (CFIBacktraceAndroid::is_chrome_address(ip)) {
     // Continue unwinding CFI unwinder if we found stack frame from chrome
     // library.
-    return depth +
-           cfi_unwinder->Unwind(ip, sp, out_trace + depth, max_depth - depth);
+    uintptr_t lr = 0;
+    unw_get_reg(cursor, UNW_ARM_LR, &lr);
+    depth +=
+        cfi_unwinder->Unwind(ip, sp, lr, out_trace + depth, max_depth - depth);
   }
+  if (depth >= max_depth)
+    return depth;
+
+  // Try unwinding the rest of frames from Jni markers on stack if present. This
+  // is to skip trying to unwind art frames which do not have unwind
+  // information.
+  for (const auto* marker : jni_markers) {
+    // Skip if we already walked past this marker.
+    if (sp > marker->sp)
+      continue;
+    depth += cfi_unwinder->Unwind(marker->pc, marker->sp, /*lr=*/0,
+                                  out_trace + depth, max_depth - depth);
+    if (depth >= max_depth)
+      break;
+  }
+
+  if (depth == 0)
+    RecordUnwindResult(SamplingProfilerUnwindResult::kFirstFrameUnmapped);
   return depth;
 }
 
@@ -132,6 +188,7 @@ struct HandlerParams {
   uintptr_t* sp;
   // The address where the full stack is copied to.
   char* stack_copy_buffer;
+  size_t* stack_size;
 };
 
 // Argument passed to the ThreadSignalHandler() from the sampling thread to the
@@ -161,10 +218,11 @@ static void ThreadSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
   *params->sp = sp;
 
   uintptr_t stack_base_addr = params->unwinder->GetEndAddressOfRegion(sp);
-  size_t size = stack_base_addr - sp;
-  if (stack_base_addr == 0 || size > kMaxStackBytesCopied)
+  *params->stack_size = stack_base_addr - sp;
+  if (stack_base_addr == 0 || *params->stack_size > kMaxStackBytesCopied)
     return;
-  memcpy(params->stack_copy_buffer, reinterpret_cast<void*>(sp), size);
+  memcpy(params->stack_copy_buffer, reinterpret_cast<void*>(sp),
+         *params->stack_size);
   *params->success = true;
 }
 
@@ -240,9 +298,9 @@ size_t StackUnwinderAndroid::TraceStack(const void** out_trace,
     return 0;
   if (unw_init_local(&cursor, &context) != 0)
     return 0;
-  return TraceStackWithContext(&cursor,
-                               CFIBacktraceAndroid::GetInitializedInstance(),
-                               this, out_trace, max_depth);
+  return TraceStackWithContext(
+      &cursor, CFIBacktraceAndroid::GetInitializedInstance(), this,
+      /* stack_segment_base=*/0, JniMarkers(), out_trace, max_depth);
 }
 
 size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
@@ -253,12 +311,14 @@ size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
   // stack frames from the copied stack.
   DCHECK(is_initialized_);
   AsyncSafeWaitableEvent wait_event;
+  size_t stack_size;
   std::unique_ptr<char[]> stack_copy_buffer(new char[kMaxStackBytesCopied]);
   bool copied = false;
   unw_context_t context;
   uintptr_t sp = 0;
-  HandlerParams params = {this,     &wait_event, &copied,
-                          &context, &sp,         stack_copy_buffer.get()};
+  HandlerParams params = {this,       &wait_event, &copied,
+                          &context,   &sp,         stack_copy_buffer.get(),
+                          &stack_size};
   base::subtle::Release_Store(&g_handler_params,
                               reinterpret_cast<uintptr_t>(&params));
 
@@ -268,9 +328,7 @@ size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
   struct sigaction oact;
   memset(&act, 0, sizeof(act));
   act.sa_sigaction = ThreadSignalHandler;
-  // TODO(ssid): SA_ONSTACK will not work if sigaltstack was set. So, unwind
-  // should work without this flag.
-  act.sa_flags = SA_RESTART | SA_SIGINFO | SA_ONSTACK;
+  act.sa_flags = SA_RESTART | SA_SIGINFO;
   sigemptyset(&act.sa_mask);
   // SIGURG is chosen here because we observe no crashes with this signal and
   // neither Chrome or the AOSP sets up a special handler for this signal.
@@ -281,31 +339,63 @@ size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
     bool changed = sigaction(SIGURG, &oact, &act) == 0;
     DCHECK(changed);
     if (!finished_waiting) {
+      RecordUnwindResult(SamplingProfilerUnwindResult::kFutexSignalFailed);
       NOTREACHED();
       return 0;
     }
   }
   base::subtle::Release_Store(&g_handler_params, 0);
-  if (!copied)
+  if (!copied) {
+    RecordUnwindResult(SamplingProfilerUnwindResult::kStackCopyFailed);
     return 0;
+  }
 
-  // Context contains list of saved registers. Replace the SP to the copied
-  // stack. The SP should be one of the first 16 registers.
+  // Context contains list of saved registers. Replace the SP and any register
+  // that points to address on the previous stack to point to the copied stack.
+  const uintptr_t relocation_offset =
+      reinterpret_cast<uintptr_t>(stack_copy_buffer.get()) - sp;
   bool replaced_sp = false;
-  for (size_t i = 0; i < 17; ++i) {
-    uintptr_t* data = reinterpret_cast<uintptr_t*>(&context) + i;
-    if (*data == sp) {
-      *data = reinterpret_cast<uintptr_t>(stack_copy_buffer.get());
-      replaced_sp = true;
-      break;
+  uintptr_t* register_context = reinterpret_cast<uintptr_t*>(&context);
+  for (size_t i = 0; i < 16; ++i) {
+    if (register_context[i] >= sp && register_context[i] < sp + stack_size) {
+      replaced_sp = replaced_sp || register_context[i] == sp;
+      register_context[i] += relocation_offset;
     }
   }
   DCHECK(replaced_sp);
 
+  uintptr_t* new_stack = reinterpret_cast<uintptr_t*>(stack_copy_buffer.get());
+  constexpr uintptr_t marker_l =
+                          jni_generator::kJniStackMarkerValue & 0xFFFFFFFF,
+                      marker_r = jni_generator::kJniStackMarkerValue >> 32;
+  JniMarkers jni_markers;
+  for (size_t i = 0; i < stack_size / sizeof(uintptr_t); ++i) {
+    if (new_stack[i] == marker_r && i > 0 && new_stack[i - 1] == marker_l) {
+      // Note: JniJavaCallContext::sp will be replaced with offset below.
+      const JniMarker* marker =
+          reinterpret_cast<const JniMarker*>(new_stack + i - 1);
+      DCHECK_EQ(jni_generator::kJniStackMarkerValue,
+                jni_markers.back()->marker);
+      if (marker->sp >= sp && marker->sp < sp + stack_size &&
+          CFIBacktraceAndroid::is_chrome_address(marker->pc)) {
+        jni_markers.push_back(marker);
+      } else {
+        NOTREACHED();
+      }
+    }
+
+    // Unwind can use address on the stack. So, replace them as well. See EHABI
+    // #7.5.4 table 3.
+    if (new_stack[i] >= sp && new_stack[i] < sp + stack_size)
+      new_stack[i] += relocation_offset;
+  }
+
   // Initialize an unwind cursor on copied stack.
   unw_cursor_t cursor;
-  if (unw_init_local(&cursor, &context) != 0)
+  if (unw_init_local(&cursor, &context) != 0) {
+    RecordUnwindResult(SamplingProfilerUnwindResult::kUnwindInitFailed);
     return 0;
+  }
   uintptr_t ip = 0;
   unw_get_reg(&cursor, UNW_REG_SP, &sp);
   DCHECK_EQ(sp, reinterpret_cast<uintptr_t>(stack_copy_buffer.get()));
@@ -317,15 +407,17 @@ size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
   auto* cfi_unwinder = CFIBacktraceAndroid::GetInitializedInstance();
   static CFIBacktraceAndroid::CFIRow cfi;
   static bool found = GetCFIForPC(cfi_unwinder, ip, &cfi);
-  if (!found)
+  if (!found) {
+    RecordUnwindResult(SamplingProfilerUnwindResult::kHandlerUnwindFailed);
     return 0;
+  }
   sp = sp + cfi.cfa_offset;
   memcpy(&ip, reinterpret_cast<uintptr_t*>(sp - cfi.ra_offset),
          sizeof(uintptr_t));
 
   // Do not use libunwind if we stopped at chrome frame.
   if (CFIBacktraceAndroid::is_chrome_address(ip))
-    return cfi_unwinder->Unwind(ip, sp, out_trace, max_depth);
+    return cfi_unwinder->Unwind(ip, sp, 0, out_trace, max_depth);
 
   // Reset the unwind cursor to previous function and continue with libunwind.
   // TODO(ssid): Dynamic allocation functions might require registers to be
@@ -333,8 +425,10 @@ size_t StackUnwinderAndroid::TraceStack(base::PlatformThreadId tid,
   unw_set_reg(&cursor, UNW_REG_SP, sp);
   unw_set_reg(&cursor, UNW_REG_IP, ip);
 
-  return TraceStackWithContext(&cursor, cfi_unwinder, this, out_trace,
-                               max_depth);
+  return TraceStackWithContext(
+      &cursor, cfi_unwinder, this,
+      reinterpret_cast<uintptr_t>(stack_copy_buffer.get()) + stack_size,
+      jni_markers, out_trace, max_depth);
 }
 
 uintptr_t StackUnwinderAndroid::GetEndAddressOfRegion(uintptr_t addr) const {

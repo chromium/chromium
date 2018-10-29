@@ -194,9 +194,10 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
 void OriginTrialContext::InitializePendingFeatures() {
   if (!enabled_trials_.size())
     return;
-  if (!GetSupplementable()->IsDocument())
+  auto* document = DynamicTo<Document>(GetSupplementable());
+  if (!document)
     return;
-  LocalFrame* frame = ToDocument(GetSupplementable())->GetFrame();
+  LocalFrame* frame = document->GetFrame();
   if (!frame)
     return;
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
@@ -237,8 +238,8 @@ bool OriginTrialContext::EnableTrialFromToken(const String& token) {
   //    to validate the token against the document context.
   bool is_secure = false;
   ExecutionContext* context = GetSupplementable();
-  if (context->IsWorkletGlobalScope()) {
-    is_secure = ToWorkletGlobalScope(context)->DocumentSecureContext();
+  if (auto* scope = DynamicTo<WorkletGlobalScope>(context)) {
+    is_secure = scope->DocumentSecureContext();
   } else {
     is_secure = context->IsSecureContext();
   }
@@ -255,8 +256,8 @@ bool OriginTrialContext::EnableTrialFromToken(const String& token) {
   }
 
   const SecurityOrigin* origin;
-  if (context->IsWorkletGlobalScope())
-    origin = ToWorkletGlobalScope(context)->DocumentSecurityOrigin();
+  if (auto* scope = DynamicTo<WorkletGlobalScope>(context))
+    origin = scope->DocumentSecurityOrigin();
   else
     origin = context->GetSecurityOrigin();
 

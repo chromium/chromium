@@ -86,9 +86,6 @@ const char kDisableBackingStoreLimit[]      = "disable-backing-store-limit";
 const char kDisableBackgroundingOccludedWindowsForTesting[] =
     "disable-backgrounding-occluded-windows";
 
-// Disable Background Fetch.
-const char kDisableBackgroundFetch[] = "disable-background-fetch";
-
 // Disable task throttling of timer tasks from background pages.
 const char kDisableBackgroundTimerThrottling[] =
     "disable-background-timer-throttling";
@@ -247,10 +244,6 @@ const char kDisableRendererAccessibility[]  = "disable-renderer-accessibility";
 // Prevent renderer process backgrounding when set.
 const char kDisableRendererBackgrounding[]  = "disable-renderer-backgrounding";
 
-// Whether the resize lock is disabled. Default is false. This is generally only
-// useful for tests that want to force disabling.
-const char kDisableResizeLock[] = "disable-resize-lock";
-
 // Whether the ResourceScheduler is disabled.  Note this is only useful for C++
 // Headless embedders who need to implement their own resource scheduling.
 const char kDisableResourceScheduler[] = "disable-resource-scheduler";
@@ -270,6 +263,9 @@ const char kDisableSoftwareRasterizer[]     = "disable-software-rasterizer";
 
 // Disables the Web Speech API.
 const char kDisableSpeechAPI[]              = "disable-speech-api";
+
+// Disables adding the test certs in the network process.
+const char kDisableTestCerts[] = "disable-test-root-certs";
 
 // Disable multithreaded GPU compositing of web content.
 const char kDisableThreadedCompositing[]     = "disable-threaded-compositing";
@@ -327,8 +323,8 @@ const char kEnablePreferCompositingToLCDText[] =
 // features.
 const char kEnableBlinkFeatures[]           = "enable-blink-features";
 
-// A shorthand for adding both "--enable-blink-features=BlinkGenPropertyTrees"
-// and "--enable-layer-lists".
+// This is now an alias of "--enable-blink-features=BlinkGenPropertyTrees".
+// TODO(pdr): This flag is redundant and should be removed.
 const char kEnableBlinkGenPropertyTrees[] = "enable-blink-gen-property-trees";
 
 // Enables Web Platform features that are in development.
@@ -395,6 +391,8 @@ const char kEnableServiceBinaryLauncher[] = "enable-service-binary-launcher";
 const char kEnableSkiaBenchmarking[]        = "enable-skia-benchmarking";
 
 // Enables slimming paint phase 2: https://www.chromium.org/blink/slimming-paint
+// This is now an alias of "--enable-blink-features=SlimmingPaintV2".
+// TODO(pdr): This flag is redundant should be removed.
 const char kEnableSlimmingPaintV2[]         = "enable-slimming-paint-v2";
 
 // On platforms that support it, enables smooth scroll animation.
@@ -575,15 +573,6 @@ const char kLogFile[] = "log-file";
 const char kMainFrameResizesAreOrientationChanges[] =
     "main-frame-resizes-are-orientation-changes";
 
-// Specifies the maximum cache size per an origin for the ApplicationCache.
-// The default value is 5MB.
-const char kMaxAppCacheOriginCacheSizeMb[] =
-    "max-appcache-origin-cache-size-mb";
-
-// Specifies the maximum disk cache size for the ApplicationCache. The default
-// value is 250MB.
-const char kMaxAppCacheDiskCacheSizeMb[] = "max-appcache-disk-cache-size-mb";
-
 // Sets the maximium decoded image size limitation.
 const char kMaxDecodedImageSizeMb[] = "max-decoded-image-size-mb";
 
@@ -629,19 +618,6 @@ const char kNumRasterThreads[]              = "num-raster-threads";
 // value to 'never' to disable throttling.
 const char kOverridePluginPowerSaverForTesting[] =
     "override-plugin-power-saver-for-testing";
-
-// Controls the behavior of history navigation in response to horizontal
-// overscroll.
-// Set the value to '0' to disable.
-// Set the value to '1' to enable the behavior where pages slide in and out in
-// response to the horizontal overscroll gesture and a screenshot of the target
-// page is shown.
-// Set the value to '2' to enable the simplified overscroll UI where a
-// navigation arrow slides in from the side of the screen in response to the
-// horizontal overscroll gesture.
-// Defaults to '2'.
-const char kOverscrollHistoryNavigation[] =
-    "overscroll-history-navigation";
 
 // Controls the value of the threshold to start horizontal overscroll relative
 // to the default value.

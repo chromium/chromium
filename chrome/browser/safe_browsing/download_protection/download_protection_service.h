@@ -23,6 +23,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
@@ -121,9 +122,12 @@ class DownloadProtectionService {
     return download_request_timeout_ms_;
   }
 
-  DownloadFeedbackService* feedback_service() {
-    return feedback_service_.get();
-  }
+  // Checks the user permissions, and submits the downloaded file if
+  // appropriate. Returns whether the submission was successful.
+  bool MaybeBeginFeedbackForDownload(
+      Profile* profile,
+      download::DownloadItem* download,
+      DownloadCommands::Command download_command);
 
   // Registers a callback that will be run when a ClientDownloadRequest has
   // been formed.
@@ -157,7 +161,6 @@ class DownloadProtectionService {
       bool show_download_in_folder);
 
  private:
-  // todo(jialiul): Remove the need for non-test friending.
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
   friend class DownloadProtectionServiceTest;
@@ -165,37 +168,15 @@ class DownloadProtectionService {
   friend class CheckClientDownloadRequest;
 
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadWhitelistedUrlWithoutSampling);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadWhitelistedUrlWithSampling);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadValidateRequest);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadSuccess);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadHTTPS);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadBlob);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadData);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadZip);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientDownloadFetchFailed);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            TestDownloadRequestTimeout);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           CheckClientCrxDownloadSuccess);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            PPAPIDownloadRequest_InvalidResponse);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            PPAPIDownloadRequest_Timeout);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            VerifyReferrerChainWithEmptyNavigationHistory);
-  FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceFlagTest,
-                           CheckClientDownloadOverridenByFlag);
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
-                           VerifyMaybeSendDangerousDownloadOpenedReport);
+                           VerifyReferrerChainLengthForExtendedReporting);
 
   static const void* const kDownloadPingTokenKey;
 

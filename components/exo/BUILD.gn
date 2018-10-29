@@ -10,8 +10,6 @@ source_set("exo") {
   sources = [
     "buffer.cc",
     "buffer.h",
-    "client_controlled_shell_surface.cc",
-    "client_controlled_shell_surface.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
@@ -25,33 +23,16 @@ source_set("exo") {
     "data_source_observer.h",
     "display.cc",
     "display.h",
-    "gaming_seat.cc",
-    "gaming_seat.h",
-    "input_method_surface.cc",
-    "input_method_surface.h",
-    "input_method_surface_manager.h",
-    "keyboard.cc",
-    "keyboard.h",
     "keyboard_delegate.h",
     "keyboard_device_configuration_delegate.h",
     "keyboard_observer.h",
     "layer_tree_frame_sink_holder.cc",
     "layer_tree_frame_sink_holder.h",
-    "notification_surface.cc",
-    "notification_surface.h",
-    "notification_surface_manager.h",
-    "pointer.cc",
-    "pointer.h",
-    "pointer_delegate.h",
     "seat.cc",
     "seat.h",
     "seat_observer.h",
     "shared_memory.cc",
     "shared_memory.h",
-    "shell_surface.cc",
-    "shell_surface.h",
-    "shell_surface_base.cc",
-    "shell_surface_base.h",
     "sub_surface.cc",
     "sub_surface.h",
     "surface.cc",
@@ -60,19 +41,14 @@ source_set("exo") {
     "surface_observer.h",
     "surface_tree_host.cc",
     "surface_tree_host.h",
-    "text_input.cc",
-    "text_input.h",
     "touch.cc",
     "touch.h",
     "touch_delegate.h",
     "wm_helper.cc",
     "wm_helper.h",
-    "xdg_shell_surface.cc",
-    "xdg_shell_surface.h",
   ]
 
   deps = [
-    "//ash/public/cpp",
     "//base",
     "//cc",
     "//components/viz/service",
@@ -92,7 +68,8 @@ source_set("exo") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
-    "//ui/keyboard",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
     "//ui/ozone",
     "//ui/views",
     "//ui/views/mus",
@@ -101,7 +78,38 @@ source_set("exo") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos" ]
+    deps += [
+      "//ash/public/cpp",
+      "//chromeos",
+      "//ui/keyboard",
+    ]
+    sources += [
+      "client_controlled_shell_surface.cc",
+      "client_controlled_shell_surface.h",
+      "gaming_seat.cc",
+      "gaming_seat.h",
+      "input_method_surface.cc",
+      "input_method_surface.h",
+      "input_method_surface_manager.h",
+      "keyboard.cc",
+      "keyboard.h",
+      "notification.cc",
+      "notification.h",
+      "notification_surface.cc",
+      "notification_surface.h",
+      "notification_surface_manager.h",
+      "pointer.cc",
+      "pointer.h",
+      "pointer_delegate.h",
+      "shell_surface.cc",
+      "shell_surface.h",
+      "shell_surface_base.cc",
+      "shell_surface_base.h",
+      "text_input.cc",
+      "text_input.h",
+      "xdg_shell_surface.cc",
+      "xdg_shell_surface.h",
+    ]
   }
 }
 
@@ -119,8 +127,6 @@ source_set("test_support") {
 
   deps = [
     ":exo",
-    "//ash:test_support_without_content",
-    "//ash/public/cpp",
     "//base",
     "//gpu",
     "//skia",
@@ -131,6 +137,13 @@ source_set("test_support") {
     "//ui/views",
     "//ui/wm",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash:test_support_without_content",
+      "//ash/public/cpp",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -146,6 +159,7 @@ source_set("unit_tests") {
     "display_unittest.cc",
     "gaming_seat_unittest.cc",
     "keyboard_unittest.cc",
+    "notification_unittest.cc",
     "pointer_unittest.cc",
     "seat_unittest.cc",
     "shared_memory_unittest.cc",
@@ -159,9 +173,6 @@ source_set("unit_tests") {
   deps = [
     ":exo",
     ":test_support",
-    "//ash",
-    "//ash:test_support_without_content",
-    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//cc",
@@ -181,7 +192,6 @@ source_set("unit_tests") {
     "//ui/events:test_support",
     "//ui/events/ozone:events_ozone_evdev",
     "//ui/gfx",
-    "//ui/keyboard",
     "//ui/message_center",
     "//ui/views",
     "//ui/wm",
@@ -190,19 +200,24 @@ source_set("unit_tests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//ash:test_support_without_content",
+      "//ash/public/cpp",
+      "//ui/keyboard",
+    ]
+  }
 }
 
 test("exo_unittests") {
   sources = [
-    "../../ash/test/ash_test_suite.cc",
-    "../../ash/test/ash_test_suite.h",
     "test/run_all_unittests.cc",
   ]
 
   deps = [
     ":unit_tests",
-    "//ash:test_support_without_content",
-    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//cc:test_support",
@@ -219,13 +234,28 @@ test("exo_unittests") {
   ]
 
   data_deps = [
-    "//ash/strings:ash_test_strings",
-    "//ash/resources:ash_test_resources_100_percent",
-    "//ash/resources:ash_test_resources_200_percent",
     "//testing/buildbot/filters:exo_unittests_filters",
   ]
 
   if (is_linux) {
     deps += [ "//components/exo/wayland:unit_tests" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "../../ash/test/ash_test_suite.cc",
+      "../../ash/test/ash_test_suite.h",
+    ]
+
+    deps += [
+      "//ash:test_support_without_content",
+      "//ash/public/cpp",
+    ]
+
+    data_deps += [
+      "//ash/strings:ash_test_strings",
+      "//ash/resources:ash_test_resources_100_percent",
+      "//ash/resources:ash_test_resources_200_percent",
+    ]
   }
 }

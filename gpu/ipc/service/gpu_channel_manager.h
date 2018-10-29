@@ -23,9 +23,11 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/raster_decoder_context_state.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -41,6 +43,7 @@ class GLShareGroup;
 
 namespace gpu {
 
+class SharedImageManager;
 struct GpuPreferences;
 struct SyncToken;
 class GpuChannel;
@@ -109,6 +112,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   ServiceDiscardableManager* discardable_manager() {
     return &discardable_manager_;
   }
+  PassthroughDiscardableManager* passthrough_discardable_manager() {
+    return &passthrough_discardable_manager_;
+  }
   gles2::Outputter* outputter();
   gles2::ProgramCache* program_cache();
   gles2::ShaderTranslatorCache* shader_translator_cache() {
@@ -143,6 +149,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
 
+  SharedImageManager* shared_image_manager() { return &shared_image_manager_; }
+
   // Retrieve GPU Resource consumption statistics for the task manager
   void GetVideoMemoryUsageStats(
       VideoMemoryUsageStats* video_memory_usage_stats) const;
@@ -157,7 +165,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // raster::GrShaderCache::Client implementation.
   void StoreShader(const std::string& key, const std::string& shader) override;
 
- private:
   void InternalDestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
   void InternalDestroyGpuMemoryBufferOnIO(gfx::GpuMemoryBufferId id,
                                           int client_id);
@@ -198,6 +205,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
   GpuFeatureInfo gpu_feature_info_;
   ServiceDiscardableManager discardable_manager_;
+  PassthroughDiscardableManager passthrough_discardable_manager_;
+  SharedImageManager shared_image_manager_;
 #if defined(OS_ANDROID)
   // Last time we know the GPU was powered on. Global for tracking across all
   // transport surfaces.

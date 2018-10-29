@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/devtools_manager.h"
-#include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/forwarding_agent_host.h"
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/devtools/protocol/security_handler.h"
@@ -115,7 +114,8 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
   return result;
 }
 
-DevToolsAgentHostImpl::DevToolsAgentHostImpl(const std::string& id) : id_(id) {
+DevToolsAgentHostImpl::DevToolsAgentHostImpl(const std::string& id)
+    : id_(id), renderer_channel_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -129,7 +129,7 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForId(
     const std::string& id) {
   if (!g_devtools_instances.IsCreated())
     return nullptr;
-  DevToolsMap::iterator it = g_devtools_instances.Get().find(id);
+  auto it = g_devtools_instances.Get().find(id);
   if (it == g_devtools_instances.Get().end())
     return nullptr;
   return it->second;
@@ -179,15 +179,12 @@ DevToolsSession* DevToolsAgentHostImpl::SessionByClient(
 bool DevToolsAgentHostImpl::InnerAttachClient(DevToolsAgentHostClient* client,
                                               TargetRegistry* registry) {
   scoped_refptr<DevToolsAgentHostImpl> protect(this);
-  DevToolsSession* session = new DevToolsSession(this, client);
-  sessions_.insert(session);
-  session_by_client_[client].reset(session);
-  if (!AttachSession(session, registry)) {
-    sessions_.erase(session);
-    session_by_client_.erase(client);
+  auto session = std::make_unique<DevToolsSession>(this, client);
+  if (!AttachSession(session.get(), registry))
     return false;
-  }
-
+  renderer_channel_.AttachSession(session.get());
+  sessions_.push_back(session.get());
+  session_by_client_[client] = std::move(session);
   if (sessions_.size() == 1)
     NotifyAttached();
   DevToolsManager* manager = DevToolsManager::GetInstance();
@@ -243,7 +240,8 @@ void DevToolsAgentHostImpl::InnerDetachClient(DevToolsAgentHostClient* client) {
       std::move(session_by_client_[client]);
   // Make sure we dispose session prior to reporting it to the host.
   session->Dispose();
-  sessions_.erase(session.get());
+  sessions_.erase(
+      std::remove(sessions_.begin(), sessions_.end(), session.get()));
   session_by_client_.erase(client);
   DetachSession(session.get());
   DevToolsManager* manager = DevToolsManager::GetInstance();
@@ -341,6 +339,8 @@ bool DevToolsAgentHostImpl::AttachSession(DevToolsSession* session,
 
 void DevToolsAgentHostImpl::DetachSession(DevToolsSession* session) {}
 
+void DevToolsAgentHostImpl::UpdateRendererChannel(bool force) {}
+
 // static
 void DevToolsAgentHost::DetachAllClients() {
   if (!g_devtools_instances.IsCreated())
@@ -349,12 +349,10 @@ void DevToolsAgentHost::DetachAllClients() {
   // Make a copy, since detaching may lead to agent destruction, which
   // removes it from the instances.
   std::vector<scoped_refptr<DevToolsAgentHostImpl>> copy;
-  for (DevToolsMap::iterator it(g_devtools_instances.Get().begin());
+  for (auto it(g_devtools_instances.Get().begin());
        it != g_devtools_instances.Get().end(); ++it)
     copy.push_back(it->second);
-  for (std::vector<scoped_refptr<DevToolsAgentHostImpl>>::iterator it(
-           copy.begin());
-       it != copy.end(); ++it)
+  for (auto it(copy.begin()); it != copy.end(); ++it)
     it->get()->ForceDetachAllSessions();
 }
 

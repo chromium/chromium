@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/trees/clip_expander.h"
+#include "cc/trees/property_tree.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {

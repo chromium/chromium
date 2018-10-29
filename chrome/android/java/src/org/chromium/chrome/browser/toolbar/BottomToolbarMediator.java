@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.res.Resources;
+import android.view.View;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
@@ -18,18 +19,25 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandl
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonSlotData.ToolbarButtonData;
+import org.chromium.chrome.browser.widget.textbubble.TextBubble;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowAndroid.KeyboardVisibilityListener;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * This class is responsible for reacting to events from the outside world, interacting with other
  * coordinators, running most of the business logic associated with the bottom toolbar, and updating
  * the model accordingly.
  */
-class BottomToolbarMediator implements FullscreenListener, KeyboardVisibilityListener,
-                                       OverlayPanelManagerObserver, OverviewModeObserver,
-                                       SceneChangeObserver {
+class BottomToolbarMediator
+        implements FullscreenListener, KeyboardVisibilityDelegate.KeyboardVisibilityListener,
+                   OverlayPanelManagerObserver, OverviewModeObserver, SceneChangeObserver {
+    /** The amount of time to show the Duet help bubble for. */
+    private static final int DUET_IPH_BUBBLE_SHOW_DURATION_MS = 6000;
+
     /** The model for the bottom toolbar that holds all of its state. */
     private BottomToolbarModel mModel;
 
@@ -98,7 +106,9 @@ class BottomToolbarMediator implements FullscreenListener, KeyboardVisibilityLis
     void destroy() {
         mFullscreenManager.removeListener(this);
         if (mOverviewModeBehavior != null) mOverviewModeBehavior.removeOverviewModeObserver(this);
-        if (mWindowAndroid != null) mWindowAndroid.removeKeyboardVisibilityListener(this);
+        if (mWindowAndroid != null) {
+            mWindowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
+        }
         if (mModel.get(BottomToolbarModel.LAYOUT_MANAGER) != null) {
             LayoutManager manager = mModel.get(BottomToolbarModel.LAYOUT_MANAGER);
             manager.getOverlayPanelManager().removeObserver(this);
@@ -221,7 +231,7 @@ class BottomToolbarMediator implements FullscreenListener, KeyboardVisibilityLis
         assert mWindowAndroid == null : "#setWindowAndroid should only be called once per toolbar.";
         // Watch for keyboard events so we can hide the bottom toolbar when the keyboard is showing.
         mWindowAndroid = windowAndroid;
-        mWindowAndroid.addKeyboardVisibilityListener(this);
+        mWindowAndroid.getKeyboardDelegate().addKeyboardVisibilityListener(this);
     }
 
     void setTabSwitcherButtonData(
@@ -239,5 +249,22 @@ class BottomToolbarMediator implements FullscreenListener, KeyboardVisibilityLis
 
     void setPrimaryColor(int color) {
         mModel.set(BottomToolbarModel.PRIMARY_COLOR, color);
+    }
+
+    /**
+     * Maybe show the IPH bubble for Chrome Duet.
+     * @param anchor The view to anchor the IPH to.
+     * @param tracker A tracker for IPH.
+     */
+    void showIPH(View anchor, Tracker tracker) {
+        if (tracker.shouldTriggerHelpUI(FeatureConstants.CHROME_DUET_FEATURE)) {
+            TextBubble bubble =
+                    new TextBubble(anchor.getContext(), anchor, R.string.iph_duet_icons_moved,
+                            R.string.iph_duet_icons_moved, true, new ViewRectProvider(anchor));
+            bubble.setAutoDismissTimeout(DUET_IPH_BUBBLE_SHOW_DURATION_MS);
+            bubble.addOnDismissListener(
+                    () -> tracker.dismissed(FeatureConstants.CHROME_DUET_FEATURE));
+            bubble.show();
+        }
     }
 }

@@ -43,6 +43,10 @@ void ClearDelegatesFromSubmenu(NSMenu* menu) {
   }
 }
 
+NSString* MenuTitleForNode(const BookmarkNode* node) {
+  return base::SysUTF16ToNSString(node->GetTitle());
+}
+
 }  // namespace
 
 BookmarkMenuBridge::BookmarkMenuBridge(Profile* profile, NSMenu* menu_root)
@@ -245,7 +249,7 @@ void BookmarkMenuBridge::ClearBookmarkMenu() {
 void BookmarkMenuBridge::AddNodeAsSubmenu(NSMenu* menu,
                                           const BookmarkNode* node,
                                           NSImage* image) {
-  NSString* title = [BookmarkMenuCocoaController menuTitleForNode:node];
+  NSString* title = MenuTitleForNode(node);
   base::scoped_nsobject<NSMenuItem> items(
       [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""]);
   [items setImage:image];
@@ -278,9 +282,8 @@ void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node, NSMenu* menu) {
     if (child->is_folder()) {
       AddNodeAsSubmenu(menu, child, folder_image_);
     } else {
-      NSString* title = [BookmarkMenuCocoaController menuTitleForNode:child];
       base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
-          initWithTitle:title
+          initWithTitle:MenuTitleForNode(child)
                  action:nil
           keyEquivalent:@""]);
       bookmark_nodes_[child] = item;
@@ -294,7 +297,7 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
                                            NSMenuItem* item,
                                            bool set_title) {
   if (set_title)
-    [item setTitle:[BookmarkMenuCocoaController menuTitleForNode:node]];
+    [item setTitle:MenuTitleForNode(node)];
   [item setTarget:controller_];
   [item setAction:@selector(openBookmarkMenuItem:)];
   [item setTag:node->id()];

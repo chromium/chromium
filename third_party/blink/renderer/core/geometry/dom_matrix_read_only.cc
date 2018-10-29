@@ -182,15 +182,6 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix2D(
   return new DOMMatrixReadOnly(args, 6);
 }
 
-DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix2D(DOMMatrix2DInit& other) {
-  if (!ValidateAndFixup2D(other)) {
-    return nullptr;
-  }
-  double args[] = {other.m11(), other.m12(), other.m21(),
-                   other.m22(), other.m41(), other.m42()};
-  return new DOMMatrixReadOnly(args, 6);
-}
-
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix(
     DOMMatrixInit& other,
     ExceptionState& exception_state) {

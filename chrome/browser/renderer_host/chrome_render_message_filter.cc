@@ -12,6 +12,7 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -27,6 +28,7 @@
 #include "components/network_hints/common/network_hints_common.h"
 #include "components/network_hints/common/network_hints_messages.h"
 #include "components/web_cache/browser/web_cache_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
@@ -105,8 +107,8 @@ void ChromeRenderMessageFilter::OverrideThreadForMessage(
 void ChromeRenderMessageFilter::OnDnsPrefetch(
     const network_hints::LookupRequest& request) {
   if (preconnect_manager_initialized_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&predictors::PreconnectManager::StartPreresolveHosts,
                        preconnect_manager_, request.hostname_list));
   }
@@ -127,8 +129,8 @@ void ChromeRenderMessageFilter::OnPreconnect(const GURL& url,
   }
 
   if (preconnect_manager_initialized_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&predictors::PreconnectManager::StartPreconnectUrl,
                        preconnect_manager_, url, allow_credentials));
   }
@@ -143,8 +145,8 @@ void ChromeRenderMessageFilter::OnAllowDatabase(
     bool* allowed) {
   *allowed =
       cookie_settings_->IsCookieAccessAllowed(origin_url, top_origin_url);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&TabSpecificContentSettings::WebDatabaseAccessed,
                  render_process_id_, render_frame_id, origin_url, name,
                  display_name, !*allowed));
@@ -158,8 +160,8 @@ void ChromeRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
   *allowed =
       cookie_settings_->IsCookieAccessAllowed(origin_url, top_origin_url);
   // Record access to DOM storage for potential display in UI.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&TabSpecificContentSettings::DOMStorageAccessed,
                  render_process_id_, render_frame_id, origin_url, local,
                  !*allowed));
@@ -226,28 +228,20 @@ void ChromeRenderMessageFilter::OnRequestFileSystemAccess(
       ->IsGuest(render_process_id_);
   if (is_web_view_guest) {
     // Record access to file system for potential display in UI.
-    BrowserThread::PostTask(
-        BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&ChromeRenderMessageFilter::FileSystemAccessedOnUIThread,
-                   render_process_id_,
-                   render_frame_id,
-                   origin_url,
-                   allowed,
+                   render_process_id_, render_frame_id, origin_url, allowed,
                    callback));
     return;
   }
 #endif
   callback.Run(allowed);
   // Record access to file system for potential display in UI.
-  BrowserThread::PostTask(
-      BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&TabSpecificContentSettings::FileSystemAccessed,
-                 render_process_id_,
-                 render_frame_id,
-                 origin_url,
-                 !allowed));
+                 render_process_id_, render_frame_id, origin_url, !allowed));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -294,8 +288,8 @@ void ChromeRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
                                                  bool* allowed) {
   *allowed =
       cookie_settings_->IsCookieAccessAllowed(origin_url, top_origin_url);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&TabSpecificContentSettings::IndexedDBAccessed,
                  render_process_id_, render_frame_id, origin_url, name,
                  !*allowed));

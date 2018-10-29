@@ -81,6 +81,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidFailProvisionalLoad(const blink::WebURLError& error) {}
   virtual void DidFinishLoad() {}
   virtual void DidFinishDocumentLoad() {}
+  virtual void DidHandleOnloadEvents() {}
   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,
                                       int world_id) {}
   virtual void WillReleaseScriptContext(v8::Local<v8::Context> context,
@@ -131,6 +132,12 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature) {}
   virtual void DidObserveNewCssPropertyUsage(int css_property,
                                              bool is_animated) {}
+
+  // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
+  // This is called once for each janking animation frame, with the jank
+  // fraction for that frame.  The cumulative jank score can be inferred by
+  // summing the jank fractions.
+  virtual void DidObserveLayoutJank(double jank_fraction) {}
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.

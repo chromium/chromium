@@ -116,6 +116,11 @@ void VariationsHttpHeaderProvider::ResetForTesting() {
   // re-inited. Note: This is a no-op if this is not currently observing.
   base::FieldTrialList::RemoveObserver(this);
   variation_ids_cache_initialized_ = false;
+  variation_ids_set_.clear();
+  default_variation_ids_set_.clear();
+  synthetic_variation_ids_set_.clear();
+  cached_variation_ids_header_.clear();
+  cached_variation_ids_header_signed_in_.clear();
 }
 
 VariationsHttpHeaderProvider::VariationsHttpHeaderProvider()

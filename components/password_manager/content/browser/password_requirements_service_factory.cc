@@ -49,20 +49,8 @@ KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
   if (context->IsOffTheRecord())
     return nullptr;
 
-  VLOG(1) << "PasswordGenerationRequirements experiment enabled? "
-          << base::FeatureList::IsEnabled(
-                 features::kPasswordGenerationRequirements);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kPasswordGenerationRequirements) &&
-      !base::FeatureList::IsEnabled(::features::kExperimentalUi)) {
-    return nullptr;
-  }
-
-  bool enable_domain_overrides =
-      base::FeatureList::IsEnabled(
-          features::kPasswordGenerationRequirementsDomainOverrides) ||
-      base::FeatureList::IsEnabled(::features::kExperimentalUi);
+  bool enable_domain_overrides = base::FeatureList::IsEnabled(
+      features::kPasswordGenerationRequirementsDomainOverrides);
 
   VLOG(1)
       << "PasswordGenerationRequirementsDomainOverrides experiment enabled? "
@@ -72,7 +60,7 @@ KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
     return new PasswordRequirementsService(nullptr);
 
   // Default parameters.
-  int version = 0;
+  int version = 1;
   int prefix_length = 0;
   int timeout_in_ms = 5000;
 
@@ -95,15 +83,6 @@ KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
   if (base::StringToInt(
           field_trial_params[features::kGenerationRequirementsTimeout], &tmp)) {
     timeout_in_ms = tmp;
-  }
-
-  // If no experiment configuration is set to a user with experimental-ui flag,
-  // set a default that exercises the full new code.
-  if (version == 0 &&
-      base::FeatureList::IsEnabled(::features::kExperimentalUi)) {
-    version = 1;
-    prefix_length = 0;
-    timeout_in_ms = 5000;
   }
 
   VLOG(1) << "PasswordGenerationRequirements parameters: " << version << ", "

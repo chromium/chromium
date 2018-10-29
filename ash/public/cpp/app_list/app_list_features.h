@@ -13,8 +13,7 @@ namespace base {
 struct Feature;
 }
 
-namespace app_list {
-namespace features {
+namespace app_list_features {
 
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
@@ -32,6 +31,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableBackgroundBlur;
 
 // Enables the Play Store app search.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnablePlayStoreAppSearch;
+
+// Enables in-app data search.
+ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
 
 // Enables the home launcher in tablet mode. In this mode, the launcher will be
 // always shown right on top of the wallpaper. Home button will minimize all
@@ -68,6 +70,7 @@ bool ASH_PUBLIC_EXPORT IsAnswerCardEnabled();
 bool ASH_PUBLIC_EXPORT IsAppShortcutSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsBackgroundBlurEnabled();
 bool ASH_PUBLIC_EXPORT IsPlayStoreAppSearchEnabled();
+bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsHomeLauncherEnabled();
 bool ASH_PUBLIC_EXPORT IsHomeLauncherGesturesEnabled();
 bool ASH_PUBLIC_EXPORT IsSettingsShortcutSearchEnabled();
@@ -82,7 +85,6 @@ std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
 std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();
 std::string ASH_PUBLIC_EXPORT AppSearchResultRankerPredictorName();
 
-}  // namespace features
-}  // namespace app_list
+}  // namespace app_list_features
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_APP_LIST_FEATURES_H_

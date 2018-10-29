@@ -11,7 +11,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/ui/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -233,6 +233,10 @@ UIColor* DimColorIncognito() {
          "is never sent to the search provider.";
   return GetOmniboxSuggestionIconForAutocompleteMatchType(_match.type,
                                                           self.isStarred);
+}
+
+- (BOOL)isTabMatch {
+  return _match.has_tab_match;
 }
 
 #pragma mark helpers

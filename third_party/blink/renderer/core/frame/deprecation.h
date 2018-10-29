@@ -39,9 +39,6 @@ class CORE_EXPORT Deprecation {
   // Be considerate to developers' consoles: features should only send
   // deprecation warnings when we're actively interested in removing them from
   // the platform.
-  //
-  // For shared workers and service workers, the ExecutionContext* overload
-  // doesn't count the usage but only sends a console warning.
   static void CountDeprecation(const LocalFrame*, WebFeature);
   static void CountDeprecation(ExecutionContext*, WebFeature);
   static void CountDeprecation(const Document&, WebFeature);

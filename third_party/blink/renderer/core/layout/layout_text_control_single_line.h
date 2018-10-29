@@ -77,7 +77,13 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height,
       LayoutUnit non_content_height) const override;
-  void AddOverflowFromChildren() final;
+
+  void ComputeVisualOverflow(const LayoutRect&, bool recompute_floats) override;
+
+  // If the INPUT content height is smaller than the font height, the
+  // inner-editor element overflows the INPUT box intentionally, however it
+  // shouldn't affect outside of the INPUT box.  So we ignore child overflow.
+  void AddLayoutOverflowFromChildren() final {}
 
   bool AllowsOverflowClip() const override { return false; }
 

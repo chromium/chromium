@@ -14,6 +14,8 @@ namespace switches {
 COMPONENT_EXPORT(MEDIA_SESSION_CPP) extern const char kEnableAudioFocus[];
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
 extern const char kEnableAudioFocusDuckFlash[];
+COMPONENT_EXPORT(MEDIA_SESSION_CPP)
+extern const char kEnableAudioFocusNoEnforce[];
 
 #if !defined(OS_ANDROID)
 COMPONENT_EXPORT(MEDIA_SESSION_CPP)
@@ -27,6 +29,10 @@ COMPONENT_EXPORT(MEDIA_SESSION_CPP) bool IsAudioFocusEnabled();
 // Based on the command line of the current process, determine if
 // audio focus duck flash should be enabled.
 COMPONENT_EXPORT(MEDIA_SESSION_CPP) bool IsAudioFocusDuckFlashEnabled();
+
+// Based on the command line of the current process, determine if
+// audio focus enforcement should be enabled.
+COMPONENT_EXPORT(MEDIA_SESSION_CPP) bool IsAudioFocusEnforcementEnabled();
 
 COMPONENT_EXPORT(MEDIA_SESSION_CPP) bool IsMediaSessionEnabled();
 

@@ -12,6 +12,7 @@ goog.provide('Background');
 goog.require('AutomationPredicate');
 goog.require('AutomationUtil');
 goog.require('BackgroundKeyboardHandler');
+goog.require('BackgroundMouseHandler');
 goog.require('BrailleCommandData');
 goog.require('BrailleCommandHandler');
 goog.require('ChromeVoxState');
@@ -121,6 +122,13 @@ Background = function() {
   /** @type {!BackgroundKeyboardHandler} @private */
   this.keyboardHandler_ = new BackgroundKeyboardHandler();
 
+  /** @type {!BackgroundMouseHandler} @private */
+  this.mouseHandler_ = new BackgroundMouseHandler();
+
+  if (localStorage['speakTextUnderMouse'] == String(true)) {
+    chrome.accessibilityPrivate.enableChromeVoxMouseEvents(true);
+  }
+
   /** @type {!LiveRegions} @private */
   this.liveRegions_ = new LiveRegions(this);
 
@@ -138,11 +146,6 @@ Background = function() {
    * @private
    */
   this.focusRecoveryMap_ = new WeakMap();
-
-  chrome.automation.getDesktop(function(desktop) {
-    /** @type {string} */
-    this.chromeChannel_ = desktop.chromeChannel;
-  }.bind(this));
 
   CommandHandler.init();
   FindHandler.init();
@@ -437,11 +440,6 @@ Background.prototype = {
           AutomationPredicate.linkOrControl(node);
     };
 
-    // Always try to give nodes selection.
-    if (start.defaultActionVerb == chrome.automation.DefaultActionVerb.SELECT) {
-      start.doDefault();
-    }
-
     // Next, try to focus the start or end node.
     if (!AutomationPredicate.structuralContainer(start) &&
         start.state[StateType.FOCUSABLE]) {
@@ -472,7 +470,7 @@ Background.prototype = {
     // the next or previous focusable node from |start|.
     if (!start.state[StateType.OFFSCREEN])
       start.setSequentialFocusNavigationStartingPoint();
-  }
+  },
 };
 
 /**

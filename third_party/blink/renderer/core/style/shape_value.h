@@ -64,7 +64,6 @@ class ShapeValue final : public GarbageCollectedFinalized<ShapeValue> {
   BasicShape* Shape() const { return shape_.get(); }
 
   StyleImage* GetImage() const { return image_.Get(); }
-  bool IsImageValid() const;
   void SetImage(StyleImage* image) {
     DCHECK_EQ(GetType(), kImage);
     if (image_ != image)

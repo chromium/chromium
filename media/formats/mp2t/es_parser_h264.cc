@@ -203,7 +203,7 @@ EsParserH264::EsParserH264(const NewVideoConfigCB& new_video_config_cb,
       next_access_unit_pos_(0),
       use_hls_sample_aes_(use_hls_sample_aes),
       get_decrypt_config_cb_(get_decrypt_config_cb) {
-  DCHECK_EQ(!get_decrypt_config_cb_.is_null(), use_hls_sample_aes_);
+  DCHECK_EQ(!!get_decrypt_config_cb_, use_hls_sample_aes_);
 }
 #endif
 
@@ -442,7 +442,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   const DecryptConfig* base_decrypt_config = nullptr;
   if (use_hls_sample_aes_) {
-    DCHECK(!get_decrypt_config_cb_.is_null());
+    DCHECK(get_decrypt_config_cb_);
     base_decrypt_config = get_decrypt_config_cb_.Run();
   }
 

@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/main_menu_builder.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -94,12 +95,21 @@ TEST(MainMenuBuilderTest, StringId) {
 }
 
 TEST(MainMenuBuilderTest, StringIdWithArg) {
+  base::string16 product_name(base::ASCIIToUTF16("MyAppIsTotallyAwesome"));
   base::scoped_nsobject<NSMenuItem> item =
-      MenuItemBuilder(IDS_ABOUT_MAC).string_format_1(IDS_PRODUCT_NAME).Build();
+      MenuItemBuilder(IDS_ABOUT_MAC).string_format_1(product_name).Build();
 
-  base::string16 product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   EXPECT_NSEQ(l10n_util::GetNSStringF(IDS_ABOUT_MAC, product_name),
               [item title]);
+}
+
+TEST(MainMenuBuilderTest, Disabled) {
+  base::scoped_nsobject<NSMenuItem> item =
+      MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(true).Build();
+  EXPECT_EQ(nil, item.get());
+
+  item = MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(false).Build();
+  EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
 }
 
 }  // namespace

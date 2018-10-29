@@ -21,6 +21,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/common/url_constants.h"
@@ -98,8 +99,8 @@ class URLRequestContextFactory::URLRequestContextGetter
 
   scoped_refptr<base::SingleThreadTaskRunner>
       GetNetworkTaskRunner() const override {
-    return content::BrowserThread::GetTaskRunnerForThread(
-        content::BrowserThread::IO);
+    return base::CreateSingleThreadTaskRunnerWithTraits(
+        {content::BrowserThread::IO});
   }
 
  private:
@@ -139,8 +140,8 @@ class URLRequestContextFactory::MainURLRequestContextGetter
 
   scoped_refptr<base::SingleThreadTaskRunner>
       GetNetworkTaskRunner() const override {
-    return content::BrowserThread::GetTaskRunnerForThread(
-        content::BrowserThread::IO);
+    return base::CreateSingleThreadTaskRunnerWithTraits(
+        {content::BrowserThread::IO});
   }
 
  private:
@@ -178,8 +179,8 @@ void URLRequestContextFactory::InitializeOnUIThread(net::NetLog* net_log) {
   pref_proxy_config_tracker_impl_ =
       std::make_unique<PrefProxyConfigTrackerImpl>(
           CastBrowserProcess::GetInstance()->pref_service(),
-          content::BrowserThread::GetTaskRunnerForThread(
-              content::BrowserThread::IO));
+          base::CreateSingleThreadTaskRunnerWithTraits(
+              {content::BrowserThread::IO}));
 
   proxy_config_service_ =
       pref_proxy_config_tracker_impl_->CreateTrackingProxyConfigService(

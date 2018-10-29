@@ -4,4 +4,3 @@ PASS successfullyParsed is true
 TEST COMPLETE
 Test calling window.open() in a nested call to setTimeout(). A popup should be allowed.
 PASS newWindow is non-null.
-

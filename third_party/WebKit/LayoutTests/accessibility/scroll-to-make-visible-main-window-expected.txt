@@ -2,7 +2,6 @@ Tests that scrolling to make an element visible successfully scrolls the main wi
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Upper Target
 5000-pixel box
 Lower Target

@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_ble_pin_entry_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_transport_selector_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/ble_device_selection_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
@@ -92,12 +94,12 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               dialog_model));
       break;
     case Step::kBleDeviceSelection:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+      sheet_view = std::make_unique<BleDeviceSelectionSheetView>(
           std::make_unique<AuthenticatorBleDeviceSelectionSheetModel>(
               dialog_model));
       break;
     case Step::kBlePinEntry:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+      sheet_view = std::make_unique<AuthenticatorBlePinEntrySheetView>(
           std::make_unique<AuthenticatorBlePinEntrySheetModel>(dialog_model));
       break;
     case Step::kBleVerifying:

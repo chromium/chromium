@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -24,10 +25,13 @@ namespace net {
 
 namespace {
 
+constexpr int kMaxJsonSize = 16 * 1024;
+constexpr int kMaxJsonDepth = 5;
+
 class ReportingServiceImpl : public ReportingService {
  public:
   ReportingServiceImpl(std::unique_ptr<ReportingContext> context)
-      : context_(std::move(context)), weak_factory_(this) {}
+      : context_(std::move(context)) {}
 
   // ReportingService implementation:
 
@@ -50,13 +54,21 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void ProcessHeader(const GURL& url,
-                     const std::string& header_value) override {
-    context_->delegate()->ParseJson(
-        "[" + header_value + "]",
-        base::BindRepeating(&ReportingServiceImpl::ProcessHeaderValue,
-                            weak_factory_.GetWeakPtr(), url),
-        base::BindRepeating(
-            &ReportingHeaderParser::RecordHeaderDiscardedForJsonInvalid));
+                     const std::string& header_string) override {
+    if (header_string.size() > kMaxJsonSize) {
+      ReportingHeaderParser::RecordHeaderDiscardedForJsonTooBig();
+      return;
+    }
+
+    std::unique_ptr<base::Value> header_value = base::JSONReader::Read(
+        "[" + header_string + "]", base::JSON_PARSE_RFC, kMaxJsonDepth);
+    if (!header_value) {
+      ReportingHeaderParser::RecordHeaderDiscardedForJsonInvalid();
+      return;
+    }
+
+    ReportingHeaderParser::ParseHeader(context_.get(), url,
+                                       std::move(header_value));
   }
 
   void RemoveBrowsingData(int data_type_mask,
@@ -88,12 +100,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
  private:
-  void ProcessHeaderValue(const GURL& url, std::unique_ptr<base::Value> value) {
-    ReportingHeaderParser::ParseHeader(context_.get(), url, std::move(value));
-  }
-
   std::unique_ptr<ReportingContext> context_;
-  base::WeakPtrFactory<ReportingServiceImpl> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportingServiceImpl);
 };

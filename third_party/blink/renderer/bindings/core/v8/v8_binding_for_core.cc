@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_error_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_link_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
@@ -60,7 +59,6 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -715,12 +713,11 @@ static ScriptState* ToScriptStateImpl(LocalFrame* frame,
 v8::Local<v8::Context> ToV8Context(ExecutionContext* context,
                                    DOMWrapperWorld& world) {
   DCHECK(context);
-  if (context->IsDocument()) {
-    if (LocalFrame* frame = ToDocument(context)->GetFrame())
+  if (auto* document = DynamicTo<Document>(context)) {
+    if (LocalFrame* frame = document->GetFrame())
       return ToV8Context(frame, world);
-  } else if (context->IsWorkerOrWorkletGlobalScope()) {
-    if (WorkerOrWorkletScriptController* script =
-            ToWorkerOrWorkletGlobalScope(context)->ScriptController()) {
+  } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
+    if (WorkerOrWorkletScriptController* script = scope->ScriptController()) {
       if (script->GetScriptState()->ContextIsValid())
         return script->GetScriptState()->GetContext();
     }
@@ -901,42 +898,6 @@ Vector<String> GetOwnPropertyNames(v8::Isolate* isolate,
 
   return NativeValueTraits<IDLSequence<IDLString>>::NativeValue(
       isolate, property_names, exception_state);
-}
-
-void StoreExceptionForInspector(ScriptState* script_state,
-                                ErrorEvent* event,
-                                v8::Local<v8::Value> data,
-                                v8::Local<v8::Object> creation_context) {
-  v8::Local<v8::Value> wrapped_event =
-      ToV8(event, creation_context, script_state->GetIsolate());
-  if (wrapped_event.IsEmpty())
-    return;
-
-  DCHECK(wrapped_event->IsObject());
-  auto private_error =
-      V8PrivateProperty::GetErrorEventError(script_state->GetIsolate());
-  private_error.Set(wrapped_event.As<v8::Object>(), data);
-}
-
-v8::Local<v8::Value> LoadExceptionForInspector(
-    ScriptState* script_state,
-    ErrorEvent* event,
-    v8::Local<v8::Object> creation_context) {
-  v8::Local<v8::Value> wrapped_event =
-      ToV8(event, creation_context, script_state->GetIsolate());
-  if (wrapped_event.IsEmpty() || !wrapped_event->IsObject())
-    return v8::Local<v8::Value>();
-
-  DCHECK(wrapped_event->IsObject());
-  auto private_error =
-      V8PrivateProperty::GetErrorEventError(script_state->GetIsolate());
-  v8::Local<v8::Value> error;
-  if (!private_error.GetOrUndefined(wrapped_event.As<v8::Object>())
-           .ToLocal(&error) ||
-      error->IsUndefined()) {
-    return v8::Local<v8::Value>();
-  }
-  return error;
 }
 
 }  // namespace blink

@@ -117,7 +117,7 @@ void ExpandButton::OnBlur() {
 
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(views::ImageView::GetTooltipText());
+  node_data->SetName(tooltip_text());
 }
 
 // Do relative time string formatting that is similar to
@@ -369,7 +369,7 @@ void NotificationHeaderView::SetExpanded(bool expanded) {
   expand_button_->SetImage(gfx::CreateVectorIcon(
       expanded ? kNotificationExpandLessIcon : kNotificationExpandMoreIcon,
       kExpandIconSize, accent_color_));
-  expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
+  expand_button_->set_tooltip_text(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);

@@ -19,6 +19,10 @@ namespace gaia {
 struct OAuthClientInfo;
 }
 
+namespace network {
+class NetworkConnectionTracker;
+}
+
 namespace cloud_print {
 
 // CloudPrintProxyFrontend is the interface used by CloudPrintProxyBackend to
@@ -56,10 +60,12 @@ class CloudPrintProxyFrontend {
 
 class CloudPrintProxyBackend {
  public:
-  CloudPrintProxyBackend(CloudPrintProxyFrontend* frontend,
-                         const ConnectorSettings& settings,
-                         const gaia::OAuthClientInfo& oauth_client_info,
-                         bool enable_job_poll);
+  CloudPrintProxyBackend(
+      CloudPrintProxyFrontend* frontend,
+      const ConnectorSettings& settings,
+      const gaia::OAuthClientInfo& oauth_client_info,
+      bool enable_job_poll,
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~CloudPrintProxyBackend();
 
   // Legacy mechanism when we have saved user credentials but no saved robot

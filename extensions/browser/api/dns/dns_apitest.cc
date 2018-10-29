@@ -36,7 +36,8 @@ class DnsApiTest : public ShellApiTest {
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   scoped_refptr<DnsResolveFunction> resolve_function(new DnsResolveFunction());
-  scoped_refptr<Extension> empty_extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> empty_extension =
+      ExtensionBuilder("Test").Build();
 
   resolve_function->set_extension(empty_extension.get());
   resolve_function->set_has_callback(true);
@@ -57,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   scoped_refptr<DnsResolveFunction> resolve_function(new DnsResolveFunction());
-  scoped_refptr<Extension> empty_extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> empty_extension =
+      ExtensionBuilder("Test").Build();
 
   resolve_function->set_extension(empty_extension.get());
   resolve_function->set_has_callback(true);

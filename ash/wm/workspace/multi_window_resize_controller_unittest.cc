@@ -406,6 +406,29 @@ TEST_F(MultiWindowResizeControllerTest, WindowStateChange) {
   EXPECT_FALSE(IsShowing());
 }
 
+// Tests that if one of the resized windows visibility changes to hidden, the
+// resize widget should be dismissed.
+TEST_F(MultiWindowResizeControllerTest, HideWindowTest) {
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
+      &delegate1, -1, gfx::Rect(0, 0, 100, 100)));
+  delegate1.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &delegate2, -2, gfx::Rect(100, 0, 100, 100)));
+  delegate2.set_window_component(HTLEFT);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Point w1_center_in_screen = w1->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(w1_center_in_screen);
+  ShowNow();
+  EXPECT_TRUE(IsShowing());
+
+  // Hide one window should dimiss the resizer.
+  w1->Hide();
+  EXPECT_FALSE(IsShowing());
+}
+
 namespace {
 
 class TestWindowStateDelegate : public wm::WindowStateDelegate {

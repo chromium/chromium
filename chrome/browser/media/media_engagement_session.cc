@@ -166,6 +166,8 @@ void MediaEngagementSession::RecordUkmMetrics() {
   MediaEngagementScore score =
       service_->CreateEngagementScore(origin_.GetURL());
   ukm::builders::Media_Engagement_SessionFinished(ukm_source_id_)
+      .SetPlaybacks_AudioContextTotal(score.audio_context_playbacks())
+      .SetPlaybacks_MediaElementTotal(score.media_element_playbacks())
       .SetPlaybacks_Total(score.media_playbacks())
       .SetVisits_Total(score.visits())
       .SetEngagement_Score(round(score.actual_score() * 100))

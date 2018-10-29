@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -205,7 +204,7 @@ class PlatformKeysService : public KeyedService {
   content::BrowserContext* browser_context_;
   KeyPermissions key_permissions_;
   std::unique_ptr<SelectDelegate> select_delegate_;
-  base::queue<linked_ptr<Task>> tasks_;
+  base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<PlatformKeysService> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformKeysService);

@@ -2,20 +2,24 @@ Tests the TreeWalker.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test that TreeWalker.parent() doesn't set the currentNode to a node not under the root.
+
 
 PASS w.currentNode is subTree
 PASS w.parentNode() is null
 PASS w.currentNode is subTree
 
+
 Test that setting the currentNode to non-Node values throws.
+
 
 PASS w.currentNode = null threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
 PASS w.currentNode = {} threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
 PASS w.currentNode = window threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
 
+
 Test that we handle setting the currentNode to arbitrary nodes not under the root element.
+
 
 PASS w.parentNode() is null
 PASS w.currentNode is document.documentElement
@@ -32,7 +36,9 @@ PASS w.currentNode is document.documentElement
 PASS w.previousSibling() is null
 PASS w.currentNode is document.documentElement
 
+
 Test how we handle the case when the traversed to node within the root, but the currentElement is not.
+
 
 PASS w.nextNode() is subTree
 PASS w.lastChild() is subTree

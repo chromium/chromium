@@ -392,15 +392,6 @@ WallpaperUtil.setOnlineWallpaperWithoutPreview = function(
 };
 
 /**
- * Gets the suffix to append to the base url of an online wallpaper. The
- * requested thumbnail is displayed in the wallpaper picker grid.
- */
-WallpaperUtil.getOnlineWallpaperThumbnailSuffix = function() {
-  return loadTimeData.getBoolean('useNewWallpaperPicker') ? '' :
-                                                            '_thumbnail.png';
-};
-
-/**
  * Creates a blob of type 'image/png'.
  * @param {string} data The image data.
  */
@@ -427,35 +418,22 @@ WallpaperUtil.displayImage = function(imageElement, data, opt_callback) {
 };
 
 /**
- * Sets the value of the surprise me checkbox (or the daily refresh toggle on
- * the new picker).
+ * Sets the value of the daily refresh toggle.
  * @param {boolean} checked The value used to set the checkbox.
  */
 WallpaperUtil.setSurpriseMeCheckboxValue = function(checked) {
-  if (loadTimeData.getBoolean('useNewWallpaperPicker')) {
     document.querySelectorAll('.daily-refresh-slider').forEach(element => {
       element.classList.toggle('checked', checked);
     });
-  } else {
-    $('surprise-me')
-        .querySelector('#checkbox')
-        .classList.toggle('checked', checked);
-  }
 };
 
 /**
- * Gets the value of the surprise me checkbox (or the value of the daily refresh
- * toggle on the new picker).
+ * Gets the state of the daily refresh toggle.
  * @return {boolean} The value of the checkbox.
  */
 WallpaperUtil.getSurpriseMeCheckboxValue = function() {
-  if (loadTimeData.getBoolean('useNewWallpaperPicker')) {
     return document.querySelector('.daily-refresh-slider')
         .classList.contains('checked');
-  }
-  return $('surprise-me')
-      .querySelector('#checkbox')
-      .classList.contains('checked');
 };
 
 /**
@@ -475,8 +453,7 @@ WallpaperUtil.displayThumbnail = function(imageElement, url, source) {
       // operation within |WallpaperThumbnailsGridItem.decorate| hasn't
       // completed. See http://crbug.com/792829.
       var xhr = new XMLHttpRequest();
-      xhr.open(
-          'GET', url + WallpaperUtil.getOnlineWallpaperThumbnailSuffix(), true);
+      xhr.open('GET', url, true);
       xhr.responseType = 'arraybuffer';
       xhr.send(null);
       xhr.addEventListener('load', function(e) {

@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
-#include "content/browser/renderer_host/pepper/ssl_context_helper.h"
 #include "content/common/content_export.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/browser/browser_ppapi_host.h"
@@ -100,10 +99,6 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
     return message_filter_;
   }
 
-  const scoped_refptr<SSLContextHelper>& ssl_context_helper() const {
-    return ssl_context_helper_;
-  }
-
  private:
   friend class BrowserPpapiHostTest;
 
@@ -152,8 +147,6 @@ class CONTENT_EXPORT BrowserPpapiHostImpl : public BrowserPpapiHost {
   // If true, this is an external plugin, i.e. created by the embedder using
   // BrowserPpapiHost::CreateExternalPluginProcess.
   bool external_plugin_;
-
-  scoped_refptr<SSLContextHelper> ssl_context_helper_;
 
   // Tracks all PP_Instances in this plugin and associated data.
   std::unordered_map<PP_Instance, std::unique_ptr<InstanceData>> instance_map_;

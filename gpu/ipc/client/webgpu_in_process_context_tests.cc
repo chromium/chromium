@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/config/gpu_switches.h"
+#include "gpu/ipc/in_process_gpu_thread_holder.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,23 +19,23 @@ namespace {
 
 class WebGPUInProcessCommandBufferTest : public ::testing::Test {
  public:
-  std::unique_ptr<WebGPUInProcessContext> CreateWebGPUInProcessContext() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableUnsafeWebGPU);
+  WebGPUInProcessCommandBufferTest() {
+    gpu_thread_holder_.GetGpuPreferences()->enable_webgpu = true;
+  }
 
+  std::unique_ptr<WebGPUInProcessContext> CreateWebGPUInProcessContext() {
     ContextCreationAttribs attributes;
     attributes.bind_generates_resource = false;
     attributes.enable_gles2_interface = false;
     attributes.context_type = CONTEXT_TYPE_WEBGPU;
 
-    static scoped_refptr<CommandBufferTaskExecutor> task_executor = nullptr;
     static constexpr GpuMemoryBufferManager* memory_buffer_manager = nullptr;
     static constexpr ImageFactory* image_factory = nullptr;
     static constexpr GpuChannelManagerDelegate* channel_manager = nullptr;
     auto context = std::make_unique<WebGPUInProcessContext>();
     auto result = context->Initialize(
-        task_executor, attributes, SharedMemoryLimits(), memory_buffer_manager,
-        image_factory, channel_manager);
+        gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
+        memory_buffer_manager, image_factory, channel_manager);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
   }
@@ -47,6 +48,7 @@ class WebGPUInProcessCommandBufferTest : public ::testing::Test {
   void TearDown() override { context_.reset(); }
 
  protected:
+  InProcessGpuThreadHolder gpu_thread_holder_;
   webgpu::WebGPUInterface* wg_;  // not owned
   std::unique_ptr<WebGPUInProcessContext> context_;
 };

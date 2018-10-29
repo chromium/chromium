@@ -51,19 +51,15 @@ class ImmersiveModeControllerAsh
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
-  views::Widget* GetRevealWidget() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
  private:
   // Updates the browser root view's layout including window caption controls.
   void LayoutBrowserRootView();
 
-  // Used when running in mash to create |mash_reveal_widget_|. Does nothing
-  // if already null.
-  void CreateMashRevealWidget();
-
-  // Destroys |mash_reveal_widget_| if valid, does nothing otherwise.
-  void DestroyMashRevealWidget();
+  // See LocatedEventRetargeter.
+  void InstallEventRewriter();
+  void UninstallEventRewriter();
 
   // ImmersiveFullscreenController::Delegate overrides:
   void OnImmersiveRevealStarted() override;
@@ -84,8 +80,6 @@ class ImmersiveModeControllerAsh
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  gfx::Rect GetScreenBoundsForRevealWidget();
-
   std::unique_ptr<ash::ImmersiveFullscreenController> controller_;
 
   BrowserView* browser_view_ = nullptr;
@@ -97,10 +91,6 @@ class ImmersiveModeControllerAsh
   // The fraction of the TopContainerView's height which is visible. Zero when
   // the top-of-window views are not revealed.
   double visible_fraction_ = 1.0;
-
-  // When running in mash a widget is created to draw window controls on top of
-  // the browser's |top_container|.
-  std::unique_ptr<views::Widget> mash_reveal_widget_;
 
   // See comment above LocatedEventRetargeter.
   std::unique_ptr<ui::EventRewriter> event_rewriter_;

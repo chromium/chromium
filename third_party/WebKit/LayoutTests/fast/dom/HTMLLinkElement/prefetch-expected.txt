@@ -1,3 +1,4 @@
 prefetch.link has MIME type text/plain
 This test requires DumpRenderTree to see the log of what resources are loaded.
+
 SUCCESS! prefetch onload called.

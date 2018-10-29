@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
-#include "third_party/blink/renderer/core/workers/main_thread_worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -79,10 +79,10 @@ Mutex& CreationMutex() {
 LocalFrame* ToFrame(ExecutionContext* context) {
   if (!context)
     return nullptr;
-  if (context->IsDocument())
-    return ToDocument(context)->GetFrame();
+  if (auto* document = DynamicTo<Document>(context))
+    return document->GetFrame();
   if (context->IsMainThreadWorkletGlobalScope())
-    return ToMainThreadWorkletGlobalScope(context)->GetFrame();
+    return To<WorkletGlobalScope>(context)->GetFrame();
   return nullptr;
 }
 }
@@ -172,19 +172,18 @@ void MainThreadDebugger::ExceptionThrown(ExecutionContext* context,
                                          ErrorEvent* event) {
   LocalFrame* frame = nullptr;
   ScriptState* script_state = nullptr;
-  if (context->IsDocument()) {
-    frame = ToDocument(context)->GetFrame();
+  if (auto* document = DynamicTo<Document>(context)) {
+    frame = document->GetFrame();
     if (!frame)
       return;
     script_state =
         event->World() ? ToScriptState(frame, *event->World()) : nullptr;
   } else if (context->IsMainThreadWorkletGlobalScope()) {
-    frame = ToMainThreadWorkletGlobalScope(context)->GetFrame();
+    auto* scope = To<WorkletGlobalScope>(context);
+    frame = scope->GetFrame();
     if (!frame)
       return;
-    script_state = ToMainThreadWorkletGlobalScope(context)
-                       ->ScriptController()
-                       ->GetScriptState();
+    script_state = scope->ScriptController()->GetScriptState();
   } else {
     NOTREACHED();
   }
@@ -196,8 +195,12 @@ void MainThreadDebugger::ExceptionThrown(ExecutionContext* context,
   const String default_message = "Uncaught";
   if (script_state && script_state->ContextIsValid()) {
     ScriptState::Scope scope(script_state);
-    v8::Local<v8::Value> exception = LoadExceptionForInspector(
-        script_state, event, script_state->GetContext()->Global());
+    ScriptValue error = event->error(script_state);
+    v8::Local<v8::Value> exception =
+        error.IsEmpty()
+            ? v8::Local<v8::Value>(v8::Null(script_state->GetIsolate()))
+            : error.V8Value();
+
     SourceLocation* location = event->Location();
     String message = event->MessageForConsole();
     String url = location->Url();
@@ -370,9 +373,7 @@ static Node* SecondArgumentAsNode(
   }
   ExecutionContext* execution_context =
       ToExecutionContext(info.GetIsolate()->GetCurrentContext());
-  if (execution_context->IsDocument())
-    return ToDocument(execution_context);
-  return nullptr;
+  return DynamicTo<Document>(execution_context);
 }
 
 void MainThreadDebugger::QuerySelectorCallback(

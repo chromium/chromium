@@ -51,13 +51,13 @@ class FakePrinter(object):
     def print_expected(self, run_results, get_tests_with_result_type):
         pass
 
-    def print_workers_and_shards(self, num_workers, num_shards, num_locked_shards):
+    def print_workers_and_shards(self, port, num_workers, num_shards, num_locked_shards):
         pass
 
     def print_started_test(self, test_name):
         pass
 
-    def print_finished_test(self, result, expected, exp_str, got_str):
+    def print_finished_test(self, port, result, expected, exp_str, got_str):
         pass
 
     def write(self, msg):
@@ -144,9 +144,7 @@ class LayoutTestRunnerTests(unittest.TestCase):
             runner._interrupt_if_at_failure_limits(run_results)
 
     def test_update_summary_with_result(self):
-        # Reftests expected to be image mismatch should be respected when pixel_tests=False.
         runner = self._runner()
-        runner._options.pixel_tests = False
         test = 'failures/expected/reftest.html'
         expectations = TestExpectations(runner._port, tests=[test])
         runner._expectations = expectations

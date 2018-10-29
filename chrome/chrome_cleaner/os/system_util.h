@@ -7,10 +7,9 @@
 
 #include <windows.h>
 
-#include <wincrypt.h>
-
 #include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/wincrypt_shim.h"
 
 namespace chrome_cleaner {
 

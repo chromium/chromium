@@ -16,6 +16,8 @@ login.createScreen('UpdateScreen', 'update', function() {
   var CONTEXT_KEY_PROGRESS = 'progress';
   var CONTEXT_KEY_PROGRESS_MESSAGE = 'progress-msg';
   var CONTEXT_KEY_CANCEL_UPDATE_SHORTCUT_ENABLED = 'cancel-update-enabled';
+  var CONTEXT_KEY_REQUIRES_PERMISSION_FOR_CELLULAR =
+      'requires-permission-for-cellular';
 
   return {
     EXTERNAL_API: [],
@@ -50,6 +52,11 @@ login.createScreen('UpdateScreen', 'update', function() {
       this.context.addObserver(
           CONTEXT_KEY_PROGRESS_MESSAGE, function(progress_msg) {
             self.setProgressMessage(progress_msg);
+          });
+      this.context.addObserver(
+          CONTEXT_KEY_REQUIRES_PERMISSION_FOR_CELLULAR,
+          function(requires_permission) {
+            self.setRequiresPermissionForCellular(requires_permission);
           });
       this.context.addObserver(
           CONTEXT_KEY_CANCEL_UPDATE_SHORTCUT_ENABLED, function(enabled) {
@@ -95,6 +102,10 @@ login.createScreen('UpdateScreen', 'update', function() {
      */
     setUpdateProgress: function(progress) {
       $('oobe-update-md').progressValue = progress;
+    },
+
+    setRequiresPermissionForCellular: function(requiresPermission) {
+      $('oobe-update-md').requiresPermissionForCellular = requiresPermission;
     },
 
     /**

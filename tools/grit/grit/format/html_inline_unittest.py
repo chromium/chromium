@@ -58,6 +58,8 @@ class HtmlInlineUnittest(unittest.TestCase):
       'test.css': '''
       .image {
         background: url('test.png');
+        background-image: url([[ignoreMe]]);
+        background-image: image-set(url({{alsoMe}}), 1x);
       }
       ''',
 

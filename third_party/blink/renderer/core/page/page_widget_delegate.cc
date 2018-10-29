@@ -179,7 +179,8 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
       if (!root || !root->View())
         return WebInputEventResult::kHandledSuppressed;
       handler.HandleMouseMove(*root, static_cast<const WebMouseEvent&>(event),
-                              coalesced_event.GetCoalescedEventsPointers());
+                              coalesced_event.GetCoalescedEventsPointers(),
+                              coalesced_event.GetPredictedEventsPointers());
       return WebInputEventResult::kHandledSystem;
     case WebInputEvent::kMouseLeave:
       if (!root || !root->View())
@@ -238,7 +239,8 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
         return WebInputEventResult::kNotHandled;
       return handler.HandlePointerEvent(
           *root, static_cast<const WebPointerEvent&>(event),
-          coalesced_event.GetCoalescedEventsPointers());
+          coalesced_event.GetCoalescedEventsPointers(),
+          coalesced_event.GetPredictedEventsPointers());
 
     case WebInputEvent::kTouchStart:
     case WebInputEvent::kTouchMove:
@@ -266,12 +268,14 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
 void PageWidgetEventHandler::HandleMouseMove(
     LocalFrame& main_frame,
     const WebMouseEvent& event,
-    const std::vector<const WebInputEvent*>& coalesced_events) {
+    const std::vector<const WebInputEvent*>& coalesced_events,
+    const std::vector<const WebInputEvent*>& predicted_events) {
   WebMouseEvent transformed_event =
       TransformWebMouseEvent(main_frame.View(), event);
   main_frame.GetEventHandler().HandleMouseMoveEvent(
       transformed_event,
-      TransformWebMouseEventVector(main_frame.View(), coalesced_events));
+      TransformWebMouseEventVector(main_frame.View(), coalesced_events),
+      TransformWebMouseEventVector(main_frame.View(), predicted_events));
 }
 
 void PageWidgetEventHandler::HandleMouseLeave(LocalFrame& main_frame,
@@ -306,12 +310,14 @@ WebInputEventResult PageWidgetEventHandler::HandleMouseWheel(
 WebInputEventResult PageWidgetEventHandler::HandlePointerEvent(
     LocalFrame& main_frame,
     const WebPointerEvent& event,
-    const std::vector<const WebInputEvent*>& coalesced_events) {
+    const std::vector<const WebInputEvent*>& coalesced_events,
+    const std::vector<const WebInputEvent*>& predicted_events) {
   WebPointerEvent transformed_event =
       TransformWebPointerEvent(main_frame.View(), event);
   return main_frame.GetEventHandler().HandlePointerEvent(
       transformed_event,
-      TransformWebPointerEventVector(main_frame.View(), coalesced_events));
+      TransformWebPointerEventVector(main_frame.View(), coalesced_events),
+      TransformWebPointerEventVector(main_frame.View(), predicted_events));
 }
 
 }  // namespace blink

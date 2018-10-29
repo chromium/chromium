@@ -59,8 +59,7 @@ ValueStore::ReadResult TestingValueStore::Get(
     return ReadResult(CreateStatusCopy(status_));
 
   auto settings = std::make_unique<base::DictionaryValue>();
-  for (std::vector<std::string>::const_iterator it = keys.begin();
-      it != keys.end(); ++it) {
+  for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
     base::Value* value = NULL;
     if (storage_.GetWithoutPathExpansion(*it, &value)) {
       settings->SetWithoutPathExpansion(*it, value->CreateDeepCopy());
@@ -115,8 +114,7 @@ ValueStore::WriteResult TestingValueStore::Remove(
     return WriteResult(CreateStatusCopy(status_));
 
   std::unique_ptr<ValueStoreChangeList> changes(new ValueStoreChangeList());
-  for (std::vector<std::string>::const_iterator it = keys.begin();
-      it != keys.end(); ++it) {
+  for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
     std::unique_ptr<base::Value> old_value;
     if (storage_.RemoveWithoutPathExpansion(*it, &old_value)) {
       changes->push_back(ValueStoreChange(*it, std::move(old_value), nullptr));

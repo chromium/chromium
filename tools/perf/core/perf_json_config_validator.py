@@ -86,9 +86,10 @@ def _ValidateBrowserType(builder_name, test_config):
     if not browser_options.webview_embedder_apk:
       raise ValueError('%s must set --webview-embedder-apk flag' % builder_name)
   elif 'Android' in builder_name or 'android' in builder_name:
-    if browser_options.browser != 'android-chromium':
-      raise ValueError("%s must use 'android-chromium' browser" %
-                       builder_name)
+    if browser_options.browser not in ('android-chromium', 'android-chrome'):
+      raise ValueError(
+          "%s must use 'android-chromium' or 'android-chrome' browser" %
+          builder_name)
   elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf'):
     if browser_options.browser != 'release_x64':
       raise ValueError("%s must use 'release_x64' browser type" %

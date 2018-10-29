@@ -78,7 +78,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   ResourceRequest not_mixed_content("https://example.test/foo.jpg");
   not_mixed_content.SetFrameType(
       network::mojom::RequestContextFrameType::kAuxiliary);
-  not_mixed_content.SetRequestContext(WebURLRequest::kRequestContextScript);
+  not_mixed_content.SetRequestContext(mojom::RequestContextType::SCRIPT);
   EXPECT_EQ(WebMixedContentContextType::kNotMixedContent,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), not_mixed_content));
@@ -92,8 +92,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   ResourceRequest blockable_mixed_content("http://example.test/foo.jpg");
   blockable_mixed_content.SetFrameType(
       network::mojom::RequestContextFrameType::kAuxiliary);
-  blockable_mixed_content.SetRequestContext(
-      WebURLRequest::kRequestContextScript);
+  blockable_mixed_content.SetRequestContext(mojom::RequestContextType::SCRIPT);
   EXPECT_EQ(WebMixedContentContextType::kBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
@@ -102,8 +101,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
       "http://example.test/foo.jpg");
   blockable_mixed_content.SetFrameType(
       network::mojom::RequestContextFrameType::kAuxiliary);
-  blockable_mixed_content.SetRequestContext(
-      WebURLRequest::kRequestContextImage);
+  blockable_mixed_content.SetRequestContext(mojom::RequestContextType::IMAGE);
   EXPECT_EQ(WebMixedContentContextType::kOptionallyBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
@@ -137,11 +135,10 @@ TEST(MixedContentCheckerTest, HandleCertificateError) {
   MixedContentChecker::HandleCertificateError(
       &dummy_page_holder->GetFrame(), response1,
       network::mojom::RequestContextFrameType::kNone,
-      WebURLRequest::kRequestContextScript);
+      mojom::RequestContextType::SCRIPT);
 
   ResourceResponse response2(displayed_url);
-  WebURLRequest::RequestContext request_context =
-      WebURLRequest::kRequestContextImage;
+  mojom::RequestContextType request_context = mojom::RequestContextType::IMAGE;
   ASSERT_EQ(
       WebMixedContentContextType::kOptionallyBlockable,
       WebMixedContent::ContextTypeFromRequestContext(
@@ -204,14 +201,14 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
 
   // Test that a mixed content favicon is correctly blocked.
   EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
-      &dummy_page_holder->GetFrame(), WebURLRequest::kRequestContextFavicon,
+      &dummy_page_holder->GetFrame(), mojom::RequestContextType::FAVICON,
       network::mojom::RequestContextFrameType::kNone,
       ResourceRequest::RedirectStatus::kNoRedirect, http_favicon_url,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   // Test that a secure favicon is not blocked.
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
-      &dummy_page_holder->GetFrame(), WebURLRequest::kRequestContextFavicon,
+      &dummy_page_holder->GetFrame(), mojom::RequestContextType::FAVICON,
       network::mojom::RequestContextFrameType::kNone,
       ResourceRequest::RedirectStatus::kNoRedirect, https_favicon_url,
       SecurityViolationReportingPolicy::kSuppressReporting));

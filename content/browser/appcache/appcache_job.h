@@ -36,32 +36,40 @@ class AppCacheURLRequestJob;
 // of the AppCache code.
 class CONTENT_EXPORT AppCacheJob {
  public:
-  enum DeliveryType {
-    AWAITING_DELIVERY_ORDERS,
-    APPCACHED_DELIVERY,
-    NETWORK_DELIVERY,
-    ERROR_DELIVERY
+  enum class DeliveryType {
+    kAwaitingDeliverCall,
+    kAppCached,
+    kNetwork,
+    kError,
   };
 
   virtual ~AppCacheJob();
 
-  // Returns true if the job was started.
+  // True if the job was started.
   virtual bool IsStarted() const = 0;
 
-  // Returns true if the job is waiting for instructions.
-  virtual bool IsWaiting() const;
+  // True if the job is waiting for instructions.
+  bool IsWaiting() const {
+    return delivery_type_ == DeliveryType::kAwaitingDeliverCall;
+  }
 
-  // Returns true if the job is delivering a response from the cache.
-  virtual bool IsDeliveringAppCacheResponse() const;
+  // True if the job is delivering a response from the cache.
+  bool IsDeliveringAppCacheResponse() const {
+    return delivery_type_ == DeliveryType::kAppCached;
+  }
 
   // Returns true if the job is delivering a response from the network.
-  virtual bool IsDeliveringNetworkResponse() const;
+  bool IsDeliveringNetworkResponse() const {
+    return delivery_type_ == DeliveryType::kNetwork;
+  }
 
   // Returns true if the job is delivering an error response.
-  virtual bool IsDeliveringErrorResponse() const;
+  bool IsDeliveringErrorResponse() const {
+    return delivery_type_ == DeliveryType::kError;
+  }
 
   // Returns true if the cache entry was not found in the cache.
-  virtual bool IsCacheEntryNotFound() const;
+  bool IsCacheEntryNotFound() const { return cache_entry_not_found_; }
 
   // Informs the job of what response it should deliver. Only one of these
   // methods should be called, and only once per job. A job will sit idle and

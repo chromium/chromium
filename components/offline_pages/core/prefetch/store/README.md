@@ -146,3 +146,30 @@ Furthermore, when adding or removing columns, any existing column ordering might
 not be kept. This means that any query must not presume column ordering and must
 always explicitly refer to them by name. Using <code>SELECT * FROM ...</code>
 for obtaining data in all columns is therefore *unsafe and forbidden*.
+
+## Schema History / Test Data
+
+The components/test/data/offline_pages/prefetch/version_schemas directory contains
+data used in testing the prefetch database schema,
+see prefetch_store_schema_unittest.cc for the tests. In this directory, there
+are two files for every version of the prefetch database schema:
+
+- v#.sql
+
+SQL that creates the database schema for this version and inserts rows in each
+table for testing. This defines the initial state for each migration test. Data
+inserted here should attempt to cover edge cases specific to that version (like
+a change in a default value).
+
+- v#.data
+
+Represents the expected result of running the initial state defined in the .sql
+file through the migration logic up to the current version of the schema.
+Or in pseudo-code:
+
+ migrated_db = MigrateToCurrentSchema(BuildDbFromSqlFile(old_version_sql_file));
+ EXPECT_EQ(GetDataFromDataFile(old_version_data_file),
+    GetDataFromDb(migrated_db));
+
+Whenever a new version is created, existing .data might need to be updated to
+account for the added migration step.

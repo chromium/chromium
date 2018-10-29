@@ -128,6 +128,7 @@ extern const char kChromeUIResetPasswordHost[];
 extern const char kChromeUIResetPasswordURL[];
 extern const char kChromeUIRestartHost[];
 extern const char kChromeUIRestartURL[];
+extern const char kChromeUISafetyURL[];
 extern const char kChromeUISettingsHost[];
 extern const char kChromeUISettingsURL[];
 extern const char kChromeUISignInInternalsHost[];
@@ -201,8 +202,6 @@ extern const char kChromeUIIntenetConfigDialogURL[];
 extern const char kChromeUIIntenetDetailDialogURL[];
 extern const char kChromeUIInternetConfigDialogHost[];
 extern const char kChromeUIInternetDetailDialogHost[];
-extern const char kChromeUIKeyboardOverlayHost[];
-extern const char kChromeUIKeyboardOverlayURL[];
 extern const char kChromeUILinuxCreditsHost[];
 extern const char kChromeUILinuxCreditsURL[];
 extern const char kChromeUIMobileSetupHost[];
@@ -289,9 +288,11 @@ extern const char kDisplaySubPage[];
 extern const char kHelpSubPage[];
 extern const char kInternetSubPage[];
 extern const char kConnectedDevicesSubPage[];
+extern const char kLockScreenSubPage[];
 extern const char kNetworkDetailSubPage[];
 extern const char kPowerSubPage[];
 extern const char kSmbSharesPage[];
+extern const char kSmbSharesPageAddDialog[];
 extern const char kStylusSubPage[];
 #endif
 #if defined(OS_WIN)

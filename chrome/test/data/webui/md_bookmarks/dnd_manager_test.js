@@ -65,15 +65,14 @@ suite('drag and drop', function() {
     };
   }
 
-  function startInternalDrag(dragElement) {
-    MockInteractions.down(dragElement);
+  function simulateDragStart(dragElement) {
+    dispatchDragEvent('dragstart', dragElement);
     move(dragElement, MockInteractions.topLeftOfNode(dragElement));
   }
 
   function move(target, dest) {
-    MockInteractions.move(
-        target, {x: 0, y: 0}, dest || MockInteractions.middleOfNode(target),
-        -1);
+    dispatchDragEvent(
+        'dragover', target, dest || MockInteractions.middleOfNode(target));
   }
 
   function getDragIds() {
@@ -109,6 +108,10 @@ suite('drag and drop', function() {
     store.replaceSingleton();
 
     chrome.bookmarks.move = function(id, details) {};
+    chrome.bookmarkManagerPrivate.startDrag = function(
+        idList, dragNodeIndex, isFromTouch) {
+      dndManager.dragInfo_.setNativeDragData(createDragData(idList));
+    };
 
     app = document.createElement('bookmarks-app');
     replaceBody(app);
@@ -137,7 +140,7 @@ suite('drag and drop', function() {
     const dragElement = getListItem('13');
     let dragTarget = getListItem('12');
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     assertDeepEquals(['13'], getDragIds());
 
@@ -173,7 +176,7 @@ suite('drag and drop', function() {
     const dragElement = getFolderNode('112');
     const dragTarget = getFolderNode('111');
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     assertEquals(
         DropPosition.ON | DropPosition.ABOVE,
@@ -186,7 +189,7 @@ suite('drag and drop', function() {
   test('drag an item into a sidebar folder', function() {
     const dragElement = getListItem('13');
     let dragTarget = getFolderNode('2');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     // Items can only be dragged onto sidebar folders, not above or below.
     assertEquals(
@@ -206,7 +209,7 @@ suite('drag and drop', function() {
     const dragTarget = getFolderNode('112');
 
     // Folders cannot be dragged into their descendants.
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertEquals(
         DropPosition.NONE, dndManager.calculateValidDropPositions_(dragTarget));
 
@@ -219,7 +222,7 @@ suite('drag and drop', function() {
     const dragElement = getFolderNode('15');
     const dragTarget = getFolderNode('11');
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     // Drags below an open folder are not allowed.
     assertEquals(
@@ -230,13 +233,13 @@ suite('drag and drop', function() {
 
     assertDragStyle(dragTarget, DRAG_STYLE.ON);
 
-    MockInteractions.up(dragElement);
+    dispatchDragEvent('dragend', dragElement);
     assertDragStyle(dragTarget, DRAG_STYLE.NONE);
 
     store.data.folderOpenState.set('11', false);
     store.notifyObservers();
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     // Drags below a closed folder are allowed.
     assertEquals(
@@ -248,7 +251,7 @@ suite('drag and drop', function() {
     // Dragging multiple items.
     store.data.selection.items = new Set(['13', '15']);
     let dragElement = getListItem('13');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['13', '15'], getDragIds());
 
     // The dragged items should not be allowed to be dragged around any selected
@@ -262,17 +265,17 @@ suite('drag and drop', function() {
     assertEquals(
         DropPosition.NONE,
         dndManager.calculateValidDropPositions_(getListItem('15')));
-    MockInteractions.up(dragElement);
+    dispatchDragEvent('dragend', dragElement);
 
     // Dragging an unselected item should only drag the unselected item.
     dragElement = getListItem('14');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['14'], getDragIds());
-    MockInteractions.up(dragElement);
+    dispatchDragEvent('dragend', dragElement);
 
     // Dragging a folder node should only drag the node.
     dragElement = getListItem('11');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['11'], getDragIds());
   });
 
@@ -297,13 +300,13 @@ suite('drag and drop', function() {
     const dragTarget = getListItem('13');
 
     // Drag a folder onto the list.
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['112'], getDragIds());
 
     move(dragTarget, MockInteractions.topLeftOfNode(dragTarget));
     assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
 
-    MockInteractions.up(dragTarget);
+    dispatchDragEvent('dragend', dragTarget);
 
     // Folders should not be able to dragged onto themselves in the list.
     dndManager.handleChromeDragEnter_(createDragData(['11']));
@@ -368,11 +371,6 @@ suite('drag and drop', function() {
   });
 
   test('simple native drop end to end', function() {
-    let draggedIds;
-    chrome.bookmarkManagerPrivate.startDrag = function(nodes, isTouch) {
-      draggedIds = nodes;
-    };
-
     let dropParentId;
     let dropIndex;
     chrome.bookmarkManagerPrivate.drop = function(parentId, index) {
@@ -383,13 +381,8 @@ suite('drag and drop', function() {
     const dragElement = getListItem('13');
     const dragTarget = getListItem('12');
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['13'], getDragIds());
-
-    dispatchDragEvent('dragstart', dragElement);
-    assertEquals(null, dndManager.internalDragElement_);
-    assertDeepEquals(['13'], draggedIds);
-    dndManager.handleChromeDragEnter_(createDragData(draggedIds));
 
     dispatchDragEvent(
         'dragover', dragTarget, MockInteractions.topLeftOfNode(dragTarget));
@@ -400,34 +393,6 @@ suite('drag and drop', function() {
     assertEquals(1, dropIndex);
 
     dispatchDragEvent('dragend', dragTarget);
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
-  });
-
-
-  test('simple internal drop end to end', function() {
-    let moveId;
-    let moveParentId;
-    let moveIndex;
-    chrome.bookmarks.move = function(id, details) {
-      moveId = id;
-      moveParentId = details.parentId;
-      moveIndex = details.index;
-    };
-
-    const dragElement = getListItem('13');
-    const dragTarget = getListItem('12');
-
-    startInternalDrag(dragElement);
-    assertDeepEquals(['13'], getDragIds());
-
-    move(dragTarget, MockInteractions.topLeftOfNode(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
-
-    MockInteractions.up(dragTarget);
-    assertEquals('13', moveId);
-    assertEquals('1', moveParentId);
-    assertEquals(1, moveIndex);
-
     assertDragStyle(dragTarget, DRAG_STYLE.NONE);
   });
 
@@ -445,7 +410,7 @@ suite('drag and drop', function() {
     const dragElement = getFolderNode('14');
     let dragTarget = getFolderNode('15');
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     // Dragging onto folders without children doesn't update the auto expander.
     move(dragTarget);
@@ -499,20 +464,20 @@ suite('drag and drop', function() {
     const dragTarget = list;
 
     // Dragging onto an empty list.
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     move(dragTarget);
     assertEquals(
         DropPosition.ON, dndManager.calculateValidDropPositions_(dragTarget));
     assertDragStyle(dragTarget, DRAG_STYLE.ON);
 
-    MockInteractions.up(dragTarget);
+    dispatchDragEvent('dragend', dragTarget);
 
     // Dragging onto a non-empty list.
     store.data.selectedFolder = '11';
     store.notifyObservers();
 
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     move(dragTarget);
     assertEquals(
@@ -529,15 +494,15 @@ suite('drag and drop', function() {
     // Dragging an item not in the selection selects the dragged item and
     // deselects the previous selection.
     let dragElement = getListItem('14');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals(['14'], normalizeIterable(store.data.selection.items));
-    MockInteractions.up(dragElement);
+    dispatchDragEvent('dragend', dragElement);
 
     // Dragging a folder node deselects any selected items in the bookmark list.
     dragElement = getFolderNode('15');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertDeepEquals([], normalizeIterable(store.data.selection.items));
-    MockInteractions.up(dragElement);
+    dispatchDragEvent('dragend', dragElement);
   });
 
   test('cannot drag items when editing is disabled', function() {
@@ -545,7 +510,7 @@ suite('drag and drop', function() {
     store.notifyObservers();
 
     const dragElement = getFolderNode('11');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertFalse(dndManager.dragInfo_.isDragValid());
   });
 
@@ -554,11 +519,11 @@ suite('drag and drop', function() {
     store.notifyObservers();
 
     let dragElement = getFolderNode('1');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertFalse(dndManager.dragInfo_.isDragValid());
 
     dragElement = getFolderNode('2');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
     assertFalse(dndManager.dragInfo_.isDragValid());
   });
 
@@ -567,40 +532,12 @@ suite('drag and drop', function() {
     store.notifyObservers();
 
     const dragElement = getListItem('12');
-    startInternalDrag(dragElement);
+    simulateDragStart(dragElement);
 
     // Can't drag onto the unmodifiable node.
     const dragTarget = getFolderNode('2');
     move(dragTarget);
     assertEquals(
         DropPosition.NONE, dndManager.calculateValidDropPositions_(dragTarget));
-  });
-
-  test('ensure drag and drop chip shows', function() {
-    const dragElement = getListItem('13');
-    const dragTarget = getFolderNode('2');
-
-    startInternalDrag(dragElement);
-
-    move(dragTarget, {x: 50, y: 80});
-    assertTrue(!!dndManager.chip_);
-    const dndChip = dndManager.dndChip;
-    assertEquals('50px', dndChip.style.getPropertyValue('--mouse-x'));
-    assertEquals('80px', dndChip.style.getPropertyValue('--mouse-y'));
-    assertTrue(dndChip.showing_);
-
-    MockInteractions.up(dragElement);
-    assertFalse(dndChip.showing_);
-  });
-
-  test('drag starts after minimal move distance', function() {
-    const dragElement = getListItem('13');
-
-    MockInteractions.down(dragElement);
-    move(dragElement);
-    assertFalse(dndManager.dragInfo_.isDragValid());
-
-    move(dragElement, MockInteractions.topLeftOfNode(dragElement));
-    assertTrue(dndManager.dragInfo_.isDragValid());
   });
 });

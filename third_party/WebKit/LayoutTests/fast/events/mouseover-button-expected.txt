@@ -13,4 +13,3 @@ PASS document.events['A-no-press'].which is 0
 PASS document.events['B-left'].which is 1
 PASS document.events['C-no-press'].which is 0
 PASS document.events['D-middle'].which is 2
-

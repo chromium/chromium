@@ -23,7 +23,11 @@ namespace quic {
                                                         " ")
 
 QuicCryptoStream::QuicCryptoStream(QuicSession* session)
-    : QuicStream(kCryptoStreamId, session, /*is_static=*/true) {
+    : QuicStream(QuicUtils::GetCryptoStreamId(
+                     session->connection()->transport_version()),
+                 session,
+                 /*is_static=*/true,
+                 BIDIRECTIONAL) {
   // The crypto stream is exempt from connection level flow control.
   DisableConnectionFlowControlForThisStream();
 }

@@ -38,10 +38,10 @@
 #include "chrome/browser/chrome_child_process_watcher.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_device_client.h"
-#include "chrome/browser/chrome_feature_list_creator.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
+#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/devtools/remote_debugging_server.h"
@@ -56,6 +56,7 @@
 #include "chrome/browser/loader/chrome_resource_dispatcher_host_delegate.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
+#include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/thread_watcher.h"
@@ -96,6 +97,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/net_log/chrome_net_log.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/optimization_guide/optimization_guide_service.h"
@@ -114,9 +116,12 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
 #include "components/update_client/update_query_params.h"
+#include "components/variations/service/variations_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/network_quality_observer_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/plugin_service.h"
@@ -134,7 +139,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/preferences/public/cpp/in_process_service_factory.h"
 #include "ui/base/idle/idle.h"
@@ -218,10 +223,16 @@ rappor::RapporService* GetBrowserRapporService() {
 
 BrowserProcessImpl::BrowserProcessImpl(
     ChromeFeatureListCreator* chrome_feature_list_creator)
-    : chrome_feature_list_creator_(chrome_feature_list_creator),
-      pref_service_factory_(
-          std::make_unique<prefs::InProcessPrefServiceFactory>()) {
+    : chrome_feature_list_creator_(chrome_feature_list_creator) {
   g_browser_process = this;
+
+  DCHECK(chrome_feature_list_creator_);
+  browser_policy_connector_ =
+      chrome_feature_list_creator_->TakeChromeBrowserPolicyConnector();
+  created_browser_policy_connector_ = true;
+  pref_service_factory_ =
+      chrome_feature_list_creator_->TakePrefServiceFactory();
+
   platform_part_ = std::make_unique<BrowserProcessPlatformPart>();
   // Most work should be done in Init().
 }
@@ -267,7 +278,7 @@ void BrowserProcessImpl::Init() {
   extensions_browser_client_ =
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
   extensions_browser_client_->AddAPIProvider(
-      std::make_unique<apps::ChromeAppsBrowserAPIProvider>());
+      std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif
 
@@ -439,7 +450,7 @@ void BrowserProcessImpl::StartTearDown() {
     local_state_->CommitPendingWrite();
 
   // This expects to be destroyed before the task scheduler is torn down.
-  system_network_context_manager_.reset();
+  SystemNetworkContextManager::DeleteInstance();
 }
 
 void BrowserProcessImpl::PostDestroyThreads() {
@@ -459,6 +470,15 @@ void BrowserProcessImpl::PostDestroyThreads() {
   io_thread_.reset();
 }
 #endif  // !defined(OS_ANDROID)
+
+void BrowserProcessImpl::SetMetricsServices(
+    std::unique_ptr<metrics_services_manager::MetricsServicesManager> manager,
+    metrics_services_manager::MetricsServicesManagerClient* client) {
+  metrics_services_manager_ = std::move(manager);
+  metrics_services_manager_client_ =
+      static_cast<ChromeMetricsServicesManagerClient*>(client);
+  metrics_services_manager_->GetVariationsService()->OverrideCachedUIStrings();
+}
 
 namespace {
 
@@ -535,8 +555,8 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
 
 void RequestProxyResolvingSocketFactory(
     network::mojom::ProxyResolvingSocketFactoryRequest request) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
                      std::move(request)));
 }
@@ -642,8 +662,8 @@ IOThread* BrowserProcessImpl::io_thread() {
 SystemNetworkContextManager*
 BrowserProcessImpl::system_network_context_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(system_network_context_manager_.get());
-  return system_network_context_manager_.get();
+  DCHECK(SystemNetworkContextManager::GetInstance());
+  return SystemNetworkContextManager::GetInstance();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -829,16 +849,14 @@ const std::string& BrowserProcessImpl::GetApplicationLocale() {
   return locale_;
 }
 
-void BrowserProcessImpl::SetApplicationLocale(const std::string& locale) {
+void BrowserProcessImpl::SetApplicationLocale(
+    const std::string& actual_locale) {
   // NOTE: this is called before any threads have been created in non-test
   // environments.
-  locale_ = locale;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_l10n_util::SetProcessLocale(locale);
-#endif
-  ChromeContentBrowserClient::SetApplicationLocale(locale);
+  locale_ = actual_locale;
+  ChromeContentBrowserClient::SetApplicationLocale(actual_locale);
   translate::TranslateDownloadManager::GetInstance()->set_application_locale(
-      locale);
+      actual_locale);
 }
 
 DownloadStatusUpdater* BrowserProcessImpl::download_status_updater() {
@@ -903,6 +921,16 @@ BrowserProcessImpl::CachedDefaultWebClientState() {
 prefs::InProcessPrefServiceFactory* BrowserProcessImpl::pref_service_factory()
     const {
   return pref_service_factory_.get();
+}
+
+data_use_measurement::ChromeDataUseMeasurement*
+BrowserProcessImpl::data_use_measurement() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!data_use_measurement_) {
+    data_use_measurement_ = data_use_measurement::ChromeDataUseMeasurement::
+        CreateForNetworkService();
+  }
+  return data_use_measurement_.get();
 }
 
 // static
@@ -1076,11 +1104,24 @@ void BrowserProcessImpl::ResourceDispatcherHostCreated() {
   ApplyAllowCrossOriginAuthPromptPolicy();
 }
 
+std::string BrowserProcessImpl::actual_locale() {
+  return chrome_feature_list_creator_
+             ? chrome_feature_list_creator_->actual_locale()
+             : std::string();
+}
+
 void BrowserProcessImpl::OnKeepAliveStateChanged(bool is_keeping_alive) {
   if (is_keeping_alive)
     Pin();
   else
     Unpin();
+}
+
+void BrowserProcessImpl::CreateNetworkQualityObserver() {
+  DCHECK(!network_quality_observer_);
+  network_quality_observer_ =
+      content::CreateNetworkQualityObserver(network_quality_tracker());
+  DCHECK(network_quality_observer_);
 }
 
 void BrowserProcessImpl::OnKeepAliveRestartStateChanged(bool can_restart) {}
@@ -1109,33 +1150,8 @@ void BrowserProcessImpl::CreateProfileManager() {
 void BrowserProcessImpl::CreateLocalState() {
   DCHECK(!local_state_);
 
-  base::FilePath local_state_path;
-  CHECK(base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_path));
-
-  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
-  if (chrome_feature_list_creator_)
-    local_state_ = chrome_feature_list_creator_->TakePrefService();
-  PrefRegistrySimple* pref_pregistry_simple =
-      local_state_ ? static_cast<PrefRegistrySimple*>(
-                         local_state_->DeprecatedGetPrefRegistry())
-                   : pref_registry.get();
-
-  // Register local state preferences.
-  RegisterLocalState(pref_pregistry_simple);
-
-  auto delegate = pref_service_factory_->CreateDelegate();
-  delegate->InitPrefRegistry(pref_pregistry_simple);
-  if (local_state_) {
-    chrome_prefs::InstallPoliciesOnLocalState(
-        local_state_.get(), policy_service(), std::move(delegate));
-  } else {
-    local_state_ = chrome_prefs::CreateLocalState(
-        local_state_path, policy_service(), std::move(pref_registry), false,
-        std::move(delegate));
-    DCHECK(local_state_);
-  }
-
-  sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
+  local_state_ = chrome_feature_list_creator_->TakePrefService();
+  DCHECK(local_state_);
 }
 
 void BrowserProcessImpl::PreCreateThreads(
@@ -1147,7 +1163,8 @@ void BrowserProcessImpl::PreCreateThreads(
       extensions::kExtensionScheme, true);
 #endif
 
-  if (command_line.HasSwitch(network::switches::kLogNetLog)) {
+  if (command_line.HasSwitch(network::switches::kLogNetLog) &&
+      !base::FeatureList::IsEnabled(network::features::kNetworkService)) {
     base::FilePath log_file =
         command_line.GetSwitchValuePath(network::switches::kLogNetLog);
     if (log_file.empty()) {
@@ -1165,12 +1182,12 @@ void BrowserProcessImpl::PreCreateThreads(
   // Must be created before the IOThread.
   // TODO(mmenke): Once IOThread class is no longer needed (not the thread
   // itself), this can be created on first use.
-  system_network_context_manager_ =
-      std::make_unique<SystemNetworkContextManager>();
+  if (!SystemNetworkContextManager::GetInstance())
+    SystemNetworkContextManager::CreateInstance(local_state_.get());
   io_thread_ = std::make_unique<IOThread>(
       local_state(), policy_service(), net_log_.get(),
       extension_event_router_forwarder(),
-      system_network_context_manager_.get());
+      SystemNetworkContextManager::GetInstance());
 }
 
 void BrowserProcessImpl::PreMainMessageLoopRun() {
@@ -1227,6 +1244,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
         base::WrapUnique(new base::DefaultTickClock()), local_state(),
         system_network_context_manager()->GetSharedURLLoaderFactory());
   }
+
+  CreateNetworkQualityObserver();
 }
 
 void BrowserProcessImpl::CreateIconManager() {
@@ -1347,8 +1366,8 @@ void BrowserProcessImpl::CreateOptimizationGuideService() {
 
   optimization_guide_service_ =
       std::make_unique<optimization_guide::OptimizationGuideService>(
-          content::BrowserThread::GetTaskRunnerForThread(
-              content::BrowserThread::IO));
+          base::CreateSingleThreadTaskRunnerWithTraits(
+              {content::BrowserThread::UI}));
 }
 
 void BrowserProcessImpl::CreateGCMDriver() {
@@ -1372,11 +1391,12 @@ void BrowserProcessImpl::CreateGCMDriver() {
       base::WrapUnique(new gcm::GCMClientFactory), local_state(), store_path,
       base::BindRepeating(&RequestProxyResolvingSocketFactory),
       system_network_context_manager()->GetSharedURLLoaderFactory(),
-      chrome::GetChannel(), gcm::GetProductCategoryForSubtypes(local_state()),
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI),
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
+      content::GetNetworkConnectionTracker(), chrome::GetChannel(),
+      gcm::GetProductCategoryForSubtypes(local_state()),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::UI}),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}),
       blocking_task_runner);
 #endif  // defined(OS_ANDROID)
 }

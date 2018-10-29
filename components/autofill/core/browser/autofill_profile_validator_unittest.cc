@@ -165,8 +165,8 @@ TEST_F(AutofillProfileValidatorTest,
 
   // Set up the test expectations.
   expected_validity_ = {{ADDRESS_HOME_COUNTRY, AutofillProfile::INVALID},
-                        {ADDRESS_HOME_STATE, AutofillProfile::UNVALIDATED},
-                        {ADDRESS_HOME_ZIP, AutofillProfile::UNVALIDATED},
+                        {ADDRESS_HOME_STATE, AutofillProfile::INVALID},
+                        {ADDRESS_HOME_ZIP, AutofillProfile::INVALID},
                         {PHONE_HOME_WHOLE_NUMBER, AutofillProfile::UNVALIDATED},
                         {EMAIL_ADDRESS, AutofillProfile::VALID}};
 
@@ -205,8 +205,8 @@ TEST_F(AutofillProfileValidatorTest, ValidateAddress_EmptyCountryCode) {
   // Set up the test expectations.
   // The phone is validated for the US.
   expected_validity_ = {{ADDRESS_HOME_COUNTRY, AutofillProfile::EMPTY},
-                        {ADDRESS_HOME_STATE, AutofillProfile::UNVALIDATED},
-                        {ADDRESS_HOME_ZIP, AutofillProfile::UNVALIDATED},
+                        {ADDRESS_HOME_STATE, AutofillProfile::INVALID},
+                        {ADDRESS_HOME_ZIP, AutofillProfile::INVALID},
                         {PHONE_HOME_WHOLE_NUMBER, AutofillProfile::UNVALIDATED},
                         {EMAIL_ADDRESS, AutofillProfile::VALID}};
 

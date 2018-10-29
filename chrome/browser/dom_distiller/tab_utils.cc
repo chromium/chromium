@@ -163,10 +163,8 @@ void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
                                    old_web_contents->GetLastCommittedURL());
 
   std::unique_ptr<content::WebContents> old_web_contents_owned =
-      CoreTabHelper::FromWebContents(old_web_contents)
-          ->delegate()
-          ->SwapTabContents(old_web_contents, std::move(new_web_contents),
-                            false, false);
+      old_web_contents->GetDelegate()->SwapWebContents(
+          old_web_contents, std::move(new_web_contents), false, false);
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
       new SourcePageHandleWebContents(old_web_contents_owned.release(), true));

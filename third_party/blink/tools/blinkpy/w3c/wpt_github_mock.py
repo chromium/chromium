@@ -59,7 +59,7 @@ class MockWPTGitHub(object):
         self.create_pr_index += 1
         return 5678
 
-    def update_pr(self, pr_number, desc_title, body):
+    def update_pr(self, pr_number, desc_title=None, body=None, state=None):
         self.calls.append('update_pr')
         return 5678
 
@@ -71,6 +71,9 @@ class MockWPTGitHub(object):
 
     def remove_label(self, _, label):
         self.calls.append('remove_label "%s"' % label)
+
+    def add_comment(self, _, comment_body):
+        self.calls.append('add_comment "%s"' % comment_body)
 
     def get_pr_branch(self, number):
         self.calls.append('get_pr_branch')

@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "net/third_party/quic/core/quic_packets.h"
+#include "net/third_party/quic/platform/api/quic_containers.h"
 #include "net/third_party/quic/platform/api/quic_export.h"
 #include "net/third_party/quic/platform/api/quic_map_util.h"
 #include "net/third_party/spdy/core/priority_write_scheduler.h"
@@ -177,13 +178,12 @@ class QUIC_EXPORT_PRIVATE QuicWriteBlockedList {
       bool is_blocked;
     };
 
-    std::vector<StreamIdBlockedPair>::const_iterator begin() const {
-      return streams_.cbegin();
-    }
+    // Optimized for the typical case of 2 static streams per session.
+    typedef QuicInlinedVector<StreamIdBlockedPair, 2> StreamsVector;
 
-    std::vector<StreamIdBlockedPair>::const_iterator end() const {
-      return streams_.cend();
-    }
+    StreamsVector::const_iterator begin() const { return streams_.cbegin(); }
+
+    StreamsVector::const_iterator end() const { return streams_.cend(); }
 
     size_t num_blocked() const { return num_blocked_; }
 
@@ -254,7 +254,7 @@ class QUIC_EXPORT_PRIVATE QuicWriteBlockedList {
 
    private:
     size_t num_blocked_ = 0;
-    std::vector<StreamIdBlockedPair> streams_;
+    StreamsVector streams_;
   };
 
   StaticStreamCollection static_stream_collection_;

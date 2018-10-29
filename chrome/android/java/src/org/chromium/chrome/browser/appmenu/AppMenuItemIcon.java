@@ -5,15 +5,14 @@
 package org.chromium.chrome.browser.appmenu;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 
-import org.chromium.chrome.browser.widget.TintedImageView;
-
 /**
- * A TintedImageView that supports the checkable state.
+ * An AppCompatImageView that supports the checkable state.
  */
-public class AppMenuItemIcon extends TintedImageView implements Checkable {
+public class AppMenuItemIcon extends AppCompatImageView implements Checkable {
     private static final int[] CHECKED_STATE_SET = new int[] {android.R.attr.state_checked};
     private boolean mCheckedState;
 

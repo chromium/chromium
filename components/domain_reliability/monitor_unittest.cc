@@ -13,12 +13,16 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "components/domain_reliability/baked_in_configs.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/config.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/test_util.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/test_browser_thread_bundle.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -54,8 +58,10 @@ class DomainReliabilityMonitorTest : public testing::Test {
   typedef DomainReliabilityMonitor::RequestInfo RequestInfo;
 
   DomainReliabilityMonitorTest()
-      : pref_task_runner_(new base::TestSimpleTaskRunner()),
-        network_task_runner_(new base::TestSimpleTaskRunner()),
+      : pref_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI})),
+        network_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO})),
         url_request_context_getter_(
             new net::TestURLRequestContextGetter(network_task_runner_)),
         time_(new MockTime()),
@@ -65,6 +71,8 @@ class DomainReliabilityMonitorTest : public testing::Test {
                  network_task_runner_,
                  std::unique_ptr<MockableTime>(time_)) {
     monitor_.MoveToNetworkThread();
+    // Let the NetworkConnectionTracker registration complete.
+    thread_bundle_.RunUntilIdle();
     monitor_.InitURLRequestContext(url_request_context_getter_);
     monitor_.SetDiscardUploads(false);
   }
@@ -104,8 +112,9 @@ class DomainReliabilityMonitorTest : public testing::Test {
     return monitor_.AddContextForTesting(std::move(config));
   }
 
-  scoped_refptr<base::TestSimpleTaskRunner> pref_task_runner_;
-  scoped_refptr<base::TestSimpleTaskRunner> network_task_runner_;
+  content::TestBrowserThreadBundle thread_bundle_;
+  scoped_refptr<base::SingleThreadTaskRunner> pref_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
   MockTime* time_;
   DomainReliabilityMonitor monitor_;

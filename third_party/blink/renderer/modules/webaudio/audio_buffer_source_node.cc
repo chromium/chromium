@@ -198,8 +198,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   size_t destination_length = bus->length();
 
   bool is_length_good =
-      destination_length <= AudioUtilities::kRenderQuantumFrames &&
-      number_of_frames <= AudioUtilities::kRenderQuantumFrames;
+      destination_length <= audio_utilities::kRenderQuantumFrames &&
+      number_of_frames <= audio_utilities::kRenderQuantumFrames;
   DCHECK(is_length_good);
   if (!is_length_good)
     return false;
@@ -227,7 +227,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Avoid converting from time to sample-frames twice by computing
   // the grain end time first before computing the sample frame.
   unsigned end_frame =
-      is_grain_ ? AudioUtilities::TimeToSampleFrame(
+      is_grain_ ? audio_utilities::TimeToSampleFrame(
                       grain_offset_ + grain_duration_, buffer_sample_rate)
                 : buffer_length;
 
@@ -482,7 +482,7 @@ void AudioBufferSourceHandler::ClampGrainParameters(const AudioBuffer* buffer) {
   // identical to the PCM data stored in the buffer. Since playbackRate == 1 is
   // very common, it's worth considering quality.
   virtual_read_index_ =
-      AudioUtilities::TimeToSampleFrame(grain_offset_, buffer->sampleRate());
+      audio_utilities::TimeToSampleFrame(grain_offset_, buffer->sampleRate());
 }
 
 void AudioBufferSourceHandler::Start(double when,

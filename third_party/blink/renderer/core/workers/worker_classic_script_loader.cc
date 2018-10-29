@@ -62,7 +62,7 @@ WorkerClassicScriptLoader::~WorkerClassicScriptLoader() {
 void WorkerClassicScriptLoader::LoadSynchronously(
     ExecutionContext& execution_context,
     const KURL& url,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     mojom::IPAddressSpace creation_address_space) {
   url_ = url;
   execution_context_ = &execution_context;
@@ -88,7 +88,7 @@ void WorkerClassicScriptLoader::LoadSynchronously(
 void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     ExecutionContext& execution_context,
     const KURL& url,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     network::mojom::FetchRequestMode fetch_request_mode,
     network::mojom::FetchCredentialsMode fetch_credentials_mode,
     mojom::IPAddressSpace creation_address_space,
@@ -170,7 +170,7 @@ void WorkerClassicScriptLoader::DidReceiveResponse(
   origin_trial_tokens_ = OriginTrialContext::ParseHeaderValue(
       response.HttpHeaderField(HTTPNames::Origin_Trial));
 
-  if (NetworkUtils::IsReservedIPAddress(response.RemoteIPAddress())) {
+  if (network_utils::IsReservedIPAddress(response.RemoteIPAddress())) {
     response_address_space_ =
         SecurityOrigin::Create(response_url_)->IsLocalhost()
             ? mojom::IPAddressSpace::kLocal

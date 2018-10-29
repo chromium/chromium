@@ -19,7 +19,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/test_utils.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "url/gurl.h"
 
 namespace resource_coordinator {
@@ -117,10 +116,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessProbeBrowserTest,
   if (content::AreAllSitesIsolatedForTesting())
     return;
 #endif
-  // Ensure that the |resource_coordinator| service is enabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kGlobalResourceCoordinator}, {});
-
   TestingRenderProcessProbe probe;
 
   ASSERT_TRUE(embedded_test_server()->Start());

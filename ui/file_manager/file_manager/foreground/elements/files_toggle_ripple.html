@@ -27,7 +27,7 @@
       }
 
       .ripple {
-        background-color: white;
+        background-color: var(--files-toggle-ripple-bg-color, white);
         height: 0;
         margin: 0 auto;
         opacity: 0;
@@ -36,9 +36,10 @@
       }
 
       .ripple.activated {
+        background-color: var(--files-toggle-ripple-activated-bg-color, white);
         border-radius: 2px;
         height: 50%;
-        opacity: 0.2;
+        opacity: var(--files-toggle-ripple-activated-opacity, 0.2);
         width: 50%;
         @apply(--files-toggle-ripple-activated);
       }

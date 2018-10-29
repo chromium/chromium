@@ -2,10 +2,10 @@ This test makes sure hiding and showing a scrollable iframe correctly updates th
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS internals.nonFastScrollableRects(document).length is 1
 PASS internals.nonFastScrollableRects(document).length is 0
 PASS internals.nonFastScrollableRects(document).length is 1

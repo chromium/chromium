@@ -37,6 +37,20 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'GetFirstBlockAncestor', function() {
   assertEquals(div, ParagraphUtils.getFirstBlockAncestor(text4));
 });
 
+TEST_F('SelectToSpeakParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
+  let root = {role: 'rootWebArea'};
+  let svgRoot = {role: 'svgRoot', parent: root, root: root};
+  let text1 = {role: 'staticText', parent: svgRoot, root: root};
+  let inline1 = {role: 'inlineTextBox', parent: text1, root: root};
+  let text2 = {role: 'staticText', parent: svgRoot, root: root};
+  let inline2 = {role: 'inlineTextBox', parent: text2, root: root};
+  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(text1));
+  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline1));
+  assertEquals(svgRoot, ParagraphUtils.getFirstBlockAncestor(inline2));
+  assertTrue(ParagraphUtils.inSameParagraph(inline1, inline2));
+});
+
+
 TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
   let root = {role: 'rootWebArea'};
   let paragraph1 = {role: 'paragraph', display: 'block', parent: 'rootWebArea',
@@ -201,4 +215,18 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
   searchBar.value = '';
   result = ParagraphUtils.buildNodeGroup([searchBar], 0);
   assertEquals('Address and search bar ', result.text);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
+  let root = {role: 'rootWebArea'};
+  let svgRoot = {role: 'svgRoot', parent: root, root: root};
+  let text1 = {role: 'staticText', parent: svgRoot, root: root, name: 'Hello,'};
+  let inline1 = {role: 'inlineTextBox', parent: text1, root: root,
+      name: 'Hello,'};
+  let text2 = {role: 'staticText', parent: svgRoot, root: root, name: 'world!'};
+  let inline2 = {role: 'inlineTextBox', parent: text2, root: root,
+      name: 'world!'};
+
+  let result = ParagraphUtils.buildNodeGroup([inline1, inline2], 0);
+  assertEquals('Hello, world! ', result.text);
 });

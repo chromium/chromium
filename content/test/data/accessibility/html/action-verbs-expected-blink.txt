@@ -10,8 +10,11 @@ rootWebArea name='Action verbs'
 ++++staticText name='Link' defaultActionVerb=clickAncestor
 ++++++inlineTextBox name='Link'
 ++textField defaultActionVerb=activate
+++++genericContainer
 ++searchBox defaultActionVerb=activate
+++++genericContainer
 ++textField multiline defaultActionVerb=activate
+++++genericContainer
 ++textField defaultActionVerb=activate
 ++checkBox defaultActionVerb=check checkedState=false
 ++checkBox defaultActionVerb=uncheck checkedState=true

@@ -44,6 +44,8 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   void Init(base::OnceCallback<void(const base::UnguessableToken&)> callback)
       override;
   void Navigate(const GURL& url) override;
+  void Activate(base::OnceCallback<void(blink::mojom::PortalActivationStatus)>
+                    callback) override;
 
   // WebContentsObserver overrides.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;

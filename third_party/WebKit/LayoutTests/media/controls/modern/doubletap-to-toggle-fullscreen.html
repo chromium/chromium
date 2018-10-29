@@ -10,10 +10,9 @@ async_test(t => {
   const video = document.querySelector('video');
 
   video.addEventListener('playing', () => {
-    // Double tap in the top left hand corner
-    const coordinates =
-      coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
-    doubleTapAtCoordinates(coordinates[0] + 1, coordinates[1] + 1);
+    // Double tap on the left side.
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTapAtCoordinates(coordinates[0], coordinates[1]);
   }, { once: true });
 
   video.addEventListener('webkitfullscreenchange', t.step_func(() => {
@@ -23,9 +22,8 @@ async_test(t => {
     video.addEventListener('webkitfullscreenchange',
         t.step_func_done(), { once: true });
 
-    const coordinates =
-      coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
-    doubleTapAtCoordinates(coordinates[0] + 1, coordinates[1] + 1);
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTapAtCoordinates(coordinates[0], coordinates[1]);
   }), { once: true });
 
   video.play();

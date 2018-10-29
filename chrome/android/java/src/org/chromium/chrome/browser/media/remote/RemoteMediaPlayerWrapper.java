@@ -32,16 +32,22 @@ public class RemoteMediaPlayerWrapper implements RemoteMediaPlayer.OnMetadataUpd
     private static final String TAG = "MediaRemoting";
 
     private final CastDevice mCastDevice;
+    private final String mMediaUrl;
 
     private GoogleApiClient mApiClient;
     private RemoteMediaPlayer mMediaPlayer;
     private MediaNotificationInfo.Builder mNotificationBuilder;
     private MediaStatusObserver mMediaStatusObserver;
 
+    private boolean mLoaded;
+
     public RemoteMediaPlayerWrapper(GoogleApiClient apiClient,
-            MediaNotificationInfo.Builder notificationBuilder, CastDevice castDevice) {
+            MediaNotificationInfo.Builder notificationBuilder, CastDevice castDevice,
+            String mediaUrl) {
         mApiClient = apiClient;
         mCastDevice = castDevice;
+        mMediaUrl = mediaUrl;
+        mLoaded = false;
         mNotificationBuilder = notificationBuilder;
 
         mMediaPlayer = new RemoteMediaPlayer();
@@ -103,16 +109,18 @@ public class RemoteMediaPlayerWrapper implements RemoteMediaPlayer.OnMetadataUpd
     }
 
     /**
-     * Starts loading the provided media URL, without autoplay.
+     * Starts loading the media URL, from the given position.
      */
-    public void load(String mediaUrl) {
+    public void load(long startTime) {
         if (!canSendCommand()) return;
 
+        mLoaded = true;
+
         MediaInfo.Builder mediaInfoBuilder =
-                new MediaInfo.Builder(mediaUrl).setContentType("*/*").setStreamType(
+                new MediaInfo.Builder(mMediaUrl).setContentType("*/*").setStreamType(
                         MediaInfo.STREAM_TYPE_BUFFERED);
 
-        mMediaPlayer.load(mApiClient, mediaInfoBuilder.build(), /* autoplay */ true)
+        mMediaPlayer.load(mApiClient, mediaInfoBuilder.build(), /* autoplay */ true, startTime)
                 .setResultCallback(this);
     }
 
@@ -123,6 +131,11 @@ public class RemoteMediaPlayerWrapper implements RemoteMediaPlayer.OnMetadataUpd
     @Override
     public void play() {
         if (!canSendCommand()) return;
+
+        if (!mLoaded) {
+            load(/* startTime */ 0);
+            return;
+        }
 
         try {
             mMediaPlayer.play(mApiClient).setResultCallback(this);
@@ -187,6 +200,11 @@ public class RemoteMediaPlayerWrapper implements RemoteMediaPlayer.OnMetadataUpd
     @Override
     public void seek(long position) {
         if (!canSendCommand()) return;
+
+        if (!mLoaded) {
+            load(position);
+            return;
+        }
 
         try {
             mMediaPlayer.seek(mApiClient, position).setResultCallback(this);

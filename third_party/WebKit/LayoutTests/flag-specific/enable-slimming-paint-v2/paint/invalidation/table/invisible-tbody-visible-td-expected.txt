@@ -9,7 +9,7 @@
         {
           "object": "LayoutTableSection TBODY id='tbody'",
           "rect": [8, 8, 200, 200],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

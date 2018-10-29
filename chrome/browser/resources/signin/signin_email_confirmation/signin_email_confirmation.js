@@ -33,7 +33,7 @@ cr.define('signin.emailConfirmation', function() {
   }
 
   function onConfirm(e) {
-    const action = document.querySelector('paper-radio-group').selected;
+    const action = document.querySelector('cr-radio-group').selected;
     chrome.send('dialogClose', [JSON.stringify({'action': action})]);
   }
 

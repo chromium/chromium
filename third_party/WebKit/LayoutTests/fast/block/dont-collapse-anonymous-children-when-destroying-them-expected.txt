@@ -1,3 +1,2 @@
-
 PASS
 crbug.com/553048: Don't attempt to collapse anonymous children when destroying them.

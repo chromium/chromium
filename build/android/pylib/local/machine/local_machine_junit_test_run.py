@@ -29,7 +29,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     pass
 
   #override
-  def RunTests(self):
+  def RunTests(self, results):
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
       json_file_path = os.path.join(temp_dir, 'results.json')
 
@@ -119,8 +119,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       test_run_results = base_test_result.TestRunResults()
       test_run_results.AddResults(results_list)
-
-      return [test_run_results]
+      results.append(test_run_results)
 
   #override
   def TearDown(self):

@@ -2,5 +2,5 @@ CONSOLE WARNING: line 13: Element.createShadowRoot is deprecated and will be rem
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS getComputedStyle(inner).backgroundColor is "rgba(0, 0, 0, 0)"
 
+PASS getComputedStyle(inner).backgroundColor is "rgba(0, 0, 0, 0)"

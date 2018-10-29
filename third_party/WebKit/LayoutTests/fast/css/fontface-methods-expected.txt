@@ -3,7 +3,6 @@ Tests load() method of FontFace.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS face1.status is "unloaded"
 PASS face1.status is "loading"
 PASS face1.status is "loaded"

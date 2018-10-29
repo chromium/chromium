@@ -4,8 +4,8 @@
 <script src="../assert_selection.js"></script>
 <script>
 test(() => {
-  assert_exists(window, 'internals', 'This test requires window.internals.');
-  assert_exists(window, 'testRunner', 'This test requires window.testRunner.');
+  assert_own_property(window, 'internals', 'This test requires window.internals.');
+  assert_own_property(window, 'testRunner', 'This test requires window.testRunner.');
   internals.settings.setSmartInsertDeleteEnabled(false);
   internals.settings.setSelectTrailingWhitespaceEnabled(true);
   assert_selection(

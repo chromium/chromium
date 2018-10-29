@@ -2,7 +2,6 @@ When contentEditable is set to invalid string, SYNTAX_ERR exception (code: 12) m
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById('div').contentEditable = 'abc' threw exception SyntaxError: Failed to set the 'contentEditable' property on 'HTMLElement': The value provided ('abc') is not one of 'true', 'false', 'plaintext-only', or 'inherit'..
 PASS document.getElementById("div").getAttribute("contentEditable") is "true"
 PASS document.getElementById("div").contentEditable is "true"

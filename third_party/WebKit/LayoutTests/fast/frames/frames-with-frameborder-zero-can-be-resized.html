@@ -28,7 +28,7 @@
             function run() {
                 if (window.testRunner) {
                     testRunner.dumpAsText();
-                    testRunner.dumpChildFramesAsText();
+                    testRunner.dumpChildFrames();
 
                     document.getElementById("results").contentDocument.getElementById("description").innerText = "\nThis tests that frames with frameborder=0 can be resized. See WebKit Bug 23750. On success, two 'PASS' messages will be shown below.";
 

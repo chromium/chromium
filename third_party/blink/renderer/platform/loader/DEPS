@@ -27,7 +27,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/mhtml",
     "+third_party/blink/renderer/platform/network",
     "+third_party/blink/renderer/platform/platform_export.h",
-    "+third_party/blink/renderer/platform/PlatformProbeSink.h",
+    "+third_party/blink/renderer/platform/platform_probe_sink.h",
     "+third_party/blink/renderer/platform/probe",
     "+third_party/blink/renderer/platform/runtime_enabled_features.h",
     "+third_party/blink/renderer/platform/scheduler",

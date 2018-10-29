@@ -42,11 +42,11 @@ OverlaySurfaceEmbedder::~OverlaySurfaceEmbedder() = default;
 void OverlaySurfaceEmbedder::SetSurfaceId(const viz::SurfaceId& surface_id) {
   video_layer_ = window_->GetVideoLayer();
   // SurfaceInfo has information about the embedded surface.
-  video_layer_->SetShowPrimarySurface(
-      surface_id, window_->GetBounds().size(), SK_ColorBLACK,
-      cc::DeadlinePolicy::UseDefaultDeadline(),
-      true /* stretch_content_to_fill_bounds */);
-  video_layer_->SetFallbackSurfaceId(surface_id);
+  video_layer_->SetShowSurface(surface_id, window_->GetBounds().size(),
+                               SK_ColorBLACK,
+                               cc::DeadlinePolicy::UseDefaultDeadline(),
+                               true /* stretch_content_to_fill_bounds */);
+  video_layer_->SetOldestAcceptableFallback(surface_id);
 }
 
 void OverlaySurfaceEmbedder::UpdateLayerBounds() {

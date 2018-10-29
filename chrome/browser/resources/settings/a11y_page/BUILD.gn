@@ -34,7 +34,7 @@ js_library("tts_subpage") {
   deps = [
     ":externs",
     "..:route",
-    "../device_page:display_size_slider",
+    "../controls:settings_slider",
     "../languages_page:languages_browser_proxy",
     "../settings_page:settings_animated_pages",
     "//ui/webui/resources/js:i18n_behavior",

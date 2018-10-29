@@ -32,12 +32,6 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Child Containment Layer",
-      "position": [59, 231],
-      "bounds": [120, 460],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,

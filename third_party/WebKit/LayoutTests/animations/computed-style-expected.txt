@@ -2,7 +2,6 @@ This tests computed style values from animation properties.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test1Style.animationName is 'anim1'
 PASS test2Style.animationName is 'anim2, anim3'
 PASS test3Style.animationName is 'anim1, anim2, anim3'
@@ -17,6 +16,7 @@ PASS test2Style.animationTimingFunction is 'linear, ease-in-out'
 PASS test3Style.animationTimingFunction is 'step-start, step-end, steps(5, end)'
 PASS test1Style.animationDirection is 'normal'
 PASS test2Style.animationDirection is 'normal, alternate'
+
 
 PASS successfullyParsed is true
 

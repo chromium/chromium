@@ -84,3 +84,7 @@ crbug.com/838057 [ Linux ] virtual/outofblink-cors/external/wpt/fetch/api/cors/c
 crbug.com/838057 [ Linux ] virtual/outofblink-cors/external/wpt/fetch/api/cors/cors-redirect-preflight.any.worker.html [ Crash ]
 crbug.com/838057 [ Linux ] virtual/outofblink-cors/external/wpt/service-workers/service-worker/fetch-canvas-tainting-video-cache.https.html [ Crash ]
 crbug.com/838057 [ Linux ] virtual/outofblink-cors/external/wpt/service-workers/service-worker/fetch-canvas-tainting-video.https.html [ Crash ]
+
+# Disabled by sheriff due to test crash
+crbug.com/896068 [ Linux ] webaudio/AudioBuffer/huge-buffer.html [ Crash ]
+crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]

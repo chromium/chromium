@@ -65,7 +65,7 @@ TEST_F(ExternalPopupMenuDisplayNoneItemsTest, IndexMappingTest) {
 }
 
 class ExternalPopupMenuWebFrameClient
-    : public FrameTestHelpers::TestWebFrameClient {
+    : public frame_test_helpers::TestWebFrameClient {
  public:
   WebExternalPopupMenu* CreateExternalPopupMenu(
       const WebPopupMenuInfo&,
@@ -107,13 +107,13 @@ class ExternalPopupMenuTest : public testing::Test {
   }
 
   void RegisterMockedURLLoad(const std::string& file_name) {
-    URLTestHelpers::RegisterMockedURLLoadFromBase(
+    url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url_), test::CoreTestDataPath("popup"),
         WebString::FromUTF8(file_name), WebString::FromUTF8("text/html"));
   }
 
   void LoadFrame(const std::string& file_name) {
-    FrameTestHelpers::LoadFrame(MainFrame(), base_url_ + file_name);
+    frame_test_helpers::LoadFrame(MainFrame(), base_url_ + file_name);
     WebView()->Resize(WebSize(800, 600));
     WebView()->UpdateAllLifecyclePhases();
   }
@@ -127,7 +127,7 @@ class ExternalPopupMenuTest : public testing::Test {
  private:
   std::string base_url_;
   ExternalPopupMenuWebFrameClient web_frame_client_;
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {

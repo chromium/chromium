@@ -3,12 +3,12 @@ FAIL Missing arguments: get assert_throws: function "() => table.get()" did not 
 PASS Branding: get
 PASS Missing arguments: set
 PASS Branding: set
-PASS Basic
-PASS Growing
-PASS Setting out-of-bounds
-PASS Setting non-function
-PASS Setting non-wasm function
-PASS Setting non-wasm arrow function
+FAIL Basic assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Growing assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Setting out-of-bounds assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Setting non-function assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Setting non-wasm function assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Setting non-wasm arrow function assert_throws: undefined: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Getting out-of-range argument: undefined assert_throws: function "() => table.get(value)" did not throw
 FAIL Setting out-of-range argument: undefined assert_throws: function "() => table.set(value, null)" did not throw
 FAIL Getting out-of-range argument: NaN assert_throws: function "() => table.get(value)" did not throw
@@ -28,5 +28,6 @@ FAIL Setting out-of-range argument: "0x100000000" assert_throws: function "() =>
 FAIL Getting out-of-range argument: object "[object Object]" assert_throws: function "() => table.get(value)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Setting out-of-range argument: object "[object Object]" assert_throws: function "() => table.set(value, null)" threw object "RangeError: WebAssembly.Table.set(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
 PASS Order of argument conversion
+PASS Stray argument
 Harness: the test ran to completion.
 

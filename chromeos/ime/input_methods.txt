@@ -23,17 +23,6 @@
 #    screen.
 #
 # Notes:
-#   When adding a line to this list, please also add a mapping from the input
-#   method ID to the keyboard overlay ID to INPUT_METHOD_ID_TO_OVERLAY_ID in
-#
-#    * tools/gen_keyboard_overlay_data/gen_keyboard_overlay_data.py
-#
-#   and update the following files by running this script.
-#
-#    * chrome/app/generated_resources.grd
-#    * chrome/browser/resources/chromeos/keyboard_overlay_data.js
-#    * chrome/browser/ui/webui/chromeos/keyboard_overlay_ui.cc
-#
 #   If you add an XKB layout which depends on AltGr or X11's Mod3Mask
 #   (e.g. Germany Neo2 XKB layout), you should also update kAltGrLayoutIds or
 #   kMod3LayoutIds in

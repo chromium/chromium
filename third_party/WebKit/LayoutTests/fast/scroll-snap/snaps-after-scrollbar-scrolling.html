@@ -1,52 +1,15 @@
 <!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<link rel="stylesheet" href="resources/simple-snap.css">
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
-<style>
-body {
-  margin: 0px;
-}
-div {
-  position: absolute;
-}
-#scroller {
-  width: 400px;
-  height: 400px;
-  overflow: scroll;
-  scroll-snap-type: both mandatory;
-  padding: 0px;
-}
-.snap {
-  width: 200px;
-  height: 200px;
-  background-color: blue;
-  scroll-snap-align: start;
-}
-#space {
-  width: 1000px;
-  height: 1000px;
-}
-#left-top {
-  left: 0px;
-  top: 0px;
-}
-#right-top {
-  left: 400px;
-  top: 0px;
-}
-#left-bottom {
-  left: 0px;
-  top: 400px;
-}
-
-</style>
 
 <div id='scroller'>
   <div id="space"></div>
-  <div class="snap" id="left-top"></div>
-  <div class="snap" id="right-top"></div>
-  <div class="snap" id="left-bottom"></div>
+  <div class="snap left top"></div>
+  <div class="snap right top"></div>
+  <div class="snap left bottom"></div>
 </div>
 
 <script>

@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome вам штеди време тако што поставља налоге на веб. Можете да додајете или уклањате налоге у подешавањима.</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3345341804167540816">Користите Chrome свуда</translation>
-<translation id="3678774398092457402">Да ли желите да Chrome сачува лозинку за овај сајт?</translation>
 <translation id="384394811301901750">Google Chrome тренутно не може да користи камеру</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chrome подацима управља <ph name="DOMAIN" />. Промена ће избрисати податке са овог уређаја, али ће подаци остати на <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" /> увек можете да прилагодите. Google може да користи садржај на сајтовима које посећујете, интеракције са прегледачима и активности у њима да би персонализовао Chrome и Google услуге као што су Преводилац, Претрага и огласи.</translation>
 <translation id="5639704535586432836">Отворите Подешавања &gt; Приватност &gt; Камера &gt; Google Chrome и укључите камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не може да користи камеру у режиму подељеног приказа</translation>
-<translation id="5703130498371792817">Уживате у Chrome-у? <ph name="BEGIN_LINK" />Оцените ову апликацију<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Савет за Chrome. Нека дугмад се сада налазе у дну екрана, попут дугмади Назад, Напред и Претражи.</translation>
 <translation id="6036420186814142909">Google Chrome има функције које вам помажу да управљате интернет подацима и брзином учитавања веб-страница.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome услови коришћења услуге</translation>
 <translation id="7165736900384873061">Почните да користите Google Chrome QR скенер</translation>
 <translation id="7172660552945675509">Савет: <ph name="BEGIN_LINK" />Преместите Chrome на док<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome користи Face ID да би лозинкама могле да приступају само овлашћене особе.</translation>
 <translation id="7265369419224458312">Овде приступајте картицама које сте отворили на рачунару. Само отворите Chrome на рачунару, идите на мени и изаберите „Пријави ме у Chrome...“</translation>
 <translation id="728488472449859922">Укључите Google Chrome QR скенер</translation>
 <translation id="7400722733683201933">О програму Google Chrome</translation>

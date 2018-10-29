@@ -47,7 +47,8 @@ class DumpAccessibilityTestBase : public ContentBrowserTest {
   // including the load complete accessibility event. The subclass should
   // dump whatever that specific test wants to dump, returning the result
   // as a sequence of strings.
-  virtual std::vector<std::string> Dump() = 0;
+  virtual std::vector<std::string> Dump(
+      std::vector<std::string>& run_until) = 0;
 
   // Add the default filters that are applied to all tests.
   virtual void AddDefaultFilters(
@@ -92,10 +93,12 @@ class DumpAccessibilityTestBase : public ContentBrowserTest {
   void ParseHtmlForExtraDirectives(
       const std::string& test_html,
       std::vector<AccessibilityTreeFormatter::Filter>* filters,
-      std::vector<std::string>* wait_for);
+      std::vector<std::string>* wait_for,
+      std::vector<std::string>* run_until);
 
   // Create the right AccessibilityTreeFormatter subclass.
-  AccessibilityTreeFormatter* CreateAccessibilityTreeFormatter();
+  std::unique_ptr<AccessibilityTreeFormatter>
+  CreateAccessibilityTreeFormatter();
 
   void RunTestForPlatform(const base::FilePath file_path, const char* file_dir);
 

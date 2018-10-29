@@ -4,7 +4,6 @@ Tests that we can compute word boundaries for any character index from the acces
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Accessible text: "Ace ten twenty-one thirty-five. xxxxxxxxxxxxxxxxxxx"
 Character 0: 'A' word=(0, 3): 'Ace'
 Character 1: 'c' word=(0, 3): 'Ace'

@@ -78,13 +78,6 @@ class CORE_EXPORT RootScrollerController
   // scroller.
   PaintLayer* RootScrollerPaintLayer() const;
 
-  // Used to determine which Element should scroll the viewport.  This is
-  // needed since Blink's scrolling machinery works on Elements whereas the
-  // document *Node* also scrolls so we need to designate an element one
-  // Element as the viewport scroller. Sadly, this is *not* the
-  // document.scrollingElement in general.
-  bool ScrollsViewport(const Element&) const;
-
   void ElementRemoved(const Element&);
 
   // In the "implicit root scroller" mode, we might promote an element to
@@ -162,8 +155,6 @@ class CORE_EXPORT RootScrollerController
   HeapHashSet<WeakMember<Element>> implicit_candidates_;
 
   WeakMember<Element> implicit_root_scroller_;
-
-  bool document_has_document_element_;
 };
 
 }  // namespace blink

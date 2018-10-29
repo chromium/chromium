@@ -72,8 +72,11 @@ scoped_refptr<PluginPrefs> PluginPrefs::GetForProfile(Profile* profile) {
 scoped_refptr<PluginPrefs> PluginPrefs::GetForTestingProfile(
     Profile* profile) {
   return static_cast<PluginPrefs*>(
-      PluginPrefsFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile, &PluginPrefsFactory::CreateForTestingProfile).get());
+      PluginPrefsFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile,
+              base::BindRepeating(&PluginPrefsFactory::CreateForTestingProfile))
+          .get());
 }
 
 PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
@@ -277,8 +280,7 @@ void PluginPrefs::OnUpdatePreferences(
   }
 
   // Add the plugin groups.
-  for (std::set<base::string16>::const_iterator it = group_names.begin();
-      it != group_names.end(); ++it) {
+  for (auto it = group_names.begin(); it != group_names.end(); ++it) {
     std::unique_ptr<base::DictionaryValue> summary(new base::DictionaryValue());
     summary->SetString("name", *it);
     plugins_list->Append(std::move(summary));

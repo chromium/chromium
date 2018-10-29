@@ -64,20 +64,20 @@ class FileSystemOperation {
   virtual ~FileSystemOperation() {}
 
   // Used for CreateFile(), etc. |result| is the return code of the operation.
-  using StatusCallback = base::Callback<void(base::File::Error result)>;
+  using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
   // Used for GetMetadata(). |result| is the return code of the operation,
   // |file_info| is the obtained file info.
   using GetMetadataCallback =
-      base::Callback<void(base::File::Error result,
-                          const base::File::Info& file_info)>;
+      base::OnceCallback<void(base::File::Error result,
+                              const base::File::Info& file_info)>;
 
   // Used for OpenFile(). |on_close_callback| will be called after the file is
   // closed in the child process. It can be null, if no operation is needed on
   // closing a file.
   using OpenFileCallback =
-      base::Callback<void(base::File file,
-                          base::OnceClosure on_close_callback)>;
+      base::OnceCallback<void(base::File file,
+                              base::OnceClosure on_close_callback)>;
 
   // Used for ReadDirectoryCallback.
   using FileEntryList = std::vector<filesystem::mojom::DirectoryEntry>;
@@ -198,17 +198,17 @@ class FileSystemOperation {
     ERROR_COPY_ENTRY
   };
   using CopyProgressCallback =
-      base::Callback<void(CopyProgressType type,
-                          const FileSystemURL& source_url,
-                          const FileSystemURL& destination_url,
-                          int64_t size)>;
+      base::RepeatingCallback<void(CopyProgressType type,
+                                   const FileSystemURL& source_url,
+                                   const FileSystemURL& destination_url,
+                                   int64_t size)>;
 
   // Used for CopyFileLocal() to report progress update.
   // |size| is the cumulative copied bytes for the copy.
   // At the beginning the progress callback should be called with |size| = 0,
   // and also at the ending the progress callback should be called with |size|
   // set to the copied file size.
-  using CopyFileProgressCallback = base::Callback<void(int64_t size)>;
+  using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
   // The option for copy or move operation.
   enum CopyOrMoveOption {
@@ -231,14 +231,14 @@ class FileSystemOperation {
   };
 
   // Used for Write().
-  using WriteCallback = base::Callback<
+  using WriteCallback = base::RepeatingCallback<
       void(base::File::Error result, int64_t bytes, bool complete)>;
 
   // Creates a file at |path|. If |exclusive| is true, an error is raised
   // in case a file is already present at the URL.
   virtual void CreateFile(const FileSystemURL& path,
                           bool exclusive,
-                          const StatusCallback& callback) = 0;
+                          StatusCallback callback) = 0;
 
   // Creates a directory at |path|. If |exclusive| is true, an error is
   // raised in case a directory is already present at the URL. If
@@ -247,7 +247,7 @@ class FileSystemOperation {
   virtual void CreateDirectory(const FileSystemURL& path,
                                bool exclusive,
                                bool recursive,
-                               const StatusCallback& callback) = 0;
+                               StatusCallback callback) = 0;
 
   // Copies a file or directory from |src_path| to |dest_path|. If
   // |src_path| is a directory, the contents of |src_path| are copied to
@@ -274,7 +274,7 @@ class FileSystemOperation {
                     CopyOrMoveOption option,
                     ErrorBehavior error_behavior,
                     const CopyProgressCallback& progress_callback,
-                    const StatusCallback& callback) = 0;
+                    StatusCallback callback) = 0;
 
   // Moves a file or directory from |src_path| to |dest_path|. A new file
   // or directory is created at |dest_path| as needed.
@@ -294,20 +294,20 @@ class FileSystemOperation {
   virtual void Move(const FileSystemURL& src_path,
                     const FileSystemURL& dest_path,
                     CopyOrMoveOption option,
-                    const StatusCallback& callback) = 0;
+                    StatusCallback callback) = 0;
 
   // Checks if a directory is present at |path|.
   virtual void DirectoryExists(const FileSystemURL& path,
-                               const StatusCallback& callback) = 0;
+                               StatusCallback callback) = 0;
 
   // Checks if a file is present at |path|.
   virtual void FileExists(const FileSystemURL& path,
-                          const StatusCallback& callback) = 0;
+                          StatusCallback callback) = 0;
 
   // Gets the metadata of a file or directory at |path|.
   virtual void GetMetadata(const FileSystemURL& path,
                            int fields,
-                           const GetMetadataCallback& callback) = 0;
+                           GetMetadataCallback callback) = 0;
 
   // Reads contents of a directory at |path|.
   virtual void ReadDirectory(const FileSystemURL& path,
@@ -315,13 +315,20 @@ class FileSystemOperation {
 
   // Removes a file or directory at |path|. If |recursive| is true, remove
   // all files and directories under the directory at |path| recursively.
-  virtual void Remove(const FileSystemURL& path, bool recursive,
-                      const StatusCallback& callback) = 0;
+  virtual void Remove(const FileSystemURL& path,
+                      bool recursive,
+                      StatusCallback callback) = 0;
 
   // Writes the data read from |blob_reader| using |writer_delegate|.
+  virtual void WriteBlob(const FileSystemURL& url,
+                         std::unique_ptr<FileWriterDelegate> writer_delegate,
+                         std::unique_ptr<BlobReader> blob_reader,
+                         const WriteCallback& callback) = 0;
+
+  // Writes the data read from |data_pipe| using |writer_delegate|.
   virtual void Write(const FileSystemURL& url,
                      std::unique_ptr<FileWriterDelegate> writer_delegate,
-                     std::unique_ptr<BlobReader> blob_reader,
+                     mojo::ScopedDataPipeConsumerHandle data_pipe,
                      const WriteCallback& callback) = 0;
 
   // Truncates a file at |path| to |length|. If |length| is larger than
@@ -329,7 +336,7 @@ class FileSystemOperation {
   // part is filled with null bytes.
   virtual void Truncate(const FileSystemURL& path,
                         int64_t length,
-                        const StatusCallback& callback) = 0;
+                        StatusCallback callback) = 0;
 
   // Tries to cancel the current operation [we support cancelling write or
   // truncate only]. Reports failure for the current operation, then reports
@@ -338,7 +345,7 @@ class FileSystemOperation {
   // E.g. a typical cancel implementation would look like:
   //
   //   virtual void SomeOperationImpl::Cancel(
-  //       const StatusCallback& cancel_callback) {
+  //       StatusCallback cancel_callback) {
   //     // Abort the current inflight operation first.
   //     ...
   //
@@ -348,13 +355,13 @@ class FileSystemOperation {
   //
   //     // Dispatch 'success' for the cancel (or dispatch appropriate
   //     // error code with DidFail() if the cancel has somehow failed).
-  //     cancel_callback.Run(base::File::FILE_OK);
+  //     std::move(cancel_callback).Run(base::File::FILE_OK);
   //   }
   //
   // Note that, for reporting failure, the callback function passed to a
   // cancellable operations are kept around with the operation instance
   // (as |operation_callback_| in the code example).
-  virtual void Cancel(const StatusCallback& cancel_callback) = 0;
+  virtual void Cancel(StatusCallback cancel_callback) = 0;
 
   // Modifies timestamps of a file or directory at |path| with
   // |last_access_time| and |last_modified_time|. The function DOES NOT
@@ -364,7 +371,7 @@ class FileSystemOperation {
   virtual void TouchFile(const FileSystemURL& path,
                          const base::Time& last_access_time,
                          const base::Time& last_modified_time,
-                         const StatusCallback& callback) = 0;
+                         StatusCallback callback) = 0;
 
   // Opens a file at |path| with |file_flags|, where flags are OR'ed
   // values of base::File::Flags.
@@ -372,7 +379,7 @@ class FileSystemOperation {
   // This function is used only by Pepper as of writing.
   virtual void OpenFile(const FileSystemURL& path,
                         int file_flags,
-                        const OpenFileCallback& callback) = 0;
+                        OpenFileCallback callback) = 0;
 
   // Creates a local snapshot file for a given |path| and returns the
   // metadata and platform path of the snapshot file via |callback|.
@@ -397,7 +404,7 @@ class FileSystemOperation {
   //
   virtual void CopyInForeignFile(const base::FilePath& src_local_disk_path,
                                  const FileSystemURL& dest_url,
-                                 const StatusCallback& callback) = 0;
+                                 StatusCallback callback) = 0;
 
   // Removes a single file.
   //
@@ -406,7 +413,7 @@ class FileSystemOperation {
   // - File::FILE_ERROR_NOT_A_FILE if |url| is not a file.
   //
   virtual void RemoveFile(const FileSystemURL& url,
-                          const StatusCallback& callback) = 0;
+                          StatusCallback callback) = 0;
 
   // Removes a single empty directory.
   //
@@ -416,7 +423,7 @@ class FileSystemOperation {
   // - File::FILE_ERROR_NOT_EMPTY if |url| is not empty.
   //
   virtual void RemoveDirectory(const FileSystemURL& url,
-                               const StatusCallback& callback) = 0;
+                               StatusCallback callback) = 0;
 
   // Copies a file from |src_url| to |dest_url|.
   // This must be called for files that belong to the same filesystem
@@ -440,7 +447,7 @@ class FileSystemOperation {
                              const FileSystemURL& dest_url,
                              CopyOrMoveOption option,
                              const CopyFileProgressCallback& progress_callback,
-                             const StatusCallback& callback) = 0;
+                             StatusCallback callback) = 0;
 
   // Moves a local file from |src_url| to |dest_url|.
   // This must be called for files that belong to the same filesystem
@@ -460,7 +467,7 @@ class FileSystemOperation {
   virtual void MoveFileLocal(const FileSystemURL& src_url,
                              const FileSystemURL& dest_url,
                              CopyOrMoveOption option,
-                             const StatusCallback& callback) = 0;
+                             StatusCallback callback) = 0;
 
   // Synchronously gets the platform path for the given |url|.
   // This may fail if the given |url|'s filesystem type is neither

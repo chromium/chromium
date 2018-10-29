@@ -268,26 +268,66 @@ class EternalSyncReadsInterceptor : public net::URLRequestInterceptor {
   DISALLOW_COPY_AND_ASSIGN(EternalSyncReadsInterceptor);
 };
 
-class RequestInterceptor : public net::URLRequestInterceptor {
+// Simulates handing over things to the disk to write before returning to the
+// caller.
+class URLRequestSimulatedCacheJob : public net::URLRequestJob {
  public:
-  using InterceptCallback = base::Callback<void(net::URLRequest*)>;
-
-  explicit RequestInterceptor(const InterceptCallback& callback)
-      : callback_(callback) {}
-  ~RequestInterceptor() override {}
-
-  // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
+  // If |fill_entire_buffer| is true, each read fills the entire read buffer at
+  // once. Otherwise, one byte is read at a time.
+  URLRequestSimulatedCacheJob(
       net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    callback_.Run(request);
-    return nullptr;
+      net::NetworkDelegate* network_delegate,
+      scoped_refptr<net::IOBuffer>* simulated_cache_dest)
+      : URLRequestJob(request, network_delegate),
+        simulated_cache_dest_(simulated_cache_dest),
+        weak_factory_(this) {}
+
+  // net::URLRequestJob implementation:
+  void Start() override {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&URLRequestSimulatedCacheJob::StartAsync,
+                                  weak_factory_.GetWeakPtr()));
+  }
+
+  int ReadRawData(net::IOBuffer* buf, int buf_size) override {
+    DCHECK_GT(buf_size, 0);
+
+    // Pretend this is the entire network stack, which has sent the buffer
+    // to some worker thread to be written to disk.
+    memset(buf->data(), 'a', buf_size);
+    *simulated_cache_dest_ = buf;
+
+    // The network stack will not report the read result until the write
+    // completes.
+    return net::ERR_IO_PENDING;
   }
 
  private:
-  InterceptCallback callback_;
+  ~URLRequestSimulatedCacheJob() override {}
+  void StartAsync() { NotifyHeadersComplete(); }
 
-  DISALLOW_COPY_AND_ASSIGN(RequestInterceptor);
+  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  base::WeakPtrFactory<URLRequestSimulatedCacheJob> weak_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(URLRequestSimulatedCacheJob);
+};
+
+class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
+ public:
+  explicit SimulatedCacheInterceptor(
+      scoped_refptr<net::IOBuffer>* simulated_cache_dest)
+      : simulated_cache_dest_(simulated_cache_dest) {}
+
+  net::URLRequestJob* MaybeInterceptRequest(
+      net::URLRequest* request,
+      net::NetworkDelegate* network_delegate) const override {
+    return new URLRequestSimulatedCacheJob(request, network_delegate,
+                                           simulated_cache_dest_);
+  }
+
+ private:
+  scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
+  DISALLOW_COPY_AND_ASSIGN(SimulatedCacheInterceptor);
 };
 
 // Returns whether monitoring was successfully set up. If yes,
@@ -477,15 +517,6 @@ class URLLoaderTest : public testing::Test {
     EXPECT_EQ(net::OK, Load(MultipleWritesInterceptor::GetURL(), &actual_body));
 
     EXPECT_EQ(actual_body, expected_body);
-  }
-
-  // Adds an interceptor that can examine the URLRequest object.
-  void AddRequestObserver(
-      const GURL& url,
-      const RequestInterceptor::InterceptCallback& callback) {
-    net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-        url, std::unique_ptr<net::URLRequestInterceptor>(
-                 new RequestInterceptor(callback)));
   }
 
   net::EmbeddedTestServer* test_server() { return &test_server_; }
@@ -1988,6 +2019,54 @@ TEST_F(URLLoaderTest, EnterSuspendModeWhileNoPendingRead) {
   unowned_power_monitor_source->Resume();
 }
 
+TEST_F(URLLoaderTest, EnterSuspendDiskCacheWriteQueued) {
+  // Test to make sure that fetch abort on suspend doesn't yank out the backing
+  // for IOBuffer for an issued disk_cache Write.
+
+  GURL url("http://www.example.com");
+  scoped_refptr<net::IOBuffer> simulated_cache_dest;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<SimulatedCacheInterceptor>(&simulated_cache_dest));
+
+  std::unique_ptr<TestPowerMonitorSource> power_monitor_source =
+      std::make_unique<TestPowerMonitorSource>();
+  TestPowerMonitorSource* unowned_power_monitor_source =
+      power_monitor_source.get();
+  base::PowerMonitor power_monitor(std::move(power_monitor_source));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+
+  base::RunLoop delete_run_loop;
+  mojom::URLLoaderPtr loader;
+  std::unique_ptr<URLLoader> url_loader;
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = mojom::kBrowserProcessId;
+  params.is_corb_enabled = false;
+  url_loader = std::make_unique<URLLoader>(
+      context(), nullptr /* network_service_client */,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      mojo::MakeRequest(&loader), mojom::kURLLoadOptionNone, request, false,
+      client()->CreateInterfacePtr(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+      0 /* request_id */, resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */);
+
+  // Spin until the job has produced a (simulated) cache write.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(simulated_cache_dest);
+
+  unowned_power_monitor_source->Suspend();
+
+  client()->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_ABORTED, client()->completion_status().error_code);
+  delete_run_loop.Run();
+
+  unowned_power_monitor_source->Resume();
+
+  // The "cache write" should still have data available.
+  EXPECT_EQ('a', simulated_cache_dest->data()[0]);
+}
+
 class FakeSSLPrivateKeyImpl : public network::mojom::SSLPrivateKey {
  public:
   explicit FakeSSLPrivateKeyImpl(
@@ -2132,6 +2211,12 @@ class MockNetworkServiceClient : public mojom::NetworkServiceClient {
     NOTREACHED();
   }
 
+#if defined(OS_CHROMEOS)
+  void OnUsedTrustAnchor(const std::string& username_hash) override {
+    NOTREACHED();
+  }
+#endif
+
   void OnFileUploadRequested(uint32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -2152,6 +2237,10 @@ class MockNetworkServiceClient : public mojom::NetworkServiceClient {
                        OnClearSiteDataCallback callback) override {
     NOTREACHED();
   }
+
+  void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
+                       int64_t recv_bytes,
+                       int64_t sent_bytes) override {}
 
   void set_credentials_response(CredentialsResponse credentials_response) {
     credentials_response_ = credentials_response;

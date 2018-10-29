@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">在 Chromium 中畅享 Google 的智能技术</translation>
 <translation id="2730884209570016437">由于另一个应用正在使用您的相机，因此 Chromium 无法使用。</translation>
 <translation id="2797210818057553964">您可以随时在 Chromium 设置中自定义此设置</translation>
+<translation id="2915596697727466327">Chromium 会使用 Face ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3413120535237193088">要将您的书签同步到您所有的设备上，请登录 Chromium。</translation>
 <translation id="3473048256428424907">开启 Chromium QR 码扫描器</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">您在其他设备上的 Chromium 中打开的标签页将列在此处。</translation>
 <translation id="495292094137889840">开始使用 Chromium QR 码扫描器</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
-<translation id="5416919929805616771">您对 Chromium 使用体验感到满意吗？欢迎<ph name="BEGIN_LINK" />为此应用评分<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5945387852661427312">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chromium 数据。您的数据将与此帐号永久关联。退出 Chromium 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="6068866989048414399">Chromium 服务条款</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chromium 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />将 Chromium 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Chromium 可根据您的位置信息为您提供更好的 Google 产品使用体验。</translation>
-<translation id="8353224596138547809">您希望 Chromium 保存您在此网站上使用的密码吗？</translation>
 <translation id="8508544542427105412">您随时可以自定义<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。Google 可能会根据您访问的网站上的内容、您在浏览器中的互动行为和活动，为您提供个性化的 Chromium 体验和其他 Google 服务体验（例如翻译、搜索和广告）。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8809780021347235332">要保存图片，请点按“设置”以允许 Chromium 使用您的照片</translation>

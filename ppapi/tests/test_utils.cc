@@ -19,6 +19,7 @@
 #include "ppapi/cpp/net_address.h"
 #include "ppapi/cpp/private/host_resolver_private.h"
 #include "ppapi/cpp/private/net_address_private.h"
+#include "ppapi/cpp/url_loader.h"
 #include "ppapi/cpp/var.h"
 
 namespace {
@@ -31,6 +32,8 @@ bool IsBigEndian() {
 
   return data.integer8[0] == 1;
 }
+
+void DoNothing(void* user_data, int32_t result) {}
 
 }  // namespace
 
@@ -272,6 +275,11 @@ void NestedEvent::SignalThunk(void* event, int32_t /* result */) {
   static_cast<NestedEvent*>(event)->SignalOnMainThread();
 }
 
+pp::CompletionCallback DoNothingCallback() {
+  return pp::CompletionCallback(&DoNothing, NULL,
+                                PP_COMPLETIONCALLBACK_FLAG_OPTIONAL);
+}
+
 TestCompletionCallback::TestCompletionCallback(PP_Instance instance)
     : wait_for_result_called_(false),
       have_result_(false),
@@ -423,4 +431,33 @@ void TestCompletionCallback::QuitMessageLoop() {
     const bool should_quit = false;
     loop.PostQuit(should_quit);
   }
+}
+
+int32_t OpenURLRequest(PP_Instance instance,
+                       pp::URLLoader* loader,
+                       const pp::URLRequestInfo& request,
+                       CallbackType callback_type,
+                       std::string* response_body) {
+  {
+    TestCompletionCallback open_callback(instance, callback_type);
+    open_callback.WaitForResult(
+        loader->Open(request, open_callback.GetCallback()));
+    if (open_callback.result() != PP_OK)
+      return open_callback.result();
+  }
+
+  int32_t bytes_read = 0;
+  do {
+    char buffer[1024];
+    TestCompletionCallback read_callback(instance, callback_type);
+    read_callback.WaitForResult(loader->ReadResponseBody(
+        &buffer, sizeof(buffer), read_callback.GetCallback()));
+    bytes_read = read_callback.result();
+    if (bytes_read < 0)
+      return bytes_read;
+    if (response_body)
+      response_body->append(std::string(buffer, bytes_read));
+  } while (bytes_read > 0);
+
+  return PP_OK;
 }

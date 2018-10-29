@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/win/windows_version.h"
@@ -498,7 +499,8 @@ ui::EventDispatchDetails InputMethodWinBase::ProcessUnhandledKeyEvent(
     ui::KeyEvent* event,
     const std::vector<MSG>* char_msgs) {
   DCHECK(event);
-  ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
+  ui::EventDispatchDetails details =
+      DispatchKeyEventPostIME(event, base::NullCallback());
   if (details.dispatcher_destroyed || details.target_destroyed ||
       event->stopped_propagation()) {
     return details;

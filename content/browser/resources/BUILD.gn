@@ -8,6 +8,7 @@ if (closure_compile) {
   group("closure_compile") {
     deps = [
       "histograms:closure_compile",
+      "process:closure_compile",
     ]
   }
 }

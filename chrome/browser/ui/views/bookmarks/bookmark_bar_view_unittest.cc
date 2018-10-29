@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,7 +120,8 @@ class BookmarkBarViewTest : public BrowserWithTestWindowTest {
     // TemplateURLService is normally NULL during testing. Instant extended
     // needs this service so set a custom factory function.
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-        profile, &BookmarkBarViewTest::CreateTemplateURLService);
+        profile,
+        base::BindRepeating(&BookmarkBarViewTest::CreateTemplateURLService));
     return profile;
   }
 

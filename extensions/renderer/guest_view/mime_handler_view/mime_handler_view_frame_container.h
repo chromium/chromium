@@ -42,6 +42,8 @@ class MimeHandlerViewFrameContainer : public MimeHandlerViewContainerBase {
 
   // MimeHandlerViewContainerBase overrides.
   void CreateMimeHandlerViewGuestIfNecessary() final;
+  void OnRetryCreatingMimeHandlerViewGuest(int32_t element_instance_id) final;
+  void OnDestroyFrameContainer(int32_t element_instance_id) final;
   blink::WebRemoteFrame* GetGuestProxyFrame() const final;
   int32_t GetInstanceId() const final;
   gfx::Size GetElementSize() const final;

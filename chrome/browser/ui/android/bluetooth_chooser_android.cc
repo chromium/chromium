@@ -29,7 +29,7 @@ BluetoothChooserAndroid::BluetoothChooserAndroid(
     : web_contents_(content::WebContents::FromRenderFrameHost(frame)),
       event_handler_(event_handler) {
   const url::Origin origin = frame->GetLastCommittedOrigin();
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
 
   base::android::ScopedJavaLocalRef<jobject> window_android =
       web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject();

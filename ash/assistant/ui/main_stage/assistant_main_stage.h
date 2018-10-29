@@ -44,7 +44,6 @@ class AssistantMainStage : public views::View,
   // views::View:
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  void ChildVisibilityChanged(views::View* child) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* view) override;
@@ -55,7 +54,8 @@ class AssistantMainStage : public views::View,
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
   void OnPendingQueryChanged(const AssistantQuery& query) override;
   void OnPendingQueryCleared() override;
-  void OnResponseChanged(const AssistantResponse& response) override;
+  void OnResponseChanged(
+      const std::shared_ptr<AssistantResponse>& response) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(AssistantVisibility new_visibility,

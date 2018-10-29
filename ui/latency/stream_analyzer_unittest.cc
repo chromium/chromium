@@ -44,6 +44,7 @@ class StreamAnalyzerTest : public testing::Test {
 };
 
 TEST_F(StreamAnalyzerTest, AllResultsTheSame) {
+  const double approx_sqrt_error = 0.0001;
   // Try adding a single sample vs. multiple samples.
   for (size_t samples : {1u, 100u}) {
     // A power of 2 sweep for both the value and weight dimensions.
@@ -57,17 +58,18 @@ TEST_F(StreamAnalyzerTest, AllResultsTheSame) {
         uint64_t expected_value =
             value * TestStreamAnalyzerClient::result_scale;
         EXPECT_EQ(expected_value, analyzer_->ComputeMean());
-        EXPECT_EQ(expected_value, analyzer_->ComputeRMS());
-        EXPECT_NEAR_SMR(analyzer_->ComputeSMR(), expected_value, weight);
-        EXPECT_DOUBLE_EQ(0, analyzer_->ComputeStdDev());
-        EXPECT_NEAR_VARIANCE_OF_ROOT(0, analyzer_->ComputeVarianceOfRoots(),
-                                     expected_value, weight);
+        EXPECT_NEAR_SQRT_APPROX(expected_value, analyzer_->ComputeRMS());
+        EXPECT_NEAR_SQRT_APPROX(analyzer_->ComputeSMR(), expected_value);
+        EXPECT_NEAR_SQRT_APPROX(0, analyzer_->ComputeStdDev());
+        EXPECT_NEAR(0, analyzer_->ComputeVarianceOfRoots(),
+                    approx_sqrt_error * value);
 
         // Verify values are forwarded to the WindowedAnalyzer.
         EXPECT_EQ(expected_value, analyzer_->window().ComputeWorstMean().value);
-        EXPECT_EQ(expected_value, analyzer_->window().ComputeWorstRMS().value);
-        EXPECT_NEAR_SMR(expected_value,
-                        analyzer_->window().ComputeWorstSMR().value, weight);
+        EXPECT_NEAR_SQRT_APPROX(expected_value,
+                                analyzer_->window().ComputeWorstRMS().value);
+        EXPECT_NEAR_SQRT_APPROX(expected_value,
+                                analyzer_->window().ComputeWorstSMR().value);
       }
     }
   }
@@ -83,17 +85,18 @@ TEST_F(StreamAnalyzerTest, AllResultsTheSame) {
       uint64_t expected_value = value * TestStreamAnalyzerClient::result_scale;
       // Makes sure our precision is good enough.
       EXPECT_EQ(expected_value, analyzer_->ComputeMean());
-      EXPECT_EQ(expected_value, analyzer_->ComputeRMS());
-      EXPECT_NEAR_SMR(expected_value, analyzer_->ComputeSMR(), weight);
-      EXPECT_DOUBLE_EQ(0, analyzer_->ComputeStdDev());
-      EXPECT_NEAR_VARIANCE_OF_ROOT(0, analyzer_->ComputeVarianceOfRoots(),
-                                   expected_value, weight);
+      EXPECT_NEAR_SQRT_APPROX(expected_value, analyzer_->ComputeRMS());
+      EXPECT_NEAR_SQRT_APPROX(expected_value, analyzer_->ComputeSMR());
+      EXPECT_NEAR_SQRT_APPROX(0, analyzer_->ComputeStdDev());
+      EXPECT_NEAR(0, analyzer_->ComputeVarianceOfRoots(),
+                  approx_sqrt_error * value);
 
       // Verify values are forwarded to the WindowedAnalyzer.
       EXPECT_EQ(expected_value, analyzer_->window().ComputeWorstMean().value);
-      EXPECT_EQ(expected_value, analyzer_->window().ComputeWorstRMS().value);
-      EXPECT_NEAR_SMR(expected_value,
-                      analyzer_->window().ComputeWorstSMR().value, weight);
+      EXPECT_NEAR_SQRT_APPROX(expected_value,
+                              analyzer_->window().ComputeWorstRMS().value);
+      EXPECT_NEAR_SQRT_APPROX(expected_value,
+                              analyzer_->window().ComputeWorstSMR().value);
     }
   }
 }
@@ -133,11 +136,12 @@ TEST_F(StreamAnalyzerTest, AllResultsDifferent) {
   for (size_t i = 0; i < 1000; i++) {
     AddPatternHelper(&shared_client_, analyzer(), pattern49, kSampleWeight);
     EXPECT_DOUBLE_EQ(expected_mean, analyzer_->ComputeMean());
-    EXPECT_NEAR_SMR(expected_smr, analyzer_->ComputeSMR(), kSampleWeight);
-    EXPECT_DOUBLE_EQ(expected_rms, analyzer_->ComputeRMS());
-    EXPECT_DOUBLE_EQ(expected_std_dev, analyzer_->ComputeStdDev());
-    EXPECT_DOUBLE_EQ(expected_variance_of_roots,
-                     analyzer_->ComputeVarianceOfRoots());
+    // since each value creates a difference of 0.001, the result should
+    EXPECT_NEAR_SQRT_APPROX(expected_smr, analyzer_->ComputeSMR());
+    EXPECT_NEAR_SQRT_APPROX(expected_rms, analyzer_->ComputeRMS());
+    EXPECT_NEAR_SQRT_APPROX(expected_std_dev, analyzer_->ComputeStdDev());
+    EXPECT_NEAR_SQRT_APPROX(expected_variance_of_roots,
+                            analyzer_->ComputeVarianceOfRoots());
   }
   thresholds = analyzer_->ComputeThresholds();
   ASSERT_EQ(3u, thresholds.size());
@@ -158,11 +162,11 @@ TEST_F(StreamAnalyzerTest, AllResultsDifferent) {
   }
   thresholds = analyzer_->ComputeThresholds();
   EXPECT_DOUBLE_EQ(expected_mean, analyzer_->ComputeMean());
-  EXPECT_NEAR_SMR(expected_smr, analyzer_->ComputeSMR(), kSampleWeight);
-  EXPECT_DOUBLE_EQ(expected_rms, analyzer_->ComputeRMS());
-  EXPECT_DOUBLE_EQ(expected_std_dev, analyzer_->ComputeStdDev());
-  EXPECT_DOUBLE_EQ(expected_variance_of_roots,
-                   analyzer_->ComputeVarianceOfRoots());
+  EXPECT_NEAR_SQRT_APPROX(expected_smr, analyzer_->ComputeSMR());
+  EXPECT_NEAR_SQRT_APPROX(expected_rms, analyzer_->ComputeRMS());
+  EXPECT_NEAR_SQRT_APPROX(expected_std_dev, analyzer_->ComputeStdDev());
+  EXPECT_NEAR_SQRT_APPROX(expected_variance_of_roots,
+                          analyzer_->ComputeVarianceOfRoots());
   EXPECT_EQ(client_.TransformResult(thresholds_[0]), thresholds[0].threshold);
   EXPECT_EQ(client_.TransformResult(thresholds_[1]), thresholds[1].threshold);
   EXPECT_EQ(client_.TransformResult(thresholds_[2]), thresholds[2].threshold);
@@ -180,11 +184,11 @@ TEST_F(StreamAnalyzerTest, AllResultsDifferent) {
   }
   thresholds = analyzer_->ComputeThresholds();
   EXPECT_DOUBLE_EQ(expected_mean, analyzer_->ComputeMean());
-  EXPECT_NEAR_SMR(expected_smr, analyzer_->ComputeSMR(), kSampleWeight);
-  EXPECT_DOUBLE_EQ(expected_rms, analyzer_->ComputeRMS());
-  EXPECT_DOUBLE_EQ(expected_std_dev, analyzer_->ComputeStdDev());
-  EXPECT_DOUBLE_EQ(expected_variance_of_roots,
-                   analyzer_->ComputeVarianceOfRoots());
+  EXPECT_NEAR_SQRT_APPROX(expected_smr, analyzer_->ComputeSMR());
+  EXPECT_NEAR_SQRT_APPROX(expected_rms, analyzer_->ComputeRMS());
+  EXPECT_NEAR_SQRT_APPROX(expected_std_dev, analyzer_->ComputeStdDev());
+  EXPECT_NEAR_SQRT_APPROX(expected_variance_of_roots,
+                          analyzer_->ComputeVarianceOfRoots());
   EXPECT_EQ(client_.TransformResult(thresholds_[0]), thresholds[0].threshold);
   EXPECT_EQ(client_.TransformResult(thresholds_[1]), thresholds[1].threshold);
   EXPECT_EQ(client_.TransformResult(thresholds_[2]), thresholds[2].threshold);
@@ -295,7 +299,7 @@ TEST_F(StreamAnalyzerTest, Precision) {
   double expected_rms = client_.TransformResult(std::sqrt(mean_square));
   EXPECT_ABS_LT(expected_rms * .001,
                 expected_rms - naive_analyzer.ComputeRMS());
-  EXPECT_DOUBLE_EQ(expected_rms, analyzer_->ComputeRMS());
+  EXPECT_NEAR_SQRT_APPROX(expected_rms, analyzer_->ComputeRMS());
 
   double large_value_root = std::sqrt(large_value_f) * large_weight;
   double small_value_root = std::sqrt(small_value_f) * small_weight;
@@ -304,7 +308,7 @@ TEST_F(StreamAnalyzerTest, Precision) {
   double expected_smr = client_.TransformResult(mean_root * mean_root);
   EXPECT_ABS_LT(expected_smr * .001,
                 expected_smr - naive_analyzer.ComputeSMR());
-  EXPECT_NEAR_SMR(expected_smr, analyzer_->ComputeSMR(), 1);
+  EXPECT_NEAR_SQRT_APPROX(expected_smr, analyzer_->ComputeSMR());
 }
 
 }  // namespace

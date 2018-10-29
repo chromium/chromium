@@ -7,11 +7,11 @@
 
 #include "third_party/blink/renderer/core/style/border_image_length.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
-#include "third_party/blink/renderer/platform/length.h"
-#include "third_party/blink/renderer/platform/length_box.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_box.h"
 
 namespace blink {
-namespace StyleBuildingUtils {
+namespace style_building_utils {
 
 inline bool BorderImageLengthMatchesAllSides(
     const BorderImageLengthBox& border_image_length_box,
@@ -27,7 +27,7 @@ inline bool LengthMatchesAllSides(const LengthBox& length_box,
           length_box.Top() == length && length_box.Bottom() == length);
 }
 
-}  // namespace StyleBuildingUtils
+}  // namespace style_building_utils
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_STYLE_BUILDING_UTILS_H_

@@ -31,7 +31,7 @@ bool NetworkPreSandboxHook(service_manager::SandboxLinux::Options options) {
       {BrokerFilePermission::ReadWriteCreateRecursive("/")},
       service_manager::SandboxLinux::PreSandboxHook(), options);
 
-  instance->EngageNamespaceSandbox(false /* from_zygote */);
+  instance->EngageNamespaceSandboxIfPossible();
   return true;
 }
 

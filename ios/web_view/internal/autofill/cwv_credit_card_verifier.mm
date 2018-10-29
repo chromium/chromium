@@ -11,11 +11,38 @@
 #include "components/autofill/core/browser/ui/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/card_unmask_prompt_view.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/public/cwv_credit_card_verifier_data_source.h"
+#import "ios/web_view/public/cwv_credit_card_verifier_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+NSErrorDomain const CWVCreditCardVerifierErrorDomain =
+    @"org.chromium.chromewebview.CreditCardVerifierErrorDomain";
+NSString* const CWVCreditCardVerifierErrorMessageKey = @"error_message";
+NSString* const CWVCreditCardVerifierRetryAllowedKey = @"retry_allowed";
+
+namespace {
+// Converts an autofill::AutofillClient::PaymentsRpcResult to a
+// CWVCreditCardVerificationError.
+CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
+    autofill::AutofillClient::PaymentsRpcResult result) {
+  switch (result) {
+    case autofill::AutofillClient::NONE:
+    case autofill::AutofillClient::SUCCESS:
+      NOTREACHED();
+      return CWVCreditCardVerificationErrorNone;
+    case autofill::AutofillClient::TRY_AGAIN_FAILURE:
+      return CWVCreditCardVerificationErrorTryAgainFailure;
+    case autofill::AutofillClient::PERMANENT_FAILURE:
+      return CWVCreditCardVerificationErrorPermanentFailure;
+    case autofill::AutofillClient::NETWORK_ERROR:
+      return CWVCreditCardVerificationErrorNetworkFailure;
+  }
+}
+}  // namespace
 
 @interface CWVCreditCardVerifier ()
 
@@ -60,10 +87,12 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
       _unmaskingController;
   // Used to interface with |_unmaskingController|.
   std::unique_ptr<ios_web_view::WebViewCardUnmaskPromptView> _unmaskingView;
-  // Completion handler for verification results. This is provided by the
-  // client and copied internally to be invoked later from
-  // |didReceiveVerificationResultWithErrorMessage:retryAllowed:|.
-  void (^_completionHandler)(NSString* errorMessage, BOOL retryAllowed);
+  // Data source to provide risk data.
+  __weak id<CWVCreditCardVerifierDataSource> _dataSource;
+  // Delegate to receive callbacks.
+  __weak id<CWVCreditCardVerifierDelegate> _delegate;
+  // The callback to invoke for returning risk data.
+  base::OnceCallback<void(const std::string&)> _riskDataCallback;
 }
 
 @synthesize creditCard = _creditCard;
@@ -131,16 +160,27 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 }
 
 - (void)verifyWithCVC:(NSString*)CVC
-      expirationMonth:(NSString*)expirationMonth
-       expirationYear:(NSString*)expirationYear
+      expirationMonth:(nullable NSString*)expirationMonth
+       expirationYear:(nullable NSString*)expirationYear
          storeLocally:(BOOL)storeLocally
-    completionHandler:
-        (void (^)(NSString* errorMessage, BOOL retryAllowed))completionHandler {
-  DCHECK(!_completionHandler);
+           dataSource:(__weak id<CWVCreditCardVerifierDataSource>)dataSource
+             delegate:
+                 (nullable __weak id<CWVCreditCardVerifierDelegate>)delegate {
+  _dataSource = dataSource;
+  _delegate = delegate;
+
+  // It is possible for |_riskDataCallback| to be null when a failed
+  // verification attempt is retried.
+  if (!_riskDataCallback.is_null()) {
+    [_dataSource creditCardVerifier:self
+        getRiskDataWithCompletionHandler:^(NSString* _Nonnull riskData) {
+          std::move(_riskDataCallback).Run(base::SysNSStringToUTF8(riskData));
+        }];
+  }
+
   _unmaskingController->OnUnmaskResponse(
       base::SysNSStringToUTF16(CVC), base::SysNSStringToUTF16(expirationMonth),
       base::SysNSStringToUTF16(expirationYear), storeLocally);
-  _completionHandler = completionHandler;
 }
 
 - (BOOL)isCVCValid:(NSString*)CVC {
@@ -156,9 +196,24 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 
 - (void)didReceiveVerificationResultWithErrorMessage:(NSString*)errorMessage
                                         retryAllowed:(BOOL)retryAllowed {
-  DCHECK(_completionHandler);
-  _completionHandler(errorMessage, retryAllowed);
-  _completionHandler = nil;
+  if ([_delegate respondsToSelector:@selector
+                 (creditCardVerifier:didFinishVerificationWithError:)]) {
+    NSError* error;
+    autofill::AutofillClient::PaymentsRpcResult result =
+        _unmaskingController->GetVerificationResult();
+    if (errorMessage.length > 0 && result != autofill::AutofillClient::NONE &&
+        result != autofill::AutofillClient::SUCCESS) {
+      NSDictionary* userInfo = @{
+        CWVCreditCardVerifierErrorMessageKey : errorMessage,
+        CWVCreditCardVerifierRetryAllowedKey : @(retryAllowed),
+      };
+      error = [NSError errorWithDomain:CWVCreditCardVerifierErrorDomain
+                                  code:CWVConvertPaymentsRPCResult(result)
+                              userInfo:userInfo];
+    }
+
+    [_delegate creditCardVerifier:self didFinishVerificationWithError:error];
+  }
 }
 
 #pragma mark - Internal Methods
@@ -166,6 +221,10 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 - (void)didReceiveUnmaskVerificationResult:
     (autofill::AutofillClient::PaymentsRpcResult)result {
   _unmaskingController->OnVerificationResult(result);
+}
+
+- (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback {
+  _riskDataCallback = std::move(callback);
 }
 
 @end

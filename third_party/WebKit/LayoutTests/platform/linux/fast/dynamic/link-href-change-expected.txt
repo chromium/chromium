@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (0,20) size 800x560
-      LayoutInline {A} at (0,0) size 366x49 [color=#008000] [border: (10px solid #000000)]
-        LayoutText {#text} at (15,0) size 336x19
-          text run at (15,0) width 336: "This should have a 10px solid black border around it."
-      LayoutText {#text} at (0,0) size 0x0

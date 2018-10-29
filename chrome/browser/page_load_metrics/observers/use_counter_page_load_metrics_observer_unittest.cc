@@ -171,14 +171,18 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, RecordUkmUsage) {
   std::vector<const ukm::mojom::UkmEntry*> entries =
       test_ukm_recorder().GetEntriesByName(
           ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_EQ(2ul, entries.size());
+  EXPECT_EQ(3ul, entries.size());
   test_ukm_recorder().ExpectEntrySourceHasUrl(entries[0], GURL(kTestUrl));
   test_ukm_recorder().ExpectEntryMetric(
       entries[0], ukm::builders::Blink_UseCounter::kFeatureName,
-      static_cast<int64_t>(WebFeature::kNavigatorVibrate));
+      static_cast<int64_t>(WebFeature::kPageVisits));
   test_ukm_recorder().ExpectEntrySourceHasUrl(entries[1], GURL(kTestUrl));
   test_ukm_recorder().ExpectEntryMetric(
       entries[1], ukm::builders::Blink_UseCounter::kFeatureName,
+      static_cast<int64_t>(WebFeature::kNavigatorVibrate));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(entries[2], GURL(kTestUrl));
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[2], ukm::builders::Blink_UseCounter::kFeatureName,
       static_cast<int64_t>(WebFeature::kTouchEventPreventedNoTouchAction));
 }
 

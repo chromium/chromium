@@ -135,11 +135,35 @@ void ParseThresholds(const DoubleOrDoubleSequence& threshold_parameter,
 
 }  // anonymous namespace
 
+static bool throttle_delay_enabled = true;
+
+void IntersectionObserver::SetThrottleDelayEnabledForTesting(bool enabled) {
+  throttle_delay_enabled = enabled;
+}
+
 IntersectionObserver* IntersectionObserver::Create(
     const IntersectionObserverInit& observer_init,
     IntersectionObserverDelegate& delegate,
     ExceptionState& exception_state) {
   Element* root = observer_init.root();
+
+  DOMHighResTimeStamp delay = 0;
+  bool track_visibility = false;
+  if (RuntimeEnabledFeatures::IntersectionObserverV2Enabled()) {
+    delay = observer_init.delay();
+    track_visibility = observer_init.trackVisibility();
+    if (track_visibility && delay < 100) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "To enable the 'trackVisibility' option, you must also use a "
+          "'delay' option with a value of at least 100. Visibility is more "
+          "expensive to compute than the basic intersection; enabling this "
+          "option may negatively affect your page's performance. Please make "
+          "sure you *really* need visibility tracking before enabling the "
+          "'trackVisibility' option.");
+      return nullptr;
+    }
+  }
 
   Vector<Length> root_margin;
   ParseRootMargin(observer_init.rootMargin(), root_margin, exception_state);
@@ -151,12 +175,8 @@ IntersectionObserver* IntersectionObserver::Create(
   if (exception_state.HadException())
     return nullptr;
 
-  bool track_visibility = false;
-  if (RuntimeEnabledFeatures::IntersectionObserverV2Enabled())
-    track_visibility = observer_init.trackVisibility();
-
   return new IntersectionObserver(delegate, root, root_margin, thresholds,
-                                  track_visibility);
+                                  delay, track_visibility);
 }
 
 IntersectionObserver* IntersectionObserver::Create(
@@ -174,12 +194,14 @@ IntersectionObserver* IntersectionObserver::Create(
     const Vector<float>& thresholds,
     Document* document,
     EventCallback callback,
+    DOMHighResTimeStamp delay,
     bool track_visibility,
     ExceptionState& exception_state) {
   IntersectionObserverDelegateImpl* intersection_observer_delegate =
       new IntersectionObserverDelegateImpl(document, std::move(callback));
   return new IntersectionObserver(*intersection_observer_delegate, nullptr,
-                                  root_margin, thresholds, track_visibility);
+                                  root_margin, thresholds, delay,
+                                  track_visibility);
 }
 
 IntersectionObserver::IntersectionObserver(
@@ -187,11 +209,13 @@ IntersectionObserver::IntersectionObserver(
     Element* root,
     const Vector<Length>& root_margin,
     const Vector<float>& thresholds,
+    DOMHighResTimeStamp delay,
     bool track_visibility)
     : ContextClient(delegate.GetExecutionContext()),
       delegate_(&delegate),
       root_(root),
       thresholds_(thresholds),
+      delay_(delay),
       top_margin_(kFixed),
       right_margin_(kFixed),
       bottom_margin_(kFixed),
@@ -324,8 +348,12 @@ String IntersectionObserver::rootMargin() const {
   return string_builder.ToString();
 }
 
+DOMHighResTimeStamp IntersectionObserver::GetEffectiveDelay() const {
+  return throttle_delay_enabled ? delay_ : 0;
+}
+
 DOMHighResTimeStamp IntersectionObserver::GetTimeStamp() const {
-  if (Document* document = ToDocument(delegate_->GetExecutionContext())) {
+  if (Document* document = To<Document>(delegate_->GetExecutionContext())) {
     if (LocalDOMWindow* dom_window = document->domWindow())
       return DOMWindowPerformance::performance(*dom_window)->now();
   }
@@ -358,16 +386,6 @@ void IntersectionObserver::Trace(blink::Visitor* visitor) {
   visitor->Trace(observations_);
   ScriptWrappable::Trace(visitor);
   ContextClient::Trace(visitor);
-}
-
-static bool v2_throttle_delay_enabled = true;
-
-bool IntersectionObserver::V2ThrottleDelayEnabled() {
-  return v2_throttle_delay_enabled;
-}
-
-void IntersectionObserver::SetV2ThrottleDelayEnabledForTesting(bool enabled) {
-  v2_throttle_delay_enabled = enabled;
 }
 
 }  // namespace blink

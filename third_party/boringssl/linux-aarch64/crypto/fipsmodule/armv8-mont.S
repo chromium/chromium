@@ -1,4 +1,14 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__aarch64__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 
 .globl	bn_mul_mont
@@ -1405,3 +1415,4 @@ __bn_mul4x_mont:
 .align	2
 .align	4
 #endif
+#endif  // !OPENSSL_NO_ASM

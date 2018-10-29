@@ -1,0 +1,24 @@
+Tests the signed exchange information are available when the navigation succeeded after redirect.
+
+* http://localhost:8000/resources/redirect.php?url=http%3A%2F%2F127.0.0.1%3A8000%2Floading%2Fsxg%2Fresources%2Fsxg-location.sxg
+  failed: false
+  statusCode: 302
+  resourceType: other
+* http://127.0.0.1:8000/loading/sxg/resources/sxg-location.sxg
+  failed: false
+  statusCode: 200
+  resourceType: signed-exchange
+  SignedExchangeInfo
+    Request URL: https://127.0.0.1:8443/loading/sxg/resources/inner-url.html
+    Certificate URL: https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor
+    Certificate Subject: 127.0.0.1
+    Certificate Issuer: web-platform-tests
+* https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor
+  failed: false
+  statusCode: 200
+  resourceType: other
+* https://127.0.0.1:8443/loading/sxg/resources/inner-url.html
+  failed: false
+  statusCode: 200
+  resourceType: document
+

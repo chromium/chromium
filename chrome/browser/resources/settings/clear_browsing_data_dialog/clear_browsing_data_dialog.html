@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/paper_tabs_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
@@ -46,6 +47,12 @@
         padding-top: 8px;
       }
 
+      #clearBrowsingDataDialog [slot=footer] {
+        background: var(--paper-grey-50);
+        border-top: none;
+        padding: 0;
+      }
+
       .row {
         align-items: center;
         display: flex;
@@ -88,6 +95,16 @@
         font-size: calc(13 / 15 * 100%);
         padding-top: 8px;
       }
+
+      .divider {
+        border-top: var(--settings-separator-line);
+        margin: 0 16px;
+      }
+
+      #footer-description {
+        color: var(--cr-secondary-text-color);
+        padding: 16px;
+      }
     </style>
 
     <cr-dialog id="clearBrowsingDataDialog"
@@ -127,7 +144,7 @@
                 pref="{{prefs.browser.clear_data.browsing_history_basic}}"
                 label="$i18n{clearBrowsingHistory}"
                 sub-label-html="[[browsingCheckboxLabel_(
-                    isSignedIn_, isSyncingHistory_,
+                    isSignedIn_, isSyncingHistory_, syncStatus.hasError,
                     '$i18nPolymer{clearBrowsingHistorySummary}',
                     '$i18nPolymer{clearBrowsingHistorySummarySignedIn}',
                     '$i18nPolymer{clearBrowsingHistorySummarySynced}')]]"
@@ -238,6 +255,28 @@
                                                clearButtonDisabled_)]]">
             $i18n{clearData}
         </paper-button>
+      </div>
+      <div slot="footer"
+          hidden="[[!shouldShowFooter_(syncStatus.signedIn, diceEnabled_)]]">
+        <settings-sync-account-control sync-status="[[syncStatus]]"
+            hide-buttons>
+        </settings-sync-account-control>
+        <div class="divider"></div>
+        <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
+          <span id="sync-info" hidden="[[syncStatus.hasError]]">
+            $i18nRaw{clearBrowsingDataWithSync}
+          </span>
+          <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
+            $i18nRaw{clearBrowsingDataWithSyncPaused}
+          </span>
+          <span id="sync-passphrase-error-info"
+              hidden="[[!hasPassphraseError_]]">
+            $i18nRaw{clearBrowsingDataWithSyncPassphraseError}
+          </span>
+          <span id="sync-other-error-info" hidden="[[!hasOtherSyncError_]]">
+            $i18nRaw{clearBrowsingDataWithSyncError}
+          </span>
+        </div>
       </div>
     </cr-dialog>
 

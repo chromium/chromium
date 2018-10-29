@@ -17,6 +17,14 @@ Console.ConsolePinPane = class extends UI.ThrottledWidget {
       this.addPin(expression);
   }
 
+  /**
+   * @override
+   */
+  willHide() {
+    for (const pin of this._pins)
+      pin.setHovered(false);
+  }
+
   _savePins() {
     const toSave = Array.from(this._pins).map(pin => pin.expression());
     this._pinsSetting.set(toSave);
@@ -114,6 +122,18 @@ Console.ConsolePin = class extends Common.Object {
     /** @type {?UI.TextEditor} */
     this._editor = null;
     this._committedExpression = expression;
+    this._hovered = false;
+    /** @type {?SDK.RemoteObject} */
+    this._lastNode = null;
+
+    this._pinPreview.addEventListener('mouseenter', this.setHovered.bind(this, true), false);
+    this._pinPreview.addEventListener('mouseleave', this.setHovered.bind(this, false), false);
+    this._pinPreview.addEventListener('click', event => {
+      if (this._lastNode) {
+        Common.Revealer.reveal(this._lastNode);
+        event.consume();
+      }
+    }, false);
 
     this._editorPromise = self.runtime.extension(UI.TextEditorFactory).instance().then(factory => {
       this._editor = factory.createEditor({
@@ -143,8 +163,20 @@ Console.ConsolePin = class extends Common.Object {
           this._editor.setText(trimmedText);
         this._committedExpression = trimmedText;
         pinPane._savePins();
+        this._editor.setSelection(TextUtils.TextRange.createFromLocation(Infinity, Infinity));
       });
     });
+  }
+
+  /**
+   * @param {boolean} hovered
+   */
+  setHovered(hovered) {
+    if (this._hovered === hovered)
+      return;
+    this._hovered = hovered;
+    if (!hovered && this._lastNode)
+      SDK.OverlayModel.hideDOMNodeHighlight();
   }
 
   /**
@@ -171,8 +203,11 @@ Console.ConsolePin = class extends Common.Object {
    * @param {!UI.ContextMenu} contextMenu
    */
   appendToContextMenu(contextMenu) {
-    if (this._lastResult && this._lastResult.object)
+    if (this._lastResult && this._lastResult.object) {
       contextMenu.appendApplicableItems(this._lastResult.object);
+      // Prevent result from being released manually. It will release along with 'console' group.
+      this._lastResult = null;
+    }
   }
 
   /**
@@ -185,12 +220,14 @@ Console.ConsolePin = class extends Common.Object {
     const isEditing = this._pinElement.hasFocus();
     const throwOnSideEffect = isEditing && text !== this._committedExpression;
     const timeout = throwOnSideEffect ? 250 : undefined;
-    this._lastExecutionContext = UI.context.flavor(SDK.ExecutionContext);
+    const executionContext = UI.context.flavor(SDK.ExecutionContext);
     const {preview, result} = await ObjectUI.JavaScriptREPL.evaluateAndBuildPreview(
-        text, throwOnSideEffect, timeout, !isEditing /* allowErrors */);
-    if (this._lastResult)
+        text, throwOnSideEffect, timeout, !isEditing /* allowErrors */, 'console');
+    if (this._lastResult && this._lastExecutionContext)
       this._lastExecutionContext.runtimeModel.releaseEvaluationResult(this._lastResult);
     this._lastResult = result || null;
+    this._lastExecutionContext = executionContext || null;
+
     const previewText = preview.deepTextContent();
     if (!previewText || previewText !== this._pinPreview.deepTextContent()) {
       this._pinPreview.removeChildren();
@@ -205,6 +242,17 @@ Console.ConsolePin = class extends Common.Object {
       }
       this._pinPreview.title = previewText;
     }
+
+    let node = null;
+    if (result && result.object && result.object.type === 'object' && result.object.subtype === 'node')
+      node = result.object;
+    if (this._hovered) {
+      if (node)
+        SDK.OverlayModel.highlightObjectAsDOMNode(node);
+      else if (this._lastNode)
+        SDK.OverlayModel.hideDOMNodeHighlight();
+    }
+    this._lastNode = node || null;
 
     const isError = result && result.exceptionDetails && !SDK.RuntimeModel.isSideEffectFailure(result);
     this._pinElement.classList.toggle('error-level', isError);

@@ -464,8 +464,7 @@ public class DownloadTest implements CustomMainActivityStart {
      * @param size The size of info bars to poll for.
      */
     private void assertPollForInfoBarSize(final int size) {
-        final InfoBarContainer container =
-                mDownloadTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        final InfoBarContainer container = mDownloadTestRule.getInfoBarContainer();
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {

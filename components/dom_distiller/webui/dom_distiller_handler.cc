@@ -102,8 +102,7 @@ void DomDistillerHandler::HandleSelectArticle(const base::ListValue* args) {
 void DomDistillerHandler::HandleRequestEntries(const base::ListValue* args) {
   base::ListValue entries;
   const std::vector<ArticleEntry>& entries_specifics = service_->GetEntries();
-  for (std::vector<ArticleEntry>::const_iterator it = entries_specifics.begin();
-       it != entries_specifics.end();
+  for (auto it = entries_specifics.begin(); it != entries_specifics.end();
        ++it) {
     const ArticleEntry& article = *it;
     DCHECK(IsEntryValid(article));

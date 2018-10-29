@@ -83,6 +83,12 @@ TEST(NetworkQualityEstimatorParamsTest, TypicalNetworkQualities) {
               params.TypicalNetworkQuality(ect).downstream_throughput_kbps());
     EXPECT_EQ(nqe::internal::INVALID_RTT_THROUGHPUT,
               params.ConnectionThreshold(ect).downstream_throughput_kbps());
+
+    EXPECT_EQ(params.TypicalNetworkQuality(ect).http_rtt(),
+              NetworkQualityEstimatorParams::GetDefaultTypicalHttpRtt(ect));
+    EXPECT_EQ(
+        params.TypicalNetworkQuality(ect).downstream_throughput_kbps(),
+        NetworkQualityEstimatorParams::GetDefaultTypicalDownlinkKbps(ect));
   }
 
   // The typical network quality of 4G connection should be at least as fast

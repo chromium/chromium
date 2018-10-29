@@ -2,7 +2,6 @@ This tests that various combinations of replaceChild on the document works as sp
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 replacing element with element
 PASS doc.replaceChild(newChild, doc.documentElement) did not throw exception.
 <!DOCTYPE html><div/>

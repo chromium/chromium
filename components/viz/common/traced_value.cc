@@ -5,7 +5,7 @@
 #include "components/viz/common/traced_value.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace viz {
 

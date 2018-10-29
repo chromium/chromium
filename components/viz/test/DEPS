@@ -8,6 +8,7 @@ include_rules = [
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/common/capabilities.h",
+  "+gpu/command_buffer/common/context_result.h",
   "+gpu/command_buffer/common/skia_utils.h",
   "+gpu/command_buffer/common/sync_token.h",
   "+gpu/config/gpu_feature_info.h",

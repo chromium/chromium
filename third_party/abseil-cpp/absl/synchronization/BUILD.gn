@@ -50,8 +50,8 @@ source_set("synchronization") {
     "internal/create_thread_identity.cc",
     "internal/per_thread_sem.cc",
     "internal/waiter.cc",
+    "mutex.cc",
     "notification.cc",
-    "mutex.cc"
   ]
   public = [
     "barrier.h",
@@ -93,6 +93,8 @@ source_set("thread_pool") {
     ":synchronization",
     "../base:core_headers",
   ]
+  visibility = []
+  visibility += [ "../*" ]
 }
 
 source_set("per_thread_sem_test_common") {

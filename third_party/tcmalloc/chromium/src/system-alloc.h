@@ -83,6 +83,10 @@ bool TCMalloc_SystemRelease(void* start, size_t length);
 extern PERFTOOLS_DLL_DECL
 void TCMalloc_SystemCommit(void* start, size_t length);
 
+// Guards the first page in the supplied range of memory. It crashes the
+// program if the guard page cannot be added.
+extern void TCMalloc_SystemAddGuard(void* start, size_t size);
+
 // The current system allocator.
 extern PERFTOOLS_DLL_DECL SysAllocator* tcmalloc_sys_alloc;
 

@@ -21,7 +21,7 @@ int RenderViewHostDelegateView::GetBottomControlsHeight() const {
   return 0;
 }
 
-bool RenderViewHostDelegateView::DoBrowserControlsShrinkBlinkSize() const {
+bool RenderViewHostDelegateView::DoBrowserControlsShrinkRendererSize() const {
   return false;
 }
 

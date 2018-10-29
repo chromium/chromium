@@ -56,7 +56,7 @@ void MightBeCollectedVisitor::VisitMember(Member* edge) {
 
 void MightBeCollectedVisitor::VisitCollection(Collection* edge) {
   if (edge->on_heap() && !is_eagerly_finalized_) {
-    might_be_collected_ = !edge->is_root();
+    might_be_collected_ = true;
   } else {
     edge->AcceptMembers(this);
   }

@@ -2,7 +2,6 @@ This tests checks parsing of the '-webkit-transform-origin' property and in part
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("-webkit-transform-origin: 10% 10% 10%", "-webkit-transform-origin") is ""
 PASS test("-webkit-transform-origin: 10% 10% 10px", "-webkit-transform-origin") is "10% 10% 10px"
 PASS test("-webkit-transform-origin: 10px 10px 10%", "-webkit-transform-origin") is ""

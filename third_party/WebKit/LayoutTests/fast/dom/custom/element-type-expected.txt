@@ -3,7 +3,6 @@ Test that changing an instantiated custom element's 'is' attribute does not affe
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.testRunner is non-null.
 PASS a.getAttribute("is") is "x-y"
 PASS a instanceof X is true

@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_root_base.h"
+#include "base/logging.h"
 
 namespace base {
 namespace internal {

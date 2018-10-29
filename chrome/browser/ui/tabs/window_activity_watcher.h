@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 namespace tab_ranker {
@@ -32,6 +33,8 @@ class WindowActivityWatcher : public BrowserListObserver {
       const Browser* browser);
 
  private:
+  friend class base::NoDestructor<WindowActivityWatcher>;
+
   WindowActivityWatcher();
   ~WindowActivityWatcher() override;
 

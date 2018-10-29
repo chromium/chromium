@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
@@ -50,10 +49,10 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
       return;
 
     while (!set_requests_.empty()) {
-      SetRequest request = set_requests_.front();
+      SetRequest request = std::move(set_requests_.front());
       set_requests_.pop();
       const base::Value* value = provider_->Get(request.first);
-      ASSERT_TRUE(request.second->Equals(value));
+      ASSERT_EQ(request.second, *value);
     }
     loop_.Quit();
   }
@@ -61,8 +60,7 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   bool Set(const std::string& setting, const base::Value& value) {
     if (!service_->Set(setting, value))
       return false;
-    set_requests_.push(
-        SetRequest(setting, linked_ptr<base::Value>(value.DeepCopy())));
+    set_requests_.push(SetRequest(setting, value.Clone()));
     return true;
   }
 
@@ -73,7 +71,7 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   DeviceSettingsProvider* provider_;
   base::RunLoop loop_;
 
-  using SetRequest = std::pair<std::string, linked_ptr<base::Value>>;
+  using SetRequest = std::pair<std::string, base::Value>;
   base::queue<SetRequest> set_requests_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefsChecker);
@@ -98,8 +96,9 @@ class OwnerSettingsServiceChromeOSTest : public DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
-    provider_.reset(new DeviceSettingsProvider(base::Bind(&OnPrefChanged),
-                                               &device_settings_service_));
+    provider_.reset(new DeviceSettingsProvider(
+        base::Bind(&OnPrefChanged), &device_settings_service_,
+        TestingBrowserProcess::GetGlobal()->local_state()));
     owner_key_util_->SetPrivateKey(device_policy_.GetSigningKey());
     InitOwner(AccountId::FromUserEmail(device_policy_.policy_data().username()),
               true);
@@ -199,8 +198,9 @@ class OwnerSettingsServiceChromeOSNoOwnerTest
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
-    provider_.reset(new DeviceSettingsProvider(base::Bind(&OnPrefChanged),
-                                               &device_settings_service_));
+    provider_.reset(new DeviceSettingsProvider(
+        base::Bind(&OnPrefChanged), &device_settings_service_,
+        TestingBrowserProcess::GetGlobal()->local_state()));
     FlushDeviceSettings();
     service_ = OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
         profile_.get());

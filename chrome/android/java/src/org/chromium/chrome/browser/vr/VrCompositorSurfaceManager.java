@@ -94,7 +94,7 @@ public class VrCompositorSurfaceManager implements CompositorSurfaceManager {
     public void doneWithUnownedSurface() {}
 
     @Override
-    public void recreateSurfaceForJellyBean() {}
+    public void recreateSurface() {}
 
     @Override
     public void setBackgroundDrawable(Drawable background) {}

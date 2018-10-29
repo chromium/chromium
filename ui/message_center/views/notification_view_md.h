@@ -99,9 +99,12 @@ class NotificationButtonMD : public views::LabelButton {
   const base::Optional<base::string16>& placeholder() const {
     return placeholder_;
   }
+  void set_placeholder(const base::Optional<base::string16>& placeholder) {
+    placeholder_ = placeholder;
+  }
 
  private:
-  const base::Optional<base::string16> placeholder_;
+  base::Optional<base::string16> placeholder_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationButtonMD);
 };
@@ -171,7 +174,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   // Overridden from views::View:
   void Layout() override;
   void OnFocus() override;
-  void ScrollRectToVisible(const gfx::Rect& rect) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -213,6 +215,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestClickExpanded);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestActionButtonClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestInlineReply);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
+                           TestInlineReplyRemovedByUpdate);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, ExpandLongMessage);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestAccentColor);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UseImageAsIcon);

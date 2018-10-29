@@ -37,7 +37,7 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
 
   base::TimeTicks GetCurrentStreamTime();
 
-  // Event handlers for |audio_out_|.
+  // Event handlers for |audio_renderer_|.
   void OnRendererError();
   void OnMinLeadTimeChanged(int64_t min_lead_time);
 
@@ -48,7 +48,7 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
   int target_packet_size_ = 0;
 
   // Audio renderer connection.
-  fuchsia::media::AudioOutPtr audio_out_;
+  fuchsia::media::AudioRendererPtr audio_renderer_;
 
   base::SharedMemory payload_buffer_;
   size_t payload_buffer_pos_ = 0;

@@ -11,6 +11,7 @@
 
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 
 class AccountId;
 class ScopedKeepAlive;
@@ -95,6 +96,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // own deletion to the message loop twice if the user logs out while we're
   // still in the process of cleaning up after login (http://crbug.com/134463).
   bool shutting_down_ = false;
+
+  // Used to make sure Finalize() is not called twice.
+  bool is_finalizing_ = false;
 
   // Make sure chrome won't exit while we are at login/oobe screen.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;

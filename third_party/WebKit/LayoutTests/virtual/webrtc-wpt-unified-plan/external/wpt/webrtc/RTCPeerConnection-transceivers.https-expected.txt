@@ -3,7 +3,7 @@ PASS addTrack: creates a transceiver for the sender
 PASS addTrack: "transceiver == {sender,receiver}"
 PASS addTrack: transceiver.sender is associated with the track
 PASS addTrack: transceiver.receiver has its own track
-FAIL addTrack: transceiver.receiver's track is muted assert_true: expected true got false
+PASS addTrack: transceiver.receiver's track is muted
 PASS addTrack: transceiver is not associated with an m-section
 PASS addTrack: transceiver is not stopped
 PASS addTrack: transceiver's direction is sendrecv
@@ -23,7 +23,7 @@ PASS setLocalDescription(answer): transceiver.currentDirection is sendonly
 PASS addTransceiver(track): creates a transceiver for the track
 PASS addTransceiver(track): "transceiver == {sender,receiver}"
 PASS addTransceiver(track, init): initialize direction to inactive
-FAIL addTransceiver(track, init): initialize sendEncodings[0].active to false assert_false: expected false got true
+PASS addTransceiver(track, init): initialize sendEncodings[0].active to false
 PASS addTransceiver(0 streams): ontrack fires with no stream
 PASS addTransceiver(1 stream): ontrack fires with corresponding stream
 PASS addTransceiver(2 streams): ontrack fires with corresponding two streams
@@ -40,5 +40,6 @@ PASS addTrack reuses reusable transceivers
 PASS addTransceiver does not reuse reusable transceivers
 PASS Can setup two-way call using a single transceiver
 PASS Closing the PC stops the transceivers
+PASS Changing transceiver direction to 'sendrecv' makes ontrack fire
 Harness: the test ran to completion.
 

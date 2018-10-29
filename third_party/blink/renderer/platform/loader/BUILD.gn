@@ -88,6 +88,7 @@ blink_platform_sources("loader") {
     "fetch/unique_identifier.h",
     "link_header.cc",
     "link_header.h",
+    "mixed_content_autoupgrade_status.h",
     "subresource_integrity.cc",
     "subresource_integrity.h",
   ]

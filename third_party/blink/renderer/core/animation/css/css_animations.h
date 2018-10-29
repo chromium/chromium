@@ -140,7 +140,7 @@ class CSSAnimations final {
   };
 
   struct RunningTransition {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     void Trace(blink::Visitor* visitor) { visitor->Trace(animation); }

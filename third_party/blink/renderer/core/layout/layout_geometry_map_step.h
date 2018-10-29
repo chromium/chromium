@@ -48,7 +48,7 @@ typedef unsigned GeometryInfoFlags;
 
 // Stores data about how to map from one layoutObject to its container.
 struct LayoutGeometryMapStep {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   LayoutGeometryMapStep(const LayoutGeometryMapStep& o)
       : layout_object_(o.layout_object_),
         offset_(o.offset_),

@@ -73,6 +73,15 @@ chrome.browsingData.removeCookies({
   "since": oneWeekAgo
 }, callback);</pre>
 
+<p>
+  If the user is syncing their data, <code>chrome.browsingData.remove</code> may
+  automatically rebuild the cookie for the Sync account after clearing it. This
+  is to ensure that Sync can continue working, so that the data can be
+  eventually deleted on the server. However the more specific
+  <code>chrome.browsingData.removeCookies</code> can be used to clear the cookie
+  for the Sync account, and Sync will be paused in this case.
+</p>
+
 <p class="caution">
   <strong>Important</strong>: Removing browsing data involves a good deal of
   heavy lifting in the background, and can take <em>tens of seconds</em> to

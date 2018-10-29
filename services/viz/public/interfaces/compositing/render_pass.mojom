@@ -18,7 +18,7 @@ struct RenderPass {
   gfx.mojom.Rect damage_rect;
   gfx.mojom.Transform transform_to_root_target;
   FilterOperations filters;
-  FilterOperations background_filters;
+  FilterOperations backdrop_filters;
   gfx.mojom.ColorSpace color_space;
   bool has_transparent_background;
   bool cache_render_pass = false;

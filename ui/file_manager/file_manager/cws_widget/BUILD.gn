@@ -1,0 +1,50 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":app_installer",
+    ":cws_webview_client",
+    ":cws_widget_container",
+    ":cws_widget_container_error_dialog",
+    ":cws_widget_container_platform_delegate",
+  ]
+}
+
+js_library("app_installer") {
+  deps = [
+    ":cws_widget_container_platform_delegate",
+  ]
+}
+
+js_library("cws_widget_container") {
+  deps = [
+    ":app_installer",
+    ":cws_webview_client",
+    ":cws_widget_container_error_dialog",
+  ]
+}
+
+js_library("cws_widget_container_error_dialog") {
+  deps = [
+    "//ui/webui/resources/js/cr/ui:dialogs",
+  ]
+}
+
+js_library("cws_widget_container_platform_delegate") {
+}
+
+js_library("cws_webview_client") {
+  deps = [
+    ":cws_widget_container_platform_delegate",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "../../externs/webview_tag.js",
+  ]
+}

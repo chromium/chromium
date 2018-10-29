@@ -5,4 +5,7 @@
   <string name="webview">WebView</string>
   <string name="warmup">Call Warmup (3s delay)</string>
   <string name="go">Go</string>
+  <string name="will_load_parallel_url">Load a first URL in parallel:</string>
+  <string name="parallel_url_to_load">URL to Load in parallel:</string>
+  <string name="default_parallel_url">http://www.android.com</string>
 </resources>

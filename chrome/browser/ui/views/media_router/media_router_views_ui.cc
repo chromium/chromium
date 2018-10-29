@@ -45,7 +45,8 @@ MediaRouterViewsUI::~MediaRouterViewsUI() {
 
 void MediaRouterViewsUI::AddObserver(CastDialogController::Observer* observer) {
   observers_.AddObserver(observer);
-  observer->OnModelUpdated(model_);
+  // TODO(takumif): Update the header when this object is initialized instead.
+  UpdateModelHeader();
 }
 
 void MediaRouterViewsUI::RemoveObserver(
@@ -108,8 +109,6 @@ void MediaRouterViewsUI::OnRoutesUpdated(
 }
 
 void MediaRouterViewsUI::UpdateSinks() {
-  model_.set_dialog_header(
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CAST_DIALOG_TITLE));
   std::vector<UIMediaSink> media_sinks;
   for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
     auto route_it = std::find_if(
@@ -147,6 +146,10 @@ UIMediaSink MediaRouterViewsUI::ConvertToUISink(
                         : UIMediaSinkState::AVAILABLE;
     ui_sink.cast_modes = sink.cast_modes;
   }
+  if (ui_sink.icon_type == SinkIconType::HANGOUT &&
+      ui_sink.state == UIMediaSinkState::AVAILABLE && sink.sink.domain()) {
+    ui_sink.status_text = base::UTF8ToUTF16(*sink.sink.domain());
+  }
   if (issue && IssueMatches(*issue, ui_sink))
     ui_sink.issue = issue;
   return ui_sink;
@@ -160,6 +163,31 @@ void MediaRouterViewsUI::OnIssue(const Issue& issue) {
 void MediaRouterViewsUI::OnIssueCleared() {
   issue_ = base::nullopt;
   UpdateSinks();
+}
+
+void MediaRouterViewsUI::OnDefaultPresentationChanged(
+    const content::PresentationRequest& presentation_request) {
+  // This sets the default cast mode to presentation when the dialog is opened.
+  // So we need to update the header to reflect that.
+  MediaRouterUIBase::OnDefaultPresentationChanged(presentation_request);
+  UpdateModelHeader();
+}
+
+void MediaRouterViewsUI::OnDefaultPresentationRemoved() {
+  MediaRouterUIBase::OnDefaultPresentationRemoved();
+  UpdateModelHeader();
+}
+
+void MediaRouterViewsUI::UpdateModelHeader() {
+  const std::string source_name = GetTruncatedPresentationRequestSourceName();
+  const base::string16 header_text =
+      source_name.empty()
+          ? l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CAST_DIALOG_TITLE)
+          : l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
+                                       base::UTF8ToUTF16(source_name));
+  model_.set_dialog_header(header_text);
+  for (CastDialogController::Observer& observer : observers_)
+    observer.OnModelUpdated(model_);
 }
 
 void MediaRouterViewsUI::FileDialogFileSelected(

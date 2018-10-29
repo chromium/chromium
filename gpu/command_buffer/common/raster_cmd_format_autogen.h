@@ -366,43 +366,6 @@ static_assert(offsetof(EndQueryEXT, target) == 4,
 static_assert(offsetof(EndQueryEXT, submit_count) == 8,
               "offset of EndQueryEXT submit_count should be 8");
 
-struct CompressedCopyTextureCHROMIUM {
-  typedef CompressedCopyTextureCHROMIUM ValueType;
-  static const CommandId kCmdId = kCompressedCopyTextureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _source_id, GLuint _dest_id) {
-    SetHeader();
-    source_id = _source_id;
-    dest_id = _dest_id;
-  }
-
-  void* Set(void* cmd, GLuint _source_id, GLuint _dest_id) {
-    static_cast<ValueType*>(cmd)->Init(_source_id, _dest_id);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t source_id;
-  uint32_t dest_id;
-};
-
-static_assert(sizeof(CompressedCopyTextureCHROMIUM) == 12,
-              "size of CompressedCopyTextureCHROMIUM should be 12");
-static_assert(offsetof(CompressedCopyTextureCHROMIUM, header) == 0,
-              "offset of CompressedCopyTextureCHROMIUM header should be 0");
-static_assert(offsetof(CompressedCopyTextureCHROMIUM, source_id) == 4,
-              "offset of CompressedCopyTextureCHROMIUM source_id should be 4");
-static_assert(offsetof(CompressedCopyTextureCHROMIUM, dest_id) == 8,
-              "offset of CompressedCopyTextureCHROMIUM dest_id should be 8");
-
 struct LoseContextCHROMIUM {
   typedef LoseContextCHROMIUM ValueType;
   static const CommandId kCmdId = kLoseContextCHROMIUM;
@@ -1487,32 +1450,5 @@ static_assert(offsetof(SetActiveURLCHROMIUM, header) == 0,
               "offset of SetActiveURLCHROMIUM header should be 0");
 static_assert(offsetof(SetActiveURLCHROMIUM, url_bucket_id) == 4,
               "offset of SetActiveURLCHROMIUM url_bucket_id should be 4");
-
-struct ResetActiveURLCHROMIUM {
-  typedef ResetActiveURLCHROMIUM ValueType;
-  static const CommandId kCmdId = kResetActiveURLCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init() { SetHeader(); }
-
-  void* Set(void* cmd) {
-    static_cast<ValueType*>(cmd)->Init();
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-};
-
-static_assert(sizeof(ResetActiveURLCHROMIUM) == 4,
-              "size of ResetActiveURLCHROMIUM should be 4");
-static_assert(offsetof(ResetActiveURLCHROMIUM, header) == 0,
-              "offset of ResetActiveURLCHROMIUM header should be 0");
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_FORMAT_AUTOGEN_H_

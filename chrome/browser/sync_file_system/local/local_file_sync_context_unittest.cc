@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "storage/browser/blob/scoped_file.h"
@@ -69,9 +71,10 @@ class LocalFileSyncContextTest : public testing::Test {
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncContextTest");
 
     ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    io_task_runner_ = BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+    io_task_runner_ =
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
     file_task_runner_ =
-        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
   }
 
   void TearDown() override { RevokeSyncableFileSystem(); }
@@ -628,8 +631,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForDeletion) {
   ASSERT_TRUE(base::ContainsKey(urls, kFile));
   ASSERT_TRUE(base::ContainsKey(urls, kDir));
   ASSERT_TRUE(base::ContainsKey(urls, kChild));
-  for (FileSystemURLSet::iterator iter = urls.begin();
-       iter != urls.end(); ++iter) {
+  for (auto iter = urls.begin(); iter != urls.end(); ++iter) {
     file_system.ClearChangeForURLInTracker(*iter);
   }
 

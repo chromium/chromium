@@ -117,6 +117,7 @@ login.createScreen('RecommendAppsScreen', 'recommend-apps', function() {
       this.removeClass_('recommend-apps-loading');
       this.removeClass_('error');
       this.addClass_('recommend-apps-loaded');
+      this.getElement_('recommend-apps-install-button').focus();
     },
 
     /**

@@ -6,6 +6,7 @@ module ash.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "ui/accessibility/ax_enums.mojom";
+import "ui/events/mojo/event.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
 // Alert sent to the accessibility api.
@@ -47,6 +48,22 @@ enum AccessibilityPanelState {
   FULLSCREEN
 };
 
+// These values are persisted to logs and should not be renumbered or re-used.
+// See tools/metrics/histograms/enums.xml.
+enum DictationToggleSource {
+  // Toggled by the keyboard command (Search + D).
+  kKeyboard,
+
+  // Toggled by the dictation button in the tray.
+  kButton,
+
+  // Switch Access context menu button.
+  kSwitchAccess,
+
+  // Chromevox chrome extension.
+  kChromevox
+};
+
 enum SelectToSpeakState {
   // Select to Speak is not actively selecting text or speaking.
   kSelectToSpeakStateInactive,
@@ -57,6 +74,42 @@ enum SelectToSpeakState {
 
   // Select to Speak is currently speaking.
   kSelectToSpeakStateSpeaking,
+};
+
+// The type of mouse event the dwell control feature should perform when
+// dwelling. These values are written to prefs and should not be changed.
+[Extensible]
+enum AutoclickEventType {
+  // Perform a left click.
+  kLeftClick,
+
+  // Perform a right click.
+  kRightClick,
+
+  // Perform a drag and drop, i.e. click down at the first dwell, and up at the
+  // second dwell.
+  kDragAndDrop,
+
+  // Perform a double-click.
+  kDoubleClick,
+
+  // A non-action, i.e. nothing will happen at the end of the dwell time.
+  kNoAction,
+
+  // TODO(katie): Add scroll.
+};
+
+// Allows a client to implement Select-to-Speak.
+// TODO(katie): Consider combining DispatchMouseEvent and DispatchKeyEvent
+// into a single DispatchEvent function.
+interface SelectToSpeakEventHandlerDelegate {
+  // Sends a KeyEvent to the Select-to-Speak extension in Chrome. The event
+  // is cast to a key event with a type CHECK.
+  DispatchKeyEvent(ui.mojom.Event event);
+
+  // Sends a MouseEvent to the Select-to-Speak extension in Chrome. The event
+  // is cast to a mouse event with a type CHECK.
+  DispatchMouseEvent(ui.mojom.Event event);
 };
 
 // Interface for ash client (e.g. Chrome) to control and query accessibility
@@ -93,6 +146,13 @@ interface AccessibilityController {
   // Sets the current Select-to-Speak state. This should be used by the Select-
   // to-Speak extension to inform ash of its updated state.
   SetSelectToSpeakState(SelectToSpeakState state);
+
+  // Set the delegate used by the Select-to-Speak event handler.
+  SetSelectToSpeakEventHandlerDelegate(
+      SelectToSpeakEventHandlerDelegate delegate);
+
+  // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
+  ToggleDictationFromSource(DictationToggleSource source);
 };
 
 // Interface for ash to request accessibility service from its client (e.g.

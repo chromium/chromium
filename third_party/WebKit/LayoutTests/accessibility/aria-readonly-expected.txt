@@ -1,8 +1,8 @@
      
+
 This tests that the AXValue property is correctly reported for native and non-native text boxes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS ariaTextBoxIsWritable is true
 PASS ariaReadOnlyAriaTextBoxIsWritable is false

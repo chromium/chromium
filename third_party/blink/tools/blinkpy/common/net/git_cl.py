@@ -71,10 +71,13 @@ class GitCL(object):
             builders_by_bucket = {bucket: builders}
         else:
             builders_by_bucket = self._group_builders_by_bucket(builders)
-
         # Sort both buckets and builders to ensure stable unit tests.
         for bucket in sorted(builders_by_bucket):
-            command = ['try', '-B', bucket]
+            command = ['try']
+            # Only specify bucket if it's explicitly given to us. Otherwise,
+            # `git cl` will figure out the appropriate bucket.
+            if bucket:
+                command.extend(['-B', bucket])
             for builder in sorted(builders_by_bucket[bucket]):
                 command.extend(['-b', builder])
             self.run(command)
@@ -84,7 +87,7 @@ class GitCL(object):
         for builder in builders:
             bucket = self._host.builders.bucket_for_builder(builder)
             builders_by_bucket[bucket].append(builder)
-        return builders_by_bucket
+        return dict(builders_by_bucket)
 
     def get_issue_number(self):
         """Returns the issue number as a string, or "None"."""
@@ -245,10 +248,23 @@ class GitCL(object):
         url = result_dict['url']
         if url is None:
             return Build(builder_name, None)
-        match = re.match(r'.*/(\d+)/?$', url)
+
+        # LUCI jobs
+        # TODO(martiniss): Switch to using build number once `git cl
+        # try-results` uses buildbucket v2 API.
+        tags = result_dict.get('tags', [])
+        for tag in tags:
+            if tag.startswith("build_address:"):
+                build_number = tag.split('/')[-1]
+                return Build(builder_name, int(build_number))
+
+        # BuildBot jobs
+        match = re.match(r'.*/builds/(\d+)/?$', url)
         if match:
             build_number = match.group(1)
             return Build(builder_name, int(build_number))
+
+        # Swarming tasks
         match = re.match(r'.*/task/([0-9a-f]+)(/?|\?.*)$', url)
         assert match, '%s did not match expected format' % url
         task_id = match.group(1)

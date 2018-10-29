@@ -536,9 +536,6 @@ bool TabManagerDelegate::KillArcProcess(const int nspid) {
 
 bool TabManagerDelegate::KillTab(LifecycleUnit* lifecycle_unit,
                                  ::mojom::LifecycleUnitDiscardReason reason) {
-  DecisionDetails decision_details;
-  if (!lifecycle_unit->CanDiscard(reason, &decision_details))
-    return false;
   bool did_discard = lifecycle_unit->Discard(reason);
   return did_discard;
 }

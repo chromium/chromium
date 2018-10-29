@@ -20,47 +20,47 @@
         {
           "object": "NGPhysicalTextFragment 'AAAAA AAAA AAAA'",
           "rect": [0, 120, 300, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'A A A A A AA AA'",
           "rect": [0, 0, 300, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AA AA AA A A A'",
           "rect": [0, 160, 280, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAA AAA AAA AA'",
           "rect": [0, 140, 280, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAAAA AAAAAAA'",
           "rect": [0, 80, 280, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAA AAAA AAAA'",
           "rect": [0, 40, 260, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AA AA AAA AAA'",
           "rect": [0, 20, 260, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAAAA AAAAA'",
           "rect": [0, 100, 240, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAAA AAAAA'",
           "rect": [0, 60, 220, 20],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AA AA AA A'",
@@ -78,43 +78,13 @@
           "reason": "disappeared"
         },
         {
-          "object": "NGPhysicalTextFragment 'AAAA AAAAA'",
-          "rect": [0, 80, 200, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AA AAA AAA'",
-          "rect": [0, 40, 200, 20],
-          "reason": "disappeared"
-        },
-        {
           "object": "NGPhysicalTextFragment 'A A A A A'",
           "rect": [0, 300, 180, 20],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'A A A A A'",
-          "rect": [0, 300, 180, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'A A A A A'",
-          "rect": [0, 0, 180, 20],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAA AAA'",
           "rect": [0, 220, 160, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAA AAAA'",
-          "rect": [0, 60, 160, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AA AA AA'",
-          "rect": [0, 20, 160, 20],
           "reason": "disappeared"
         },
         {
@@ -123,34 +93,9 @@
           "reason": "disappeared"
         },
         {
-          "object": "NGPhysicalTextFragment 'AAAAAAA'",
-          "rect": [0, 140, 140, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAAAA'",
-          "rect": [0, 160, 120, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAAAA'",
-          "rect": [0, 120, 120, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAAA'",
-          "rect": [0, 180, 100, 20],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAAA'",
-          "rect": [0, 100, 100, 20],
-          "reason": "disappeared"
-        },
-        {
           "object": "NGPhysicalTextFragment 'A A'",
-          "rect": [0, 180, 60, 20],
-          "reason": "appeared"
+          "rect": [0, 180, 100, 20],
+          "reason": "geometry"
         }
       ]
     }

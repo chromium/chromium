@@ -228,12 +228,12 @@ void AddContainerAndCodecMasksForTest() {
   if (is_test_masks_added)
     return;
 
-  AddCodecMask(EmeMediaType::AUDIO, "fooaudio", TEST_CODEC_FOO_AUDIO);
-  AddCodecMask(EmeMediaType::VIDEO, "foovideo", TEST_CODEC_FOO_VIDEO);
-  AddCodecMask(EmeMediaType::VIDEO, "securefoovideo",
-               TEST_CODEC_FOO_SECURE_VIDEO);
-  AddMimeTypeCodecMask("audio/foo", TEST_CODEC_FOO_AUDIO_ALL);
-  AddMimeTypeCodecMask("video/foo", TEST_CODEC_FOO_VIDEO_ALL);
+  AddCodecMaskForTesting(EmeMediaType::AUDIO, "fooaudio", TEST_CODEC_FOO_AUDIO);
+  AddCodecMaskForTesting(EmeMediaType::VIDEO, "foovideo", TEST_CODEC_FOO_VIDEO);
+  AddCodecMaskForTesting(EmeMediaType::VIDEO, "securefoovideo",
+                         TEST_CODEC_FOO_SECURE_VIDEO);
+  AddMimeTypeCodecMaskForTesting("audio/foo", TEST_CODEC_FOO_AUDIO_ALL);
+  AddMimeTypeCodecMaskForTesting("video/foo", TEST_CODEC_FOO_VIDEO_ALL);
 
   is_test_masks_added = true;
 }

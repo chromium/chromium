@@ -15,6 +15,7 @@ GLImageAHardwareBuffer::~GLImageAHardwareBuffer() {}
 
 bool GLImageAHardwareBuffer::Initialize(AHardwareBuffer* buffer,
                                         bool preserved) {
+  handle_ = base::android::ScopedHardwareBufferHandle::Create(buffer);
   EGLint attribs[] = {EGL_IMAGE_PRESERVED_KHR, preserved ? EGL_TRUE : EGL_FALSE,
                       EGL_NONE};
   EGLClientBuffer client_buffer = eglGetNativeClientBufferANDROID(buffer);
@@ -53,5 +54,12 @@ void GLImageAHardwareBuffer::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t process_tracing_id,
     const std::string& dump_name) {}
+
+std::unique_ptr<GLImage::ScopedHardwareBuffer>
+GLImageAHardwareBuffer::GetAHardwareBuffer() {
+  return std::make_unique<ScopedHardwareBuffer>(
+      base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
+      base::ScopedFD());
+}
 
 }  // namespace gl

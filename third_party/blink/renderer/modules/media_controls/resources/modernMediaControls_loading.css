@@ -2,16 +2,6 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.*/
 
-#spinner-frame {
-  position: absolute;
-  height: var(--overlay-play-button-width, 48px);
-  width: var(--overlay-play-button-width, 48px);
-  top: 50%;
-  left: 50%;
-  margin-left: calc(var(--overlay-play-button-width) / -2);
-  overflow: hidden;
-}
-
 #spinner {
   animation: container-rotate 1568ms linear infinite;
   height: 100%;

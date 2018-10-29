@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-namespace OpenType {
+namespace open_type {
 
 struct Int16 {
   DISALLOW_NEW();
@@ -101,6 +101,6 @@ struct TableBase {
   }
 };
 
-}  // namespace OpenType
+}  // namespace open_type
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_

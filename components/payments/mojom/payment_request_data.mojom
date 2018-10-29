@@ -49,13 +49,13 @@ struct PaymentCurrencyAmount {
 // the browser process when calling retry() method in JavaScript. It contains
 // merchant-defined error message strings.
 struct PaymentValidationErrors {
-  PayerErrorFields payer;
+  PayerErrors payer;
   AddressErrors shipping_address;
 };
 
-// The |PayerErrorFields| is used to represent validation errors with one or
+// The |PayerErrors| is used to represent validation errors with one or
 // more payer details.
-struct PayerErrorFields {
+struct PayerErrors {
   string email;
   string name;
   string phone;

@@ -13,6 +13,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -24,7 +25,8 @@ class CloudPolicyCoreTest : public testing::Test,
       : core_(dm_protocol::kChromeUserPolicyType,
               std::string(),
               &store_,
-              loop_.task_runner()),
+              loop_.task_runner(),
+              network::TestNetworkConnectionTracker::CreateGetter()),
         core_connected_callback_count_(0),
         refresh_scheduler_started_callback_count_(0),
         core_disconnecting_callback_count_(0),

@@ -2,7 +2,6 @@ Test to make sure inserting an ordered/unordered list inside another list works
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Select all nodes
 
 PASS <ul><ul><li>hello</li><li>world</li><li>WebKit</li></ul></ul>

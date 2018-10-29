@@ -6,13 +6,14 @@
 
 #include <utility>
 
+#include "base/critical_closure.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 
 namespace base {
 namespace internal {
 
-Sequence::Sequence() = default;
+Sequence::Sequence(const TaskTraits& traits) : traits_(traits) {}
 
 bool Sequence::PushTask(Task task) {
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
@@ -21,8 +22,12 @@ bool Sequence::PushTask(Task task) {
   DCHECK(task.sequenced_time.is_null());
   task.sequenced_time = base::TimeTicks::Now();
 
+  task.task =
+      traits_.shutdown_behavior() == TaskShutdownBehavior::BLOCK_SHUTDOWN
+          ? MakeCriticalClosure(std::move(task.task))
+          : std::move(task.task);
+
   AutoSchedulerLock auto_lock(lock_);
-  ++num_tasks_per_priority_[static_cast<int>(task.traits.priority())];
   queue_.push(std::move(task));
 
   // Return true if the sequence was empty before the push.
@@ -33,10 +38,6 @@ Optional<Task> Sequence::TakeTask() {
   AutoSchedulerLock auto_lock(lock_);
   DCHECK(!queue_.empty());
   DCHECK(queue_.front().task);
-
-  const int priority_index = static_cast<int>(queue_.front().traits.priority());
-  DCHECK_GT(num_tasks_per_priority_[priority_index], 0U);
-  --num_tasks_per_priority_[priority_index];
 
   return std::move(queue_.front());
 }
@@ -50,28 +51,17 @@ bool Sequence::Pop() {
 }
 
 SequenceSortKey Sequence::GetSortKey() const {
-  TaskPriority priority = TaskPriority::LOWEST;
   base::TimeTicks next_task_sequenced_time;
 
   {
     AutoSchedulerLock auto_lock(lock_);
     DCHECK(!queue_.empty());
 
-    // Find the highest task priority in the sequence.
-    const int highest_priority_index = static_cast<int>(TaskPriority::HIGHEST);
-    const int lowest_priority_index = static_cast<int>(TaskPriority::LOWEST);
-    for (int i = highest_priority_index; i > lowest_priority_index; --i) {
-      if (num_tasks_per_priority_[i] > 0) {
-        priority = static_cast<TaskPriority>(i);
-        break;
-      }
-    }
-
     // Save the sequenced time of the next task in the sequence.
     next_task_sequenced_time = queue_.front().sequenced_time;
   }
 
-  return SequenceSortKey(priority, next_task_sequenced_time);
+  return SequenceSortKey(traits_.priority(), next_task_sequenced_time);
 }
 
 Sequence::~Sequence() = default;

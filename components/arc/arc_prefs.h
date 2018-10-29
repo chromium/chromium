@@ -41,9 +41,10 @@ ARC_EXPORT extern const char kEcryptfsMigrationStrategy[];
 
 // TODO(b/110211045): Move Assistant related prefs to ash.
 ARC_EXPORT extern const char kVoiceInteractionActivityControlAccepted[];
-ARC_EXPORT extern const char kVoiceInteractionEnabled[];
 ARC_EXPORT extern const char kVoiceInteractionContextEnabled[];
+ARC_EXPORT extern const char kVoiceInteractionEnabled[];
 ARC_EXPORT extern const char kVoiceInteractionHotwordEnabled[];
+ARC_EXPORT extern const char kVoiceInteractionLaunchWithMicOpen[];
 ARC_EXPORT extern const char kVoiceInteractionNotificationEnabled[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

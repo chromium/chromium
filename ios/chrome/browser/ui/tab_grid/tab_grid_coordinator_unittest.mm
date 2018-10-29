@@ -31,10 +31,6 @@
 - (void)tabSwitcherDismissTransitionDidEnd:(id<TabSwitcher>)tabSwitcher {
   self.didEndCalled = YES;
 }
-
-- (id<ToolbarOwner>)tabSwitcherTransitionToolbarOwner {
-  return nil;
-}
 @end
 
 namespace {
@@ -76,7 +72,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   }
 
  protected:
-  // The MainPresentingViewController that is under test.  The test fixture sets
+  // The TabGridCoordinator that is under test.  The test fixture sets
   // this VC as the root VC for the window.
   TabGridCoordinator* coordinator_;
 
@@ -96,7 +92,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 // Tests that the tab grid view controller is the initial active view
 // controller.
 TEST_F(TabGridCoordinatorTest, InitialActiveViewController) {
-  EXPECT_EQ(coordinator_.mainViewController, coordinator_.activeViewController);
+  EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
 }
 
 // Tests that it is possible to set a TabViewController without first setting a
@@ -210,7 +206,7 @@ TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
   CGRect rect = [UIScreen mainScreen].bounds;
   [coordinator_ start];
   EXPECT_TRUE(
-      CGRectEqualToRect(rect, coordinator_.mainViewController.view.frame));
+      CGRectEqualToRect(rect, coordinator_.baseViewController.view.frame));
 }
 
 }  // namespace

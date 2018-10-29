@@ -66,8 +66,11 @@ class APP_LIST_EXPORT AppsContainerView : public HorizontalPage {
   void UpdateControlVisibility(AppListViewState app_list_state,
                                bool is_in_drag);
 
-  // Updates the opacity of the items in this view during dragging.
-  void UpdateOpacity();
+  // Updates y position and opacity of the items in this view during dragging.
+  void UpdateYPositionAndOpacity();
+
+  // Called when tablet mode starts and ends.
+  void OnTabletModeChanged(bool started);
 
   // views::View overrides:
   gfx::Size CalculatePreferredSize() const override;
@@ -117,6 +120,10 @@ class APP_LIST_EXPORT AppsContainerView : public HorizontalPage {
   // true. This is used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Returns expected suggestion chip container's y position based on the app
+  // list transition progress.
+  int GetExpectedSuggestionChipY(float progress);
+
   ContentsView* contents_view_;  // Not owned.
 
   // True if new style launcher feature is enabled.
@@ -130,6 +137,11 @@ class APP_LIST_EXPORT AppsContainerView : public HorizontalPage {
   FolderBackgroundView* folder_background_view_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
+
+  // The distance between y position of suggestion chip container and apps grid
+  // view. This is used in dragging to avoid duplicate calculation of apps grid
+  // view's y position.
+  int chip_grid_y_distance_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AppsContainerView);
 };

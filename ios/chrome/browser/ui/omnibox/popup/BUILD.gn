@@ -6,9 +6,6 @@ source_set("popup") {
   sources = [
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
-    "omnibox_popup_generic_presenter.h",
-    "omnibox_popup_legacy_presenter.h",
-    "omnibox_popup_legacy_presenter.mm",
     "omnibox_popup_mediator.h",
     "omnibox_popup_mediator.mm",
     "omnibox_popup_positioner.h",
@@ -30,14 +27,17 @@ source_set("popup") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui:ui",
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/omnibox/popup/shortcuts",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public:public",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:util",
+    "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/web/public:public",
     "//net",
   ]
@@ -52,15 +52,35 @@ source_set("popup_internal") {
     "self_sizing_table_view.mm",
   ]
   deps = [
+    "resources:omnibox_popup_tab_match",
     "//base",
     "//components/image_fetcher/ios",
     "//components/omnibox/browser",
     "//ios/chrome/app/theme:theme",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:util",
     "//net",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "omnibox_popup_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":popup",
+    ":popup_internal",
+    "//base",
+    "//components/omnibox/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }

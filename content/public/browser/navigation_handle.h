@@ -273,6 +273,12 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns true if the target is an inner response of a signed exchange.
   virtual bool IsSignedExchangeInnerResponse() = 0;
 
+  // Returns true if the navigation response was cached.
+  virtual bool WasResponseCached() = 0;
+
+  // Returns the proxy server used for this navigation, if any.
+  virtual const net::ProxyServer& GetProxyServer() = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.
@@ -315,9 +321,10 @@ class CONTENT_EXPORT NavigationHandle {
 
   // Simulates the reception of the network response.
   virtual NavigationThrottle::ThrottleCheckResult
-  CallWillProcessResponseForTesting(
-      RenderFrameHost* render_frame_host,
-      const std::string& raw_response_headers) = 0;
+  CallWillProcessResponseForTesting(RenderFrameHost* render_frame_host,
+                                    const std::string& raw_response_headers,
+                                    bool was_cached,
+                                    const net::ProxyServer& proxy_server) = 0;
 
   // Simulates the navigation being committed.
   virtual void CallDidCommitNavigationForTesting(const GURL& url) = 0;

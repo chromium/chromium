@@ -81,7 +81,7 @@ class URLMatcherConditionFactoryMethods {
       URLMatcherConditionFactory* url_matcher_condition_factory,
       const std::string& pattern_type,
       const std::string& pattern_value) const {
-    FactoryMethods::const_iterator i = factory_methods_.find(pattern_type);
+    auto i = factory_methods_.find(pattern_type);
     CHECK(i != factory_methods_.end());
     const FactoryMethod& method = i->second;
     return (url_matcher_condition_factory->*method)(pattern_value);

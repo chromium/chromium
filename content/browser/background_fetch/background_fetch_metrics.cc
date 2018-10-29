@@ -43,7 +43,7 @@ void RecordBackgroundFetchUkmEvent(
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
     int frame_tree_node_id,
-    bool has_permission) {
+    BackgroundFetchPermission permission) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Only record UKM data if there's a frame associated.
@@ -67,7 +67,8 @@ void RecordBackgroundFetchUkmEvent(
           options.download_total, kUkmEventDataBucketSpacing))
       .SetNumRequestsInFetch(ukm::GetExponentialBucketMin(
           requests.size(), kUkmEventDataBucketSpacing))
-      .SetDeniedDueToPermissions(!has_permission)
+      .SetDeniedDueToPermissions(permission ==
+                                 BackgroundFetchPermission::BLOCKED)
       .Record(ukm::UkmRecorder::Get());
 }
 

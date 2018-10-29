@@ -1,0 +1,86 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="../navigation_behavior.html">
+<link rel="import" href="../shared/bookmark_proxy.html">
+<link rel="import" href="../shared/chooser_shared_css.html">
+<link rel="import" href="../shared/i18n_setup.html">
+<link rel="import" href="../shared/step_indicator.html">
+<link rel="import" href="nux_email_proxy.html">
+
+<dom-module id="email-chooser">
+  <template>
+    <style include="chooser-shared-css paper-button-style">
+      .gmail {
+        background-image: -webkit-image-set(
+            url(chrome://welcome/email/gmail_1x.png) 1x,
+            url(chrome://welcome/email/gmail_2x.png) 2x);
+      }
+
+      .yahoo {
+        background-image: -webkit-image-set(
+            url(chrome://welcome/email/yahoo_1x.png) 1x,
+            url(chrome://welcome/email/yahoo_2x.png) 2x);
+      }
+
+      .aol {
+        background-image: -webkit-image-set(
+            url(chrome://welcome/email/aol_1x.png) 1x,
+            url(chrome://welcome/email/aol_2x.png) 2x);
+      }
+
+      .icloud {
+        background-image: -webkit-image-set(
+            url(chrome://welcome/email/icloud_1x.png) 1x,
+            url(chrome://welcome/email/icloud_2x.png) 2x);
+      }
+
+      .outlook {
+        background-image: -webkit-image-set(
+            url(chrome://welcome/email/outlook_1x.png) 1x,
+            url(chrome://welcome/email/outlook_2x.png) 2x);
+      }
+
+      iron-icon[icon='cr:chevron-right'] {
+        height: 20px;
+        margin-left: 6px;
+        margin-right: -10px;
+        width: 20px;
+      }
+    </style>
+
+    <template is="dom-repeat" items="[[emailList_]]">
+      <button active$="[[getSelected_(item, selectedEmailProvider_)]]"
+          on-click="onEmailClick_" on-pointerdown="onEmailPointerDown_"
+          on-keyup="onEmailKeyUp_" class="option">
+        <div class="option-icon-shadow">
+          <div class$="[[item.icon]] option-icon"></div>
+        </div>
+        <div class="option-name">[[item.name]]</div>
+        <iron-icon icon="cr:check"></iron-icon>
+      </button>
+    </template>
+
+    <div class="button-bar">
+      <paper-button on-click="onNoThanksClicked_">
+        $i18n{skip}
+      </paper-button>
+      <step-indicator model="[[indicatorModel]]"></step-indicator>
+      <div on-click="onActionButtonClicked_">
+        <paper-button class="action-button" on-click="onGetStartedClicked_"
+            disabled="[[!selectedEmailProvider_]]">
+          $i18n{next}
+          <iron-icon icon="cr:chevron-right"></iron-icon>
+        </paper-button>
+      </div>
+    </div>
+  </template>
+  <script src="email_chooser.js"></script>
+</dom-module>

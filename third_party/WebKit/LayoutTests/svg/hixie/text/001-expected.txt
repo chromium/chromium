@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 400x400
-  LayoutSVGRoot {svg} at (0,0) size 400x400
-    LayoutSVGRect {rect} at (0,0) size 4x4 [fill={[type=SOLID] [color=#EEEEEE]}] [x=0.00] [y=0.00] [width=4.00] [height=4.00]
-    LayoutSVGRect {rect} at (1,1) size 2x2 [fill={[type=SOLID] [color=#FF0000]}] [x=1.00] [y=1.00] [width=2.00] [height=2.00]
-    LayoutSVGText {text} at (1,0.98) size 2x2 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (1,0.98) size 2x2
-        chunk 1 text run 1 at (1.00,2.60) startOffset 0 endOffset 1 width 2.00: "X"

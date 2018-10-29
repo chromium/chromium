@@ -30,6 +30,7 @@ bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service) {
 void ActivateAffiliationBasedMatching(
     PasswordStore* password_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& db_path) {
   // Subsequent instances of the AffiliationService must use the same sequenced
   // task runner for their backends. This guarantees that the backend of the
@@ -46,7 +47,8 @@ void ActivateAffiliationBasedMatching(
   // is owned by the PasswordStore.
   std::unique_ptr<AffiliationService> affiliation_service(
       new AffiliationService(backend_task_runner));
-  affiliation_service->Initialize(std::move(url_loader_factory), db_path);
+  affiliation_service->Initialize(std::move(url_loader_factory),
+                                  network_connection_tracker, db_path);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper(
       new AffiliatedMatchHelper(password_store,
                                 std::move(affiliation_service)));
@@ -67,6 +69,7 @@ void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
     PasswordStore* password_store,
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& profile_path) {
   DCHECK(password_store);
 
@@ -76,9 +79,9 @@ void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
       password_store->affiliated_match_helper() != nullptr;
 
   if (matching_should_be_active && !matching_is_active) {
-    ActivateAffiliationBasedMatching(password_store,
-                                     std::move(url_loader_factory),
-                                     GetAffiliationDatabasePath(profile_path));
+    ActivateAffiliationBasedMatching(
+        password_store, std::move(url_loader_factory),
+        network_connection_tracker, GetAffiliationDatabasePath(profile_path));
   } else if (!matching_should_be_active && matching_is_active) {
     password_store->SetAffiliatedMatchHelper(nullptr);
   }

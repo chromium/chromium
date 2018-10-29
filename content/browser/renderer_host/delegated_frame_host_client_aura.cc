@@ -43,15 +43,20 @@ SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
   return SK_ColorWHITE;
 }
 
-void DelegatedFrameHostClientAura::OnFirstSurfaceActivation(
-    const viz::SurfaceInfo& surface_info) {}
-
 void DelegatedFrameHostClientAura::OnBeginFrame(base::TimeTicks frame_time) {
   render_widget_host_view_->OnBeginFrame(frame_time);
 }
 
 void DelegatedFrameHostClientAura::OnFrameTokenChanged(uint32_t frame_token) {
   render_widget_host_view_->OnFrameTokenChangedForView(frame_token);
+}
+
+float DelegatedFrameHostClientAura::GetDeviceScaleFactor() const {
+  return render_widget_host_view_->device_scale_factor_;
+}
+
+void DelegatedFrameHostClientAura::WasEvicted() {
+  render_widget_host_view_->WasEvicted();
 }
 
 }  // namespace content

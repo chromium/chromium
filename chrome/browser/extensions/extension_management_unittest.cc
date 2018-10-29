@@ -15,8 +15,9 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -92,7 +93,9 @@ const char kExampleDictNoCustomError[] =
 
 class ExtensionManagementServiceTest : public testing::Test {
  public:
-  typedef ExtensionManagementPrefUpdater<TestingPrefServiceSimple> PrefUpdater;
+  typedef ExtensionManagementPrefUpdater<
+      sync_preferences::TestingPrefServiceSyncable>
+      PrefUpdater;
 
   ExtensionManagementServiceTest() {}
   ~ExtensionManagementServiceTest() override {}
@@ -102,18 +105,10 @@ class ExtensionManagementServiceTest : public testing::Test {
 
   void InitPrefService() {
     extension_management_.reset();
-    pref_service_.reset(new TestingPrefServiceSimple());
-    pref_service_->registry()->RegisterListPref(
-        pref_names::kAllowedInstallSites);
-    pref_service_->registry()->RegisterListPref(pref_names::kAllowedTypes);
-    pref_service_->registry()->RegisterListPref(pref_names::kInstallDenyList);
-    pref_service_->registry()->RegisterListPref(pref_names::kInstallAllowList);
-    pref_service_->registry()->RegisterDictionaryPref(
-        pref_names::kInstallForceList);
-    pref_service_->registry()->RegisterDictionaryPref(
-        pref_names::kExtensionManagement);
-    extension_management_.reset(
-        new ExtensionManagement(pref_service_.get(), false));
+    profile_ = std::make_unique<TestingProfile>();
+    pref_service_ = profile_->GetTestingPrefService();
+    extension_management_ =
+        std::make_unique<ExtensionManagement>(profile_.get());
   }
 
   void SetPref(bool managed,
@@ -223,7 +218,10 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+
+  std::unique_ptr<TestingProfile> profile_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   std::unique_ptr<ExtensionManagement> extension_management_;
 
  private:
@@ -588,7 +586,7 @@ TEST_F(ExtensionManagementServiceTest, kMinimumVersionRequired) {
   EXPECT_TRUE(CheckMinimumVersion(kTargetExtension, "9999.0"));
 
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.SetMinimumVersionRequired(kTargetExtension, "3.0");
   }
 
@@ -613,7 +611,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.ClearInstallSources();
   }
   // Verifies that the new one overrides the legacy ones.
@@ -623,7 +621,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 
   // Updates the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.AddInstallSource("https://corp.mycompany.com/*");
   }
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
@@ -644,7 +642,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.ClearAllowedTypes();
   }
   // Verifies that the new one overrides the legacy ones.
@@ -653,7 +651,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 
   // Updates the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.AddAllowedType("theme");
   }
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
@@ -666,7 +664,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 TEST_F(ExtensionManagementServiceTest, NewInstallBlacklist) {
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetBlacklistedByDefault(false);  // Allowed by default.
     updater.SetIndividualExtensionInstallationAllowed(kTargetExtension, false);
     updater.ClearPerExtensionSettings(kTargetExtension2);
@@ -704,7 +702,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallBlacklist) {
 TEST_F(ExtensionManagementServiceTest, NewInstallWhitelist) {
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetBlacklistedByDefault(true);  // Disallowed by default.
     updater.SetIndividualExtensionInstallationAllowed(kTargetExtension, true);
     updater.ClearPerExtensionSettings(kTargetExtension2);
@@ -748,7 +746,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallForcelist) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetIndividualExtensionAutoInstalled(
         kTargetExtension, kExampleUpdateUrl, true);
   }
@@ -782,7 +780,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
 
   {
     // Set BlacklistedByDefault() to false.
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.SetBlacklistedByDefault(false);
   }
 

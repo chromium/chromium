@@ -252,7 +252,7 @@ void AudioDebugFileWriter::AudioFileWriter::WriteHeader() {
 void AudioDebugFileWriter::AudioFileWriter::StartRecording(base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!file_.IsValid());
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   file_ = std::move(file);
   WriteHeader();

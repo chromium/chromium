@@ -193,6 +193,26 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    public void testUserLeaveAndStopDestroysSurfaceHelper() {
+        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
+        mActivity.setSurfaceHelperForTesting(surfaceHelper);
+        mActivityLifecycle.create().start().resume();
+        mActivityLifecycle.pause().userLeaving().stop();
+        verify(surfaceHelper).onDestroy();
+    }
+
+    @Test
+    public void testOnDestroyDestroysSurfaceHelper() {
+        CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
+        mActivity.setSurfaceHelperForTesting(surfaceHelper);
+        mActivityLifecycle.create().start().resume();
+        mActivityLifecycle.pause().stop();
+        verify(surfaceHelper, never()).onDestroy();
+        mActivityLifecycle.destroy();
+        verify(surfaceHelper).onDestroy();
+    }
+
+    @Test
     public void testBackButtonFinishes() {
         mActivityLifecycle.create().start().resume();
         mActivity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));

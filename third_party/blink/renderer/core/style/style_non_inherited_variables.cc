@@ -30,18 +30,24 @@ CSSVariableData* StyleNonInheritedVariables::GetVariable(
 void StyleNonInheritedVariables::SetRegisteredVariable(
     const AtomicString& name,
     const CSSValue* parsed_value) {
-  registered_data_.Set(name, const_cast<CSSValue*>(parsed_value));
+  needs_resolution_ = true;
+  registered_data_->Set(name, const_cast<CSSValue*>(parsed_value));
 }
 
 void StyleNonInheritedVariables::RemoveVariable(const AtomicString& name) {
   data_.Set(name, nullptr);
-  registered_data_.Set(name, nullptr);
+  registered_data_->Set(name, nullptr);
 }
+
+StyleNonInheritedVariables::StyleNonInheritedVariables()
+    : registered_data_(new HeapHashMap<AtomicString, Member<CSSValue>>),
+      needs_resolution_(false) {}
 
 StyleNonInheritedVariables::StyleNonInheritedVariables(
     StyleNonInheritedVariables& other) {
   data_ = other.data_;
-  registered_data_ = other.registered_data_;
+  registered_data_ =
+      new HeapHashMap<AtomicString, Member<CSSValue>>(*other.registered_data_);
   needs_resolution_ = other.needs_resolution_;
 }
 

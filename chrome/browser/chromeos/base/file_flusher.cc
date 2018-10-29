@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/synchronization/cancellation_flag.h"
 #include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
@@ -148,8 +149,8 @@ void FileFlusher::Job::ScheduleFinish() {
     return;
 
   finish_scheduled_ = true;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&Job::FinishOnUIThread, base::Unretained(this)));
 }
 

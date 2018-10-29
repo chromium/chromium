@@ -61,9 +61,9 @@ bool SVGURIReference::IsKnownAttribute(const QualifiedName& attr_name) {
 
 const AtomicString& SVGURIReference::LegacyHrefString(
     const SVGElement& element) {
-  if (element.hasAttribute(SVGNames::hrefAttr))
-    return element.getAttribute(SVGNames::hrefAttr);
-  return element.getAttribute(XLinkNames::hrefAttr);
+  if (element.hasAttribute(svg_names::kHrefAttr))
+    return element.getAttribute(svg_names::kHrefAttr);
+  return element.getAttribute(xlink_names::kHrefAttr);
 }
 
 KURL SVGURIReference::LegacyHrefURL(const Document& document) const {

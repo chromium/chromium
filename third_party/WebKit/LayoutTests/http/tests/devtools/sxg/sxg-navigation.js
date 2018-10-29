@@ -6,11 +6,6 @@
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.showPanel('network');
-  await TestRunner.addScriptTag('/loading/sxg/resources/sxg-util.js');
-  // The timestamp of the test SXG file is "Apr 1 2018 00:00 UTC" and valid
-  // until "Apr 8 2018 00:00 UTC".
-  await TestRunner.evaluateInPageAsync(
-    'setSignedExchangeVerificationTime(new Date("Apr 1 2018 00:01 UTC"))');
   SDK.networkLog.reset();
   await TestRunner.addIframe('/loading/sxg/resources/sxg-location.sxg');
   ConsoleTestRunner.dumpConsoleMessages();

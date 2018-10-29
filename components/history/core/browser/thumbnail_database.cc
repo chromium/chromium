@@ -776,8 +776,7 @@ bool ThumbnailDatabase::GetIconMappingsForPageURL(
     return false;
 
   bool result = false;
-  for (std::vector<IconMapping>::iterator m = mapping_data.begin();
-       m != mapping_data.end(); ++m) {
+  for (auto m = mapping_data.begin(); m != mapping_data.end(); ++m) {
     if (required_icon_types.count(m->icon_type) != 0) {
       result = true;
       if (!filtered_mapping_data)

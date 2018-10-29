@@ -38,6 +38,7 @@ static_library("sync_bookmarks") {
     "//components/keyed_service/core:core",
     "//components/sync",
     "//components/undo",
+    "//ui/base",
     "//ui/gfx",
   ]
 }

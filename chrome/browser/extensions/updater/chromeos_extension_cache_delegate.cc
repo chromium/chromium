@@ -27,8 +27,17 @@ const base::FilePath& ChromeOSExtensionCacheDelegate::GetCacheDir() const {
   return cache_dir_;
 }
 
+size_t ChromeOSExtensionCacheDelegate::GetMinimumCacheSize() const {
+  // Default minimum size of local cache on disk, in bytes.
+  static constexpr int kDefaultMinimumCacheSize = 1024 * 1024;
+  return kDefaultMinimumCacheSize;
+}
+
 size_t ChromeOSExtensionCacheDelegate::GetMaximumCacheSize() const {
-  size_t max_size = ExtensionCacheDelegate::GetMaximumCacheSize();
+  // Default maximum size of local cache on disk, in bytes.
+  static constexpr size_t kDefaultCacheSizeLimit = 256 * 1024 * 1024;
+
+  size_t max_size = kDefaultCacheSizeLimit;
   int policy_size = 0;
   if (chromeos::CrosSettings::Get()->GetInteger(chromeos::kExtensionCacheSize,
                                                 &policy_size) &&
@@ -36,6 +45,12 @@ size_t ChromeOSExtensionCacheDelegate::GetMaximumCacheSize() const {
     max_size = policy_size;
   }
   return max_size;
+}
+
+base::TimeDelta ChromeOSExtensionCacheDelegate::GetMaximumCacheAge() const {
+  // Maximum age of unused extensions in the cache.
+  static constexpr base::TimeDelta kMaxCacheAge = base::TimeDelta::FromDays(30);
+  return kMaxCacheAge;
 }
 
 }  // namespace extensions

@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_float_point.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_touch_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -21,7 +20,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
-#include "third_party/blink/renderer/platform/scheduler/util/thread_cpu_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
@@ -369,7 +369,7 @@ void InspectorEmulationAgent::WillSendRequest(
       request.HttpHeaderField("Accept-Language").IsEmpty()) {
     request.SetHTTPHeaderField(
         "Accept-Language",
-        AtomicString(NetworkUtils::GenerateAcceptLanguageHeader(
+        AtomicString(network_utils::GenerateAcceptLanguageHeader(
             accept_language_override_.Get())));
   }
 }
@@ -443,14 +443,14 @@ Response InspectorEmulationAgent::setDeviceMetricsOverride(
     Maybe<protocol::Page::Viewport>) {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been updated by the handling of
-  // ViewMsg_EnableDeviceEmulation.
+  // WidgetMsg_EnableDeviceEmulation.
   return AssertPage();
 }
 
 Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been cleared by the handling of
-  // ViewMsg_DisableDeviceEmulation.
+  // WidgetMsg_DisableDeviceEmulation.
   return AssertPage();
 }
 

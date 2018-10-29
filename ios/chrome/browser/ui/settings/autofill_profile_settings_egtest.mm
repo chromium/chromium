@@ -10,7 +10,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/web_view_interaction_test_util.h"
@@ -261,8 +260,9 @@ NSString* GetTextFieldForID(int categoryId) {
       performAction:grey_tap()];
 
   // Check the Autofill profile switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, NO)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::LegacySettingsSwitchCell(
+                                   @"addressItem_switch", YES, NO)]
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
@@ -275,8 +275,9 @@ NSString* GetTextFieldForID(int categoryId) {
   [self openAutofillProfilesSettings];
 
   // Toggle the Autofill profiles switch off.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::LegacySettingsSwitchCell(
+                                   @"addressItem_switch", YES, YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
 
   // Expect Autofill profiles to remain visible.
@@ -284,8 +285,9 @@ NSString* GetTextFieldForID(int categoryId) {
       assertWithMatcher:grey_notNil()];
 
   // Toggle the Autofill profiles switch back on.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", NO, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::LegacySettingsSwitchCell(
+                                   @"addressItem_switch", NO, YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
 
   // Expect Autofill profiles to remain visible.

@@ -27,12 +27,11 @@ const std::string& ExtensionIconSet::Get(int size, MatchType match_type) const {
   // The searches for MATCH_BIGGER and MATCH_SMALLER below rely on the fact that
   // std::map is sorted. This is per the spec, so it should be safe to rely on.
   if (match_type == MATCH_EXACTLY) {
-    IconMap::const_iterator result = map_.find(size);
+    auto result = map_.find(size);
     return result == map_.end() ? base::EmptyString() : result->second;
   } else if (match_type == MATCH_SMALLER) {
-    IconMap::const_reverse_iterator result = map_.rend();
-    for (IconMap::const_reverse_iterator iter = map_.rbegin();
-         iter != map_.rend(); ++iter) {
+    auto result = map_.rend();
+    for (auto iter = map_.rbegin(); iter != map_.rend(); ++iter) {
       if (iter->first <= size) {
         result = iter;
         break;
@@ -41,15 +40,14 @@ const std::string& ExtensionIconSet::Get(int size, MatchType match_type) const {
     return result == map_.rend() ? base::EmptyString() : result->second;
   } else {
     DCHECK(match_type == MATCH_BIGGER);
-    IconMap::const_iterator result = map_.end();
-    for (IconMap::const_iterator iter = map_.begin(); iter != map_.end();
-         ++iter) {
+    auto result = map_.cend();
+    for (auto iter = map_.cbegin(); iter != map_.cend(); ++iter) {
       if (iter->first >= size) {
         result = iter;
         break;
       }
     }
-    return result == map_.end() ? base::EmptyString() : result->second;
+    return result == map_.cend() ? base::EmptyString() : result->second;
   }
 }
 
@@ -64,8 +62,7 @@ int ExtensionIconSet::GetIconSizeFromPath(base::StringPiece path) const {
   DCHECK_NE(path[0], '/') <<
       "ExtensionIconSet stores icon paths without leading slash.";
 
-  for (IconMap::const_iterator iter = map_.begin(); iter != map_.end();
-       ++iter) {
+  for (auto iter = map_.cbegin(); iter != map_.cend(); ++iter) {
     if (iter->second == path)
       return iter->first;
   }

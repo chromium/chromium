@@ -7,7 +7,7 @@ include_rules = [
   "+chrome/install_static",
   "+chrome/installer/util",
   "+chrome/notification_helper/notification_helper_constants.h",
-  "+chrome/services/cups_ipp_validator/public",
+  "+chrome/services/cups_ipp_parser/public",
   "+chrome/services/file_util/public",
   "+chrome/services/media_gallery_util/public",
   "+chrome/services/printing/public",
@@ -63,6 +63,8 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/metrics_mojo_service.h",
   "+services/metrics/public",
+  "+services/network/cert_verifier_with_trust_anchors.h",
+  "+services/network/cert_verify_proc_chromeos.h",
   "+services/network/ignore_errors_cert_verifier.h",
   "+services/network/network_service.h",
   "+services/network/public",
@@ -87,6 +89,7 @@ include_rules = [
   "+third_party/cros_system_api",
   "+third_party/libaom/av1_buildflags.h",
   "+third_party/metrics_proto",
+  "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
 
   # Code under //ash runs out-of-process in mash so it must be accessed via mojo
@@ -155,7 +158,6 @@ include_rules = [
   "+third_party/blink/public/platform/web_mouse_event.h",
   "+third_party/blink/public/platform/web_mouse_wheel_event.h",
   "+third_party/blink/public/platform/web_touch_event.h",
-  "+third_party/blink/public/platform/web_referrer_policy.h",
   "+third_party/blink/public/platform/web_security_style.h",
   "+third_party/blink/public/platform/web_speech_synthesis_constants.h",
   "+third_party/blink/public/platform/web_sudden_termination_disabler_type.h",
@@ -164,7 +166,6 @@ include_rules = [
   "+third_party/blink/public/platform/modules/screen_orientation/web_screen_orientation_lock_type.h",
   "+third_party/blink/public/public_buildflags.h",
   "+third_party/blink/public/web/web_context_menu_data.h",
-  "+third_party/blink/public/web/web_find_options.h",
   "+third_party/blink/public/web/web_fullscreen_options.h",
   "+third_party/blink/public/web/web_media_player_action.h",
   "+third_party/blink/public/web/web_plugin_action.h",
@@ -186,6 +187,7 @@ include_rules = [
   "+third_party/blink/public/platform/modules/presentation/presentation.mojom.h",
   "+third_party/blink/public/platform/modules/webauthn/authenticator.mojom.h",
   "+third_party/blink/public/platform/modules/webshare/webshare.mojom.h",
+  "+third_party/blink/public/platform/modules/badging/badging.mojom.h",
   "+third_party/blink/public/platform/oom_intervention.mojom.h",
   "+third_party/blink/public/platform/site_engagement.mojom.h",
   "+third_party/blink/public/web/window_features.mojom.h",
@@ -221,6 +223,11 @@ specific_include_rules = {
 
     # Needed for classic mode.
     "+ash/ash_service.h",
+  ],
+  "platform_util_mac.mm": [
+    # The following is used to forward methods to an NSWindow in another
+    # process, via the views::Widget API.
+    "+ui/views/widget/widget.h",
   ],
   # TODO(mash): Fix. https://crbug.com/768439, https://crbug.com/768395.
   "exo_parts\.cc": [

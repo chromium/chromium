@@ -43,7 +43,7 @@ CSSUnitValue* MaybeSimplifyAsUnitValue(const CSSNumericValueVector& values,
     return nullptr;
 
   double final_value = first_unit_value->value();
-  for (size_t i = 1; i < values.size(); i++) {
+  for (wtf_size_t i = 1; i < values.size(); i++) {
     CSSUnitValue* unit_value = ToCSSUnitValueOrNull(values[i]);
     if (!unit_value ||
         unit_value->GetInternalUnit() != first_unit_value->GetInternalUnit())
@@ -62,7 +62,7 @@ CSSUnitValue* MaybeMultiplyAsUnitValue(const CSSNumericValueVector& values) {
   auto unit_other_than_number = CSSPrimitiveValue::UnitType::kNumber;
 
   double final_value = 1.0;
-  for (size_t i = 0; i < values.size(); i++) {
+  for (wtf_size_t i = 0; i < values.size(); i++) {
     CSSUnitValue* unit_value = ToCSSUnitValueOrNull(values[i]);
     if (!unit_value)
       return nullptr;

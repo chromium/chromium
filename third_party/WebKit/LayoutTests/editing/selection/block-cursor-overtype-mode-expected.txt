@@ -22,6 +22,7 @@ getSelection().collapse(textNode, 3)
 PASS blockCursor.width is 0
 PASS internals.absoluteCaretBounds().width is 1
 
+
 Verifying block cursor position and width for each position in 'שדן' in a ltr block
 getSelection().collapse(textNode, 0)
 PASS getSelection().isCollapsed is true
@@ -40,6 +41,7 @@ PASS internals.absoluteCaretBounds().width is 1
 getSelection().collapse(textNode, 3)
 PASS blockCursor.width is 0
 PASS internals.absoluteCaretBounds().width is 1
+
 
 Verifying block cursor position and width for each position in 'שדןABC' in a ltr block
 getSelection().collapse(textNode, 0)
@@ -74,6 +76,7 @@ PASS internals.absoluteCaretBounds().width is 1
 getSelection().collapse(textNode, 6)
 PASS blockCursor.width is 0
 PASS internals.absoluteCaretBounds().width is 1
+
 
 PASS successfullyParsed is true
 

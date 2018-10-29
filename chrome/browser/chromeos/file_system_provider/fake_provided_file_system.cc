@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/interfaces/types.mojom.h"
 #include "net/base/io_buffer.h"
@@ -73,7 +72,7 @@ void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
   metadata->mime_type.reset(new std::string(mime_type));
 
   entries_[entry_path] =
-      make_linked_ptr(new FakeEntry(std::move(metadata), contents));
+      std::make_unique<FakeEntry>(std::move(metadata), contents);
 }
 
 const FakeEntry* FakeProvidedFileSystem::GetEntry(
@@ -98,10 +97,8 @@ AbortCallback FakeProvidedFileSystem::GetMetadata(
   const Entries::const_iterator entry_it = entries_.find(entry_path);
 
   if (entry_it == entries_.end()) {
-    return PostAbortableTask(
-        base::BindOnce(std::move(callback),
-                       base::Passed(base::WrapUnique<EntryMetadata>(NULL)),
-                       base::File::FILE_ERROR_NOT_FOUND));
+    return PostAbortableTask(base::BindOnce(std::move(callback), nullptr,
+                                            base::File::FILE_ERROR_NOT_FOUND));
   }
 
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);

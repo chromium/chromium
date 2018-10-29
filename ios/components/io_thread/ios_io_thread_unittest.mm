@@ -27,7 +27,7 @@ namespace {
 // A concrete implementation of IOThread for testing.
 class TestIOThread : public io_thread::IOSIOThread {
  public:
-  TestIOThread(PrefService* local_state, net_log::ChromeNetLog* net_log)
+  TestIOThread(PrefService* local_state, net::NetLog* net_log)
       : IOSIOThread(local_state, net_log) {}
   ~TestIOThread() override {}
 

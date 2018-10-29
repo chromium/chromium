@@ -8,24 +8,12 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
-#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/formats/mp4/box_reader.h"
-
-class NullMediaLog : public media::MediaLog {
- public:
-  NullMediaLog() = default;
-  ~NullMediaLog() override = default;
-
-  void AddEventLocked(std::unique_ptr<media::MediaLogEvent> event) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullMediaLog);
-};
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  NullMediaLog media_log;
+  media::NullMediaLog media_log;
   std::unique_ptr<media::mp4::BoxReader> reader;
   if (media::mp4::BoxReader::ReadTopLevelBox(data, size, &media_log, &reader) ==
       media::mp4::ParseResult::kOk) {

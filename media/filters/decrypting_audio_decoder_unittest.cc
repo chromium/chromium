@@ -178,7 +178,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
 
   // Make the audio decode callback pending by saving and not firing it.
   void EnterPendingDecodeState() {
-    EXPECT_TRUE(pending_audio_decode_cb_.is_null());
+    EXPECT_TRUE(!pending_audio_decode_cb_);
     EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(encrypted_buffer_, _))
         .WillOnce(SaveArg<1>(&pending_audio_decode_cb_));
 
@@ -188,7 +188,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     // Make sure the Decode() on the decoder triggers a DecryptAndDecode() on
     // the decryptor.
-    EXPECT_FALSE(pending_audio_decode_cb_.is_null());
+    EXPECT_FALSE(!pending_audio_decode_cb_);
   }
 
   void EnterWaitingForKeyState() {
@@ -204,16 +204,16 @@ class DecryptingAudioDecoderTest : public testing::Test {
   }
 
   void AbortPendingAudioDecodeCB() {
-    if (!pending_audio_decode_cb_.is_null()) {
-      base::ResetAndReturn(&pending_audio_decode_cb_)
+    if (pending_audio_decode_cb_) {
+      std::move(pending_audio_decode_cb_)
           .Run(Decryptor::kSuccess, Decryptor::AudioFrames());
     }
   }
 
   void AbortAllPendingCBs() {
-    if (!pending_init_cb_.is_null()) {
-      ASSERT_TRUE(pending_audio_decode_cb_.is_null());
-      base::ResetAndReturn(&pending_init_cb_).Run(false);
+    if (pending_init_cb_) {
+      ASSERT_TRUE(!pending_audio_decode_cb_);
+      std::move(pending_init_cb_).Run(false);
       return;
     }
 
@@ -420,7 +420,7 @@ TEST_F(DecryptingAudioDecoderTest, KeyAdded_DruingPendingDecode) {
   // The audio decode callback is returned after the correct decryption key is
   // added.
   key_added_cb_.Run();
-  base::ResetAndReturn(&pending_audio_decode_cb_)
+  std::move(pending_audio_decode_cb_)
       .Run(Decryptor::kNoKey, Decryptor::AudioFrames());
   base::RunLoop().RunUntilIdle();
 }

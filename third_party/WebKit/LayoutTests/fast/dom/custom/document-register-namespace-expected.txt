@@ -3,7 +3,6 @@ Using document.registerElement() for extending HTML and non-HTML elements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS html1.namespaceURI is "http://www.w3.org/1999/xhtml"
 PASS html2.namespaceURI is "http://www.w3.org/1999/xhtml"
 PASS html3.namespaceURI is "http://www.w3.org/1999/xhtml"

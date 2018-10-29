@@ -215,7 +215,7 @@ class TextIteratorAlgorithm {
   const unsigned start_offset_;
   const Member<const Node> end_container_;
   const unsigned end_offset_;
-  // |m_endNode| stores |Strategy::childAt(*m_endContainer, m_endOffset - 1)|,
+  // |end_node_| stores |Strategy::ChildAt(*end_container_, end_offfset_ - 1)|,
   // if it exists, or |nullptr| otherwise.
   const Member<const Node> end_node_;
   const Member<const Node> past_end_node_;

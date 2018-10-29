@@ -49,9 +49,9 @@ using namespace HTMLNames;
 HTMLOptionElement::HTMLOptionElement(Document& document)
     : HTMLElement(optionTag, document), is_selected_(false) {}
 
-// An explicit empty destructor should be in HTMLOptionElement.cpp, because
+// An explicit empty destructor should be in html_option_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
-// HTMLOptionElement.h, when including HTMLOptionElement.h,
+// html_option_element.h, when including html_option_element.h,
 // msvc tries to expand the destructor and causes
 // a compile error because of lack of ComputedStyle definition.
 HTMLOptionElement::~HTMLOptionElement() = default;
@@ -268,12 +268,12 @@ void HTMLOptionElement::SetDirty(bool value) {
 }
 
 void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLElement::ChildrenChanged(change);
   if (HTMLDataListElement* data_list = OwnerDataListElement())
     data_list->OptionElementChildrenChanged();
   else if (HTMLSelectElement* select = OwnerSelectElement())
     select->OptionElementChildrenChanged(*this);
   UpdateLabel();
-  HTMLElement::ChildrenChanged(change);
 }
 
 HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {

@@ -133,14 +133,8 @@ class PromiseAllHandler final
     if (--number_of_pending_promises_ > 0)
       return;
 
-    v8::Local<v8::Array> values =
-        v8::Array::New(value.GetIsolate(), values_.size());
-    for (wtf_size_t i = 0; i < values_.size(); ++i) {
-      if (!V8CallBoolean(values->CreateDataProperty(value.GetContext(), i,
-                                                    values_[i].V8Value())))
-        return;
-    }
-
+    v8::Local<v8::Value> values =
+        ToV8(values_, value.GetContext()->Global(), value.GetIsolate());
     MarkPromiseSettled();
     resolver_.Resolve(values);
   }

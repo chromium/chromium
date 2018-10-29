@@ -53,10 +53,10 @@ class NavigationDelegateTest : public ios_web_view::WebViewInttestBase {
 
 // Tests that expected delegate methods are called for a successful request.
 TEST_F(NavigationDelegateTest, RequestSucceeds) {
-  // A request made with -loadRequest: has type CWVNavigationTypeClientRedirect.
+  // A request made with -loadRequest: has type CWVNavigationTypeTyped.
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldStartLoadWithRequest:ArgWithURL(GetEchoURL())
-                            navigationType:CWVNavigationTypeClientRedirect])
+                            navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
   OCMExpect([mock_delegate_ webView:web_view_
@@ -74,7 +74,7 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
 TEST_F(NavigationDelegateTest, RequestFails) {
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldStartLoadWithRequest:ArgWithURL(GetCloseSocketURL())
-                            navigationType:CWVNavigationTypeClientRedirect])
+                            navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
   OCMExpect([mock_delegate_ webViewDidCommitNavigation:web_view_]);
@@ -92,7 +92,7 @@ TEST_F(NavigationDelegateTest, RequestFails) {
 TEST_F(NavigationDelegateTest, CancelRequest) {
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldStartLoadWithRequest:ArgWithURL(GetEchoURL())
-                            navigationType:CWVNavigationTypeClientRedirect])
+                            navigationType:CWVNavigationTypeTyped])
       .andReturn(NO);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
@@ -104,7 +104,7 @@ TEST_F(NavigationDelegateTest, CancelRequest) {
 TEST_F(NavigationDelegateTest, CancelResponse) {
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldStartLoadWithRequest:ArgWithURL(GetEchoURL())
-                            navigationType:CWVNavigationTypeClientRedirect])
+                            navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
   OCMExpect([mock_delegate_ webView:web_view_

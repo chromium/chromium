@@ -16,6 +16,8 @@
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/prerender/prerender_dispatcher.h"
 #include "chrome/renderer/prerender/prerender_helper.h"
+#include "components/data_reduction_proxy/content/common/data_reduction_proxy_url_loader_throttle.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/safe_browsing/features.h"
 #include "components/safe_browsing/renderer/renderer_url_loader_throttle.h"
 #include "components/subresource_filter/content/renderer/ad_delay_renderer_metadata_provider.h"
@@ -157,6 +159,13 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
   DCHECK(!is_frame_resource ||
          type_ == content::URLLoaderThrottleProviderType::kFrame);
+
+  if (data_reduction_proxy::params::IsEnabledWithNetworkService()) {
+    throttles.push_back(
+        std::make_unique<
+            data_reduction_proxy::DataReductionProxyURLLoaderThrottle>(
+            net::HttpRequestHeaders()));
+  }
 
   if ((network_service_enabled ||
        base::FeatureList::IsEnabled(

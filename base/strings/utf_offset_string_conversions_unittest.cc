@@ -37,12 +37,12 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffset) {
     {"A\xF0\x90\x8C\x80z", 6, 4},
     {"A\xF0\x90\x8C\x80z", kNpos, kNpos},
   };
-  for (size_t i = 0; i < arraysize(utf8_to_utf16_cases); ++i) {
-    const size_t offset = utf8_to_utf16_cases[i].input_offset;
+  for (const auto& i : utf8_to_utf16_cases) {
+    const size_t offset = i.input_offset;
     std::vector<size_t> offsets;
     offsets.push_back(offset);
-    UTF8ToUTF16AndAdjustOffsets(utf8_to_utf16_cases[i].utf8, &offsets);
-    EXPECT_EQ(utf8_to_utf16_cases[i].output_offset, offsets[0]);
+    UTF8ToUTF16AndAdjustOffsets(i.utf8, &offsets);
+    EXPECT_EQ(i.output_offset, offsets[0]);
   }
 
   struct UTF16ToUTF8Case {
@@ -86,9 +86,8 @@ TEST(UTFOffsetStringConversionsTest, LimitOffsets) {
     OffsetAdjuster::AdjustOffset(kNoAdjustments, &size_ts.back(), kLimit);
   }
   size_t unlimited_count = 0;
-  for (std::vector<size_t>::iterator ti = size_ts.begin(); ti != size_ts.end();
-       ++ti) {
-    if (*ti != kNpos)
+  for (auto ti : size_ts) {
+    if (ti != kNpos)
       ++unlimited_count;
   }
   EXPECT_EQ(11U, unlimited_count);
@@ -100,9 +99,8 @@ TEST(UTFOffsetStringConversionsTest, LimitOffsets) {
     OffsetAdjuster::AdjustOffset(kNoAdjustments, &size_ts.back(), kLimit);
   }
   unlimited_count = 0;
-  for (std::vector<size_t>::iterator ti = size_ts.begin(); ti != size_ts.end();
-       ++ti) {
-    if (*ti != kNpos)
+  for (auto ti : size_ts) {
+    if (ti != kNpos)
       ++unlimited_count;
   }
   EXPECT_EQ(11U, unlimited_count);

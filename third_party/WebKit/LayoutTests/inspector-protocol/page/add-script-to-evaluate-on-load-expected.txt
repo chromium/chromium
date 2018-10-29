@@ -1,17 +1,9 @@
 Tests that Page.addScriptToEvaluateOnLoad is executed in the order of addition
+Adding scripts
 message from 0
 message from 1
 message from 2
 message from 3
 message from 4
-message from 5
-message from 6
-message from 7
-message from 8
-message from 9
-message from 10
-message from 11
-message from 12
-message from 13
-message from 14
+Removing scripts
 

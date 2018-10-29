@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <message name="IDS_MANAGEMENT_TITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment" translateable="false">
-    Management
+    Management overview
   </message>
+
   <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device is not managed" translateable="false">
     Your device is not managed by an administrator
   </message>
   <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain" translateable="false">
-    Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>
+    Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>. This means your administrators may remotely configure your device and account.
   </message>
   <message name="IDS_MANAGEMENT_DEVICE_MANAGED" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator" translateable="false">
     Your device is managed by an administrator
   </message>
 
+  <message name="IDS_MANAGEMENT_DEVICE_REPORTING" desc="Title of the types of device reporting section of the page" translateable="false">
+    Device reporting
+  </message>
   <message name="IDS_MANAGEMENT_DEVICE_CONFIGURATION" desc="Message telling users that their administrator has set some specific policies on their device" translateable="false">
     Your device has been configured to:
   </message>
@@ -30,5 +34,18 @@
   </message>
   <message name="IDS_MANAGEMENT_REPORT_DEVICE_USERS" desc="Message stating that administrators see all users that have used the device recently." translateable="false">
     report list of device users that have recently logged in
+  </message>
+
+  <message name="IDS_MANAGEMENT_EXTENSION_REPORTING" desc="Title of the force installed extensions section of the page" translateable="false">
+    Extension reporting
+  </message>
+  <message name="IDS_MANAGEMENT_EXTENSIONS_INSTALLED" desc="Message describing that the administrator has installed some powerful extensions on the managed user's browser" translateable="false">
+    Your administrators have installed extensions with powerful capabilities
+  </message>
+  <message name="IDS_MANAGEMENT_EXTENSIONS_NAME" desc="Title of a column of the extension table showing the name of the extension" translateable="false">
+    Name
+  </message>
+  <message name="IDS_MANAGEMENT_EXTENSIONS_PERMISSIONS" desc="Title of a column of the extension table showing the permissions of the extension" translateable="false">
+    Permissions
   </message>
 </grit-part>

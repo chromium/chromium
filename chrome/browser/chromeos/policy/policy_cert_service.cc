@@ -8,56 +8,85 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/policy/policy_cert_verifier.h"
 #include "chrome/browser/chromeos/policy/temp_certs_cache_nss.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
+#include "services/network/cert_verifier_with_trust_anchors.h"
+#include "services/network/public/cpp/features.h"
 
 namespace policy {
 
 PolicyCertService::~PolicyCertService() {
-  DCHECK(cert_verifier_)
-      << "CreatePolicyCertVerifier() must be called after construction.";
+  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+    DCHECK(cert_verifier_)
+        << "CreatePolicyCertVerifier() must be called after construction.";
+  }
 }
 
 PolicyCertService::PolicyCertService(
+    Profile* profile,
     const std::string& user_id,
     UserNetworkConfigurationUpdater* net_conf_updater,
     user_manager::UserManager* user_manager)
-    : cert_verifier_(NULL),
+    : profile_(profile),
+      cert_verifier_(NULL),
       user_id_(user_id),
       net_conf_updater_(net_conf_updater),
       user_manager_(user_manager),
-      has_trust_anchors_(false),
       weak_ptr_factory_(this) {
   DCHECK(net_conf_updater_);
   DCHECK(user_manager_);
 }
 
-PolicyCertService::PolicyCertService(const std::string& user_id,
-                                     PolicyCertVerifier* verifier,
-                                     user_manager::UserManager* user_manager)
+PolicyCertService::PolicyCertService(
+    const std::string& user_id,
+    network::CertVerifierWithTrustAnchors* verifier,
+    user_manager::UserManager* user_manager)
     : cert_verifier_(verifier),
       user_id_(user_id),
       net_conf_updater_(NULL),
       user_manager_(user_manager),
-      has_trust_anchors_(false),
-      weak_ptr_factory_(this) {
-}
+      weak_ptr_factory_(this) {}
 
-std::unique_ptr<PolicyCertVerifier>
+std::unique_ptr<network::CertVerifierWithTrustAnchors>
 PolicyCertService::CreatePolicyCertVerifier() {
+  DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
   base::Closure callback = base::Bind(
       &PolicyCertServiceFactory::SetUsedPolicyCertificates, user_id_);
-  cert_verifier_ = new PolicyCertVerifier(
-      base::Bind(base::IgnoreResult(&content::BrowserThread::PostTask),
-                 content::BrowserThread::UI,
-                 FROM_HERE,
-                 callback));
+  constexpr base::TaskTraits traits = {content::BrowserThread::UI};
+  auto cert_verifier = std::make_unique<network::CertVerifierWithTrustAnchors>(
+      base::Bind(base::IgnoreResult(&base::PostTaskWithTraits), FROM_HERE,
+                 traits, callback));
+  cert_verifier_ = cert_verifier.get();
   // Certs are forwarded to |cert_verifier_|, thus register here after
   // |cert_verifier_| is created.
+  StartObservingPolicyCertsInternal(true /* notify */);
+
+  return cert_verifier;
+}
+
+void PolicyCertService::StartObservingPolicyCerts() {
+  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
+  // Don't notify the network service since it will get the initial list of
+  // trust anchors in NetworkContextParams::initial_trust_anchors.
+  StartObservingPolicyCertsInternal(false /* notify */);
+}
+
+void PolicyCertService::OnPolicyProvidedCertsChanged(
+    const net::CertificateList& all_server_and_authority_certs,
+    const net::CertificateList& trust_anchors) {
+  OnPolicyProvidedCertsChangedInternal(all_server_and_authority_certs,
+                                       trust_anchors, true /* notify */);
+}
+
+void PolicyCertService::StartObservingPolicyCertsInternal(bool notify) {
   net_conf_updater_->AddPolicyProvidedCertsObserver(this);
 
   // Set the current list of policy-provided server and authority certificates,
@@ -66,16 +95,14 @@ PolicyCertService::CreatePolicyCertVerifier() {
       net_conf_updater_->GetAllServerAndAuthorityCertificates();
   net::CertificateList trust_anchors =
       net_conf_updater_->GetWebTrustedCertificates();
-  OnPolicyProvidedCertsChanged(all_server_and_authority_certs, trust_anchors);
-
-  return base::WrapUnique(cert_verifier_);
+  OnPolicyProvidedCertsChangedInternal(all_server_and_authority_certs,
+                                       trust_anchors, notify);
 }
 
-void PolicyCertService::OnPolicyProvidedCertsChanged(
+void PolicyCertService::OnPolicyProvidedCertsChangedInternal(
     const net::CertificateList& all_server_and_authority_certs,
-    const net::CertificateList& trust_anchors) {
-  DCHECK(cert_verifier_);
-
+    const net::CertificateList& trust_anchors,
+    bool notify) {
   // Make all policy-provided server and authority certificates available to NSS
   // as temp certificates.
   // Note that this is done on the UI thread because the assumption is that NSS
@@ -95,17 +122,28 @@ void PolicyCertService::OnPolicyProvidedCertsChanged(
     return;
   }
 
-  has_trust_anchors_ = !trust_anchors.empty();
+  trust_anchors_ = trust_anchors;
+
+  if (!notify)
+    return;
+
+  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+    ProfileNetworkContextServiceFactory::GetForContext(profile_)
+        ->UpdateTrustAnchors(trust_anchors_);
+    return;
+  }
+
+  DCHECK(cert_verifier_);
 
   // It's safe to use base::Unretained here, because it's guaranteed that
   // |cert_verifier_| outlives this object (see description of
   // CreatePolicyCertVerifier).
   // Note: ProfileIOData, which owns the CertVerifier is deleted by a
   // DeleteSoon on IO, i.e. after all pending tasks on IO are finished.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PolicyCertVerifier::SetTrustAnchors,
-                     base::Unretained(cert_verifier_), trust_anchors));
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(&network::CertVerifierWithTrustAnchors::SetTrustAnchors,
+                     base::Unretained(cert_verifier_), trust_anchors_));
 }
 
 bool PolicyCertService::UsedPolicyCertificates() const {
@@ -125,7 +163,7 @@ void PolicyCertService::Shutdown() {
 // static
 std::unique_ptr<PolicyCertService> PolicyCertService::CreateForTesting(
     const std::string& user_id,
-    PolicyCertVerifier* verifier,
+    network::CertVerifierWithTrustAnchors* verifier,
     user_manager::UserManager* user_manager) {
   return base::WrapUnique(
       new PolicyCertService(user_id, verifier, user_manager));

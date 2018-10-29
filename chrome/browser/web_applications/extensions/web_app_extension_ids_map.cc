@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -16,6 +17,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "url/gurl.h"
+
+namespace web_app {
 
 namespace {
 
@@ -56,13 +59,9 @@ namespace {
 constexpr char kExtensionId[] = "extension_id";
 constexpr char kInstallSource[] = "install_source";
 
-constexpr web_app::PendingAppManager::InstallSource
-    m70_implicit_install_source =
-        web_app::PendingAppManager::InstallSource::kInternal;
+constexpr InstallSource m70_implicit_install_source = InstallSource::kInternal;
 
 }  // namespace
-
-namespace web_app {
 
 // static
 void ExtensionIdsMap::RegisterProfilePrefs(
@@ -132,7 +131,7 @@ bool ExtensionIdsMap::HasExtensionId(const PrefService* pref_service,
 // static
 std::vector<GURL> ExtensionIdsMap::GetInstalledAppUrls(
     Profile* profile,
-    PendingAppManager::InstallSource install_source) {
+    InstallSource install_source) {
   const base::DictionaryValue* urls_to_dicts =
       profile->GetPrefs()->GetDictionary(prefs::kWebAppsExtensionIDs);
 
@@ -154,8 +153,8 @@ std::vector<GURL> ExtensionIdsMap::GetInstalledAppUrls(
       if (!install_source_value) {
         continue;
       }
-      actual_install_source = static_cast<PendingAppManager::InstallSource>(
-          install_source_value->GetInt());
+      actual_install_source =
+          static_cast<InstallSource>(install_source_value->GetInt());
 
       v = v->FindKey(kExtensionId);
     }
@@ -184,7 +183,7 @@ ExtensionIdsMap::ExtensionIdsMap(PrefService* pref_service)
 
 void ExtensionIdsMap::Insert(const GURL& url,
                              const std::string& extension_id,
-                             PendingAppManager::InstallSource install_source) {
+                             InstallSource install_source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Write the M71+ format.

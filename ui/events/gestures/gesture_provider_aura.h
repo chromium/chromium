@@ -49,6 +49,8 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   std::vector<std::unique_ptr<GestureEvent>> GetAndResetPendingGestures();
   void OnTouchEnter(int pointer_id, float x, float y);
 
+  void ResetGestureHandlingState();
+
   // GestureProviderClient implementation
   void OnGestureEvent(const GestureEventData& gesture) override;
   bool RequiresDoubleTapGestureEvents() const override;

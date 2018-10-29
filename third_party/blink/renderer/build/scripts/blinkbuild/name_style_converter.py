@@ -22,6 +22,7 @@ SPECIAL_TOKENS = [
     'Uint16',
     'Uint32',
     'WebGL2',
+    'webgl2',
     'WebGPU',
     'ASCII',
     'CSSOM',
@@ -38,9 +39,11 @@ SPECIAL_TOKENS = [
     'WebGL',
     'XPath',
     'ETC1',
+    'etc1',
     'HTML',
     'Int8',
     'S3TC',
+    's3tc',
     'SPv2',
     'UTF8',
     'sRGB',
@@ -57,6 +60,7 @@ SPECIAL_TOKENS = [
     'FE',
     'V0',
     'V8',
+    'v8',
 ]
 
 _SPECIAL_TOKENS_WITH_NUMBERS = [token for token in SPECIAL_TOKENS if re.search(r'[0-9]', token)]
@@ -223,3 +227,10 @@ class NameStyleConverter(object):
         i.e. kUpperCamelCase
         """
         return 'k' + self.to_upper_camel_case()
+
+    def to_header_guard(self):
+        """Represents this name as a header guard style in Chromium C++ style.
+
+        i.e. THIRD_PARTY_BLINK_RENDERER_MODULES_MODULES_EXPORT_H_
+        """
+        return re.sub(r'[-/.]', '_', self.to_macro_case()) + '_'

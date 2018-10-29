@@ -5,7 +5,7 @@
 #include <tuple>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "content/common/view_messages.h"
@@ -57,7 +57,7 @@ class RenderMediaLogTest : public testing::Test {
   }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   MockRenderThread render_thread_;
   base::SimpleTestTickClock tick_clock_;
   RenderMediaLog log_;

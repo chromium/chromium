@@ -40,6 +40,7 @@ class MakeInternalSettingsWriter(json5_generator.Writer):
         'to_passing_type': to_passing_type,
         'to_idl_type': to_idl_type,
     }
+    _FILE_BASENAME = 'internal_settings_generated'
 
     def __init__(self, json5_file_path, output_dir):
         super(MakeInternalSettingsWriter, self).__init__(json5_file_path, output_dir)
@@ -47,14 +48,15 @@ class MakeInternalSettingsWriter(json5_generator.Writer):
         self.json5_file.name_dictionaries.sort(key=lambda entry: entry['name'].original)
 
         self._outputs = {
-            'internal_settings_generated.h': self.generate_header,
-            'internal_settings_generated.cc': self.generate_implementation,
-            'internal_settings_generated.idl': self.generate_idl,
+            (self._FILE_BASENAME + '.h'): self.generate_header,
+            (self._FILE_BASENAME + '.cc'): self.generate_implementation,
+            (self._FILE_BASENAME + '.idl'): self.generate_idl,
         }
         self._template_context = {
             'input_files': self._input_files,
             'primary_header_name': 'internal_settings_generated.h',
             'settings': self.json5_file.name_dictionaries,
+            'header_guard': self.make_header_guard(self._relative_output_dir + self._FILE_BASENAME + '.h')
         }
 
     @template_expander.use_jinja('templates/internal_settings_generated.h.tmpl', filters=filters)

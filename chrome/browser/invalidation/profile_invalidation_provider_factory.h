@@ -36,7 +36,7 @@ class ProfileInvalidationProviderFactory
 
   // Switches service creation to go through |testing_factory| for all browser
   // contexts.
-  void RegisterTestingFactory(TestingFactoryFunction testing_factory);
+  void RegisterTestingFactory(TestingFactory testing_factory);
 
  private:
   friend class ProfileInvalidationProviderFactoryTestBase;
@@ -51,7 +51,7 @@ class ProfileInvalidationProviderFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 
-  TestingFactoryFunction testing_factory_;
+  TestingFactory testing_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileInvalidationProviderFactory);
 };

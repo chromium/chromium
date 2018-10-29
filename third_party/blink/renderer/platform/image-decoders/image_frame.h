@@ -43,7 +43,7 @@ namespace blink {
 // ImageFrame represents the decoded image data.  This buffer is what all
 // decoders write a single frame into.
 class PLATFORM_EXPORT ImageFrame final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum PixelFormat { kN32, kRGBA_F16 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/ui/passphrase_textfield.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace chromeos {
@@ -40,9 +41,9 @@ std::string PassphraseTextfield::GetPassphrase() {
 }
 
 void PassphraseTextfield::SetFakePassphrase() {
-  CR_DEFINE_STATIC_LOCAL(base::string16, fake_passphrase,
-                         (base::ASCIIToUTF16("********")));
-  SetText(fake_passphrase);
+  static base::NoDestructor<base::string16> fake_passphrase(
+      base::ASCIIToUTF16("********"));
+  SetText(*fake_passphrase);
   changed_ = false;
 }
 

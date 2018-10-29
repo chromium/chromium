@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/device_info/local_device_info_provider.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -44,10 +43,6 @@ class SessionSyncBridge : public AbstractSessionsSyncManager,
   // Raw pointers must not be null and their pointees must outlive this object.
   SessionSyncBridge(
       SyncSessionsClient* sessions_client,
-      syncer::SessionSyncPrefs* sync_prefs,
-      syncer::LocalDeviceInfoProvider* local_device_info_provider,
-      const syncer::RepeatingModelTypeStoreFactory& store_factory,
-      const base::RepeatingClosure& foreign_sessions_updated_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   ~SessionSyncBridge() override;
 
@@ -101,7 +96,6 @@ class SessionSyncBridge : public AbstractSessionsSyncManager,
 
   SyncSessionsClient* const sessions_client_;
   LocalSessionEventRouter* const local_session_event_router_;
-  const base::RepeatingClosure foreign_sessions_updated_callback_;
 
   FaviconCache favicon_cache_;
   SessionsGlobalIdMapper global_id_mapper_;

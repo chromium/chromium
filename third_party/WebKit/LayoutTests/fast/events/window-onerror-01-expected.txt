@@ -7,9 +7,7 @@ window.onerror: "Uncaught ReferenceError: hahaha_good_luck_finding_me is not def
 Stack Trace:
 ReferenceError: hahaha_good_luck_finding_me is not defined
     at window-onerror-01.html:14:9
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 PASS successfullyParsed is true

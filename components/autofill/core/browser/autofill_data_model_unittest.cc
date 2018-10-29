@@ -9,12 +9,15 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
+
+const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
 
 // Provides concrete implementations for pure virtual methods.
 class TestAutofillDataModel : public AutofillDataModel {
@@ -69,6 +72,27 @@ TEST(AutofillDataModelTest, IsVerified) {
 
   model.set_origin(std::string());
   EXPECT_FALSE(model.IsVerified());
+}
+
+TEST(AutofillDataModelTest, GetMetadata) {
+  TestAutofillDataModel model("guid", std::string());
+  model.set_use_count(10);
+  model.set_use_date(kArbitraryTime);
+
+  AutofillMetadata metadata = model.GetMetadata();
+  EXPECT_EQ(model.use_count(), metadata.use_count);
+  EXPECT_EQ(model.use_date(), metadata.use_date);
+}
+
+TEST(AutofillDataModelTest, SetMetadata) {
+  AutofillMetadata metadata;
+  metadata.use_count = 10;
+  metadata.use_date = kArbitraryTime;
+
+  TestAutofillDataModel model("guid", std::string());
+  EXPECT_TRUE(model.SetMetadata(metadata));
+  EXPECT_EQ(metadata.use_count, model.use_count());
+  EXPECT_EQ(metadata.use_date, model.use_date());
 }
 
 enum Expectation { GREATER, LESS };

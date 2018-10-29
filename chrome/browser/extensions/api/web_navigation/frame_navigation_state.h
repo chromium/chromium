@@ -54,9 +54,6 @@ class FrameNavigationState {
   // the WebContents this object is tracking.
   void FrameHostDeleted(content::RenderFrameHost* frame_host);
 
-  // Update the URL associated with |frame_host|.
-  void UpdateFrame(content::RenderFrameHost* frame_host, const GURL& url);
-
   // Returns true if |frame_host| is a known frame host.
   bool IsValidFrame(content::RenderFrameHost* frame_host) const;
 

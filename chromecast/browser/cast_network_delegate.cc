@@ -40,9 +40,10 @@ void CastNetworkDelegate::Initialize() {
 bool CastNetworkDelegate::IsWhitelisted(const GURL& gurl,
                                         const std::string& session_id,
                                         int render_process_id,
+                                        int render_frame_id,
                                         bool for_device_auth) const {
   return network_request_interceptor_->IsWhiteListed(
-      gurl, session_id, render_process_id, for_device_auth);
+      gurl, session_id, render_process_id, render_frame_id, for_device_auth);
 }
 
 bool CastNetworkDelegate::OnCanAccessFile(
@@ -84,9 +85,11 @@ int CastNetworkDelegate::OnBeforeURLRequest(
   if (!content::ResourceRequestInfo::GetRenderFrameForRequest(
           request, &render_process_id, &render_frame_id)) {
     render_process_id = content::ChildProcessHost::kInvalidUniqueID;
+    render_frame_id = content::ChildProcessHost::kInvalidUniqueID;
   }
   return network_request_interceptor_->OnBeforeURLRequest(
-      request, session_id, render_process_id, std::move(callback), new_url);
+      request, session_id, render_process_id, render_frame_id,
+      std::move(callback), new_url);
 }
 
 int CastNetworkDelegate::OnBeforeStartTransaction(

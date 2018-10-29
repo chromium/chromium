@@ -45,6 +45,27 @@ Tests ARIA 1.1 accessibility markup.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "multiline",
       "value": {
         "type": "boolean",
@@ -181,6 +202,13 @@ Tests ARIA 1.1 accessibility markup.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "keyshortcuts",
       "value": {
         "type": "string",
@@ -228,6 +256,13 @@ Tests ARIA 1.1 accessibility markup.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {

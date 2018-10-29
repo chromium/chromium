@@ -47,9 +47,7 @@ class TestMenuItemView : public MenuItemView {
   DISALLOW_COPY_AND_ASSIGN(TestMenuItemView);
 };
 
-using MenuItemViewUnitTest = views::ViewsTestBase;
-
-TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
+TEST(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   TestMenuItemView root_menu;
   root_menu.set_owned_by_client();
 
@@ -88,7 +86,7 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
 
 // Tests that the top-level menu item with hidden children should contain the
 // "(empty)" menu item to display.
-TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
+TEST(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   TestMenuItemView root_menu;
   views::MenuItemView* item1 =
       root_menu.AppendMenuItemWithLabel(1, base::ASCIIToUTF16("item 1"));
@@ -119,7 +117,7 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
 
 // Tests that submenu with hidden children should contain the "(empty)" menu
 // item to display.
-TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
+TEST(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
   TestMenuItemView root_menu;
   MenuItemView* submenu_item =
       root_menu.AppendSubMenu(1, base::ASCIIToUTF16("My Submenu"));
@@ -138,19 +136,24 @@ TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
   EXPECT_EQ(2, submenu->child_count());
 
   // Adds any empty menu items to the menu, if needed.
+  EXPECT_FALSE(submenu->HasEmptyMenuItemView());
   root_menu.AddEmptyMenus();
-
+  EXPECT_TRUE(submenu->HasEmptyMenuItemView());
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
   ASSERT_EQ(3, submenu->child_count());
   MenuItemView* empty_item = static_cast<MenuItemView*>(submenu->child_at(0));
   ASSERT_TRUE(empty_item);
+  // Not allowed to add an duplicated empty menu item
+  // if it already has an empty menu item.
+  root_menu.AddEmptyMenus();
+  ASSERT_EQ(3, submenu->child_count());
   ASSERT_EQ(MenuItemView::kEmptyMenuItemViewID, empty_item->id());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }
 
-TEST_F(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
+TEST(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
   TestMenuItemView root_menu;
   views::MenuItemView* item1 =
       root_menu.AppendMenuItemWithLabel(1, base::ASCIIToUTF16("&Item 1"));

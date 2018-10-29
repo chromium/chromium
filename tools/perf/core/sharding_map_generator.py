@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import collections
-import json
 import sys
 
 import core.path_util
@@ -58,6 +57,8 @@ def generate_sharding_map(
   max_shard_time = 0
   max_shard_index = None
   num_stories = len(story_timing_list)
+  predicted_shard_timings = []
+
   # The algorithm below removes all the stories from |story_timing_list| one by
   # one and add them to the current shard until the shard's total time is
   # approximately equals to |expected_time_per_shard|. After that point,
@@ -69,8 +70,9 @@ def generate_sharding_map(
   num_stories = len(story_timing_list)
   final_shard_index = num_shards - 1
   for i in range(num_shards):
+    shard_name = 'shard #%i' % i
     sharding_map[str(i)] = {'benchmarks': collections.OrderedDict()}
-    debug_map[str(i)] = collections.OrderedDict()
+    debug_map[shard_name] = collections.OrderedDict()
     time_per_shard = 0
     stories_in_shard = []
     expected_total_time = expected_time_per_shard * (i + 1)
@@ -92,13 +94,13 @@ def generate_sharding_map(
         total_time_scheduled += candidate_story_duration
         time_per_shard += candidate_story_duration
         stories_in_shard.append(candidate_story)
-        debug_map[str(i)][candidate_story] = candidate_story_duration
+        debug_map[shard_name][candidate_story] = candidate_story_duration
         last_diff = abs(total_time_scheduled - expected_total_time)
         _add_benchmarks_to_shard(sharding_map, i, stories_in_shard, all_stories)
       else:
         break
     # Double time_per_shard to account for reference benchmark run.
-    debug_map[str(i)]['expected_total_time'] = time_per_shard * 2
+    debug_map[shard_name]['expected_total_time'] = time_per_shard * 2
     if time_per_shard > max_shard_time:
       max_shard_time = time_per_shard
       max_shard_index = i
@@ -106,10 +108,7 @@ def generate_sharding_map(
       min_shard_time = time_per_shard
       min_shard_index = i
 
-  if debug:
-    with open(debug, 'w') as output_file:
-      json.dump(debug_map, output_file, indent = 4, separators=(',', ': '))
-
+    predicted_shard_timings.append((shard_name, time_per_shard * 2))
 
   sharding_map['extra_infos'] = collections.OrderedDict([
       ('num_stories', num_stories),
@@ -119,6 +118,11 @@ def generate_sharding_map(
       ('predicted_max_shard_time', max_shard_time * 2),
       ('predicted_max_shard_index', max_shard_index),
       ])
+
+  if debug:
+    sharding_map['extra_infos'].update(debug_map)
+  else:
+    sharding_map['extra_infos'].update(predicted_shard_timings)
   return sharding_map
 
 

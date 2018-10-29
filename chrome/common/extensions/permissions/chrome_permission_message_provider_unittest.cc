@@ -43,6 +43,15 @@ class ChromePermissionMessageProviderUnittest : public testing::Test {
             type));
   }
 
+  PermissionMessages GetPowerfulMessages(const APIPermissionSet& permissions,
+                                         Manifest::Type type) {
+    return message_provider_->GetPowerfulPermissionMessages(
+        message_provider_->GetAllPermissionIDs(
+            PermissionSet(permissions, ManifestPermissionSet(), URLPatternSet(),
+                          URLPatternSet()),
+            type));
+  }
+
   bool IsPrivilegeIncrease(const APIPermissionSet& granted_permissions,
                            const APIPermissionSet& requested_permissions) {
     return message_provider_->IsPrivilegeIncrease(
@@ -159,6 +168,38 @@ TEST_F(ChromePermissionMessageProviderUnittest,
                 base::ASCIIToUTF16("all xn--oogle-qmc.com sites"),
                 base::ASCIIToUTF16("xn--oogle-qmc.com")),
             messages.front().message());
+}
+
+// Checks whether powerful permissions are returned correctly.
+TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
+  {
+    APIPermissionSet permissions;
+    permissions.insert(APIPermission::kTab);
+    PermissionMessages messages =
+        GetPowerfulMessages(permissions, Manifest::TYPE_EXTENSION);
+    ASSERT_EQ(1U, messages.size());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
+        messages.front().message());
+  }
+  {
+    APIPermissionSet permissions;
+    permissions.insert(APIPermission::kBookmark);
+    PermissionMessages messages =
+        GetPowerfulMessages(permissions, Manifest::TYPE_EXTENSION);
+    ASSERT_EQ(0U, messages.size());
+  }
+  {
+    APIPermissionSet permissions;
+    permissions.insert(APIPermission::kTab);
+    permissions.insert(APIPermission::kBookmark);
+    PermissionMessages messages =
+        GetPowerfulMessages(permissions, Manifest::TYPE_EXTENSION);
+    ASSERT_EQ(1U, messages.size());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
+        messages.front().message());
+  }
 }
 
 }  // namespace extensions

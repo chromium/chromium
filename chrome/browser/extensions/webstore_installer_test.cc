@@ -8,8 +8,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/extensions/webstore_inline_installer.h"
-#include "chrome/browser/extensions/webstore_inline_installer_factory.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,8 +31,6 @@
 using content::WebContents;
 using extensions::Extension;
 using extensions::TabHelper;
-using extensions::WebstoreInlineInstaller;
-using extensions::WebstoreInlineInstallerFactory;
 using extensions::WebstoreStandaloneInstaller;
 
 using net::test_server::HttpRequest;

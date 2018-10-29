@@ -63,9 +63,9 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mTitle = (TextView) findViewById(R.id.title);
-        mDescription = (TextView) findViewById(R.id.description);
-        mPositiveButton = (Button) findViewById(R.id.sign_in);
+        mTitle = findViewById(R.id.title);
+        mDescription = findViewById(R.id.description);
+        mPositiveButton = findViewById(R.id.sign_in);
     }
 
     /**

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/bind_helpers.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -23,10 +24,11 @@ ui::EventDispatchDetails InputMethodMinimal::DispatchKeyEvent(
 
   // If no text input client, do nothing.
   if (!GetTextInputClient())
-    return DispatchKeyEventPostIME(event);
+    return DispatchKeyEventPostIME(event, base::NullCallback());
 
   // Insert the character.
-  ui::EventDispatchDetails dispatch_details = DispatchKeyEventPostIME(event);
+  ui::EventDispatchDetails dispatch_details =
+      DispatchKeyEventPostIME(event, base::NullCallback());
   if (!event->stopped_propagation() && !dispatch_details.dispatcher_destroyed &&
       event->type() == ET_KEY_PRESSED && GetTextInputClient()) {
     const uint16_t ch = event->GetCharacter();

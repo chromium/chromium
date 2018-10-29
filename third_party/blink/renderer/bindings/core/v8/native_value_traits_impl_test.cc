@@ -20,6 +20,20 @@ namespace blink {
 
 namespace {
 
+v8::Local<v8::Object> EvaluateScriptForObject(V8TestingScope& scope,
+                                              const char* source) {
+  v8::Local<v8::Script> script =
+      v8::Script::Compile(scope.GetContext(),
+                          V8String(scope.GetIsolate(), source))
+          .ToLocalChecked();
+  return script->Run(scope.GetContext()).ToLocalChecked().As<v8::Object>();
+}
+
+v8::Local<v8::Array> EvaluateScriptForArray(V8TestingScope& scope,
+                                            const char* source) {
+  return EvaluateScriptForObject(scope, source).As<v8::Array>();
+}
+
 TEST(NativeValueTraitsImplTest, IDLInterface) {
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
@@ -43,25 +57,6 @@ TEST(NativeValueTraitsImplTest, IDLCallbackFunction) {
       "");
 }
 
-void ThrowException(v8::Local<v8::Name>,
-                    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  info.GetIsolate()->ThrowException(V8String(info.GetIsolate(), "bogus!"));
-}
-
-void ReturnBogusObjectDescriptor(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  auto context = isolate->GetCurrentContext();
-
-  v8::Local<v8::Object> descriptor = v8::Object::New(isolate);
-  EXPECT_TRUE(
-      V8CallBoolean(descriptor->Set(context, V8String(isolate, "configurable"),
-                                    v8::Boolean::New(isolate, true))));
-  EXPECT_TRUE(V8CallBoolean(descriptor->SetAccessor(
-      context, V8String(isolate, "enumerable"), ThrowException)));
-  info.GetReturnValue().Set(descriptor);
-}
-
 TEST(NativeValueTraitsImplTest, IDLRecord) {
   V8TestingScope scope;
   {
@@ -73,13 +68,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_TRUE(record.IsEmpty());
   }
   {
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 34))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "bar"), ToV8(&scope, -1024))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 42))));
+    v8::Local<v8::Object> v8_object =
+        EvaluateScriptForObject(scope, "({ foo: 42, bar: -1024 })");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -90,14 +80,13 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_EQ(std::make_pair(String("bar"), int32_t(-1024)), record[1]);
   }
   {
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 34))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->DefineOwnProperty(
-        scope.GetContext(), V8String(scope.GetIsolate(), "bar"),
-        ToV8(&scope, -1024), v8::PropertyAttribute::DontEnum)));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "baz"), ToV8(&scope, 42))));
+    v8::Local<v8::Object> v8_object =
+        EvaluateScriptForObject(scope,
+                                "Object.defineProperties({}, {"
+                                "  foo: {value: 34, enumerable: true},"
+                                "  bar: {value: -1024, enumerable: false},"
+                                "  baz: {value: 42, enumerable: true},"
+                                "})");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -110,11 +99,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
   {
     // Exceptions are being thrown in this test, so we need another scope.
     V8TestingScope scope;
-    v8::Local<v8::Object> original_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(original_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 34))));
-    EXPECT_TRUE(V8CallBoolean(original_object->Set(
-        scope.GetContext(), ToV8(&scope, "bar"), ToV8(&scope, 42))));
+    v8::Local<v8::Object> original_object = EvaluateScriptForObject(
+        scope, "(self.originalObject = {foo: 34, bar: 42})");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -122,14 +108,18 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             scope.GetIsolate(), original_object, exception_state);
     EXPECT_EQ(2U, record.size());
 
-    v8::Local<v8::Object> handler = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(handler->Set(
-        scope.GetContext(), ToV8(&scope, "getOwnPropertyDescriptor"),
-        v8::Function::New(scope.GetContext(), ReturnBogusObjectDescriptor)
-            .ToLocalChecked())));
     v8::Local<v8::Proxy> proxy =
-        v8::Proxy::New(scope.GetContext(), original_object, handler)
-            .ToLocalChecked();
+        EvaluateScriptForObject(scope,
+                                "new Proxy(self.originalObject, {"
+                                "  getOwnPropertyDescriptor() {"
+                                "    return {"
+                                "      configurable: true,"
+                                "      get enumerable() { throw 'bogus!'; },"
+                                "    };"
+                                "  }"
+                                "})")
+            .As<v8::Proxy>();
+
     ExceptionState exception_state_from_proxy(
         scope.GetIsolate(), ExceptionState::kExecutionContext,
         "NativeValueTraitsImplTest", "IDLRecordTest");
@@ -150,15 +140,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             .ToChecked());
   }
   {
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 42))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "bar"), ToV8(&scope, 0))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "xx"), ToV8(&scope, true))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "abcd"), ToV8(&scope, false))));
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(
+        scope, "({foo: 42, bar: 0, xx: true, abcd: false})");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -171,14 +154,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_EQ(std::make_pair(String("abcd"), false), record[3]);
   }
   {
-    v8::Local<v8::Array> v8_string_array =
-        v8::Array::New(scope.GetIsolate(), 2);
-    EXPECT_TRUE(V8CallBoolean(v8_string_array->Set(
-        scope.GetContext(), ToV8(&scope, 0), ToV8(&scope, "Hello, World!"))));
-    EXPECT_TRUE(V8CallBoolean(v8_string_array->Set(
-        scope.GetContext(), ToV8(&scope, 1), ToV8(&scope, "Hi, Mom!"))));
-    EXPECT_TRUE(V8CallBoolean(v8_string_array->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, "Ohai"))));
+    v8::Local<v8::Array> v8_string_array = EvaluateScriptForArray(
+        scope, "Object.assign(['Hello, World!', 'Hi, Mom!'], {foo: 'Ohai'})");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -190,12 +167,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_EQ(std::make_pair(String("foo"), String("Ohai")), record[2]);
   }
   {
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), v8::Symbol::GetToStringTag(scope.GetIsolate()),
-        ToV8(&scope, 34))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 42))));
+    v8::Local<v8::Object> v8_object =
+        EvaluateScriptForObject(scope, "({[Symbol.toStringTag]: 34, foo: 42})");
 
     // The presence of symbols should throw a TypeError when the conversion to
     // the record's key type is attempted.
@@ -208,15 +181,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_TRUE(exception_state.Message().IsEmpty());
   }
   {
-    v8::Local<v8::Object> v8_parent_object =
-        v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(v8_parent_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 34))));
-    EXPECT_TRUE(V8CallBoolean(v8_parent_object->Set(
-        scope.GetContext(), ToV8(&scope, "bar"), ToV8(&scope, 512))));
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(V8CallBoolean(
-        v8_object->SetPrototype(scope.GetContext(), v8_parent_object)));
+    v8::Local<v8::Object> v8_object =
+        EvaluateScriptForObject(scope, "Object.create({foo: 34, bar: 512})");
 
     NonThrowableExceptionState exception_state;
     auto record =
@@ -224,10 +190,11 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             scope.GetIsolate(), v8_object, exception_state);
     EXPECT_TRUE(record.IsEmpty());
 
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "quux"), ToV8(&scope, 42))));
-    EXPECT_TRUE(V8CallBoolean(v8_object->Set(
-        scope.GetContext(), ToV8(&scope, "foo"), ToV8(&scope, 1024))));
+    v8_object =
+        EvaluateScriptForObject(scope,
+                                "Object.assign("
+                                "    Object.create({foo: 34, bar: 512}),"
+                                "    {quux: 42, foo: 1024})");
     record =
         NativeValueTraits<IDLRecord<IDLString, IDLUnsignedLong>>::NativeValue(
             scope.GetIsolate(), v8_object, exception_state);
@@ -236,16 +203,8 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     EXPECT_EQ(std::make_pair(String("foo"), uint32_t(1024)), record[1]);
   }
   {
-    v8::Local<v8::Array> v8_string_array =
-        v8::Array::New(scope.GetIsolate(), 2);
-    EXPECT_TRUE(V8CallBoolean(v8_string_array->Set(
-        scope.GetContext(), ToV8(&scope, 0), ToV8(&scope, "Hello, World!"))));
-    EXPECT_TRUE(V8CallBoolean(v8_string_array->Set(
-        scope.GetContext(), ToV8(&scope, 1), ToV8(&scope, "Hi, Mom!"))));
-    v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
-    EXPECT_TRUE(
-        V8CallBoolean(v8_object->Set(scope.GetContext(), ToV8(&scope, "foo"),
-                                     ToV8(&scope, v8_string_array))));
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(
+        scope, "({foo: ['Hello, World!', 'Hi, Mom!']})");
 
     NonThrowableExceptionState exception_state;
     const auto& record =
@@ -269,11 +228,8 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
     EXPECT_TRUE(sequence.IsEmpty());
   }
   {
-    v8::Local<v8::Array> v8_array = v8::Array::New(scope.GetIsolate());
-    for (int32_t i = 0; i < 5; ++i) {
-      v8_array->Set(scope.GetContext(), ToV8(&scope, i), ToV8(&scope, i))
-          .ToChecked();
-    }
+    v8::Local<v8::Array> v8_array =
+        EvaluateScriptForArray(scope, "[0, 1, 2, 3, 4]");
     NonThrowableExceptionState exception_state;
     const auto& sequence = NativeValueTraits<IDLSequence<IDLLong>>::NativeValue(
         scope.GetIsolate(), v8_array, exception_state);
@@ -282,10 +238,8 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
   {
     const double double_pi = 3.141592653589793238;
     const float float_pi = double_pi;
-    v8::Local<v8::Array> v8_real_array = v8::Array::New(scope.GetIsolate(), 1);
-    v8_real_array
-        ->Set(scope.GetContext(), ToV8(&scope, 0), ToV8(&scope, double_pi))
-        .ToChecked();
+    v8::Local<v8::Array> v8_real_array =
+        EvaluateScriptForArray(scope, "[3.141592653589793238]");
 
     NonThrowableExceptionState exception_state;
     Vector<double> double_vector =
@@ -301,17 +255,8 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
     EXPECT_EQ(float_pi, float_vector[0]);
   }
   {
-    v8::Local<v8::Array> v8_array = v8::Array::New(scope.GetIsolate(), 3);
-    EXPECT_TRUE(v8_array
-                    ->Set(scope.GetContext(), ToV8(&scope, 0),
-                          ToV8(&scope, "Vini, vidi, vici."))
-                    .ToChecked());
-    EXPECT_TRUE(
-        v8_array->Set(scope.GetContext(), ToV8(&scope, 1), ToV8(&scope, 65535))
-            .ToChecked());
-    EXPECT_TRUE(
-        v8_array->Set(scope.GetContext(), ToV8(&scope, 2), ToV8(&scope, 0.125))
-            .ToChecked());
+    v8::Local<v8::Array> v8_array =
+        EvaluateScriptForArray(scope, "['Vini, vidi, vici.', 65535, 0.125]");
 
     NonThrowableExceptionState exception_state;
     Vector<ScriptValue> script_value_vector =
@@ -326,38 +271,8 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
                        kNormalConversion, exception_state));
   }
   {
-    v8::Local<v8::Array> v8_string_array1 =
-        v8::Array::New(scope.GetIsolate(), 2);
-    EXPECT_TRUE(
-        v8_string_array1
-            ->Set(scope.GetContext(), ToV8(&scope, 0), ToV8(&scope, "foo"))
-            .ToChecked());
-    EXPECT_TRUE(
-        v8_string_array1
-            ->Set(scope.GetContext(), ToV8(&scope, 1), ToV8(&scope, "bar"))
-            .ToChecked());
-    v8::Local<v8::Array> v8_string_array2 =
-        v8::Array::New(scope.GetIsolate(), 3);
-    EXPECT_TRUE(
-        v8_string_array2
-            ->Set(scope.GetContext(), ToV8(&scope, 0), ToV8(&scope, "x"))
-            .ToChecked());
-    EXPECT_TRUE(
-        v8_string_array2
-            ->Set(scope.GetContext(), ToV8(&scope, 1), ToV8(&scope, "y"))
-            .ToChecked());
-    EXPECT_TRUE(
-        v8_string_array2
-            ->Set(scope.GetContext(), ToV8(&scope, 2), ToV8(&scope, "z"))
-            .ToChecked());
     v8::Local<v8::Array> v8_string_array_array =
-        v8::Array::New(scope.GetIsolate(), 2);
-    EXPECT_TRUE(v8_string_array_array
-                    ->Set(scope.GetContext(), ToV8(&scope, 0), v8_string_array1)
-                    .ToChecked());
-    EXPECT_TRUE(v8_string_array_array
-                    ->Set(scope.GetContext(), ToV8(&scope, 1), v8_string_array2)
-                    .ToChecked());
+        EvaluateScriptForArray(scope, "[['foo', 'bar'], ['x', 'y', 'z']]");
 
     NonThrowableExceptionState exception_state;
     Vector<Vector<String>> string_vector_vector =
@@ -373,27 +288,18 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
     EXPECT_EQ("z", string_vector_vector[1][2]);
   }
   {
-    v8::Local<v8::String> script_code =
-        ToV8(&scope,
-             "let arr = [1, 2, 3];"
-             "let iterations = ["
-             "  {done: false, value: 8},"
-             "  {done: false, value: 5},"
-             "  {done: true}"
-             "];"
-             "arr[Symbol.iterator] = function() {"
-             "  let i = 0;"
-             "  return {next: () => iterations[i++]};"
-             "}; arr")
-            .As<v8::String>();
-    v8::MicrotasksScope microtasks(scope.GetIsolate(),
-                                   v8::MicrotasksScope::kDoNotRunMicrotasks);
-    v8::Local<v8::Value> v8_array =
-        v8::Script::Compile(scope.GetContext(), script_code)
-            .ToLocalChecked()
-            ->Run(scope.GetContext())
-            .ToLocalChecked();
-    EXPECT_TRUE(v8_array->IsArray());
+    v8::Local<v8::Array> v8_array =
+        EvaluateScriptForArray(scope,
+                               "let arr = [1, 2, 3];"
+                               "let iterations = ["
+                               "  {done: false, value: 8},"
+                               "  {done: false, value: 5},"
+                               "  {done: true}"
+                               "];"
+                               "arr[Symbol.iterator] = function() {"
+                               "  let i = 0;"
+                               "  return {next: () => iterations[i++]};"
+                               "}; arr");
 
     NonThrowableExceptionState exception_state;
     const auto& sequence = NativeValueTraits<IDLSequence<IDLByte>>::NativeValue(
@@ -401,28 +307,19 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
     EXPECT_EQ(Vector<int8_t>({1, 2, 3}), sequence);
   }
   {
-    v8::Local<v8::String> script_code =
-        ToV8(&scope,
-             "let obj = {"
-             "  iterations: ["
-             "    {done: false, value: 55},"
-             "    {done: false, value: 0},"
-             "    {done: true, value: 99}"
-             "  ],"
-             "  [Symbol.iterator]() {"
-             "    let i = 0;"
-             "    return {next: () => this.iterations[i++]};"
-             "  }"
-             "}; obj")
-            .As<v8::String>();
-    v8::MicrotasksScope microtasks(scope.GetIsolate(),
-                                   v8::MicrotasksScope::kDoNotRunMicrotasks);
-    v8::Local<v8::Value> v8_object =
-        v8::Script::Compile(scope.GetContext(), script_code)
-            .ToLocalChecked()
-            ->Run(scope.GetContext())
-            .ToLocalChecked();
-    EXPECT_TRUE(v8_object->IsObject());
+    v8::Local<v8::Object> v8_object =
+        EvaluateScriptForObject(scope,
+                                "let obj = {"
+                                "  iterations: ["
+                                "    {done: false, value: 55},"
+                                "    {done: false, value: 0},"
+                                "    {done: true, value: 99}"
+                                "  ],"
+                                "  [Symbol.iterator]() {"
+                                "    let i = 0;"
+                                "    return {next: () => this.iterations[i++]};"
+                                "  }"
+                                "}; obj");
 
     NonThrowableExceptionState exception_state;
     const auto& byte_sequence =

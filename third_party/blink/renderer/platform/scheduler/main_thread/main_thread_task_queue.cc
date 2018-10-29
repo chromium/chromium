@@ -55,6 +55,10 @@ const char* MainThreadTaskQueue::NameForQueueType(
       return "cleanup_tq";
     case MainThreadTaskQueue::QueueType::kOther:
       return "other_tq";
+    case MainThreadTaskQueue::QueueType::kWebSchedulingUserInteraction:
+      return "web_scheduling_user_interaction_tq";
+    case MainThreadTaskQueue::QueueType::kWebSchedulingBestEffort:
+      return "web_scheduling_background_tq";
     case MainThreadTaskQueue::QueueType::kCount:
       NOTREACHED();
       return nullptr;
@@ -82,6 +86,8 @@ MainThreadTaskQueue::QueueClass MainThreadTaskQueue::QueueClassForQueueType(
     case QueueType::kFrameDeferrable:
     case QueueType::kFramePausable:
     case QueueType::kFrameUnpausable:
+    case QueueType::kWebSchedulingUserInteraction:
+    case QueueType::kWebSchedulingBestEffort:
       return QueueClass::kTimer;
     case QueueType::kCompositor:
     case QueueType::kInput:
@@ -109,7 +115,7 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       freeze_when_keep_active_(params.freeze_when_keep_active),
       main_thread_scheduler_(main_thread_scheduler),
       frame_scheduler_(params.frame_scheduler) {
-  if (GetTaskQueueImpl()) {
+  if (GetTaskQueueImpl() && spec.should_notify_observers) {
     // TaskQueueImpl may be null for tests.
     // TODO(scheduler-dev): Consider mapping directly to
     // MainThreadSchedulerImpl::OnTaskStarted/Completed. At the moment this
@@ -125,14 +131,14 @@ MainThreadTaskQueue::MainThreadTaskQueue(
 MainThreadTaskQueue::~MainThreadTaskQueue() = default;
 
 void MainThreadTaskQueue::OnTaskStarted(
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   if (main_thread_scheduler_)
     main_thread_scheduler_->OnTaskStarted(this, task, task_timing);
 }
 
 void MainThreadTaskQueue::OnTaskCompleted(
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   if (main_thread_scheduler_) {
     main_thread_scheduler_->OnTaskCompleted(this, task, task_timing);

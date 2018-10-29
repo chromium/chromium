@@ -349,7 +349,7 @@ void ResolveLanguageListInThreadPool(
         language_switch_result,
     const scoped_refptr<base::TaskRunner> task_runner,
     const UILanguageListResolvedCallback& resolved_callback) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   std::string selected_language;
   if (!language_switch_result) {

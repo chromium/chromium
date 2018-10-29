@@ -1,0 +1,94 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='outer'",
+      "bounds": [402, 302]
+    },
+    {
+      "name": "Scrolling Layer",
+      "position": [1, 1],
+      "bounds": [400, 300],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [1, 1],
+      "bounds": [400, 602],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='inner'",
+      "position": [1, 501],
+      "bounds": [102, 102],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Layer",
+      "position": [2, 502],
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [2, 502],
+      "bounds": [100, 500],
+      "transform": 1
+    },
+    {
+      "name": "Overflow Controls Host Layer",
+      "position": [1, 501],
+      "bounds": [102, 102],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [95, 502],
+      "bounds": [7, 100],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "Overflow Controls Host Layer",
+      "bounds": [402, 302],
+      "drawsContent": false
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [394, 1],
+      "bounds": [7, 300],
+      "drawsContent": false
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -302, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    }
+  ]
+}
+

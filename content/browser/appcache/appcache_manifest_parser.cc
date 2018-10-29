@@ -71,7 +71,7 @@ constexpr bool IsTokenSeparator(char character) {
 }
 
 // Removes the characters at the beginning of the string up to a newline.
-constexpr base::StringPiece TrimToFirstNewLine(base::StringPiece data) {
+base::StringPiece TrimToFirstNewLine(base::StringPiece data) {
   size_t skip = 0;
   while (skip < data.length() && !IsNewLine(data[skip]))
     ++skip;
@@ -79,7 +79,7 @@ constexpr base::StringPiece TrimToFirstNewLine(base::StringPiece data) {
 }
 
 // Removes whitespace characters at the beginning of the string.
-constexpr base::StringPiece TrimStartingWhiteSpace(base::StringPiece data) {
+base::StringPiece TrimStartingWhiteSpace(base::StringPiece data) {
   size_t skip = 0;
   while (skip < data.length() && IsWhiteSpace(data[skip]))
     ++skip;
@@ -87,7 +87,7 @@ constexpr base::StringPiece TrimStartingWhiteSpace(base::StringPiece data) {
 }
 
 // Removes whitespace characters at the end of the string.
-constexpr base::StringPiece TrimTrailingWhiteSpace(base::StringPiece data) {
+base::StringPiece TrimTrailingWhiteSpace(base::StringPiece data) {
   size_t length = data.size();
 
   while (length != 0) {
@@ -104,7 +104,7 @@ constexpr base::StringPiece TrimTrailingWhiteSpace(base::StringPiece data) {
 //
 // Returns the first line, which is guaranteed not to include a newline, and the
 // rest of the string, which may be empty.
-constexpr std::pair<base::StringPiece, base::StringPiece> SplitOnNewLine(
+std::pair<base::StringPiece, base::StringPiece> SplitOnNewLine(
     base::StringPiece data) {
   size_t split = 0;
   while (split < data.length() && !IsNewLine(data[split]))

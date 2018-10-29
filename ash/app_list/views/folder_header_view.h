@@ -23,7 +23,7 @@ namespace test {
 class FolderHeaderViewTest;
 }
 
-// FolderHeaderView contains a back button and an editable folder name field.
+// FolderHeaderView contains an editable folder name field.
 class APP_LIST_EXPORT FolderHeaderView : public views::View,
                                          public views::TextfieldController,
                                          public AppListItemObserver {

@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
+#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
+#include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
@@ -97,7 +99,7 @@ TestingBrowserProcess::TestingBrowserProcess()
   extensions_browser_client_.reset(
       new extensions::ChromeExtensionsBrowserClient);
   extensions_browser_client_->AddAPIProvider(
-      std::make_unique<apps::ChromeAppsBrowserAPIProvider>());
+      std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif
@@ -365,8 +367,8 @@ const std::string& TestingBrowserProcess::GetApplicationLocale() {
 }
 
 void TestingBrowserProcess::SetApplicationLocale(
-    const std::string& app_locale) {
-  app_locale_ = app_locale;
+    const std::string& actual_locale) {
+  app_locale_ = actual_locale;
 }
 
 DownloadStatusUpdater* TestingBrowserProcess::download_status_updater() {
@@ -374,7 +376,9 @@ DownloadStatusUpdater* TestingBrowserProcess::download_status_updater() {
 }
 
 DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
-  return nullptr;
+  if (!download_request_limiter_)
+    download_request_limiter_ = base::MakeRefCounted<DownloadRequestLimiter>();
+  return download_request_limiter_.get();
 }
 
 net_log::ChromeNetLog* TestingBrowserProcess::net_log() {
@@ -445,6 +449,11 @@ TestingBrowserProcess::CachedDefaultWebClientState() {
 
 prefs::InProcessPrefServiceFactory*
 TestingBrowserProcess::pref_service_factory() const {
+  return nullptr;
+}
+
+data_use_measurement::ChromeDataUseMeasurement*
+TestingBrowserProcess::data_use_measurement() {
   return nullptr;
 }
 

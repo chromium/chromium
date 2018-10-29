@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/consent_bump/consent_bump_option_button.h"
 
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

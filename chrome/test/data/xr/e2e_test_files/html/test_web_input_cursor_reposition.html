@@ -1,0 +1,59 @@
+<!doctype html>
+<!-- Used to test that the cursor can be repositioned while inputting text. -->
+<html>
+  <head>
+    <!-- This isn't strictly necessary for this test, but without it, text
+         selection in text boxes doesn't work. We want it to work so we can
+         catch cases of repositioning erroneously selecting text. -->
+    <meta name='viewport' content='width=device-width'>
+  </head>
+  <body>
+    <script src="../../../../../../third_party/WebKit/LayoutTests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <input id="textfield" type="text" style="width:100%" oninput="finishJavaScriptStep()" onclick="finishJavaScriptStep()"></input>
+  </body>
+  <script>
+    var t = async_test("Cursor can be repositioned for web text input");
+
+    function stepVerifyInitialString(expectedString) {
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString, expectedString,
+            "Initial text input did not work");
+      });
+      finishJavaScriptStep();
+    }
+
+    function stepVerifyDeletedString(expectedString) {
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString, expectedString,
+            "Text deletion at repositioned cursor did not work");
+      });
+      finishJavaScriptStep();
+    }
+
+    function stepVerifyInsertedString(baseString, modifiedCharacter) {
+      // The actual and given base string should only differ by the single
+      // given character.
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString.length, baseString.length,
+            "Actual and base string lengths differ");
+        let foundModifiedCharacter = false;
+        for (let i = 0; i < baseString.length; i++) {
+          if (baseString.charAt(i) != actualString.charAt(i)) {
+            assert_false(foundModifiedCharacter,
+                "Found multiple modified characters");
+            assert_equals(actualString.charAt(i), modifiedCharacter,
+                "Found modified character, but did not match expected character");
+            foundModifiedCharacter = true;
+          }
+        }
+        assert_true(foundModifiedCharacter,
+            "Did not find modified character in string");
+      });
+      t.done();
+    }
+  </script>
+</html>

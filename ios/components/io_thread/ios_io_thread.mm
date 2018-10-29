@@ -27,7 +27,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/net_log/chrome_net_log.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/ios/proxy_service_factory.h"
@@ -53,6 +52,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_server_properties_impl.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -174,11 +174,8 @@ IOSIOThread::Globals::~Globals() {}
 
 // |local_state| is passed in explicitly in order to (1) reduce implicit
 // dependencies and (2) make IOSIOThread more flexible for testing.
-IOSIOThread::IOSIOThread(PrefService* local_state,
-                         net_log::ChromeNetLog* net_log)
-    : net_log_(net_log),
-      globals_(nullptr),
-      weak_factory_(this) {
+IOSIOThread::IOSIOThread(PrefService* local_state, net::NetLog* net_log)
+    : net_log_(net_log), globals_(nullptr), weak_factory_(this) {
   pref_proxy_config_tracker_ =
       ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
           local_state);
@@ -208,7 +205,7 @@ void IOSIOThread::SetGlobalsForTesting(Globals* globals) {
   globals_ = globals;
 }
 
-net_log::ChromeNetLog* IOSIOThread::net_log() {
+net::NetLog* IOSIOThread::net_log() {
   return net_log_;
 }
 
@@ -239,7 +236,7 @@ void IOSIOThread::Init() {
   DCHECK(!globals_);
   globals_ = new Globals;
 
-  // Add an observer that will emit network change events to the ChromeNetLog.
+  // Add an observer that will emit network change events to the NetLog.
   // Assuming NetworkChangeNotifier dispatches in FIFO order, we should be
   // logging the network change before other IO thread consumers respond to it.
   network_change_observer_ =
@@ -306,7 +303,7 @@ void IOSIOThread::CleanUp() {
   // Release objects that the net::URLRequestContext could have been pointing
   // to.
 
-  // This must be reset before the ChromeNetLog is destroyed.
+  // This must be reset before the NetLog is destroyed.
   network_change_observer_.reset();
 
   system_proxy_config_service_.reset();

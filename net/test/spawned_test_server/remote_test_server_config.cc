@@ -29,7 +29,7 @@ base::FilePath GetTestServerConfigFilePath() {
 #if defined(OS_ANDROID)
   base::PathService::Get(base::DIR_ANDROID_EXTERNAL_STORAGE, &dir);
 #elif defined(OS_FUCHSIA)
-  dir = base::FilePath("/data");
+  dir = base::FilePath("/test-shared");
 #else
   base::PathService::Get(base::DIR_TEMP, &dir);
 #endif

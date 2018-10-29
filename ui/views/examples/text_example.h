@@ -19,8 +19,6 @@ class GridLayout;
 
 namespace examples {
 
-class ExampleComboboxModel;
-
 class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
                                           public ButtonListener,
                                           public ComboboxListener {
@@ -77,10 +75,6 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
 
   // Check box to enable/disable underline style.
   Checkbox* underline_checkbox_;
-
-  // We create a model for each of the combobox, so we need to keep them
-  // around until destruction time.
-  std::vector<std::unique_ptr<ExampleComboboxModel>> example_combobox_model_;
 
   DISALLOW_COPY_AND_ASSIGN(TextExample);
 };

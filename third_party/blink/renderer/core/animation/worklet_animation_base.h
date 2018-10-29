@@ -26,6 +26,7 @@ class CORE_EXPORT WorkletAnimationBase : public ScriptWrappable {
   // Updates the animation on the compositor side to reflect the main thread
   // state.
   virtual void UpdateCompositingState() = 0;
+  virtual void InvalidateCompositingState() = 0;
 
   virtual Document* GetDocument() const = 0;
   virtual KeyframeEffect* GetEffect() const = 0;

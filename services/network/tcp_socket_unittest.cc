@@ -466,6 +466,48 @@ TEST_F(TCPSocketTest, ServerReceivesMultipleAccept) {
   }
 }
 
+// Check that accepted sockets can't be upgraded to TLS, since UpgradeToTLS only
+// supports the client side of a TLS handshake.
+TEST_F(TCPSocketTest, AcceptedSocketCantUpgradeToTLS) {
+  TestServer server;
+  server.Start(1 /* backlog */);
+
+  net::TestCompletionCallback callback;
+  server.AcceptOneConnection(callback.callback());
+
+  mojom::TCPConnectedSocketPtr client_socket;
+  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
+  EXPECT_EQ(net::OK,
+            CreateTCPConnectedSocketSync(
+                mojo::MakeRequest(&client_socket), nullptr /*observer*/,
+                base::nullopt /*local_addr*/, server.server_addr(),
+                &client_socket_receive_handle, &client_socket_send_handle));
+
+  EXPECT_EQ(net::OK, callback.WaitForResult());
+
+  // Consumers generally close these before attempting to upgrade the socket,
+  // since TCPConnectedSocket waits for the pipes to close before upgrading the
+  // connection.
+  client_socket_receive_handle.reset();
+  client_socket_send_handle.reset();
+
+  base::RunLoop run_loop;
+  mojom::TLSClientSocketPtr tls_client_socket;
+  server.most_recent_connected_socket()->UpgradeToTLS(
+      net::HostPortPair("foopy", 443), nullptr /* options */,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      mojo::MakeRequest(&tls_client_socket), nullptr /* observer */,
+      base::BindLambdaForTesting(
+          [&](int net_error,
+              mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
+              mojo::ScopedDataPipeProducerHandle send_pipe_handle,
+              const base::Optional<net::SSLInfo>& ssl_info) {
+            EXPECT_EQ(net::ERR_NOT_IMPLEMENTED, net_error);
+            run_loop.Quit();
+          }));
+}
+
 // Tests that if a socket is closed, the other side can observe that the pipes
 // are broken.
 TEST_F(TCPSocketTest, SocketClosed) {

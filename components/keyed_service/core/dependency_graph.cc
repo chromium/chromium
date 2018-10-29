@@ -50,9 +50,9 @@ void DependencyGraph::RemoveNode(DependencyNode* node) {
   base::Erase(all_nodes_, node);
 
   // Remove all dependency edges that contain this node.
-  EdgeMap::iterator it = edges_.begin();
+  auto it = edges_.begin();
   while (it != edges_.end()) {
-    EdgeMap::iterator temp = it;
+    auto temp = it;
     ++it;
 
     if (temp->first == node || temp->second == node)
@@ -106,15 +106,15 @@ bool DependencyGraph::BuildConstructionOrder() {
 
     std::pair<EdgeMap::iterator, EdgeMap::iterator> range =
         edges.equal_range(node);
-    EdgeMap::iterator it = range.first;
+    auto it = range.first;
     while (it != range.second) {
       DependencyNode* dest = it->second;
-      EdgeMap::iterator temp = it;
+      auto temp = it;
       it++;
       edges.erase(temp);
 
       bool has_incoming_edges = false;
-      for (EdgeMap::iterator jt = edges.begin(); jt != edges.end(); ++jt) {
+      for (auto jt = edges.begin(); jt != edges.end(); ++jt) {
         if (jt->second == dest) {
           has_incoming_edges = true;
           break;

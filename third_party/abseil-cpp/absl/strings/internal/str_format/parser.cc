@@ -81,19 +81,27 @@ static constexpr std::int8_t kIds[] = {
 template <bool is_positional>
 bool ConsumeConversion(string_view *src, UnboundConversion *conv,
                        int *next_arg) {
-  const char *pos = src->begin();
-  const char *const end = src->end();
+  const char *pos = src->data();
+  const char *const end = pos + src->size();
   char c;
-  // Read the next char into `c` and update `pos`. Reads '\0' if at end.
-  const auto get_char = [&] { c = pos == end ? '\0' : *pos++; };
+  // Read the next char into `c` and update `pos`. Returns false if there are
+  // no more chars to read.
+#define ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR()        \
+  do {                                                \
+    if (ABSL_PREDICT_FALSE(pos == end)) return false; \
+    c = *pos++;                                       \
+  } while (0)
 
   const auto parse_digits = [&] {
     int digits = c - '0';
-    // We do not want to overflow `digits` so we consume at most digits10-1
+    // We do not want to overflow `digits` so we consume at most digits10
     // digits. If there are more digits the parsing will fail later on when the
     // digit doesn't match the expected characters.
-    int num_digits = std::numeric_limits<int>::digits10 - 2;
-    for (get_char(); num_digits && std::isdigit(c); get_char()) {
+    int num_digits = std::numeric_limits<int>::digits10;
+    for (;;) {
+      if (ABSL_PREDICT_FALSE(pos == end || !num_digits)) break;
+      c = *pos++;
+      if (!std::isdigit(c)) break;
       --num_digits;
       digits = 10 * digits + c - '0';
     }
@@ -101,14 +109,14 @@ bool ConsumeConversion(string_view *src, UnboundConversion *conv,
   };
 
   if (is_positional) {
-    get_char();
-    if (c < '1' || c > '9') return false;
+    ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
+    if (ABSL_PREDICT_FALSE(c < '1' || c > '9')) return false;
     conv->arg_position = parse_digits();
     assert(conv->arg_position > 0);
-    if (c != '$') return false;
+    if (ABSL_PREDICT_FALSE(c != '$')) return false;
   }
 
-  get_char();
+  ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
 
   // We should start with the basic flag on.
   assert(conv->flags.basic);
@@ -119,32 +127,39 @@ bool ConsumeConversion(string_view *src, UnboundConversion *conv,
   if (c < 'A') {
     conv->flags.basic = false;
 
-    for (; c <= '0'; get_char()) {
+    for (; c <= '0';) {
+      // FIXME: We might be able to speed this up reusing the kIds lookup table
+      // from above.
+      // It might require changing Flags to be a plain integer where we can |= a
+      // value.
       switch (c) {
         case '-':
           conv->flags.left = true;
-          continue;
+          break;
         case '+':
           conv->flags.show_pos = true;
-          continue;
+          break;
         case ' ':
           conv->flags.sign_col = true;
-          continue;
+          break;
         case '#':
           conv->flags.alt = true;
-          continue;
+          break;
         case '0':
           conv->flags.zero = true;
-          continue;
+          break;
+        default:
+          goto flags_done;
       }
-      break;
+      ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
     }
+flags_done:
 
     if (c <= '9') {
       if (c >= '0') {
         int maybe_width = parse_digits();
         if (!is_positional && c == '$') {
-          if (*next_arg != 0) return false;
+          if (ABSL_PREDICT_FALSE(*next_arg != 0)) return false;
           // Positional conversion.
           *next_arg = -1;
           conv->flags = Flags();
@@ -153,12 +168,12 @@ bool ConsumeConversion(string_view *src, UnboundConversion *conv,
         }
         conv->width.set_value(maybe_width);
       } else if (c == '*') {
-        get_char();
+        ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
         if (is_positional) {
-          if (c < '1' || c > '9') return false;
+          if (ABSL_PREDICT_FALSE(c < '1' || c > '9')) return false;
           conv->width.set_from_arg(parse_digits());
-          if (c != '$') return false;
-          get_char();
+          if (ABSL_PREDICT_FALSE(c != '$')) return false;
+          ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
         } else {
           conv->width.set_from_arg(++*next_arg);
         }
@@ -166,16 +181,16 @@ bool ConsumeConversion(string_view *src, UnboundConversion *conv,
     }
 
     if (c == '.') {
-      get_char();
+      ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
       if (std::isdigit(c)) {
         conv->precision.set_value(parse_digits());
       } else if (c == '*') {
-        get_char();
+        ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
         if (is_positional) {
-          if (c < '1' || c > '9') return false;
+          if (ABSL_PREDICT_FALSE(c < '1' || c > '9')) return false;
           conv->precision.set_from_arg(parse_digits());
           if (c != '$') return false;
-          get_char();
+          ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
         } else {
           conv->precision.set_from_arg(++*next_arg);
         }
@@ -188,23 +203,23 @@ bool ConsumeConversion(string_view *src, UnboundConversion *conv,
   std::int8_t id = kIds[static_cast<unsigned char>(c)];
 
   if (id < 0) {
-    if (id == none) return false;
+    if (ABSL_PREDICT_FALSE(id == none)) return false;
 
     // It is a length modifier.
     using str_format_internal::LengthMod;
     LengthMod length_mod = LengthMod::FromId(static_cast<LM>(~id));
-    get_char();
+    ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
     if (c == 'h' && length_mod.id() == LengthMod::h) {
       conv->length_mod = LengthMod::FromId(LengthMod::hh);
-      get_char();
+      ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
     } else if (c == 'l' && length_mod.id() == LengthMod::l) {
       conv->length_mod = LengthMod::FromId(LengthMod::ll);
-      get_char();
+      ABSL_FORMAT_PARSER_INTERNAL_GET_CHAR();
     } else {
       conv->length_mod = length_mod;
     }
     id = kIds[static_cast<unsigned char>(c)];
-    if (id < 0) return false;
+    if (ABSL_PREDICT_FALSE(id < 0)) return false;
   }
 
   assert(CheckFastPathSetting(*conv));

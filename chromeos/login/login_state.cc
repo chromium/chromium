@@ -110,6 +110,10 @@ bool LoginState::IsKioskApp() const {
   return logged_in_user_type_ == LOGGED_IN_USER_KIOSK_APP;
 }
 
+bool LoginState::IsChildUser() const {
+  return logged_in_user_type_ == LOGGED_IN_USER_CHILD;
+}
+
 bool LoginState::UserHasNetworkProfile() const {
   if (!IsUserLoggedIn())
     return false;
@@ -119,12 +123,14 @@ bool LoginState::UserHasNetworkProfile() const {
 bool LoginState::IsUserAuthenticated() const {
   return logged_in_user_type_ == LOGGED_IN_USER_REGULAR ||
          logged_in_user_type_ == LOGGED_IN_USER_OWNER ||
-         logged_in_user_type_ == LOGGED_IN_USER_SUPERVISED;
+         logged_in_user_type_ == LOGGED_IN_USER_SUPERVISED ||
+         logged_in_user_type_ == LOGGED_IN_USER_CHILD;
 }
 
 bool LoginState::IsUserGaiaAuthenticated() const {
   return logged_in_user_type_ == LOGGED_IN_USER_REGULAR ||
-         logged_in_user_type_ == LOGGED_IN_USER_OWNER;
+         logged_in_user_type_ == LOGGED_IN_USER_OWNER ||
+         logged_in_user_type_ == LOGGED_IN_USER_CHILD;
 }
 
 // Private methods

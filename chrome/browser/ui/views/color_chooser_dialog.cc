@@ -6,10 +6,14 @@
 
 #include <commdlg.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/views/color_chooser/color_chooser_listener.h"
@@ -20,14 +24,6 @@ using content::BrowserThread;
 // static
 COLORREF ColorChooserDialog::g_custom_colors[16];
 
-ColorChooserDialog::ExecuteOpenParams::ExecuteOpenParams(SkColor color,
-                                                         RunState run_state,
-                                                         HWND owner)
-    : color(color),
-      run_state(run_state),
-      owner(owner) {
-}
-
 ColorChooserDialog::ColorChooserDialog(views::ColorChooserListener* listener,
                                        SkColor initial_color,
                                        gfx::NativeWindow owning_window)
@@ -35,11 +31,14 @@ ColorChooserDialog::ColorChooserDialog(views::ColorChooserListener* listener,
   DCHECK(listener_);
   CopyCustomColors(g_custom_colors, custom_colors_);
   HWND owning_hwnd = views::HWNDForNativeWindow(owning_window);
-  ExecuteOpenParams execute_params(initial_color, BeginRun(owning_hwnd),
-                                   owning_hwnd);
-  execute_params.run_state.dialog_thread->task_runner()->PostTask(
-      FROM_HERE,
-      base::Bind(&ColorChooserDialog::ExecuteOpen, this, execute_params));
+
+  std::unique_ptr<RunState> run_state = BeginRun(owning_hwnd);
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      run_state->dialog_task_runner;
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&ColorChooserDialog::ExecuteOpen, this,
+                                       initial_color, std::move(run_state)));
 }
 
 bool ColorChooserDialog::IsRunning(gfx::NativeWindow owning_window) const {
@@ -56,24 +55,27 @@ void ColorChooserDialog::ListenerDestroyed() {
 ColorChooserDialog::~ColorChooserDialog() {
 }
 
-void ColorChooserDialog::ExecuteOpen(const ExecuteOpenParams& params) {
+void ColorChooserDialog::ExecuteOpen(SkColor color,
+                                     std::unique_ptr<RunState> run_state) {
   CHOOSECOLOR cc;
   cc.lStructSize = sizeof(CHOOSECOLOR);
-  cc.hwndOwner = params.owner;
-  cc.rgbResult = skia::SkColorToCOLORREF(params.color);
+  cc.hwndOwner = run_state->owner;
+  cc.rgbResult = skia::SkColorToCOLORREF(color);
   cc.lpCustColors = custom_colors_;
   cc.Flags = CC_ANYCOLOR | CC_FULLOPEN | CC_RGBINIT;
   bool success = !!ChooseColor(&cc);
   DisableOwner(cc.hwndOwner);
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-      base::Bind(&ColorChooserDialog::DidCloseDialog, this, success,
-                 skia::COLORREFToSkColor(cc.rgbResult), params.run_state));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(&ColorChooserDialog::DidCloseDialog, this, success,
+                     skia::COLORREFToSkColor(cc.rgbResult),
+                     std::move(run_state)));
 }
 
 void ColorChooserDialog::DidCloseDialog(bool chose_color,
                                         SkColor color,
-                                        RunState run_state) {
-  EndRun(run_state);
+                                        std::unique_ptr<RunState> run_state) {
+  EndRun(std::move(run_state));
   CopyCustomColors(custom_colors_, g_custom_colors);
   if (listener_) {
     if (chose_color)

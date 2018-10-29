@@ -9,6 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/chromeos_features.h"
 #include "chromeos/components/tether/connect_tethering_operation.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/fake_active_host.h"
@@ -144,6 +146,8 @@ class TetherConnectorImplTest : public NetworkStateTest {
   ~TetherConnectorImplTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(features::kMultiDeviceApi);
+
     DBusThreadManager::Initialize();
     NetworkStateTest::SetUp();
     network_state_handler()->SetTetherTechnologyState(
@@ -350,6 +354,7 @@ class TetherConnectorImplTest : public NetworkStateTest {
 
   std::string result_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TetherConnectorImpl> tether_connector_;
 

@@ -435,8 +435,7 @@ TaskController.prototype.updateContextMenuTaskItems_ = function(
       this.ui_.fileContextMenu.defaultTaskMenuItem.style.backgroundImage = '';
     }
 
-    if (defaultTask.taskId === FileTasks.ZIP_UNPACKER_TASK_ID ||
-        defaultTask.taskId === FileTasks.ZIP_ARCHIVER_UNZIP_TASK_ID)
+    if (defaultTask.taskId === FileTasks.ZIP_ARCHIVER_UNZIP_TASK_ID)
       this.ui_.fileContextMenu.defaultTaskMenuItem.label = str('TASK_OPEN');
     else
       this.ui_.fileContextMenu.defaultTaskMenuItem.label = defaultTask.title;

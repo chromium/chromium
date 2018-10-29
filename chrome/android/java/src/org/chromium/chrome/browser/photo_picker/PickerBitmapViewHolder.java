@@ -10,8 +10,8 @@ import android.os.SystemClock;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.TextUtils;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 
 import java.util.List;

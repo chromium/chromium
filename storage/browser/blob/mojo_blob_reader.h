@@ -97,8 +97,10 @@ class STORAGE_EXPORT MojoBlobReader {
   void StartReading();
   void ReadMore();
   void DidRead(bool completed_synchronously, int num_bytes);
-  void OnResponseBodyStreamClosed(MojoResult result);
-  void OnResponseBodyStreamReady(MojoResult result);
+  void OnResponseBodyStreamClosed(MojoResult result,
+                                  const mojo::HandleSignalsState& state);
+  void OnResponseBodyStreamReady(MojoResult result,
+                                 const mojo::HandleSignalsState& state);
 
   const std::unique_ptr<Delegate> delegate_;
 

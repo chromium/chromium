@@ -20,6 +20,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/cronet/cronet_buildflags.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/cronet_prefs_manager.h"
 #include "components/cronet/histogram_manager.h"
@@ -440,8 +441,12 @@ std::string CronetEnvironment::user_agent() {
 
 std::vector<uint8_t> CronetEnvironment::GetHistogramDeltas() {
   std::vector<uint8_t> data;
+#if BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
+  NOTREACHED() << "Histogram support is disabled";
+#else   // BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
   if (!HistogramManager::GetInstance()->GetDeltas(&data))
     return std::vector<uint8_t>();
+#endif  // BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
   return data;
 }
 

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
@@ -90,7 +91,7 @@ public class ShareMenuActionHandler {
         String url = currentTab.getUrl();
         if (TextUtils.isEmpty(url)) return false;
         if (currentTab.isShowingErrorPage() || currentTab.isShowingInterstitialPage()
-                || currentTab.isShowingSadTab()) {
+                || SadTab.isShowing(currentTab)) {
             return false;
         }
         return true;

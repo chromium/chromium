@@ -255,7 +255,7 @@ void TextInput::AttachInputMethod() {
 
   if (!keyboard_controller_ && keyboard::KeyboardController::HasInstance()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled()) {
+    if (keyboard_controller->IsEnabled()) {
       keyboard_controller_ = keyboard_controller;
       keyboard_controller_->AddObserver(this);
     }

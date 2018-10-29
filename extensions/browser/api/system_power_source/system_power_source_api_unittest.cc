@@ -4,6 +4,7 @@
 
 #include <limits>
 
+#include "base/bind.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_power_manager_client.h"
 #include "extensions/browser/api/system_power_source/system_power_source_api.h"
@@ -341,7 +342,8 @@ TEST_F(SystemPowerSourceApiUnitTest, GetPowerSourceRounding) {
 TEST_F(SystemPowerSourceApiUnitTest, OnPowerChangedEvent) {
   TestEventRouter* event_router = static_cast<TestEventRouter*>(
       EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser_context(), &TestEventRouterFactoryFunction));
+          browser_context(),
+          base::BindRepeating(&TestEventRouterFactoryFunction)));
   SystemPowerSourceAPI system_power_source_api(browser_context());
 
   power_manager_client_->UpdatePowerProperties(MakePowerSupplyProperties(
@@ -365,7 +367,8 @@ TEST_F(SystemPowerSourceApiUnitTest, OnPowerChangedEvent) {
 TEST_F(SystemPowerSourceApiUnitTest, RequestStatusUpdate) {
   TestEventRouter* event_router = static_cast<TestEventRouter*>(
       EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-          browser_context(), &TestEventRouterFactoryFunction));
+          browser_context(),
+          base::BindRepeating(&TestEventRouterFactoryFunction)));
   SystemPowerSourceAPI system_power_source_api(browser_context());
 
   power_manager_client_->UpdatePowerProperties(MakePowerSupplyProperties(

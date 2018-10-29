@@ -6,6 +6,7 @@
 #define SERVICES_IDENTITY_PUBLIC_CPP_SCOPE_SET_H_
 
 #include <set>
+#include <string>
 
 namespace identity {
 

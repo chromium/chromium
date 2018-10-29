@@ -20,7 +20,7 @@ TEST(UserGestureIndicatorTest, InitialState) {
 
 TEST(UserGestureIndicatorTest, ConstructedWithNewUserGesture) {
   std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-      Frame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
 
   EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
   EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
@@ -30,7 +30,7 @@ TEST(UserGestureIndicatorTest, ConstructedWithNewUserGesture) {
 
 TEST(UserGestureIndicatorTest, ConstructedWithUserGesture) {
   std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-      Frame::NotifyUserActivation(nullptr);
+      LocalFrame::NotifyUserActivation(nullptr);
 
   EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
   EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
@@ -51,7 +51,7 @@ TEST(UserGestureIndicatorTest, ConstructedWithNoUserGesture) {
 TEST(UserGestureIndicatorTest, DestructUserGestureIndicator) {
   {
     std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-        Frame::NotifyUserActivation(nullptr);
+        LocalFrame::NotifyUserActivation(nullptr);
 
     EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
     EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
@@ -66,7 +66,7 @@ TEST(UserGestureIndicatorTest, DestructUserGestureIndicator) {
 TEST(UserGestureIndicatorTest, ScopedNewUserGestureIndicators) {
   // Root GestureIndicator and GestureToken.
   std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-      Frame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
 
   EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
   EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
@@ -74,7 +74,8 @@ TEST(UserGestureIndicatorTest, ScopedNewUserGestureIndicators) {
     // Construct inner UserGestureIndicator.
     // It should share GestureToken with the root indicator.
     std::unique_ptr<UserGestureIndicator> inner_user_gesture =
-        Frame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
+        LocalFrame::NotifyUserActivation(nullptr,
+                                         UserGestureToken::kNewGesture);
 
     EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
     EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
@@ -94,7 +95,7 @@ TEST(UserGestureIndicatorTest, ScopedNewUserGestureIndicators) {
 
 TEST(UserGestureIndicatorTest, MultipleGesturesWithTheSameToken) {
   std::unique_ptr<UserGestureIndicator> indicator =
-      Frame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
   EXPECT_TRUE(UserGestureIndicator::ProcessingUserGesture());
   EXPECT_NE(nullptr, UserGestureIndicator::CurrentToken());
   {
@@ -116,7 +117,7 @@ TEST(UserGestureIndicatorTest, Timeouts) {
   {
     // Token times out after 1 second.
     std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-        Frame::NotifyUserActivation(nullptr);
+        LocalFrame::NotifyUserActivation(nullptr);
     scoped_refptr<UserGestureToken> token = user_gesture_scope->CurrentToken();
     EXPECT_TRUE(token->HasGestures());
     clock.Advance(TimeDelta::FromSecondsD(0.75));
@@ -131,7 +132,7 @@ TEST(UserGestureIndicatorTest, Timeouts) {
 
     {
       std::unique_ptr<UserGestureIndicator> user_gesture_scope =
-          Frame::NotifyUserActivation(nullptr);
+          LocalFrame::NotifyUserActivation(nullptr);
       token = user_gesture_scope->CurrentToken();
       EXPECT_TRUE(token->HasGestures());
       clock.Advance(TimeDelta::FromSecondsD(0.75));

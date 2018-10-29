@@ -158,7 +158,7 @@ public class CachedMetrics {
     /** Caches a set of times histogram samples. */
     public static class TimesHistogramSample extends CachedMetric {
         private final List<Long> mSamples = new ArrayList<Long>();
-        private final TimeUnit mTimeUnit;
+        protected final TimeUnit mTimeUnit;
 
         public TimesHistogramSample(String histogramName, TimeUnit timeUnit) {
             super(histogramName);
@@ -177,7 +177,7 @@ public class CachedMetrics {
             }
         }
 
-        private void recordWithNative(long sample) {
+        protected void recordWithNative(long sample) {
             RecordHistogram.recordTimesHistogram(mName, sample, mTimeUnit);
         }
 
@@ -187,6 +187,21 @@ public class CachedMetrics {
                 recordWithNative(sample);
             }
             mSamples.clear();
+        }
+    }
+
+    /**
+     * Caches a set of times histogram samples, calls
+     * {@link RecordHistogram#recordMediumTimesHistogram(String, long, TimeUnit)}.
+     */
+    public static class MediumTimesHistogramSample extends TimesHistogramSample {
+        public MediumTimesHistogramSample(String histogramName, TimeUnit timeUnit) {
+            super(histogramName, timeUnit);
+        }
+
+        @Override
+        protected void recordWithNative(long sample) {
+            RecordHistogram.recordMediumTimesHistogram(mName, sample, mTimeUnit);
         }
     }
 

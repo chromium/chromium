@@ -76,6 +76,7 @@ void CmdSetImageLayout(VulkanCommandBuffer* command_buffer,
   DCHECK_NE(layout, old_layout);
   VkImageMemoryBarrier image_memory_barrier = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .pNext = nullptr,
       .srcAccessMask = GetAccessMask(old_layout),
       .dstAccessMask = GetAccessMask(layout),
       .oldLayout = old_layout,

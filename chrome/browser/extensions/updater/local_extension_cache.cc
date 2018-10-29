@@ -11,8 +11,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/sys_info.h"
+#include "base/task/post_task.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
@@ -276,13 +278,10 @@ void LocalExtensionCache::BackendCheckCacheStatus(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      base::Bind(&LocalExtensionCache::OnCacheStatusChecked,
-                 local_cache,
-                 exists,
-                 callback));
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::Bind(&LocalExtensionCache::OnCacheStatusChecked, local_cache,
+                 exists, callback));
 }
 
 void LocalExtensionCache::OnCacheStatusChecked(bool ready,
@@ -295,12 +294,10 @@ void LocalExtensionCache::OnCacheStatusChecked(bool ready,
   if (ready) {
     CheckCacheContents(callback);
   } else {
-    content::BrowserThread::PostDelayedTask(
-        content::BrowserThread::UI,
-        FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(&LocalExtensionCache::CheckCacheStatus,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   callback),
+                   weak_ptr_factory_.GetWeakPtr(), callback),
         cache_status_polling_delay_);
   }
 }
@@ -322,13 +319,10 @@ void LocalExtensionCache::BackendCheckCacheContents(
     const base::Closure& callback) {
   std::unique_ptr<CacheMap> cache_content(new CacheMap);
   BackendCheckCacheContentsInternal(cache_dir, cache_content.get());
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      base::Bind(&LocalExtensionCache::OnCacheContentsChecked,
-                 local_cache,
-                 base::Passed(&cache_content),
-                 callback));
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::Bind(&LocalExtensionCache::OnCacheContentsChecked, local_cache,
+                 base::Passed(&cache_content), callback));
 }
 
 // static
@@ -537,8 +531,8 @@ void LocalExtensionCache::BackendInstallCacheEntry(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&LocalExtensionCache::OnCacheEntryInstalled, local_cache, id,
                  CacheItemInfo(version, expected_hash, info.last_modified,
                                info.size, cached_crx_path),

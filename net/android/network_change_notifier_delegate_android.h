@@ -138,9 +138,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   // Converts a Java long[] into a NetworkMap. Expects long[] to contain
   // repeated instances of: NetworkHandle, ConnectionType
-  static void JavaLongArrayToNetworkMap(JNIEnv* env,
-                                        jlongArray long_array,
-                                        NetworkMap* network_map);
+  static void JavaLongArrayToNetworkMap(
+      JNIEnv* env,
+      const base::android::JavaRef<jlongArray>& long_array,
+      NetworkMap* network_map);
 
   // Setters that grab appropriate lock.
   void SetCurrentConnectionType(ConnectionType connection_type);

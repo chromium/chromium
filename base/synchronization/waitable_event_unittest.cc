@@ -91,9 +91,9 @@ TEST(WaitableEventTest, AutoInitiallySignaled) {
 
 TEST(WaitableEventTest, WaitManyShortcut) {
   WaitableEvent* ev[5];
-  for (unsigned i = 0; i < 5; ++i) {
-    ev[i] = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
-                              WaitableEvent::InitialState::NOT_SIGNALED);
+  for (auto*& i : ev) {
+    i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
+                          WaitableEvent::InitialState::NOT_SIGNALED);
   }
 
   ev[3]->Signal();
@@ -108,15 +108,15 @@ TEST(WaitableEventTest, WaitManyShortcut) {
   ev[0]->Signal();
   EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 0u);
 
-  for (unsigned i = 0; i < 5; ++i)
-    delete ev[i];
+  for (auto* i : ev)
+    delete i;
 }
 
 TEST(WaitableEventTest, WaitManyLeftToRight) {
   WaitableEvent* ev[5];
-  for (size_t i = 0; i < 5; ++i) {
-    ev[i] = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
-                              WaitableEvent::InitialState::NOT_SIGNALED);
+  for (auto*& i : ev) {
+    i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
+                          WaitableEvent::InitialState::NOT_SIGNALED);
   }
 
   // Test for consistent left-to-right return behavior across all permutations
@@ -144,8 +144,8 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
     EXPECT_EQ(4u, WaitableEvent::WaitMany(ev, 5));
   } while (std::next_permutation(ev, ev + 5));
 
-  for (size_t i = 0; i < 5; ++i)
-    delete ev[i];
+  for (auto* i : ev)
+    delete i;
 }
 
 class WaitableEventSignaler : public PlatformThread::Delegate {
@@ -186,9 +186,9 @@ TEST(WaitableEventTest, WaitAndDelete) {
 // without additional synchronization.
 TEST(WaitableEventTest, WaitMany) {
   WaitableEvent* ev[5];
-  for (unsigned i = 0; i < 5; ++i) {
-    ev[i] = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
-                              WaitableEvent::InitialState::NOT_SIGNALED);
+  for (auto*& i : ev) {
+    i = new WaitableEvent(WaitableEvent::ResetPolicy::AUTOMATIC,
+                          WaitableEvent::InitialState::NOT_SIGNALED);
   }
 
   WaitableEventSignaler signaler(TimeDelta::FromMilliseconds(10), ev[2]);
@@ -197,8 +197,8 @@ TEST(WaitableEventTest, WaitMany) {
 
   size_t index = WaitableEvent::WaitMany(ev, 5);
 
-  for (unsigned i = 0; i < 5; ++i)
-    delete ev[i];
+  for (auto* i : ev)
+    delete i;
 
   PlatformThread::Join(thread);
   EXPECT_EQ(2u, index);

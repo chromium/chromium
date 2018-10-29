@@ -24,10 +24,6 @@ namespace gfx {
 class Point;
 }
 
-namespace keyboard {
-class KeyboardController;
-}
-
 namespace ui {
 class SimpleMenuModel;
 class WindowTreeHost;
@@ -199,12 +195,6 @@ class ASH_EXPORT RootWindowController {
   // Returns the topmost window or one of its transient parents, if any of them
   // are in fullscreen mode.
   aura::Window* GetWindowForFullscreenMode();
-
-  // Activate virtual keyboard on current root window controller.
-  void ActivateKeyboard(keyboard::KeyboardController* keyboard_controller);
-
-  // Deactivate virtual keyboard on current root window controller.
-  void DeactivateKeyboard(keyboard::KeyboardController* keyboard_controller);
 
   // If touch exploration is enabled, update the touch exploration
   // controller so that synthesized touch events are anchored at this point.

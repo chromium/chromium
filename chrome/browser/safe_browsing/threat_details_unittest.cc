@@ -399,8 +399,8 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ThreatDetailsTest, ThreatSubResource) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kLandingURL), web_contents());
-  navigation->SetReferrer(
-      content::Referrer(GURL(kReferrerURL), blink::kWebReferrerPolicyDefault));
+  navigation->SetReferrer(content::Referrer(
+      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
   navigation->Commit();
 
   UnsafeResource resource;
@@ -447,8 +447,8 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
 TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kLandingURL), web_contents());
-  navigation->SetReferrer(
-      content::Referrer(GURL(kReferrerURL), blink::kWebReferrerPolicyDefault));
+  navigation->SetReferrer(content::Referrer(
+      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
   navigation->Commit();
 
   UnsafeResource resource;
@@ -1390,14 +1390,15 @@ TEST_F(ThreatDetailsTest, ThreatOnMainPageLoadBlocked) {
   // navigation entry.
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kUnrelatedURL), web_contents());
-  navigation->SetReferrer(content::Referrer(GURL(kUnrelatedReferrerURL),
-                                            blink::kWebReferrerPolicyDefault));
+  navigation->SetReferrer(content::Referrer(
+      GURL(kUnrelatedReferrerURL), network::mojom::ReferrerPolicy::kDefault));
   navigation->Commit();
 
   // Start a pending load with a referrer.
   controller().LoadURL(
       GURL(kLandingURL),
-      content::Referrer(GURL(kReferrerURL), blink::kWebReferrerPolicyDefault),
+      content::Referrer(GURL(kReferrerURL),
+                        network::mojom::ReferrerPolicy::kDefault),
       ui::PAGE_TRANSITION_TYPED, std::string());
 
   // Create UnsafeResource for the pending main page load.
@@ -1451,8 +1452,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   // Load and commit the landing URL with a referrer.
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL(kLandingURL), web_contents());
-  navigation->SetReferrer(
-      content::Referrer(GURL(kReferrerURL), blink::kWebReferrerPolicyDefault));
+  navigation->SetReferrer(content::Referrer(
+      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
   navigation->Commit();
 
   // Create UnsafeResource for fake sub-resource of landing page.
@@ -1461,10 +1462,11 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
                true /* is_subresource */, GURL(kThreatURL), &resource);
 
   // Start a pending load before creating ThreatDetails.
-  controller().LoadURL(GURL(kPendingURL),
-                       content::Referrer(GURL(kPendingReferrerURL),
-                                         blink::kWebReferrerPolicyDefault),
-                       ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(
+      GURL(kPendingURL),
+      content::Referrer(GURL(kPendingReferrerURL),
+                        network::mojom::ReferrerPolicy::kDefault),
+      ui::PAGE_TRANSITION_TYPED, std::string());
 
   // Do ThreatDetails collection.
   auto report = std::make_unique<ThreatDetailsWrap>(

@@ -7,19 +7,17 @@ package org.chromium.chrome.browser.download.home.list.holder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.modelutil.PropertyModel;
 import org.chromium.chrome.download.R;
-import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 
 /**
  * A {@link RecyclerView.ViewHolder} specifically meant to display a prefetch item.
  */
-public class PrefetchViewHolder extends ThumbnailAwareViewHolder {
+public class PrefetchViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mCaption;
     private final TextView mTimestamp;
@@ -30,13 +28,11 @@ public class PrefetchViewHolder extends ThumbnailAwareViewHolder {
     public static PrefetchViewHolder create(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.download_manager_prefetch_item, null);
-        int imageSize = parent.getContext().getResources().getDimensionPixelSize(
-                R.dimen.download_manager_prefetch_thumbnail_size);
-        return new PrefetchViewHolder(view, imageSize);
+        return new PrefetchViewHolder(view);
     }
 
-    private PrefetchViewHolder(View view, int thumbnailSizePx) {
-        super(view, thumbnailSizePx, thumbnailSizePx);
+    private PrefetchViewHolder(View view) {
+        super(view);
         mTitle = (TextView) itemView.findViewById(R.id.title);
         mCaption = (TextView) itemView.findViewById(R.id.caption);
         mTimestamp = (TextView) itemView.findViewById(R.id.timestamp);
@@ -51,10 +47,5 @@ public class PrefetchViewHolder extends ThumbnailAwareViewHolder {
         mTitle.setText(offlineItem.item.title);
         mCaption.setText(UiUtils.generatePrefetchCaption(offlineItem.item));
         mTimestamp.setText(UiUtils.generatePrefetchTimestamp(offlineItem.date));
-    }
-
-    @Override
-    void onVisualsChanged(ImageView view, OfflineItemVisuals visuals) {
-        view.setImageBitmap(visuals == null ? null : visuals.icon);
     }
 }

@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.download;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -84,21 +82,12 @@ public class DownloadResumptionScheduler {
     }
 
     /**
-     * Kicks off the download resumption process through either {@link DownloadNotificationService}
-     * or {@link DownloadNotificationService2}, which handles actually resuming the individual
-     * downloads.
+     * Kicks off the download resumption process through {@link DownloadNotificationService2},
+     * which handles actually resuming the individual downloads.
      *
      * It is assumed that native is loaded at the time of this call.
      */
     public void resume() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_FOREGROUND)) {
             DownloadNotificationService2.getInstance().resumeAllPendingDownloads();
-        } else {
-            // Start the DownloadNotificationService and allow that to manage the download life
-            // cycle. Shut down the task right away after starting the service
-            DownloadNotificationService.startDownloadNotificationService(
-                    ContextUtils.getApplicationContext(),
-                    new Intent(DownloadNotificationService.ACTION_DOWNLOAD_RESUME_ALL));
-        }
     }
 }

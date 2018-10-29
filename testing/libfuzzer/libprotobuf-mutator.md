@@ -46,6 +46,10 @@ libprotobuf-mutator fuzzer that is even more trivial than
 url_parse_proto_fuzzer.
 
 ## Write a fuzz target for code that accepts protobufs
+*** note
+**Note:** Right now this only works on Linux.
+***
+
 This is almost as easy as writing a standard libFuzzer-based fuzzer. You can
 look at [override_lite_runtime_plugin_test_fuzzer] for an example of a working example of
 this (don't copy the line adding "//testing/libfuzzer:no_clusterfuzz" to

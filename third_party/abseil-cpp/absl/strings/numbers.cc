@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This file contains std::string processing functions related to
+// This file contains string processing functions related to
 // numeric values.
 
 #include "absl/strings/numbers.h"
@@ -30,10 +30,10 @@
 #include <memory>
 #include <utility>
 
+#include "absl/base/internal/bits.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/charconv.h"
-#include "absl/strings/internal/bits.h"
 #include "absl/strings/internal/memutil.h"
 #include "absl/strings/str_cat.h"
 
@@ -161,8 +161,8 @@ bool SimpleAtob(absl::string_view str, bool* value) {
 // their output to the beginning of the buffer.  The caller is responsible
 // for ensuring that the buffer has enough space to hold the output.
 //
-// Returns a pointer to the end of the std::string (i.e. the null character
-// terminating the std::string).
+// Returns a pointer to the end of the string (i.e. the null character
+// terminating the string).
 // ----------------------------------------------------------------------
 
 namespace {
@@ -344,7 +344,7 @@ static std::pair<uint64_t, uint64_t> Mul32(std::pair<uint64_t, uint64_t> num,
   uint64_t bits128_up = (bits96_127 >> 32) + (bits64_127 < bits64_95);
   if (bits128_up == 0) return {bits64_127, bits0_63};
 
-  int shift = 64 - strings_internal::CountLeadingZeros64(bits128_up);
+  int shift = 64 - base_internal::CountLeadingZeros64(bits128_up);
   uint64_t lo = (bits0_63 >> shift) + (bits64_127 << (64 - shift));
   uint64_t hi = (bits64_127 >> shift) + (bits128_up << (64 - shift));
   return {hi, lo};
@@ -375,7 +375,7 @@ static std::pair<uint64_t, uint64_t> PowFive(uint64_t num, int expfive) {
       5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5,
       5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5};
   result = Mul32(result, powers_of_five[expfive & 15]);
-  int shift = strings_internal::CountLeadingZeros64(result.first);
+  int shift = base_internal::CountLeadingZeros64(result.first);
   if (shift != 0) {
     result.first = (result.first << shift) + (result.second >> (64 - shift));
     result.second = (result.second << shift);

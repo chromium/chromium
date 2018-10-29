@@ -31,7 +31,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image size-cover'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -46,7 +46,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image size-contain'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -76,7 +76,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image percent-height'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -106,7 +106,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image bottom'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -121,7 +121,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image center'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -147,7 +147,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image repeat-space'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -161,7 +161,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test image repeat-round'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -176,7 +176,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -191,7 +191,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated size-cover'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -206,7 +206,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated size-contain'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -221,7 +221,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated percent-height'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -236,7 +236,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated top'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -251,7 +251,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated bottom'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -266,7 +266,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated center'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -280,7 +280,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated no-repeat'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -294,7 +294,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated repeat-space'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     },
@@ -309,7 +309,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV class='test generated repeat-round'",
           "rect": [0, 0, 60, 44],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     }

@@ -20,17 +20,12 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
           "rect": [8, 72, 402, 402],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutSVGViewportContainer svg id='targetSymbol'",
           "rect": [9, 73, 400, 400],
           "reason": "paint property change"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
-          "rect": [8, 72, 102, 402],
-          "reason": "disappeared"
         },
         {
           "object": "LayoutSVGViewportContainer svg id='targetSymbol'",

@@ -73,7 +73,8 @@ class SyncEncryptionPassphraseCollectionViewControllerTest
     PassphraseCollectionViewControllerTest::SetUp();
     mock_sync_setup_service_ = static_cast<NiceMock<SyncSetupServiceMock>*>(
         SyncSetupServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            chrome_browser_state_.get(), &CreateSyncSetupService));
+            chrome_browser_state_.get(),
+            base::BindRepeating(&CreateSyncSetupService)));
     // The other mocked functions of SyncSetupServiceMock return bools, so they
     // will by default return false.  GetSyncServiceState(), however, returns an
     // enum, and thus always needs its default value set.

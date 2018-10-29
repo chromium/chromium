@@ -134,26 +134,6 @@ FPDF_PAGE PDFiumPage::GetPage() {
   return page();
 }
 
-FPDF_PAGE PDFiumPage::GetPrintPage() {
-  ScopedUnsupportedFeature scoped_unsupported_feature(engine_);
-  ScopedSubstFont scoped_subst_font(engine_);
-  if (!available_)
-    return nullptr;
-  if (!page_) {
-    ScopedUnloadPreventer scoped_unload_preventer(this);
-    page_.reset(FPDF_LoadPage(engine_->doc(), index_));
-  }
-  return page();
-}
-
-void PDFiumPage::ClosePrintPage() {
-  // Do not close |page_| while in the middle of a load.
-  if (preventing_unload_count_)
-    return;
-
-  page_.reset();
-}
-
 FPDF_TEXTPAGE PDFiumPage::GetTextPage() {
   if (!available_)
     return nullptr;

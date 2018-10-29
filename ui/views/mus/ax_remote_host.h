@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/mojom/ax_host.mojom.h"
 #include "ui/display/display_observer.h"
@@ -41,10 +42,6 @@ class VIEWS_MUS_EXPORT AXRemoteHost : public ax::mojom::AXRemoteHost,
                                       public display::DisplayObserver,
                                       public AXAuraObjCache::Delegate {
  public:
-  // Well-known tree ID for the remote client.
-  // TODO(jamescook): Support different IDs for different clients.
-  static constexpr int kRemoteAXTreeID = -2;
-
   AXRemoteHost();
   ~AXRemoteHost() override;
 
@@ -84,7 +81,10 @@ class VIEWS_MUS_EXPORT AXRemoteHost : public ax::mojom::AXRemoteHost,
 
  private:
   // Registers this object as a remote host for the parent AXHost.
-  void BindAndSetRemote();
+  void BindAndRegisterRemote();
+
+  // Callback for initial state from AXHost.
+  void RegisterRemoteHostCallback(const ui::AXTreeID& tree_id, bool enabled);
 
   void Enable();
   void Disable();
@@ -101,6 +101,9 @@ class VIEWS_MUS_EXPORT AXRemoteHost : public ax::mojom::AXRemoteHost,
   ax::mojom::AXHostPtr ax_host_ptr_;
 
   mojo::Binding<ax::mojom::AXRemoteHost> binding_{this};
+
+  // ID to use for the AX tree.
+  ui::AXTreeID tree_id_;
 
   // Whether accessibility automation support is enabled.
   bool enabled_ = false;

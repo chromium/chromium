@@ -31,7 +31,7 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
       network::mojom::FetchRequestMode,
       network::mojom::FetchRedirectMode,
       network::mojom::RequestContextFrameType,
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       WaitUntilObserver*);
 
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
@@ -50,7 +50,7 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
                            network::mojom::FetchRequestMode,
                            network::mojom::FetchRedirectMode,
                            network::mojom::RequestContextFrameType,
-                           WebURLRequest::RequestContext,
+                           mojom::RequestContextType,
                            WaitUntilObserver*);
 
  private:
@@ -58,7 +58,7 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
   const network::mojom::FetchRequestMode request_mode_;
   const network::mojom::FetchRedirectMode redirect_mode_;
   const network::mojom::RequestContextFrameType frame_type_;
-  const WebURLRequest::RequestContext request_context_;
+  const mojom::RequestContextType request_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

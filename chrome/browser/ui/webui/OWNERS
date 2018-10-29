@@ -22,4 +22,6 @@ per-file snippets_internals*=file://components/ntp_snippets/OWNERS
 
 per-file sync_internals*=file://components/sync/OWNERS
 
+per-file invalidations_message_handler.*=file://components/invalidation/OWNERS
+
 # COMPONENT: UI>Browser>WebUI

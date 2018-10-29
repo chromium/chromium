@@ -55,6 +55,10 @@ NSString* const kHorizontalSizeClass = @"sizeclass";
 NSString* const kSignedIn = @"signIn";
 NSString* const kIsShowingPDF = @"pdf";
 NSString* const kVideoPlaying = @"avplay";
+NSString* const kIncognitoTabCount = @"OTRTabs";
+NSString* const kRegularTabCount = @"regTabs";
+NSString* const kDestroyingAndRebuildingIncognitoBrowserState =
+    @"destroyingAndRebuildingOTR";
 
 // Whether the crash reporter is enabled.
 bool g_crash_reporter_enabled = false;
@@ -275,6 +279,27 @@ void SetCurrentlySignedIn(bool signedIn) {
                                                      withValue:1];
   } else {
     [[CrashReportUserApplicationState sharedInstance] removeValue:kSignedIn];
+  }
+}
+
+void SetRegularTabCount(int tabCount) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kRegularTabCount
+                                                   withValue:tabCount];
+}
+
+void SetIncognitoTabCount(int tabCount) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kIncognitoTabCount
+                                                   withValue:tabCount];
+}
+
+void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {
+  if (in_progress) {
+    [[CrashReportUserApplicationState sharedInstance]
+         setValue:kDestroyingAndRebuildingIncognitoBrowserState
+        withValue:1];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kDestroyingAndRebuildingIncognitoBrowserState];
   }
 }
 

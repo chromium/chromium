@@ -46,7 +46,7 @@ url::Origin GetOrigin(base::StringPiece origin_string) {
 }
 
 bool IsThirdParty(const GURL& url, const url::Origin& first_party_origin) {
-  return first_party_origin.unique() ||
+  return first_party_origin.opaque() ||
          !net::registry_controlled_domains::SameDomainOrHost(
              url, first_party_origin,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);

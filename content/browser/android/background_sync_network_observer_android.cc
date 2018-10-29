@@ -4,6 +4,8 @@
 
 #include "content/browser/android/background_sync_network_observer_android.h"
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "jni/BackgroundSyncNetworkObserver_jni.h"
 
 using base::android::JavaParamRef;
@@ -17,8 +19,8 @@ BackgroundSyncNetworkObserverAndroid::Observer::Create(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer> observer(
       new BackgroundSyncNetworkObserverAndroid::Observer(callback));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&BackgroundSyncNetworkObserverAndroid::Observer::Init,
                  observer));
   return observer;
@@ -48,8 +50,8 @@ void BackgroundSyncNetworkObserverAndroid::Observer::
                                 const JavaParamRef<jobject>& jcaller,
                                 jint new_connection_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(callback_, static_cast<network::mojom::ConnectionType>(
                                 new_connection_type)));
 }

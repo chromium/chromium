@@ -17,6 +17,10 @@
 #include "components/sync/model/syncable_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace network {
+class NetworkConnectionTracker;
+}  // namespace network
+
 namespace password_manager {
 
 // Activates or deactivates affiliation-based matching for |password_store|,
@@ -28,6 +32,7 @@ void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
     PasswordStore* password_store,
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& profile_path);
 
 // Creates a LoginDatabase. Looks in |profile_path| for the database file.

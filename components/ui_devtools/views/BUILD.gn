@@ -41,6 +41,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "overlay_agent_unittest.cc",
     "ui_devtools_unittest.cc",
     "view_element_unittest.cc",
     "widget_element_unittest.cc",
@@ -54,6 +55,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gtest",
     "//ui/aura",
+    "//ui/aura:test_support",
     "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",

@@ -25,13 +25,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/image_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -54,6 +54,8 @@ enum SafeInstallationFlag {
   ENABLED,   // Safe installation is enabled.
 };
 SafeInstallationFlag g_use_safe_installation = DEFAULT;
+
+bool g_report_error_for_invisible_icon = false;
 
 // Returns true if the given file path exists and is not zero-length.
 bool ValidateFilePath(const base::FilePath& path) {
@@ -223,7 +225,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
   std::vector<InstallWarning> warnings;
   if (!ValidateExtension(extension.get(), error, &warnings))
     return NULL;
-  extension->AddInstallWarnings(warnings);
+  extension->AddInstallWarnings(std::move(warnings));
 
   return extension;
 }
@@ -341,15 +343,6 @@ std::vector<base::FilePath> FindPrivateKeyFiles(
 
 bool CheckForIllegalFilenames(const base::FilePath& extension_path,
                               std::string* error) {
-  // Reserved underscore names.
-  static const base::FilePath::CharType* const reserved_names[] = {
-      kLocaleFolder, kPlatformSpecificFolder, FILE_PATH_LITERAL("__MACOSX"),
-  };
-  CR_DEFINE_STATIC_LOCAL(
-      std::set<base::FilePath::StringType>,
-      reserved_underscore_names,
-      (reserved_names, reserved_names + arraysize(reserved_names)));
-
   // Enumerate all files and directories in the extension root.
   // There is a problem when using pattern "_*" with FileEnumerator, so we have
   // to cheat with find_first_of and match all.
@@ -361,17 +354,21 @@ bool CheckForIllegalFilenames(const base::FilePath& extension_path,
   while (!(file = all_files.Next()).empty()) {
     base::FilePath::StringType filename = file.BaseName().value();
 
-    // Skip all that don't start with "_".
+    // Skip all filenames that don't start with "_".
     if (filename.find_first_of(FILE_PATH_LITERAL("_")) != 0)
       continue;
-    if (reserved_underscore_names.find(filename) ==
-        reserved_underscore_names.end()) {
-      *error = base::StringPrintf(
-          "Cannot load extension with file or directory name %s. "
-          "Filenames starting with \"_\" are reserved for use by the system.",
-          file.BaseName().AsUTF8Unsafe().c_str());
-      return false;
+
+    // Some filenames are special and allowed to start with "_".
+    if (filename == kLocaleFolder || filename == kPlatformSpecificFolder ||
+        filename == FILE_PATH_LITERAL("__MACOSX")) {
+      continue;
     }
+
+    *error = base::StringPrintf(
+        "Cannot load extension with file or directory name %s. "
+        "Filenames starting with \"_\" are reserved for use by the system.",
+        file.BaseName().AsUTF8Unsafe().c_str());
+    return false;
   }
 
   return true;
@@ -402,9 +399,7 @@ bool CheckForWindowsReservedFilenames(const base::FilePath& extension_dir,
 base::FilePath GetInstallTempDir(const base::FilePath& extensions_dir) {
   // We do file IO in this function, but only when the current profile's
   // Temp directory has never been used before, or in a rare error case.
-  // Developers are not likely to see these situations often, so do an
-  // explicit thread check.
-  base::AssertBlockingAllowed();
+  // Developers are not likely to see these situations often.
 
   // Create the temp directory as a sub-directory of the Extensions directory.
   // This guarantees it is on the same file system as the extension's eventual
@@ -460,19 +455,35 @@ base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
   return path;
 }
 
+void SetReportErrorForInvisibleIconForTesting(bool value) {
+  g_report_error_for_invisible_icon = value;
+}
+
 bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
                               const Extension* extension,
                               int error_message_id,
                               std::string* error) {
-  for (ExtensionIconSet::IconMap::const_iterator iter = icon_set.map().begin();
-       iter != icon_set.map().end();
-       ++iter) {
+  for (const auto& entry : icon_set.map()) {
     const base::FilePath path =
-        extension->GetResource(iter->second).GetFilePath();
+        extension->GetResource(entry.second).GetFilePath();
     if (!ValidateFilePath(path)) {
       *error = l10n_util::GetStringFUTF8(error_message_id,
-                                         base::UTF8ToUTF16(iter->second));
+                                         base::UTF8ToUTF16(entry.second));
       return false;
+    }
+
+    if (extension->location() == Manifest::UNPACKED) {
+      const bool is_sufficiently_visible =
+          image_util::IsIconAtPathSufficientlyVisible(path);
+      UMA_HISTOGRAM_BOOLEAN(
+          "Extensions.ManifestIconSetIconWasVisibleForUnpacked",
+          is_sufficiently_visible);
+      if (!is_sufficiently_visible && g_report_error_for_invisible_icon) {
+        *error = l10n_util::GetStringFUTF8(
+            IDS_EXTENSION_LOAD_ICON_NOT_SUFFICIENTLY_VISIBLE,
+            base::UTF8ToUTF16(entry.second));
+        return false;
+      }
     }
   }
   return true;

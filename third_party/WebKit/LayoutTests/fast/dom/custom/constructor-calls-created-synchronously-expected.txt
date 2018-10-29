@@ -3,7 +3,6 @@ Tests that custom element constructors run the createdCallback synchronously.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS ncallbacks is 1
 PASS successfullyParsed is true
 

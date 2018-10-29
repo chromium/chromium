@@ -15,7 +15,7 @@
 
 @interface FakeFormActivityObserver : NSObject<FormActivityObserver>
 // Arguments passed to
-// |webState:didSubmitDocumentWithFormNamed:userInitiated:inFrame:|.
+// |webState:didSubmitDocumentWithFormNamed:withData:userInitiated:inFrame:|.
 @property(nonatomic, readonly)
     autofill::TestSubmitDocumentInfo* submitDocumentInfo;
 // Arguments passed to
@@ -43,6 +43,7 @@
 
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormNamed:(const std::string&)formName
+                          withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
                    formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame {
@@ -50,6 +51,7 @@
   _submitDocumentInfo->web_state = webState;
   _submitDocumentInfo->sender_frame = frame;
   _submitDocumentInfo->form_name = formName;
+  _submitDocumentInfo->form_data = formData;
   _submitDocumentInfo->has_user_gesture = hasUserGesture;
   _submitDocumentInfo->form_in_main_frame = formInMainFrame;
 }
@@ -82,16 +84,18 @@ class FormActivityObserverBridgeTest : public PlatformTest {
 TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   ASSERT_FALSE([observer_ submitDocumentInfo]);
   std::string kTestFormName("form-name");
+  std::string kTestFormData("[]");
   bool has_user_gesture = true;
   bool form_in_main_frame = true;
   web::FakeWebFrame sender_frame("sender_frame", true, GURL::EmptyGURL());
   observer_bridge_.DocumentSubmitted(&test_web_state_, &sender_frame,
-                                     kTestFormName, has_user_gesture,
-                                     form_in_main_frame);
+                                     kTestFormName, kTestFormData,
+                                     has_user_gesture, form_in_main_frame);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
   EXPECT_EQ(&test_web_state_, [observer_ submitDocumentInfo]->web_state);
   EXPECT_EQ(&sender_frame, [observer_ submitDocumentInfo]->sender_frame);
   EXPECT_EQ(kTestFormName, [observer_ submitDocumentInfo]->form_name);
+  EXPECT_EQ(kTestFormData, [observer_ submitDocumentInfo]->form_data);
   EXPECT_EQ(has_user_gesture, [observer_ submitDocumentInfo]->has_user_gesture);
   EXPECT_EQ(form_in_main_frame,
             [observer_ submitDocumentInfo]->form_in_main_frame);
@@ -104,7 +108,6 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   autofill::FormActivityParams params;
   web::FakeWebFrame sender_frame("sender_frame", true, GURL::EmptyGURL());
   params.form_name = "form-name";
-  params.field_name = "field-name";
   params.field_type = "field-type";
   params.type = "type";
   params.value = "value";
@@ -116,8 +119,6 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   EXPECT_EQ(&sender_frame, [observer_ formActivityInfo]->sender_frame);
   EXPECT_EQ(params.form_name,
             [observer_ formActivityInfo]->form_activity.form_name);
-  EXPECT_EQ(params.field_name,
-            [observer_ formActivityInfo]->form_activity.field_name);
   EXPECT_EQ(params.field_type,
             [observer_ formActivityInfo]->form_activity.field_type);
   EXPECT_EQ(params.type, [observer_ formActivityInfo]->form_activity.type);

@@ -1,9 +1,9 @@
-{% from 'dictionary_impl_common.cpp.tmpl' import dictionary_setter_impl with context %}
+{% from 'dictionary_impl_common.cc.tmpl' import dictionary_setter_impl with context %}
 {% filter format_blink_cpp_source_code %}
 
 {% include 'copyright_block.txt' %}
-#ifndef {{cpp_class}}_h
-#define {{cpp_class}}_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 {% for filename in header_includes %}
 #include "{{filename}}"
@@ -17,7 +17,7 @@ class {{decl}};
 
 {# FIXME: Add "final" if this class doesn\'t have subclasses #}
 class {{exported}}{{cpp_class}}{% if parent_cpp_class %} : public {{parent_cpp_class}}{% endif %} {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   {{cpp_class}}();
   virtual ~{{cpp_class}}();
@@ -59,6 +59,6 @@ class {{exported}}{{cpp_class}}{% if parent_cpp_class %} : public {{parent_cpp_c
 
 }  // namespace blink
 
-#endif  // {{cpp_class}}_h
+#endif  // {{header_guard}}
 
 {% endfilter %}{# format_blink_cpp_source_code #}

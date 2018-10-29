@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Test that the volume slider doesn't shift during use on smaller controls</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<body></body>
+<script>
+async_test(t => {
+  // Ensure that we will show the volume slider.
+  setPreferHiddenVolumeControlsForTest(t, false);
+
+  let video = document.createElement('video');
+  video.controls = true;
+  video.preload = 'none';
+  video.width = 200;
+  video.src = '../content/test.webm'
+  document.body.append(video);
+  enableTestMode(video);
+
+  const fullscreenBtn = fullscreenButton(video);
+  const muteBtn = muteButton(video);
+  const volumeSlider = volumeSliderElement(video);
+
+  // Wait for preload.
+  video.addEventListener('loadedmetadata', t.step_func(() => {
+    // Ensure that the mouse is outside of the mute button to prevent an issue
+    // where the mouseover event didn't always fire correctly on the mute button.
+    hoverOverControl(fullscreenBtn, t.step_func(() => {
+      // Hover the mute button to open the volume slider.
+      hoverOverControl(muteBtn, t.step_func(() => {
+        // Wait for the volume slider to open.
+        runAfterVolumeSliderAnimationEnds(t.step_func(() => {
+          // Store initial position.
+          const initialPosition = volumeSlider.getBoundingClientRect();
+          // Use the slider.
+          singleTapOnControl(volumeSlider, t.step_func_done(() => {
+            // Assert that the slider hasn't moved.
+            const newPosition = volumeSlider.getBoundingClientRect();
+            ['x', 'y', 'width', 'height'].forEach(attr => {
+              assert_equals(initialPosition[attr], newPosition[attr], attr + ' should not change');
+            });
+          }));
+        }));
+      }));
+    }));
+  }));
+
+  video.load();
+});
+</script>

@@ -55,7 +55,8 @@ static const int kV8DOMWrapperObjectIndex =
     static_cast<int>(gin::kEncodedValueIndex);
 static const int kV8DefaultWrapperInternalFieldCount =
     static_cast<int>(gin::kNumberOfInternalFields);
-static const int kV8PrototypeTypeIndex = 0;
+// The value of the following field isn't used (only its presence), hence no
+// corresponding Index constant exists for it.
 static const int kV8PrototypeInternalFieldcount = 1;
 
 typedef v8::Local<v8::FunctionTemplate> (

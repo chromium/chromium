@@ -24,7 +24,12 @@ MockWidgetInputHandler::MockWidgetInputHandler(
     mojom::WidgetInputHandlerHostPtr host)
     : binding_(this, std::move(request)), host_(std::move(host)) {}
 
-MockWidgetInputHandler::~MockWidgetInputHandler() {}
+MockWidgetInputHandler::~MockWidgetInputHandler() {
+  // We explicitly close the binding before the tearing down the vector of
+  // messages, as some of them may spin a RunLoop on destruction and we don't
+  // want to accept more messages beyond this point.
+  binding_.Close();
+}
 
 void MockWidgetInputHandler::SetFocus(bool focused) {
   dispatched_messages_.emplace_back(

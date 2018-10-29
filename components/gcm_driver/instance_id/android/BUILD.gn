@@ -22,6 +22,7 @@ android_library("instance_id_driver_java") {
   deps = [
     "$google_play_services_package:google_play_services_iid_java",
     "//base:base_java",
+    "//components/gcm_driver/android:gcm_driver_java",
   ]
 
   java_files = [

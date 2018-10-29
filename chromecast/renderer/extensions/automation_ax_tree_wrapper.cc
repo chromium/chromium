@@ -59,6 +59,8 @@ api::automation::EventType ToAutomationEvent(ax::mojom::Event event_type) {
       return api::automation::EVENT_TYPE_LIVEREGIONCHANGED;
     case ax::mojom::Event::kLoadComplete:
       return api::automation::EVENT_TYPE_LOADCOMPLETE;
+    case ax::mojom::Event::kLoadStart:
+      return api::automation::EVENT_TYPE_LOADSTART;
     case ax::mojom::Event::kLocationChanged:
       return api::automation::EVENT_TYPE_LOCATIONCHANGED;
     case ax::mojom::Event::kMediaStartedPlaying:
@@ -147,6 +149,8 @@ api::automation::EventType ToAutomationEvent(
       return api::automation::EVENT_TYPE_LIVEREGIONCREATED;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       return api::automation::EVENT_TYPE_LOADCOMPLETE;
+    case ui::AXEventGenerator::Event::LOAD_START:
+      return api::automation::EVENT_TYPE_LOADSTART;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
       return api::automation::EVENT_TYPE_MENULISTITEMSELECTED;
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
@@ -183,7 +187,7 @@ api::automation::EventType ToAutomationEvent(
 }  // namespace
 
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
-    int32_t tree_id,
+    ui::AXTreeID tree_id,
     AutomationInternalCustomBindings* owner)
     : tree_id_(tree_id), host_node_id_(-1), owner_(owner) {
   // We have to initialize AXEventGenerator here - we can't do it in the
@@ -323,6 +327,7 @@ bool AutomationAXTreeWrapper::IsEventTypeHandledByAXEventGenerator(
     case api::automation::EVENT_TYPE_LIVEREGIONCHANGED:
     case api::automation::EVENT_TYPE_LIVEREGIONCREATED:
     case api::automation::EVENT_TYPE_LOADCOMPLETE:
+    case api::automation::EVENT_TYPE_LOADSTART:
     case api::automation::EVENT_TYPE_SCROLLPOSITIONCHANGED:
     case api::automation::EVENT_TYPE_SELECTEDCHILDRENCHANGED:
       return true;

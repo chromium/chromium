@@ -503,14 +503,18 @@ bool GetCompressedTexSizeInBytes(const char* function_name,
       bytes_required *= depth;
       break;
     default:
-      ERRORSTATE_SET_GL_ERROR_INVALID_ENUM(error_state, function_name, format,
-                                           "format");
+      if (function_name && error_state) {
+        ERRORSTATE_SET_GL_ERROR_INVALID_ENUM(error_state, function_name, format,
+                                             "format");
+      }
       return false;
   }
 
   if (!bytes_required.IsValid()) {
-    ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_VALUE, function_name,
-                            "invalid size");
+    if (function_name && error_state) {
+      ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_VALUE, function_name,
+                              "invalid size");
+    }
     return false;
   }
 

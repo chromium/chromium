@@ -65,8 +65,7 @@ bool NudgeTracker::IsSyncRequired() const {
   if (IsRetryRequired())
     return true;
 
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->IsSyncRequired()) {
       return true;
     }
@@ -82,8 +81,7 @@ bool NudgeTracker::IsGetUpdatesRequired() const {
   if (IsRetryRequired())
     return true;
 
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->IsGetUpdatesRequired()) {
       return true;
     }
@@ -200,8 +198,7 @@ void NudgeTracker::UpdateTypeThrottlingAndBackoffState() {
 }
 
 bool NudgeTracker::IsAnyTypeBlocked() const {
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->IsBlocked()) {
       return true;
     }
@@ -225,8 +222,7 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 
   // Return min of GetTimeUntilUnblock() values for all IsBlocked() types.
   base::TimeDelta time_until_next_unblock = base::TimeDelta::Max();
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->IsBlocked()) {
       time_until_next_unblock =
           std::min(time_until_next_unblock, it->second->GetTimeUntilUnblock());
@@ -238,7 +234,7 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 }
 
 base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(ModelType type) const {
-  TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
+  auto tracker_it = type_trackers_.find(type);
   DCHECK(tracker_it != type_trackers_.end());
 
   return tracker_it->second->GetLastBackoffInterval();
@@ -246,8 +242,7 @@ base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(ModelType type) const {
 
 ModelTypeSet NudgeTracker::GetBlockedTypes() const {
   ModelTypeSet result;
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->IsBlocked()) {
       result.Put(it->first);
     }
@@ -257,8 +252,7 @@ ModelTypeSet NudgeTracker::GetBlockedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNudgedTypes() const {
   ModelTypeSet result;
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->HasLocalChangePending()) {
       result.Put(it->first);
     }
@@ -268,8 +262,7 @@ ModelTypeSet NudgeTracker::GetNudgedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
   ModelTypeSet result;
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->HasPendingInvalidation()) {
       result.Put(it->first);
     }
@@ -279,8 +272,7 @@ ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
 
 ModelTypeSet NudgeTracker::GetRefreshRequestedTypes() const {
   ModelTypeSet result;
-  for (TypeTrackerMap::const_iterator it = type_trackers_.begin();
-       it != type_trackers_.end(); ++it) {
+  for (auto it = type_trackers_.begin(); it != type_trackers_.end(); ++it) {
     if (it->second->HasRefreshRequestPending()) {
       result.Put(it->first);
     }
@@ -360,9 +352,7 @@ void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
 
 void NudgeTracker::OnReceivedCustomNudgeDelays(
     const std::map<ModelType, base::TimeDelta>& delay_map) {
-  for (std::map<ModelType, base::TimeDelta>::const_iterator iter =
-           delay_map.begin();
-       iter != delay_map.end(); ++iter) {
+  for (auto iter = delay_map.begin(); iter != delay_map.end(); ++iter) {
     ModelType type = iter->first;
     DCHECK(ProtocolTypes().Has(type));
     TypeTrackerMap::const_iterator type_iter = type_trackers_.find(type);

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -143,11 +144,11 @@ void OfflinePageUtilsTest::SetUp() {
 
   // Set up the factory for testing.
   OfflinePageModelFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, BuildTestOfflinePageModel);
+      &profile_, base::BindRepeating(&BuildTestOfflinePageModel));
   RunUntilIdle();
 
   RequestCoordinatorFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, BuildTestRequestCoordinator);
+      &profile_, base::BindRepeating(&BuildTestRequestCoordinator));
   RunUntilIdle();
 
   // Make sure to create offline pages and requests.

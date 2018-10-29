@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <utility>
 
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -34,8 +35,8 @@ SettingsStorageQuotaEnforcer::Limits GetLocalQuotaLimits() {
 }  // namespace
 
 LocalValueStoreCache::LocalValueStoreCache(
-    const scoped_refptr<ValueStoreFactory>& factory)
-    : storage_factory_(factory), quota_(GetLocalQuotaLimits()) {
+    scoped_refptr<ValueStoreFactory> factory)
+    : storage_factory_(std::move(factory)), quota_(GetLocalQuotaLimits()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -73,7 +74,7 @@ void LocalValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
 }
 
 ValueStore* LocalValueStoreCache::GetStorage(const Extension* extension) {
-  StorageMap::iterator iter = storage_map_.find(extension->id());
+  auto iter = storage_map_.find(extension->id());
   if (iter != storage_map_.end())
     return iter->second.get();
 

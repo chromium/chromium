@@ -242,4 +242,37 @@ TEST_F(HttpPasswordStoreMigratorTest, MigratorDeletionByConsumerWithoutHSTS) {
   TestMigratorDeletionByConsumer(false);
 }
 
+TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {
+  const GURL kOrigins[] = {GURL("http://example.org/"),
+                           GURL("http://example.org/path/")};
+
+  for (bool origin_has_paths : {true, false}) {
+    PasswordForm http_html_form;
+    http_html_form.origin = kOrigins[origin_has_paths];
+    http_html_form.signon_realm = "http://example.org/";
+    http_html_form.scheme = PasswordForm::Scheme::SCHEME_HTML;
+
+    PasswordForm non_html_empty_realm_form;
+    non_html_empty_realm_form.origin = kOrigins[origin_has_paths];
+    non_html_empty_realm_form.signon_realm = "http://example.org/";
+    non_html_empty_realm_form.scheme = PasswordForm::Scheme::SCHEME_BASIC;
+
+    PasswordForm non_html_form;
+    non_html_form.origin = kOrigins[origin_has_paths];
+    non_html_form.signon_realm = "http://example.org/realm";
+    non_html_form.scheme = PasswordForm::Scheme::SCHEME_BASIC;
+
+    EXPECT_EQ(HttpPasswordStoreMigrator::MigrateHttpFormToHttps(http_html_form)
+                  .signon_realm,
+              "https://example.org/");
+    EXPECT_EQ(HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
+                  non_html_empty_realm_form)
+                  .signon_realm,
+              "https://example.org/");
+    EXPECT_EQ(HttpPasswordStoreMigrator::MigrateHttpFormToHttps(non_html_form)
+                  .signon_realm,
+              "https://example.org/realm");
+  }
+}
+
 }  // namespace password_manager

@@ -133,7 +133,8 @@ class NetworkCertMigrator::MigrationTask
     for (const net::ScopedCERTCertificate& cert : certs_) {
       int current_slot_id = -1;
       std::string current_pkcs11_id =
-          CertLoader::GetPkcs11IdAndSlotForCert(cert.get(), &current_slot_id);
+          NetworkCertLoader::GetPkcs11IdAndSlotForCert(cert.get(),
+                                                       &current_slot_id);
       if (current_pkcs11_id == pkcs11_id) {
         *slot_id = current_slot_id;
         return cert.get();
@@ -166,8 +167,8 @@ class NetworkCertMigrator::MigrationTask
 
   bool CorrespondingCertificateDatabaseLoaded(const NetworkState* network) {
     if (network->IsPrivate())
-      return CertLoader::Get()->user_cert_database_load_finished();
-    return CertLoader::Get()->initial_load_finished();
+      return NetworkCertLoader::Get()->user_cert_database_load_finished();
+    return NetworkCertLoader::Get()->initial_load_finished();
   }
 
   net::ScopedCERTCertificateList certs_;
@@ -181,8 +182,8 @@ NetworkCertMigrator::NetworkCertMigrator()
 
 NetworkCertMigrator::~NetworkCertMigrator() {
   network_state_handler_->RemoveObserver(this, FROM_HERE);
-  if (CertLoader::IsInitialized())
-    CertLoader::Get()->RemoveObserver(this);
+  if (NetworkCertLoader::IsInitialized())
+    NetworkCertLoader::Get()->RemoveObserver(this);
 }
 
 void NetworkCertMigrator::Init(NetworkStateHandler* network_state_handler) {
@@ -190,12 +191,12 @@ void NetworkCertMigrator::Init(NetworkStateHandler* network_state_handler) {
   network_state_handler_ = network_state_handler;
   network_state_handler_->AddObserver(this, FROM_HERE);
 
-  DCHECK(CertLoader::IsInitialized());
-  CertLoader::Get()->AddObserver(this);
+  DCHECK(NetworkCertLoader::IsInitialized());
+  NetworkCertLoader::Get()->AddObserver(this);
 }
 
 void NetworkCertMigrator::NetworkListChanged() {
-  if (!CertLoader::Get()->initial_load_finished()) {
+  if (!NetworkCertLoader::Get()->initial_load_finished()) {
     VLOG(2) << "Certs not loaded yet.";
     return;
   }
@@ -203,7 +204,7 @@ void NetworkCertMigrator::NetworkListChanged() {
   // certificates.
   VLOG(2) << "Start certificate migration of network configurations.";
   scoped_refptr<MigrationTask> helper(new MigrationTask(
-      CertLoader::Get()->all_certs(), weak_ptr_factory_.GetWeakPtr()));
+      NetworkCertLoader::Get()->all_certs(), weak_ptr_factory_.GetWeakPtr()));
   NetworkStateHandler::NetworkStateList networks;
   network_state_handler_->GetNetworkListByType(
       NetworkTypePattern::Default(),

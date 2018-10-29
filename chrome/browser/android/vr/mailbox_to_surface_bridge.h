@@ -42,11 +42,11 @@ namespace vr {
 class MailboxToSurfaceBridge {
  public:
   MailboxToSurfaceBridge();
-  ~MailboxToSurfaceBridge();
+  virtual ~MailboxToSurfaceBridge();
 
   // Returns true if the GPU process connection is established and ready to use.
   // Equivalent to waiting for on_initialized to be called.
-  bool IsConnected();
+  virtual bool IsConnected();
 
   // Checks if a workaround from "gpu/config/gpu_driver_bug_workaround_type.h"
   // is active. Requires initialization to be complete.
@@ -80,12 +80,12 @@ class MailboxToSurfaceBridge {
   // on the target GL thread before using any GL methods.
   // The GL methods check that they are called on this thread, so there
   // will be a DCHECK error if they are not used consistently.
-  void CreateUnboundContextProvider(base::OnceClosure callback);
+  virtual void CreateUnboundContextProvider(base::OnceClosure callback);
 
   // Client must call this on the target (GL) thread after
   // CreateUnboundContextProvider. It's called automatically when using
   // CreateAndBindContextProvider.
-  void BindContextProviderToCurrentThread();
+  virtual void BindContextProviderToCurrentThread();
 
   // All other public methods below must be called on the GL thread
   // (except when marked otherwise).
@@ -115,7 +115,7 @@ class MailboxToSurfaceBridge {
   // Creates a texture and binds it to a newly created mailbox. Returns its
   // mailbox and texture ID in the command buffer context. (Don't use that
   // in the local GL context, it's not valid there.)
-  uint32_t CreateMailboxTexture(gpu::Mailbox* mailbox);
+  virtual uint32_t CreateMailboxTexture(gpu::Mailbox* mailbox);
 
   // Creates a GLImage from the |buffer| and binds it to the supplied texture_id
   // in the GPU process. Returns the image ID in the command buffer context.

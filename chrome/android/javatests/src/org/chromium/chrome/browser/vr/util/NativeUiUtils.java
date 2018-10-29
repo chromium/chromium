@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.vr.util;
 
+import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
+
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,26 +16,37 @@ import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.vr.KeyboardTestAction;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
+import org.chromium.chrome.browser.vr.UiTestOperationResult;
 import org.chromium.chrome.browser.vr.UiTestOperationType;
 import org.chromium.chrome.browser.vr.UserFriendlyElementName;
+import org.chromium.chrome.browser.vr.VrBrowserTestFramework;
 import org.chromium.chrome.browser.vr.VrControllerTestAction;
 import org.chromium.chrome.browser.vr.VrDialog;
 import org.chromium.chrome.browser.vr.VrShell;
-import org.chromium.chrome.browser.vr.VrUiTestActivityResult;
 import org.chromium.chrome.browser.vr.VrViewContainer;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Class containing utility functions for interacting with the VR browser native UI, e.g. the
  * omnibox or back button.
  */
 public class NativeUiUtils {
+    // How many frames to wait after entering text in the omnibox before we can assume that
+    // suggestions are updated. This should only be used if the workaround of inputting text and
+    // waiting for the suggestion box to appear doesn't work, e.g. if you need to input text, wait
+    // for autocomplete, then input more text before committing. 20 is arbitrary, but stable.
+    public static final int NUM_FRAMES_FOR_SUGGESTION_UPDATE = 20;
     // Arbitrary but reasonable amount of time to expect the UI to stop updating after interacting
     // with an element.
-    private static final int DEFAULT_UI_QUIESCENCE_TIMEOUT_MS = 1000;
+    private static final int DEFAULT_UI_QUIESCENCE_TIMEOUT_MS = 2000;
 
     /**
      * Enables the use of both the mock head pose (locked forward) and Chrome-side mocked controller
@@ -45,6 +59,16 @@ public class NativeUiUtils {
     }
 
     /**
+     * Enables the mock keyboard without sending any input. Should be called before performing an
+     * action that would trigger the keyboard for the first time to ensure that the mock keyboard
+     * is used instead of the real one.
+     */
+    public static void enableMockedKeyboard() {
+        TestVrShellDelegate.getInstance().performKeyboardInputForTesting(
+                KeyboardTestAction.ENABLE_MOCKED_KEYBOARD, "" /* unused */);
+    }
+
+    /**
      * Clicks on a UI element as if done via a controller.
      *
      * @param elementName The UserFriendlyElementName that will be clicked on.
@@ -54,6 +78,71 @@ public class NativeUiUtils {
     public static void clickElement(int elementName, PointF position) {
         TestVrShellDelegate.getInstance().performControllerActionForTesting(
                 elementName, VrControllerTestAction.CLICK, position);
+    }
+
+    /**
+     * Clicks on a DOM element/node as if done via a controller.
+     *
+     * @param nodeId The ID of the node to click on.
+     * @param position A PointF specifying where on the node to send the click relative to a unit
+     *        square centered at (0, 0).
+     * @param numClicks The number of times to click the element.
+     * @param testFramework The VrBrowserTestFramework to use to interact with the page.
+     */
+    public static void clickContentNode(String nodeId, PointF position, final int numClicks,
+            VrBrowserTestFramework testFramework) throws InterruptedException, TimeoutException {
+        Rect nodeBounds = DOMUtils.getNodeBounds(testFramework.getFirstTabWebContents(), nodeId);
+        int contentWidth = Integer.valueOf(
+                testFramework.runJavaScriptOrFail("window.innerWidth", POLL_TIMEOUT_SHORT_MS));
+        int contentHeight = Integer.valueOf(
+                testFramework.runJavaScriptOrFail("window.innerHeight", POLL_TIMEOUT_SHORT_MS));
+        // Convert the given PointF (native UI-style coordinates) into absolute content coordinates
+        // for the node.
+        // The coordinate systems are different (content has the origin in the top left, click
+        // coordinates have the "origin" in the bottom left), so be sure to account for that.
+        float nodeCoordX = (nodeBounds.right - nodeBounds.left) * (0.5f + position.x);
+        float nodeCoordY = (nodeBounds.bottom - nodeBounds.top) * (0.5f - position.y);
+        // Offset the click position within the node by the node's location to get the click
+        // position within the content.
+        PointF absClickCoord =
+                new PointF(nodeCoordX + nodeBounds.left, nodeCoordY + nodeBounds.top);
+
+        // Scale the coordinates between 0 and 1.
+        float contentCoordX = absClickCoord.x / contentWidth;
+        float contentCoordY = absClickCoord.y / contentHeight;
+        // Now convert back to the native UI-style coordinates.
+        final PointF clickCoordinates = new PointF(contentCoordX - 0.5f, 0.5f - contentCoordY);
+        performActionAndWaitForUiQuiescence(() -> {
+            for (int i = 0; i < numClicks; ++i) {
+                clickElement(UserFriendlyElementName.CONTENT_QUAD, clickCoordinates);
+            }
+        });
+    }
+
+    /**
+     * Inputs the given text as if done via the VR keyboard.
+     *
+     * @param inputString The String to input via the keyboard.
+     */
+    public static void inputString(String inputString) {
+        TestVrShellDelegate.getInstance().performKeyboardInputForTesting(
+                KeyboardTestAction.INPUT_TEXT, inputString);
+    }
+
+    /**
+     * Presses backspace as if done via the VR keyboard.
+     */
+    public static void inputBackspace() {
+        TestVrShellDelegate.getInstance().performKeyboardInputForTesting(
+                KeyboardTestAction.BACKSPACE, "" /* unused */);
+    }
+
+    /**
+     * Presses enter as if done via the VR keyboard.
+     */
+    public static void inputEnter() throws InterruptedException {
+        TestVrShellDelegate.getInstance().performKeyboardInputForTesting(
+                KeyboardTestAction.ENTER, "" /* unused */);
     }
 
     /**
@@ -137,8 +226,10 @@ public class NativeUiUtils {
         // Run on the UI thread to prevent issues with registering a new callback before
         // ReportUiOperationResultForTesting has finished.
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            instance.registerUiOperationCallbackForTesting(UiTestOperationType.UI_ACTIVITY_RESULT,
-                    () -> { resultLatch.countDown(); }, DEFAULT_UI_QUIESCENCE_TIMEOUT_MS);
+            instance.registerUiOperationCallbackForTesting(
+                    UiTestOperationType.UI_ACTIVITY_RESULT, () -> {
+                        resultLatch.countDown();
+                    }, DEFAULT_UI_QUIESCENCE_TIMEOUT_MS, 0 /* unused */);
         });
         action.run();
 
@@ -147,8 +238,37 @@ public class NativeUiUtils {
         int uiResult =
                 instance.getLastUiOperationResultForTesting(UiTestOperationType.UI_ACTIVITY_RESULT);
         Assert.assertEquals("UI reported non-quiescent result '"
-                        + vrUiTestActivityResultToString(uiResult) + "'",
-                VrUiTestActivityResult.QUIESCENT, uiResult);
+                        + uiTestOperationResultToString(uiResult) + "'",
+                UiTestOperationResult.QUIESCENT, uiResult);
+    }
+
+    /**
+     * Runs the given Runnable and waits until the specified element changes its visibility.
+     *
+     * @param elementName The UserFriendlyElementName to wait on to change visibility.
+     * @param action A Runnable containing the action to perform.
+     */
+    public static void performActionAndWaitForVisibilityChange(
+            final int elementName, Runnable action) throws InterruptedException {
+        final TestVrShellDelegate instance = TestVrShellDelegate.getInstance();
+        final CountDownLatch resultLatch = new CountDownLatch(1);
+        // Run on the UI thread to prevent issues with registering a new callback before
+        // ReportUiOperationResultForTesting has finished.
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            instance.registerUiOperationCallbackForTesting(
+                    UiTestOperationType.ELEMENT_VISIBILITY_CHANGE, () -> {
+                        resultLatch.countDown();
+                    }, DEFAULT_UI_QUIESCENCE_TIMEOUT_MS, elementName);
+        });
+        action.run();
+
+        // Wait for the result to be reported.
+        resultLatch.await();
+        int result = instance.getLastUiOperationResultForTesting(
+                UiTestOperationType.ELEMENT_VISIBILITY_CHANGE);
+        Assert.assertEquals("UI reported non-visibility-changed result '"
+                        + uiTestOperationResultToString(result) + "'",
+                UiTestOperationResult.VISIBILITY_CHANGE, result);
     }
 
     /**
@@ -195,7 +315,7 @@ public class NativeUiUtils {
         // ReportUiOperationResultForTesting has finished.
         ThreadUtils.runOnUiThreadBlocking(() -> {
             instance.registerUiOperationCallbackForTesting(UiTestOperationType.FRAME_BUFFER_DUMPED,
-                    () -> { resultLatch.countDown(); }, 0 /* unused */);
+                    () -> { resultLatch.countDown(); }, 0 /* unused */, 0 /* unused */);
         });
         instance.saveNextFrameBufferToDiskForTesting(filepathBase);
         resultLatch.await();
@@ -207,6 +327,20 @@ public class NativeUiUtils {
     public static ViewGroup getVrViewContainer() {
         VrShell vrShell = TestVrShellDelegate.getVrShellForTesting();
         return vrShell.getVrViewContainerForTesting();
+    }
+
+    /**
+     * Waits until a modal dialog is or is not shown.
+     */
+    public static void waitForModalDialogStatus(
+            final boolean shouldBeShown, final ChromeActivity activity) {
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> {
+                    return shouldBeShown == activity.getModalDialogManager().isShowing();
+                },
+                "Timed out waiting for modal dialog to "
+                        + (shouldBeShown ? "be shown" : "not be shown"));
     }
 
     private static void clickFallbackUiButton(int buttonId) throws InterruptedException {
@@ -228,16 +362,20 @@ public class NativeUiUtils {
         clickElementAndWaitForUiQuiescence(UserFriendlyElementName.BROWSING_DIALOG, buttonCenter);
     }
 
-    private static String vrUiTestActivityResultToString(int result) {
+    private static String uiTestOperationResultToString(int result) {
         switch (result) {
-            case VrUiTestActivityResult.UNREPORTED:
+            case UiTestOperationResult.UNREPORTED:
                 return "Unreported";
-            case VrUiTestActivityResult.QUIESCENT:
+            case UiTestOperationResult.QUIESCENT:
                 return "Quiescent";
-            case VrUiTestActivityResult.TIMEOUT_NO_START:
+            case UiTestOperationResult.TIMEOUT_NO_START:
                 return "Timeout (UI activity not started)";
-            case VrUiTestActivityResult.TIMEOUT_NO_END:
+            case UiTestOperationResult.TIMEOUT_NO_END:
                 return "Timeout (UI activity not stopped)";
+            case UiTestOperationResult.VISIBILITY_CHANGE:
+                return "Visibility change";
+            case UiTestOperationResult.TIMEOUT_NO_CHANGE:
+                return "Timeout (Element visibility did not change)";
             default:
                 return "Unknown result";
         }

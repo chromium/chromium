@@ -340,6 +340,7 @@ source_set("unit_tests") {
     "connection_tester.h",
     "content_description_unittest.cc",
     "data_channel_manager_unittest.cc",
+    "frame_stats_unittest.cc",
     "http_ice_config_request_unittest.cc",
     "ice_config_unittest.cc",
     "ice_transport_unittest.cc",

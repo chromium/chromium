@@ -61,6 +61,7 @@ def main():
   # we need the help output from both the argument parser here and the argument
   # parser in browser_test_runner.
   if '--help' in rest_args:
+    print '\n\nCommand line arguments handed by run_gpu_integration_test:'
     parser.print_help()
     return retval
 

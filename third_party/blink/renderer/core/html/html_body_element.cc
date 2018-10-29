@@ -115,7 +115,7 @@ void HTMLBodyElement::ParseAttribute(
 
     SetNeedsStyleRecalc(kSubtreeStyleChange,
                         StyleChangeReasonForTracing::Create(
-                            StyleChangeReason::kLinkColorChange));
+                            style_change_reason::kLinkColorChange));
   } else if (name == onafterprintAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::afterprint,
@@ -131,7 +131,9 @@ void HTMLBodyElement::ParseAttribute(
   } else if (name == onbeforeunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::beforeunload,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        CreateAttributeEventListener(
+            GetDocument().GetFrame(), name, value,
+            JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
   } else if (name == onunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::unload,
@@ -155,7 +157,9 @@ void HTMLBodyElement::ParseAttribute(
   } else if (name == onerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::error,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        CreateAttributeEventListener(
+            GetDocument().GetFrame(), name, value,
+            JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else if (name == onfocusAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::focus,

@@ -13,6 +13,7 @@
 #include "ash/session/session_observer.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/accessibility/tray_accessibility.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/system_tray.h"
 #include "ash/system/tray/system_tray_item_detailed_view_delegate.h"
@@ -25,7 +26,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/tray_accessibility.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -131,7 +131,7 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
     controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView();
     controlled_setting_icon_->SetImage(
         gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kMenuIconColor));
-    controlled_setting_icon_->SetTooltipText(
+    controlled_setting_icon_->set_tooltip_text(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);
   }

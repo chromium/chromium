@@ -47,7 +47,8 @@ interface TCPBoundSocket {
   // already bound socket. The TCPBoundSocket will be destroyed on completion,
   // whether the call succeeds or not.
   Connect(
-      net.interfaces.IPEndPoint remote_addr,
+      net.interfaces.AddressList remote_addr_list,
+      TCPConnectedSocketOptions? tcp_connected_socket_options,
       TCPConnectedSocket& socket,
       SocketObserver? observer)
       => (int32 net_error,

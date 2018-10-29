@@ -30,7 +30,7 @@ class DirectoryDataTypeController : public DataTypeController {
 
   // Directory based data types register with backend before LoadModels in
   // BeforeLoadModels. No need to do anything in RegisterWithBackend.
-  void RegisterWithBackend(base::Callback<void(bool)> set_downloaded,
+  void RegisterWithBackend(base::OnceCallback<void(bool)> set_downloaded,
                            ModelTypeConfigurer* configurer) override;
 
   // Directory specific implementation of ActivateDataType with the
@@ -46,14 +46,14 @@ class DirectoryDataTypeController : public DataTypeController {
   // the data type's ChangeProcessor registration with the backend).
   // See ModelTypeConfigurer::DeactivateDataType for more details.
   void DeactivateDataType(ModelTypeConfigurer* configurer) override;
-  void Stop(SyncStopMetadataFate metadata_fate, StopCallback callback) final;
-  void GetAllNodes(const AllNodesCallback& callback) override;
-  void GetStatusCounters(const StatusCountersCallback& callback) override;
+  void Stop(ShutdownReason shutdown_reason, StopCallback callback) final;
+  void GetAllNodes(AllNodesCallback callback) override;
+  void GetStatusCounters(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   // Convenience overload with synchronous API, since directory types are always
   // capable of stopping immediately.
-  virtual void Stop(SyncStopMetadataFate metadata_fate) = 0;
+  virtual void Stop(ShutdownReason shutdown_reason) = 0;
 
   // Returns a ListValue representing all nodes for a specified type by querying
   // the directory.

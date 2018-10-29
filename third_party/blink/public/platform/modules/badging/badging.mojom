@@ -1,0 +1,19 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Interface for handling badge messages from frames and subframes.
+interface BadgeService {
+  // Sets a badge for the PWA corresponding to the context sending the request
+  // if such a PWA exists.
+  // TODO(estevenson): Pass the badge contents from the API. Chrome OS will be
+  // the first client and will not show the data anyway so for now this is
+  // sufficient.
+  SetBadge();
+
+  // Clear badge (if it exists) for the PWA corresponding to the context sending
+  // the request if such a PWA exists.
+  ClearBadge();
+};

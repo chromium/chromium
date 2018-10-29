@@ -12,7 +12,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
-#include "third_party/blink/public/platform/web_thread.h"
 
 namespace blink {
 namespace scheduler {
@@ -22,7 +21,6 @@ class MockRendererScheduler : public WebThreadScheduler {
   MockRendererScheduler() = default;
   ~MockRendererScheduler() override = default;
 
-  MOCK_METHOD0(CreateMainThread, std::unique_ptr<blink::WebThread>());
   MOCK_METHOD0(DefaultTaskRunner,
                scoped_refptr<base::SingleThreadTaskRunner>());
   MOCK_METHOD0(CompositorTaskRunner,

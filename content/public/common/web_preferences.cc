@@ -20,22 +20,22 @@ const char kCommonScript[] = "Zyyy";
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
 
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_MAC, WebSettings::kEditingBehaviorMac);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_WIN, WebSettings::kEditingBehaviorWin);
-STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_UNIX, WebSettings::kEditingBehaviorUnix);
+STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_MAC, WebSettings::EditingBehavior::kMac);
+STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_WIN, WebSettings::EditingBehavior::kWin);
+STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_UNIX, WebSettings::EditingBehavior::kUnix);
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_ANDROID,
-                   WebSettings::kEditingBehaviorAndroid);
+                   WebSettings::EditingBehavior::kAndroid);
 
 STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_DEFAULT,
-                   WebSettings::kV8CacheOptionsDefault);
-STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_NONE, WebSettings::kV8CacheOptionsNone);
-STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_CODE, WebSettings::kV8CacheOptionsCode);
+                   WebSettings::V8CacheOptions::kDefault);
+STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_NONE, WebSettings::V8CacheOptions::kNone);
+STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_CODE, WebSettings::V8CacheOptions::kCode);
 STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_CODE_WITHOUT_HEAT_CHECK,
-                   WebSettings::kV8CacheOptionsCodeWithoutHeatCheck);
+                   WebSettings::V8CacheOptions::kCodeWithoutHeatCheck);
 STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_FULLCODE_WITHOUT_HEAT_CHECK,
-                   WebSettings::kV8CacheOptionsFullCodeWithoutHeatCheck);
+                   WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck);
 STATIC_ASSERT_ENUM(V8_CACHE_OPTIONS_LAST,
-                   WebSettings::kV8CacheOptionsFullCodeWithoutHeatCheck);
+                   WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck);
 
 STATIC_ASSERT_ENUM(SavePreviousDocumentResources::NEVER,
                    WebSettings::SavePreviousDocumentResources::kNever);
@@ -46,11 +46,11 @@ STATIC_ASSERT_ENUM(SavePreviousDocumentResources::UNTIL_ON_LOAD,
                    WebSettings::SavePreviousDocumentResources::kUntilOnLoad);
 
 STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ALLOWED,
-                   WebSettings::kImageAnimationPolicyAllowed);
+                   WebSettings::ImageAnimationPolicy::kAllowed);
 STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ANIMATION_ONCE,
-                   WebSettings::kImageAnimationPolicyAnimateOnce);
+                   WebSettings::ImageAnimationPolicy::kAnimateOnce);
 STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_NO_ANIMATION,
-                   WebSettings::kImageAnimationPolicyNoAnimation);
+                   WebSettings::ImageAnimationPolicy::kNoAnimation);
 
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_NONE, blink::kPointerTypeNone);
 STATIC_ASSERT_ENUM(ui::POINTER_TYPE_COARSE, blink::kPointerTypeCoarse);
@@ -187,12 +187,15 @@ WebPreferences::WebPreferences()
       user_gesture_required_for_presentation(true),
       text_track_margin_percentage(0.0f),
       immersive_mode_enabled(false),
+#if defined(OS_ANDROID) || defined(OS_MACOSX)
+      double_tap_to_zoom_enabled(true),
+#else
+      double_tap_to_zoom_enabled(false),
+#endif
 #if !defined(OS_ANDROID)
       text_autosizing_enabled(false),
-      double_tap_to_zoom_enabled(false),
 #else
       text_autosizing_enabled(true),
-      double_tap_to_zoom_enabled(true),
       font_scale_factor(1.0f),
       device_scale_adjustment(1.0f),
       force_enable_zoom(false),

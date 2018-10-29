@@ -90,7 +90,7 @@ def check_virtual_test_suites(host, options):
         comps = [layout_tests_dir] + suite.name.split('/') + ['README.txt']
         path_to_readme = fs.join(*comps)
         if not fs.exists(path_to_readme):
-            failure = 'LayoutTests/%s/README.txt is missing (each virtual suite must have one).' % suite.name
+            failure = '{} is missing (each virtual suite must have one).'.format(path_to_readme)
             _log.error(failure)
             failures.append(failure)
     if failures:

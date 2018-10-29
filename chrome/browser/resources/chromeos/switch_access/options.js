@@ -4,43 +4,41 @@
 
 /**
  * Class to manage the options page.
- *
- * @constructor
  */
-function SwitchAccessOptions() {
-  let background = chrome.extension.getBackgroundPage();
+class SwitchAccessOptions {
+  constructor() {
+    const background = chrome.extension.getBackgroundPage();
 
-  /**
-   * SwitchAccess reference.
-   *
-   * @private {SwitchAccessInterface}
-   */
-  this.switchAccess_ = background.switchAccess;
+    /**
+     * SwitchAccess reference.
+     * @private {!SwitchAccessInterface}
+     */
+    this.switchAccess_ = background.switchAccess;
 
-  this.init_();
-  document.addEventListener('change', this.handleInputChange_.bind(this));
-  background.document.addEventListener(
-      'prefsUpdate', this.handlePrefsUpdate_.bind(this));
-}
+    this.init_();
 
-SwitchAccessOptions.prototype = {
+    document.addEventListener('change', this.handleInputChange_.bind(this));
+    background.document.addEventListener(
+        'prefsUpdate', this.handlePrefsUpdate_.bind(this));
+  }
+
   /**
    * Initialize the options page by setting all elements representing a user
    * preference to show the correct value.
    *
    * @private
    */
-  init_: function() {
+  init_() {
     document.getElementById('enableAutoScan').checked =
         this.switchAccess_.getBooleanPref('enableAutoScan');
     document.getElementById('autoScanTime').value =
         this.switchAccess_.getNumberPref('autoScanTime') / 1000;
 
-    for (let command of this.switchAccess_.getCommands()) {
+    for (const command of this.switchAccess_.getCommands()) {
       document.getElementById(command).value =
           String.fromCharCode(this.switchAccess_.getNumberPref(command));
     }
-  },
+  }
 
   /**
    * Handle a change by the user to an element representing a user preference.
@@ -48,16 +46,16 @@ SwitchAccessOptions.prototype = {
    * @param {!Event} event
    * @private
    */
-  handleInputChange_: function(event) {
-    let input = event.target;
+  handleInputChange_(event) {
+    const input = event.target;
     switch (input.id) {
       case 'enableAutoScan':
         this.switchAccess_.setPref(input.id, input.checked);
         break;
       case 'autoScanTime':
-        let oldVal = this.switchAccess_.getNumberPref(input.id);
-        let val = Number(input.value) * 1000;
-        let min = Number(input.min) * 1000;
+        const oldVal = this.switchAccess_.getNumberPref(input.id);
+        const val = Number(input.value) * 1000;
+        const min = Number(input.min) * 1000;
         if (this.isValidScanTimeInput_(val, oldVal, min)) {
           input.value = Number(input.value);
           this.switchAccess_.setPref(input.id, val);
@@ -67,17 +65,17 @@ SwitchAccessOptions.prototype = {
         break;
       default:
         if (this.switchAccess_.getCommands().includes(input.id)) {
-          let keyCode = input.value.toUpperCase().charCodeAt(0);
+          const keyCode = input.value.toUpperCase().charCodeAt(0);
           if (this.isValidKeyCode_(keyCode)) {
             input.value = input.value.toUpperCase();
             this.switchAccess_.setPref(input.id, keyCode);
           } else {
-            let oldKeyCode = this.switchAccess_.getNumberPref(input.id);
+            const oldKeyCode = this.switchAccess_.getNumberPref(input.id);
             input.value = String.fromCharCode(oldKeyCode);
           }
         }
     }
-  },
+  }
 
   /**
    * Return true if |keyCode| is a letter or number, and if it is not already
@@ -86,11 +84,11 @@ SwitchAccessOptions.prototype = {
    * @param {number} keyCode
    * @return {boolean}
    */
-  isValidKeyCode_: function(keyCode) {
+  isValidKeyCode_(keyCode) {
     return ((keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0)) ||
             (keyCode >= 'A'.charCodeAt(0) && keyCode <= 'Z'.charCodeAt(0))) &&
         !this.switchAccess_.keyCodeIsUsed(keyCode);
-  },
+  }
 
   /**
    * Return true if the input is a valid autoScanTime input. Otherwise, return
@@ -101,9 +99,9 @@ SwitchAccessOptions.prototype = {
    * @param {number} min
    * @return {boolean}
    */
-  isValidScanTimeInput_: function(value, oldValue, min) {
+  isValidScanTimeInput_(value, oldValue, min) {
     return (value !== oldValue) && (value >= min);
-  },
+  }
 
   /**
    * Handle a change in user preferences.
@@ -111,8 +109,8 @@ SwitchAccessOptions.prototype = {
    * @param {!Event} event
    * @private
    */
-  handlePrefsUpdate_: function(event) {
-    let updatedPrefs = event.detail;
+  handlePrefsUpdate_(event) {
+    const updatedPrefs = event.detail;
     for (let key of Object.keys(updatedPrefs)) {
       switch (key) {
         case 'enableAutoScan':
@@ -128,7 +126,7 @@ SwitchAccessOptions.prototype = {
       }
     }
   }
-};
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   new SwitchAccessOptions();

@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FILE_CHOOSER_COMPLETION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FILE_CHOOSER_COMPLETION_H_
 
+#include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -44,7 +46,7 @@ class WebFileChooserCompletion {
  public:
   struct SelectedFileInfo {
     // The actual path of the selected file.
-    WebString path;
+    base::FilePath file_path;
 
     // The display name of the file that is to be exposed as File.name in
     // the DOM layer. If it is empty the base part of the |path| is used.
@@ -55,11 +57,11 @@ class WebFileChooserCompletion {
 
     // Metadata of non-native file.
     // 0 is Unix epoch, unit is sec.
-    double modification_time;
+    base::Time modification_time;
     long long length;
     bool is_directory;
 
-    SelectedFileInfo() : modification_time(0), length(0), is_directory(false) {}
+    SelectedFileInfo() : length(0), is_directory(false) {}
   };
 
   // Called with zero or more file names. Zero-length vector means that

@@ -4,6 +4,8 @@
 
 #include "components/sync/driver/fake_data_type_controller.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/model/data_type_error_handler_impl.h"
@@ -54,16 +56,15 @@ void FakeDataTypeController::LoadModels(
 }
 
 void FakeDataTypeController::RegisterWithBackend(
-    base::Callback<void(bool)> set_downloaded,
+    base::OnceCallback<void(bool)> set_downloaded,
     ModelTypeConfigurer* configurer) {
   ++register_with_backend_call_count_;
 }
 
 // MODEL_LOADED -> MODEL_STARTING.
-void FakeDataTypeController::StartAssociating(
-    const StartCallback& start_callback) {
+void FakeDataTypeController::StartAssociating(StartCallback start_callback) {
   DCHECK(CalledOnValidThread());
-  last_start_callback_ = start_callback;
+  last_start_callback_ = std::move(start_callback);
   state_ = ASSOCIATING;
 }
 
@@ -72,7 +73,7 @@ void FakeDataTypeController::StartAssociating(
 void FakeDataTypeController::FinishStart(ConfigureResult result) {
   DCHECK(CalledOnValidThread());
   // We should have a callback from Start().
-  if (last_start_callback_.is_null()) {
+  if (!last_start_callback_) {
     ADD_FAILURE();
     return;
   }
@@ -98,11 +99,12 @@ void FakeDataTypeController::FinishStart(ConfigureResult result) {
   } else {
     NOTREACHED();
   }
-  last_start_callback_.Run(result, local_merge_result, syncer_merge_result);
+  std::move(last_start_callback_)
+      .Run(result, local_merge_result, syncer_merge_result);
 }
 
 // * -> NOT_RUNNING
-void FakeDataTypeController::Stop(SyncStopMetadataFate metadata_fate) {
+void FakeDataTypeController::Stop(ShutdownReason shutdown_reason) {
   DCHECK(CalledOnValidThread());
   if (state() == MODEL_STARTING) {
     // Real data type controllers run the callback and specify "ABORTED" as an
@@ -111,7 +113,7 @@ void FakeDataTypeController::Stop(SyncStopMetadataFate metadata_fate) {
     SimulateModelLoadFinishing();
   }
 
-  if (metadata_fate == CLEAR_METADATA)
+  if (shutdown_reason == DISABLE_SYNC)
     ++clear_metadata_call_count_;
 
   state_ = NOT_RUNNING;
@@ -158,7 +160,7 @@ FakeDataTypeController::CreateErrorHandler() {
   DCHECK(CalledOnValidThread());
   return std::make_unique<DataTypeErrorHandlerImpl>(
       base::SequencedTaskRunnerHandle::Get(), base::Closure(),
-      base::Bind(model_load_callback_, type()));
+      base::BindRepeating(model_load_callback_, type()));
 }
 
 }  // namespace syncer

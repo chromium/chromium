@@ -77,18 +77,21 @@ DeviceFactoryMediaToMojoAdapter::ActiveDeviceEntry::operator=(
     DeviceFactoryMediaToMojoAdapter::ActiveDeviceEntry&& other) = default;
 
 DeviceFactoryMediaToMojoAdapter::DeviceFactoryMediaToMojoAdapter(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref,
     std::unique_ptr<media::VideoCaptureSystem> capture_system,
     media::MojoJpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
     scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner)
-    : service_ref_(std::move(service_ref)),
-      capture_system_(std::move(capture_system)),
+    : capture_system_(std::move(capture_system)),
       jpeg_decoder_factory_callback_(std::move(jpeg_decoder_factory_callback)),
       jpeg_decoder_task_runner_(std::move(jpeg_decoder_task_runner)),
       has_called_get_device_infos_(false),
       weak_factory_(this) {}
 
 DeviceFactoryMediaToMojoAdapter::~DeviceFactoryMediaToMojoAdapter() = default;
+
+void DeviceFactoryMediaToMojoAdapter::SetServiceRef(
+    std::unique_ptr<service_manager::ServiceContextRef> service_ref) {
+  service_ref_ = std::move(service_ref);
+}
 
 void DeviceFactoryMediaToMojoAdapter::GetDeviceInfos(
     GetDeviceInfosCallback callback) {
@@ -129,6 +132,7 @@ void DeviceFactoryMediaToMojoAdapter::CreateDevice(
   capture_system_->GetDeviceInfosAsync(
       base::Bind(&DiscardDeviceInfosAndCallContinuation,
                  base::Passed(&create_and_add_new_device_cb)));
+  has_called_get_device_infos_ = true;
 }
 
 void DeviceFactoryMediaToMojoAdapter::AddSharedMemoryVirtualDevice(
@@ -145,10 +149,16 @@ void DeviceFactoryMediaToMojoAdapter::AddTextureVirtualDevice(
   NOTIMPLEMENTED();
 }
 
+void DeviceFactoryMediaToMojoAdapter::RegisterVirtualDevicesChangedObserver(
+    mojom::DevicesChangedObserverPtr observer) {
+  NOTIMPLEMENTED();
+}
+
 void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
     const std::string& device_id,
     mojom::DeviceRequest device_request,
     CreateDeviceCallback callback) {
+  DCHECK(service_ref_);
   std::unique_ptr<media::VideoCaptureDevice> media_device =
       capture_system_->CreateDevice(device_id);
   if (media_device == nullptr) {

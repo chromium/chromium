@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/optional.h"
+#include "base/task/post_task.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -15,6 +16,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -38,8 +40,8 @@ void BackgroundFetchServiceImpl::CreateForWorker(
     const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           BackgroundFetchServiceImpl::CreateOnIoThread,
           WrapRefCounted(static_cast<StoragePartitionImpl*>(
@@ -60,8 +62,8 @@ void BackgroundFetchServiceImpl::CreateForFrame(
       RenderFrameHost::FromID(render_process_host->GetID(), render_frame_id);
   DCHECK(render_frame_host);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           BackgroundFetchServiceImpl::CreateOnIoThread,
           WrapRefCounted(static_cast<StoragePartitionImpl*>(

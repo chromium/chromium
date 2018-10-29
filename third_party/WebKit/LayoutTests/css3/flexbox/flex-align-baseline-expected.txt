@@ -29,6 +29,7 @@ PASS firstChild.offsetTop is lastChild.offsetTop
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 horizontal-tb ltr row
 horizontal-tb rtl row
 horizontal-tb ltr column
@@ -53,4 +54,3 @@ vertical-rl ltr row-reverse
 vertical-rl rtl row-reverse
 vertical-rl ltr column-reverse
 vertical-rl rtl column-reverse
-

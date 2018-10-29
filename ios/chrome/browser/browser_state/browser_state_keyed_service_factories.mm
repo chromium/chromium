@@ -27,7 +27,7 @@
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
-#include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#include "ios/chrome/browser/invalidation/ios_chrome_deprecated_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
@@ -116,7 +116,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSChromeFaviconLoaderFactory::GetInstance();
   IOSChromeContentSuggestionsServiceFactory::GetInstance();
   IOSChromePasswordStoreFactory::GetInstance();
-  IOSChromeProfileInvalidationProviderFactory::GetInstance();
+  IOSChromeDeprecatedProfileInvalidationProviderFactory::GetInstance();
   ModelTypeStoreServiceFactory::GetInstance();
   ProfileSyncServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();

@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/cocoa/system_hotkey_map.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -62,11 +63,9 @@ void SystemHotkeyHelperMac::LoadSystemHotkeys() {
   // will destroy the object.
   NSDictionary* dictionary = [SystemHotkeyMap::DictionaryFromData(data) retain];
 
-  BrowserThread::PostTask(BrowserThread::UI,
-                          FROM_HERE,
-                          base::Bind(&SystemHotkeyHelperMac::FileDidLoad,
-                                     base::Unretained(this),
-                                     dictionary));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(&SystemHotkeyHelperMac::FileDidLoad,
+                                      base::Unretained(this), dictionary));
 }
 
 void SystemHotkeyHelperMac::FileDidLoad(NSDictionary* dictionary) {

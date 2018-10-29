@@ -19,6 +19,11 @@ extensions::ExtensionHost* GetAccessibilityExtensionHost(
 void ForwardKeyToExtension(const ui::KeyEvent& key_event,
                            extensions::ExtensionHost* host);
 
+// Forwards the mouse event to the extension background page for the
+// corresponding host.
+void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
+                             extensions::ExtensionHost* host);
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_EVENT_HANDLER_COMMON_H_

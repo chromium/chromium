@@ -158,6 +158,13 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
   sign_out_button_ = new SignOutButton(this);
   container_->AddSignOutButton(sign_out_button_);
 
+  bool reboot = Shell::Get()->shutdown_controller()->reboot_on_shutdown();
+  power_button_ = new TopShortcutButton(
+      this, kUnifiedMenuPowerIcon,
+      reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN);
+  power_button_->set_id(VIEW_ID_POWER_BUTTON);
+  container_->AddChildView(power_button_);
+
   lock_button_ = new TopShortcutButton(this, kUnifiedMenuLockIcon,
                                        IDS_ASH_STATUS_TRAY_LOCK);
   lock_button_->SetVisible(can_show_web_ui &&
@@ -168,13 +175,6 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
                                            IDS_ASH_STATUS_TRAY_SETTINGS);
   settings_button_->SetVisible(can_show_web_ui);
   container_->AddChildView(settings_button_);
-
-  bool reboot = Shell::Get()->shutdown_controller()->reboot_on_shutdown();
-  power_button_ = new TopShortcutButton(
-      this, kUnifiedMenuPowerIcon,
-      reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN);
-  power_button_->set_id(VIEW_ID_POWER_BUTTON);
-  container_->AddChildView(power_button_);
 
   // |collapse_button_| should be right-aligned, so we make the buttons
   // container flex occupying all remaining space.

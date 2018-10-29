@@ -70,7 +70,9 @@ suite('OnStartupPage', function() {
   }
 
   function getSelectedOptionLabel() {
-    return testElement.$.onStartupRadioGroup.querySelector('.iron-selected')
+    return Array
+        .from(testElement.root.querySelectorAll('controlled-radio-button'))
+        .find(el => el.name == testElement.$.onStartupRadioGroup.selected)
         .label;
   }
 

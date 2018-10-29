@@ -34,7 +34,7 @@ class CTVerifier;
 class HttpProxyClientSocketPool;
 class HostResolver;
 class NetLog;
-class NetworkQualityProvider;
+class NetworkQualityEstimator;
 class SocketPerformanceWatcherFactory;
 class SOCKSClientSocketPool;
 class SSLClientSocketPool;
@@ -51,7 +51,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
       NetLog* net_log,
       ClientSocketFactory* socket_factory,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
-      NetworkQualityProvider* network_quality_provider,
+      NetworkQualityEstimator* network_quality_estimator,
       HostResolver* host_resolver,
       CertVerifier* cert_verifier,
       ChannelIDService* channel_id_service,
@@ -103,7 +103,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   NetLog* const net_log_;
   ClientSocketFactory* const socket_factory_;
   SocketPerformanceWatcherFactory* socket_performance_watcher_factory_;
-  NetworkQualityProvider* network_quality_provider_;
+  NetworkQualityEstimator* network_quality_estimator_;
   HostResolver* const host_resolver_;
   CertVerifier* const cert_verifier_;
   ChannelIDService* const channel_id_service_;

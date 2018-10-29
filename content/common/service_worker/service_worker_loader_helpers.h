@@ -38,17 +38,15 @@ class ServiceWorkerLoaderHelpers {
   // Otherwise returns base::nullopt.
   static base::Optional<net::RedirectInfo> ComputeRedirectInfo(
       const network::ResourceRequest& original_request,
-      const network::ResourceResponseHead& response_head,
-      bool token_binding_negotiated);
+      const network::ResourceResponseHead& response_head);
 
-  // Reads |blob| using the range in |headers| (if any), writing into
-  // |handle_out|. Calls |on_blob_read_complete| when done or if an error
-  // occurred. Returns a net error code if the inputs were invalid and reading
-  // couldn't start. In that case |on_blob_read_complete| isn't called.
+  // Reads |blob| into |handle_out|. Calls |on_blob_read_complete| when done or
+  // if an error occurred. Currently this always returns net::OK but
+  // the plan is to return an error if reading couldn't start, in
+  // which case |on_blob_read_complete| isn't called.
   static int ReadBlobResponseBody(
       blink::mojom::BlobPtr* blob,
       uint64_t blob_size,
-      const net::HttpRequestHeaders& headers,
       base::OnceCallback<void(int net_error)> on_blob_read_complete,
       mojo::ScopedDataPipeConsumerHandle* handle_out);
 };

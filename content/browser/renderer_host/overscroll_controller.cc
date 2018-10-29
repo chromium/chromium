@@ -531,6 +531,8 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
   if (overscroll_mode_ == OVERSCROLL_NONE)
     return false;
 
+  overscroll_ignored_ = false;
+
   // Tell the delegate about the overscroll update so that it can update
   // the display accordingly (e.g. show history preview etc.).
   if (delegate_) {

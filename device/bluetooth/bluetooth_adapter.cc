@@ -171,7 +171,7 @@ void BluetoothAdapter::AddPairingDelegate(
   RemovePairingDelegate(pairing_delegate);
 
   // Find the first point with a lower priority, or the end of the list.
-  std::list<PairingDelegatePair>::iterator iter = pairing_delegates_.begin();
+  auto iter = pairing_delegates_.begin();
   while (iter != pairing_delegates_.end() && iter->second >= priority)
     ++iter;
 
@@ -180,8 +180,8 @@ void BluetoothAdapter::AddPairingDelegate(
 
 void BluetoothAdapter::RemovePairingDelegate(
     BluetoothDevice::PairingDelegate* pairing_delegate) {
-  for (std::list<PairingDelegatePair>::iterator iter =
-       pairing_delegates_.begin(); iter != pairing_delegates_.end(); ++iter) {
+  for (auto iter = pairing_delegates_.begin(); iter != pairing_delegates_.end();
+       ++iter) {
     if (iter->first == pairing_delegate) {
       RemovePairingDelegateInternal(pairing_delegate);
       pairing_delegates_.erase(iter);
@@ -369,9 +369,7 @@ void BluetoothAdapter::MarkDiscoverySessionsAsInactive() {
   // |discovery_sessions_|. To avoid invalidating the iterator, make a copy
   // here.
   std::set<BluetoothDiscoverySession*> temp(discovery_sessions_);
-  for (std::set<BluetoothDiscoverySession*>::iterator
-          iter = temp.begin();
-       iter != temp.end(); ++iter) {
+  for (auto iter = temp.begin(); iter != temp.end(); ++iter) {
     (*iter)->MarkAsInactive();
   }
 }

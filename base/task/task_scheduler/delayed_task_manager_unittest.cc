@@ -37,8 +37,7 @@ void RunTask(Task task) {
 Task ConstructMockedTask(testing::StrictMock<MockTask>& mock_task,
                          TimeTicks now,
                          TimeDelta delay) {
-  Task task = Task(FROM_HERE, BindOnce(&MockTask::Run, Unretained(&mock_task)),
-                   TaskTraits(), delay);
+  Task task(FROM_HERE, BindOnce(&MockTask::Run, Unretained(&mock_task)), delay);
   // The constructor of Task computes |delayed_run_time| by adding |delay| to
   // the real time. Recompute it by adding |delay| to the given |now| (usually
   // mock time).

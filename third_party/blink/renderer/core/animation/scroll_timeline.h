@@ -57,6 +57,14 @@ class CORE_EXPORT ScrollTimeline final : public AnimationTimeline {
 
   ScrollDirection GetOrientation() const { return orientation_; }
 
+  void GetCurrentAndMaxOffset(const LayoutBox*,
+                              double& current_offset,
+                              double& max_offset) const;
+  void ResolveScrollStartAndEnd(const LayoutBox*,
+                                double max_offset,
+                                double& resolved_start_scroll_offset,
+                                double& resolved_end_scroll_offset) const;
+
   // Must be called when this ScrollTimeline is attached/detached from an
   // animation.
   void AttachAnimation();

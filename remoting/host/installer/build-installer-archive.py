@@ -21,6 +21,10 @@ import subprocess
 import sys
 import zipfile
 
+sys.path.append(os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
+    "build", "android", "gyp"))
+from util import build_utils
 
 def cleanDir(dir):
   """Deletes and recreates the dir to make sure it is clean.
@@ -52,23 +56,6 @@ def buildDefDictionary(definitions):
     (key, val) = d.split('=')
     defs[key] = val
   return defs
-
-
-def createZip(zip_path, directory):
-  """Creates a zipfile at zip_path for the given directory.
-
-  Args:
-    zip_path: Path to zip file to create.
-    directory: Directory with contents to archive.
-  """
-  zipfile_base = os.path.splitext(os.path.basename(zip_path))[0]
-  zip = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
-  for (root, dirs, files) in os.walk(directory):
-    for f in files:
-      full_path = os.path.join(root, f)
-      rel_path = os.path.relpath(full_path, directory)
-      zip.write(full_path, os.path.join(zipfile_base, rel_path))
-  zip.close()
 
 
 def remapSrcFile(dst_root, src_roots, src_file):
@@ -206,7 +193,10 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
     else:
       shutil.copy2(bs, dst_file)
 
-  createZip(zip_path, temp_dir)
+  build_utils.ZipDir(
+    zip_path, temp_dir,
+    compress_fn=lambda _: zipfile.ZIP_DEFLATED,
+    zip_prefix_path=os.path.splitext(os.path.basename(zip_path))[0])
 
 
 def error(msg):

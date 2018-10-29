@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Should have removed only one BOM from frame 0
-FAIL Should have removed only one BOM from frame 1 assert_equals: expected "﻿" but got "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
-FAIL Should have removed only one BOM from frame 2 assert_equals: expected "﻿" but got "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
-Harness: the test ran to completion.
-

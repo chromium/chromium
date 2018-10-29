@@ -4,5 +4,6 @@
 
 :root {
   --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
+  --oobe-default-font-family: Roboto, sans-serif;
   --oobe-title-font-family: "Google Sans", Roboto, sans-serif;
 }

@@ -16,8 +16,10 @@ namespace network {
 ProxyResolvingSocketMojo::ProxyResolvingSocketMojo(
     std::unique_ptr<ProxyResolvingClientSocket> socket,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    mojom::SocketObserverPtr observer,
     TLSSocketFactory* tls_socket_factory)
-    : tls_socket_factory_(tls_socket_factory),
+    : observer_(std::move(observer)),
+      tls_socket_factory_(tls_socket_factory),
       socket_(std::move(socket)),
       traffic_annotation_(traffic_annotation) {}
 
@@ -112,8 +114,16 @@ void ProxyResolvingSocketMojo::OnConnectCompleted(int result) {
            std::move(send_pipe.producer_handle));
 }
 
-void ProxyResolvingSocketMojo::OnNetworkReadError(int net_error) {}
-void ProxyResolvingSocketMojo::OnNetworkWriteError(int net_error) {}
+void ProxyResolvingSocketMojo::OnNetworkReadError(int net_error) {
+  if (observer_)
+    observer_->OnReadError(net_error);
+}
+
+void ProxyResolvingSocketMojo::OnNetworkWriteError(int net_error) {
+  if (observer_)
+    observer_->OnWriteError(net_error);
+}
+
 void ProxyResolvingSocketMojo::OnShutdown() {
   socket_data_pump_ = nullptr;
   if (!pending_upgrade_to_tls_callback_.is_null())

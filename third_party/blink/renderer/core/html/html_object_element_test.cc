@@ -37,7 +37,7 @@ TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
 
   GetDocument().View()->UpdateAllLifecyclePhases();
 
-  object->RenderFallbackContent();
+  object->RenderFallbackContent(nullptr);
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle(kForce);
 

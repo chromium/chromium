@@ -243,8 +243,8 @@ void FastUnloadController::CancelWindowClose() {
   DCHECK(is_attempting_to_close_browser_);
   tabs_needing_before_unload_.clear();
   CancelTabNeedingBeforeUnloadAck();
-  for (WebContentsSet::iterator it = tabs_needing_unload_.begin();
-       it != tabs_needing_unload_.end(); it++) {
+  for (auto it = tabs_needing_unload_.begin(); it != tabs_needing_unload_.end();
+       it++) {
     content::WebContents* contents = *it;
 
     CoreTabHelper* core_tab_helper = CoreTabHelper::FromWebContents(contents);
@@ -299,25 +299,32 @@ void FastUnloadController::Observe(
 ////////////////////////////////////////////////////////////////////////////////
 // FastUnloadController, TabStripModelObserver implementation:
 
-void FastUnloadController::TabInsertedAt(TabStripModel* tab_strip_model,
-                                         content::WebContents* contents,
-                                         int index,
-                                         bool foreground) {
-  TabAttachedImpl(contents);
-}
+void FastUnloadController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() != TabStripModelChange::kInserted &&
+      change.type() != TabStripModelChange::kRemoved &&
+      change.type() != TabStripModelChange::kReplaced)
+    return;
 
-void FastUnloadController::TabDetachedAt(content::WebContents* contents,
-                                         int index,
-                                         bool was_active) {
-  TabDetachedImpl(contents);
-}
+  for (const auto& delta : change.deltas()) {
+    content::WebContents* new_contents = nullptr;
+    content::WebContents* old_contents = nullptr;
+    if (change.type() == TabStripModelChange::kInserted) {
+      new_contents = delta.insert.contents;
+    } else if (change.type() == TabStripModelChange::kReplaced) {
+      new_contents = delta.replace.new_contents;
+      old_contents = delta.replace.old_contents;
+    } else {
+      old_contents = delta.remove.contents;
+    }
 
-void FastUnloadController::TabReplacedAt(TabStripModel* tab_strip_model,
-                                         content::WebContents* old_contents,
-                                         content::WebContents* new_contents,
-                                         int index) {
-  TabDetachedImpl(old_contents);
-  TabAttachedImpl(new_contents);
+    if (old_contents)
+      TabDetachedImpl(old_contents);
+    if (new_contents)
+      TabAttachedImpl(new_contents);
+  }
 }
 
 void FastUnloadController::TabStripEmpty() {
@@ -403,7 +410,7 @@ void FastUnloadController::ProcessPendingTabs(bool skip_beforeunload) {
                                   tabs_needing_before_unload_.end());
       tabs_needing_before_unload_.clear();
     } else {
-      WebContentsSet::iterator it = tabs_needing_before_unload_.begin();
+      auto it = tabs_needing_before_unload_.begin();
       content::WebContents* contents = *it;
       tabs_needing_before_unload_.erase(it);
       // Null check render_view_host here as this gets called on a PostTask and
@@ -445,9 +452,9 @@ void FastUnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     browser_->OnWindowClosing();
 
     // Run unload handlers detached since no more interaction is possible.
-    WebContentsSet::iterator it = tabs_needing_unload_.begin();
+    auto it = tabs_needing_unload_.begin();
     while (it != tabs_needing_unload_.end()) {
-      WebContentsSet::iterator current = it++;
+      auto current = it++;
       content::WebContents* contents = *current;
       tabs_needing_unload_.erase(current);
       // Null check render_view_host here as this gets called on a PostTask

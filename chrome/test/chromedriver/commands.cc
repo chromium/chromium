@@ -316,7 +316,7 @@ void ExecuteSessionCommand(
     const base::DictionaryValue& params,
     const std::string& session_id,
     const CommandCallback& callback) {
-  SessionThreadMap::iterator iter = session_thread_map->find(session_id);
+  auto iter = session_thread_map->find(session_id);
   if (iter == session_thread_map->end()) {
     Status status(return_ok_without_session ? kOk : kInvalidSessionId);
     callback.Run(status, std::unique_ptr<base::Value>(), session_id,

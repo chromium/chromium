@@ -246,7 +246,7 @@ InputMethodPrivateShowInputViewFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled()) {
+  if (keyboard_controller->IsEnabled()) {
     keyboard_controller->ShowKeyboard(false);
     return RespondNow(NoArguments());
   }
@@ -258,7 +258,7 @@ InputMethodPrivateShowInputViewFunction::Run() {
   // for now. And re-disables it after showing once.
   keyboard::SetAccessibilityKeyboardEnabled(true);
   keyboard_controller = keyboard::KeyboardController::Get();
-  if (!keyboard_controller->enabled()) {
+  if (!keyboard_controller->IsEnabled()) {
     keyboard::SetAccessibilityKeyboardEnabled(false);
     return RespondNow(Error(kErrorFailToShowInputView));
   }

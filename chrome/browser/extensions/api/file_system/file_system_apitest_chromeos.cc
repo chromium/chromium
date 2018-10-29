@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/chromeos_features.h"
 #include "components/drive/chromeos/file_system_interface.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -117,6 +119,10 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
  public:
   FileSystemApiTestForDrive() {}
 
+  bool SetUpUserDataDirectory() override {
+    return drive::SetUpUserDataDirectoryForDriveFsTest();
+  }
+
   // Sets up fake Drive service for tests (this has to be injected before the
   // real DriveIntegrationService instance is created.)
   void SetUpInProcessBrowserTestFixture() override {
@@ -138,13 +144,15 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
 
-    std::unique_ptr<drive::ResourceEntry> entry;
-    drive::FileError error = drive::FILE_ERROR_FAILED;
-    integration_service_->file_system()->GetResourceEntry(
-        base::FilePath::FromUTF8Unsafe("drive/root"),  // whatever
-        google_apis::test_util::CreateCopyResultCallback(&error, &entry));
-    content::RunAllTasksUntilIdle();
-    ASSERT_EQ(drive::FILE_ERROR_OK, error);
+    if (!base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
+      std::unique_ptr<drive::ResourceEntry> entry;
+      drive::FileError error = drive::FILE_ERROR_FAILED;
+      integration_service_->file_system()->GetResourceEntry(
+          base::FilePath::FromUTF8Unsafe("drive/root"),  // whatever
+          google_apis::test_util::CreateCopyResultCallback(&error, &entry));
+      content::RunAllTasksUntilIdle();
+      ASSERT_EQ(drive::FILE_ERROR_OK, error);
+    }
   }
 
   void TearDown() override {
@@ -152,10 +160,18 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     PlatformAppBrowserTest::TearDown();
   };
 
+  base::FilePath GetDriveMountPoint() {
+    if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
+      return drivefs_mount_point_;
+    } else {
+      return drive::util::GetDriveMountPointPath(browser()->profile());
+    }
+  }
+
  private:
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
-    // Ignore signin profile.
+    // Ignore signin and lock screen apps profile.
     if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
             chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
@@ -167,15 +183,22 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     DCHECK(!fake_drive_service_);
     fake_drive_service_ = new drive::FakeDriveService;
 
+    CHECK(drivefs_root_.CreateUniqueTempDir());
+    drivefs_mount_point_ = drivefs_root_.GetPath().Append("drive-user");
+    fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
+        profile, drivefs_mount_point_);
+
     SetUpTestFileHierarchy();
 
     integration_service_ = new drive::DriveIntegrationService(
-        profile, nullptr, fake_drive_service_, std::string(),
-        test_cache_root_.GetPath(), nullptr);
+        profile, nullptr, fake_drive_service_, "", test_cache_root_.GetPath(),
+        nullptr,
+        fake_drivefs_helper_->CreateFakeDriveFsConnectionDelegateFactory());
     return integration_service_;
   }
 
   void SetUpTestFileHierarchy() {
+    CHECK(base::CreateDirectory(drivefs_mount_point_.Append("root")));
     const std::string root = fake_drive_service_->GetRootResourceId();
     AddTestFile("open_existing.txt", "Can you see me?", root);
     AddTestFile("open_existing1.txt", "Can you see me?", root);
@@ -192,6 +215,11 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
                    const std::string& parent_id) {
     fake_drive_service_->AddNewFile("text/plain", data, parent_id, title, false,
                                     base::Bind(&IgnoreDriveEntryResult));
+    base::FilePath parent_path = drivefs_mount_point_.Append("root");
+    if (parent_id == "subdir_resource_id") {
+      parent_path = parent_path.Append("subdir");
+    }
+    CHECK(base::WriteFile(parent_path.Append(title), data.data(), data.size()));
   }
 
   void AddTestDirectory(const std::string& resource_id,
@@ -200,10 +228,15 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     fake_drive_service_->AddNewDirectoryWithResourceId(
         resource_id, parent_id, title, drive::AddNewDirectoryOptions(),
         base::Bind(&IgnoreDriveEntryResult));
+    CHECK(base::CreateDirectory(
+        drivefs_mount_point_.Append("root").Append(title)));
   }
 
   base::ScopedTempDir test_cache_root_;
+  base::ScopedTempDir drivefs_root_;
+  base::FilePath drivefs_mount_point_;
   drive::FakeDriveService* fake_drive_service_ = nullptr;
+  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
   drive::DriveIntegrationService* integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
@@ -216,10 +249,28 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
  public:
   FileSystemApiTestForRequestFileSystem() : fake_user_manager_(nullptr) {}
 
+  bool SetUpUserDataDirectory() override {
+    return drive::SetUpUserDataDirectoryForDriveFsTest();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformAppBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         extensions::switches::kWhitelistedExtensionID, kTestingExtensionId);
+  }
+
+  // Sets up fake Drive service for tests (this has to be injected before the
+  // real DriveIntegrationService instance is created.)
+  void SetUpInProcessBrowserTestFixture() override {
+    PlatformAppBrowserTest::SetUpInProcessBrowserTestFixture();
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+
+    create_drive_integration_service_ = base::BindRepeating(
+        &FileSystemApiTestForRequestFileSystem::CreateDriveIntegrationService,
+        base::Unretained(this));
+    service_factory_for_test_.reset(
+        new drive::DriveIntegrationServiceFactory::ScopedFactoryForTest(
+            &create_drive_integration_service_));
   }
 
   void SetUpOnMainThread() override {
@@ -289,12 +340,38 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
     fake_user_manager_->AddKioskAppUser(kiosk_app_account_id);
     fake_user_manager_->LoginUser(kiosk_app_account_id);
   }
+
+ private:
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    // Ignore signin and lock screen apps profile.
+    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+        profile->GetPath() ==
+            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+      return nullptr;
+    }
+
+    CHECK(drivefs_root_.CreateUniqueTempDir());
+    fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
+        profile, drivefs_root_.GetPath().Append("drive-user"));
+
+    return new drive::DriveIntegrationService(
+        profile, nullptr, nullptr, "", {}, nullptr,
+        fake_drivefs_helper_->CreateFakeDriveFsConnectionDelegateFactory());
+  }
+
+  base::ScopedTempDir drivefs_root_;
+  std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenExistingFileTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/open_existing.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/open_existing.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest("api_test/file_system/open_existing"))
@@ -303,8 +380,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenExistingFileWithWriteTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/open_existing.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/open_existing.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest(
@@ -313,8 +390,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenMultipleSuggested) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/open_existing.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/open_existing.txt");
   ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
       chrome::DIR_USER_DOCUMENTS, test_file.DirName(), true, false));
   FileSystemChooseEntryFunction::SkipPickerAndSelectSuggestedPathForTest();
@@ -325,10 +402,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenMultipleExistingFilesTest) {
-  base::FilePath test_file1 = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/open_existing1.txt");
-  base::FilePath test_file2 = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/open_existing2.txt");
+  base::FilePath test_file1 =
+      GetDriveMountPoint().AppendASCII("root/open_existing1.txt");
+  base::FilePath test_file2 =
+      GetDriveMountPoint().AppendASCII("root/open_existing2.txt");
   std::vector<base::FilePath> test_files;
   test_files.push_back(test_file1);
   test_files.push_back(test_file2);
@@ -341,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenDirectoryTest) {
   base::FilePath test_directory =
-      drive::util::GetDriveMountPointPath(browser()->profile()).AppendASCII(
-          "root/subdir");
+      GetDriveMountPoint().AppendASCII("root/subdir");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_directory);
   ASSERT_TRUE(RunPlatformAppTest("api_test/file_system/open_directory"))
@@ -360,8 +436,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        MAYBE_FileSystemApiOpenDirectoryWithWriteTest) {
   base::FilePath test_directory =
-      drive::util::GetDriveMountPointPath(browser()->profile()).AppendASCII(
-          "root/subdir");
+      GetDriveMountPoint().AppendASCII("root/subdir");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_directory);
   ASSERT_TRUE(
@@ -372,8 +447,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenDirectoryWithoutPermissionTest) {
   base::FilePath test_directory =
-      drive::util::GetDriveMountPointPath(browser()->profile()).AppendASCII(
-          "root/subdir");
+      GetDriveMountPoint().AppendASCII("root/subdir");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_directory);
   ASSERT_TRUE(RunPlatformAppTest(
@@ -384,8 +458,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiOpenDirectoryWithOnlyWritePermissionTest) {
   base::FilePath test_directory =
-      drive::util::GetDriveMountPointPath(browser()->profile()).AppendASCII(
-          "root/subdir");
+      GetDriveMountPoint().AppendASCII("root/subdir");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_directory);
   ASSERT_TRUE(RunPlatformAppTest(
@@ -395,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiSaveNewFileTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/save_new.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/save_new.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest("api_test/file_system/save_new"))
@@ -405,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
                        FileSystemApiSaveExistingFileTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/save_existing.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/save_existing.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest("api_test/file_system/save_existing"))
@@ -415,8 +488,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
     FileSystemApiSaveNewFileWithWriteTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/save_new.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/save_new.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest("api_test/file_system/save_new_with_write"))
@@ -425,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
     FileSystemApiSaveExistingFileWithWriteTest) {
-  base::FilePath test_file = drive::util::GetDriveMountPointPath(
-      browser()->profile()).AppendASCII("root/save_existing.txt");
+  base::FilePath test_file =
+      GetDriveMountPoint().AppendASCII("root/save_existing.txt");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
       &test_file);
   ASSERT_TRUE(RunPlatformAppTest(

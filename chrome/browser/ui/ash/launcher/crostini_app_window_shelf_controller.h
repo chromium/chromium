@@ -54,6 +54,9 @@ class CrostiniAppWindowShelfController : public AppWindowLauncherController,
   void OnAppLaunchRequested(const std::string& app_id,
                             int64_t display_id) override;
 
+  // Close app with |shelf_id| and then restart it on |display_id|.
+  void Restart(const ash::ShelfID& shelf_id, int64_t display_id);
+
  private:
   using AuraWindowToAppWindow =
       std::map<aura::Window*, std::unique_ptr<AppWindowBase>>;
@@ -61,7 +64,9 @@ class CrostiniAppWindowShelfController : public AppWindowLauncherController,
   void RegisterAppWindow(aura::Window* window, const std::string& shelf_app_id);
   void UnregisterAppWindow(AppWindowBase* app_window);
   void AddToShelf(aura::Window* window, AppWindowBase* app_window);
-  void RemoveFromShelf(aura::Window* window, AppWindowBase* app_window);
+
+  // Returns ID of the shelf item that is removed, or a null id.
+  ash::ShelfID RemoveFromShelf(aura::Window* window, AppWindowBase* app_window);
 
   // AppWindowLauncherController:
   AppWindowLauncherItemController* ControllerForWindow(
@@ -71,6 +76,12 @@ class CrostiniAppWindowShelfController : public AppWindowLauncherController,
   AuraWindowToAppWindow aura_window_to_app_window_;
   std::set<aura::Window*> observed_windows_;
   CrostiniAppDisplay crostini_app_display_;
+
+  // These two member variables track an app restart request. When
+  // app_id_to_restart_ is not empty the controller observes that app and
+  // relaunches it when all of its windows are closed.
+  std::string app_id_to_restart_;
+  int64_t display_id_to_restart_in_;
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniAppWindowShelfController);
 };

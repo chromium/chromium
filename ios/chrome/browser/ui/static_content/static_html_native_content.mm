@@ -109,6 +109,16 @@
 }
 
 - (UIView*)view {
+  // During app teardown and when an offline reading list page is open,
+  // CRWWebController attempts to remove StaticHtmlNativeContent's web view from
+  // superview. While the app is clearing browsing data, though, web usage is
+  // not enabled. While returning nil whenever |_staticHTMLViewController| is
+  // nil is not ideal solution, this file will get removed soon in a refactor
+  // (crbug.com/725239), so it will serve to just prevent crashing.
+  if (!_staticHTMLViewController) {
+    return nil;
+  }
+
   CHECK(_webUsageEnabled) << "Tried to create a web view when web usage was"
                           << " disabled!";
   return [_staticHTMLViewController webView];

@@ -85,7 +85,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   Type GetType() const { return type_; }
 
   struct ColorStop {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     float stop;
     Color color;
 

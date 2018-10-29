@@ -16,9 +16,7 @@ namespace {
 template <typename StringListType>
 base::ListValue* StringListToListValue(const StringListType& list) {
   base::ListValue* result = new base::ListValue();
-  for (typename StringListType::const_iterator it = list.begin();
-       it != list.end();
-       ++it) {
+  for (auto it = list.begin(); it != list.end(); ++it) {
     result->AppendString(*it);
   }
   return result;

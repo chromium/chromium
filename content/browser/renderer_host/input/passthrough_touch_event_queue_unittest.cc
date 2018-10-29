@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
@@ -155,9 +156,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
                                int unique_event_id) {
     queue_->ProcessTouchAck(InputEventAckSource::COMPOSITOR_THREAD, ack_result,
                             ui::LatencyInfo(), unique_event_id);
-    sent_events_ids_.erase(std::remove(sent_events_ids_.begin(),
-                                       sent_events_ids_.end(), unique_event_id),
-                           sent_events_ids_.end());
+    base::Erase(sent_events_ids_, unique_event_id);
   }
 
   void SendGestureEventAck(WebInputEvent::Type type,

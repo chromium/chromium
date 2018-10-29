@@ -18,4 +18,5 @@ dictionary PointerEventInit : MouseEventInit {
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
     sequence<PointerEvent> coalescedEvents = [];
+    [RuntimeEnabled=PredictedEvents]sequence<PointerEvent> predictedEvents = [];
 };

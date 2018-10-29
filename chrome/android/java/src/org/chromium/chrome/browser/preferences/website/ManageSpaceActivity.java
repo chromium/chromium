@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.preferences.Preferences;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.website.Website.StoredDataClearedCallback;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
+import org.chromium.chrome.browser.util.ConversionUtils;
 
 import java.util.Collection;
 
@@ -192,9 +193,10 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
 
     /** This refreshes the storage numbers by fetching all site permissions. */
     private void refreshStorageNumbers() {
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(new SizeCalculator());
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher();
         fetcher.fetchPreferencesForCategory(
-                SiteSettingsCategory.createFromType(SiteSettingsCategory.Type.USE_STORAGE));
+                SiteSettingsCategory.createFromType(SiteSettingsCategory.Type.USE_STORAGE),
+                new SizeCalculator());
     }
 
     /** Data will be cleared once we fetch all site size and important status info. */
@@ -274,6 +276,10 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSiteStorageSizeCalculated(long totalSize, long unimportantSize) {
+        RecordHistogram.recordCountHistogram("Android.ManageSpace.TotalDiskUsageMB",
+                (int) ConversionUtils.bytesToMegabytes(totalSize));
+        RecordHistogram.recordCountHistogram("Android.ManageSpace.UnimportantDiskUsageMB",
+                (int) ConversionUtils.bytesToMegabytes(unimportantSize));
         mSiteDataSizeText.setText(Formatter.formatFileSize(this, totalSize));
         mUnimportantSiteDataSizeText.setText(Formatter.formatFileSize(this, unimportantSize));
     }
@@ -307,9 +313,10 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
          * asynchronously, and at the end we update the UI with the new storage numbers.
          */
         public void clearData() {
-            WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(this, true);
+            WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(true);
             fetcher.fetchPreferencesForCategory(
-                    SiteSettingsCategory.createFromType(SiteSettingsCategory.Type.USE_STORAGE));
+                    SiteSettingsCategory.createFromType(SiteSettingsCategory.Type.USE_STORAGE),
+                    this);
         }
 
         @Override

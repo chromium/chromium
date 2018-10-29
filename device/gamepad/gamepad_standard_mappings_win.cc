@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
 namespace device {
@@ -261,43 +262,44 @@ void MapperMogaPro(const Gamepad& input, Gamepad* mapped) {
 }
 
 struct MappingData {
-  const char* const vendor_id;
-  const char* const product_id;
+  const uint16_t vendor_id;
+  const uint16_t product_id;
   GamepadStandardMappingFunction function;
 } AvailableMappings[] = {
     // http://www.linux-usb.org/usb.ids
-    {"0079", "0011", Mapper2Axes8Keys},      // 2Axes 8Keys Game Pad
-    {"046d", "c216", MapperLogitechDInput},  // Logitech F310, D-mode
-    {"046d", "c218", MapperLogitechDInput},  // Logitech F510, D-mode
-    {"046d", "c219", MapperLogitechDInput},  // Logitech F710, D-mode
-    {"054c", "05c4", MapperDualshock4},      // Playstation Dualshock 4
-    {"054c", "09cc", MapperDualshock4},      // Dualshock 4 (PS4 Slim)
-    {"054c", "0ba0", MapperDualshock4},      // Dualshock 4 USB receiver
-    {"0583", "2060", MapperIBuffalo},        // iBuffalo Classic
-    {"0955", "7210", MapperNvShield},        // Nvidia Shield gamepad (2015)
-    {"0955", "7214", MapperNvShield2017},    // Nvidia Shield gamepad (2017)
-    {"0b05", "4500", MapperADT1},            // Nexus Player Controller
-    {"1532", "0900", MapperRazerServal},     // Razer Serval Controller
-    {"18d1", "2c40", MapperADT1},            // ADT-1 Controller
-    {"20d6", "6271", MapperMogaPro},         // Moga Pro Controller (HID mode)
-    {"2378", "1008", MapperOnLiveWireless},  // OnLive Controller (Bluetooth)
-    {"2378", "100a", MapperOnLiveWireless},  // OnLive Controller (Wired)
-    {"2836", "0001", MapperOUYA},            // OUYA Controller
+    {0x0079, 0x0011, Mapper2Axes8Keys},      // 2Axes 8Keys Game Pad
+    {0x046d, 0xc216, MapperLogitechDInput},  // Logitech F310, D-mode
+    {0x046d, 0xc218, MapperLogitechDInput},  // Logitech F510, D-mode
+    {0x046d, 0xc219, MapperLogitechDInput},  // Logitech F710, D-mode
+    {0x054c, 0x05c4, MapperDualshock4},      // Playstation Dualshock 4
+    {0x054c, 0x09cc, MapperDualshock4},      // Dualshock 4 (PS4 Slim)
+    {0x054c, 0x0ba0, MapperDualshock4},      // Dualshock 4 USB receiver
+    {0x0583, 0x2060, MapperIBuffalo},        // iBuffalo Classic
+    {0x0955, 0x7210, MapperNvShield},        // Nvidia Shield gamepad (2015)
+    {0x0955, 0x7214, MapperNvShield2017},    // Nvidia Shield gamepad (2017)
+    {0x0b05, 0x4500, MapperADT1},            // Nexus Player Controller
+    {0x1532, 0x0900, MapperRazerServal},     // Razer Serval Controller
+    {0x18d1, 0x2c40, MapperADT1},            // ADT-1 Controller
+    {0x20d6, 0x6271, MapperMogaPro},         // Moga Pro Controller (HID mode)
+    {0x2378, 0x1008, MapperOnLiveWireless},  // OnLive Controller (Bluetooth)
+    {0x2378, 0x100a, MapperOnLiveWireless},  // OnLive Controller (Wired)
+    {0x2836, 0x0001, MapperOUYA},            // OUYA Controller
 };
+const size_t kAvailableMappingsLen = base::size(AvailableMappings);
 
 }  // namespace
 
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const base::StringPiece& vendor_id,
-    const base::StringPiece& product_id,
-    const base::StringPiece& version_number,
+    const uint16_t vendor_id,
+    const uint16_t product_id,
+    const uint16_t version_number,
     GamepadBusType bus_type) {
-  for (size_t i = 0; i < arraysize(AvailableMappings); ++i) {
+  for (size_t i = 0; i < kAvailableMappingsLen; ++i) {
     MappingData& item = AvailableMappings[i];
     if (vendor_id == item.vendor_id && product_id == item.product_id)
       return item.function;
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace device

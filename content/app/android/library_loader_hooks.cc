@@ -4,7 +4,6 @@
 
 #include "content/app/android/library_loader_hooks.h"
 
-#include "base/android/library_loader/library_loader_hooks.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/tracing/common/trace_startup.h"
@@ -12,13 +11,20 @@
 
 namespace content {
 
-bool LibraryLoaded(JNIEnv* env, jclass clazz) {
+bool LibraryLoaded(JNIEnv* env,
+                   jclass clazz,
+                   base::android::LibraryProcessType library_process_type) {
   // Enable startup tracing asap to avoid early TRACE_EVENT calls being ignored.
   tracing::EnableStartupTracingIfNeeded();
 
-  // Android's main browser loop is custom so we set the browser
-  // name here as early as possible.
-  base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
+  // Android's main browser loop is custom so we set the browser name here as
+  // early as possible if this is the browser process or main webview process.
+  if (library_process_type ==
+          base::android::LibraryProcessType::PROCESS_BROWSER ||
+      library_process_type ==
+          base::android::LibraryProcessType::PROCESS_WEBVIEW) {
+    base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
+  }
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 

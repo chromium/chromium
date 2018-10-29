@@ -118,12 +118,22 @@ public class SharedStatics {
                 () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
     }
 
-    public void setProxyOverride(String host, int port, String[] exclusionList) {
+    public void setProxyOverride(String host, int port, String[] exclusionList, Runnable callback) {
+        if (host == null) {
+            throw new NullPointerException("Host string should not be null");
+        }
+        if (exclusionList != null) {
+            for (String url : exclusionList) {
+                if (url == null) {
+                    throw new NullPointerException("Excluded URL strings should not be null");
+                }
+            }
+        }
         ThreadUtils.runOnUiThread(
-                () -> AwContentsStatics.setProxyOverride(host, port, exclusionList));
+                () -> AwContentsStatics.setProxyOverride(host, port, exclusionList, callback));
     }
 
-    public void clearProxyOverride() {
-        ThreadUtils.runOnUiThread(() -> AwContentsStatics.clearProxyOverride());
+    public void clearProxyOverride(Runnable callback) {
+        ThreadUtils.runOnUiThread(() -> AwContentsStatics.clearProxyOverride(callback));
     }
 }

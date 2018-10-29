@@ -33,8 +33,6 @@ class CORE_EXPORT LayoutNGListMarker final
 
   bool IsContentImage() const;
 
-  bool IsLayoutNGObject() const override { return true; }
-
   LayoutObject* SymbolMarkerLayoutText() const;
 
   // Marker text with suffix, e.g. "1. ", for use in accessibility.

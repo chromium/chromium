@@ -20,6 +20,7 @@
 // Invoked by FormActivityObserverBridge::DidSubmitDocument.
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormNamed:(const std::string&)formName
+                          withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
                    formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame;
@@ -50,6 +51,7 @@ class FormActivityObserverBridge : public FormActivityObserver {
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const std::string& form_name,
+                         const std::string& form_data,
                          bool has_user_gesture,
                          bool form_in_main_frame) override;
 

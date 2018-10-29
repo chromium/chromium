@@ -26,7 +26,6 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/default_pref_store.h"
@@ -102,6 +101,29 @@ class DeadlockCheckerObserver {
   bool notification_received_;
   DISALLOW_COPY_AND_ASSIGN(DeadlockCheckerObserver);
 };
+
+// Synthesizes a plugin content setting exception into |prefs|. Plugin settings
+// are emphemeral as of Chrome M71; this method is used to simulate the scenario
+// where we inherit these legacy values from Chrome versions M70-, when the
+// exceptions were still stored in preferences.
+bool SetLegacyPersistedPluginSetting(
+    PrefService* prefs,
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    const ResourceIdentifier& resource_identifier,
+    base::Value* in_value) {
+  auto* registry = ContentSettingsRegistry::GetInstance();
+  auto* content_setting_info = registry->Get(CONTENT_SETTINGS_TYPE_PLUGINS);
+  PrefChangeRegistrar pref_change_registrar;
+  pref_change_registrar.Init(prefs);
+  ContentSettingsPref content_settings_pref(
+      CONTENT_SETTINGS_TYPE_PLUGINS, prefs, &pref_change_registrar,
+      content_setting_info->website_settings_info()->pref_name(),
+      false /* is_incognito */, base::DoNothing());
+  return content_settings_pref.SetWebsiteSetting(
+      primary_pattern, secondary_pattern, resource_identifier,
+      base::Time::Now(), in_value);
+}
 
 class PrefProviderTest : public testing::Test {
  public:
@@ -371,15 +393,14 @@ TEST_F(PrefProviderTest, ResourceIdentifier) {
     value.release();
   }
 
-  bool flash_is_ephemeral =
-      ContentSettingsRegistry::GetInstance()
-          ->Get(CONTENT_SETTINGS_TYPE_PLUGINS)
-          ->storage_behavior() == ContentSettingsInfo::EPHEMERAL;
-  ContentSetting expectation =
-      flash_is_ephemeral ? CONTENT_SETTING_DEFAULT : CONTENT_SETTING_BLOCK;
-  EXPECT_EQ(expectation, TestUtils::GetContentSetting(
-                             &pref_content_settings_provider, host, host,
-                             CONTENT_SETTINGS_TYPE_PLUGINS, resource1, false));
+  ASSERT_EQ(ContentSettingsInfo::EPHEMERAL,
+            ContentSettingsRegistry::GetInstance()
+                ->Get(CONTENT_SETTINGS_TYPE_PLUGINS)
+                ->storage_behavior());
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(&pref_content_settings_provider, host,
+                                         host, CONTENT_SETTINGS_TYPE_PLUGINS,
+                                         resource1, false));
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&pref_content_settings_provider, host,
                                          host, CONTENT_SETTINGS_TYPE_PLUGINS,
@@ -488,7 +509,6 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   ContentSettingsPattern wildcard =
       ContentSettingsPattern::FromString("*");
   std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_ALLOW));
-  ResourceIdentifier res_id("abcde");
 
   PrefProvider provider(&prefs, false /* incognito */,
                         true /* store_last_modified */);
@@ -502,23 +522,27 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   provider.SetWebsiteSetting(pattern, wildcard,
                              CONTENT_SETTINGS_TYPE_GEOLOCATION,
                              ResourceIdentifier(), value->DeepCopy());
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Non-empty pattern, plugins, non-empty resource identifier.
-  std::unique_ptr<base::Value> value_copy(value->DeepCopy());
-  if (provider.SetWebsiteSetting(pattern, wildcard,
-                                 CONTENT_SETTINGS_TYPE_PLUGINS, res_id,
-                                 value_copy.get())) {
-    value_copy.release();
-  }
 
-  // Empty pattern, plugins, non-empty resource identifier.
-  value_copy.reset(value->DeepCopy());
-  if (provider.SetWebsiteSetting(wildcard, wildcard,
-                                 CONTENT_SETTINGS_TYPE_PLUGINS, res_id,
-                                 value_copy.get())) {
-    value_copy.release();
-  }
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Plugin settings became emphemeral as of Chrome M71 and are no longer
+  // persisted into preferences. Here we simulate the scenario where we inherit
+  // legacy, persisted values coming from Chrome versions M70-, to verify the
+  // ability of PrefProvider to delete the legacy plugin settings although those
+  // are no longer handled by it (as opposed to the first section of the test,
+  // which verifies the deletion of regular settings which are still handled by
+  // PrefProvider).
+
+  // Legacy, persisted exception for CONTENT_SETTINGS_TYPE_PLUGINS with a
+  // non-empty pattern, and non-empty resource identifier.
+  ResourceIdentifier res_id("abcde");
+  ASSERT_TRUE(SetLegacyPersistedPluginSetting(&prefs, pattern, wildcard, res_id,
+                                              value->DeepCopy()));
+
+  // Same with an empty pattern and non-empty resource identifier.
+  ASSERT_TRUE(SetLegacyPersistedPluginSetting(&prefs, wildcard, wildcard,
+                                              res_id, value->DeepCopy()));
 #endif
+
   // Non-empty pattern, syncable, empty resource identifier.
   provider.SetWebsiteSetting(pattern, wildcard, CONTENT_SETTINGS_TYPE_COOKIES,
                              ResourceIdentifier(), value->DeepCopy());
@@ -528,15 +552,9 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
                              CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
                              ResourceIdentifier(), value->DeepCopy());
 
-  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_JAVASCRIPT);
-  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_GEOLOCATION);
-#if BUILDFLAG(ENABLE_PLUGINS)
-  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_PLUGINS);
-#endif
-
+  // Test that the preferences for images, geolocation and plugins get cleared.
   WebsiteSettingsRegistry* registry = WebsiteSettingsRegistry::GetInstance();
-  // Test that the preferences for images, geolocation and plugins are empty.
-  const char* empty_prefs[] = {
+  const char* cleared_prefs[] = {
     registry->Get(CONTENT_SETTINGS_TYPE_JAVASCRIPT)->pref_name().c_str(),
     registry->Get(CONTENT_SETTINGS_TYPE_GEOLOCATION)->pref_name().c_str(),
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -544,7 +562,21 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 #endif
   };
 
-  for (const char* pref : empty_prefs) {
+  // Expect the prefs are not empty before we trigger clearing them.
+  for (const char* pref : cleared_prefs) {
+    DictionaryPrefUpdate update(&prefs, pref);
+    const base::DictionaryValue* dictionary = update.Get();
+    ASSERT_FALSE(dictionary->empty());
+  }
+
+  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_JAVASCRIPT);
+  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_GEOLOCATION);
+#if BUILDFLAG(ENABLE_PLUGINS)
+  provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_PLUGINS);
+#endif
+
+  // Ensure they become empty afterwards.
+  for (const char* pref : cleared_prefs) {
     DictionaryPrefUpdate update(&prefs, pref);
     const base::DictionaryValue* dictionary = update.Get();
     EXPECT_TRUE(dictionary->empty());
@@ -634,8 +666,15 @@ TEST_F(PrefProviderTest, RejectEphemeralStorage) {
       break;
     }
   }
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // At the very least, CONTENT_SETTINGS_TYPE_PLUGINS is ephemeral.
+  ASSERT_NE(CONTENT_SETTINGS_NUM_TYPES, ephemeral_type);
+#else
+  // There might be no ephemeral setting if plugins are not supported.
   if (ephemeral_type == CONTENT_SETTINGS_NUM_TYPES)
     return;
+#endif
 
   sync_preferences::TestingPrefServiceSyncable prefs;
   PrefProvider::RegisterProfilePrefs(prefs.registry());
@@ -654,87 +693,5 @@ TEST_F(PrefProviderTest, RejectEphemeralStorage) {
   provider.ShutdownOnUIThread();
 }
 
-// Tests if PrefProvider clears unsupported (ephemeral) types if they are
-// stored.
-// kEnableEphemeralFlashPermission is not available on Android.
-#if BUILDFLAG(ENABLE_PLUGINS)
-#if !defined(OS_ANDROID)
-TEST_F(PrefProviderTest, ClearingUnsupportedTypes) {
-  sync_preferences::TestingPrefServiceSyncable prefs;
-  PrefProvider::RegisterProfilePrefs(prefs.registry());
-
-  const ContentSettingsPattern site_pattern =
-      ContentSettingsPattern::FromString("https://example.com");
-
-  enum steps {
-    SET_PERMISSION,
-    CHECK_EXISTENCE,
-    CLEAR_PERMISSION,
-    CHECK_DELETION,
-  };
-
-  for (int step = SET_PERMISSION; step <= CHECK_DELETION; step++) {
-    bool ephemeral_flash_permission = (step == CLEAR_PERMISSION);
-
-    // Boilerplate code to set the switch and restart PrefProvider.
-    base::test::ScopedFeatureList feature_list;
-    if (ephemeral_flash_permission) {
-      feature_list.InitAndEnableFeature(
-          features::kEnableEphemeralFlashPermission);
-    } else {
-      feature_list.InitAndDisableFeature(
-          features::kEnableEphemeralFlashPermission);
-    }
-    ContentSettingsRegistry::GetInstance()->ResetForTest();
-    PrefProvider provider(&prefs, false, true);
-
-    switch (step) {
-      case SET_PERMISSION: {
-        // Disable Ephemeral Flash permissions and set permission.
-        ASSERT_FALSE(ephemeral_flash_permission);
-        EXPECT_TRUE(provider.SetWebsiteSetting(
-            site_pattern, site_pattern, CONTENT_SETTINGS_TYPE_PLUGINS,
-            std::string(), new base::Value(CONTENT_SETTING_ALLOW)));
-        EXPECT_NE(nullptr,
-                  provider.GetRuleIterator(CONTENT_SETTINGS_TYPE_PLUGINS,
-                                           std::string(), false));
-        break;
-      }
-      case CHECK_EXISTENCE: {
-        // Reload PrefProvider with persistent Flash permission and ensure the
-        // permission still exists.
-        ASSERT_FALSE(ephemeral_flash_permission);
-        EXPECT_NE(nullptr,
-                  provider.GetRuleIterator(CONTENT_SETTINGS_TYPE_PLUGINS,
-                                           std::string(), false));
-        break;
-      }
-      case CLEAR_PERMISSION: {
-        // Enable Ephemeral Flash permissions and clear permission.
-        ASSERT_TRUE(ephemeral_flash_permission);
-        EXPECT_EQ(nullptr,
-                  provider.GetRuleIterator(CONTENT_SETTINGS_TYPE_PLUGINS,
-                                           std::string(), false));
-
-        provider.ClearAllContentSettingsRules(CONTENT_SETTINGS_TYPE_PLUGINS);
-        break;
-      }
-      case CHECK_DELETION: {
-        // Reload PrefProvider with persistent Flash permission and check if the
-        // permission is gone.
-        ASSERT_FALSE(ephemeral_flash_permission);
-        EXPECT_EQ(nullptr,
-                  provider.GetRuleIterator(CONTENT_SETTINGS_TYPE_PLUGINS,
-                                           std::string(), false));
-        break;
-      }
-    }
-
-    provider.ShutdownOnUIThread();
-  }
-}
-#endif  // !defined(OS_ANDROID)
-
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 }  // namespace content_settings

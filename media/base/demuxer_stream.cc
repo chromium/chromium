@@ -20,6 +20,20 @@ const char* DemuxerStream::GetTypeName(Type type) {
   }
 }
 
+// static
+const char* DemuxerStream::GetStatusName(Status status) {
+  switch (status) {
+    case DemuxerStream::kOk:
+      return "okay";
+    case DemuxerStream::kAborted:
+      return "aborted";
+    case DemuxerStream::kConfigChanged:
+      return "config_changed";
+    case DemuxerStream::kError:
+      return "error";
+  }
+}
+
 DemuxerStream::~DemuxerStream() = default;
 
 // Most DemuxerStream implementations don't specify liveness. Returns unknown

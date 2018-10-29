@@ -102,8 +102,15 @@ std::unique_ptr<base::ListValue> BeaconSeedsToListValue(
   return list;
 }
 
-void RecordDeviceSyncSoftwareFeaturesResult(bool success) {
+void RecordDeviceSyncSoftwareFeaturesResult(
+    bool success,
+    cryptauth::SoftwareFeature software_feature) {
   UMA_HISTOGRAM_BOOLEAN("CryptAuth.DeviceSyncSoftwareFeaturesResult", success);
+  if (!success) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures", software_feature,
+        cryptauth::SoftwareFeature_ARRAYSIZE);
+  }
 }
 
 // Converts supported and enabled SoftwareFeature protos to a single dictionary
@@ -126,6 +133,8 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
 
   for (const auto& enabled_software_feature : enabled_software_features) {
     std::string software_feature_key = enabled_software_feature;
+    cryptauth::SoftwareFeature software_feature =
+        SoftwareFeatureStringToEnum(software_feature_key);
 
     int software_feature_state;
     if (!dictionary->GetInteger(software_feature_key,
@@ -134,11 +143,13 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
             SoftwareFeatureState::kSupported) {
       PA_LOG(ERROR) << "A feature is marked as enabled but not as supported: "
                     << software_feature_key;
-      RecordDeviceSyncSoftwareFeaturesResult(false /* success */);
+      RecordDeviceSyncSoftwareFeaturesResult(false /* success */,
+                                             software_feature);
 
       continue;
     } else {
-      RecordDeviceSyncSoftwareFeaturesResult(true /* success */);
+      RecordDeviceSyncSoftwareFeaturesResult(true /* success */,
+                                             software_feature);
     }
 
     dictionary->SetInteger(software_feature_key,
@@ -300,6 +311,20 @@ void AddSoftwareFeaturesToExternalDevice(
     bool old_unlock_key_value_from_prefs,
     bool old_mobile_hotspot_supported_from_prefs) {
   for (const auto& it : software_features_dictionary.DictItems()) {
+    std::string software_feature = it.first;
+    if (SoftwareFeatureStringToEnum(software_feature) ==
+        SoftwareFeature::UNKNOWN_FEATURE) {
+      // SoftwareFeatures were previously stored in prefs as ints. Now,
+      // SoftwareFeatures are stored as full string values, e.g.,
+      // "betterTogetherHost". If |it.first| is not recognized by
+      // SoftwareFeatureStringToEnum(), that means it is in the old int
+      // representation of the SoftwareFeature. Convert it to its full string
+      // representation using SoftwareFeatureEnumToString();
+      int software_feature_int = std::atoi(software_feature.c_str());
+      software_feature = SoftwareFeatureEnumToString(
+          static_cast<SoftwareFeature>(software_feature_int));
+    }
+
     int software_feature_state;
     if (!it.second.GetAsInteger(&software_feature_state)) {
       PA_LOG(WARNING) << "Unable to retrieve SoftwareFeature; skipping.";
@@ -308,10 +333,10 @@ void AddSoftwareFeaturesToExternalDevice(
 
     switch (static_cast<SoftwareFeatureState>(software_feature_state)) {
       case SoftwareFeatureState::kEnabled:
-        external_device->add_enabled_software_features(it.first);
+        external_device->add_enabled_software_features(software_feature);
         FALLTHROUGH;
       case SoftwareFeatureState::kSupported:
-        external_device->add_supported_software_features(it.first);
+        external_device->add_supported_software_features(software_feature);
         break;
       default:
         break;
@@ -701,6 +726,12 @@ void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
 
 void CryptAuthDeviceManagerImpl::OnSyncRequested(
     std::unique_ptr<SyncScheduler::SyncRequest> sync_request) {
+  // If a sync is already in progress, there is no need to start a new one.
+  if (sync_request_) {
+    sync_request->Cancel();
+    return;
+  }
+
   NotifySyncStarted();
 
   sync_request_ = std::move(sync_request);

@@ -1,14 +1,14 @@
  
-link  submit
+link submit
 treeitem
 option
 tab
 gridcell
 checkbox
+
 This tests that the aria-disabled attribute works. The text field should not be enabled.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS textField.restriction is "disabled"
 PASS textField.restriction is "none"

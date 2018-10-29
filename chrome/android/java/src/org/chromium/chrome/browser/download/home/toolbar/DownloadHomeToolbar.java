@@ -33,10 +33,12 @@ public class DownloadHomeToolbar extends SelectableListToolbar<ListItem> {
     }
 
     /**
-     * Removes the close button from the toolbar.
+     * Removes a menu item from the toolbar.
+     * @param menuItemId The menu item to be removed. Nothing happens if there is no menu item
+     *                   associated with this ID.
      */
-    public void removeCloseButton() {
-        getMenu().removeItem(R.id.close_menu_id);
+    public void removeMenuItem(int menuItemId) {
+        getMenu().removeItem(menuItemId);
     }
 
     @Override

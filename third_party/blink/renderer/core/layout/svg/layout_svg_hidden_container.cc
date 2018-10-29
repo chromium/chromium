@@ -43,9 +43,10 @@ void LayoutSVGHiddenContainer::UpdateLayout() {
   ClearNeedsLayout();
 }
 
-bool LayoutSVGHiddenContainer::NodeAtFloatPoint(HitTestResult&,
-                                                const FloatPoint&,
-                                                HitTestAction) {
+bool LayoutSVGHiddenContainer::NodeAtPoint(HitTestResult&,
+                                           const HitTestLocation&,
+                                           const LayoutPoint&,
+                                           HitTestAction) {
   return false;
 }
 

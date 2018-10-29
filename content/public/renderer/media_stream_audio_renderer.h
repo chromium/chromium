@@ -47,9 +47,8 @@ class MediaStreamAudioRenderer
   // There is no guarantee about the thread where |callback| will be invoked.
   // TODO(olka): make sure callback is always called on the client thread,
   // update clients accordingly and fix the comment.
-  virtual void SwitchOutputDevice(
-      const std::string& device_id,
-      const media::OutputDeviceStatusCB& callback) = 0;
+  virtual void SwitchOutputDevice(const std::string& device_id,
+                                  media::OutputDeviceStatusCB callback) = 0;
 
   // Time stamp that reflects the current render time. Should not be updated
   // when paused.

@@ -30,6 +30,18 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
   ~FeaturePromoBubbleView() override;
 
+  // Creates a promo bubble. The returned pointer is only valid until the widget
+  // is closed. It must not be manually deleted by the caller. |anchor_view| is
+  // the View this bubble is anchored to. |arrow| specifies where on the border
+  // the bubble's arrow is located. |string_specifier| is a string ID that can
+  // be passed to |l10n_util::GetStringUTF16()|. |activation_action| specifies
+  // whether the bubble's widget will be activated.
+  static FeaturePromoBubbleView* CreateOwned(
+      views::View* anchor_view,
+      views::BubbleBorder::Arrow arrow,
+      int string_specifier,
+      ActivationAction activation_action);
+
   // Closes the promo bubble.
   void CloseBubble();
 
@@ -64,6 +76,9 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   gfx::Rect GetBubbleBounds() override;
+  void UpdateHighlightedButton(bool highlighted) override {
+    // Do nothing: the anchor for promo bubbles should not highlight.
+  }
 
   // Starts a timer to close the promo bubble.
   void StartAutoCloseTimer(base::TimeDelta auto_close_duration);

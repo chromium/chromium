@@ -12,8 +12,7 @@ namespace views {
 
 bool IsPossiblyUnintendedInteraction(const base::TimeTicks& initial_timestamp,
                                      const ui::Event& event) {
-  return (event.IsMouseEvent() || event.IsPointerEvent() ||
-          event.IsTouchEvent()) &&
+  return (event.IsMouseEvent() || event.IsTouchEvent()) &&
          event.time_stamp() <
              initial_timestamp +
                  base::TimeDelta::FromMilliseconds(GetDoubleClickInterval());

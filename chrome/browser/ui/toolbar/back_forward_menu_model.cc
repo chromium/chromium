@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -98,15 +99,9 @@ base::string16 BackForwardMenuModel::GetLabelAt(int index) const {
   // super long.
   NavigationEntry* entry = GetNavigationEntry(index);
   base::string16 menu_text(entry->GetTitleForDisplay());
+  menu_text = ui::EscapeMenuLabelAmpersands(menu_text);
   menu_text = gfx::ElideText(menu_text, gfx::FontList(), kMaxWidth,
                              gfx::ELIDE_TAIL, gfx::Typesetter::NATIVE);
-
-#if !defined(OS_MACOSX)
-  for (size_t i = menu_text.find('&'); i != base::string16::npos;
-       i = menu_text.find('&', i + 2)) {
-    menu_text.insert(i, 1, '&');
-  }
-#endif
 
   return menu_text;
 }

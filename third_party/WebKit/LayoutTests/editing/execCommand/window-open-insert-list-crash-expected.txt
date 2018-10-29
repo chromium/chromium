@@ -10,14 +10,9 @@ CONSOLE WARNING: line 5: We don't execute document.execCommand() this time, beca
 CONSOLE WARNING: line 7: We don't execute document.execCommand() this time, because it is called recursively.
 CONSOLE WARNING: line 5: We don't execute document.execCommand() this time, because it is called recursively.
 CONSOLE WARNING: line 7: We don't execute document.execCommand() this time, because it is called recursively.
-CONSOLE WARNING: line 5: We don't execute document.execCommand() this time, because it is called recursively.
-CONSOLE WARNING: line 7: We don't execute document.execCommand() this time, because it is called recursively.
-CONSOLE WARNING: line 5: We don't execute document.execCommand() this time, because it is called recursively.
-CONSOLE WARNING: line 7: We don't execute document.execCommand() this time, because it is called recursively.
 Should not crash if we load a test case from crbug.com/338542.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS event.data is "FINISH"
 PASS Did not crash.

@@ -24,6 +24,7 @@ void IsolatedXRRuntimeProvider::RequestDevices(
     } else {
       client->OnDeviceAdded(oculus_device_->BindXRRuntimePtr(),
                             oculus_device_->BindGamepadFactory(),
+                            oculus_device_->BindCompositorHost(),
                             oculus_device_->GetVRDisplayInfo());
     }
   }
@@ -37,6 +38,7 @@ void IsolatedXRRuntimeProvider::RequestDevices(
     } else {
       client->OnDeviceAdded(openvr_device_->BindXRRuntimePtr(),
                             openvr_device_->BindGamepadFactory(),
+                            openvr_device_->BindCompositorHost(),
                             openvr_device_->GetVRDisplayInfo());
     }
   }

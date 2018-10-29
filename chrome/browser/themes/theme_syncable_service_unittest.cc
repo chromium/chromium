@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -209,7 +210,7 @@ class ThemeSyncableServiceTest : public testing::Test {
   FakeThemeService* BuildForProfile(Profile* profile) {
     return static_cast<FakeThemeService*>(
         ThemeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile, &BuildMockThemeService));
+            profile, base::BindRepeating(&BuildMockThemeService)));
   }
 
   syncer::SyncDataList MakeThemeDataList(

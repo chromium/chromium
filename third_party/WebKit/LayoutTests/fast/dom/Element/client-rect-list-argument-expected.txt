@@ -2,7 +2,6 @@ Tests that the ClientRectList.item() argument is correctly validated.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS clientRects.length is 3
 PASS clientRects.item(0) is not null
 PASS clientRects.item(1) is not null
@@ -15,6 +14,8 @@ PASS clientRects.item(-1) is null
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 14. Block in inline
 
 Lorem

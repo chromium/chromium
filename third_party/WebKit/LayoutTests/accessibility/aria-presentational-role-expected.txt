@@ -1,8 +1,8 @@
 Link and text
+
 This tests that the aria 'presentation' role works by successfully removing the element from the AX tree.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS firstChild.role is 'AXRole: AXLink'
 PASS successfullyParsed is true

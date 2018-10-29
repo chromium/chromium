@@ -2,7 +2,6 @@ Test WebKitMutationObserver.observe on attributes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing basic aspects of childList observation.
 ...can childList changes be observed at all
 PASS mutations.length is 1
@@ -20,8 +19,10 @@ PASS mutations[1].type is "childList"
 PASS mutations[1].removedNodes.length is 1
 PASS mutations[1].removedNodes[0] is removedDiv2
 
+
 Testing that observing without specifying "childList" does not result in hearing about childList changes.
 PASS mutations is null
+
 
 Testing that re-observing the same node with the same observer has the effect of resetting the options.
 PASS calls is 1
@@ -29,11 +30,13 @@ PASS mutations.length is 1
 PASS mutations[0].type is "childList"
 PASS mutations is null
 
+
 Testing that multiple observers can be registered to a given node and both receive mutations.
 PASS mutations.length is 1
 PASS mutations[0].type is "childList"
 PASS mutations2.length is 1
 PASS mutations2[0].type is "childList"
+
 
 Testing that innerText and innerHTML always result in a single childList mutation.
 ...innerHTML
@@ -52,6 +55,7 @@ PASS mutations[0].type is "childList"
 PASS mutations[0].addedNodes.length is 1
 PASS mutations[0].removedNodes.length is 3
 
+
 Testing that replaceChild results in minimal childList mutations.
 ...simple replace child
 PASS mutations.length is 1
@@ -69,6 +73,7 @@ PASS mutations[0].addedNodes[1] is addedDiv2
 PASS mutations[0].removedNodes.length is 1
 PASS mutations[0].removedNodes[0] is removedDiv1
 
+
 Testing that insertBefore results in minimal childList mutations.
 PASS mutations.length is 1
 PASS mutations[0].type is "childList"
@@ -76,6 +81,7 @@ PASS mutations[0].addedNodes.length is 2
 PASS mutations[0].addedNodes[0] is addedDiv1
 PASS mutations[0].addedNodes[1] is addedDiv2
 PASS mutations[0].removedNodes.length is 0
+
 
 Testing that appendChild results in minimal childList mutations.
 PASS mutations.length is 1
@@ -85,8 +91,10 @@ PASS mutations[0].addedNodes[0] is addedDiv1
 PASS mutations[0].addedNodes[1] is addedDiv2
 PASS mutations[0].removedNodes.length is 0
 
+
 Setting an empty childlist to the empty string with innerHTML should not assert.
 PASS mutations is null
+
 
 PASS successfullyParsed is true
 

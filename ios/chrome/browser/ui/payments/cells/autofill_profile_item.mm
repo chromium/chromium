@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
@@ -25,6 +26,13 @@ const CGFloat kVerticalPadding = 16;
 const CGFloat kVerticalSpacingBetweenLabels = 8;
 }  // namespace
 
+@interface AutofillProfileCell ()
+
+// Sets dynamic font types if they are available (iOS 11+)
+- (void)useScaledFont:(BOOL)useScaledFont;
+
+@end
+
 @implementation AutofillProfileItem
 
 @synthesize name = _name;
@@ -34,6 +42,7 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 @synthesize notification = _notification;
 @synthesize accessoryType = _accessoryType;
 @synthesize complete = _complete;
+@synthesize useScaledFont = _useScaledFont;
 
 #pragma mark CollectionViewItem
 
@@ -53,6 +62,7 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
   cell.phoneNumberLabel.text = self.phoneNumber;
   cell.emailLabel.text = self.email;
   cell.notificationLabel.text = self.notification;
+  [cell useScaledFont:self.useScaledFont];
 }
 
 @end
@@ -112,24 +122,33 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 
 // Set default font and text colors for labels.
 - (void)setDefaultViewStyling {
-  _nameLabel.font = [MDCTypography body2Font];
+  [self useScaledFont:NO];
   _nameLabel.textColor = [[MDCPalette greyPalette] tint900];
   _nameLabel.numberOfLines = 0;
   _nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  _addressLabel.font = [MDCTypography body1Font];
   _addressLabel.textColor = [[MDCPalette greyPalette] tint900];
   _addressLabel.numberOfLines = 0;
   _addressLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  _phoneNumberLabel.font = [MDCTypography body1Font];
   _phoneNumberLabel.textColor = [[MDCPalette greyPalette] tint900];
 
-  _emailLabel.font = [MDCTypography body1Font];
   _emailLabel.textColor = [[MDCPalette greyPalette] tint900];
 
-  _notificationLabel.font = [MDCTypography body1Font];
   _notificationLabel.textColor = [[MDCPalette cr_bluePalette] tint500];
+}
+
+- (void)useScaledFont:(BOOL)useScaledFont {
+  MaybeSetUILabelScaledFont(useScaledFont, _nameLabel,
+                            [MDCTypography body2Font]);
+  MaybeSetUILabelScaledFont(useScaledFont, _addressLabel,
+                            [MDCTypography body1Font]);
+  MaybeSetUILabelScaledFont(useScaledFont, _phoneNumberLabel,
+                            [MDCTypography body1Font]);
+  MaybeSetUILabelScaledFont(useScaledFont, _emailLabel,
+                            [MDCTypography body1Font]);
+  MaybeSetUILabelScaledFont(useScaledFont, _notificationLabel,
+                            [MDCTypography body1Font]);
 }
 
 // Set constraints on subviews.

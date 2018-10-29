@@ -15,7 +15,6 @@
 #include "base/optional.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/web_preferences.h"
-#include "headless/lib/browser/headless_network_conditions.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -65,8 +64,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext {
   // GUID for this browser context.
   virtual const std::string& Id() const = 0;
 
-  virtual HeadlessNetworkConditions GetNetworkConditions() = 0;
-
   // TODO(skyostil): Allow saving and restoring contexts (crbug.com/617931).
 
  protected:
@@ -105,7 +102,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
   Builder& SetAcceptLanguage(const std::string& accept_language);
   Builder& SetUserAgent(const std::string& user_agent);
   Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> proxy_config);
-  Builder& SetHostResolverRules(const std::string& host_resolver_rules);
   Builder& SetWindowSize(const gfx::Size& window_size);
   Builder& SetUserDataDir(const base::FilePath& user_data_dir);
   Builder& SetIncognitoMode(bool incognito_mode);

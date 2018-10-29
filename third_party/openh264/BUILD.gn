@@ -10,11 +10,12 @@ import("//third_party/yasm/yasm_assemble.gni")
 # Config shared by all openh264 targets.
 config("config") {
   cflags = []
+  defines = []
 
   if (is_chromeos && target_cpu == "arm") {
     # HAVE_NEON and __chromeos__ are needed for enabling NEON on ChromeOS
     # devices.
-    defines = [
+    defines += [
       "HAVE_NEON",
       "__chromeos__",
     ]

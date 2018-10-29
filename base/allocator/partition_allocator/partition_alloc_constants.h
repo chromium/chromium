@@ -8,7 +8,6 @@
 #include <limits.h>
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/bits.h"
 #include "base/logging.h"
 
 namespace base {

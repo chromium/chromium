@@ -30,6 +30,61 @@ struct EnumTraits<content::mojom::MediaStreamRequestResult,
 };
 
 template <>
+struct StructTraits<content::mojom::MediaStreamDeviceDataView,
+                    content::MediaStreamDevice> {
+  static const content::MediaStreamType& type(
+      const content::MediaStreamDevice& device) {
+    return device.type;
+  }
+
+  static const std::string& id(const content::MediaStreamDevice& device) {
+    return device.id;
+  }
+
+  static const media::VideoFacingMode& video_facing(
+      const content::MediaStreamDevice& device) {
+    return device.video_facing;
+  }
+
+  static const base::Optional<std::string>& group_id(
+      const content::MediaStreamDevice& device) {
+    return device.group_id;
+  }
+
+  static const base::Optional<std::string>& matched_output_device_id(
+      const content::MediaStreamDevice& device) {
+    return device.matched_output_device_id;
+  }
+
+  static const std::string& name(const content::MediaStreamDevice& device) {
+    return device.name;
+  }
+
+  static const media::AudioParameters& input(
+      const content::MediaStreamDevice& device) {
+    return device.input;
+  }
+
+  static int session_id(const content::MediaStreamDevice& device) {
+    return device.session_id;
+  }
+
+  static const base::Optional<
+      media::VideoCaptureDeviceDescriptor::CameraCalibration>&
+  camera_calibration(const content::MediaStreamDevice& device) {
+    return device.camera_calibration;
+  }
+
+  static const base::Optional<media::mojom::DisplayMediaInformationPtr>&
+  display_media_info(const content::MediaStreamDevice& device) {
+    return device.display_media_info;
+  }
+
+  static bool Read(content::mojom::MediaStreamDeviceDataView input,
+                   content::MediaStreamDevice* out);
+};
+
+template <>
 struct StructTraits<content::mojom::TrackControlsDataView,
                     content::TrackControls> {
   static bool requested(const content::TrackControls& controls) {

@@ -98,6 +98,7 @@ Resources.ServiceWorkerCacheView = class extends UI.SimpleView {
   _createDataGrid() {
     const columns = /** @type {!Array<!DataGrid.DataGrid.ColumnDescriptor>} */ ([
       {id: 'path', title: Common.UIString('Path'), weight: 4, sortable: true},
+      {id: 'responseType', title: ls`Response-Type`, weight: 1, align: DataGrid.DataGrid.Align.Right, sortable: true},
       {id: 'contentType', title: Common.UIString('Content-Type'), weight: 1, sortable: true}, {
         id: 'contentLength',
         title: Common.UIString('Content-Length'),
@@ -214,7 +215,7 @@ Resources.ServiceWorkerCacheView = class extends UI.SimpleView {
     for (const entry of entries) {
       let node = oldEntries.get(entry.requestURL);
       if (!node || node.data.responseTime !== entry.responseTime) {
-        node = new Resources.ServiceWorkerCacheView.DataGridNode(this._createRequest(entry));
+        node = new Resources.ServiceWorkerCacheView.DataGridNode(this._createRequest(entry), entry.responseType);
         node.selectable = true;
       }
       rootNode.appendChild(node);
@@ -335,13 +336,15 @@ Resources.ServiceWorkerCacheView._RESPONSE_CACHE_SIZE = 10;
 Resources.ServiceWorkerCacheView.DataGridNode = class extends DataGrid.DataGridNode {
   /**
    * @param {!SDK.NetworkRequest} request
+   * @param {!Protocol.CacheStorage.CachedResponseType} responseType
    */
-  constructor(request) {
+  constructor(request, responseType) {
     super(request);
     this._path = Common.ParsedURL.extractPath(request.url());
     if (!this._path)
       this._path = request.url();
     this._request = request;
+    this._responseType = responseType;
   }
 
   /**
@@ -352,14 +355,29 @@ Resources.ServiceWorkerCacheView.DataGridNode = class extends DataGrid.DataGridN
   createCell(columnId) {
     const cell = this.createTD(columnId);
     let value;
-    if (columnId === 'path')
+    if (columnId === 'path') {
       value = this._path;
-    else if (columnId === 'contentType')
+    } else if (columnId === 'responseType') {
+      if (this._responseType === 'opaqueResponse') {
+        const opaque = UI.XLink.create(
+            'https://developers.google.com/web/tools/workbox/guides/storage-quota#beware_of_opaque_responses',
+            ls`opaque`);
+        opaque.title = ls`As a security consideration, an opaque response potentially takes ` +
+            ls`up far more cache space than its content length`;
+        cell.appendChild(opaque);
+        return cell;
+      } else if (this._responseType === 'opaqueRedirect') {
+        value = 'opaqueredirect';
+      } else {
+        value = this._responseType;
+      }
+    } else if (columnId === 'contentType') {
       value = this._request.mimeType;
-    else if (columnId === 'contentLength')
+    } else if (columnId === 'contentLength') {
       value = (this._request.resourceSize | 0).toLocaleString('en-US');
-    else if (columnId === 'responseTime')
+    } else if (columnId === 'responseTime') {
       value = new Date(this._request.endTime * 1000).toLocaleString();
+    }
     DataGrid.DataGrid.setElementText(cell, value || '', true);
     return cell;
   }

@@ -43,7 +43,7 @@
 namespace blink {
 
 class CORE_EXPORT ScriptValue final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Defined in ToV8.h due to circular dependency

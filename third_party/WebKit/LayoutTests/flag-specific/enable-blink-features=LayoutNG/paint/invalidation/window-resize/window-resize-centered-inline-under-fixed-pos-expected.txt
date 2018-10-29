@@ -20,22 +20,17 @@
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
           "rect": [0, 0, 600, 250],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
           "rect": [0, 0, 6, 250],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 250],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
           "rect": [0, 125, 6, 30],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }
@@ -63,22 +58,17 @@
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
           "rect": [0, 0, 400, 250],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
           "rect": [0, 0, 6, 250],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 250],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
           "rect": [0, 125, 6, 30],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }
@@ -106,32 +96,27 @@
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
           "rect": [0, 0, 400, 600],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 250, 400, 350],
           "reason": "incremental"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
           "rect": [0, 0, 6, 600],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 250],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
           "rect": [0, 300, 6, 30],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
           "rect": [0, 125, 6, 30],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }
@@ -159,27 +144,22 @@
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
           "rect": [0, 0, 800, 600],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [400, 0, 400, 600],
           "reason": "incremental"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
           "rect": [0, 0, 6, 600],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 600],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
           "rect": [0, 300, 6, 30],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }

@@ -14,7 +14,8 @@ import("//testing/test.gni")
 declare_args() {
   enable_swiftshader = (is_win || is_linux || (is_mac && use_egl) ||
                         is_chromeos || is_fuchsia) &&
-                       (target_cpu == "x86" || target_cpu == "x64")
+                       (target_cpu == "x86" || target_cpu == "x64" ||
+                        target_cpu == "arm64")
 }
 
 use_glx = use_x11 || ozone_platform_x11
@@ -51,6 +52,8 @@ jumbo_component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
   sources = [
+    "android/android_surface_composer_compat.cc",
+    "android/android_surface_composer_compat.h",
     "android/scoped_java_surface.cc",
     "android/scoped_java_surface.h",
     "android/surface_texture.cc",
@@ -126,6 +129,7 @@ jumbo_component("gl") {
     "gpu_switching_manager.h",
     "gpu_timing.cc",
     "gpu_timing.h",
+    "progress_reporter.h",
     "scoped_binders.cc",
     "scoped_binders.h",
     "scoped_make_current.cc",
@@ -195,11 +199,9 @@ jumbo_component("gl") {
       sources += [
         "gl_image_ahardwarebuffer.cc",
         "gl_image_ahardwarebuffer.h",
+        "gl_surface_egl_surface_control.cc",
+        "gl_surface_egl_surface_control.h",
       ]
-
-      if (use_static_angle) {
-        deps += [ "//third_party/angle:libEGL_static" ]
-      }
     }
 
     if (is_posix && !is_fuchsia && !is_mac) {

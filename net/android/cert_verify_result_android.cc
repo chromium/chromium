@@ -30,8 +30,7 @@ void ExtractCertVerifyResult(const JavaRef<jobject>& result,
 
   ScopedJavaLocalRef<jobjectArray> chain_byte_array =
       Java_AndroidCertVerifyResult_getCertificateChainEncoded(env, result);
-  JavaArrayOfByteArrayToStringVector(
-      env, chain_byte_array.obj(), verified_chain);
+  JavaArrayOfByteArrayToStringVector(env, chain_byte_array, verified_chain);
 }
 
 }  // namespace android

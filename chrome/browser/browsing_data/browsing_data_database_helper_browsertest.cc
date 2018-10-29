@@ -107,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataDatabaseHelperTest, CannedAddDatabase) {
       callback.result();
 
   ASSERT_EQ(3u, result.size());
-  std::list<BrowsingDataDatabaseHelper::DatabaseInfo>::iterator info =
-      result.begin();
+  auto info = result.begin();
   EXPECT_EQ(origin_str1, info->identifier.ToString());
   EXPECT_STREQ(db1, info->database_name.c_str());
   info++;

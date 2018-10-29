@@ -374,7 +374,6 @@ source_set("browser_tests") {
   testonly = true
   sources = [
     "browser/api/runtime/runtime_apitest.cc",
-    "browser/geolocation/geolocation_apitest.cc",
     "browser/shell_browsertest.cc",
     "test/shell_apitest.cc",
     "test/shell_apitest.h",
@@ -429,7 +428,7 @@ source_set("unit_tests") {
 }
 
 if (is_desktop_linux && is_official_build) {
-  extract_symbols("app_shell_linux") {
+  extract_symbols("app_shell_linux_symbols") {
     # testonly because :app_shell is testonly. See :app_shell_lib comment.
     testonly = true
 

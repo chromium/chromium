@@ -132,6 +132,9 @@ bool RlzValueStoreMac::ClearAccessPointRlz(AccessPoint access_point) {
   return true;
 }
 
+bool RlzValueStoreMac::UpdateExistingAccessPointRlz(const std::string& brand) {
+  return false;
+}
 
 bool RlzValueStoreMac::AddProductEvent(Product product,
                                        const char* event_rlz) {

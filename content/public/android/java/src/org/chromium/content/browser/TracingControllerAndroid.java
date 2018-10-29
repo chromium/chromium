@@ -11,7 +11,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Pair;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -42,7 +44,6 @@ import java.util.TimeZone;
  */
 @JNINamespace("content")
 public class TracingControllerAndroid {
-
     private static final String TAG = "cr.TracingController";
 
     private static final String ACTION_START = "GPU_PROFILER_START";
@@ -69,6 +70,7 @@ public class TracingControllerAndroid {
     private boolean mShowToasts = true;
 
     private String mFilename;
+    private boolean mCompressFile;
 
     public TracingControllerAndroid(Context context) {
         mContext = context;
@@ -144,17 +146,13 @@ public class TracingControllerAndroid {
     /**
      * Start profiling to a new file in the Downloads directory.
      *
-     * Calls #startTracing(String, boolean, String, String) with a new timestamped filename.
-     * @see #startTracing(String, boolean, String, String)
+     * Calls #startTracing(String, boolean, String, String, boolean) with a new timestamped
+     * filename. Doesn't compress the file.
+     *
+     * @see #startTracing(String, boolean, String, String, boolean)
      */
     public boolean startTracing(boolean showToasts, String categories, String traceOptions) {
-        mShowToasts = showToasts;
-
-        String filePath = generateTracingFilePath();
-        if (filePath == null) {
-            logAndToastError(mContext.getString(R.string.profiler_no_storage_toast));
-        }
-        return startTracing(filePath, showToasts, categories, traceOptions);
+        return startTracing(null, showToasts, categories, traceOptions, false);
     }
 
     private void initializeNativeControllerIfNeeded() {
@@ -164,13 +162,14 @@ public class TracingControllerAndroid {
     }
 
     /**
-     * Start profiling to the specified file. Returns true on success.
+     * Start profiling to the specified file (if not null) or to a new file in the Downloads
+     * directory.
      *
      * Only one TracingControllerAndroid can be running at the same time. If another profiler
      * is running when this method is called, it will be cancelled. If this
      * profiler is already running, this method does nothing and returns false.
      *
-     * @param filename The name of the file to output the profile data to.
+     * @param filename The name of the file to output the profile data to, or null.
      * @param showToasts Whether or not we want to show toasts during this profiling session.
      * When we are timing the profile run we might not want to incur extra draw overhead of showing
      * notifications about the profiling system.
@@ -179,19 +178,30 @@ public class TracingControllerAndroid {
      * @param traceOptions Which trace options to use. See
      * TraceOptions::TraceOptions(const std::string& options_string)
      * (in base/trace_event/trace_event_impl.h) for the format.
+     * @param compressFile Whether the trace file should be compressed (gzip).
+     * @return Whether tracing was started successfully.
      */
     public boolean startTracing(String filename, boolean showToasts, String categories,
-            String traceOptions) {
+            String traceOptions, boolean compressFile) {
         mShowToasts = showToasts;
+
+        if (filename == null) {
+            filename = generateTracingFilePath();
+            if (filename == null) {
+                logAndToastError(mContext.getString(R.string.profiler_no_storage_toast));
+                return false;
+            }
+        }
+
         if (isTracing()) {
             // Don't need a toast because this shouldn't happen via the UI.
             Log.e(TAG, "Received startTracing, but we're already tracing");
             return false;
         }
+
         // Lazy initialize the native side, to allow construction before the library is loaded.
         initializeNativeControllerIfNeeded();
-        if (!nativeStartTracing(mNativeTracingControllerAndroid, categories,
-                traceOptions.toString())) {
+        if (!nativeStartTracing(mNativeTracingControllerAndroid, categories, traceOptions)) {
             logAndToastError(mContext.getString(R.string.profiler_error_toast));
             return false;
         }
@@ -199,16 +209,20 @@ public class TracingControllerAndroid {
         logForProfiler(String.format(PROFILER_STARTED_FMT, categories));
         showToast(mContext.getString(R.string.profiler_started_toast) + ": " + categories);
         mFilename = filename;
+        mCompressFile = compressFile;
         mIsTracing = true;
         return true;
     }
 
     /**
-     * Stop profiling. This won't take effect until Chrome has flushed its file.
+     * Stop profiling and run |callback| when stopped. This won't take effect until Chrome has
+     * flushed its file.
+     *
+     * @param callback The Callback executed when tracing has stopped.
      */
-    public void stopTracing() {
+    public void stopTracing(Callback<Void> callback) {
         if (isTracing()) {
-            nativeStopTracing(mNativeTracingControllerAndroid, mFilename);
+            nativeStopTracing(mNativeTracingControllerAndroid, mFilename, mCompressFile, callback);
         }
     }
 
@@ -216,7 +230,8 @@ public class TracingControllerAndroid {
      * Called by native code when the profiler's output file is closed.
      */
     @CalledByNative
-    protected void onTracingStopped() {
+    @SuppressWarnings("unchecked")
+    protected void onTracingStopped(Object callback) {
         if (!isTracing()) {
             // Don't need a toast because this shouldn't happen via the UI.
             Log.e(TAG, "Received onTracingStopped, but we aren't tracing");
@@ -227,17 +242,66 @@ public class TracingControllerAndroid {
         showToast(mContext.getString(R.string.profiler_stopped_toast, mFilename));
         mIsTracing = false;
         mFilename = null;
+        mCompressFile = false;
+
+        if (callback != null) ((Callback<Void>) callback).onResult(null);
     }
 
     /**
-     * Get known category groups.
+     * Get known categories.
      */
-    public void getCategoryGroups() {
+    public void getKnownCategories() {
+        if (!getKnownCategories(null)) {
+            Log.e(TAG, "Unable to fetch tracing category list.");
+        }
+    }
+
+    /**
+     * Get known categories and run |callback| with the set of known categories.
+     *
+     * @param callback The callback that receives the result.
+     * @return Whether initiating the request was successful.
+     */
+    public boolean getKnownCategories(Callback<String[]> callback) {
         // Lazy initialize the native side, to allow construction before the library is loaded.
         initializeNativeControllerIfNeeded();
-        if (!nativeGetKnownCategoryGroupsAsync(mNativeTracingControllerAndroid)) {
-            Log.e(TAG, "Unable to fetch tracing record groups list.");
+        return nativeGetKnownCategoriesAsync(mNativeTracingControllerAndroid, callback);
+    }
+
+    /**
+     * Called by native when the categories requested by getKnownCategories were obtained.
+     *
+     * @param categories The set of category names.
+     * @param callback The callback that was provided to nativeGetKnownCategoriesAsync.
+     */
+    @CalledByNative
+    @SuppressWarnings("unchecked")
+    public void onKnownCategoriesReceived(String[] categories, Object callback) {
+        if (callback != null) {
+            ((Callback<String[]>) callback).onResult(categories);
         }
+    }
+
+    /**
+     * Get the current estimated trace buffer usage and approximate total event count in the buffer.
+     *
+     * @param callback The callback that receives the result as a Pair of (percentage_full,
+     * approximate_event_count).
+     * @return Whether initiating the request was successful.
+     */
+    public boolean getTraceBufferUsage(Callback<Pair<Float, Long>> callback) {
+        assert callback != null;
+        // Lazy initialize the native side, to allow construction before the library is loaded.
+        initializeNativeControllerIfNeeded();
+        return nativeGetTraceBufferUsageAsync(mNativeTracingControllerAndroid, callback);
+    }
+
+    @CalledByNative
+    @SuppressWarnings("unchecked")
+    public void onTraceBufferUsageReceived(
+            float percentFull, long approximateEventCount, Object callback) {
+        ((Callback<Pair<Float, Long>>) callback)
+                .onResult(new Pair<>(percentFull, approximateEventCount));
     }
 
     /**
@@ -257,6 +321,7 @@ public class TracingControllerAndroid {
     }
 
     // The |str| string needs to match the ones that adb_chrome_profiler looks for.
+    // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
     private void logForProfiler(String str) {
         Log.i(TAG, str);
     }
@@ -275,6 +340,7 @@ public class TracingControllerAndroid {
         }
     }
 
+    // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
     class TracingBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -290,14 +356,14 @@ public class TracingControllerAndroid {
                         ? "record-until-full" : "record-continuously";
                 String filename = intent.getStringExtra(FILE_EXTRA);
                 if (filename != null) {
-                    startTracing(filename, true, categories, traceOptions);
+                    startTracing(filename, true, categories, traceOptions, false);
                 } else {
                     startTracing(true, categories, traceOptions);
                 }
             } else if (intent.getAction().endsWith(ACTION_STOP)) {
-                stopTracing();
+                stopTracing(null);
             } else if (intent.getAction().endsWith(ACTION_LIST_CATEGORIES)) {
-                getCategoryGroups();
+                getKnownCategories();
             } else {
                 Log.e(TAG, "Unexpected intent: %s", intent);
             }
@@ -309,7 +375,11 @@ public class TracingControllerAndroid {
     private native void nativeDestroy(long nativeTracingControllerAndroid);
     private native boolean nativeStartTracing(
             long nativeTracingControllerAndroid, String categories, String traceOptions);
-    private native void nativeStopTracing(long nativeTracingControllerAndroid, String filename);
-    private native boolean nativeGetKnownCategoryGroupsAsync(long nativeTracingControllerAndroid);
+    private native void nativeStopTracing(long nativeTracingControllerAndroid, String filename,
+            boolean compressFile, Callback<Void> callback);
+    private native boolean nativeGetKnownCategoriesAsync(
+            long nativeTracingControllerAndroid, Callback<String[]> callback);
     private native String nativeGetDefaultCategories();
+    private native boolean nativeGetTraceBufferUsageAsync(
+            long nativeTracingControllerAndroid, Callback<Pair<Float, Long>> callback);
 }

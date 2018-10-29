@@ -14,7 +14,7 @@ public class LegacyHelpers {
     // These are legacy namespaces for the purpose of ID generation that will only affect the UI.
     public static final String LEGACY_OFFLINE_PAGE_NAMESPACE = "LEGACY_OFFLINE_PAGE";
     public static final String LEGACY_DOWNLOAD_NAMESPACE = "LEGACY_DOWNLOAD";
-    private static final String LEGACY_DOWNLOAD_INCOGNITO_NAMESPACE = "LEGACY_DOWNLOAD_INCOGNITO";
+    private static final String LEGACY_DOWNLOAD_NAMESPACE_PREFIX = "LEGACY_DOWNLOAD";
 
     /**
      * Helper to build a {@link ContentId} based on a single GUID for old offline content sources
@@ -38,9 +38,8 @@ public class LegacyHelpers {
      * @return   Whether or not {@code id} was built for a traditional download.
      */
     public static boolean isLegacyDownload(@Nullable ContentId id) {
-        return id != null
-                && (TextUtils.equals(LEGACY_DOWNLOAD_NAMESPACE, id.namespace)
-                           || TextUtils.equals(LEGACY_DOWNLOAD_INCOGNITO_NAMESPACE, id.namespace));
+        return id != null && id.namespace != null
+                && id.namespace.startsWith(LEGACY_DOWNLOAD_NAMESPACE);
     }
 
     /**

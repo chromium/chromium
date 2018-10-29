@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "base/values.h"
+#include "headless/lib/browser/protocol/protocol_string.h"
 {% for domain_name in domain.dependencies %}
 #include "headless/public/devtools/internal/types_forward_declarations_{{domain_name | camelcase_to_hacker_style}}.h"
 {% endfor %}

@@ -1,10 +1,10 @@
 AXWebArea
 ++AXOutline
-++++AXRow AXTitle='Animals ' AXValue='2' AXARIASetSize='2' AXARIAPosInSet='1'
+++++AXRow AXTitle='Animals' AXValue='2' AXARIASetSize='2' AXARIAPosInSet='1'
 ++++++AXLink AXTitle='Animals'
 ++++++++AXStaticText AXValue='Animals'
 ++++++AXGroup
-++++++++AXRow AXTitle='Domesticated ' AXARIASetSize='2' AXARIAPosInSet='1'
+++++++++AXRow AXTitle='Domesticated' AXARIASetSize='2' AXARIAPosInSet='1'
 ++++++++++AXLink AXTitle='Domesticated'
 ++++++++++++AXStaticText AXValue='Domesticated'
 ++++++++++AXGroup

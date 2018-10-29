@@ -66,6 +66,10 @@ const DOMWindow* DOMWindow::ToDOMWindow() const {
   return this;
 }
 
+bool DOMWindow::IsWindowOrWorkerGlobalScope() const {
+  return true;
+}
+
 Location* DOMWindow::location() const {
   if (!location_)
     location_ = Location::Create(const_cast<DOMWindow*>(this));
@@ -375,7 +379,7 @@ void DOMWindow::focus(LocalDOMWindow* incumbent_window) {
     DCHECK(IsMainThread());
     allow_focus =
         opener() && (opener() != this) &&
-        (ToDocument(incumbent_execution_context)->domWindow() == opener());
+        (To<Document>(incumbent_execution_context)->domWindow() == opener());
   }
 
   // If we're a top level window, bring the window to the front.

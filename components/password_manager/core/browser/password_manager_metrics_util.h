@@ -10,7 +10,6 @@
 #include <string>
 
 #include "components/autofill/core/common/password_form.h"
-#include "components/password_manager/core/browser/password_reuse_defines.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 
 namespace password_manager {
@@ -56,7 +55,7 @@ enum UIDismissalReason {
   CLICKED_CREDENTIAL_OBSOLETE,   // obsolete.
   AUTO_SIGNIN_TOAST_TIMEOUT,
   AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE,  // obsolete.
-  CLICKED_BRAND_NAME,
+  CLICKED_BRAND_NAME_OBSOLETE,         // obsolete.
   CLICKED_PASSWORDS_DASHBOARD,
   NUM_UI_RESPONSES,
 };
@@ -181,13 +180,6 @@ enum ReauthToAccessPasswordInSettingsEvent {
   REAUTH_COUNT
 };
 
-// Metrics: PasswordManager.IE7LookupResult
-enum IE7LookupResultStatus {
-  IE7_RESULTS_ABSENT = 0,
-  IE7_RESULTS_PRESENT = 1,
-  IE7_RESULTS_COUNT
-};
-
 // Specifies the type of PasswordFormManagers and derived classes to distinguish
 // the context in which a PasswordFormManager is being created and used.
 enum class CredentialSourceType {
@@ -199,16 +191,20 @@ enum class CredentialSourceType {
   kCredentialManagementAPI
 };
 
+// Metrics: PasswordManager.DeleteCorruptedPasswordsResult
 // Metrics: PasswordManager.DeleteUndecryptableLoginsReturnValue
-enum class DeleteUndecryptableLoginsReturnValue {
-  // No broken entries were deleted.
+// A passwords is considered corrupted if it's stored locally using lost
+// encryption key.
+enum class DeleteCorruptedPasswordsResult {
+  // No corrupted entries were deleted.
   kSuccessNoDeletions = 0,
-  // There were broken entries that were successfully deleted.
-  kSuccessLoginsDeleted = 1,
-  // Broken entries were found, but failed to be deleted.
+  // There were corrupted entries that were successfully deleted.
+  kSuccessPasswordsDeleted = 1,
+  // There was at least one corrupted entry that failed to be removed (it's
+  // possible that other corrupted entries were deleted).
   kItemFailure = 2,
   // Encryption is unavailable, it's impossible to determine which entries are
-  // broken.
+  // corrupted.
   kEncryptionUnavailable = 3,
   kMaxValue = kEncryptionUnavailable,
 };
@@ -386,14 +382,19 @@ void LogSubmittedFormFrame(SubmittedFormFrame frame);
 
 // Log a return value of LoginDatabase::DeleteUndecryptableLogins method.
 void LogDeleteUndecryptableLoginsReturnValue(
-    DeleteUndecryptableLoginsReturnValue return_value);
+    DeleteCorruptedPasswordsResult result);
+
+// Log a result of removing passwords that couldn't be decrypted with the
+// present encryption key on MacOS.
+void LogDeleteCorruptedPasswordsResult(DeleteCorruptedPasswordsResult result);
 
 #if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 // Log a save sync password change event.
 void LogSyncPasswordHashChange(SyncPasswordHashChange event);
 
 // Log whether a sync password hash saved.
-void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state);
+void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
+                                bool is_under_advanced_protection);
 
 // Log the number of Gaia password hashes saved, and the number of enterprise
 // password hashes saved.

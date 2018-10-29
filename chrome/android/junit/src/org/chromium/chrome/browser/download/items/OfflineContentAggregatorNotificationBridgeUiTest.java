@@ -30,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
@@ -83,7 +82,7 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
     }
 
     @Test
-    public void testOnlyInterestingNewItemsGetSentToTheUi() {
+    public void testAddedItemsGetSentToTheUi() {
         OfflineContentAggregatorNotificationBridgeUi bridge =
                 new OfflineContentAggregatorNotificationBridgeUi(mProvider, mNotifier);
         verify(mProvider, times(1)).addObserver(bridge);
@@ -102,19 +101,34 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
 
         bridge.onItemsAdded(items);
 
-        InOrder order = inOrder(mProvider);
-        order.verify(mProvider, times(1))
-                .getVisualsForItem(items.get(0).id /* OfflineItemState.IN_PROGRESS */, bridge);
-        order.verify(mProvider, times(1))
-                .getVisualsForItem(items.get(1).id /* OfflineItemState.PENDING*/, bridge);
-        order.verify(mProvider, never())
-                .getVisualsForItem(ArgumentMatchers.any(), ArgumentMatchers.any());
+        verify(mProvider, times(1)).getVisualsForItem(items.get(0).id, bridge);
+        verify(mProvider, times(1)).getVisualsForItem(items.get(1).id, bridge);
+        verify(mProvider, times(1)).getVisualsForItem(items.get(2).id, bridge);
+        verify(mProvider, never()).getVisualsForItem(items.get(3).id, bridge);
+        verify(mProvider, times(1)).getVisualsForItem(items.get(4).id, bridge);
+        verify(mProvider, times(1)).getVisualsForItem(items.get(5).id, bridge);
+        verify(mProvider, times(1)).getVisualsForItem(items.get(6).id, bridge);
 
-        bridge.onVisualsAvailable(items.get(0).id, new OfflineItemVisuals());
+        for (int i = 0; i < items.size(); i++) {
+            bridge.onVisualsAvailable(items.get(i).id, new OfflineItemVisuals());
+        }
 
         verify(mNotifier, times(1))
                 .notifyDownloadProgress(argThat(new DownloadInfoIdMatcher(items.get(0).id)),
                         ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean());
+        verify(mNotifier, times(1))
+                .notifyDownloadSuccessful(argThat(new DownloadInfoIdMatcher(items.get(2).id)),
+                        ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean(),
+                        ArgumentMatchers.anyBoolean());
+        verify(mNotifier, times(1))
+                .notifyDownloadCanceled(items.get(3).id /* OfflineItemState.CANCELLED */);
+        verify(mNotifier, times(1))
+                .notifyDownloadInterrupted(argThat(new DownloadInfoIdMatcher(items.get(4).id)),
+                        ArgumentMatchers.anyBoolean(), eq(PendingState.NOT_PENDING));
+        verify(mNotifier, times(1))
+                .notifyDownloadFailed(argThat(new DownloadInfoIdMatcher(items.get(5).id)));
+        verify(mNotifier, times(1))
+                .notifyDownloadPaused(argThat(new DownloadInfoIdMatcher(items.get(6).id)));
 
         bridge.destroy();
         verify(mProvider, times(1)).removeObserver(bridge);
@@ -165,8 +179,7 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
                 .notifyDownloadInterrupted(argThat(new DownloadInfoIdMatcher(items.get(4).id)),
                         ArgumentMatchers.anyBoolean(), eq(PendingState.NOT_PENDING));
         verify(mNotifier, times(1))
-                .notifyDownloadFailed(argThat(new DownloadInfoIdMatcher(items.get(5).id)),
-                        eq(FailState.NO_FAILURE));
+                .notifyDownloadFailed(argThat(new DownloadInfoIdMatcher(items.get(5).id)));
         verify(mNotifier, times(1))
                 .notifyDownloadPaused(argThat(new DownloadInfoIdMatcher(items.get(6).id)));
 

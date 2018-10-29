@@ -79,7 +79,7 @@ struct MockKeyringItem {
     // The real GNOME Keyring doesn't match empty queries.
     if (query.empty()) return false;
     for (size_t i = 0; i < query.size(); ++i) {
-      attribute_map::const_iterator match = attributes.find(query[i].first);
+      auto match = attributes.find(query[i].first);
       if (match == attributes.end()) return false;
       if (!match->second.Equals(query[i].second)) return false;
     }
@@ -147,8 +147,7 @@ gpointer mock_gnome_keyring_store_password(
   // As a hack to ease testing migration, make it possible to reject the new
   // format for the app string. This way we can add them easily to migrate.
   if (mock_keyring_reject_local_ids) {
-    MockKeyringItem::attribute_map::iterator it =
-        item->attributes.find("application");
+    auto it = item->attributes.find("application");
     if (it != item->attributes.end() &&
         it->second.type == MockKeyringItem::ItemAttribute::STRING &&
         base::StringPiece(it->second.value_string).starts_with("chrome-")) {
@@ -235,9 +234,7 @@ gpointer mock_gnome_keyring_find_items(
       found->keyring = strdup(item->keyring.c_str());
       found->item_id = i;
       found->attributes = gnome_keyring_attribute_list_new();
-      for (MockKeyringItem::attribute_map::const_iterator it =
-               item->attributes.begin();
-           it != item->attributes.end();
+      for (auto it = item->attributes.begin(); it != item->attributes.end();
            ++it) {
         if (it->second.type == MockKeyringItem::ItemAttribute::STRING) {
           gnome_keyring_attribute_list_append_string(
@@ -423,8 +420,7 @@ class NativeBackendGnomeTest : public testing::Test {
   void CheckUint32Attribute(const MockKeyringItem* item,
                             const std::string& attribute,
                             uint32_t value) {
-    MockKeyringItem::attribute_map::const_iterator it =
-        item->attributes.find(attribute);
+    auto it = item->attributes.find(attribute);
     EXPECT_NE(item->attributes.end(), it);
     if (it != item->attributes.end()) {
       EXPECT_EQ(MockKeyringItem::ItemAttribute::UINT32, it->second.type);
@@ -435,8 +431,7 @@ class NativeBackendGnomeTest : public testing::Test {
   void CheckStringAttribute(const MockKeyringItem* item,
                             const std::string& attribute,
                             const std::string& value) {
-    MockKeyringItem::attribute_map::const_iterator it =
-        item->attributes.find(attribute);
+    auto it = item->attributes.find(attribute);
     EXPECT_NE(item->attributes.end(), it);
     if (it != item->attributes.end()) {
       EXPECT_EQ(MockKeyringItem::ItemAttribute::STRING, it->second.type);
@@ -476,7 +471,7 @@ class NativeBackendGnomeTest : public testing::Test {
     // We serialize unique origins as "", in order to make other systems that
     // read from the login database happy. https://crbug.com/591310
     CheckStringAttribute(item, "federation_url",
-                         form.federation_origin.unique()
+                         form.federation_origin.opaque()
                              ? ""
                              : form.federation_origin.Serialize());
     CheckUint32Attribute(item, "should_skip_zero_click", form.skip_zero_click);
@@ -1254,8 +1249,7 @@ TEST_F(NativeBackendGnomeTest, ReadDuplicateForms) {
   // Read the raw value back. Change the |unique_string| to
   // |unique_string_replacement| so the forms become unique.
   ASSERT_EQ(2u, mock_keyring_items.size());
-  MockKeyringItem::attribute_map::iterator it =
-      mock_keyring_items[0].attributes.find("origin_url");
+  auto it = mock_keyring_items[0].attributes.find("origin_url");
   ASSERT_NE(mock_keyring_items[0].attributes.end(), it);
   size_t position = it->second.value_string.find(unique_string);
   ASSERT_NE(std::string::npos, position) << it->second.value_string;

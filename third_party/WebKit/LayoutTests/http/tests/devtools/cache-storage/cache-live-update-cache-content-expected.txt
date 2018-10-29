@@ -8,7 +8,7 @@ Dumping CacheStorage tree:
 Added entry
 Dumping CacheStorage tree:
     cache: testCache1 - http://127.0.0.1:8000
-        /1, text/plain, 0
+        /1, default, text/plain, 0
 Deleted entry
 Dumping CacheStorage tree:
     cache: testCache1 - http://127.0.0.1:8000

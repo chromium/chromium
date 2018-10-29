@@ -22,8 +22,8 @@ namespace absl {
 namespace test_internal {
 
 // A type that counts number of occurences of the type, the live occurrences of
-// the type, as well as the number of copies, moves, and swaps that have
-// occurred on the type. This is used as a base class for the copyable,
+// the type, as well as the number of copies, moves, swaps, and comparisons that
+// have occurred on the type. This is used as a base class for the copyable,
 // copyable+movable, and movable types below that are used in actual tests. Use
 // InstanceTracker in tests to track the number of instances.
 class BaseCountedInstance {
@@ -64,6 +64,36 @@ class BaseCountedInstance {
     x.is_live_ = false;
     ++num_moves_;
     return *this;
+  }
+
+  bool operator==(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ == x.value_;
+  }
+
+  bool operator!=(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ != x.value_;
+  }
+
+  bool operator<(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ < x.value_;
+  }
+
+  bool operator>(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ > x.value_;
+  }
+
+  bool operator<=(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ <= x.value_;
+  }
+
+  bool operator>=(const BaseCountedInstance& x) const {
+    ++num_comparisons_;
+    return value_ >= x.value_;
   }
 
   int value() const {
@@ -108,6 +138,9 @@ class BaseCountedInstance {
 
   // Number of times that BaseCountedInstance objects were swapped.
   static int num_swaps_;
+
+  // Number of times that BaseCountedInstance objects were compared.
+  static int num_comparisons_;
 };
 
 // Helper to track the BaseCountedInstance instance counters. Expects that the
@@ -152,13 +185,21 @@ class InstanceTracker {
   // construction or the last call to ResetCopiesMovesSwaps().
   int swaps() const { return BaseCountedInstance::num_swaps_ - start_swaps_; }
 
-  // Resets the base values for moves, copies and swaps to the current values,
-  // so that subsequent Get*() calls for moves, copies and swaps will compare to
-  // the situation at the point of this call.
+  // Returns the number of comparisons on BaseCountedInstance objects since
+  // construction or the last call to ResetCopiesMovesSwaps().
+  int comparisons() const {
+    return BaseCountedInstance::num_comparisons_ - start_comparisons_;
+  }
+
+  // Resets the base values for moves, copies, comparisons, and swaps to the
+  // current values, so that subsequent Get*() calls for moves, copies,
+  // comparisons, and swaps will compare to the situation at the point of this
+  // call.
   void ResetCopiesMovesSwaps() {
     start_moves_ = BaseCountedInstance::num_moves_;
     start_copies_ = BaseCountedInstance::num_copies_;
     start_swaps_ = BaseCountedInstance::num_swaps_;
+    start_comparisons_ = BaseCountedInstance::num_comparisons_;
   }
 
  private:
@@ -167,6 +208,7 @@ class InstanceTracker {
   int start_moves_;
   int start_copies_;
   int start_swaps_;
+  int start_comparisons_;
 };
 
 // Copyable, not movable.

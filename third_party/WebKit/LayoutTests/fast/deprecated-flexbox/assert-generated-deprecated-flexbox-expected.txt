@@ -1,5 +1,3 @@
 Bug 91003: ASSERT(genChild->isListMarker() || genChild->style()->styleType() == FIRST_LETTER) triggered on flex-box content
 
 This test has passed if it doesn't crash or ASSERT.
-
-

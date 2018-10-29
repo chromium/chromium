@@ -46,7 +46,7 @@ class FragmentData;
 // The fragments are collected by calling PaintLayer::CollectFragments
 // on every box once per paint/hit-testing operation.
 struct PaintLayerFragment {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // See |root_fragment_data| for the coordinate space of |layer_bounds|,

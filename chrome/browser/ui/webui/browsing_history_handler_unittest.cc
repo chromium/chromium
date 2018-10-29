@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,14 +108,16 @@ class BrowsingHistoryHandlerTest : public ::testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              &BuildFakeProfileOAuth2TokenService);
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              &BuildFakeSigninManagerBase);
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
     builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                              &BuildFakeSyncService);
+                              base::BindRepeating(&BuildFakeSyncService));
     builder.AddTestingFactory(WebHistoryServiceFactory::GetInstance(),
-                              &BuildFakeWebHistoryService);
+                              base::BindRepeating(&BuildFakeWebHistoryService));
     profile_ = builder.Build();
     profile_->CreateBookmarkModel(false);
 

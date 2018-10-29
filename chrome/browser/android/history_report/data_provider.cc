@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "chrome/browser/android/history_report/delta_file_service.h"
 #include "chrome/browser/android/history_report/get_all_urls_from_history_task.h"
@@ -23,6 +24,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using bookmarks::BookmarkModel;
@@ -126,11 +128,9 @@ std::unique_ptr<std::vector<DeltaFileEntryWithData>> DataProvider::Query(
     if (!entries->empty()) {
       Context context(history_service_,
                       &history_task_tracker_);
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI,
-          FROM_HERE,
-          base::Bind(&QueryUrlsHistoryInUiThread,
-                     base::Unretained(&context),
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
+          base::Bind(&QueryUrlsHistoryInUiThread, base::Unretained(&context),
                      base::Unretained(entries.get())));
       std::vector<UrlAndTitle> bookmarks;
       bookmark_model_->model_loader()->BlockTillLoaded();
@@ -165,12 +165,10 @@ void DataProvider::StartVisitMigrationToUsageBuffer(
   base::WaitableEvent finished(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                                base::WaitableEvent::InitialState::NOT_SIGNALED);
   buffer_service->Clear();
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&StartVisitMigrationToUsageBufferUiThread,
-                 base::Unretained(history_service_),
-                 buffer_service,
+                 base::Unretained(history_service_), buffer_service,
                  base::Unretained(&finished),
                  base::Unretained(&history_task_tracker_)));
   finished.Wait();
@@ -186,8 +184,8 @@ void DataProvider::RecreateLog() {
     std::unique_ptr<history::HistoryDBTask> task =
         std::unique_ptr<history::HistoryDBTask>(
             new GetAllUrlsFromHistoryTask(&finished, &urls));
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(base::IgnoreResult(&history::HistoryService::ScheduleDBTask),
                    base::Unretained(history_service_), FROM_HERE,
                    base::Passed(&task),

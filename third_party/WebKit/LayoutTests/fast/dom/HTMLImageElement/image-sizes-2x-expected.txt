@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById("simple").clientWidth is window.innerWidth
 PASS currentSrcFileNameNoParams("simple") is "image-set-2x.png"
 PASS document.getElementById("small_sizes").clientWidth is 300

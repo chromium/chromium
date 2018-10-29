@@ -2,4 +2,3 @@ PASS rect.width.animVal.value is 100
 PASS rect.height.animVal.value is 200
 PASS rect["transform"].animVal.numberOfItems is 1
 PASS rect["transform"].animVal.getItem(0).angle is 300
-

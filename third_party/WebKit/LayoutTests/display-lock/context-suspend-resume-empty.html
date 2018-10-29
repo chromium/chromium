@@ -1,0 +1,49 @@
+<!doctype HTML>
+
+<!--
+Runs an acquireDisplayLock, which suspends the context.
+The context is then resumed which is when the promise resolves.
+-->
+
+<style>
+#parent {
+  width: 100px;
+  height: 100px;
+  contain: content;
+}
+</style>
+
+<div id="log"></div>
+<div id="parent"></div>
+
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+
+function acquire() {
+  let current_status = "FAIL";
+  let resume_handle = undefined;
+  document.getElementById("parent").acquireDisplayLock(
+    (context) => {
+      resume_handle = context.suspend();
+  }).then(
+    () => { finishTest(current_status); },
+    () => { finishTest("FAIL - rejected"); });
+  setTimeout(() => {
+    current_status = "PASS";
+    context.resume();
+  }, 50);
+}
+
+window.onload = acquire;
+</script>
+
+
+

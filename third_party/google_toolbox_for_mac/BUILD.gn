@@ -14,8 +14,6 @@ config("google_toolbox_for_mac_public_config") {
 
 component("google_toolbox_for_mac") {
   sources = [
-    "src/Foundation/GTMStringEncoding.h",
-    "src/Foundation/GTMStringEncoding.m",
     "src/GTMDefines.h",
   ]
 
@@ -27,20 +25,6 @@ component("google_toolbox_for_mac") {
     sources += [
       "src/AppKit/GTMCarbonEvent.h",
       "src/AppKit/GTMCarbonEvent.m",
-      "src/AppKit/GTMFadeTruncatingTextFieldCell.h",
-      "src/AppKit/GTMFadeTruncatingTextFieldCell.m",
-      "src/AppKit/GTMIBArray.h",
-      "src/AppKit/GTMIBArray.m",
-      "src/AppKit/GTMKeyValueAnimation.h",
-      "src/AppKit/GTMKeyValueAnimation.m",
-      "src/AppKit/GTMNSAnimation+Duration.h",
-      "src/AppKit/GTMNSAnimation+Duration.m",
-      "src/AppKit/GTMNSBezierPath+CGPath.h",
-      "src/AppKit/GTMNSBezierPath+CGPath.m",
-      "src/AppKit/GTMNSBezierPath+RoundRect.h",
-      "src/AppKit/GTMNSBezierPath+RoundRect.m",
-      "src/AppKit/GTMNSColor+Luminance.h",
-      "src/AppKit/GTMNSColor+Luminance.m",
       "src/AppKit/GTMUILocalizer.h",
       "src/AppKit/GTMUILocalizer.m",
       "src/AppKit/GTMUILocalizerAndLayoutTweaker.h",
@@ -52,7 +36,6 @@ component("google_toolbox_for_mac") {
     ]
 
     libs = [
-      "AddressBook.framework",
       "AppKit.framework",
       "Carbon.framework",
       "Cocoa.framework",
@@ -77,6 +60,8 @@ component("google_toolbox_for_mac") {
       "src/Foundation/GTMNSString+URLArguments.m",
       "src/Foundation/GTMSQLite.h",
       "src/Foundation/GTMSQLite.m",
+      "src/Foundation/GTMStringEncoding.h",
+      "src/Foundation/GTMStringEncoding.m",
       "src/iPhone/GTMFadeTruncatingLabel.h",
       "src/iPhone/GTMFadeTruncatingLabel.m",
       "src/iPhone/GTMRoundedRectPath.h",

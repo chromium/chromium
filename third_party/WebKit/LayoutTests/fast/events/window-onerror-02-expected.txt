@@ -7,9 +7,7 @@ window.onerror: "Uncaught ReferenceError: unknownObject is not defined" at windo
 Stack Trace:
 ReferenceError: unknownObject is not defined
     at window-onerror-02.html:14:9
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 PASS successfullyParsed is true

@@ -20,10 +20,6 @@ type:*SkBlockComRef*
 type:*RemoveIUnknown*
 src:*atlcomcli.h
 
-# invalid downcasts for IPC messages
-# https://crbug.com/520760
-src:*nacl_message_scanner.cc*
-
 # src/base/win/event_trace_provider_unittest.cc
 type:*EtwTraceProvider*
 
@@ -199,10 +195,6 @@ src:*third_party/icu/source/common/*
 src:*third_party/blink/renderer/platform/wtf/*
 # v8/src/intl.cc
 fun:*LocaleConvertCase*
-
-# Casts away const qualifier
-# third_party/boringssl/src/crypto/pem/pem_lib.c
-fun:*PEM_ASN1_write*
 
 # PropertyCallbackArguments::Call methods cast function pointers
 src:*v8/src/api-arguments-inl.h

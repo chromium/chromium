@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow DIV id='elm'",
           "rect": [8, 8, 500, 485],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

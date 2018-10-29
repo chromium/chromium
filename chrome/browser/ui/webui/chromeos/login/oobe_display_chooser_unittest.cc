@@ -121,7 +121,7 @@ TEST_F(OobeDisplayChooserTest, PreferTouchAsPrimary) {
 
   // Setup corresponding TouchscreenDevice object
   ui::TouchscreenDevice touchscreen =
-      ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_USB,
                             "Touchscreen", gfx::Size(800, 600), 1);
   touchscreen.vendor_id = kWhitelistedId;
   ws::InputDeviceClientTestApi().SetTouchscreenDevices({touchscreen});
@@ -164,7 +164,7 @@ TEST_F(OobeDisplayChooserTest, DontSwitchFromTouch) {
 
   // Setup corresponding TouchscreenDevice object
   ui::TouchscreenDevice touchscreen =
-      ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_USB,
                             "Touchscreen", gfx::Size(800, 600), 1);
   touchscreen.vendor_id = kWhitelistedId;
   ws::InputDeviceClientTestApi().SetTouchscreenDevices({touchscreen});

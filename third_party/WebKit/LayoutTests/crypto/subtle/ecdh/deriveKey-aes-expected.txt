@@ -2,7 +2,6 @@ Tests deriveKey() using ECDH to make AES keys
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing the private key...
 
 Importing the public key...

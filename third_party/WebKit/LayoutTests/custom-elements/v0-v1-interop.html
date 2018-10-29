@@ -54,4 +54,28 @@ test_with_window((w) => {
   assert_true(w.document.createElement('div', 'b-b') instanceof w.HTMLDivElement,
               'V0 createElement syntax does not work with V1 defined element');
 }, 'V0 and V1 definition and createElement cannot be used together');
+
+test_with_window((w) => {
+  const element = w.document.createElement('my-element');
+  assert_true(element.matches(':unresolved'), 'Undefined element should be matched to :unresolved');
+  assert_false(element.matches(':defined'), 'Undefined element should not be matched to :defined');
+
+  class MyElement extends w.HTMLElement {};
+  w.document.registerElement('my-element', {prototype: MyElement.prototype});
+  assert_true(element instanceof MyElement, 'Make sure V0-upgraded');
+  assert_false(element.matches(':unresolved'), 'V0-defined element should not be matched to :unresolved');
+  assert_true(element.matches(':defined'), 'V0-defined element should  be matched to :defined');
+
+  const element1 = w.document.createElement('my-element1');
+  w.customElements.define('my-element1', MyElement);
+  w.customElements.upgrade(element1);
+  assert_true(element1 instanceof MyElement, 'Make sure V1-upgraded');
+  assert_false(element1.matches(':unresolved'), 'V1-defined element should not be matched to :unresolved');
+  assert_true(element1.matches(':defined'), 'V1-defined element should be matched to :defined');
+
+  const builtin = w.document.createElement('span');
+  assert_false(builtin.matches(':unresolved'), 'Built-in element should not be matched to :unresolved');
+  assert_true(builtin.matches(':defined'), 'Built-in element should be matched to :defined');
+
+}, ':unresolved and :defined work with both of V0 and V1 custom elements');
 </script>

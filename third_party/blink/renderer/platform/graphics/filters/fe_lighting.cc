@@ -58,8 +58,8 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
     return CreateTransparentBlack();
   PaintFilter::CropRect rect = GetCropRect();
   Color light_color = AdaptColorToOperatingInterpolationSpace(lighting_color_);
-  sk_sp<PaintFilter> input(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> input(paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace()));
   switch (light_source_->GetType()) {
     case LS_DISTANT: {
       DistantLightSource* distant_light_source =

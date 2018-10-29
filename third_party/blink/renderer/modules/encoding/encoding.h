@@ -9,13 +9,13 @@
 
 namespace blink {
 
-namespace Encoding {
+namespace encoding {
 
 // The Encoding Standard has a definition of whitespace that differs from
 // WTF::isWhiteSpace() (it excludes vertical tab).
 bool IsASCIIWhiteSpace(UChar);
 
-}  // namespace Encoding
+}  // namespace encoding
 
 }  // namespace blink
 

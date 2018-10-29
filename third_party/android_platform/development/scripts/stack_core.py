@@ -23,6 +23,7 @@ import os
 import re
 import struct
 import subprocess
+import sys
 import time
 import zipfile
 
@@ -157,6 +158,40 @@ def PrintOutput(trace_lines, value_lines, java_lines, more_info):
 def PrintDivider():
   print
   print '-----------------------------------------------------\n'
+
+def StreamingConvertTrace(input, load_vaddrs, more_info, fallback_monochrome, arch_defined, llvm_symbolizer):
+  """Symbolize stacks on the fly as they are read from an input stream."""
+  InitWidthRelatedLineMatchers()
+
+  if fallback_monochrome:
+    global _FALLBACK_SO
+    _FALLBACK_SO = 'libmonochrome.so'
+  useful_lines = []
+  so_dirs = []
+  in_stack = False
+  for line in iter(sys.stdin.readline, b''):
+    print line,
+    maybe_line, maybe_so_dir = PreProcessLog(load_vaddrs)([line])
+    useful_lines.extend(maybe_line)
+    so_dirs.extend(maybe_so_dir)
+    if in_stack:
+      if not maybe_line:
+        print "Stack found. Symbolizing..."
+        if so_dirs:
+          UpdateLibrarySearchPath(so_dirs)
+        # if arch isn't defined in command line, find it from log
+        if not arch_defined:
+          arch = _FindAbi(useful_lines)
+          if arch:
+            print ('Find ABI:' + arch)
+            symbol.ARCH = arch
+        ResolveCrashSymbol(list(useful_lines), more_info, llvm_symbolizer)
+        so_dirs = []
+        useful_lines = []
+        in_stack = False
+    else:
+      if _TRACE_LINE.search(line):
+        in_stack = True
 
 def ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome, arch_defined, llvm_symbolizer):
   """Convert strings containing native crash to a stack."""

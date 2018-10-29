@@ -9,6 +9,7 @@
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "components/browser_sync/profile_sync_service.h"
+#include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/signin/core/browser/device_id_helper.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
@@ -90,6 +91,12 @@ WebViewProfileSyncServiceFactory::BuildServiceInstanceFor(
   init_params.network_time_update_callback = base::DoNothing();
   init_params.signin_scoped_device_id_callback = base::BindRepeating(
       &signin::GetSigninScopedDeviceId, browser_state->GetPrefs());
+  init_params.network_connection_tracker =
+      ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
+  init_params.invalidations_identity_providers.push_back(
+      WebViewProfileInvalidationProviderFactory::GetForBrowserState(
+          browser_state)
+          ->GetIdentityProvider());
 
   auto profile_sync_service =
       std::make_unique<ProfileSyncService>(std::move(init_params));

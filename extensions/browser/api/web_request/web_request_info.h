@@ -59,6 +59,8 @@ struct WebRequestInfo {
   };
 
   WebRequestInfo();
+  WebRequestInfo(WebRequestInfo&& other);
+  WebRequestInfo& operator=(WebRequestInfo&& other);
 
   // Initializes a WebRequestInfo from a net::URLRequest. Should be used
   // sparingly, as we are moving away from direct URLRequest usage and toward

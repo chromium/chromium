@@ -40,8 +40,8 @@
 #include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/frame/caption_buttons/caption_button_types.h"
 #include "ash/ime/ime_controller.h"
+#include "ash/public/cpp/caption_buttons/caption_button_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/interfaces/window_pin_type.mojom.h"
@@ -80,6 +80,7 @@
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
 #include "components/exo/keyboard_observer.h"
+#include "components/exo/notification.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/pointer.h"
@@ -109,8 +110,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -713,9 +712,17 @@ void shm_create_pool(wl_client* client,
                      uint32_t id,
                      int fd,
                      int32_t size) {
+  static const auto kMode =
+      base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
+  auto fd_pair = base::subtle::ScopedFDPair(base::ScopedFD(fd),
+                                            base::ScopedFD() /* readonly_fd */);
+  auto guid = base::UnguessableToken::Create();
+  auto platform_shared_memory = base::subtle::PlatformSharedMemoryRegion::Take(
+      std::move(fd_pair), kMode, size, guid);
   std::unique_ptr<SharedMemory> shared_memory =
       GetUserDataAs<Display>(resource)->CreateSharedMemory(
-          base::SharedMemoryHandle::ImportHandle(fd, size), size);
+          base::UnsafeSharedMemoryRegion::Deserialize(
+              std::move(platform_shared_memory)));
   if (!shared_memory) {
     wl_resource_post_no_memory(resource);
     return;
@@ -2674,16 +2681,39 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       const gfx::Rect& bounds = display.bounds();
       const gfx::Insets& insets = display.GetWorkAreaInsets();
 
-      double device_scale_factor = WMHelper::GetInstance()
-                                       ->GetDisplayInfo(display.id())
-                                       .device_scale_factor();
+      double device_scale_factor = display.device_scale_factor();
+
+      uint32_t display_id_hi = static_cast<uint32_t>(display.id() >> 32);
+      uint32_t display_id_lo = static_cast<uint32_t>(display.id());
 
       zcr_remote_shell_v1_send_workspace(
-          remote_shell_resource_, static_cast<uint32_t>(display.id() >> 32),
-          static_cast<uint32_t>(display.id()), bounds.x(), bounds.y(),
-          bounds.width(), bounds.height(), insets.left(), insets.top(),
-          insets.right(), insets.bottom(), DisplayTransform(display.rotation()),
+          remote_shell_resource_, display_id_hi, display_id_lo, bounds.x(),
+          bounds.y(), bounds.width(), bounds.height(), insets.left(),
+          insets.top(), insets.right(), insets.bottom(),
+          DisplayTransform(display.rotation()),
           wl_fixed_from_double(device_scale_factor), display.IsInternal());
+
+      if (wl_resource_get_version(remote_shell_resource_) >= 19) {
+        gfx::Size size_in_pixel = display.GetSizeInPixel();
+
+        wl_array data;
+        wl_array_init(&data);
+
+        const auto& bytes =
+            WMHelper::GetInstance()->GetDisplayIdentificationData(display.id());
+        for (uint8_t byte : bytes) {
+          uint8_t* ptr =
+              static_cast<uint8_t*>(wl_array_add(&data, sizeof(uint8_t)));
+          DCHECK(ptr);
+          *ptr = byte;
+        }
+
+        zcr_remote_shell_v1_send_display_info(
+            remote_shell_resource_, display_id_hi, display_id_lo,
+            size_in_pixel.width(), size_in_pixel.height(), &data);
+
+        wl_array_release(&data);
+      }
     }
 
     zcr_remote_shell_v1_send_configure(remote_shell_resource_, layout_mode_);
@@ -2965,7 +2995,7 @@ const struct zcr_remote_shell_v1_interface remote_shell_implementation = {
     remote_shell_get_notification_surface,
     remote_shell_get_input_method_surface};
 
-const uint32_t remote_shell_version = 18;
+const uint32_t remote_shell_version = 19;
 
 void bind_remote_shell(wl_client* client,
                        void* data,
@@ -5654,6 +5684,61 @@ void bind_text_input_manager(wl_client* client,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// zcr_notification_shell_notification_v1 interface:
+
+// Implements notification interface.
+class WaylandNotificationShellNotification {
+ public:
+  WaylandNotificationShellNotification(const std::string& title,
+                                       const std::string& message,
+                                       const std::string& display_source,
+                                       const std::string& notification_id,
+                                       const std::vector<std::string>& buttons,
+                                       wl_resource* resource)
+      : resource_(resource), weak_ptr_factory_(this) {
+    notification_ = std::make_unique<Notification>(
+        title, message, display_source, notification_id,
+        kNotificationShellNotifierId, buttons,
+        base::BindRepeating(&WaylandNotificationShellNotification::OnClose,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(&WaylandNotificationShellNotification::OnClick,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void Close() { notification_->Close(); }
+
+ private:
+  void OnClose(bool by_user) {
+    zcr_notification_shell_notification_v1_send_closed(resource_, by_user);
+    wl_client_flush(wl_resource_get_client(resource_));
+  }
+
+  void OnClick(const base::Optional<int>& button_index) {
+    int32_t index = button_index ? *button_index : -1;
+    zcr_notification_shell_notification_v1_send_clicked(resource_, index);
+    wl_client_flush(wl_resource_get_client(resource_));
+  }
+
+  wl_resource* const resource_;
+  std::unique_ptr<Notification> notification_;
+
+  base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShellNotification);
+};
+
+void notification_destroy(wl_client* client, wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+void notification_close(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<WaylandNotificationShellNotification>(resource)->Close();
+}
+
+const struct zcr_notification_shell_notification_v1_interface
+    notification_implementation = {notification_destroy, notification_close};
+
+////////////////////////////////////////////////////////////////////////////////
 // zcr_notification_shell_v1 interface:
 
 // Implements notification shell interface.
@@ -5664,28 +5749,19 @@ class WaylandNotificationShell {
   ~WaylandNotificationShell() = default;
 
   // Creates a notification on message center from textual information.
-  void CreateNotification(const std::string& title,
-                          const std::string& message,
-                          const std::string& display_source,
-                          const std::string& notification_key) {
+  std::unique_ptr<WaylandNotificationShellNotification> CreateNotification(
+      const std::string& title,
+      const std::string& message,
+      const std::string& display_source,
+      const std::string& notification_key,
+      const std::vector<std::string>& buttons,
+      wl_resource* notification_resource) {
     auto notification_id = base::StringPrintf(
         kNotificationShellNotificationIdFormat, id_, notification_key.c_str());
 
-    auto notifier_id = message_center::NotifierId(
-        message_center::NotifierId::APPLICATION, kNotificationShellNotifierId);
-    notifier_id.profile_id = ash::Shell::Get()
-                                 ->session_controller()
-                                 ->GetPrimaryUserSession()
-                                 ->user_info->account_id.GetUserEmail();
-
-    auto notification = std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-        base::UTF8ToUTF16(title), base::UTF8ToUTF16(message), gfx::Image(),
-        base::UTF8ToUTF16(display_source), GURL(), notifier_id,
-        message_center::RichNotificationData(), nullptr /* delegate */);
-
-    message_center::MessageCenter::Get()->AddNotification(
-        std::move(notification));
+    return std::make_unique<WaylandNotificationShellNotification>(
+        title, message, display_source, notification_id, buttons,
+        notification_resource);
   }
 
  private:
@@ -5697,12 +5773,35 @@ class WaylandNotificationShell {
 
 void notification_shell_create_notification(wl_client* client,
                                             wl_resource* resource,
+                                            uint32_t id,
                                             const char* title,
                                             const char* message,
                                             const char* display_source,
-                                            const char* notification_key) {
-  GetUserDataAs<WaylandNotificationShell>(resource)->CreateNotification(
-      title, message, display_source, notification_key);
+                                            const char* notification_key,
+                                            wl_array* buttons) {
+  wl_resource* notification_resource = wl_resource_create(
+      client, &zcr_notification_shell_notification_v1_interface,
+      wl_resource_get_version(resource), id);
+
+  // Converts wl_array of strings into std::vector<std::string>. All elements
+  // are 0-terminated so we use it as the mark of the element's end.
+  std::vector<std::string> button_strings;
+  const char* data = static_cast<const char*>(buttons->data);
+  int len = 0;
+  for (const char *pos = data; pos < data + buttons->size; ++pos, ++len) {
+    if (*pos == '\0') {
+      button_strings.emplace_back(std::string(pos - len, len));
+      len = 0;
+    }
+  }
+
+  std::unique_ptr<WaylandNotificationShellNotification> notification =
+      GetUserDataAs<WaylandNotificationShell>(resource)->CreateNotification(
+          title, message, display_source, notification_key, button_strings,
+          notification_resource);
+
+  SetImplementation(notification_resource, &notification_implementation,
+                    std::move(notification));
 }
 
 void notification_shell_get_notification_surface(wl_client* client,

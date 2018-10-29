@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600 scrollHeight 660
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x660 backgroundClip at (0,0) size 800x600 clip at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x660
-    LayoutBlockFlow {BODY} at (8,8) size 784x644
-      LayoutImage {IMG} at (0,0) size 500x644
-      LayoutText {#text} at (0,0) size 0x0

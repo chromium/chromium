@@ -35,9 +35,9 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/test_browser_thread_bundle.h"
-#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -280,16 +280,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<extensions::Extension> CreateExtension(
-      extensions::Manifest::Location location,
-      const std::string& data,
-      const std::string& id) {
-    std::unique_ptr<base::DictionaryValue> parsed_manifest(
-        extensions::api_test_utils::ParseDictionary(data));
-    return extensions::api_test_utils::CreateExtension(
-        location, parsed_manifest.get(), id);
-  }
-
   // From views::MenuModelAdapter::IsCommandEnabled with modification.
   bool IsCommandEnabled(ui::MenuModel* model, int id) const {
     int index = 0;
@@ -652,43 +642,31 @@ TEST_F(BackgroundModeManagerTest,
 }
 
 TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
-  scoped_refptr<extensions::Extension> component_extension(
-    CreateExtension(
-        extensions::Manifest::COMPONENT,
-        "{\"name\": \"Component Extension\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-1"));
+  scoped_refptr<const extensions::Extension> component_extension =
+      extensions::ExtensionBuilder("Component Extension")
+          .SetLocation(extensions::Manifest::COMPONENT)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> component_extension_with_options(
-    CreateExtension(
-        extensions::Manifest::COMPONENT,
-        "{\"name\": \"Component Extension with Options\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"],"
-        "\"options_page\": \"test.html\"}",
-        "ID-2"));
+  scoped_refptr<const extensions::Extension> component_extension_with_options =
+      extensions::ExtensionBuilder("Component Extension with Options")
+          .SetLocation(extensions::Manifest::COMPONENT)
+          .AddPermission("background")
+          .SetManifestKey("options_page", "test.html")
+          .Build();
 
-  scoped_refptr<extensions::Extension> regular_extension(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension\", "
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-3"));
+  scoped_refptr<const extensions::Extension> regular_extension =
+      extensions::ExtensionBuilder("Regular Extension")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> regular_extension_with_options(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension with Options\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"],"
-        "\"options_page\": \"test.html\"}",
-        "ID-4"));
+  scoped_refptr<const extensions::Extension> regular_extension_with_options =
+      extensions::ExtensionBuilder("Regular Extension with Options")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .SetManifestKey("options_page", "test.html")
+          .Build();
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
@@ -728,43 +706,31 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
 
 TEST_F(BackgroundModeManagerWithExtensionsTest,
        BackgroundMenuGenerationMultipleProfile) {
-  scoped_refptr<extensions::Extension> component_extension(
-    CreateExtension(
-        extensions::Manifest::COMPONENT,
-        "{\"name\": \"Component Extension\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-1"));
+  scoped_refptr<const extensions::Extension> component_extension =
+      extensions::ExtensionBuilder("Component Extension")
+          .SetLocation(extensions::Manifest::COMPONENT)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> component_extension_with_options(
-    CreateExtension(
-        extensions::Manifest::COMPONENT,
-        "{\"name\": \"Component Extension with Options\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"],"
-        "\"options_page\": \"test.html\"}",
-        "ID-2"));
+  scoped_refptr<const extensions::Extension> component_extension_with_options =
+      extensions::ExtensionBuilder("Component Extension with Options")
+          .SetLocation(extensions::Manifest::COMPONENT)
+          .AddPermission("background")
+          .SetManifestKey("options_page", "test.html")
+          .Build();
 
-  scoped_refptr<extensions::Extension> regular_extension(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension\", "
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-3"));
+  scoped_refptr<const extensions::Extension> regular_extension =
+      extensions::ExtensionBuilder("Regular Extension")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> regular_extension_with_options(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension with Options\","
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"],"
-        "\"options_page\": \"test.html\"}",
-        "ID-4"));
+  scoped_refptr<const extensions::Extension> regular_extension_with_options =
+      extensions::ExtensionBuilder("Regular Extension with Options")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .SetManifestKey("options_page", "test.html")
+          .Build();
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
@@ -883,41 +849,32 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
 }
 
 TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
-  scoped_refptr<extensions::Extension> bg_ext(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Background Extension\", "
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-1"));
+  scoped_refptr<const extensions::Extension> bg_ext =
+      extensions::ExtensionBuilder("Background Extension")
+          .SetVersion("1.0")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> upgraded_bg_ext(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Background Extension\", "
-        "\"version\": \"2.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-1"));
+  scoped_refptr<const extensions::Extension> upgraded_bg_ext =
+      extensions::ExtensionBuilder("Background Extension")
+          .SetVersion("2.0")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .Build();
 
-  scoped_refptr<extensions::Extension> no_bg_ext(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension\", "
-        "\"version\": \"1.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": []}",
-        "ID-2"));
+  scoped_refptr<const extensions::Extension> no_bg_ext =
+      extensions::ExtensionBuilder("Regular Extension")
+          .SetVersion("1.0")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .Build();
 
-  scoped_refptr<extensions::Extension> upgraded_no_bg_ext_has_bg(
-    CreateExtension(
-        extensions::Manifest::COMMAND_LINE,
-        "{\"name\": \"Regular Extension\", "
-        "\"version\": \"2.0\","
-        "\"manifest_version\": 2,"
-        "\"permissions\": [\"background\"]}",
-        "ID-2"));
+  scoped_refptr<const extensions::Extension> upgraded_no_bg_ext_has_bg =
+      extensions::ExtensionBuilder("Regular Extension")
+          .SetVersion("1.0")
+          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .AddPermission("background")
+          .Build();
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))

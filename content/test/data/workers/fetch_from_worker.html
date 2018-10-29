@@ -1,8 +1,12 @@
 <script>
-const params = new URLSearchParams(location.search);
-const worker = new Worker(`fetch_from_worker.js?url=${params.get('url')}`);
-worker.onmessage = e => {
-  document.body.innerText += e.data;
-  document.title = 'DONE';
-};
+const worker = new Worker(`fetch_from_worker.js`);
+
+let resolve;
+worker.onmessage = e => { resolve(e.data); };
+
+function fetch_from_worker(url) {
+  let p = new Promise(r => { resolve = r; });
+  worker.postMessage({url});
+  return p;
+}
 </script>

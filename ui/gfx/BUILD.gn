@@ -25,6 +25,7 @@ source_set("gfx_export") {
 
 jumbo_component("geometry_skia") {
   sources = [
+    "geometry_skia_export.h",
     "skia_util.cc",
     "skia_util.h",
     "transform.cc",
@@ -32,16 +33,14 @@ jumbo_component("geometry_skia") {
     "transform_util.cc",
     "transform_util.h",
   ]
-  public_deps = [
-    ":gfx_export",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base",
     "//gpu/vulkan:buildflags",
     "//skia",
     "//ui/gfx/geometry",
   ]
-  defines = [ "GFX_IMPLEMENTATION" ]
+  defines = [ "GEOMETRY_SKIA_IMPLEMENTATION" ]
 }
 
 jumbo_component("gfx") {
@@ -104,7 +103,6 @@ jumbo_component("gfx") {
     "image/image_png_rep.h",
     "image/image_skia.cc",
     "image/image_skia.h",
-    "image/image_skia_rep.cc",
     "image/image_skia_rep.h",
     "image/image_skia_source.cc",
     "image/image_skia_source.h",
@@ -212,6 +210,8 @@ jumbo_component("gfx") {
       "image/image_generic.cc",
       "image/image_skia_operations.cc",
       "image/image_skia_operations.h",
+      "image/image_skia_rep_default.cc",
+      "image/image_skia_rep_default.h",
       "paint_throbber.cc",
       "paint_throbber.h",
       "scoped_canvas.cc",
@@ -220,6 +220,14 @@ jumbo_component("gfx") {
       "shadow_util.h",
       "skia_paint_util.cc",
       "skia_paint_util.h",
+      "skia_vector_animation.cc",
+      "skia_vector_animation.h",
+      "skia_vector_animation_observer.h",
+    ]
+  } else {
+    sources += [
+      "image/image_skia_rep_ios.cc",
+      "image/image_skia_rep_ios.h",
     ]
   }
 
@@ -228,6 +236,7 @@ jumbo_component("gfx") {
 
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
     "//build/config/compiler:no_size_t_to_int_warning",
+    "//build/config/compiler:wexit_time_destructors",
   ]
 
   # This is part of the gfx component in the component build.
@@ -401,20 +410,6 @@ jumbo_component("color_space") {
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
 
-# Depend on this to use half_float.h without pulling in all of gfx.
-source_set("half_float") {
-  sources = [
-    "half_float.h",
-  ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
-
-  public_deps = [
-    ":gfx_export",
-    "//base",
-  ]
-}
-
 # Depend on this to use native_widget_types.h without pulling in all of gfx.
 source_set("native_widget_types") {
   public = [
@@ -422,6 +417,7 @@ source_set("native_widget_types") {
   ]
 
   public_deps = [
+    ":gfx_export",
     "//base",
   ]
 }
@@ -448,6 +444,8 @@ source_set("selection_bound_sources") {
     "selection_bound.cc",
     "selection_bound.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "GFX_IMPLEMENTATION" ]
 
@@ -494,7 +492,6 @@ jumbo_source_set("memory_buffer_sources") {
     "ca_layer_params.cc",
     "ca_layer_params.h",
     "client_native_pixmap.h",
-    "client_native_pixmap_factory.cc",
     "client_native_pixmap_factory.h",
     "generic_shared_memory_id.cc",
     "generic_shared_memory_id.h",
@@ -515,6 +512,8 @@ jumbo_source_set("memory_buffer_sources") {
       "gpu_memory_buffer.h",
     ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "GFX_IMPLEMENTATION" ]
 
@@ -538,7 +537,7 @@ jumbo_source_set("memory_buffer_sources") {
       "linux/native_pixmap_dmabuf.h",
     ]
 
-    deps += [ "//third_party/libdrm" ]
+    deps += [ "//build/config/linux/libdrm" ]
   }
 
   if (is_linux || is_android) {
@@ -686,6 +685,7 @@ test("gfx_unittests") {
       "sequential_id_generator_unittest.cc",
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
+      "skia_vector_animation_unittest.cc",
       "skrect_conversion_unittest.cc",
       "transform_util_unittest.cc",
       "utf16_indexing_unittest.cc",

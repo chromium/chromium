@@ -34,9 +34,7 @@
 
 #include "build/build_config.h"
 
-// TODO(lukasza): https://crbug.com/881875#c9: Enable lock annotations on Mac
-// after the clang bug is fixed: https://bugs.llvm.org/show_bug.cgi?id=38896
-#if defined(__clang__) && !defined(OS_MACOSX)
+#if defined(__clang__)
 #define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
 #define THREAD_ANNOTATION_ATTRIBUTE__(x)  // no-op

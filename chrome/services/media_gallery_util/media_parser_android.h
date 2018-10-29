@@ -22,10 +22,11 @@ class MediaParserAndroid : public MediaParser {
   ~MediaParserAndroid() override;
 
   // MediaParser implementation.
-  void ExtractVideoFrame(const std::string& mime_type,
-                         uint32_t total_size,
-                         chrome::mojom::MediaDataSourcePtr media_data_source,
-                         ExtractVideoFrameCallback callback) override;
+  void ExtractVideoFrame(
+      const std::string& mime_type,
+      uint32_t total_size,
+      chrome::mojom::MediaDataSourcePtr media_data_source,
+      ExtractVideoFrameCallback video_frame_callback) override;
 
  private:
   // The task runner to do blocking IO. The utility thread cannot be blocked.

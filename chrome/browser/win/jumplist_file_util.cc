@@ -47,7 +47,10 @@ void DeleteFiles(const base::FilePath& path,
 }
 
 void DeleteDirectoryContent(const base::FilePath& path, int max_file_deleted) {
-  base::AssertBlockingAllowed();
+  // Iterating over files can be CPU intensive, ensure this is okay on the current thread and
+  // intentionally do not mark this scope with a ScopedBlockingCall to avoid a busy thread being
+  // considered inactive in the pool.
+  base::AssertLongCPUWorkAllowed();
 
   if (path.empty() || path.value().length() >= MAX_PATH)
     return;
@@ -75,7 +78,7 @@ void DeleteDirectoryContent(const base::FilePath& path, int max_file_deleted) {
 }
 
 void DeleteDirectory(const base::FilePath& path, int max_file_deleted) {
-  base::AssertBlockingAllowed();
+  base::AssertLongCPUWorkAllowed();
 
   // Delete at most |max_file_deleted| files in |path|.
   DeleteDirectoryContent(path, max_file_deleted);
@@ -95,6 +98,11 @@ bool FilesExceedLimitInDir(const base::FilePath& path, int max_files) {
 
 void DeleteNonCachedFiles(const base::FilePath& path,
                           const base::flat_set<base::FilePath>& cached_files) {
+  // Iterating over files can be CPU intensive, ensure this is okay on the current thread and
+  // intentionally do not mark this scope with a ScopedBlockingCall to avoid a busy thread being
+  // considered inactive in the pool.
+  base::AssertLongCPUWorkAllowed();
+
   base::FileEnumerator traversal(path, false, base::FileEnumerator::FILES);
 
   for (base::FilePath current = traversal.Next(); !current.empty();

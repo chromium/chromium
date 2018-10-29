@@ -192,7 +192,7 @@ bool IncognitoConnectability::IsInMap(const Extension* extension,
                                       const GURL& origin,
                                       const ExtensionToOriginsMap& map) {
   DCHECK_EQ(origin, origin.GetOrigin());
-  ExtensionToOriginsMap::const_iterator it = map.find(extension->id());
+  auto it = map.find(extension->id());
   return it != map.end() && it->second.count(origin) > 0;
 }
 

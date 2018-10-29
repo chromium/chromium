@@ -14,10 +14,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -62,11 +62,12 @@ class ClientImpl final : public WebDataConsumerHandle::Client {
 class ReadDataOperation : public ReadDataOperationBase {
  public:
   typedef WebDataConsumerHandle::Result Result;
-  ReadDataOperation(mojo::ScopedDataPipeConsumerHandle handle,
-                    base::MessageLoop* main_message_loop,
-                    const base::Closure& on_done)
+  ReadDataOperation(
+      mojo::ScopedDataPipeConsumerHandle handle,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      const base::Closure& on_done)
       : handle_(new WebDataConsumerHandleImpl(std::move(handle))),
-        main_message_loop_(main_message_loop),
+        main_thread_task_runner_(std::move(main_thread_task_runner)),
         on_done_(on_done) {}
 
   const std::string& result() const { return result_; }
@@ -107,14 +108,14 @@ class ReadDataOperation : public ReadDataOperationBase {
 
     // The operation is done.
     reader_.reset();
-    main_message_loop_->task_runner()->PostTask(FROM_HERE, on_done_);
+    main_thread_task_runner_->PostTask(FROM_HERE, on_done_);
   }
 
  private:
   std::unique_ptr<WebDataConsumerHandleImpl> handle_;
   std::unique_ptr<WebDataConsumerHandle::Reader> reader_;
   std::unique_ptr<WebDataConsumerHandle::Client> client_;
-  base::MessageLoop* main_message_loop_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::Closure on_done_;
   std::string result_;
 };
@@ -122,11 +123,12 @@ class ReadDataOperation : public ReadDataOperationBase {
 class TwoPhaseReadDataOperation : public ReadDataOperationBase {
  public:
   typedef WebDataConsumerHandle::Result Result;
-  TwoPhaseReadDataOperation(mojo::ScopedDataPipeConsumerHandle handle,
-                            base::MessageLoop* main_message_loop,
-                            const base::Closure& on_done)
+  TwoPhaseReadDataOperation(
+      mojo::ScopedDataPipeConsumerHandle handle,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      const base::Closure& on_done)
       : handle_(new WebDataConsumerHandleImpl(std::move(handle))),
-        main_message_loop_(main_message_loop),
+        main_thread_task_runner_(std::move(main_thread_task_runner)),
         on_done_(on_done) {}
 
   const std::string& result() const { return result_; }
@@ -160,7 +162,7 @@ class TwoPhaseReadDataOperation : public ReadDataOperationBase {
       if (rv != kOk) {
         // Something is wrong.
         result_ = "error";
-        main_message_loop_->task_runner()->PostTask(FROM_HERE, on_done_);
+        main_thread_task_runner_->PostTask(FROM_HERE, on_done_);
         return;
       }
     }
@@ -177,14 +179,14 @@ class TwoPhaseReadDataOperation : public ReadDataOperationBase {
 
     // The operation is done.
     reader_.reset();
-    main_message_loop_->task_runner()->PostTask(FROM_HERE, on_done_);
+    main_thread_task_runner_->PostTask(FROM_HERE, on_done_);
   }
 
  private:
   std::unique_ptr<WebDataConsumerHandleImpl> handle_;
   std::unique_ptr<WebDataConsumerHandle::Reader> reader_;
   std::unique_ptr<WebDataConsumerHandle::Client> client_;
-  base::MessageLoop* main_message_loop_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::Closure on_done_;
   std::string result_;
 };
@@ -236,7 +238,7 @@ class WebDataConsumerHandleImplTest : public ::testing::Test {
     return expected;
   }
 
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 
   mojo::ScopedDataPipeProducerHandle producer_;
   mojo::ScopedDataPipeConsumerHandle consumer_;
@@ -245,7 +247,9 @@ class WebDataConsumerHandleImplTest : public ::testing::Test {
 TEST_F(WebDataConsumerHandleImplTest, ReadData) {
   base::RunLoop run_loop;
   auto operation = std::make_unique<ReadDataOperation>(
-      std::move(consumer_), &message_loop_, run_loop.QuitClosure());
+      std::move(consumer_),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      run_loop.QuitClosure());
 
   base::Thread t("DataConsumerHandle test thread");
   ASSERT_TRUE(t.Start());
@@ -266,7 +270,9 @@ TEST_F(WebDataConsumerHandleImplTest, ReadData) {
 TEST_F(WebDataConsumerHandleImplTest, TwoPhaseReadData) {
   base::RunLoop run_loop;
   auto operation = std::make_unique<TwoPhaseReadDataOperation>(
-      std::move(consumer_), &message_loop_, run_loop.QuitClosure());
+      std::move(consumer_),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      run_loop.QuitClosure());
 
   base::Thread t("DataConsumerHandle test thread");
   ASSERT_TRUE(t.Start());

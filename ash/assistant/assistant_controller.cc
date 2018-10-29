@@ -209,13 +209,14 @@ void AssistantController::OnDeepLinkReceived(
       Shell::Get()->new_window_controller()->OpenFeedbackPage();
       break;
     case DeepLinkType::kScreenshot:
-      // TODO(dmblack): The user probably doesn't want their screenshot to
-      // include Assistant so we may want to hide it before calling this API.
-      // Unfortunately, hiding our UI immediately beforehand doesn't resolve the
-      // issue, so we may need to introduce a delay or visibility change
-      // callback to remedy this. For now, keeping Assistant UI open since it
-      // will be included in the screenshot anyway.
+      // We close the UI before taking the screenshot as it's probably not the
+      // user's intention to include the Assistant in the picture.
+      assistant_ui_controller_->CloseUi(AssistantSource::kUnspecified);
       Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
+      break;
+    case DeepLinkType::kTaskManager:
+      // Open task manager window.
+      Shell::Get()->new_window_controller()->ShowTaskManager();
       break;
     case DeepLinkType::kUnsupported:
     case DeepLinkType::kOnboarding:
@@ -297,14 +298,17 @@ void AssistantController::OnAccessibilityStatusChanged() {
       Shell::Get()->accessibility_controller()->IsSpokenFeedbackEnabled());
 }
 
-void AssistantController::OpenUrl(const GURL& url) {
+void AssistantController::OpenUrl(const GURL& url, bool from_server) {
   if (assistant::util::IsDeepLinkUrl(url)) {
     NotifyDeepLinkReceived(url);
     return;
   }
 
-  Shell::Get()->new_window_controller()->NewTabWithUrl(url);
-  NotifyUrlOpened(url);
+  // The new tab should be opened with a user activation since the user
+  // interacted with the Assistant to open the url.
+  Shell::Get()->new_window_controller()->NewTabWithUrl(
+      url, /*from_user_interaction=*/true);
+  NotifyUrlOpened(url, from_server);
 }
 
 void AssistantController::NotifyConstructed() {
@@ -329,9 +333,9 @@ void AssistantController::NotifyDeepLinkReceived(const GURL& deep_link) {
     observer.OnDeepLinkReceived(type, params);
 }
 
-void AssistantController::NotifyUrlOpened(const GURL& url) {
+void AssistantController::NotifyUrlOpened(const GURL& url, bool from_server) {
   for (AssistantControllerObserver& observer : observers_)
-    observer.OnUrlOpened(url);
+    observer.OnUrlOpened(url, from_server);
 }
 
 void AssistantController::OnVoiceInteractionStatusChanged(

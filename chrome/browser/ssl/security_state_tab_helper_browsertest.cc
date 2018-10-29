@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -41,7 +42,9 @@
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -52,11 +55,13 @@
 #include "content/public/browser/security_style_explanation.h"
 #include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/file_chooser_file_info.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/service_manager_connection.h"
+#include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -67,6 +72,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
@@ -78,6 +84,9 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/features.h"
+#include "services/service_manager/public/cpp/connector.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -215,14 +224,14 @@ class FileChooserDelegate : public content::WebContentsDelegate {
 
   // WebContentsDelegate:
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override {
     // Send the selected file to the renderer process.
-    content::FileChooserFileInfo file_info;
-    file_info.file_path = file_;
-    std::vector<content::FileChooserFileInfo> files;
-    files.push_back(file_info);
-    render_frame_host->FilesSelectedInChooser(
-        files, blink::mojom::FileChooserParams::Mode::kOpen);
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+    files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file_, base::string16())));
+    listener->FileSelected(std::move(files),
+                           blink::mojom::FileChooserParams::Mode::kOpen);
 
     file_chosen_ = true;
     params_ = params.Clone();
@@ -351,35 +360,27 @@ void CheckSecureConnectionExplanation(
   int ssl_version =
       net::SSLConnectionStatusToVersion(security_info.connection_status);
   net::SSLVersionToString(&protocol, ssl_version);
-  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_STRONG_SSL_SUMMARY,
-                                      base::ASCIIToUTF16(protocol)),
-            explanation.summary);
-
   bool is_aead, is_tls13;
   uint16_t cipher_suite =
       net::SSLConnectionStatusToCipherSuite(security_info.connection_status);
   net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
                                &is_tls13, cipher_suite);
+  // Modern configurations are always AEADs and specify groups.
   EXPECT_TRUE(is_aead);
-  EXPECT_EQ(nullptr, mac);  // The default secure cipher does not have a MAC.
-  EXPECT_FALSE(is_tls13);   // The default secure cipher is not TLS 1.3.
+  EXPECT_EQ(nullptr, mac);
+  ASSERT_NE(0, security_info.key_exchange_group);
+  const char* key_exchange_group =
+      SSL_get_curve_name(security_info.key_exchange_group);
 
-  base::string16 key_exchange_name = base::ASCIIToUTF16(key_exchange);
-  if (security_info.key_exchange_group != 0) {
-    key_exchange_name = l10n_util::GetStringFUTF16(
-        IDS_SSL_KEY_EXCHANGE_WITH_GROUP, key_exchange_name,
-        base::ASCIIToUTF16(
-            SSL_get_curve_name(security_info.key_exchange_group)));
-  }
+  // The description should summarize the settings.
+  EXPECT_NE(std::string::npos, explanation.description.find(protocol));
+  EXPECT_NE(std::string::npos, explanation.description.find(key_exchange));
+  EXPECT_NE(std::string::npos,
+            explanation.description.find(key_exchange_group));
+  EXPECT_NE(std::string::npos, explanation.description.find(cipher));
 
-  std::vector<base::string16> description_replacements;
-  description_replacements.push_back(base::ASCIIToUTF16(protocol));
-  description_replacements.push_back(key_exchange_name);
-  description_replacements.push_back(base::ASCIIToUTF16(cipher));
-  base::string16 secure_description = l10n_util::GetStringFUTF16(
-      IDS_STRONG_SSL_DESCRIPTION, description_replacements, nullptr);
-
-  EXPECT_EQ(secure_description, base::ASCIIToUTF16(explanation.description));
+  // There should be no recommendations to provide.
+  EXPECT_EQ(0u, explanation.recommendations.size());
 }
 
 // Checks that the given |explanation| contains an appropriate
@@ -1173,85 +1174,91 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperTest,
   EXPECT_EQ(content::SSLStatus::NORMAL_CONTENT, entry->GetSSL().content_status);
 }
 
-const char kReportURI[] = "https://report-hpkp.test/";
-
 class PKPModelClientTest : public SecurityStateTabHelperTest {
  public:
+  static constexpr const char* kPKPHost = "example.test";
+
   void SetUpOnMainThread() override {
+    // This test class intentionally does not call the parent SetUpOnMainThread.
+
     // Switch HTTPS server to use the "localhost" cert. The test mocks out cert
-    // verification results, anyways, but it mocks results based on the used
-    // cert, so this server needs a different cert from the test server used to
-    // send the HPKP header.
+    // verification results based on the used cert.
     https_server_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
     ASSERT_TRUE(https_server_.Start());
 
-    // Create a second embedded test server using a different cert (the default
-    // CERT_OK one) to send an HPKP header, which should result in an entry
-    // being added to the TransportSecurityState. This server will use a
-    // different port, but HPKP headers are set on hosts basis, not origins.
-    net::EmbeddedTestServer https_set_hpkp_server(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    https_set_hpkp_server.RegisterRequestHandler(
-        base::BindRepeating(&PKPModelClientTest::SendPublicKeyPinsResponse));
-    ASSERT_TRUE(https_set_hpkp_server.Start());
+    host_resolver()->AddIPLiteralRule(
+        kPKPHost, https_server_.GetIPLiteralString(), std::string());
 
-    // Set up a mock result.
-    net::CertVerifyResult verify_result;
-    verify_result.verified_cert = https_set_hpkp_server.GetCertificate();
-    verify_result.cert_status = 0;
-    // These are the important lines. HPKP headers from servers with certs not
-    // issued by known roots are ignored, so need to claim the cert is from the
-    // known root. The second line sets a bogus hash, which matches the
-    // "Public-Key-Pins" header set by SendPublicKeyPinsResponse.
-    verify_result.is_issued_by_known_root = true;
-    verify_result.public_key_hashes.push_back(
-        net::HashValue(GetExpectedCertHash()));
+    EnableStaticPins();
+  }
 
-    mock_cert_verifier()->AddResultForCert(
-        https_set_hpkp_server.GetCertificate(), verify_result, net::OK);
+  void TearDownOnMainThread() override {
+    if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
 
-    // Do a navigation where the response should be a valid Public-Key-Pins
-    // header.
-    ui_test_utils::NavigateToURL(
-        browser(), https_set_hpkp_server.GetURL("localhost", "/"));
+      network::mojom::NetworkServiceTestPtr network_service_test;
+      content::ServiceManagerConnection::GetForProcess()
+          ->GetConnector()
+          ->BindInterface(content::mojom::kNetworkServiceName,
+                          &network_service_test);
+      network_service_test->SetTransportSecurityStateSource(0);
+      return;
+    }
+    RunOnIOThreadBlocking(base::BindOnce(&PKPModelClientTest::CleanUpOnIOThread,
+                                         base::Unretained(this)));
 
-    CheckSecurityInfoForSecure(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        security_state::SECURE, false, security_state::CONTENT_STATUS_NONE,
-        false, false);
+    // This test class intentionally does not call the parent
+    // TearDownOnMainThread.
   }
 
  private:
-  // Returns the (bogus) expected SHA-256 hash of the cert set by the
-  // Public-Key-Pins header.
-  static net::SHA256HashValue GetExpectedCertHash() {
-    net::SHA256HashValue hash;
-    memset(&hash.data, 0x99, base::size(hash.data));
-    return hash;
+  void EnableStaticPins() {
+    if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+
+      network::mojom::NetworkServiceTestPtr network_service_test;
+      content::ServiceManagerConnection::GetForProcess()
+          ->GetConnector()
+          ->BindInterface(content::mojom::kNetworkServiceName,
+                          &network_service_test);
+      // The tests don't depend on reporting, so the port doesn't matter.
+      network_service_test->SetTransportSecurityStateSource(80);
+
+      content::StoragePartition* partition =
+          content::BrowserContext::GetDefaultStoragePartition(
+              browser()->profile());
+      partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+      return;
+    }
+    RunOnIOThreadBlocking(base::BindOnce(
+        &PKPModelClientTest::EnableStaticPinsOnIOThread, base::Unretained(this),
+        base::RetainedRef(browser()->profile()->GetRequestContext())));
   }
 
-  // Returns a response with an empty body and a "Public-Key-Pins" header.
-  static std::unique_ptr<net::test_server::HttpResponse>
-  SendPublicKeyPinsResponse(const net::test_server::HttpRequest& request) {
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse());
-
-    net::SHA256HashValue hash = GetExpectedCertHash();
-    std::string base64_hash;
-    base::Base64Encode(base::StringPiece(reinterpret_cast<char*>(hash.data),
-                                         base::size(hash.data)),
-                       &base64_hash);
-
-    std::string header_value = base::StringPrintf(
-        "max-age=50000;"
-        "pin-sha256=\"%s\";"
-        "pin-sha256=\"nZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZk=\";"
-        "report-uri=\"%s\"",
-        base64_hash.c_str(), kReportURI);
-    response->AddCustomHeader("Public-Key-Pins", header_value);
-    return std::move(response);
+  void RunOnIOThreadBlocking(base::OnceClosure task) {
+    base::RunLoop run_loop;
+    base::PostTaskWithTraitsAndReply(FROM_HERE, {content::BrowserThread::IO},
+                                     std::move(task), run_loop.QuitClosure());
+    run_loop.Run();
   }
+
+  void EnableStaticPinsOnIOThread(
+      scoped_refptr<net::URLRequestContextGetter> context_getter) {
+    // The tests don't depend on reporting, so the port doesn't matter.
+    transport_security_state_source_ =
+        std::make_unique<net::ScopedTransportSecurityStateSource>();
+
+    net::TransportSecurityState* state =
+        context_getter->GetURLRequestContext()->transport_security_state();
+    state->EnableStaticPinsForTesting();
+  }
+
+  void CleanUpOnIOThread() { transport_security_state_source_.reset(); }
+
+  // Only used when NetworkService is disabled. Accessed on IO thread.
+  std::unique_ptr<net::ScopedTransportSecurityStateSource>
+      transport_security_state_source_;
 };
 
 INSTANTIATE_TEST_CASE_P(, PKPModelClientTest, ::testing::Values(false, true));
@@ -1266,14 +1273,15 @@ IN_PROC_BROWSER_TEST_P(PKPModelClientTest, PKPBypass) {
   // PKP is bypassed when |is_issued_by_known_root| is false.
   verify_result.is_issued_by_known_root = false;
   verify_result.verified_cert = cert;
+  // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
   memset(hash.data(), 1, hash.size());
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
+  ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(kPKPHost, "/ssl/google.html"));
 
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1296,14 +1304,15 @@ IN_PROC_BROWSER_TEST_P(PKPModelClientTest, PKPEnforced) {
   // PKP requires |is_issued_by_known_root| to be true.
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = cert;
+  // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
   memset(hash.data(), 1, hash.size());
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
+  ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(kPKPHost, "/ssl/google.html"));
   CheckBrokenSecurityStyle(observer, net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN,
                            browser(), cert.get());
 }
@@ -1343,8 +1352,8 @@ class SecurityStateLoadingTest : public SecurityStateTabHelperTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&InstallLoadingInterceptor,
                        embedded_test_server()->GetURL("/title1.html").host()));
   }
@@ -2560,37 +2569,24 @@ IN_PROC_BROWSER_TEST_F(
   security_state::SecurityInfo security_info;
   SecurityStateTabHelper::FromWebContents(web_contents)
       ->GetSecurityInfo(&security_info);
-  const char* protocol;
-  int ssl_version =
-      net::SSLConnectionStatusToVersion(security_info.connection_status);
-  net::SSLVersionToString(&protocol, ssl_version);
   for (const auto& explanation :
        observer.latest_explanations().secure_explanations) {
-    EXPECT_NE(l10n_util::GetStringFUTF8(IDS_STRONG_SSL_SUMMARY,
-                                        base::ASCIIToUTF16(protocol)),
+    EXPECT_NE(l10n_util::GetStringUTF8(IDS_SECURE_SSL_SUMMARY),
               explanation.summary);
   }
 
-  // Populate description string replacement with values corresponding
-  // to test constants.
-  std::vector<base::string16> description_replacements;
-  description_replacements.push_back(base::ASCIIToUTF16("TLS 1.1"));
-  description_replacements.push_back(
-      l10n_util::GetStringUTF16(IDS_SSL_AN_OBSOLETE_PROTOCOL));
-  description_replacements.push_back(base::ASCIIToUTF16("ECDHE_RSA"));
-  description_replacements.push_back(
-      l10n_util::GetStringUTF16(IDS_SSL_A_STRONG_KEY_EXCHANGE));
-  description_replacements.push_back(
-      base::ASCIIToUTF16("AES_128_CBC with HMAC-SHA1"));
-  description_replacements.push_back(
-      l10n_util::GetStringUTF16(IDS_SSL_AN_OBSOLETE_CIPHER));
-  base::string16 obsolete_description = l10n_util::GetStringFUTF16(
-      IDS_OBSOLETE_SSL_DESCRIPTION, description_replacements, nullptr);
+  // The description string should include the connection properties.
+  const content::SecurityStyleExplanation& explanation =
+      observer.latest_explanations().info_explanations[0];
+  EXPECT_NE(std::string::npos, explanation.description.find("TLS 1.1"));
+  EXPECT_NE(std::string::npos, explanation.description.find("ECDHE_RSA"));
+  EXPECT_NE(std::string::npos, explanation.description.find("AES_128_CBC"));
+  EXPECT_NE(std::string::npos, explanation.description.find("HMAC-SHA1"));
 
-  EXPECT_EQ(
-      obsolete_description,
-      base::ASCIIToUTF16(
-          observer.latest_explanations().info_explanations[0].description));
+  // There should be recommendations to fix the issues.
+  ASSERT_EQ(2u, explanation.recommendations.size());
+  EXPECT_NE(std::string::npos, explanation.recommendations[0].find("TLS 1.2"));
+  EXPECT_NE(std::string::npos, explanation.recommendations[1].find("GCM"));
 }
 
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.

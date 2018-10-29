@@ -4,9 +4,8 @@
 
 #include "ui/base/win/mouse_wheel_util.h"
 
-#include <windowsx.h>
-
 #include "base/auto_reset.h"
+#include "base/win/windowsx_shim.h"
 #include "ui/base/view_prop.h"
 #include "ui/gfx/win/hwnd_util.h"
 

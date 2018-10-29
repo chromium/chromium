@@ -75,7 +75,7 @@ void ChromeAppIconLoader::ClearImage(const std::string& id) {
 }
 
 void ChromeAppIconLoader::UpdateImage(const std::string& id) {
-  ExtensionIDToChromeAppIconMap::iterator it = map_.find(id);
+  auto it = map_.find(id);
   if (it == map_.end())
     return;
 

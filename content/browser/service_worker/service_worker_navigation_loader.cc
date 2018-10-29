@@ -7,6 +7,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -15,8 +16,6 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_request_info.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
@@ -45,41 +44,7 @@ bool BodyHasNoDataPipeGetters(const network::ResourceRequestBody* body) {
   return true;
 }
 
-const char* ResponseTypeString(ServiceWorkerResponseType response_type) {
-  switch (response_type) {
-    case ServiceWorkerResponseType::NOT_DETERMINED:
-      return "NOT_DETERMINED";
-    case ServiceWorkerResponseType::FAIL_DUE_TO_LOST_CONTROLLER:
-      return "FAIL_DUE_TO_LOST_CONTROLLER";
-    case ServiceWorkerResponseType::FALLBACK_TO_NETWORK:
-      return "FALLBACK_TO_NETWORK";
-    case ServiceWorkerResponseType::FALLBACK_TO_RENDERER:
-      return "FALLBACK_TO_RENDERER";
-    case ServiceWorkerResponseType::FORWARD_TO_SERVICE_WORKER:
-      return "FORWARD_TO_SERVICE_WORKER";
-  }
-  NOTREACHED();
-  return "";
-}
-
 }  // namespace
-
-// static
-const char* ServiceWorkerNavigationLoader::StatusString(
-    ServiceWorkerNavigationLoader::Status status) {
-  switch (status) {
-    case ServiceWorkerNavigationLoader::Status::kNotStarted:
-      return "NotStarted";
-    case ServiceWorkerNavigationLoader::Status::kStarted:
-      return "Started";
-    case ServiceWorkerNavigationLoader::Status::kSentHeader:
-      return "SentHeader";
-    case ServiceWorkerNavigationLoader::Status::kCompleted:
-      return "Completed";
-  }
-  NOTREACHED();
-  return "";
-}
 
 // This class waits for completion of a stream response from the service worker.
 // It calls ServiceWorkerNavigationLoader::CommitCompleted() upon completion of
@@ -130,10 +95,6 @@ ServiceWorkerNavigationLoader::ServiceWorkerNavigationLoader(
       url_loader_factory_getter_(std::move(url_loader_factory_getter)),
       binding_(this),
       weak_factory_(this) {
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    debug_log_ = base::make_optional<std::vector<std::string>>();
-  }
-
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker",
       "ServiceWorkerNavigationLoader::ServiceWorkerNavigationloader", this,
@@ -169,23 +130,6 @@ void ServiceWorkerNavigationLoader::FallbackToNetwork() {
   DCHECK_EQ(status_, Status::kNotStarted);
   DCHECK_EQ(response_type_, ResponseType::NOT_DETERMINED);
 
-  // https://crbug.com/887033
-  if (debug_log_) {
-    debug_log_->emplace_back(base::StringPrintf(
-        "FallbackToNW:%s->%s", ResponseTypeString(response_type_),
-        ResponseTypeString(ResponseType::FALLBACK_TO_NETWORK)));
-
-    if (!loader_callback_) {
-      std::string log;
-      for (const auto& entry : *debug_log_) {
-        log += entry + " ";
-      }
-      DEBUG_ALIAS_FOR_GURL(debug_url, resource_request_.url);
-      DEBUG_ALIAS_FOR_CSTR(debug_log, log.c_str(), 1024);
-      CHECK(false);
-    }
-  }
-
   response_type_ = ResponseType::FALLBACK_TO_NETWORK;
   TransitionToStatus(Status::kCompleted);
   std::move(loader_callback_).Run({});
@@ -198,24 +142,7 @@ void ServiceWorkerNavigationLoader::ForwardToServiceWorker() {
   DCHECK_EQ(status_, Status::kNotStarted);
   DCHECK_EQ(response_type_, ResponseType::NOT_DETERMINED);
 
-  if (debug_log_) {
-    debug_log_->emplace_back(base::StringPrintf(
-        "ForwardToSW:%s->%s", ResponseTypeString(response_type_),
-        ResponseTypeString(ResponseType::FORWARD_TO_SERVICE_WORKER)));
-  }
-
   response_type_ = ResponseType::FORWARD_TO_SERVICE_WORKER;
-
-  // https://crbug.com/881826
-  if (!loader_callback_ && debug_log_) {
-    std::string log;
-    for (const auto& entry : *debug_log_) {
-      log += entry + " ";
-    }
-    DEBUG_ALIAS_FOR_GURL(debug_url, resource_request_.url);
-    DEBUG_ALIAS_FOR_CSTR(debug_log, log.c_str(), 1024);
-    CHECK(false);
-  }
 
   std::move(loader_callback_)
       .Run(base::BindOnce(&ServiceWorkerNavigationLoader::StartRequest,
@@ -231,9 +158,6 @@ bool ServiceWorkerNavigationLoader::ShouldForwardToServiceWorker() {
 }
 
 void ServiceWorkerNavigationLoader::DetachedFromRequest() {
-  if (debug_log_)
-    debug_log_->emplace_back("DetachedFromRequest");
-
   delegate_ = nullptr;
   DeleteIfNeeded();
 }
@@ -337,6 +261,8 @@ void ServiceWorkerNavigationLoader::CommitCompleted(int error_code) {
 
   DCHECK(url_loader_client_.is_bound());
   TransitionToStatus(Status::kCompleted);
+  if (error_code == net::OK)
+    RecordTimingMetrics(true);
 
   // |stream_waiter_| calls this when done.
   stream_waiter_.reset();
@@ -361,6 +287,8 @@ void ServiceWorkerNavigationLoader::DidPrepareFetchEvent(
   response_head_.load_timing.send_start = now;
   response_head_.load_timing.send_end = now;
 
+  devtools_attached_ = version->embedded_worker()->devtools_attached();
+
   // Note that we don't record worker preparation time in S13nServiceWorker
   // path for now. If we want to measure worker preparation time we can
   // calculate it from response_head_.service_worker_ready_time and
@@ -377,6 +305,7 @@ void ServiceWorkerNavigationLoader::DidDispatchFetchEvent(
     ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(status_, Status::kStarted);
@@ -402,6 +331,8 @@ void ServiceWorkerNavigationLoader::DidDispatchFetchEvent(
     return;
   }
 
+  fetch_event_timing_ = std::move(timing);
+
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     // Dispatching the event to the service worker failed. Do a last resort
     // attempt to load the page via network as if there was no service worker.
@@ -416,6 +347,8 @@ void ServiceWorkerNavigationLoader::DidDispatchFetchEvent(
 
   if (fetch_result ==
       ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
+    TransitionToStatus(Status::kCompleted);
+    RecordTimingMetrics(false);
     // TODO(falken): Propagate the timing info to the renderer somehow, or else
     // Navigation Timing etc APIs won't know about service worker.
     std::move(fallback_callback_)
@@ -463,9 +396,8 @@ void ServiceWorkerNavigationLoader::StartResponse(
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
   base::Optional<net::RedirectInfo> redirect_info =
-      ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
-          resource_request_, response_head_,
-          response_head_.ssl_info->token_binding_negotiated);
+      ServiceWorkerLoaderHelpers::ComputeRedirectInfo(resource_request_,
+                                                      response_head_);
   if (redirect_info) {
     TRACE_EVENT_WITH_FLOW2(
         "ServiceWorker", "ServiceWorkerNavigationLoader::StartResponse", this,
@@ -503,7 +435,7 @@ void ServiceWorkerNavigationLoader::StartResponse(
     body_as_blob_.Bind(std::move(response->blob->blob));
     mojo::ScopedDataPipeConsumerHandle data_pipe;
     int error = ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
-        &body_as_blob_, response->blob->size, resource_request_.headers,
+        &body_as_blob_, response->blob->size,
         base::BindOnce(&ServiceWorkerNavigationLoader::OnBlobReadingComplete,
                        weak_factory_.GetWeakPtr()),
         &data_pipe);
@@ -564,9 +496,6 @@ void ServiceWorkerNavigationLoader::OnConnectionClosed() {
       "ServiceWorker", "ServiceWorkerNavigationLoader::OnConnectionClosed",
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  if (debug_log_)
-    debug_log_->emplace_back("ConnectionClosed");
-
   // The fetch dispatcher or stream waiter may still be running. Don't let them
   // do callbacks back to this loader, since it is now done with the request.
   // TODO(falken): Try to move this to CommitCompleted(), since the same
@@ -587,6 +516,74 @@ void ServiceWorkerNavigationLoader::OnConnectionClosed() {
 void ServiceWorkerNavigationLoader::DeleteIfNeeded() {
   if (!binding_.is_bound() && !delegate_)
     delete this;
+}
+
+void ServiceWorkerNavigationLoader::RecordTimingMetrics(bool handled) {
+  DCHECK(fetch_event_timing_);
+  DCHECK(!completion_time_.is_null());
+
+  // We only record these metrics for top-level navigation.
+  if (resource_request_.resource_type != RESOURCE_TYPE_MAIN_FRAME)
+    return;
+
+  // |fetch_event_timing_| is recorded in renderer so we can get reasonable
+  // metrics only when TimeTicks are consistent across processes.
+  if (!base::TimeTicks::IsHighResolution() ||
+      !base::TimeTicks::IsConsistentAcrossProcesses())
+    return;
+
+  // Don't record metrics when DevTools is attached to reduce noise.
+  if (devtools_attached_)
+    return;
+
+  // Time between the request is made and the request is routed to this loader.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.MainFrame.MainResource."
+      "StartToForwardServiceWorker",
+      response_head_.service_worker_start_time -
+          response_head_.load_timing.request_start);
+
+  // Time spent for service worker startup.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.MainFrame.MainResource."
+      "ForwardServiceWorkerToWorkerReady",
+      response_head_.service_worker_ready_time -
+          response_head_.service_worker_start_time);
+
+  // Browser -> Renderer IPC delay.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.MainFrame.MainResource."
+      "WorkerReadyToFetchHandlerStart",
+      fetch_event_timing_->dispatch_event_time -
+          response_head_.service_worker_ready_time);
+
+  // Time spent by fetch handlers.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.MainFrame.MainResource."
+      "FetchHandlerStartToFetchHandlerEnd",
+      fetch_event_timing_->respond_with_settled_time -
+          fetch_event_timing_->dispatch_event_time);
+
+  if (handled) {
+    // Renderer -> Browser IPC delay.
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToResponseReceived",
+        response_head_.load_timing.receive_headers_end -
+            fetch_event_timing_->respond_with_settled_time);
+
+    // Time spent reading response body.
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted",
+        completion_time_ - response_head_.load_timing.receive_headers_end);
+  } else {
+    // Renderer -> Browser IPC delay (network fallback case).
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        completion_time_ - fetch_event_timing_->respond_with_settled_time);
+  }
 }
 
 void ServiceWorkerNavigationLoader::TransitionToStatus(Status new_status) {
@@ -613,12 +610,9 @@ void ServiceWorkerNavigationLoader::TransitionToStatus(Status new_status) {
   }
 #endif  // DCHECK_IS_ON()
 
-  if (debug_log_) {
-    debug_log_->emplace_back(base::StringPrintf(
-        "Status:%s->%s", StatusString(status_), StatusString(new_status)));
-  }
-
   status_ = new_status;
+  if (new_status == Status::kCompleted)
+    completion_time_ = base::TimeTicks::Now();
 }
 
 }  // namespace content

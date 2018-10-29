@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -111,10 +112,20 @@ public abstract class OfflineItemFilter
 
     @Override
     public void onItemUpdated(OfflineItem oldItem, OfflineItem item) {
-        if (!mItems.remove(oldItem)) return;
+        boolean oldInList = mItems.remove(oldItem);
+        boolean newInList = !isFilteredOut(item);
 
-        mItems.add(item);
-        for (OfflineItemFilterObserver obs : mObservers) obs.onItemUpdated(oldItem, item);
+        if (oldInList && newInList) {
+            mItems.add(item);
+            for (OfflineItemFilterObserver obs : mObservers) obs.onItemUpdated(oldItem, item);
+        } else if (!oldInList && newInList) {
+            mItems.add(item);
+            Collection<OfflineItem> newItems = CollectionUtil.newHashSet(item);
+            for (OfflineItemFilterObserver obs : mObservers) obs.onItemsAdded(newItems);
+        } else if (oldInList && !newInList) {
+            Collection<OfflineItem> oldItems = CollectionUtil.newHashSet(oldItem);
+            for (OfflineItemFilterObserver obs : mObservers) obs.onItemsRemoved(oldItems);
+        }
     }
 
     @Override

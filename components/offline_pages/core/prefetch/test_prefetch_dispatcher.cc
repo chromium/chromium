@@ -20,6 +20,11 @@ void TestPrefetchDispatcher::AddCandidatePrefetchURLs(
   new_suggestions_count++;
 }
 
+void TestPrefetchDispatcher::NewSuggestionsAvailable(
+    SuggestionsProvider* suggestions_provider) {}
+
+void TestPrefetchDispatcher::RemoveSuggestion(const GURL& url) {}
+
 void TestPrefetchDispatcher::RemoveAllUnprocessedPrefetchURLs(
     const std::string& name_space) {
   latest_prefetch_urls.clear();

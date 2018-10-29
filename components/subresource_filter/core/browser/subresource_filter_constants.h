@@ -50,25 +50,23 @@ extern const base::FilePath::CharType kUnindexedRulesetDataFileName[];
 // Console message to be displayed on activation.
 constexpr char kActivationConsoleMessage[] =
     "Chrome is blocking ads on this site because this site tends to show ads "
-    "that interrupt, distract, or prevent user control. You should fix the "
-    "issues as soon as possible and submit your site for another review. Learn "
-    "more at https://www.chromestatus.com/feature/5738264052891648";
+    "that interrupt, distract, mislead, or prevent user control. You should "
+    "fix the issues as soon as possible and submit your site for another "
+    "review. Learn more at "
+    "https://www.chromestatus.com/feature/5738264052891648";
 
 constexpr char kActivationWarningConsoleMessage[] =
     "Chrome might start blocking ads on this site in the future because this "
-    "site tends to show ads that interrupt, distract, or prevent user control. "
-    "You should fix the issues as soon as possible and submit your site for "
-    "another review. Learn more more at "
+    "site tends to show ads that interrupt, distract, mislead, or prevent user "
+    "control. You should fix the issues as soon as possible and submit your "
+    "site for another review. Learn more more at "
     "https://www.chromestatus.com/feature/5738264052891648";
 
 // Console message to be displayed on disallowing subframe.
-constexpr char kDisallowSubframeConsoleMessagePrefix[] =
-    "Chrome blocked resource ";
-
-constexpr char kDisallowSubframeConsoleMessageSuffix[] =
-    " on this site because this site tends to show ads that interrupt, "
-    "distract, or prevent user control. Learn more at "
-    "https://www.chromestatus.com/feature/5738264052891648";
+constexpr char kDisallowSubframeConsoleMessageFormat[] =
+    "Chrome blocked resource %s on this site because this site tends to show "
+    "ads that interrupt, distract, mislead, or prevent user control. Learn "
+    "more at https://www.chromestatus.com/feature/5738264052891648";
 
 constexpr char kLearnMoreLink[] =
     "https://support.google.com/chrome/?p=blocked_ads";

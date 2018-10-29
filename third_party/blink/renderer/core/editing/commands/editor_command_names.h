@@ -8,7 +8,7 @@
 namespace blink {
 
 // Must be ordered in a case-folding manner for binary search. Covered by unit
-// tests in EditingCommandTest.cpp (not able to use static_assert)
+// tests in editing_command_test.cc (not able to use static_assert)
 #define FOR_EACH_BLINK_EDITING_COMMAND_NAME(V)    \
   V(AlignCenter)                                  \
   V(AlignJustified)                               \

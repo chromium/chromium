@@ -128,7 +128,6 @@ class FakePasswordRequirementsSpecFetcher
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_CONST_METHOD0(GetPasswordSyncState, SyncState());
-  MOCK_CONST_METHOD0(GetHistorySyncState, SyncState());
   MOCK_CONST_METHOD0(IsSavingAndFillingEnabledForCurrentPage, bool());
   MOCK_CONST_METHOD0(IsIncognito, bool());
 
@@ -240,7 +239,6 @@ TEST_F(PasswordGenerationManagerTest, ProcessPasswordRequirements) {
     const char* name;
     bool has_domain_wide_requirements = false;
     bool has_field_requirements = false;
-    bool allowed_to_fetch_specs = true;
     autofill::PasswordRequirementsSpec expected_spec;
   } kTests[] = {
       {
@@ -262,14 +260,6 @@ TEST_F(PasswordGenerationManagerTest, ProcessPasswordRequirements) {
           .has_domain_wide_requirements = true,
           .has_field_requirements = true,
           .expected_spec = GetDomainWideRequirements(),
-      },
-      {
-          .name = "Don't fetch spec if not allowed",
-          .has_domain_wide_requirements = true,
-          .allowed_to_fetch_specs = false,
-          // Default value is expected even though .has_domain_wide_requirements
-          // is true.
-          .expected_spec = autofill::PasswordRequirementsSpec(),
       },
   };
 
@@ -327,11 +317,6 @@ TEST_F(PasswordGenerationManagerTest, ProcessPasswordRequirements) {
     ASSERT_TRUE(response.SerializeToString(&response_string));
     autofill::FormStructure::ParseQueryResponse(response_string, forms,
                                                 nullptr);
-
-    EXPECT_CALL(*client_, GetHistorySyncState())
-        .WillRepeatedly(testing::Return(test.allowed_to_fetch_specs
-                                            ? SYNCING_NORMAL_ENCRYPTION
-                                            : NOT_SYNCING));
 
     GetGenerationManager()->PrefetchSpec(origin.GetOrigin());
 

@@ -112,7 +112,8 @@ EnrollmentScreen::EnrollmentScreen(BaseScreenDelegate* base_screen_delegate,
 
 EnrollmentScreen::~EnrollmentScreen() {
   DCHECK(!enrollment_helper_ || g_browser_process->IsShuttingDown() ||
-         browser_shutdown::IsTryingToQuit());
+         browser_shutdown::IsTryingToQuit() ||
+         DBusThreadManager::Get()->IsUsingFakes());
 }
 
 void EnrollmentScreen::SetParameters(

@@ -5,7 +5,9 @@
 #include "chrome/browser/net/reporting_permissions_checker.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
@@ -22,8 +24,8 @@ void ReportingPermissionsChecker::FilterReportingOrigins(
     std::set<url::Origin> origins,
     base::OnceCallback<void(std::set<url::Origin>)> result_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  content::BrowserThread::PostTaskAndReplyWithResult(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           &ReportingPermissionsCheckerFactory::DoFilterReportingOrigins,
           weak_profile_, std::move(origins)),

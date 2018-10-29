@@ -12,9 +12,11 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/sync_socket.h"
+#include "base/task/post_task.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/common/media/renderer_audio_output_stream_factory.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -79,7 +81,7 @@ void SyncWithAllThreads() {
   // least one task will be run. 20 iterations should be enough for our code.
   for (int i = 0; i < 20; ++i) {
     base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
-    SyncWith(BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+    SyncWith(base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
     SyncWith(media::AudioManager::Get()->GetWorkerTaskRunner());
   }
 }

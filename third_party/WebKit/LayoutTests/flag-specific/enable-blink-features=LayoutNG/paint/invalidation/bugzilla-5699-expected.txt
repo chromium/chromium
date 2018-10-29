@@ -20,22 +20,22 @@
         {
           "object": "NGPhysicalTextFragment 'Hello'",
           "rect": [8, 184, 35, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Hello'",
           "rect": [8, 156, 35, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [8, 150, 4, 19],
-          "reason": "appeared"
+          "reason": "style change"
         },
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [8, 136, 4, 19],
-          "reason": "disappeared"
+          "reason": "style change"
         }
       ]
     }

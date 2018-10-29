@@ -309,9 +309,9 @@ class UpdateServiceTest : public ExtensionsTest {
         << foo_js.value();
     ASSERT_TRUE(AddFileToDirectory(temp_dir.GetPath(), bar_html, "world"));
 
-    scoped_refptr<Extension> extension1 =
+    scoped_refptr<const Extension> extension1 =
         ExtensionBuilder("Foo")
-            .SetManifestKey("version", "1.0")
+            .SetVersion("1.0")
             .SetID(crx_file::id_util::GenerateId("foo_extension"))
             .SetPath(temp_dir.GetPath())
             .Build();
@@ -408,12 +408,12 @@ TEST_F(UpdateServiceTest, UninstallPings) {
                              base::Bind(&ShouldPing));
 
   // Build 3 extensions.
-  scoped_refptr<Extension> extension1 =
-      ExtensionBuilder("1").SetManifestKey("version", "1.2").Build();
-  scoped_refptr<Extension> extension2 =
-      ExtensionBuilder("2").SetManifestKey("version", "2.3").Build();
-  scoped_refptr<Extension> extension3 =
-      ExtensionBuilder("3").SetManifestKey("version", "3.4").Build();
+  scoped_refptr<const Extension> extension1 =
+      ExtensionBuilder("1").SetVersion("1.2").Build();
+  scoped_refptr<const Extension> extension2 =
+      ExtensionBuilder("2").SetVersion("2.3").Build();
+  scoped_refptr<const Extension> extension3 =
+      ExtensionBuilder("3").SetVersion("3.4").Build();
   EXPECT_TRUE(extension1->id() != extension2->id() &&
               extension1->id() != extension3->id() &&
               extension2->id() != extension3->id());
@@ -987,10 +987,10 @@ class UpdateServiceCanUpdateTest : public UpdateServiceTest,
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<Extension> store_extension_;
-  scoped_refptr<Extension> offstore_extension_;
-  scoped_refptr<Extension> emptyurl_extension_;
-  scoped_refptr<Extension> userscript_extension_;
+  scoped_refptr<const Extension> store_extension_;
+  scoped_refptr<const Extension> offstore_extension_;
+  scoped_refptr<const Extension> emptyurl_extension_;
+  scoped_refptr<const Extension> userscript_extension_;
 };
 
 class UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl

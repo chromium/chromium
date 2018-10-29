@@ -66,8 +66,8 @@ ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ReadingListDownloadService>(
       ReadingListModelFactory::GetForBrowserState(chrome_browser_state),
       chrome_browser_state->GetPrefs(), chrome_browser_state->GetStatePath(),
-      chrome_browser_state->GetRequestContext(), std::move(distiller_factory),
-      std::move(distiller_page_factory));
+      chrome_browser_state->GetSharedURLLoaderFactory(),
+      std::move(distiller_factory), std::move(distiller_page_factory));
 }
 
 web::BrowserState* ReadingListDownloadServiceFactory::GetBrowserStateToUse(

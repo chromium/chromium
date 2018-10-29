@@ -33,6 +33,7 @@ test("chrome_cleaner_unittests") {
 
     # Tests from sub-directories.
     "//chrome/chrome_cleaner/chrome_utils:unittest_sources",
+    "//chrome/chrome_cleaner/components:unittest_sources",
     "//chrome/chrome_cleaner/http:unittest_sources",
     "//chrome/chrome_cleaner/interfaces/typemaps:unittest_sources",
     "//chrome/chrome_cleaner/ipc:unittest_sources",

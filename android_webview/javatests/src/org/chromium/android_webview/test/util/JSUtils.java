@@ -11,9 +11,11 @@ import android.app.Instrumentation;
 import org.junit.Assert;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 /**
  * Collection of functions for JavaScript-based interactions with a page.
@@ -21,6 +23,13 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 public class JSUtils {
     private static final long WAIT_TIMEOUT_MS = scaleTimeout(2000);
     private static final int CHECK_INTERVAL = 100;
+
+    private static String createScriptToClickNode(String nodeId) {
+        String script = "var evObj = new MouseEvent('click', {bubbles: true});"
+                + "document.getElementById('" + nodeId + "').dispatchEvent(evObj);"
+                + "console.log('element with id [" + nodeId + "] clicked');";
+        return script;
+    }
 
     public static void clickOnLinkUsingJs(final Instrumentation instrumentation,
             final AwContents awContents,
@@ -42,12 +51,16 @@ public class JSUtils {
             }
         }, WAIT_TIMEOUT_MS, CHECK_INTERVAL);
 
+        // clang-format off
         instrumentation.runOnMainSync(
                 () -> awContents.getWebContents().evaluateJavaScriptForTests(
-                        "var evObj = new MouseEvent('click', {bubbles: true});"
-                                + "document.getElementById('" + linkId + "').dispatchEvent(evObj);"
-                                + "console.log('element with id [" + linkId + "] clicked');",
-                        null));
+                        createScriptToClickNode(linkId), null));
+        // clang-format on
+    }
+
+    public static void clickNodeWithUserGesture(WebContents webContents, String nodeId) {
+        WebContentsUtils.evaluateJavaScriptWithUserGesture(
+                webContents, createScriptToClickNode(nodeId));
     }
 
     public static String executeJavaScriptAndWaitForResult(Instrumentation instrumentation,

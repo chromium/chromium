@@ -1,8 +1,8 @@
 test
+
 This tests that aria fallback roles work correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Role should be: AXRole: AXCheckBox
 PASS successfullyParsed is true

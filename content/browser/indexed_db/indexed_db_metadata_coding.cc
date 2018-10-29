@@ -18,6 +18,7 @@ using base::StringPiece;
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKeyPath;
+using blink::mojom::IDBNameAndVersionPtr;
 using blink::IndexedDBObjectStoreMetadata;
 using leveldb::Status;
 
@@ -324,15 +325,16 @@ Status ReadObjectStores(
 }
 
 template <typename DatabaseOrTransaction>
-Status ReadDatabaseNamesInternal(DatabaseOrTransaction* db_or_transaction,
-                                 const std::string& origin_identifier,
-                                 std::vector<base::string16>* names) {
+Status ReadDatabaseNamesAndVersionsInternal(
+    DatabaseOrTransaction* db_or_transaction,
+    const std::string& origin_identifier,
+    std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) {
   const std::string start_key =
       DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier);
   const std::string stop_key =
       DatabaseNameKey::EncodeStopKeyForOrigin(origin_identifier);
 
-  DCHECK(names->empty());
+  DCHECK(names_and_versions->empty());
   std::unique_ptr<LevelDBIterator> it = CreateIterator(db_or_transaction);
   Status s;
   for (s = it->Seek(start_key);
@@ -343,7 +345,7 @@ Status ReadDatabaseNamesInternal(DatabaseOrTransaction* db_or_transaction,
     DatabaseNameKey database_name_key;
     if (!DatabaseNameKey::Decode(&slice, &database_name_key) ||
         !slice.empty()) {
-      // TODO(dmurph): Change UMA name to ReadDatabaseNames.
+      // TODO(dmurph): Change UMA name to ReadDatabaseNamesAndVersionsInternal.
       INTERNAL_CONSISTENCY_ERROR_UNTESTED(GET_DATABASE_NAMES);
       continue;
     }
@@ -369,10 +371,11 @@ Status ReadDatabaseNamesInternal(DatabaseOrTransaction* db_or_transaction,
     }
 
     // Ignore stale metadata from failed initial opens.
-    if (database_version != IndexedDBDatabaseMetadata::DEFAULT_VERSION)
-      names->push_back(database_name_key.database_name());
+    if (database_version != IndexedDBDatabaseMetadata::DEFAULT_VERSION) {
+      names_and_versions->push_back(blink::mojom::IDBNameAndVersion::New(
+          database_name_key.database_name(), database_version));
+    }
   }
-
   if (!s.ok())
     INTERNAL_READ_ERROR(GET_DATABASE_NAMES);
 
@@ -453,18 +456,38 @@ Status ReadMetadataForDatabaseNameInternal(
 IndexedDBMetadataCoding::IndexedDBMetadataCoding() = default;
 IndexedDBMetadataCoding::~IndexedDBMetadataCoding() = default;
 
+Status IndexedDBMetadataCoding::ReadDatabaseNamesAndVersions(
+    LevelDBDatabase* db,
+    const std::string& origin_identifier,
+    std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions) {
+  return ReadDatabaseNamesAndVersionsInternal(db, origin_identifier,
+                                              names_and_versions);
+}
+
 Status IndexedDBMetadataCoding::ReadDatabaseNames(
     LevelDBDatabase* db,
     const std::string& origin_identifier,
     std::vector<base::string16>* names) {
-  return ReadDatabaseNamesInternal(db, origin_identifier, names);
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
+  Status s = ReadDatabaseNamesAndVersionsInternal(db, origin_identifier,
+                                                  &names_and_versions);
+  for (const blink::mojom::IDBNameAndVersionPtr& nav : names_and_versions) {
+    names->push_back(nav->name);
+  }
+  return s;
 }
 
 Status IndexedDBMetadataCoding::ReadDatabaseNames(
     LevelDBTransaction* transaction,
     const std::string& origin_identifier,
     std::vector<base::string16>* names) {
-  return ReadDatabaseNamesInternal(transaction, origin_identifier, names);
+  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
+  Status s = ReadDatabaseNamesAndVersionsInternal(
+      transaction, origin_identifier, &names_and_versions);
+  for (const blink::mojom::IDBNameAndVersionPtr& nav : names_and_versions) {
+    names->push_back(nav->name);
+  }
+  return s;
 }
 
 Status IndexedDBMetadataCoding::ReadMetadataForDatabaseName(

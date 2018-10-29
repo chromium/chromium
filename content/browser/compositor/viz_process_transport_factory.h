@@ -104,8 +104,8 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   // blacklisted.
   //
   // Returns kSuccess if caller can use GPU compositing, kTransientFailure if
-  // caller should try again or kFatalFailure if caller should fallback to
-  // software compositing.
+  // caller should try again or kFatalFailure/kSurfaceFailure if caller should
+  // fallback to software compositing.
   gpu::ContextResult TryCreateContextsForGpuCompositing(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 

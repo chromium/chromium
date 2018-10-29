@@ -2,7 +2,6 @@ This tests checks that all of the input values for background-repeat parse corre
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("background-repeat: repeat-x;") is "repeat-x"
 PASS test("background-repeat: repeat-y;") is "repeat-y"
 PASS test("background-repeat: repeat;") is "repeat"

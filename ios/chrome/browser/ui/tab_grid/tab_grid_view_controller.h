@@ -14,7 +14,7 @@
 @protocol GridConsumer;
 @protocol GridCommands;
 @protocol GridImageDataSource;
-@protocol RecentTabsTableConsumer;
+@protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 
 // Delegate protocol for an object that can handle presenting ("opening") tabs
@@ -38,7 +38,7 @@
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly) id<GridConsumer> regularTabsConsumer;
 @property(nonatomic, readonly) id<GridConsumer> incognitoTabsConsumer;
-@property(nonatomic, readonly) id<RecentTabsTableConsumer> remoteTabsConsumer;
+@property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
@@ -33,6 +34,7 @@ class NonBlockingTypeCommitContribution : public CommitContribution {
       const CommitRequestDataList& commit_requests,
       ModelTypeWorker* worker,
       Cryptographer* cryptographer,
+      PassphraseType passphrase_type,
       DataTypeDebugInfoEmitter* debug_info_emitter,
       bool only_commit_specifics);
   ~NonBlockingTypeCommitContribution() override;
@@ -61,6 +63,8 @@ class NonBlockingTypeCommitContribution : public CommitContribution {
 
   // A non-owned pointer to cryptographer to encrypt entities.
   Cryptographer* const cryptographer_;
+
+  const PassphraseType passphrase_type_;
 
   // The type-global context information.
   const sync_pb::DataTypeContext context_;

@@ -81,7 +81,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
     item_index_ = break_token->ItemIndex();
     offset_ = break_token->TextOffset();
     break_iterator_.SetStartOffset(offset_);
-    previous_line_had_forced_break_ = break_token->IsForcedBreak();
+    is_after_forced_break_ = break_token->IsForcedBreak();
     items_data_.AssertOffset(item_index_, offset_);
     ignore_floats_ = break_token->IgnoreFloats();
   }
@@ -134,7 +134,7 @@ void NGLineBreaker::ComputeBaseDirection() {
   const String& text = Text();
   if (text.Is8Bit())
     return;
-  size_t end_offset = text.find(kNewlineCharacter, offset_);
+  wtf_size_t end_offset = text.find(kNewlineCharacter, offset_);
   base_direction_ = NGBidiParagraph::BaseDirectionForString(
       end_offset == kNotFound
           ? StringView(text, offset_)
@@ -146,6 +146,14 @@ void NGLineBreaker::PrepareNextLine() {
   // NGLineInfo is not supposed to be re-used becase it's not much gain and to
   // avoid rare code path.
   DCHECK(item_results_->IsEmpty());
+
+  if (item_index_) {
+    // We're past the first line
+    previous_line_had_forced_break_ = is_after_forced_break_;
+    is_after_forced_break_ = false;
+    is_first_formatted_line_ = false;
+    use_first_line_style_ = false;
+  }
 
   line_info_->SetStartOffset(offset_);
   line_info_->SetLineStyle(node_, items_data_, constraint_space_,
@@ -193,6 +201,7 @@ void NGLineBreaker::NextLine(NGLineInfo* line_info) {
 
   if (!should_create_line_box)
     line_info_->SetIsEmptyLine();
+  line_info_->SetEndItemIndex(item_index_);
 
   ComputeLineLocation();
 
@@ -1209,8 +1218,7 @@ void NGLineBreaker::MoveToNextOf(const NGInlineItemResult& item_result) {
 }
 
 scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
-    const NGLineInfo& line_info,
-    std::unique_ptr<const NGInlineLayoutStateStack> state_stack) const {
+    const NGLineInfo& line_info) const {
   const Vector<NGInlineItem>& items = Items();
   if (item_index_ >= items.size())
     return NGInlineBreakToken::Create(node_);
@@ -1218,8 +1226,7 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
       node_, current_style_.get(), item_index_, offset_,
       ((is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |
        (line_info.UseFirstLineStyle() ? NGInlineBreakToken::kUseFirstLineStyle
-                                      : 0)),
-      std::move(state_stack));
+                                      : 0)));
 }
 
 }  // namespace blink

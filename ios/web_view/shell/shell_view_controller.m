@@ -270,10 +270,6 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
   _autofillDelegate = [[ShellAutofillDelegate alloc] init];
   _webView.autofillController.delegate = _autofillDelegate;
 
-  // Triggers password controller initiation.
-  // TODO(crbug.com/865114): Add delegate for password controller.
-  [_webView passwordController];
-
   [_webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                 UIViewAutoresizingFlexibleHeight];
   [_containerView addSubview:_webView];
@@ -511,6 +507,15 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
 - (void)webView:(CWVWebView*)webView
     commitPreviewingViewController:(UIViewController*)previewingViewController {
   NSLog(@"%@", NSStringFromSelector(_cmd));
+}
+
+- (void)webView:(CWVWebView*)webView
+    didFailNavigationWithSSLError:(NSError*)error
+                      overridable:(BOOL)overridable
+                  decisionHandler:
+                      (void (^)(CWVSSLErrorDecision))decisionHandler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  decisionHandler(CWVSSLErrorDecisionDoNothing);
 }
 
 #pragma mark CWVScriptCommandHandler

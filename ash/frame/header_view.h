@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/frame/custom_frame_header.h"
-#include "ash/frame/frame_header.h"
+#include "ash/frame/ash_frame_caption_controller.h"
+#include "ash/public/cpp/frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
-#include "ash/public/interfaces/window_style.mojom.h"
 #include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
@@ -31,7 +30,6 @@ class Widget;
 
 namespace ash {
 
-class CaptionButtonModel;
 class DefaultFrameHeader;
 class FrameCaptionButton;
 class FrameCaptionButtonContainerView;
@@ -49,10 +47,7 @@ class ASH_EXPORT HeaderView : public views::View,
   // placed in. For example, in immersive fullscreen this view may be painted in
   // a widget that slides in and out on top of the main app or browser window.
   // However, clicking a caption button should act on the target widget.
-  explicit HeaderView(
-      views::Widget* target_widget,
-      mojom::WindowStyle window_style = mojom::WindowStyle::DEFAULT,
-      std::unique_ptr<CaptionButtonModel> model = nullptr);
+  explicit HeaderView(views::Widget* target_widget);
   ~HeaderView() override;
 
   void set_is_immersive_delegate(bool value) { is_immersive_delegate_ = value; }
@@ -116,7 +111,7 @@ class ASH_EXPORT HeaderView : public views::View,
   void SetVisibleFraction(double visible_fraction) override;
   std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override;
 
-  FrameHeader* GetFrameHeader() { return frame_header_.get(); }
+  DefaultFrameHeader* GetFrameHeader() { return frame_header_.get(); }
 
  private:
   class HeaderContentView;
@@ -131,14 +126,14 @@ class ASH_EXPORT HeaderView : public views::View,
   // The widget that the caption buttons act on.
   views::Widget* target_widget_;
 
-  std::unique_ptr<CustomFrameHeader::AppearanceProvider> appearance_provider_;
+  AshFrameCaptionController caption_controller_;
 
   // Helper for painting the header. The exact type of FrameHeader will depend
   // on the type of window: In Mash, Chrome Browser windows use
   // CustomFrameHeader which is aware of theming. In classic Ash, Chrome Browser
   // windows won't use HeaderView at all. In either configuration, non Browser
   // windows will use DefaultFrameHeader.
-  std::unique_ptr<FrameHeader> frame_header_;
+  std::unique_ptr<DefaultFrameHeader> frame_header_;
 
   views::ImageView* avatar_icon_;
 

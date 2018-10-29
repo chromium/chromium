@@ -8,16 +8,27 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
 namespace quick_unlock {
 
-QuickUnlockStorage::QuickUnlockStorage(PrefService* pref_service)
-    : pref_service_(pref_service) {
-  fingerprint_storage_ = std::make_unique<FingerprintStorage>(pref_service);
-  pin_storage_prefs_ = std::make_unique<PinStoragePrefs>(pref_service);
+namespace {
+
+base::TimeDelta GetStrongAuthTimeout(PrefService* pref_service) {
+  PasswordConfirmationFrequency strong_auth_interval =
+      static_cast<PasswordConfirmationFrequency>(
+          pref_service->GetInteger(prefs::kQuickUnlockTimeout));
+  return PasswordConfirmationFrequencyToTimeDelta(strong_auth_interval);
+}
+
+}  // namespace
+
+QuickUnlockStorage::QuickUnlockStorage(Profile* profile) : profile_(profile) {
+  fingerprint_storage_ = std::make_unique<FingerprintStorage>(profile);
+  pin_storage_prefs_ = std::make_unique<PinStoragePrefs>(profile->GetPrefs());
 }
 
 QuickUnlockStorage::~QuickUnlockStorage() {}
@@ -31,15 +42,7 @@ void QuickUnlockStorage::MarkStrongAuth() {
 bool QuickUnlockStorage::HasStrongAuth() const {
   if (last_strong_auth_.is_null())
     return false;
-
-  // PIN and fingerprint share the same timeout policy.
-  PasswordConfirmationFrequency strong_auth_interval =
-      static_cast<PasswordConfirmationFrequency>(
-          pref_service_->GetInteger(prefs::kQuickUnlockTimeout));
-  base::TimeDelta strong_auth_timeout =
-      PasswordConfirmationFrequencyToTimeDelta(strong_auth_interval);
-
-  return TimeSinceLastStrongAuth() < strong_auth_timeout;
+  return TimeSinceLastStrongAuth() < GetStrongAuthTimeout(profile_->GetPrefs());
 }
 
 base::TimeDelta QuickUnlockStorage::TimeSinceLastStrongAuth() const {
@@ -47,9 +50,13 @@ base::TimeDelta QuickUnlockStorage::TimeSinceLastStrongAuth() const {
   return base::TimeTicks::Now() - last_strong_auth_;
 }
 
+base::TimeDelta QuickUnlockStorage::TimeUntilNextStrongAuth() const {
+  DCHECK(!last_strong_auth_.is_null());
+  return GetStrongAuthTimeout(profile_->GetPrefs()) - TimeSinceLastStrongAuth();
+}
+
 bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable() const {
-  return HasStrongAuth() &&
-         fingerprint_storage_->IsFingerprintAuthenticationAvailable();
+  return HasStrongAuth() && fingerprint_storage_->IsFingerprintAvailable();
 }
 
 bool QuickUnlockStorage::IsPinAuthenticationAvailable() const {

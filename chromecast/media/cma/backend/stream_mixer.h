@@ -20,6 +20,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/backend/mixer_input.h"
+#include "chromecast/media/cma/backend/mixer_pipeline.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -29,9 +30,7 @@ namespace chromecast {
 namespace media {
 
 class AudioOutputRedirector;
-class FilterGroup;
 class MixerOutputStream;
-class PostProcessingPipelineParser;
 class PostProcessingPipelineFactory;
 
 // Mixer implementation. The mixer has zero or more inputs; these can be added
@@ -118,7 +117,7 @@ class StreamMixer {
   void SetPostProcessorConfig(const std::string& name,
                               const std::string& config);
 
-  void ResetPostProcessors();
+  void ResetPostProcessors(CastMediaShlib::ResultCallback callback);
 
   // Test-only methods.
   StreamMixer(std::unique_ptr<MixerOutputStream> output,
@@ -159,9 +158,11 @@ class StreamMixer {
     bool muted = false;
   };
 
-  void CreatePostProcessors(PostProcessingPipelineParser* pipeline_parser);
-  void ResetPostProcessorsOnThread();
-  void ValidatePostProcessors();
+  void ResetPostProcessorsOnThread(CastMediaShlib::ResultCallback callback,
+                                   const std::string& override_config);
+  void CreatePostProcessors(CastMediaShlib::ResultCallback callback,
+                            const std::string& override_config);
+  bool PostProcessorsHaveCorrectNumOutputs();
   void FinalizeOnMixerThread();
   void Start();
   void Stop();
@@ -171,8 +172,6 @@ class StreamMixer {
   void RemoveInputOnThread(MixerInput::Source* input_source);
   void SetCloseTimeout();
   void UpdatePlayoutChannel();
-  MediaPipelineBackend::AudioDecoder::RenderingDelay GetTotalRenderingDelay(
-      FilterGroup* filter_group);
 
   void PlaybackLoop();
   void WriteOneBuffer();
@@ -211,9 +210,13 @@ class StreamMixer {
                         int length);
   void LoopbackInterrupted();
 
+  MediaPipelineBackend::AudioDecoder::RenderingDelay GetTotalRenderingDelay(
+      FilterGroup* filter_group);
+
   std::unique_ptr<MixerOutputStream> output_;
   std::unique_ptr<PostProcessingPipelineFactory>
       post_processing_pipeline_factory_;
+  std::unique_ptr<MixerPipeline> mixer_pipeline_;
   std::unique_ptr<base::Thread> mixer_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> mixer_task_runner_;
 
@@ -238,11 +241,6 @@ class StreamMixer {
 
   State state_;
   base::TimeTicks close_timestamp_;
-
-  std::vector<std::unique_ptr<FilterGroup>> filter_groups_;
-  FilterGroup* default_filter_ = nullptr;
-  FilterGroup* mix_filter_ = nullptr;
-  FilterGroup* linearize_filter_ = nullptr;
 
   base::flat_map<MixerInput::Source*, std::unique_ptr<MixerInput>> inputs_;
   base::flat_map<MixerInput::Source*, std::unique_ptr<MixerInput>>

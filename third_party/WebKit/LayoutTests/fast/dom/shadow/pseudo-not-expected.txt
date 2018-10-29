@@ -3,7 +3,6 @@ Test the :not pseudo selector in
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS content.getDistributedNodes().length is 1
 PASS content.getDistributedNodes()[0].className is "second"
 PASS content.getDistributedNodes().length is 1

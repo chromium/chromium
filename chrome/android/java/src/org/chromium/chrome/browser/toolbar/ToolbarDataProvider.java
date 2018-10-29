@@ -110,9 +110,9 @@ public interface ToolbarDataProvider {
     @ColorRes
     default int getVerboseStatusTextColor(Resources res, boolean useDarkColors) {
         if (isPreview()) {
-            return ApiCompatibilityUtils.getColor(res,
-                    useDarkColors ? R.color.locationbar_status_preview_color
-                                  : R.color.locationbar_status_preview_color_light);
+            // There will never be a Preview in Incognito and the site theme color is not used. So
+            // ignore useDarkColors.
+            return ApiCompatibilityUtils.getColor(res, R.color.locationbar_status_preview_color);
         }
 
         if (isOfflinePage()) {
@@ -141,7 +141,7 @@ public interface ToolbarDataProvider {
     @StringRes
     default int getVerboseStatusString() {
         if (isPreview()) {
-            return R.string.location_bar_verbose_status_preview;
+            return R.string.location_bar_preview_lite_page_status;
         }
         if (isOfflinePage()) {
             return R.string.location_bar_verbose_status_offline;
@@ -179,12 +179,4 @@ public interface ToolbarDataProvider {
      * @return Whether or not we should display search terms instead of a URL for query in omnibox.
      */
     boolean shouldDisplaySearchTerms();
-
-    /**
-     * @return The resource ID of drawable for the home button.
-     */
-    @DrawableRes
-    default int getHomeButtonIcon() {
-        return 0;
-    }
 }

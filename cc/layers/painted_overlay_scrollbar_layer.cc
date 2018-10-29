@@ -45,6 +45,7 @@ PaintedOverlayScrollbarLayer::PaintedOverlayScrollbarLayer(
       thumb_thickness_(scrollbar_->ThumbThickness()),
       thumb_length_(scrollbar_->ThumbLength()) {
   DCHECK(scrollbar_->UsesNinePatchThumbResource());
+  SetIsScrollbar(true);
 }
 
 PaintedOverlayScrollbarLayer::~PaintedOverlayScrollbarLayer() = default;

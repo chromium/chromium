@@ -12,7 +12,9 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "chromeos/chromeos_switches.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -218,8 +220,8 @@ void PolicyOAuth2TokenFetcherImpl::RetryOnError(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
-    BrowserThread::PostDelayedTask(
-        BrowserThread::UI, FROM_HERE, task,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI}, task,
         base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
     return;
   }

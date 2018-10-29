@@ -581,7 +581,7 @@ VisiblePosition VisiblePositionForContentsPoint(const IntPoint& contents_point,
   return VisiblePosition();
 }
 
-// TODO(yosin): We should use |associatedLayoutObjectOf()| in "VisibleUnits.cpp"
+// TODO(yosin): We should use |AssociatedLayoutObjectOf()| in "visible_units.cc"
 // where it takes |LayoutObject| from |Position|.
 
 int CaretMinOffset(const Node* node) {
@@ -990,7 +990,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
 
   if (layout_object->IsBR()) {
     // TODO(leviw) The condition should be
-    // m_anchorType == PositionAnchorType::BeforeAnchor, but for now we
+    // anchor_type_ == PositionAnchorType::kBeforeAnchor, but for now we
     // still need to support legacy positions.
     if (position.IsAfterAnchor())
       return false;

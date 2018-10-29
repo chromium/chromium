@@ -8,27 +8,15 @@
 #import <QuartzCore/CAMediaTimingFunction.h>
 
 #include "base/logging.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
-#include "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_tints.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// *** Constants for the non-adaptive toolbar, 3 vertical dots. ***
-// Position of the topmost dot.
-const CGFloat kDotOffsetXVertical = 22;
-const CGFloat kDotOffsetYVertical = 18;
-// Vertical space between dots.
-const CGFloat kVerticalSpaceBetweenDots = 6;
-// Diameter of the dots.
-const CGFloat kDotDiameterVertical = 4;
-// Width of the line at the apogee.
-const CGFloat kLineWidthAtApogeeVertical = 5;
-
 // *** Constants for the adaptive toolbar, 3 horizontal dots. ***
 // Position of the leftmost dot.
 const CGFloat kDotOffsetXHorizontal = 12;
@@ -64,11 +52,6 @@ const CGFloat kStrokeEndAtApogee = 1;
 }  // namespace
 
 @interface ToolbarToolsMenuButton ()<CAAnimationDelegate> {
-  // The style of the toolbar the button is in.
-  // TODO(crbug.com/800266): Remove this ivar.
-  ToolbarControllerStyle style_;
-  // Whether the tools menu is visible.
-  BOOL toolsMenuVisible_;
   // Whether the reading list contains unseen items.
   BOOL readingListContainsUnseenItems_;
   // The CALayers containing the drawn dots.
@@ -88,112 +71,35 @@ const CGFloat kStrokeEndAtApogee = 1;
 @synthesize normalStateTint = _normalStateTint;
 @synthesize highlightedStateTint = _highlightedStateTint;
 
-- (instancetype)initWithFrame:(CGRect)frame
-                        style:(ToolbarControllerStyle)style {
+- (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
-    style_ = style;
     pathLayers_ = [[NSMutableArray alloc] initWithCapacity:kNumberOfDots];
 
-    if (!IsUIRefreshPhase1Enabled()) {
-      [self setTintColor:toolbar::NormalButtonTint(style_)
-                forState:UIControlStateNormal];
-      [self setTintColor:toolbar::HighlighButtonTint(style_)
-                forState:UIControlStateHighlighted];
-    } else {
-      [self configureSpotlightView];
-    }
+    [self configureSpotlightView];
   }
   return self;
 }
 
-- (void)setToolsMenuIsVisible:(BOOL)toolsMenuVisible {
-  if (IsUIRefreshPhase1Enabled())
-    return;
-
-  toolsMenuVisible_ = toolsMenuVisible;
-  [self updateTintOfButton];
-}
-
-- (void)setReadingListContainsUnseenItems:(BOOL)readingListContainsUnseenItems {
-  if (IsUIRefreshPhase1Enabled())
-    return;
-
-  readingListContainsUnseenItems_ = readingListContainsUnseenItems;
-  [self updateTintOfButton];
-}
-
 - (void)triggerAnimation {
-  if (IsUIRefreshPhase1Enabled()) {
-    [self animateToColor:self.tintColor];
-  } else {
-    [self animateToColor:toolbar::HighlighButtonTint(style_)];
-  }
+  [self animateToColor:self.tintColor];
 }
 
 #pragma mark - Private
 
-// Updates the tint configuration based on the button's situation, e.g. whether
-// the tools menu is visible or not.
-- (void)updateTintOfButton {
-  if (toolsMenuVisible_ || readingListContainsUnseenItems_) {
-    [self setTintColor:toolbar::HighlighButtonTint(style_)
-              forState:UIControlStateNormal];
-  } else {
-    [self setTintColor:toolbar::NormalButtonTint(style_)
-              forState:UIControlStateNormal];
-  }
-}
-
-// Sets the tint color of a button to use for the specified state.
-// Currently only supports |UIControlStateNormal| and
-// |UIControlStateHighlighted|.
-- (void)setTintColor:(UIColor*)color forState:(UIControlState)state {
-  switch (state) {
-    case UIControlStateNormal:
-      self.normalStateTint = [color copy];
-      break;
-    case UIControlStateHighlighted:
-      self.highlightedStateTint = [color copy];
-      break;
-    default:
-      return;
-  }
-
-  if (self.normalStateTint || self.highlightedStateTint)
-    self.adjustsImageWhenHighlighted = NO;
-  else
-    self.adjustsImageWhenHighlighted = YES;
-  [self updateTint];
-}
-
 // Makes the button's tint color reflect its current state.
 - (void)updateTint {
   UIColor* newTint = nil;
-  if (IsUIRefreshPhase1Enabled()) {
-    switch (self.state) {
-      case UIControlStateNormal:
-        newTint = self.configuration.buttonsTintColor;
-        break;
-      case UIControlStateHighlighted:
-        newTint = self.configuration.buttonsTintColorHighlighted;
-        break;
-      default:
-        newTint = self.configuration.buttonsTintColor;
-        break;
+  switch (self.state) {
+    case UIControlStateNormal:
+      newTint = self.configuration.buttonsTintColor;
+      break;
+    case UIControlStateHighlighted:
+      newTint = self.configuration.buttonsTintColorHighlighted;
+      break;
+    default:
+      newTint = self.configuration.buttonsTintColor;
+      break;
       }
-  } else {
-    switch (self.state) {
-      case UIControlStateNormal:
-        newTint = self.normalStateTint;
-        break;
-      case UIControlStateHighlighted:
-        newTint = self.highlightedStateTint;
-        break;
-      default:
-        newTint = self.normalStateTint;
-        break;
-    }
-  }
   self.tintColor = newTint;
 }
 
@@ -205,21 +111,19 @@ const CGFloat kStrokeEndAtApogee = 1;
 
   pathLayers_ = [[NSMutableArray alloc] initWithCapacity:kNumberOfDots];
   for (NSUInteger i = 0; i < kNumberOfDots; i++) {
-    const CGFloat x = [self firstDotXOffset] + [self horizontalSpacing] * i;
-    const CGFloat y = [self firstDotYOffset] + [self verticalSpacing] * i;
+    const CGFloat x = kDotOffsetXHorizontal + kHorizontalSpaceBetweenDots * i;
+    const CGFloat y = kDotOffsetYHorizontal;
 
     UIBezierPath* path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(x - [self segmentWidth] * 0.5,
-                                  y - [self segmentHeight] * 0.5)];
-    [path addLineToPoint:CGPointMake(x + [self segmentWidth] * 0.5,
-                                     y + [self segmentHeight] * 0.5)];
+    [path moveToPoint:CGPointMake(x, y - kMaxWidthOfStroke * 0.5)];
+    [path addLineToPoint:CGPointMake(x, y + kMaxWidthOfStroke * 0.5)];
 
     CAShapeLayer* pathLayer = [CAShapeLayer layer];
     [pathLayer setFrame:self.bounds];
     [pathLayer setPath:path.CGPath];
     [pathLayer setStrokeColor:[self.tintColor CGColor]];
     [pathLayer setFillColor:nil];
-    [pathLayer setLineWidth:[self dotsDiameter]];
+    [pathLayer setLineWidth:kDotDiameterHorizontal];
     [pathLayer setLineCap:kCALineCapRound];
     [pathLayer setStrokeStart:kStrokeStartAtRest];
     [pathLayer setStrokeEnd:kStrokeEndAtRest];
@@ -327,9 +231,9 @@ const CGFloat kStrokeEndAtApogee = 1;
 
     // Width of the stroke animation.
     CAAnimation* lineWidthAnimation =
-        [self animationWithInitialValue:@([self dotsDiameter])
-                      intermediaryValue:@([self lineWidthAtApogee])
-                             finalValue:@([self dotsDiameter])
+        [self animationWithInitialValue:@(kDotDiameterHorizontal)
+                      intermediaryValue:@(kLineWidthAtApogeeHorizontal)
+                             finalValue:@(kDotDiameterHorizontal)
                              frameStart:frameStart
                              forKeyPath:@"lineWidth"];
 
@@ -389,80 +293,6 @@ const CGFloat kStrokeEndAtApogee = 1;
   // Recreate the CAShapeLayers in case the tint code changed while the
   // animation was going on.
   [self initializeShapeLayers];
-}
-
-#pragma mark - Private
-
-// Returns the X offset of the first dot.
-- (CGFloat)firstDotXOffset {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kDotOffsetXHorizontal;
-  } else {
-    return kDotOffsetXVertical;
-  }
-}
-
-// Returns the Y offset of the first dot.
-- (CGFloat)firstDotYOffset {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kDotOffsetYHorizontal;
-  } else {
-    return kDotOffsetYVertical;
-  }
-}
-
-// Returns the vertical spacing between two dots.
-- (CGFloat)verticalSpacing {
-  if (IsUIRefreshPhase1Enabled()) {
-    return 0;
-  } else {
-    return kVerticalSpaceBetweenDots;
-  }
-}
-
-// Returns the horizontal spacing between two dots.
-- (CGFloat)horizontalSpacing {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kHorizontalSpaceBetweenDots;
-  } else {
-    return 0;
-  }
-}
-
-// Returns the width of a segment used in animation.
-- (CGFloat)segmentWidth {
-  if (IsUIRefreshPhase1Enabled()) {
-    return 0;
-  } else {
-    return kMaxWidthOfStroke;
-  }
-}
-
-// Returns the height of a segment used in animation.
-- (CGFloat)segmentHeight {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kMaxWidthOfStroke;
-  } else {
-    return 0;
-  }
-}
-
-// Returns the diameter of the dots.
-- (CGFloat)dotsDiameter {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kDotDiameterHorizontal;
-  } else {
-    return kDotDiameterVertical;
-  }
-}
-
-// Returns the width of the line at the apogge.
-- (CGFloat)lineWidthAtApogee {
-  if (IsUIRefreshPhase1Enabled()) {
-    return kLineWidthAtApogeeHorizontal;
-  } else {
-    return kLineWidthAtApogeeVertical;
-  }
 }
 
 @end

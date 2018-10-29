@@ -78,7 +78,9 @@ HttpStreamFactory::JobController::JobController(
       is_websocket_(is_websocket),
       enable_ip_based_pooling_(enable_ip_based_pooling),
       enable_alternative_services_(enable_alternative_services),
+      main_job_net_error_(OK),
       alternative_job_net_error_(OK),
+      alternative_job_failed_on_default_network_(false),
       job_bound_(false),
       main_job_is_blocked_(false),
       main_job_is_resumed_(false),
@@ -209,6 +211,7 @@ void HttpStreamFactory::JobController::OnStreamReadyOnPooledConnection(
 
   main_job_.reset();
   alternative_job_.reset();
+  ResetErrorStatusForJobs();
 
   factory_->OnStreamReady(proxy_info, request_info_.privacy_mode);
 
@@ -226,6 +229,7 @@ void HttpStreamFactory::JobController::
 
   main_job_.reset();
   alternative_job_.reset();
+  ResetErrorStatusForJobs();
 
   delegate_->OnBidirectionalStreamImplReady(used_ssl_config, used_proxy_info,
                                             std::move(stream));
@@ -322,6 +326,9 @@ void HttpStreamFactory::JobController::OnStreamFailed(
     } else {
       OnAlternativeServiceJobFailed(status);
     }
+  } else {
+    DCHECK_EQ(main_job_.get(), job);
+    main_job_net_error_ = status;
   }
 
   MaybeResumeMainJob(job, base::TimeDelta());
@@ -363,6 +370,11 @@ void HttpStreamFactory::JobController::OnStreamFailed(
     return;
   }
   delegate_->OnStreamFailed(status, *job->net_error_details(), used_ssl_config);
+}
+
+void HttpStreamFactory::JobController::OnFailedOnDefaultNetwork(Job* job) {
+  DCHECK_EQ(job->job_type(), ALTERNATIVE);
+  alternative_job_failed_on_default_network_ = true;
 }
 
 void HttpStreamFactory::JobController::OnCertificateError(
@@ -482,8 +494,6 @@ void HttpStreamFactory::JobController::OnNewSpdySessionReady(
 
   // Notify |request_|.
   if (!is_preconnect_ && !is_job_orphaned) {
-    if (job->job_type() == MAIN && alternative_job_net_error_ != OK)
-      ReportBrokenAlternativeService();
 
     DCHECK(request_);
 
@@ -528,6 +538,7 @@ void HttpStreamFactory::JobController::OnNewSpdySessionReady(
 void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job) {
   DCHECK_EQ(main_job_.get(), job);
   main_job_.reset();
+  ResetErrorStatusForJobs();
   factory_->OnPreconnectsCompleteInternal();
   MaybeNotifyFactoryOfCompletion();
 }
@@ -577,6 +588,12 @@ void HttpStreamFactory::JobController::ResumeMainJob() {
 
   main_job_->Resume();
   main_job_wait_time_ = base::TimeDelta();
+}
+
+void HttpStreamFactory::JobController::ResetErrorStatusForJobs() {
+  main_job_net_error_ = OK;
+  alternative_job_net_error_ = OK;
+  alternative_job_failed_on_default_network_ = false;
 }
 
 void HttpStreamFactory::JobController::MaybeResumeMainJob(
@@ -919,20 +936,23 @@ void HttpStreamFactory::JobController::OrphanUnboundJob() {
     return;
   }
 
-  if (bound_job_->job_type() == ALTERNATIVE && main_job_) {
-    // |request_| is bound to the alternative job. This means that the main job
+  if (bound_job_->job_type() == ALTERNATIVE && main_job_ &&
+      !alternative_job_failed_on_default_network_) {
+    // |request_| is bound to the alternative job and the alternative job
+    // succeeds on the default network. This means that the main job
     // is no longer needed, so cancel it now. Pending ConnectJobs will return
     // established sockets to socket pools if applicable.
     // https://crbug.com/757548.
+    // The main job still needs to run if the alternative job succeeds on the
+    // alternate network in order to figure out whether QUIC should be marked as
+    // broken until the default network changes.
+    DCHECK_EQ(OK, alternative_job_net_error_);
     main_job_.reset();
   }
 }
 
 void HttpStreamFactory::JobController::OnJobSucceeded(Job* job) {
   DCHECK(job);
-
-  if (job->job_type() == MAIN && alternative_job_net_error_ != OK)
-    ReportBrokenAlternativeService();
 
   if (!bound_job_) {
     if (main_job_ && alternative_job_)
@@ -958,14 +978,6 @@ void HttpStreamFactory::JobController::OnAlternativeServiceJobFailed(
   DCHECK_NE(kProtoUnknown, alternative_service_info_.protocol());
 
   alternative_job_net_error_ = net_error;
-
-  if (IsJobOrphaned(alternative_job_.get())) {
-    // If |request_| is gone, then it must have been successfully served by
-    // |main_job_|.
-    // If |request_| is bound to a different job, then it is being
-    // successfully served by the main job.
-    ReportBrokenAlternativeService();
-  }
 }
 
 void HttpStreamFactory::JobController::OnAlternativeProxyJobFailed(
@@ -988,17 +1000,41 @@ void HttpStreamFactory::JobController::OnAlternativeProxyJobFailed(
   }
 }
 
-void HttpStreamFactory::JobController::ReportBrokenAlternativeService() {
+void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService() {
+  // If alternative job succeeds on the default network, no brokenness to
+  // report.
+  if (alternative_job_net_error_ == OK &&
+      !alternative_job_failed_on_default_network_)
+    return;
+
+  // No brokenness to report if the main job fails.
+  if (main_job_net_error_ != OK)
+    return;
+
   DCHECK(alternative_service_info_.protocol() != kProtoUnknown);
-  DCHECK_NE(OK, alternative_job_net_error_);
 
-  int error_to_report = alternative_job_net_error_;
-  alternative_job_net_error_ = OK;
-  base::UmaHistogramSparse("Net.AlternateServiceFailed", -error_to_report);
+  if (alternative_job_failed_on_default_network_ &&
+      alternative_job_net_error_ == OK) {
+    // Alternative job failed on the default network but succeeds on the
+    // non-default network, mark alternative service broken until the default
+    // network changes.
+    session_->http_server_properties()
+        ->MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
+            alternative_service_info_.alternative_service());
+    // Reset error status for Jobs after reporting brokenness.
+    ResetErrorStatusForJobs();
+    return;
+  }
 
-  if (error_to_report == ERR_NETWORK_CHANGED ||
-      error_to_report == ERR_INTERNET_DISCONNECTED) {
+  // Report brokenness if alternative job failed.
+  base::UmaHistogramSparse("Net.AlternateServiceFailed",
+                           -alternative_job_net_error_);
+
+  if (alternative_job_net_error_ == ERR_NETWORK_CHANGED ||
+      alternative_job_net_error_ == ERR_INTERNET_DISCONNECTED) {
     // No need to mark alternative service as broken.
+    // Reset error status for Jobs.
+    ResetErrorStatusForJobs();
     return;
   }
 
@@ -1006,9 +1042,17 @@ void HttpStreamFactory::JobController::ReportBrokenAlternativeService() {
       BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT);
   session_->http_server_properties()->MarkAlternativeServiceBroken(
       alternative_service_info_.alternative_service());
+  // Reset error status for Jobs after reporting brokenness.
+  ResetErrorStatusForJobs();
 }
 
 void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
+  if (!main_job_ && !alternative_job_) {
+    // Both jobs are gone, report brokenness if apply. Error status for Jobs
+    // will be reset after reporting to avoid redundant reporting.
+    MaybeReportBrokenAlternativeService();
+  }
+
   if (!request_ && !main_job_ && !alternative_job_) {
     DCHECK(!bound_job_);
     factory_->OnJobControllerComplete(this);
@@ -1306,6 +1350,7 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
   bound_job_ = nullptr;
   alternative_job_.reset();
   main_job_.reset();
+  ResetErrorStatusForJobs();
   // Also resets states that related to the old main job. In particular,
   // cancels |resume_main_job_callback_| so there won't be any delayed
   // ResumeMainJob() left in the task queue.

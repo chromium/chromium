@@ -7,14 +7,17 @@
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/browser/loader/resource_request_info_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "ipc/ipc_channel.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_element_reader.h"
 #include "net/cert/cert_status_flags.h"
@@ -25,6 +28,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
+
 namespace {
 static const int kInitialBufferSize = 4096;
 static const int kMaxBufferSize = IPC::Channel::kMaximumMessageSize / 4;
@@ -381,14 +385,8 @@ void DevToolsURLInterceptorRequestJob::InterceptedRequest::ReadIntoBuffer() {
 
 class DevToolsURLInterceptorRequestJob::MockResponseDetails {
  public:
-  MockResponseDetails(std::string response_bytes,
-                      base::TimeTicks response_time);
-
-  MockResponseDetails(
-      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-      std::string response_bytes,
-      size_t read_offset,
-      base::TimeTicks response_time);
+  MockResponseDetails(scoped_refptr<net::HttpResponseHeaders> response_headers,
+                      std::string response_bytes);
 
   ~MockResponseDetails();
 
@@ -408,35 +406,18 @@ class DevToolsURLInterceptorRequestJob::MockResponseDetails {
 };
 
 DevToolsURLInterceptorRequestJob::MockResponseDetails::MockResponseDetails(
-    std::string response_bytes,
-    base::TimeTicks response_time)
-    : response_bytes_(std::move(response_bytes)),
-      read_offset_(0),
-      response_time_(response_time) {
-  int header_size = net::HttpUtil::LocateEndOfHeaders(response_bytes_.c_str(),
-                                                      response_bytes_.size());
-  if (header_size == -1) {
-    LOG(WARNING) << "Can't find headers in result";
-    response_headers_ = new net::HttpResponseHeaders("");
-  } else {
-    response_headers_ =
-        new net::HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-            response_bytes_.c_str(), header_size));
-    read_offset_ = header_size;
-  }
-
-  CHECK_LE(read_offset_, response_bytes_.size());
-}
-
-DevToolsURLInterceptorRequestJob::MockResponseDetails::MockResponseDetails(
-    const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-    std::string response_bytes,
-    size_t read_offset,
-    base::TimeTicks response_time)
-    : response_headers_(response_headers),
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    std::string response_bytes)
+    : response_headers_(std::move(response_headers)),
       response_bytes_(std::move(response_bytes)),
-      read_offset_(read_offset),
-      response_time_(response_time) {}
+      read_offset_(0),
+      response_time_(base::TimeTicks::Now()) {
+  if (!response_headers) {
+    static const char kDummyHeaders[] = "HTTP/1.1 200 OK\0\0";
+    response_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>(kDummyHeaders);
+  }
+}
 
 DevToolsURLInterceptorRequestJob::MockResponseDetails::~MockResponseDetails() {}
 
@@ -602,10 +583,47 @@ void DevToolsURLInterceptorRequestJob::Start() {
 
   net::CookieOptions options;
   options.set_include_httponly();
-  if (request()->attach_same_site_cookies()) {
-    options.set_same_site_cookie_mode(
-        net::CookieOptions::SameSiteCookieMode::INCLUDE_STRICT_AND_LAX);
+  // The below is a copy of the logic in URLRequestHttpJob
+
+  // Set SameSiteCookieMode according to the rules laid out in
+  // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site:
+  //
+  // * Include both "strict" and "lax" same-site cookies if the request's
+  //   |url|, |initiator|, and |site_for_cookies| all have the same
+  //   registrable domain. Note: this also covers the case of a request
+  //   without an initiator (only happens for browser-initiated main frame
+  //   navigations).
+  //
+  // * Include only "lax" same-site cookies if the request's |URL| and
+  //   |site_for_cookies| have the same registrable domain, _and_ the
+  //   request's |method| is "safe" ("GET" or "HEAD").
+  //
+  //   Note that this will generally be the case only for cross-site requests
+  //   which target a top-level browsing context.
+  //
+  // * Include both "strict" and "lax" same-site cookies if the request is
+  //   tagged with a flag allowing it.
+  //   Note that this can be the case for requests initiated by extensions,
+  //   which need to behave as though they are made by the document itself,
+  //   but appear like cross-site ones.
+  //
+  // * Otherwise, do not include same-site cookies.
+  using namespace net::registry_controlled_domains;
+  if (SameDomainOrHost(request()->url(), request()->site_for_cookies(),
+                       INCLUDE_PRIVATE_REGISTRIES)) {
+    if (!request()->initiator() ||
+        SameDomainOrHost(request()->url(),
+                         request()->initiator().value().GetURL(),
+                         INCLUDE_PRIVATE_REGISTRIES) ||
+        request()->attach_same_site_cookies()) {
+      options.set_same_site_cookie_mode(
+          net::CookieOptions::SameSiteCookieMode::INCLUDE_STRICT_AND_LAX);
+    } else if (net::HttpUtil::IsMethodSafe(request()->method())) {
+      options.set_same_site_cookie_mode(
+          net::CookieOptions::SameSiteCookieMode::INCLUDE_LAX);
+    }
   }
+
   store->GetCookieListWithOptionsAsync(
       request_details_.url, options,
       base::BindOnce(&DevToolsURLInterceptorRequestJob::StartWithCookies,
@@ -634,8 +652,8 @@ void DevToolsURLInterceptorRequestJob::StartWithCookies(
   DCHECK(stage_to_intercept_ == InterceptionStage::REQUEST ||
          stage_to_intercept_ == InterceptionStage::BOTH);
   waiting_for_user_response_ = WaitingForUserResponse::WAITING_FOR_REQUEST_ACK;
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback_, BuildRequestInfo()));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback_, BuildRequestInfo()));
 }
 
 void DevToolsURLInterceptorRequestJob::Kill() {
@@ -752,17 +770,9 @@ void DevToolsURLInterceptorRequestJob::OnSubRequestAuthRequired(
   waiting_for_user_response_ = WaitingForUserResponse::WAITING_FOR_AUTH_ACK;
 
   std::unique_ptr<InterceptedRequestInfo> request_info = BuildRequestInfo();
-  request_info->auth_challenge =
-      protocol::Network::AuthChallenge::Create()
-          .SetSource(auth_info->is_proxy
-                         ? protocol::Network::AuthChallenge::SourceEnum::Proxy
-                         : protocol::Network::AuthChallenge::SourceEnum::Server)
-          .SetOrigin(auth_info->challenger.Serialize())
-          .SetScheme(auth_info->scheme)
-          .SetRealm(auth_info->realm)
-          .Build();
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback_, std::move(request_info)));
+  request_info->auth_challenge = auth_info;
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback_, std::move(request_info)));
 }
 
 void DevToolsURLInterceptorRequestJob::OnSubRequestResponseStarted(
@@ -798,27 +808,15 @@ void DevToolsURLInterceptorRequestJob::OnSubRequestRedirectReceived(
   // Otherwise we will need to ask what to do via DevTools protocol.
   *defer_redirect = true;
 
-  size_t iter = 0;
-  std::string header_name;
-  std::string header_value;
-  std::unique_ptr<protocol::DictionaryValue> headers_dict(
-      protocol::DictionaryValue::create());
-  while (request.response_headers()->EnumerateHeaderLines(&iter, &header_name,
-                                                          &header_value)) {
-    headers_dict->setString(header_name, header_value);
-  }
-
   redirect_.reset(new net::RedirectInfo(redirectinfo));
 
   waiting_for_user_response_ = WaitingForUserResponse::WAITING_FOR_REQUEST_ACK;
 
   std::unique_ptr<InterceptedRequestInfo> request_info = BuildRequestInfo();
-  request_info->response_headers =
-      protocol::Object::fromValue(headers_dict.get(), nullptr);
-  request_info->http_response_status_code = redirectinfo.status_code;
+  request_info->response_headers = request.response_headers();
   request_info->redirect_url = redirectinfo.new_url.spec();
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback_, std::move(request_info)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback_, std::move(request_info)));
   sub_request_.reset();
 }
 
@@ -838,23 +836,12 @@ void DevToolsURLInterceptorRequestJob::OnInterceptedRequestResponseStarted(
   } else {
     std::unique_ptr<protocol::DictionaryValue> headers_dict(
         protocol::DictionaryValue::create());
-    if (sub_request_->request()->response_headers()) {
-      size_t iter = 0;
-      std::string name;
-      std::string value;
-      while (sub_request_->request()->response_headers()->EnumerateHeaderLines(
-          &iter, &name, &value)) {
-        headers_dict->setString(name, value);
-      }
-    }
-    request_info->http_response_status_code =
-        sub_request_->request()->GetResponseCode();
     request_info->response_headers =
-        protocol::Object::fromValue(headers_dict.get(), nullptr);
+        sub_request_->request()->response_headers();
     request_info->is_download = IsDownload(request(), sub_request_->request());
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback_, std::move(request_info)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback_, std::move(request_info)));
 }
 
 // If result is < 0 it means error.
@@ -864,8 +851,8 @@ void DevToolsURLInterceptorRequestJob::OnInterceptedRequestResponseReady(
   DCHECK(sub_request_);
   if (result < 0) {
     sub_request_->Cancel();
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &SendPendingBodyRequestsWithErrorOnUiThread,
             std::move(pending_body_requests_),
@@ -873,10 +860,10 @@ void DevToolsURLInterceptorRequestJob::OnInterceptedRequestResponseReady(
                 "Could not get response body because of error code: %d",
                 result))));
   } else {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&SendPendingBodyRequestsOnUiThread,
-                                           std::move(pending_body_requests_),
-                                           std::string(buf.data(), result)));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&SendPendingBodyRequestsOnUiThread,
+                                            std::move(pending_body_requests_),
+                                            std::string(buf.data(), result)));
   }
   if (request_->status().status() == net::URLRequestStatus::CANCELED ||
       waiting_for_user_response_ != WaitingForUserResponse::NOT_WAITING) {
@@ -904,26 +891,12 @@ void DevToolsURLInterceptorRequestJob::StopIntercepting() {
     // Fallthough.
     case WaitingForUserResponse::WAITING_FOR_REQUEST_ACK:
       ProcessInterceptionResponse(
-          std::make_unique<DevToolsNetworkInterceptor::Modifications>(
-              base::nullopt, base::nullopt, protocol::Maybe<std::string>(),
-              protocol::Maybe<std::string>(), protocol::Maybe<std::string>(),
-              protocol::Maybe<protocol::Network::Headers>(),
-              protocol::Maybe<protocol::Network::AuthChallengeResponse>()));
+          std::make_unique<DevToolsNetworkInterceptor::Modifications>());
       return;
-    case WaitingForUserResponse::WAITING_FOR_AUTH_ACK: {
-      std::unique_ptr<protocol::Network::AuthChallengeResponse> auth_response =
-          protocol::Network::AuthChallengeResponse::Create()
-              .SetResponse(protocol::Network::AuthChallengeResponse::
-                               ResponseEnum::Default)
-              .Build();
-      ProcessAuthResponse(
-          std::make_unique<DevToolsNetworkInterceptor::Modifications>(
-              base::nullopt, base::nullopt, protocol::Maybe<std::string>(),
-              protocol::Maybe<std::string>(), protocol::Maybe<std::string>(),
-              protocol::Maybe<protocol::Network::Headers>(),
-              std::move(auth_response)));
+    case WaitingForUserResponse::WAITING_FOR_AUTH_ACK:
+      ProcessAuthResponse(DevToolsNetworkInterceptor::AuthChallengeResponse(
+          DevToolsNetworkInterceptor::AuthChallengeResponse::kDefault));
       return;
-    }
 
     default:
       NOTREACHED();
@@ -937,8 +910,8 @@ void DevToolsURLInterceptorRequestJob::ContinueInterceptedRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   switch (waiting_for_user_response_) {
     case WaitingForUserResponse::NOT_WAITING:
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&ContinueInterceptedRequestCallback::sendFailure,
                          std::move(callback),
                          protocol::Response::InvalidParams(
@@ -948,9 +921,9 @@ void DevToolsURLInterceptorRequestJob::ContinueInterceptedRequest(
     case WaitingForUserResponse::WAITING_FOR_RESPONSE_ACK:
     // Fallthough.
     case WaitingForUserResponse::WAITING_FOR_REQUEST_ACK:
-      if (modifications->auth_challenge_response.isJust()) {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+      if (modifications->auth_challenge_response) {
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&ContinueInterceptedRequestCallback::sendFailure,
                            std::move(callback),
                            protocol::Response::InvalidParams(
@@ -958,35 +931,27 @@ void DevToolsURLInterceptorRequestJob::ContinueInterceptedRequest(
         break;
       }
       ProcessInterceptionResponse(std::move(modifications));
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&ContinueInterceptedRequestCallback::sendSuccess,
                          std::move(callback)));
       break;
 
     case WaitingForUserResponse::WAITING_FOR_AUTH_ACK:
-      if (!modifications->auth_challenge_response.isJust()) {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+      if (!modifications->auth_challenge_response) {
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&ContinueInterceptedRequestCallback::sendFailure,
                            std::move(callback),
                            protocol::Response::InvalidParams(
                                "authChallengeResponse required.")));
         break;
       }
-      if (ProcessAuthResponse(std::move(modifications))) {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
-            base::BindOnce(&ContinueInterceptedRequestCallback::sendSuccess,
-                           std::move(callback)));
-      } else {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
-            base::BindOnce(&ContinueInterceptedRequestCallback::sendFailure,
-                           std::move(callback),
-                           protocol::Response::InvalidParams(
-                               "Unrecognized authChallengeResponse.")));
-      }
+      ProcessAuthResponse(*modifications->auth_challenge_response);
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
+          base::BindOnce(&ContinueInterceptedRequestCallback::sendSuccess,
+                         std::move(callback)));
       break;
 
     default:
@@ -1005,9 +970,8 @@ void DevToolsURLInterceptorRequestJob::ProcessRedirect(
   raw_headers.append("Location: ");
   raw_headers.append(new_url);
   raw_headers.append(2, '\0');
-  mock_response_details_.reset(new MockResponseDetails(
-      base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers), "", 0,
-      base::TimeTicks::Now()));
+  mock_response_details_ = std::make_unique<MockResponseDetails>(
+      base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers), "");
 
   NotifyHeadersComplete();
 }
@@ -1027,8 +991,8 @@ void DevToolsURLInterceptorRequestJob::GetResponseBody(
         "received.";
   }
   if (error_reason.size()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &GetResponseBodyForInterceptionCallback::sendFailure,
             std::move(callback),
@@ -1080,9 +1044,11 @@ void DevToolsURLInterceptorRequestJob::ProcessInterceptionResponse(
     return;
   }
 
-  if (modifications->raw_response) {
-    mock_response_details_.reset(new MockResponseDetails(
-        std::move(*modifications->raw_response), base::TimeTicks::Now()));
+  if (modifications->response_headers || modifications->response_body) {
+    mock_response_details_ = std::make_unique<MockResponseDetails>(
+        std::move(modifications->response_headers),
+        modifications->response_body ? std::move(*modifications->response_body)
+                                     : "");
 
     // Set cookies in the network stack.
     net::CookieOptions options;
@@ -1153,22 +1119,17 @@ void DevToolsURLInterceptorRequestJob::ProcessInterceptionResponse(
               std::make_unique<net::UploadOwnedBytesElementReader>(&data), 0);
     }
 
-    if (modifications->modified_headers.isJust()) {
+    if (modifications->modified_headers) {
       request_details_.extra_request_headers.Clear();
-      std::unique_ptr<protocol::DictionaryValue> headers =
-          modifications->modified_headers.fromJust()->toValue();
-      for (size_t i = 0; i < headers->size(); i++) {
-        protocol::DictionaryValue::Entry entry = headers->at(i);
-        std::string value;
-        if (!entry.second->asString(&value))
-          continue;
+      for (const auto& entry : *modifications->modified_headers) {
         if (base::EqualsCaseInsensitiveASCII(
                 entry.first, net::HttpRequestHeaders::kReferer)) {
-          request_details_.referrer = value;
+          request_details_.referrer = entry.second;
           request_details_.referrer_policy =
               net::URLRequest::NEVER_CLEAR_REFERRER;
         } else {
-          request_details_.extra_request_headers.SetHeader(entry.first, value);
+          request_details_.extra_request_headers.SetHeader(entry.first,
+                                                           entry.second);
         }
       }
     }
@@ -1186,40 +1147,26 @@ void DevToolsURLInterceptorRequestJob::ProcessInterceptionResponse(
   }
 }
 
-bool DevToolsURLInterceptorRequestJob::ProcessAuthResponse(
-    std::unique_ptr<DevToolsNetworkInterceptor::Modifications> modifications) {
+void DevToolsURLInterceptorRequestJob::ProcessAuthResponse(
+    const DevToolsNetworkInterceptor::AuthChallengeResponse& response) {
   waiting_for_user_response_ = WaitingForUserResponse::NOT_WAITING;
 
-  protocol::Network::AuthChallengeResponse* auth_challenge_response =
-      modifications->auth_challenge_response.fromJust();
-
-  if (auth_challenge_response->GetResponse() ==
-      protocol::Network::AuthChallengeResponse::ResponseEnum::Default) {
-    // The user wants the default behavior, we must proxy the auth request to
-    // the original URLRequest::Delegate.  We can't do that directly but by
-    // implementing NeedsAuth and calling NotifyHeadersComplete we trigger it.
-    // To close the loop we also need to implement GetAuthChallengeInfo, SetAuth
-    // and CancelAuth.
-    NotifyHeadersComplete();
-    return true;
+  switch (response.response_type) {
+    case DevToolsNetworkInterceptor::AuthChallengeResponse::kDefault:
+      // The user wants the default behavior, we must proxy the auth request to
+      // the original URLRequest::Delegate.  We can't do that directly but by
+      // implementing NeedsAuth and calling NotifyHeadersComplete we trigger it.
+      // To close the loop we also need to implement GetAuthChallengeInfo,
+      // SetAuth and CancelAuth.
+      NotifyHeadersComplete();
+      break;
+    case DevToolsNetworkInterceptor::AuthChallengeResponse::kCancelAuth:
+      CancelAuth();
+      break;
+    case DevToolsNetworkInterceptor::AuthChallengeResponse::kProvideCredentials:
+      SetAuth(response.credentials);
+      break;
   }
-
-  if (auth_challenge_response->GetResponse() ==
-      protocol::Network::AuthChallengeResponse::ResponseEnum::CancelAuth) {
-    CancelAuth();
-    return true;
-  }
-
-  if (auth_challenge_response->GetResponse() ==
-      protocol::Network::AuthChallengeResponse::ResponseEnum::
-          ProvideCredentials) {
-    SetAuth(net::AuthCredentials(
-        base::UTF8ToUTF16(auth_challenge_response->GetUsername("")),
-        base::UTF8ToUTF16(auth_challenge_response->GetPassword(""))));
-    return true;
-  }
-
-  return false;
 }
 
 void DevToolsURLInterceptorRequestJob::SetRequestHeadersCallback(

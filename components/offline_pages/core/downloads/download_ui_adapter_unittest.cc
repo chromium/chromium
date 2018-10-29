@@ -351,19 +351,23 @@ TEST_F(DownloadUIAdapterTest, InitialItemConversion) {
   EXPECT_EQ(1UL, model->pages.size());
   EXPECT_EQ(kTestGuid1, model->pages[kTestOfflineId1].client_id.id);
 
-  auto callback = [](const base::Optional<OfflineItem>& item) {
-    EXPECT_EQ(kTestGuid1, item.value().id.id);
-    EXPECT_EQ(kTestUrl, item.value().page_url.spec());
-    EXPECT_EQ(OfflineItemState::COMPLETE, item.value().state);
-    EXPECT_EQ(0, item.value().received_bytes);
-    EXPECT_EQ(kTestFilePath, item.value().file_path);
-    EXPECT_EQ(kTestCreationTime, item.value().creation_time);
-    EXPECT_EQ(kFileSize, item.value().total_size_bytes);
-    EXPECT_EQ(kTestTitle, base::ASCIIToUTF16(item.value().title));
-  };
+  bool called = false;
+  auto callback =
+      base::BindLambdaForTesting([&](const base::Optional<OfflineItem>& item) {
+        EXPECT_EQ(kTestGuid1, item.value().id.id);
+        EXPECT_EQ(kTestUrl, item.value().page_url.spec());
+        EXPECT_EQ(OfflineItemState::COMPLETE, item.value().state);
+        EXPECT_EQ(kFileSize, item.value().received_bytes);
+        EXPECT_EQ(kTestFilePath, item.value().file_path);
+        EXPECT_EQ(kTestCreationTime, item.value().creation_time);
+        EXPECT_EQ(kFileSize, item.value().total_size_bytes);
+        EXPECT_EQ(kTestTitle, base::ASCIIToUTF16(item.value().title));
+        called = true;
+      });
 
-  adapter->GetItemById(kTestContentId1, base::BindOnce(callback));
+  adapter->GetItemById(kTestContentId1, callback);
   PumpLoop();
+  EXPECT_TRUE(called);
 }
 
 TEST_F(DownloadUIAdapterTest, ItemDeletedAdded) {

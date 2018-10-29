@@ -23,6 +23,7 @@
 #include "base/win/registry.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -78,7 +79,7 @@ void ExternalRegistryLoader::StartLoading() {
 
 std::unique_ptr<base::DictionaryValue>
 ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   auto prefs = std::make_unique<base::DictionaryValue>();
 
   // A map of IDs, to weed out duplicates between HKCU and HKLM.
@@ -207,8 +208,8 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
   std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWin",
                         base::TimeTicks::Now() - start_time);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry,
                  this, base::Passed(&prefs)));
 }
@@ -281,9 +282,9 @@ void ExternalRegistryLoader::UpatePrefsOnBlockingThread() {
   std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWinUpdate",
                         base::TimeTicks::Now() - start_time);
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(&ExternalRegistryLoader::OnUpdated, this,
-                                     base::Passed(&prefs)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(&ExternalRegistryLoader::OnUpdated, this,
+                                      base::Passed(&prefs)));
 }
 
 }  // namespace extensions

@@ -5,8 +5,8 @@
 #include "content/browser/media/android/browser_gpu_video_accelerator_factories.h"
 
 #include "content/browser/browser_main_loop.h"
-#include "content/common/gpu_stream_constants.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"
+#include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
@@ -94,6 +94,12 @@ base::UnguessableToken BrowserGpuVideoAcceleratorFactories::GetChannelToken() {
 
 int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {
   return context_provider_->GetCommandBufferProxy()->route_id();
+}
+
+bool BrowserGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
+    const media::VideoDecoderConfig& config) {
+  // TODO(sandersd): Add a cache here too?
+  return true;
 }
 
 std::unique_ptr<media::VideoDecoder>

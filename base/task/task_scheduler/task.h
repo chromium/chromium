@@ -13,7 +13,6 @@
 #include "base/pending_task.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -23,13 +22,9 @@ namespace internal {
 // profiling inherited from PendingTask.
 struct BASE_EXPORT Task : public PendingTask {
   // |posted_from| is the site the task was posted from. |task| is the closure
-  // to run. |traits_in| is metadata about the task. |delay| is a delay that
-  // must expire before the Task runs. If |delay| is non-zero and the shutdown
-  // behavior in |traits| is BLOCK_SHUTDOWN, the shutdown behavior is
-  // automatically adjusted to SKIP_ON_SHUTDOWN.
+  // to run. |delay| is a delay that must expire before the Task runs.
   Task(const Location& posted_from,
        OnceClosure task,
-       const TaskTraits& traits,
        TimeDelta delay);
 
   // Task is move-only to avoid mistakes that cause reference counts to be
@@ -39,9 +34,6 @@ struct BASE_EXPORT Task : public PendingTask {
   ~Task();
 
   Task& operator=(Task&& other);
-
-  // The TaskTraits of this task.
-  TaskTraits traits;
 
   // The delay that must expire before the task runs.
   TimeDelta delay;

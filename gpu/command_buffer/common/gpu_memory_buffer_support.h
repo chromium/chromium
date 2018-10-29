@@ -14,6 +14,10 @@ namespace gpu {
 
 struct Capabilities;
 
+// Returns the GL internalformat that is compatible with |format|.
+GPU_EXPORT unsigned InternalFormatForGpuMemoryBufferFormat(
+    gfx::BufferFormat format);
+
 // Returns true if |internalformat| is compatible with |format|.
 GPU_EXPORT bool IsImageFormatCompatibleWithGpuMemoryBufferFormat(
     unsigned internalformat,

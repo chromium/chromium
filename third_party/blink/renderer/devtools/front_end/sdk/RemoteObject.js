@@ -32,6 +32,11 @@
  */
 SDK.CallFunctionResult;
 
+/**
+ * @typedef {{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array<!SDK.RemoteObjectProperty>}}
+ */
+SDK.GetPropertiesResult;
+
 SDK.RemoteObject = class {
   /**
    * This may not be an interface due to "instanceof SDK.RemoteObject" checks in the code.
@@ -144,66 +149,40 @@ SDK.RemoteObject = class {
   /**
    * @param {!SDK.RemoteObject} object
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  static loadFromObjectPerProto(object, generatePreview, callback) {
-    // Combines 2 asynch calls. Doesn't rely on call-back orders (some calls may be loop-back).
-    let savedOwnProperties;
-    let savedAccessorProperties;
-    let savedInternalProperties;
-    let resultCounter = 2;
-
-    function processCallback() {
-      if (--resultCounter)
-        return;
-      if (savedOwnProperties && savedAccessorProperties) {
-        const propertiesMap = new Map();
-        const propertySymbols = [];
-        for (let i = 0; i < savedAccessorProperties.length; i++) {
-          const property = savedAccessorProperties[i];
-          if (property.symbol)
-            propertySymbols.push(property);
-          else
-            propertiesMap.set(property.name, property);
-        }
-        for (let i = 0; i < savedOwnProperties.length; i++) {
-          const property = savedOwnProperties[i];
-          if (property.isAccessorProperty())
-            continue;
-          if (property.symbol)
-            propertySymbols.push(property);
-          else
-            propertiesMap.set(property.name, property);
-        }
-        return callback(
-            propertiesMap.valuesArray().concat(propertySymbols),
-            savedInternalProperties ? savedInternalProperties : null);
-      } else {
-        callback(null, null);
-      }
+  static async loadFromObjectPerProto(object, generatePreview) {
+    const result = await Promise.all([
+      object.getAllProperties(true /* accessorPropertiesOnly */, generatePreview),
+      object.getOwnProperties(generatePreview)
+    ]);
+    const accessorProperties = result[0].properties;
+    const ownProperties = result[1].properties;
+    const internalProperties = result[1].internalProperties;
+    if (!ownProperties || !accessorProperties)
+      return /** @type {!SDK.GetPropertiesResult} */ ({properties: null, internalProperties: null});
+    const propertiesMap = new Map();
+    const propertySymbols = [];
+    for (let i = 0; i < accessorProperties.length; i++) {
+      const property = accessorProperties[i];
+      if (property.symbol)
+        propertySymbols.push(property);
+      else
+        propertiesMap.set(property.name, property);
     }
-
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     */
-    function allAccessorPropertiesCallback(properties, internalProperties) {
-      savedAccessorProperties = properties;
-      processCallback();
+    for (let i = 0; i < ownProperties.length; i++) {
+      const property = ownProperties[i];
+      if (property.isAccessorProperty())
+        continue;
+      if (property.symbol)
+        propertySymbols.push(property);
+      else
+        propertiesMap.set(property.name, property);
     }
-
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     */
-    function ownPropertiesCallback(properties, internalProperties) {
-      savedOwnProperties = properties;
-      savedInternalProperties = internalProperties;
-      processCallback();
-    }
-
-    object.getAllProperties(true /* accessorPropertiesOnly */, generatePreview, allAccessorPropertiesCallback);
-    object.getOwnProperties(generatePreview, ownPropertiesCallback);
+    return {
+      properties: propertiesMap.valuesArray().concat(propertySymbols),
+      internalProperties: internalProperties ? internalProperties : null
+    };
   }
 
   /**
@@ -271,77 +250,18 @@ SDK.RemoteObject = class {
 
   /**
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getOwnProperties(generatePreview, callback) {
-    throw 'Not implemented';
-  }
-
-  /**
-   * @param {boolean} generatePreview
-   * @return {!Promise<!{properties: ?Array.<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>}>}
-   */
-  getOwnPropertiesPromise(generatePreview) {
-    return new Promise(promiseConstructor.bind(this));
-
-    /**
-     * @param {function(!{properties: ?Array.<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>})} success
-     * @this {SDK.RemoteObject}
-     */
-    function promiseConstructor(success) {
-      this.getOwnProperties(!!generatePreview, getOwnPropertiesCallback.bind(null, success));
-    }
-
-    /**
-     * @param {function(!{properties: ?Array.<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>})} callback
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     */
-    function getOwnPropertiesCallback(callback, properties, internalProperties) {
-      callback({properties: properties, internalProperties: internalProperties});
-    }
-  }
-
-  /**
-   * @param {boolean} accessorPropertiesOnly
-   * @param {boolean} generatePreview
-   * @param {function(?Array<!SDK.RemoteObjectProperty>, ?Array<!SDK.RemoteObjectProperty>)} callback
-   */
-  getAllProperties(accessorPropertiesOnly, generatePreview, callback) {
+  getOwnProperties(generatePreview) {
     throw 'Not implemented';
   }
 
   /**
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @return {!Promise<!{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array<!SDK.RemoteObjectProperty>}>}
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getAllPropertiesPromise(accessorPropertiesOnly, generatePreview) {
-    return new Promise(promiseConstructor.bind(this));
-
-    /**
-     * @param {function(!{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>})} success
-     * @this {SDK.RemoteObject}
-     */
-    function promiseConstructor(success) {
-      this.getAllProperties(accessorPropertiesOnly, generatePreview, getAllPropertiesCallback.bind(null, success));
-    }
-
-    /**
-     * @param {function(!{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array<!SDK.RemoteObjectProperty>})} callback
-     * @param {?Array<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array<!SDK.RemoteObjectProperty>} internalProperties
-     */
-    function getAllPropertiesCallback(callback, properties, internalProperties) {
-      callback({properties: properties, internalProperties: internalProperties});
-    }
-  }
-
-  /**
-   * @param {!Array.<string>} propertyPath
-   * @param {function(?SDK.RemoteObject, boolean=)} callback
-   */
-  getProperty(propertyPath, callback) {
+  getAllProperties(accessorPropertiesOnly, generatePreview) {
     throw 'Not implemented';
   }
 
@@ -365,45 +285,9 @@ SDK.RemoteObject = class {
   /**
    * @param {function(this:Object, ...)} functionDeclaration
    * @param {!Array<!Protocol.Runtime.CallArgument>=} args
-   * @param {function(?SDK.RemoteObject, boolean=)=} callback
-   */
-  callFunction(functionDeclaration, args, callback) {
-    throw 'Not implemented';
-  }
-
-  /**
-   * @param {function(this:Object, ...)} functionDeclaration
-   * @param {!Array<!Protocol.Runtime.CallArgument>=} args
    * @return {!Promise<!SDK.CallFunctionResult>}
    */
-  callFunctionPromise(functionDeclaration, args) {
-    return new Promise(promiseConstructor.bind(this));
-
-    /**
-     * @param {function(!SDK.CallFunctionResult)} success
-     * @this {SDK.RemoteObject}
-     */
-    function promiseConstructor(success) {
-      this.callFunction(functionDeclaration, args, callFunctionCallback.bind(null, success));
-    }
-
-    /**
-     * @param {function(!SDK.CallFunctionResult)} callback
-     * @param {?SDK.RemoteObject} object
-     * @param {boolean=} wasThrown
-     */
-    function callFunctionCallback(callback, object, wasThrown) {
-      callback({object: object, wasThrown: wasThrown});
-    }
-  }
-
-  /**
-   * @template T
-   * @param {function(this:Object, ...):T} functionDeclaration
-   * @param {!Array<!Protocol.Runtime.CallArgument>|undefined} args
-   * @param {function(T)} callback
-   */
-  callFunctionJSON(functionDeclaration, args, callback) {
+  callFunction(functionDeclaration, args) {
     throw 'Not implemented';
   }
 
@@ -413,8 +297,8 @@ SDK.RemoteObject = class {
    * @return {!Promise<T>}
    * @template T
    */
-  callFunctionJSONPromise(functionDeclaration, args) {
-    return new Promise(success => this.callFunctionJSON(functionDeclaration, args, success));
+  callFunctionJSON(functionDeclaration, args) {
+    throw 'Not implemented';
   }
 
   release() {
@@ -582,111 +466,74 @@ SDK.RemoteObjectImpl = class extends SDK.RemoteObject {
   /**
    * @override
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getOwnProperties(generatePreview, callback) {
-    this.doGetProperties(true, false, generatePreview, callback);
+  getOwnProperties(generatePreview) {
+    return this.doGetProperties(true, false, generatePreview);
   }
 
   /**
    * @override
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getAllProperties(accessorPropertiesOnly, generatePreview, callback) {
-    this.doGetProperties(false, accessorPropertiesOnly, generatePreview, callback);
-  }
-
-  /**
-   * @override
-   * @param {!Array.<string>} propertyPath
-   * @param {function(?SDK.RemoteObject, boolean=)} callback
-   */
-  getProperty(propertyPath, callback) {
-    /**
-     * @param {string} arrayStr
-     * @suppressReceiverCheck
-     * @this {Object}
-     */
-    function remoteFunction(arrayStr) {
-      let result = this;
-      const properties = JSON.parse(arrayStr);
-      for (let i = 0, n = properties.length; i < n; ++i)
-        result = result[properties[i]];
-      return result;
-    }
-
-    const args = [{value: JSON.stringify(propertyPath)}];
-    this.callFunction(remoteFunction, args, callback);
+  getAllProperties(accessorPropertiesOnly, generatePreview) {
+    return this.doGetProperties(false, accessorPropertiesOnly, generatePreview);
   }
 
   /**
    * @param {boolean} ownProperties
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @param {function(?Array<!SDK.RemoteObjectProperty>, ?Array<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  doGetProperties(ownProperties, accessorPropertiesOnly, generatePreview, callback) {
-    if (!this._objectId) {
-      callback(null, null);
-      return;
+  async doGetProperties(ownProperties, accessorPropertiesOnly, generatePreview) {
+    if (!this._objectId)
+      return /** @type {!SDK.GetPropertiesResult} */ ({properties: null, internalProperties: null});
+
+    const response = await this._runtimeAgent.invoke_getProperties(
+        {objectId: this._objectId, ownProperties, accessorPropertiesOnly, generatePreview});
+    if (response[Protocol.Error])
+      return /** @type {!SDK.GetPropertiesResult} */ ({properties: null, internalProperties: null});
+    if (response.exceptionDetails) {
+      this._runtimeModel.exceptionThrown(Date.now(), response.exceptionDetails);
+      return /** @type {!SDK.GetPropertiesResult} */ ({properties: null, internalProperties: null});
     }
+    const properties = response.result;
+    const internalProperties = response.internalProperties;
+    const result = [];
+    for (let i = 0; properties && i < properties.length; ++i) {
+      const property = properties[i];
+      const propertyValue = property.value ? this._runtimeModel.createRemoteObject(property.value) : null;
+      const propertySymbol = property.symbol ? this._runtimeModel.createRemoteObject(property.symbol) : null;
+      const remoteProperty = new SDK.RemoteObjectProperty(
+          property.name, propertyValue, !!property.enumerable, !!property.writable, !!property.isOwn,
+          !!property.wasThrown, propertySymbol);
 
-    this._runtimeAgent
-        .invoke_getProperties({objectId: this._objectId, ownProperties, accessorPropertiesOnly, generatePreview})
-        .then(remoteObjectBinder.bind(this));
-
-    /**
-     * @param {!Protocol.RuntimeAgent.GetPropertiesResponse} response
-     * @this {SDK.RemoteObjectImpl}
-     */
-    function remoteObjectBinder(response) {
-      if (response[Protocol.Error]) {
-        callback(null, null);
-        return;
+      if (typeof property.value === 'undefined') {
+        if (property.get && property.get.type !== 'undefined')
+          remoteProperty.getter = this._runtimeModel.createRemoteObject(property.get);
+        if (property.set && property.set.type !== 'undefined')
+          remoteProperty.setter = this._runtimeModel.createRemoteObject(property.set);
       }
-      if (response.exceptionDetails) {
-        this._runtimeModel.exceptionThrown(Date.now(), response.exceptionDetails);
-        callback(null, null);
-        return;
-      }
-      const properties = response.result;
-      const internalProperties = response.internalProperties;
-      const result = [];
-      for (let i = 0; properties && i < properties.length; ++i) {
-        const property = properties[i];
-        const propertyValue = property.value ? this._runtimeModel.createRemoteObject(property.value) : null;
-        const propertySymbol = property.symbol ? this._runtimeModel.createRemoteObject(property.symbol) : null;
-        const remoteProperty = new SDK.RemoteObjectProperty(
-            property.name, propertyValue, !!property.enumerable, !!property.writable, !!property.isOwn,
-            !!property.wasThrown, propertySymbol);
-
-        if (typeof property.value === 'undefined') {
-          if (property.get && property.get.type !== 'undefined')
-            remoteProperty.getter = this._runtimeModel.createRemoteObject(property.get);
-          if (property.set && property.set.type !== 'undefined')
-            remoteProperty.setter = this._runtimeModel.createRemoteObject(property.set);
-        }
-
-        result.push(remoteProperty);
-      }
-      let internalPropertiesResult = null;
-      if (internalProperties) {
-        internalPropertiesResult = [];
-        for (let i = 0; i < internalProperties.length; i++) {
-          const property = internalProperties[i];
-          if (!property.value)
-            continue;
-          if (property.name === '[[StableObjectId]]')
-            continue;
-          const propertyValue = this._runtimeModel.createRemoteObject(property.value);
-          internalPropertiesResult.push(new SDK.RemoteObjectProperty(
-              property.name, propertyValue, true, false, undefined, undefined, undefined, true));
-        }
-      }
-      callback(result, internalPropertiesResult);
+      result.push(remoteProperty);
     }
+    let internalPropertiesResult = null;
+    if (internalProperties) {
+      internalPropertiesResult = [];
+      for (let i = 0; i < internalProperties.length; i++) {
+        const property = internalProperties[i];
+        if (!property.value)
+          continue;
+        if (property.name === '[[StableObjectId]]')
+          continue;
+        const propertyValue = this._runtimeModel.createRemoteObject(property.value);
+        internalPropertiesResult.push(new SDK.RemoteObjectProperty(
+            property.name, propertyValue, true, false, undefined, undefined, undefined, true));
+      }
+    }
+    return {properties: result, internalProperties: internalPropertiesResult};
   }
 
   /**
@@ -759,44 +606,34 @@ SDK.RemoteObjectImpl = class extends SDK.RemoteObject {
   /**
    * @override
    * @param {function(this:Object, ...)} functionDeclaration
-   * @param {!Array.<!Protocol.Runtime.CallArgument>=} args
-   * @param {function(?SDK.RemoteObject, boolean=)=} callback
+   * @param {!Array<!Protocol.Runtime.CallArgument>=} args
+   * @return {!Promise<!SDK.CallFunctionResult>}
    */
-  callFunction(functionDeclaration, args, callback) {
-    this._runtimeAgent
-        .invoke_callFunctionOn({
-          objectId: this._objectId,
-          functionDeclaration: functionDeclaration.toString(),
-          arguments: args,
-          silent: true
-        })
-        .then(response => {
-          if (!callback)
-            return;
-          if (response[Protocol.Error])
-            callback(null, false);
-          else
-            callback(this._runtimeModel.createRemoteObject(response.result), !!response.exceptionDetails);
-        });
+  async callFunction(functionDeclaration, args) {
+    const response = await this._runtimeAgent.invoke_callFunctionOn(
+        {objectId: this._objectId, functionDeclaration: functionDeclaration.toString(), arguments: args, silent: true});
+    if (response[Protocol.Error])
+      return {object: null, wasThrown: false};
+    // TODO: release exceptionDetails object
+    return {object: this._runtimeModel.createRemoteObject(response.result), wasThrown: !!response.exceptionDetails};
   }
 
   /**
    * @override
-   * @param {function(this:Object)} functionDeclaration
-   * @param {!Array.<!Protocol.Runtime.CallArgument>|undefined} args
-   * @param {function(*)} callback
+   * @param {function(this:Object, ...):T} functionDeclaration
+   * @param {!Array<!Protocol.Runtime.CallArgument>|undefined} args
+   * @return {!Promise<T>}
+   * @template T
    */
-  callFunctionJSON(functionDeclaration, args, callback) {
-    this._runtimeAgent
-        .invoke_callFunctionOn({
-          objectId: this._objectId,
-          functionDeclaration: functionDeclaration.toString(),
-          arguments: args,
-          silent: true,
-          returnByValue: true
-        })
-        .then(
-            response => callback(response[Protocol.Error] || response.exceptionDetails ? null : response.result.value));
+  async callFunctionJSON(functionDeclaration, args) {
+    const response = await this._runtimeAgent.invoke_callFunctionOn({
+      objectId: this._objectId,
+      functionDeclaration: functionDeclaration.toString(),
+      arguments: args,
+      silent: true,
+      returnByValue: true
+    });
+    return response[Protocol.Error] || response.exceptionDetails ? null : response.result.value;
   }
 
   /**
@@ -865,42 +702,29 @@ SDK.ScopeRemoteObject = class extends SDK.RemoteObjectImpl {
    * @param {boolean} ownProperties
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  doGetProperties(ownProperties, accessorPropertiesOnly, generatePreview, callback) {
-    if (accessorPropertiesOnly) {
-      callback([], []);
-      return;
-    }
+  async doGetProperties(ownProperties, accessorPropertiesOnly, generatePreview) {
+    if (accessorPropertiesOnly)
+      return /** @type {!SDK.GetPropertiesResult} */ ({properties: [], internalProperties: []});
 
     if (this._savedScopeProperties) {
       // No need to reload scope variables, as the remote object never
       // changes its properties. If variable is updated, the properties
       // array is patched locally.
-      callback(this._savedScopeProperties.slice(), []);
-      return;
+      return {properties: this._savedScopeProperties.slice(), internalProperties: null};
     }
 
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     * @this {SDK.ScopeRemoteObject}
-     */
-    function wrappedCallback(properties, internalProperties) {
-      if (this._scopeRef && Array.isArray(properties)) {
-        this._savedScopeProperties = properties.slice();
-        if (!this._scopeRef.callFrameId) {
-          for (const property of this._savedScopeProperties)
-            property.writable = false;
-        }
+    const allProperties =
+        await super.doGetProperties(ownProperties, accessorPropertiesOnly, true /* generatePreview */);
+    if (this._scopeRef && Array.isArray(allProperties.properties)) {
+      this._savedScopeProperties = allProperties.properties.slice();
+      if (!this._scopeRef.callFrameId) {
+        for (const property of this._savedScopeProperties)
+          property.writable = false;
       }
-      callback(properties, internalProperties);
     }
-
-    // Scope objects always fetch preview.
-    generatePreview = true;
-
-    super.doGetProperties(ownProperties, accessorPropertiesOnly, generatePreview, wrappedCallback.bind(this));
+    return allProperties;
   }
 
   /**
@@ -1157,23 +981,26 @@ SDK.LocalJSONObject = class extends SDK.RemoteObject {
   /**
    * @override
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getOwnProperties(generatePreview, callback) {
-    callback(this._children(), null);
+  getOwnProperties(generatePreview) {
+    return Promise.resolve(
+        /** @type {!SDK.GetPropertiesResult} */ ({properties: this._children(), internalProperties: null}));
   }
 
   /**
    * @override
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getAllProperties(accessorPropertiesOnly, generatePreview, callback) {
-    if (accessorPropertiesOnly)
-      callback([], null);
-    else
-      callback(this._children(), null);
+  getAllProperties(accessorPropertiesOnly, generatePreview) {
+    if (accessorPropertiesOnly) {
+      return Promise.resolve(/** @type {!SDK.GetPropertiesResult} */ ({properties: [], internalProperties: null}));
+    } else {
+      return Promise.resolve(
+          /** @type {!SDK.GetPropertiesResult} */ ({properties: this._children(), internalProperties: null}));
+    }
   }
 
   /**
@@ -1200,13 +1027,6 @@ SDK.LocalJSONObject = class extends SDK.RemoteObject {
   }
 
   /**
-   * @return {boolean}
-   */
-  isError() {
-    return false;
-  }
-
-  /**
    * @override
    * @return {number}
    */
@@ -1218,9 +1038,9 @@ SDK.LocalJSONObject = class extends SDK.RemoteObject {
    * @override
    * @param {function(this:Object, ...)} functionDeclaration
    * @param {!Array<!Protocol.Runtime.CallArgument>=} args
-   * @param {function(?SDK.RemoteObject, boolean=)=} callback
+   * @return {!Promise<!SDK.CallFunctionResult>}
    */
-  callFunction(functionDeclaration, args, callback) {
+  callFunction(functionDeclaration, args) {
     const target = /** @type {?Object} */ (this._value);
     const rawArgs = args ? args.map(arg => arg.value) : [];
 
@@ -1232,18 +1052,18 @@ SDK.LocalJSONObject = class extends SDK.RemoteObject {
       wasThrown = true;
     }
 
-    if (!callback)
-      return;
-    callback(SDK.RemoteObject.fromLocalObject(result), wasThrown);
+    return Promise.resolve(/** @type {!SDK.CallFunctionResult} */ (
+        {object: SDK.RemoteObject.fromLocalObject(result), wasThrown: wasThrown}));
   }
 
   /**
    * @override
-   * @param {function(this:Object)} functionDeclaration
+   * @param {function(this:Object, ...):T} functionDeclaration
    * @param {!Array<!Protocol.Runtime.CallArgument>|undefined} args
-   * @param {function(*)} callback
+   * @return {!Promise<T>}
+   * @template T
    */
-  callFunctionJSON(functionDeclaration, args, callback) {
+  callFunctionJSON(functionDeclaration, args) {
     const target = /** @type {?Object} */ (this._value);
     const rawArgs = args ? args.map(arg => arg.value) : [];
 
@@ -1254,7 +1074,7 @@ SDK.LocalJSONObject = class extends SDK.RemoteObject {
       result = null;
     }
 
-    callback(result);
+    return Promise.resolve(result);
   }
 };
 
@@ -1286,7 +1106,7 @@ SDK.RemoteArray = class {
     const objectArguments = [];
     for (let i = 0; i < objects.length; ++i)
       objectArguments.push(SDK.RemoteObject.toCallArgument(objects[i]));
-    return objects[0].callFunctionPromise(createArray, objectArguments).then(returnRemoteArray);
+    return objects[0].callFunction(createArray, objectArguments).then(returnRemoteArray);
 
     /**
      * @return {!Array<*>}
@@ -1315,8 +1135,7 @@ SDK.RemoteArray = class {
   at(index) {
     if (index < 0 || index > this._object.arrayLength())
       throw new Error('Out of range');
-    return this._object.callFunctionPromise(at, [SDK.RemoteObject.toCallArgument(index)])
-        .then(assertCallFunctionResult);
+    return this._object.callFunction(at, [SDK.RemoteObject.toCallArgument(index)]).then(assertCallFunctionResult);
 
     /**
      * @suppressReceiverCheck
@@ -1389,10 +1208,10 @@ SDK.RemoteFunction = class {
    * @return {!Promise<!SDK.RemoteObject>}
    */
   targetFunction() {
-    return this._object.getOwnPropertiesPromise(false /* generatePreview */).then(targetFunction.bind(this));
+    return this._object.getOwnProperties(false /* generatePreview */).then(targetFunction.bind(this));
 
     /**
-     * @param {!{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array<!SDK.RemoteObjectProperty>}} ownProperties
+     * @param {!SDK.GetPropertiesResult} ownProperties
      * @return {!SDK.RemoteObject}
      * @this {SDK.RemoteFunction}
      */

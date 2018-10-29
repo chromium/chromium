@@ -15,7 +15,7 @@ SyncScheduler::SyncRequest::SyncRequest(
 
 SyncScheduler::SyncRequest::~SyncRequest() {
   if (!completed_)
-    PA_LOG(ERROR) << "SyncRequest destroyed but Complete() was never called";
+    PA_LOG(ERROR) << "SyncRequest destroyed without ever having completed";
 }
 
 void SyncScheduler::SyncRequest::OnDidComplete(bool success) {
@@ -26,6 +26,11 @@ void SyncScheduler::SyncRequest::OnDidComplete(bool success) {
   } else {
     PA_LOG(ERROR) << "SyncRequest completed, but SyncScheduler destroyed.";
   }
+}
+
+void SyncScheduler::SyncRequest::Cancel() {
+  DCHECK(!completed_);
+  completed_ = true;
 }
 
 }  // namespace cryptauth

@@ -89,6 +89,22 @@ void UmaHistogramLongTimes(const std::string& name, TimeDelta sample) {
                           TimeDelta::FromHours(1), 50);
 }
 
+void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
+                                         TimeDelta sample,
+                                         TimeDelta min,
+                                         TimeDelta max,
+                                         int buckets) {
+  HistogramBase* histogram = Histogram::FactoryTimeGet(
+      name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTimeMicrosecondsGranularity(sample);
+}
+
+void UmaHistogramMicrosecondsTimes(const std::string& name, TimeDelta sample) {
+  UmaHistogramCustomMicrosecondsTimes(name, sample,
+                                      TimeDelta::FromMicroseconds(1),
+                                      TimeDelta::FromSeconds(10), 50);
+}
+
 void UmaHistogramMemoryKB(const std::string& name, int sample) {
   UmaHistogramCustomCounts(name, sample, 1000, 500000, 50);
 }

@@ -4,6 +4,8 @@
 
 #include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
@@ -71,6 +73,7 @@ AudioInputImpl::AudioInputImpl(
 AudioInputImpl::~AudioInputImpl() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   source_->Stop();
+  VLOG(1) << "Ending captured frames: " << captured_frames_count_;
 }
 
 void AudioInputImpl::Capture(const media::AudioBus* audio_source,
@@ -89,10 +92,20 @@ void AudioInputImpl::Capture(const media::AudioBus* audio_source,
     for (auto* observer : observers_)
       observer->OnBufferAvailable(input_buffer, time);
   }
+
+  captured_frames_count_ += audio_source->frames();
+  if (VLOG_IS_ON(1)) {
+    auto now = base::TimeTicks::Now();
+    if ((now - last_frame_count_report_time_) >
+        base::TimeDelta::FromMinutes(2)) {
+      VLOG(1) << "Captured frames: " << captured_frames_count_;
+      last_frame_count_report_time_ = now;
+    }
+  }
 }
 
 void AudioInputImpl::OnCaptureError(const std::string& message) {
-  DLOG(ERROR) << "Capture error " << message;
+  LOG(ERROR) << "Capture error " << message;
   base::AutoLock lock(lock_);
   for (auto* observer : observers_)
     observer->OnError(AudioInput::Error::FATAL_ERROR);
@@ -107,6 +120,7 @@ assistant_client::BufferFormat AudioInputImpl::GetFormat() const {
 void AudioInputImpl::AddObserver(
     assistant_client::AudioInput::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
+  VLOG(1) << "Add observer";
   bool should_start = false;
   {
     base::AutoLock lock(lock_);
@@ -127,6 +141,7 @@ void AudioInputImpl::AddObserver(
 void AudioInputImpl::RemoveObserver(
     assistant_client::AudioInput::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
+  VLOG(1) << "Remove observer";
   bool should_stop = false;
   {
     base::AutoLock lock(lock_);
@@ -173,11 +188,13 @@ void AudioInputImpl::OnHotwordEnabled(bool enable) {
 
 void AudioInputImpl::StartRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  VLOG(1) << "Start recording";
   source_->Start();
 }
 
 void AudioInputImpl::StopRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  VLOG(1) << "Stop recording";
   source_->Stop();
 }
 

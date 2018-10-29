@@ -39,8 +39,8 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
   ~ExtensionApiUnittest() override;
 
   const Extension* extension() const { return extension_.get(); }
-  scoped_refptr<Extension> extension_ref() { return extension_; }
-  void set_extension(scoped_refptr<Extension> extension) {
+  scoped_refptr<const Extension> extension_ref() { return extension_; }
+  void set_extension(scoped_refptr<const Extension> extension) {
     extension_ = extension;
   }
 
@@ -80,7 +80,7 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
 
  private:
   // The Extension used when running API function calls.
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 }  // namespace extensions

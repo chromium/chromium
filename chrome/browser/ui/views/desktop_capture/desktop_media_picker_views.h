@@ -52,6 +52,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   View* CreateExtraView() override;
   bool Accept() override;
+  bool ShouldShowCloseButton() const override;
   void DeleteDelegate() override;
 
   void OnMediaListRowsChanged();

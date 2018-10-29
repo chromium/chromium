@@ -14,24 +14,26 @@ var Manager = (function() {
 
   function Manager(clientRenderer) {
     this.players_ = {};
+    this.audioInfo_ = {};
     this.audioComponents_ = [];
     this.clientRenderer_ = clientRenderer;
 
-    var copyAllPlayerButton = document.getElementById('copy-all-player-button');
-    var copyAllAudioButton = document.getElementById('copy-all-audio-button');
-    var hidePlayersButton = document.getElementById('hide-players-button');
+    var copyAllPlayerButton = $('copy-all-player-button');
+    var copyAllAudioButton = $('copy-all-audio-button');
+    var hidePlayersButton = $('hide-players-button');
 
     // In tests we may not have these buttons.
     if (copyAllPlayerButton) {
       copyAllPlayerButton.onclick = function() {
         this.clientRenderer_.showClipboard(
-          JSON.stringify(this.players_, null, 2));
+            JSON.stringify(this.players_, null, 2));
       }.bind(this);
     }
     if (copyAllAudioButton) {
       copyAllAudioButton.onclick = function() {
         this.clientRenderer_.showClipboard(
-          JSON.stringify(this.audioComponents_, null, 2));
+            JSON.stringify(this.audioInfo_, null, 2) + '\n\n' +
+            JSON.stringify(this.audioComponents_, null, 2));
       }.bind(this);
     }
     if (hidePlayersButton) {
@@ -46,6 +48,15 @@ var Manager = (function() {
      */
     updateAudioFocusSessions: function(sessions) {
       this.clientRenderer_.audioFocusSessionUpdated(sessions);
+    },
+
+    /**
+     * Updates the general audio information.
+     * @param audioInfo The map of information.
+     */
+    updateGeneralAudioInformation: function(audioInfo) {
+      this.audioInfo_ = audioInfo;
+      this.clientRenderer_.generalAudioInformationSet(this.audioInfo_);
     },
 
     /**
@@ -120,10 +131,8 @@ var Manager = (function() {
       }
 
       this.players_[id].addPropertyNoRecord(timestamp, key, value);
-      this.clientRenderer_.playerUpdated(this.players_,
-                                         this.players_[id],
-                                         key,
-                                         value);
+      this.clientRenderer_.playerUpdated(
+          this.players_, this.players_[id], key, value);
     },
 
     /**
@@ -141,10 +150,8 @@ var Manager = (function() {
       }
 
       this.players_[id].addProperty(timestamp, key, value);
-      this.clientRenderer_.playerUpdated(this.players_,
-                                         this.players_[id],
-                                         key,
-                                         value);
+      this.clientRenderer_.playerUpdated(
+          this.players_, this.players_[id], key, value);
     },
 
     parseVideoCaptureFormat_: function(format) {
@@ -169,7 +176,7 @@ var Manager = (function() {
           }
           formatDict[kv[0]] = kv[1];
         } else {
-          kv = parts[i].split("@");
+          kv = parts[i].split('@');
           if (kv.length == 2) {
             formatDict['resolution'] = kv[0].replace(/[)(]/g, '');
             // Round down the FPS to 2 decimals.
@@ -188,12 +195,12 @@ var Manager = (function() {
         for (var j in videoCaptureCapabilities[i]['formats']) {
           videoCaptureCapabilities[i]['formats'][j] =
               this.parseVideoCaptureFormat_(
-                    videoCaptureCapabilities[i]['formats'][j]);
+                  videoCaptureCapabilities[i]['formats'][j]);
         }
       }
 
       // The keys of each device to be shown in order of appearance.
-      var videoCaptureDeviceKeys = ['name','formats','captureApi','id'];
+      var videoCaptureDeviceKeys = ['name', 'formats', 'captureApi', 'id'];
 
       this.clientRenderer_.redrawVideoCaptureCapabilities(
           videoCaptureCapabilities, videoCaptureDeviceKeys);

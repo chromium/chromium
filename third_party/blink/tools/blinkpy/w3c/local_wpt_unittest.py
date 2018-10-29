@@ -8,6 +8,7 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive, mock_git_commands
 from blinkpy.common.system.filesystem_mock import MockFileSystem
+from blinkpy.w3c.common import DEFAULT_WPT_COMMITTER_EMAIL, DEFAULT_WPT_COMMITTER_NAME
 from blinkpy.w3c.local_wpt import LocalWPT
 
 
@@ -34,6 +35,8 @@ class LocalWPTTest(unittest.TestCase):
 
         self.assertEqual(host.executive.calls, [
             ['git', 'clone', 'https://token@github.com/web-platform-tests/wpt.git', '/tmp/wpt'],
+            ['git', 'config', 'user.name', DEFAULT_WPT_COMMITTER_NAME],
+            ['git', 'config', 'user.email', DEFAULT_WPT_COMMITTER_EMAIL],
         ])
 
     def test_constructor(self):
@@ -55,6 +58,8 @@ class LocalWPTTest(unittest.TestCase):
         local_wpt.create_branch_with_patch('chromium-export-decafbad', 'message', 'patch', 'author <author@author.com>')
         self.assertEqual(host.executive.calls, [
             ['git', 'clone', 'https://token@github.com/web-platform-tests/wpt.git', '/tmp/wpt'],
+            ['git', 'config', 'user.name', DEFAULT_WPT_COMMITTER_NAME],
+            ['git', 'config', 'user.email', DEFAULT_WPT_COMMITTER_EMAIL],
             ['git', 'reset', '--hard', 'HEAD'],
             ['git', 'clean', '-fdx'],
             ['git', 'checkout', 'origin/master'],

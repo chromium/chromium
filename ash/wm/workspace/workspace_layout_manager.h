@@ -65,6 +65,7 @@ class ASH_EXPORT WorkspaceLayoutManager
 
   // aura::WindowObserver:
   void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
+  void OnWindowAdded(aura::Window* window) override;
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
@@ -85,8 +86,10 @@ class ASH_EXPORT WorkspaceLayoutManager
       aura::Window* lost_active) override;
 
   // keyboard::KeyboardControllerObserver:
+  void OnKeyboardVisibleBoundsChanged(const gfx::Rect& new_bounds) override;
   void OnKeyboardWorkspaceDisplacingBoundsChanged(
       const gfx::Rect& new_bounds) override;
+  void OnStateChanged(keyboard::KeyboardControllerState state) override;
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(wm::WindowState* window_state,
@@ -104,6 +107,35 @@ class ASH_EXPORT WorkspaceLayoutManager
  private:
   friend class WorkspaceControllerTestApi;
   typedef std::set<aura::Window*> WindowSet;
+
+  // Observes changes in windows in the SettingsBubbleWindowObserver, and
+  // notifies WorkspaceLayoutManager to send out system ui area change events.
+  class SettingsBubbleWindowObserver : public aura::WindowObserver {
+   public:
+    SettingsBubbleWindowObserver(
+        WorkspaceLayoutManager* workspace_layout_manager);
+    ~SettingsBubbleWindowObserver() override;
+
+    void ObserveWindow(aura::Window* window);
+
+    // aura::WindowObserver:
+    void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
+    void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+    void OnWindowDestroying(aura::Window* window) override;
+    void OnWindowBoundsChanged(aura::Window* window,
+                               const gfx::Rect& old_bounds,
+                               const gfx::Rect& new_bounds,
+                               ui::PropertyChangeReason reason) override;
+
+   private:
+    // WorkspaceLayoutManager has at least as long a lifetime as this class.
+    WorkspaceLayoutManager* workspace_layout_manager_;
+    WindowSet windows_;
+
+    void StopOberservingWindow(aura::Window* window);
+
+    DISALLOW_COPY_AND_ASSIGN(SettingsBubbleWindowObserver);
+  };
 
   // Adjusts the bounds of all managed windows when the display area changes.
   // This happens when the display size, work area insets has changed.
@@ -125,9 +157,17 @@ class ASH_EXPORT WorkspaceLayoutManager
   // manager.
   void UpdateAlwaysOnTop(aura::Window* window_on_top);
 
+  // Notifies windows about a change in a system ui area. This could be
+  // the keyboard or any window in the SettingsBubbleContainer. Windows will
+  // only be notified about changes to system ui areas on the display they are
+  // on.
+  void NotifySystemUiAreaChanged();
+
   aura::Window* window_;
   aura::Window* root_window_;
   RootWindowController* root_window_controller_;
+  aura::Window* settings_bubble_container_;
+  SettingsBubbleWindowObserver settings_bubble_window_observer_;
 
   // Set of windows we're listening to.
   WindowSet windows_;

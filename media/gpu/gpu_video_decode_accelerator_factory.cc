@@ -31,7 +31,7 @@
 #if defined(OS_ANDROID)
 #include "media/gpu/android/android_video_decode_accelerator.h"
 #include "media/gpu/android/android_video_surface_chooser_impl.h"
-#include "media/gpu/android/avda_codec_allocator.h"
+#include "media/gpu/android/codec_allocator.h"
 #include "media/gpu/android/device_info.h"
 #endif
 #if BUILDFLAG(USE_VAAPI)
@@ -266,7 +266,7 @@ GpuVideoDecodeAcceleratorFactory::CreateAndroidVDA(
     MediaLog* media_log) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
   decoder.reset(new AndroidVideoDecodeAccelerator(
-      AVDACodecAllocator::GetInstance(base::ThreadTaskRunnerHandle::Get()),
+      CodecAllocator::GetInstance(base::ThreadTaskRunnerHandle::Get()),
       std::make_unique<AndroidVideoSurfaceChooserImpl>(
           DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
       make_context_current_cb_, get_context_group_cb_, overlay_factory_cb_,

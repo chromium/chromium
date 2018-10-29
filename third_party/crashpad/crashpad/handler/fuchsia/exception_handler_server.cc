@@ -47,8 +47,9 @@ void ExceptionHandlerServer::Run(CrashReportExceptionHandler* handler) {
       continue;
     }
 
-    bool result =
-        handler->HandleException(packet.exception.pid, packet.exception.tid);
+    bool result = handler->HandleException(packet.exception.pid,
+                                           packet.exception.tid,
+                                           zx::unowned_port(exception_port_));
     if (!result) {
       LOG(ERROR) << "HandleException failed";
     }

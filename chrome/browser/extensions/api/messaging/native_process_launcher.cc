@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_host_manifest.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -224,8 +225,8 @@ void NativeProcessLauncherImpl::Core::CallCallbackOnIOThread(
 void NativeProcessLauncherImpl::Core::PostErrorResult(
     const LaunchedCallback& callback,
     LaunchResult error) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&NativeProcessLauncherImpl::Core::CallCallbackOnIOThread,
                      this, callback, error, base::Process(), base::File(),
                      base::File()));
@@ -236,8 +237,8 @@ void NativeProcessLauncherImpl::Core::PostResult(
     base::Process process,
     base::File read_file,
     base::File write_file) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&NativeProcessLauncherImpl::Core::CallCallbackOnIOThread,
                      this, callback, RESULT_SUCCESS, std::move(process),
                      std::move(read_file), std::move(write_file)));

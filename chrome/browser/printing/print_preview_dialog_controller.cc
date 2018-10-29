@@ -198,7 +198,7 @@ WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
     WebContents* contents) const {
   // |preview_dialog_map_| is keyed by the preview dialog, so if find()
   // succeeds, then |contents| is the preview dialog.
-  PrintPreviewDialogMap::const_iterator it = preview_dialog_map_.find(contents);
+  auto it = preview_dialog_map_.find(contents);
   if (it != preview_dialog_map_.end())
     return contents;
 
@@ -216,7 +216,7 @@ WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
 
 WebContents* PrintPreviewDialogController::GetInitiator(
     WebContents* preview_dialog) {
-  PrintPreviewDialogMap::iterator it = preview_dialog_map_.find(preview_dialog);
+  auto it = preview_dialog_map_.find(preview_dialog);
   return (it != preview_dialog_map_.end()) ? it->second : nullptr;
 }
 
@@ -256,7 +256,7 @@ bool PrintPreviewDialogController::IsPrintPreviewURL(const GURL& url) {
 
 void PrintPreviewDialogController::EraseInitiatorInfo(
     WebContents* preview_dialog) {
-  PrintPreviewDialogMap::iterator it = preview_dialog_map_.find(preview_dialog);
+  auto it = preview_dialog_map_.find(preview_dialog);
   if (it == preview_dialog_map_.end())
     return;
 
@@ -272,7 +272,7 @@ void PrintPreviewDialogController::OnRendererProcessClosed(
   // |preview_dialog_map_| because RemoveFoo() can change |preview_dialog_map_|.
   std::vector<WebContents*> closed_initiators;
   std::vector<WebContents*> closed_preview_dialogs;
-  for (PrintPreviewDialogMap::iterator iter = preview_dialog_map_.begin();
+  for (auto iter = preview_dialog_map_.begin();
        iter != preview_dialog_map_.end(); ++iter) {
     WebContents* preview_dialog = iter->first;
     WebContents* initiator = iter->second;

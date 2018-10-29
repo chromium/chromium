@@ -179,12 +179,8 @@
 
 - (BOOL)application:(UIApplication*)application
     continueUserActivity:(NSUserActivity*)userActivity
-#if defined(__IPHONE_12_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0)
       restorationHandler:
           (void (^)(NSArray<id<UIUserActivityRestoring>>*))restorationHandler {
-#else
-      restorationHandler:(void (^)(NSArray*))restorationHandler {
-#endif
   if ([_appState isInSafeMode])
     return NO;
 

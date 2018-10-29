@@ -4,11 +4,13 @@
 
 #include "ui/events/event_handler.h"
 
-#include "base/debug/alias.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 
 namespace ui {
+
+// static
+bool EventHandler::check_targets_ = true;
 
 EventHandler::EventHandler() {
 }
@@ -19,13 +21,12 @@ EventHandler::~EventHandler() {
     dispatchers_.pop();
     dispatcher->OnHandlerDestroyed(this);
   }
+
+  // Should have been removed from all pre-target handlers.
+  CHECK(!check_targets_ || targets_installed_on_.empty());
 }
 
 void EventHandler::OnEvent(Event* event) {
-  // TODO(sky): remove |event_type|. Temporary while tracking down crash.
-  // https://crbug.com/867035
-  const EventType event_type = event->type();
-  base::debug::Alias(&event_type);
   if (event->IsKeyEvent())
     OnKeyEvent(event->AsKeyEvent());
   else if (event->IsMouseEvent())

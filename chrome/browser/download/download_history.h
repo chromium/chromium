@@ -93,14 +93,6 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if the download was restored from history. Safe to call from
-  // within a DownloadManager::Observer::OnDownloadCreated handler and can be
-  // used to distinguish between downloads that were created due to new requests
-  // vs. downloads that were created due to being restored from history. Note
-  // that the return value is only reliable for downloads that were restored by
-  // this specific DownloadHistory instance.
-  bool WasRestoredFromHistory(const download::DownloadItem* item) const;
-
  private:
   // Callback from |history_| containing all entries in the downloads database
   // table.

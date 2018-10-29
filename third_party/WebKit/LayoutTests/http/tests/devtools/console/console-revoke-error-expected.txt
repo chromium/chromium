@@ -10,7 +10,11 @@ console-message-wrapper console-error-level x3
 
 Handling promise
 1 error
-console-message-wrapper console-info-level
 console-message-wrapper console-error-level
-console-message-wrapper console-info-level
+
+Enable verbose filter
+1 error
+console-message-wrapper console-verbose-level
+console-message-wrapper console-error-level
+console-message-wrapper console-verbose-level
 

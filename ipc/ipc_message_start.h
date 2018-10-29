@@ -16,6 +16,7 @@ enum IPCMessageStart {
   FrameMsgStart,
   PageMsgStart,
   ViewMsgStart,
+  WidgetMsgStart,
   InputMsgStart,
   TestMsgStart,
   WorkerMsgStart,
@@ -67,6 +68,7 @@ enum IPCMessageStart {
   SurfaceViewManagerMsgStart,
   ExtensionWorkerMsgStart,
   SubresourceFilterMsgStart,
+  ChromeAppsMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

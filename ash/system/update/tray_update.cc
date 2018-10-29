@@ -99,7 +99,7 @@ class TrayUpdate::UpdateView : public ActionableView {
     style.SetupLabel(update_label_);
     tri_view->AddView(TriView::Container::CENTER, update_label_);
 
-    SetInkDropMode(InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
   }
 
   ~UpdateView() override = default;

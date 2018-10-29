@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon_client.h"
@@ -83,6 +84,30 @@ std::string GetKeyName(const std::string& key, Product product) {
   if (brand.empty())
     brand = kNoSupplementaryBrand;
   return key + "." + GetProductName(product) + "." + brand;
+}
+
+// Uses |brand| to replace the brand code contained in |rlz|. No-op if |rlz| is
+// in incorrect format or already contains |brand|. Returns whether the
+// replacement took place.
+bool ConvertToDynamicRlz(const std::string& brand,
+                         std::string* rlz,
+                         AccessPoint access_point) {
+  if (brand.size() != 4) {
+    LOG(ERROR) << "Invalid brand code format: " + brand;
+    return false;
+  }
+  // Do a sanity check for the rlz string format. It must start with a
+  // single-digit rlz encoding version, followed by a two-alphanum access point
+  // name, and a four-letter brand code.
+  if (rlz->size() < 7 ||
+      rlz->substr(1, 2) != GetAccessPointName(access_point)) {
+    LOG(ERROR) << "Invalid rlz string format: " + *rlz;
+    return false;
+  }
+  if (rlz->substr(3, 4) == brand)
+    return false;
+  rlz->replace(3, 4, brand);
+  return true;
 }
 
 }  // namespace
@@ -178,6 +203,24 @@ bool RlzValueStoreChromeOS::ClearAccessPointRlz(AccessPoint access_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rlz_store_->Remove(GetKeyName(kAccessPointKey, access_point), NULL);
   return true;
+}
+
+bool RlzValueStoreChromeOS::UpdateExistingAccessPointRlz(
+    const std::string& brand) {
+  DCHECK(SupplementaryBranding::GetBrand().empty());
+  bool updated = false;
+  for (int i = NO_ACCESS_POINT + 1; i < LAST_ACCESS_POINT; ++i) {
+    AccessPoint access_point = static_cast<AccessPoint>(i);
+    const std::string access_point_key =
+        GetKeyName(kAccessPointKey, access_point);
+    std::string rlz;
+    if (rlz_store_->GetString(access_point_key, &rlz) &&
+        ConvertToDynamicRlz(brand, &rlz, access_point)) {
+      rlz_store_->SetString(access_point_key, rlz);
+      updated = true;
+    }
+  }
+  return updated;
 }
 
 bool RlzValueStoreChromeOS::AddProductEvent(Product product,

@@ -15,7 +15,7 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     android:paddingTop="12dp"
-    android:layout_marginTop="12dp">
+    android:layout_marginTop="@dimen/content_suggestions_card_modern_margin">
 
     <FrameLayout
         android:layout_width="match_parent"

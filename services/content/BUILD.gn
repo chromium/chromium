@@ -26,6 +26,8 @@ source_set("impl") {
     "service.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//services/content/public/cpp:buildflags",

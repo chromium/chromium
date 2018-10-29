@@ -14,7 +14,7 @@ ArcPictureInPictureWindowControllerImpl::
 
 ArcPictureInPictureWindowControllerImpl::
     ~ArcPictureInPictureWindowControllerImpl() {
-  Close(false);
+  Close(false, false);
 }
 
 gfx::Size ArcPictureInPictureWindowControllerImpl::Show() {
@@ -22,18 +22,15 @@ gfx::Size ArcPictureInPictureWindowControllerImpl::Show() {
   return gfx::Size();
 }
 
-void ArcPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
+void ArcPictureInPictureWindowControllerImpl::Close(
+    bool should_pause_video,
+    bool should_reset_pip_player) {
   // TODO(edcourtney): Currently, |should_pause_video| will always be false
   // here, but if that changes, we should pause the video on the Android side.
   arc_pip_bridge_->ClosePip();
 }
 
 void ArcPictureInPictureWindowControllerImpl::OnWindowDestroyed() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-void ArcPictureInPictureWindowControllerImpl::ClickCustomControl(
-    const std::string& control_id) {
   // Should be a no-op on ARC. This is managed on the Android side.
 }
 
@@ -78,6 +75,16 @@ void ArcPictureInPictureWindowControllerImpl::UpdatePlaybackState(
 bool ArcPictureInPictureWindowControllerImpl::TogglePlayPause() {
   // Should be a no-op on ARC. This is managed on the Android side.
   return false;
+}
+
+void ArcPictureInPictureWindowControllerImpl::CustomControlPressed(
+    const std::string& control_id) {
+  // Should be a no-op on ARC. This is managed on the Android side.
+}
+
+void ArcPictureInPictureWindowControllerImpl::SetAlwaysHidePlayPauseButton(
+    bool is_visible) {
+  // Should be a no-op on ARC. This is managed on the Android side.
 }
 
 }  // namespace arc

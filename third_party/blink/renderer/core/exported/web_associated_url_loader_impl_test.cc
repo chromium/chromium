@@ -37,7 +37,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -48,12 +47,13 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-using blink::URLTestHelpers::ToKURL;
+using blink::url_test_helpers::ToKURL;
 using blink::test::RunPendingTasks;
 
 namespace blink {
@@ -96,7 +96,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
       RegisterMockedUrl(url_root, iframe_support_files[i]);
     }
 
-    FrameTestHelpers::LoadFrame(MainFrame(), url.GetString().Utf8().data());
+    frame_test_helpers::LoadFrame(MainFrame(), url.GetString().Utf8().data());
 
     Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url);
   }
@@ -180,7 +180,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         network::mojom::FetchCredentialsMode::kOmit);
     if (EqualIgnoringASCIICase(WebString::FromUTF8(header_field), "referer")) {
       request.SetHTTPReferrer(WebString::FromUTF8(header_value),
-                              kWebReferrerPolicyDefault);
+                              network::mojom::ReferrerPolicy::kDefault);
     } else {
       request.SetHTTPHeaderField(WebString::FromUTF8(header_field),
                                  WebString::FromUTF8(header_value));
@@ -250,7 +250,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
 
  protected:
   String frame_file_path_;
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
 
   std::unique_ptr<WebAssociatedURLLoader> expected_loader_;
   WebURLResponse actual_response_;
@@ -306,7 +306,7 @@ TEST_F(WebAssociatedURLLoaderTest, CrossOriginSuccess) {
   WebURLRequest request(url);
   // No-CORS requests (CrossOriginRequestPolicyAllow) aren't allowed for the
   // default context. So we set the context as Script here.
-  request.SetRequestContext(WebURLRequest::kRequestContextScript);
+  request.SetRequestContext(mojom::RequestContextType::SCRIPT);
   request.SetFetchCredentialsMode(network::mojom::FetchCredentialsMode::kOmit);
 
   expected_response_ = WebURLResponse();
@@ -689,7 +689,7 @@ TEST_F(WebAssociatedURLLoaderTest, AccessCheckForLocalURL) {
   KURL url = ToKURL("file://test.pdf");
 
   WebURLRequest request(url);
-  request.SetRequestContext(WebURLRequest::kRequestContextPlugin);
+  request.SetRequestContext(mojom::RequestContextType::PLUGIN);
   request.SetFetchRequestMode(network::mojom::FetchRequestMode::kNoCORS);
   request.SetFetchCredentialsMode(network::mojom::FetchCredentialsMode::kOmit);
 
@@ -716,7 +716,7 @@ TEST_F(WebAssociatedURLLoaderTest, BypassAccessCheckForLocalURL) {
   KURL url = ToKURL("file://test.pdf");
 
   WebURLRequest request(url);
-  request.SetRequestContext(WebURLRequest::kRequestContextPlugin);
+  request.SetRequestContext(mojom::RequestContextType::PLUGIN);
   request.SetFetchRequestMode(network::mojom::FetchRequestMode::kNoCORS);
   request.SetFetchCredentialsMode(network::mojom::FetchCredentialsMode::kOmit);
 

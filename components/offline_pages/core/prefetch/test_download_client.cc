@@ -13,6 +13,7 @@ TestDownloadClient::TestDownloadClient(PrefetchDownloader* downloader)
 
 void TestDownloadClient::OnDownloadFailed(
     const std::string& guid,
+    const download::CompletionInfo& completion_info,
     download::Client::FailureReason reason) {
   downloader_->OnDownloadFailed(guid);
 }

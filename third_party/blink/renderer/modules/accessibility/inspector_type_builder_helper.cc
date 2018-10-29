@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/inspector_type_builder_helper.h"
 
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
@@ -102,7 +103,7 @@ std::unique_ptr<AXRelatedNode> RelatedNodeForAXObject(const AXObject& ax_object,
   Node* node = ax_object.GetNode();
   if (!node)
     return nullptr;
-  int backend_node_id = DOMNodeIds::IdForNode(node);
+  int backend_node_id = IdentifiersFactory::IntIdForNode(node);
   if (!backend_node_id)
     return nullptr;
   std::unique_ptr<AXRelatedNode> related_node =
@@ -167,19 +168,19 @@ std::unique_ptr<AXValue> CreateRelatedNodeListValue(
       .build();
 }
 
-String ValueSourceType(AXNameFrom name_from) {
+String ValueSourceType(ax::mojom::NameFrom name_from) {
   switch (name_from) {
-    case kAXNameFromAttribute:
-    case kAXNameFromAttributeExplicitlyEmpty:
-    case kAXNameFromTitle:
-    case kAXNameFromValue:
+    case ax::mojom::NameFrom::kAttribute:
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
+    case ax::mojom::NameFrom::kTitle:
+    case ax::mojom::NameFrom::kValue:
       return AXValueSourceTypeEnum::Attribute;
-    case kAXNameFromContents:
+    case ax::mojom::NameFrom::kContents:
       return AXValueSourceTypeEnum::Contents;
-    case kAXNameFromPlaceholder:
+    case ax::mojom::NameFrom::kPlaceholder:
       return AXValueSourceTypeEnum::Placeholder;
-    case kAXNameFromCaption:
-    case kAXNameFromRelatedElement:
+    case ax::mojom::NameFrom::kCaption:
+    case ax::mojom::NameFrom::kRelatedElement:
       return AXValueSourceTypeEnum::RelatedElement;
     default:
       return AXValueSourceTypeEnum::Implicit;  // TODO(aboxhall): what to do

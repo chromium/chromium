@@ -43,7 +43,6 @@
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_dom_media_stream_track.h"
-#include "third_party/blink/public/web/web_media_stream_registry.h"
 #include "url/gurl.h"
 
 using content::V8ValueConverter;
@@ -61,10 +60,7 @@ namespace {
 
 constexpr char kInvalidAesIvMask[] = "Invalid value for AES IV mask";
 constexpr char kInvalidAesKey[] = "Invalid value for AES key";
-constexpr char kInvalidAudioParams[] = "Invalid audio params";
 constexpr char kInvalidDestination[] = "Invalid destination";
-constexpr char kInvalidFPS[] = "Invalid FPS";
-constexpr char kInvalidMediaStreamURL[] = "Invalid MediaStream URL";
 constexpr char kInvalidRtpParams[] = "Invalid value for RTP params";
 constexpr char kInvalidLatency[] = "Invalid value for max_latency. (0-1000)";
 constexpr char kInvalidRtpTimebase[] = "Invalid rtp_timebase. (1000-1000000)";
@@ -105,8 +101,10 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
   if (config->sender_ssrc == config->receiver_ssrc) {
     DVLOG(1) << "sender_ssrc " << config->sender_ssrc
              << " cannot be equal to receiver_ssrc";
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   config->min_playout_delay = base::TimeDelta::FromMilliseconds(
@@ -120,23 +118,29 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
   if (config->min_playout_delay <= base::TimeDelta()) {
     DVLOG(1) << "min_playout_delay " << config->min_playout_delay
              << " must be greater than zero";
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (config->min_playout_delay > config->max_playout_delay) {
     DVLOG(1) << "min_playout_delay " << config->min_playout_delay
              << " must be less than or equal to max_palyout_delay";
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (config->animated_playout_delay < config->min_playout_delay ||
       config->animated_playout_delay > config->max_playout_delay) {
     DVLOG(1) << "animated_playout_delay " << config->animated_playout_delay
              << " must be between (inclusive) the min and max playout delay";
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (ext_params.codec_name == kCodecNameOpus) {
@@ -156,13 +160,17 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
       default:
         DVLOG(1) << "rtp_timebase " << config->rtp_timebase << " is invalid";
         isolate->ThrowException(v8::Exception::Error(
-            v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+            v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                    v8::NewStringType::kNormal)
+                .ToLocalChecked()));
         return false;
     }
     config->channels = ext_params.channels ? *ext_params.channels : 2;
     if (config->channels != 1 && config->channels != 2) {
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+          v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                  v8::NewStringType::kNormal)
+              .ToLocalChecked()));
       DVLOG(1) << "channels " << config->channels << " is invalid";
       return false;
     }
@@ -177,7 +185,9 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
     config->channels = ext_params.channels ? *ext_params.channels : 1;
     if (config->channels != 1) {
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+          v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                  v8::NewStringType::kNormal)
+              .ToLocalChecked()));
       DVLOG(1) << "channels " << config->channels << " is invalid";
       return false;
     }
@@ -191,7 +201,9 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
       DVLOG(1) << "min_bitrate " << config->min_bitrate << " is larger than "
                << "max_bitrate " << config->max_bitrate;
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+          v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                  v8::NewStringType::kNormal)
+              .ToLocalChecked()));
       return false;
     }
     config->start_bitrate = config->min_bitrate;
@@ -200,7 +212,9 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
     if (config->max_frame_rate > media::limits::kMaxFramesPerSecond) {
       DVLOG(1) << "max_frame_rate " << config->max_frame_rate << " is invalid";
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+          v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                  v8::NewStringType::kNormal)
+              .ToLocalChecked()));
       return false;
     }
     if (ext_params.codec_name == kCodecNameVp8) {
@@ -225,19 +239,25 @@ bool ToFrameSenderConfigOrThrow(v8::Isolate* isolate,
     config->codec = media::cast::CODEC_VIDEO_REMOTE;
   } else {
     DVLOG(1) << "codec_name " << ext_params.codec_name << " is invalid";
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (ext_params.aes_key && !HexDecode(*ext_params.aes_key, &config->aes_key)) {
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidAesKey)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidAesKey,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (ext_params.aes_iv_mask &&
       !HexDecode(*ext_params.aes_iv_mask, &config->aes_iv_mask)) {
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidAesIvMask)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidAesIvMask,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   return true;
@@ -353,10 +373,6 @@ void CastStreamingNativeHandler::AddRoutes() {
   RouteHandlerFunction("GetStats", "cast.streaming.rtpStream",
                        base::Bind(&CastStreamingNativeHandler::GetStats,
                                   weak_factory_.GetWeakPtr()));
-  RouteHandlerFunction(
-      "StartCastRtpReceiver", "cast.streaming.receiverSession",
-      base::Bind(&CastStreamingNativeHandler::StartCastRtpReceiver,
-                 weak_factory_.GetWeakPtr()));
 }
 
 void CastStreamingNativeHandler::Invalidate() {
@@ -398,7 +414,9 @@ void CastStreamingNativeHandler::CreateCastSession(
           blink::WebDOMMediaStreamTrack::FromV8Value(args[0]);
       if (track.IsNull()) {
         isolate->ThrowException(v8::Exception::Error(
-            v8::String::NewFromUtf8(isolate, kInvalidStreamArgs)));
+            v8::String::NewFromUtf8(isolate, kInvalidStreamArgs,
+                                    v8::NewStringType::kNormal)
+                .ToLocalChecked()));
         return;
       }
       stream1.reset(new CastRtpStream(track.Component(), session));
@@ -409,7 +427,9 @@ void CastStreamingNativeHandler::CreateCastSession(
           blink::WebDOMMediaStreamTrack::FromV8Value(args[1]);
       if (track.IsNull()) {
         isolate->ThrowException(v8::Exception::Error(
-            v8::String::NewFromUtf8(isolate, kInvalidStreamArgs)));
+            v8::String::NewFromUtf8(isolate, kInvalidStreamArgs,
+                                    v8::NewStringType::kNormal)
+                .ToLocalChecked()));
         return;
       }
       stream2.reset(new CastRtpStream(track.Component(), session));
@@ -533,13 +553,17 @@ void CastStreamingNativeHandler::StartCastRtpStream(
       V8ValueConverter::Create()->FromV8Value(args[1], context()->v8_context());
   if (!params_value) {
     args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertParams)));
+        v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertParams,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return;
   }
   std::unique_ptr<RtpParams> params = RtpParams::FromValue(*params_value);
   if (!params) {
     args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kInvalidRtpParams)));
+        v8::String::NewFromUtf8(args.GetIsolate(), kInvalidRtpParams,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return;
   }
 
@@ -629,7 +653,9 @@ void CastStreamingNativeHandler::SetOptionsCastUdpTransport(
           args[1], context()->v8_context()));
   if (!options) {
     args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertArgs)));
+        v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertArgs,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return;
   }
   transport->SetOptions(std::move(options));
@@ -707,8 +733,7 @@ void CastStreamingNativeHandler::CallGetRawEventsCallback(
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context()->v8_context());
 
-  RtpStreamCallbackMap::iterator it =
-      get_raw_events_callbacks_.find(transport_id);
+  auto it = get_raw_events_callbacks_.find(transport_id);
   if (it == get_raw_events_callbacks_.end())
     return;
   v8::Local<v8::Value> callback_args[] = {V8ValueConverter::Create()->ToV8Value(
@@ -725,7 +750,7 @@ void CastStreamingNativeHandler::CallGetStatsCallback(
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context()->v8_context());
 
-  RtpStreamCallbackMap::iterator it = get_stats_callbacks_.find(transport_id);
+  auto it = get_stats_callbacks_.find(transport_id);
   if (it == get_stats_callbacks_.end())
     return;
 
@@ -738,25 +763,27 @@ void CastStreamingNativeHandler::CallGetStatsCallback(
 
 CastRtpStream* CastStreamingNativeHandler::GetRtpStreamOrThrow(
     int transport_id) const {
-  RtpStreamMap::const_iterator iter = rtp_stream_map_.find(
-      transport_id);
+  auto iter = rtp_stream_map_.find(transport_id);
   if (iter != rtp_stream_map_.end())
     return iter->second.get();
   v8::Isolate* isolate = context()->v8_context()->GetIsolate();
-  isolate->ThrowException(v8::Exception::RangeError(v8::String::NewFromUtf8(
-      isolate, kRtpStreamNotFound)));
+  isolate->ThrowException(v8::Exception::RangeError(
+      v8::String::NewFromUtf8(isolate, kRtpStreamNotFound,
+                              v8::NewStringType::kNormal)
+          .ToLocalChecked()));
   return NULL;
 }
 
 CastUdpTransport* CastStreamingNativeHandler::GetUdpTransportOrThrow(
     int transport_id) const {
-  UdpTransportMap::const_iterator iter = udp_transport_map_.find(
-      transport_id);
+  auto iter = udp_transport_map_.find(transport_id);
   if (iter != udp_transport_map_.end())
     return iter->second.get();
   v8::Isolate* isolate = context()->v8_context()->GetIsolate();
   isolate->ThrowException(v8::Exception::RangeError(
-      v8::String::NewFromUtf8(isolate, kUdpTransportNotFound)));
+      v8::String::NewFromUtf8(isolate, kUdpTransportNotFound,
+                              v8::NewStringType::kNormal)
+          .ToLocalChecked()));
   return NULL;
 }
 
@@ -768,14 +795,18 @@ bool CastStreamingNativeHandler::FrameReceiverConfigFromArg(
       V8ValueConverter::Create()->FromV8Value(arg, context()->v8_context());
   if (!params_value) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kUnableToConvertParams)));
+        v8::String::NewFromUtf8(isolate, kUnableToConvertParams,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
   std::unique_ptr<RtpReceiverParams> params =
       RtpReceiverParams::FromValue(*params_value);
   if (!params) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kInvalidRtpParams)));
+        v8::String::NewFromUtf8(isolate, kInvalidRtpParams,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
 
@@ -784,7 +815,9 @@ bool CastStreamingNativeHandler::FrameReceiverConfigFromArg(
   config->rtp_max_delay_ms = params->max_latency;
   if (config->rtp_max_delay_ms < 0 || config->rtp_max_delay_ms > 1000) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kInvalidLatency)));
+        v8::String::NewFromUtf8(isolate, kInvalidLatency,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
   config->channels = 2;
@@ -813,20 +846,26 @@ bool CastStreamingNativeHandler::FrameReceiverConfigFromArg(
     config->rtp_timebase = *params->rtp_timebase;
     if (config->rtp_timebase < 1000 || config->rtp_timebase > 1000000) {
       isolate->ThrowException(v8::Exception::TypeError(
-          v8::String::NewFromUtf8(isolate, kInvalidRtpTimebase)));
+          v8::String::NewFromUtf8(isolate, kInvalidRtpTimebase,
+                                  v8::NewStringType::kNormal)
+              .ToLocalChecked()));
       return false;
     }
   }
   if (params->aes_key &&
       !HexDecode(*params->aes_key, &config->aes_key)) {
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidAesKey)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidAesKey,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   if (params->aes_iv_mask &&
       !HexDecode(*params->aes_iv_mask, &config->aes_iv_mask)) {
-    isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidAesIvMask)));
+    isolate->ThrowException(
+        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidAesIvMask,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()));
     return false;
   }
   return true;
@@ -840,160 +879,42 @@ bool CastStreamingNativeHandler::IPEndPointFromArg(
       V8ValueConverter::Create()->FromV8Value(arg, context()->v8_context());
   if (!destination_value) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kInvalidAesIvMask)));
+        v8::String::NewFromUtf8(isolate, kInvalidAesIvMask,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
   std::unique_ptr<IPEndPoint> destination =
       IPEndPoint::FromValue(*destination_value);
   if (!destination) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kInvalidDestination)));
+        v8::String::NewFromUtf8(isolate, kInvalidDestination,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
   net::IPAddress ip;
   if (!ip.AssignFromIPLiteral(destination->address)) {
     isolate->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(isolate, kInvalidDestination)));
+        v8::String::NewFromUtf8(isolate, kInvalidDestination,
+                                v8::NewStringType::kNormal)
+            .ToLocalChecked()));
     return false;
   }
   *ip_endpoint = net::IPEndPoint(ip, destination->port);
   return true;
 }
 
-void CastStreamingNativeHandler::StartCastRtpReceiver(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() < 8 || args.Length() > 9 ||
-      !args[0]->IsObject() ||
-      !args[1]->IsObject() ||
-      !args[2]->IsObject() ||
-      !args[3]->IsInt32() ||
-      !args[4]->IsInt32() ||
-      !args[5]->IsNumber() ||
-      !args[6]->IsString()) {
-    args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertArgs)));
-    return;
-  }
-
-  v8::Isolate* isolate = context()->v8_context()->GetIsolate();
-
-  scoped_refptr<CastReceiverSession> session(
-      new CastReceiverSession());
-  media::cast::FrameReceiverConfig audio_config;
-  media::cast::FrameReceiverConfig video_config;
-  net::IPEndPoint local_endpoint;
-  net::IPEndPoint remote_endpoint;
-
-  if (!FrameReceiverConfigFromArg(isolate, args[0], &audio_config) ||
-      !FrameReceiverConfigFromArg(isolate, args[1], &video_config) ||
-      !IPEndPointFromArg(isolate, args[2], &local_endpoint)) {
-    return;
-  }
-
-  const int max_width = args[3]->ToInt32(args.GetIsolate())->Value();
-  const int max_height = args[4]->ToInt32(args.GetIsolate())->Value();
-  const double fps = args[5].As<v8::Number>()->Value();
-
-  if (fps <= 1) {
-    args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kInvalidFPS)));
-    return;
-  }
-
-  const std::string url = *v8::String::Utf8Value(isolate, args[6]);
-  blink::WebMediaStream stream =
-      blink::WebMediaStreamRegistry::LookupMediaStreamDescriptor(GURL(url));
-
-  if (stream.IsNull()) {
-    args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kInvalidMediaStreamURL)));
-    return;
-  }
-
-  media::VideoCaptureFormat capture_format(gfx::Size(max_width, max_height),
-                                           fps, media::PIXEL_FORMAT_I420);
-
-  video_config.target_frame_rate = fps;
-  audio_config.target_frame_rate = 100;
-
-  media::AudioParameters params(
-      media::AudioParameters::AUDIO_PCM_LINEAR,
-      media::GuessChannelLayout(audio_config.channels),
-      audio_config.rtp_timebase,  // sampling rate
-      static_cast<int>(audio_config.rtp_timebase /
-                       audio_config.target_frame_rate));
-
-  if (!params.IsValid()) {
-    args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-        v8::String::NewFromUtf8(args.GetIsolate(), kInvalidAudioParams)));
-    return;
-  }
-
-  std::unique_ptr<base::DictionaryValue> options;
-  if (args.Length() >= 9) {
-    std::unique_ptr<base::Value> options_value =
-        V8ValueConverter::Create()->FromV8Value(args[8],
-                                                context()->v8_context());
-    if (!options_value->is_none()) {
-      options = base::DictionaryValue::From(std::move(options_value));
-      if (!options) {
-        args.GetIsolate()->ThrowException(v8::Exception::TypeError(
-            v8::String::NewFromUtf8(args.GetIsolate(), kUnableToConvertArgs)));
-        return;
-      }
-    }
-  }
-
-  if (!options) {
-    options.reset(new base::DictionaryValue());
-  }
-
-  v8::CopyablePersistentTraits<v8::Function>::CopyablePersistent error_callback;
-  error_callback.Reset(args.GetIsolate(),
-                       v8::Local<v8::Function>(args[7].As<v8::Function>()));
-
-  session->Start(
-      audio_config, video_config, local_endpoint, remote_endpoint,
-      std::move(options), capture_format,
-      base::Bind(&CastStreamingNativeHandler::AddTracksToMediaStream,
-                 weak_factory_.GetWeakPtr(), url, params),
-      base::Bind(&CastStreamingNativeHandler::CallReceiverErrorCallback,
-                 weak_factory_.GetWeakPtr(), error_callback));
-}
-
 void CastStreamingNativeHandler::CallReceiverErrorCallback(
     v8::CopyablePersistentTraits<v8::Function>::CopyablePersistent function,
     const std::string& error_message) {
   v8::Isolate* isolate = context()->v8_context()->GetIsolate();
-  v8::Local<v8::Value> arg = v8::String::NewFromUtf8(isolate,
-                                                      error_message.data(),
-                                                      v8::String::kNormalString,
-                                                      error_message.size());
+  v8::Local<v8::Value> arg =
+      v8::String::NewFromUtf8(isolate, error_message.data(),
+                              v8::NewStringType::kNormal, error_message.size())
+          .ToLocalChecked();
   context()->SafeCallFunction(v8::Local<v8::Function>::New(isolate, function),
                               1, &arg);
-}
-
-void CastStreamingNativeHandler::AddTracksToMediaStream(
-    const std::string& url,
-    const media::AudioParameters& params,
-    scoped_refptr<media::AudioCapturerSource> audio,
-    std::unique_ptr<media::VideoCapturerSource> video) {
-  blink::WebMediaStream web_stream =
-      blink::WebMediaStreamRegistry::LookupMediaStreamDescriptor(GURL(url));
-  if (web_stream.IsNull()) {
-    LOG(DFATAL) << "Stream not found.";
-    return;
-  }
-  if (!content::AddAudioTrackToMediaStream(
-          audio, params.sample_rate(), params.channel_layout(),
-          params.frames_per_buffer(), true,  // is_remote
-          &web_stream)) {
-    LOG(ERROR) << "Failed to add Cast audio track to media stream.";
-  }
-  if (!content::AddVideoTrackToMediaStream(std::move(video), true,  // is_remote
-                                           &web_stream)) {
-    LOG(ERROR) << "Failed to add Cast video track to media stream.";
-  }
 }
 
 }  // namespace extensions

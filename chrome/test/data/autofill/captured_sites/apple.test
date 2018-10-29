@@ -1,6 +1,72 @@
 {
   "name": "Bag - Apple",
   "startingURL": "https://www.apple.com/shop/bag",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_CITY",
+      "value": "Austin"
+    },
+    {
+      "type": "ADDRESS_HOME_COUNTRY",
+      "value": "US"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_STATE",
+      "value": "TX"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "COMPANY_NAME",
+      "value": "Initech"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    },
+    {
+      "type": "PHONE_HOME_CITY_CODE",
+      "value": "512"
+    },
+    {
+      "type": "PHONE_HOME_NUMBER",
+      "value": "5551234"
+    }
+  ],
   "actions": [
     {
       "selectorType": "xpath",

@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGContainer {g} at (0,0) size 103176x132091 [transform={m=((1.09,0.00)(0.00,1.09)) t=(0.00,0.00)}]
-      LayoutSVGPath {path} at (0,39403) size 103176x92688 [fill={[type=SOLID] [color=#008000]}] [data="M 0 39403 L 103176 39403 L 103176 132091 L 0 132091 Z"]
-      LayoutSVGPath {path} at (0,0) size 0x0 [fill={[type=SOLID] [color=#000000]}] [data="M 0 0"]

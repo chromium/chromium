@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "gpu/ipc/common/context_result.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/mojo/ca_layer_params.mojom";
 import "ui/gfx/mojo/color_space.mojom";
@@ -69,4 +70,9 @@ interface DisplayClient {
   // size of the swapped frame.
   [EnableIf=is_android]
   DidCompleteSwapWithSize(gfx.mojom.Size size);
+
+  // Notifies that context creation failed. On Android we can't fall back to
+  // SW in these cases, so we need to handle this specifically.
+  [EnableIf=is_android]
+  OnFatalOrSurfaceContextCreationFailure(gpu.mojom.ContextResult result);
 };

@@ -288,7 +288,7 @@ void RadioButtonGroupScope::RemoveButton(HTMLInputElement* element) {
     return;
   group->Remove(element);
   if (group->IsEmpty()) {
-    // We don't remove an empty RadioButtonGroup from m_nameToGroupMap for
+    // We don't remove an empty RadioButtonGroup from name_to_group_map_ for
     // better performance.
     DCHECK(!group->IsRequired());
     SECURITY_DCHECK(!group->CheckedButton());

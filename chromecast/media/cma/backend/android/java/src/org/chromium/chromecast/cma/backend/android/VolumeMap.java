@@ -28,7 +28,7 @@ public final class VolumeMap {
 
     private static final int DEVICE_TYPE = AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
 
-    private static AudioManager sAudioManager = null;
+    private static AudioManager sAudioManager;
 
     // Mapping from Android's stream_type to Cast's AudioContentType (used for callback).
     private static final SparseIntArray ANDROID_TYPE_TO_CAST_TYPE_MAP = new SparseIntArray(4) {

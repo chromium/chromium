@@ -40,7 +40,6 @@ class LocationBarLayout {
   //   decorations;
   // - |edge_item_padding|, the padding between the omnibox edge and the item,
   //   if the item is the first one drawn;
-  // - |item_padding|, the padding between the previous item and this one;
   // - The |view| corresponding to this decoration, a weak pointer.
   // Note that |auto_collapse| can be true if and only if |max_fraction| is 0.
   void AddDecoration(int y,
@@ -48,7 +47,6 @@ class LocationBarLayout {
                      bool auto_collapse,
                      double max_fraction,
                      int edge_item_padding,
-                     int item_padding,
                      views::View* view);
 
   // First pass of decoration layout process. Pass the full width of the

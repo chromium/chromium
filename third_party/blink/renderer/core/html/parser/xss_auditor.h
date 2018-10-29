@@ -76,7 +76,7 @@ class XSSAuditor {
   bool IsEnabled() const { return is_enabled_; }
 
  private:
-  static const size_t kMaximumFragmentLengthTarget = 100;
+  static const wtf_size_t kMaximumFragmentLengthTarget = 100;
 
   enum State {
     kUninitialized,

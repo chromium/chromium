@@ -180,20 +180,6 @@ class TaskManagerUtilityProcessBrowserTest : public TaskManagerBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(TaskManagerUtilityProcessBrowserTest);
 };
 
-class TaskManagerMemoryCoordinatorBrowserTest : public TaskManagerBrowserTest {
- public:
-  TaskManagerMemoryCoordinatorBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMemoryCoordinator);
-  }
-
-  ~TaskManagerMemoryCoordinatorBrowserTest() override {}
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerMemoryCoordinatorBrowserTest);
-};
-
 // Parameterized variant of TaskManagerBrowserTest which runs with/without
 // --site-per-process, which enables out of process iframes (OOPIFs).
 class TaskManagerOOPIFBrowserTest : public TaskManagerBrowserTest,
@@ -677,7 +663,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, SentDataObserved) {
+#if defined(MEMORY_SANITIZER)
+// This tests times out when MSan is enabled. See https://crbug.com/890313.
+#define MAYBE_SentDataObserved DISABLED_SentDataObserved
+#else
+#define MAYBE_SentDataObserved SentDataObserved
+#endif
+IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -709,7 +701,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, SentDataObserved) {
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
 
-IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, TotalSentDataObserved) {
+#if defined(MEMORY_SANITIZER)
+// This tests times out when MSan is enabled. See https://crbug.com/890313.
+#define MAYBE_TotalSentDataObserved DISABLED_TotalSentDataObserved
+#else
+#define MAYBE_TotalSentDataObserved TotalSentDataObserved
+#endif
+IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -810,32 +808,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerUtilityProcessBrowserTest,
       minimal_heap_size));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchUtility(proxy_resolver_name)));
-}
-
-// Memory coordinator is not available on macos. crbug.com/617492
-#if defined(OS_MACOSX)
-#define MAYBE_MemoryState DISABLED_MemoryState
-#else
-#define MAYBE_MemoryState MemoryState
-#endif  // defined(OS_MACOSX)
-IN_PROC_BROWSER_TEST_F(TaskManagerMemoryCoordinatorBrowserTest,
-                       MAYBE_MemoryState) {
-  ShowTaskManager();
-  model()->ToggleColumnVisibility(ColumnSpecifier::MEMORY_STATE);
-  model()->ToggleColumnVisibility(ColumnSpecifier::V8_MEMORY_USED);
-
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
-
-  // Wait until the tab consumes some memory so that memory state is refreshed.
-  size_t minimal_heap_size = 1024;
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
-      MatchTab("title1.html"), ColumnSpecifier::V8_MEMORY_USED,
-      minimal_heap_size));
-
-  int row = FindResourceIndex(MatchTab("title1.html"));
-  ASSERT_NE(-1, row);
-  ASSERT_NE(base::MemoryState::UNKNOWN, model()->GetMemoryState(row));
 }
 
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, DevToolsNewDockedWindow) {

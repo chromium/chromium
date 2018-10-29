@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.support.test.filters.SmallTest;
+import android.support.v7.widget.AppCompatImageButton;
 import android.view.View;
 
 import org.junit.Assert;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceTestUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarModel;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -67,7 +67,7 @@ public class LocationBarLayoutTest {
         private Integer mSecurityLevel;
 
         public TestToolbarModel() {
-            super(ContextUtils.getApplicationContext(), null /* bottomSheet */);
+            super(ContextUtils.getApplicationContext());
             initializeWithNative();
         }
 
@@ -131,16 +131,17 @@ public class LocationBarLayoutTest {
         return (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
     }
 
-    private TintedImageButton getDeleteButton() {
-        return (TintedImageButton) mActivityTestRule.getActivity().findViewById(R.id.delete_button);
+    private AppCompatImageButton getDeleteButton() {
+        return (AppCompatImageButton) mActivityTestRule.getActivity().findViewById(
+                R.id.delete_button);
     }
 
-    private TintedImageButton getMicButton() {
-        return (TintedImageButton) mActivityTestRule.getActivity().findViewById(R.id.mic_button);
+    private AppCompatImageButton getMicButton() {
+        return (AppCompatImageButton) mActivityTestRule.getActivity().findViewById(R.id.mic_button);
     }
 
-    private TintedImageButton getSecurityButton() {
-        return (TintedImageButton) mActivityTestRule.getActivity().findViewById(
+    private AppCompatImageButton getSecurityButton() {
+        return (AppCompatImageButton) mActivityTestRule.getActivity().findViewById(
                 R.id.security_button);
     }
 
@@ -269,7 +270,7 @@ public class LocationBarLayoutTest {
         mTestToolbarModel.setSecurityLevel(ConnectionSecurityLevel.NONE);
         setUrlToPageUrl(locationBar);
 
-        TintedImageButton securityButton = getSecurityButton();
+        AppCompatImageButton securityButton = getSecurityButton();
         Assert.assertNotEquals(SEARCH_TERMS, urlBar.getText().toString());
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNotEquals(mTestToolbarModel.getSecurityIconResource(
@@ -289,7 +290,7 @@ public class LocationBarLayoutTest {
         mTestToolbarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
         setUrlToPageUrl(locationBar);
 
-        TintedImageButton securityButton = getSecurityButton();
+        AppCompatImageButton securityButton = getSecurityButton();
         Assert.assertEquals(securityButton.getVisibility(), View.VISIBLE);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(mTestToolbarModel.getSecurityIconResource(

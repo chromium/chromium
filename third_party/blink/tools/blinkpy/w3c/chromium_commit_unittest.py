@@ -5,11 +5,12 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive, mock_git_commands
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 
-CHROMIUM_WPT_DIR = 'third_party/WebKit/LayoutTests/external/wpt/'
+CHROMIUM_WPT_DIR = RELATIVE_WEB_TESTS + 'external/wpt/'
 
 
 class ChromiumCommitTest(unittest.TestCase):

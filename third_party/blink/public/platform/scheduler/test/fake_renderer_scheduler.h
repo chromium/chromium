@@ -20,7 +20,7 @@ class FakeRendererScheduler : public WebThreadScheduler {
   ~FakeRendererScheduler() override;
 
   // RendererScheduler implementation.
-  std::unique_ptr<WebThread> CreateMainThread() override;
+  std::unique_ptr<Thread> CreateMainThread() override;
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;

@@ -26,6 +26,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,11 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
  public:
   explicit MockAffiliationFetchThrottler(
       AffiliationFetchThrottlerDelegate* delegate)
-      : AffiliationFetchThrottler(delegate, nullptr, nullptr),
+      : AffiliationFetchThrottler(
+            delegate,
+            nullptr,
+            network::TestNetworkConnectionTracker::GetInstance(),
+            nullptr),
         signaled_network_request_needed_(false) {
     EXPECT_CALL(*this, OnInformOfNetworkRequestComplete(testing::_)).Times(0);
   }
@@ -342,7 +347,9 @@ class AffiliationBackendTest : public testing::Test {
     auto test_shared_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    backend_->Initialize(test_shared_loader_factory->Clone(), db_path());
+    backend_->Initialize(test_shared_loader_factory->Clone(),
+                         network::TestNetworkConnectionTracker::GetInstance(),
+                         db_path());
     auto mock_fetch_throttler =
         std::make_unique<MockAffiliationFetchThrottler>(backend_.get());
     mock_fetch_throttler_ = mock_fetch_throttler.get();

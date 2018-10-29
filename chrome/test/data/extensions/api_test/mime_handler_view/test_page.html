@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Test page used for some MimeHandlerView tests</title>
+<h1> Test Page</h1>
+
+<script>
+  function maybe_navigate(query) {
+    if (!query.startsWith("?next="))
+      return false;
+    window.location.href = query.substr(query_index + token.length);
+    return true;
+  }
+
+  function should_add_beforeunload(query) {
+    if (query !== "?beforeunload")
+      return false;
+    window.addEventListener("beforeunload", (e) => {
+        e.returnValue = "foo";
+        return e;
+    });
+  }
+
+  window.addEventListener("load", () => {
+    let search = window.location.search;
+    if (maybe_navigate(search))
+      return;
+    should_add_beforeunload(search);
+  });
+</script>

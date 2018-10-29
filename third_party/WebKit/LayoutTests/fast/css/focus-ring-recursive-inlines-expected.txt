@@ -2,11 +2,10 @@ When adding focus ring rects, we should avoid adding line box rects of recursive
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS internals.focusRingRects(document.getElementById('focus')).length is 5
 INLINE TEXT
 BLOCK CONTENTS
-

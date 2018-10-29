@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_message_loop.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "media/mojo/services/media_metrics_provider.h"
@@ -135,6 +136,43 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
       EXPECT_UKM(UkmEntry::kContainerNameName, container_names::CONTAINER_MOV);
     }
   }
+}
+
+TEST_F(MediaMetricsProviderTest, TestBytesReceivedUMA) {
+  base::HistogramTester histogram_tester;
+  Initialize(false, false, kTestOrigin, mojom::MediaURLScheme::kHttp);
+  provider_->AddBytesReceived(1 << 10);
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount("Media.BytesReceived.SRC", 1, 1);
+  histogram_tester.ExpectTotalCount("Media.BytesReceived.MSE", 0);
+  histogram_tester.ExpectTotalCount("Media.BytesReceived.EME", 0);
+  histogram_tester.ExpectTotalCount("Ads.Media.BytesReceived", 0);
+
+  // EME is recorded in before MSE/SRC.
+  Initialize(true, false, kTestOrigin, mojom::MediaURLScheme::kHttp);
+  provider_->AddBytesReceived(1 << 10);
+  provider_->SetIsEME();
+  provider_->SetIsAdMedia();
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount("Media.BytesReceived.EME", 1, 1);
+  histogram_tester.ExpectTotalCount("Media.BytesReceived.MSE", 0);
+  histogram_tester.ExpectBucketCount("Ads.Media.BytesReceived", 1, 1);
+  histogram_tester.ExpectBucketCount("Ads.Media.BytesReceived.EME", 1, 1);
+  histogram_tester.ExpectTotalCount("Ads.Media.BytesReceived.MSE", 0);
+
+  Initialize(true, false, kTestOrigin, mojom::MediaURLScheme::kHttp);
+  provider_->AddBytesReceived(1 << 10);
+  provider_->SetIsAdMedia();
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount("Media.BytesReceived.MSE", 1, 1);
+  histogram_tester.ExpectBucketCount("Ads.Media.BytesReceived.MSE", 1, 1);
+  histogram_tester.ExpectBucketCount("Ads.Media.BytesReceived", 1, 2);
 }
 
 // Note: Tests for various Acquire* methods are contained with the unittests for

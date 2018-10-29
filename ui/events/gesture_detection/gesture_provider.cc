@@ -196,8 +196,10 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         break;
       case ET_GESTURE_PINCH_BEGIN:
         DCHECK(!pinch_event_sent_);
-        if (!scroll_event_sent_)
+        if (!scroll_event_sent_ &&
+            !scale_gesture_detector_.InAnchoredScaleMode()) {
           Send(GestureEventData(ET_GESTURE_SCROLL_BEGIN, gesture));
+        }
         pinch_event_sent_ = true;
         break;
       case ET_GESTURE_PINCH_END:

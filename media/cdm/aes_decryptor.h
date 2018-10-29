@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -164,7 +165,8 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
   // Gets a DecryptionKey associated with |key_id|. The AesDecryptor still owns
   // the key. Returns NULL if no key is associated with |key_id|.
-  DecryptionKey* GetKey_Locked(const std::string& key_id) const;
+  DecryptionKey* GetKey_Locked(const std::string& key_id) const
+      EXCLUSIVE_LOCKS_REQUIRED(key_map_lock_);
 
   // Determines if |key_id| is already specified for |session_id|.
   bool HasKey(const std::string& session_id, const std::string& key_id);
@@ -184,8 +186,8 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   // Since only Decrypt() is called off the renderer thread, we only need to
   // protect |key_map_|, the only member variable that is shared between
   // Decrypt() and other methods.
-  KeyIdToSessionKeysMap key_map_;    // Protected by |key_map_lock_|.
-  mutable base::Lock key_map_lock_;  // Protects the |key_map_|.
+  mutable base::Lock key_map_lock_;
+  KeyIdToSessionKeysMap key_map_ GUARDED_BY(key_map_lock_);
 
   // Keeps track of current open sessions and their type. Although publicly
   // AesDecryptor only supports temporary sessions, ClearKeyPersistentSessionCdm
@@ -193,12 +195,11 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   // CdmSessionType for each session.
   std::map<std::string, CdmSessionType> open_sessions_;
 
-  NewKeyCB new_audio_key_cb_;
-  NewKeyCB new_video_key_cb_;
-
   // Protect |new_audio_key_cb_| and |new_video_key_cb_| as they are set on the
   // main thread but called on the media thread.
   mutable base::Lock new_key_cb_lock_;
+  NewKeyCB new_audio_key_cb_ GUARDED_BY(new_key_cb_lock_);
+  NewKeyCB new_video_key_cb_ GUARDED_BY(new_key_cb_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(AesDecryptor);
 };

@@ -17,7 +17,7 @@ class DeathAwareScriptWrappable;
 namespace internal {
 
 class InObjectContainer {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   explicit InObjectContainer(DeathAwareScriptWrappable* dependency)

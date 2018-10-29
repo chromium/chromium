@@ -11,6 +11,7 @@
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
 #include "chrome/browser/browsing_data/counters/media_licenses_counter.h"
+#include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counter.h"
 #include "chrome/browser/browsing_data/counters/site_settings_counter.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
@@ -39,6 +41,10 @@
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
+#if defined(OS_MACOSX)
+#include "device/fido/mac/credential_store.h"
+#endif
+
 namespace {
 
 history::WebHistoryService* GetUpdatedWebHistoryService(Profile* profile) {
@@ -55,8 +61,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
     return std::make_unique<browsing_data::HistoryCounter>(
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        base::Bind(&GetUpdatedWebHistoryService,
-                   base::Unretained(profile)),
+        base::Bind(&GetUpdatedWebHistoryService, base::Unretained(profile)),
         ProfileSyncServiceFactory::GetForProfile(profile));
   }
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistoryBasic) {
@@ -83,10 +88,19 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
   }
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
-    return std::make_unique<browsing_data::PasswordsCounter>(
+    std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
+#if defined(OS_MACOSX)
+        std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
+            ChromeAuthenticatorRequestDelegate::
+                TouchIdAuthenticatorConfigForProfile(profile));
+#else
+        nullptr;
+#endif
+    return std::make_unique<browsing_data::SigninDataCounter>(
         PasswordStoreFactory::GetForProfile(profile,
                                             ServiceAccessType::EXPLICIT_ACCESS),
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        ProfileSyncServiceFactory::GetForProfile(profile),
+        std::move(credential_store));
   }
 
   if (pref_name == browsing_data::prefs::kDeleteFormData) {

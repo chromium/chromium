@@ -25,10 +25,12 @@ class CC_PAINT_EXPORT SkiaPaintImageGenerator final : public SkImageGenerator {
                    void* pixels,
                    size_t row_bytes,
                    const Options& options) override;
-  bool onQueryYUV8(SkYUVSizeInfo* size_info,
-                   SkYUVColorSpace* color_space) const override;
-  bool onGetYUV8Planes(const SkYUVSizeInfo& size_info,
-                       void* planes[3]) override;
+  bool onQueryYUVA8(SkYUVASizeInfo* size_info,
+                    SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+                    SkYUVColorSpace* color_space) const override;
+  bool onGetYUVA8Planes(const SkYUVASizeInfo& size_info,
+                        const SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+                        void* planes[3]) override;
 
  private:
   sk_sp<PaintImageGenerator> paint_image_generator_;

@@ -20,11 +20,18 @@ public final class WebApkConstants {
     public static final String EXTRA_SOURCE = "org.chromium.chrome.browser.webapp_source";
     public static final String EXTRA_WEBAPK_PACKAGE_NAME =
             "org.chromium.chrome.browser.webapk_package_name";
+    public static final String EXTRA_WEBAPK_LAUNCHING_ACTIVITY_CLASS_NAME =
+            "org.chromium.webapk.launching_activity_class_name";
     public static final String EXTRA_FORCE_NAVIGATION =
             "org.chromium.chrome.browser.webapk_force_navigation";
     // Activity launch time for uma tracking of Chrome web apk startup
     public static final String EXTRA_WEBAPK_LAUNCH_TIME =
             "org.chromium.chrome.browser.webapk_launch_time";
+    // Whether the host browser's activity should be completely transparent till the page
+    // has loaded. This enables the ShellAPK's splash screen to show through the host browser's
+    // activity.
+    public static final String EXTRA_USE_TRANSPARENT_SPLASH =
+            "org.chromium.chrome.browser.webapk.transparent_splash";
 
     // Must be kept in sync with chrome/browser/android/shortcut_info.h.
     public static final int SHORTCUT_SOURCE_UNKNOWN = 0;

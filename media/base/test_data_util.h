@@ -29,6 +29,9 @@ base::FilePath GetTestDataFilePath(const std::string& name);
 // Returns relative path for test data folder: media/test/data.
 base::FilePath GetTestDataPath();
 
+// Returns the mime type for media/test/data/<file_name>.
+std::string GetMimeTypeForFile(const std::string& file_name);
+
 // Returns a string containing key value query params in the form of:
 // "key_1=value_1&key_2=value2"
 std::string GetURLQueryString(const base::StringPairs& query_params);

@@ -30,13 +30,20 @@ bool StyleInheritedVariables::operator==(
   return true;
 }
 
+StyleInheritedVariables::StyleInheritedVariables()
+    : registered_data_(new HeapHashMap<AtomicString, Member<CSSValue>>),
+      root_(nullptr),
+      needs_resolution_(false) {}
+
 StyleInheritedVariables::StyleInheritedVariables(
     StyleInheritedVariables& other) {
   if (!other.root_) {
+    registered_data_ = new HeapHashMap<AtomicString, Member<CSSValue>>;
     root_ = &other;
   } else {
     data_ = other.data_;
-    registered_data_ = other.registered_data_;
+    registered_data_ = new HeapHashMap<AtomicString, Member<CSSValue>>(
+        *other.registered_data_);
     root_ = other.root_;
   }
   needs_resolution_ = other.needs_resolution_;
@@ -55,13 +62,14 @@ CSSVariableData* StyleInheritedVariables::GetVariable(
 void StyleInheritedVariables::SetRegisteredVariable(
     const AtomicString& name,
     const CSSValue* parsed_value) {
-  registered_data_.Set(name, const_cast<CSSValue*>(parsed_value));
+  needs_resolution_ = true;
+  registered_data_->Set(name, const_cast<CSSValue*>(parsed_value));
 }
 
 const CSSValue* StyleInheritedVariables::RegisteredVariable(
     const AtomicString& name) const {
-  auto result = registered_data_.find(name);
-  if (result != registered_data_.end())
+  auto result = registered_data_->find(name);
+  if (result != registered_data_->end())
     return result->value.Get();
   if (root_)
     return root_->RegisteredVariable(name);
@@ -70,9 +78,12 @@ const CSSValue* StyleInheritedVariables::RegisteredVariable(
 
 void StyleInheritedVariables::RemoveVariable(const AtomicString& name) {
   data_.Set(name, nullptr);
-  auto iterator = registered_data_.find(name);
-  if (iterator != registered_data_.end())
+  auto iterator = registered_data_->find(name);
+  if (iterator != registered_data_->end()) {
     iterator->value = nullptr;
+  } else if (root_ && root_->RegisteredVariable(name)) {
+    SetRegisteredVariable(name, nullptr);
+  }
 }
 
 HashSet<AtomicString> StyleInheritedVariables::GetCustomPropertyNames() const {

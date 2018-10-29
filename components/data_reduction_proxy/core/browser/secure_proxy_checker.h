@@ -11,39 +11,47 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_request_status.h"
 
 namespace net {
-
-class URLFetcher;
-class URLRequestContextGetter;
-
+struct RedirectInfo;
 }  // namespace net
+
+namespace network {
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+struct ResourceResponseHead;
+}  // namespace network
 
 namespace data_reduction_proxy {
 
-typedef base::Callback<
-    void(const std::string&, const net::URLRequestStatus&, int)>
+typedef base::RepeatingCallback<void(const std::string&, int, int)>
     SecureProxyCheckerCallback;
 
 // Checks if the secure proxy is allowed by the carrier by sending a probe.
-class SecureProxyChecker : public net::URLFetcherDelegate {
+class SecureProxyChecker {
  public:
-  explicit SecureProxyChecker(const scoped_refptr<net::URLRequestContextGetter>&
-                                  url_request_context_getter);
+  explicit SecureProxyChecker(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  ~SecureProxyChecker() override;
+  virtual ~SecureProxyChecker();
 
   void CheckIfSecureProxyIsAllowed(SecureProxyCheckerCallback fetcher_callback);
 
  private:
-  void OnURLFetchComplete(const net::URLFetcher* source) override;
+  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadCompleteOrRedirect(const std::string& response,
+                                   int net_error,
+                                   int response_code);
 
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
+  void OnURLLoaderRedirect(const net::RedirectInfo& redirect_info,
+                           const network::ResourceResponseHead& response_head,
+                           std::vector<std::string>* to_be_removed_headers);
 
-  // The URLFetcher being used for the secure proxy check.
-  std::unique_ptr<net::URLFetcher> fetcher_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The URLLoader being used for the secure proxy check.
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
   SecureProxyCheckerCallback fetcher_callback_;
 
   // Used to determine the latency in performing the Data Reduction Proxy secure

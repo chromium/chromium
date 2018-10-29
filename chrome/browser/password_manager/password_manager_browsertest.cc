@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -48,6 +49,7 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
@@ -1661,9 +1663,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // is relevant. By the time the reply is executed it is guaranteed that the
   // migration is completed.
   base::RunLoop run_loop;
-  content::BrowserThread::PostTaskAndReply(content::BrowserThread::IO,
-                                           FROM_HERE, base::BindOnce([]() {}),
-                                           run_loop.QuitClosure());
+  base::PostTaskWithTraitsAndReply(FROM_HERE, {content::BrowserThread::IO},
+                                   base::BindOnce([]() {}),
+                                   run_loop.QuitClosure());
   run_loop.Run();
 
   // Migration updates should touch the password store.
@@ -3531,6 +3533,31 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_EQ(submit_url, frame->GetLastCommittedURL());
   EXPECT_FALSE(prompt_observer->IsSavePromptAvailable());
+}
+
+// Verify that there is no renderer kill when filling out a password on a
+// blob: URL.
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       NoRendererKillWithBlobURLFrames) {
+  // Start from a page without a password form.
+  NavigateToFile("/password/other.html");
+
+  GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
+  std::string form_html = GeneratePasswordFormForAction(submit_url);
+  std::string navigate_to_blob_url =
+      "location.href = URL.createObjectURL(new Blob([\"" + form_html +
+      "\"], { type: 'text/html' }));";
+  NavigationObserver observer(WebContents());
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), navigate_to_blob_url));
+  observer.Wait();
+
+  // Fill in the password and submit the form.  This shouldn't bring up a save
+  // password prompt and shouldn't result in a renderer kill.
+  std::string fill_and_submit =
+      "document.getElementById('password_field').value = 'random';"
+      "document.getElementById('testform').submit();";
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
+  EXPECT_FALSE(BubbleObserver(WebContents()).IsSavePromptAvailable());
 }
 
 // Test that for HTTP auth (i.e., credentials not put through web forms) the

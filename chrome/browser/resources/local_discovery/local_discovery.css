@@ -20,7 +20,7 @@ header {
 }
 
 .device {
-  background: url(device.png) no-repeat;
+  background: url(printer.png) no-repeat;
   margin: 23px 0;
   max-width: 695px;
   overflow: hidden;
@@ -33,10 +33,6 @@ html[dir='rtl'] .device {
 .device .device-info {
   float: left;
   padding-inline-start: 40px;
-}
-
-.printer {
-  background: url(printer.png) no-repeat;
 }
 
 html[dir='rtl'] .device .device-info {
@@ -112,23 +108,4 @@ section {
 
 .dialog-contents {
   padding-left: 17px;
-}
-
-#back-link {
-  background: -webkit-image-set(
-      url(chevron_left-1x.png) 1x,
-      url(chevron_left-2x.png) 2x)
-      no-repeat;
-  margin-bottom: 25px;
-  margin-top: 6px;
-  padding-left: 23px;
-}
-
-html[dir='rtl'] #back-link {
-  transform: scaleX(-1);
-}
-
-html[dir='rtl'] #back-link span {
-  display: inline-block;
-  transform: scaleX(-1);
 }

@@ -201,6 +201,11 @@ are declared in tools/grit/grit_rule.gni.
         <part file="md_extensions_strings.grdp" />
       </if>
 
+      <!-- NUX Welcome onboarding experience strings -->
+      <if expr="not chromeos and not is_android">
+        <part file="onboarding_welcome_strings.grdp" />
+      </if>
+
       <!-- Printing specific strings -->
       <if expr="enable_printing">
         <part file="printing_strings.grdp" />
@@ -543,7 +548,7 @@ are declared in tools/grit/grit_rule.gni.
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="The name of the Generate Password command in the content area context menu">
-            Generate password...
+            Suggest password...
           </message>
           <message name="IDS_CONTENT_CONTEXT_MORE_APPS" desc="The label for the parent item of the submenu in the content area context menu.">
             More
@@ -764,7 +769,7 @@ are declared in tools/grit/grit_rule.gni.
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="In Title Case: The name of the Generate Password command in the content area context menu">
-            Generate Password...
+            Suggest Password...
           </message>
         </if>
       </if>
@@ -2991,9 +2996,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
             JavaScript memory
           </message>
-          <message name="IDS_TASK_MANAGER_MEMORY_STATE_COLUMN" desc="Task manager memory state column.  Shows the memory coordinator's state of a process">
-            Memory state
-          </message>
           <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
             Keepalive count
           </message>
@@ -3068,9 +3070,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
             JavaScript Memory
           </message>
-          <message name="IDS_TASK_MANAGER_MEMORY_STATE_COLUMN" desc="Task manager memory state column.  Shows the memory coordinator's state of a process">
-            Memory State
-          </message>
           <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
             Keepalive Count
           </message>
@@ -3095,15 +3094,6 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
           Disabled
-        </message>
-        <message name="IDS_TASK_MANAGER_MEMORY_STATE_NORMAL_TEXT" desc="The value displayed for a process with memory state 'normal'.">
-          Normal
-        </message>
-        <message name="IDS_TASK_MANAGER_MEMORY_STATE_THROTTLED_TEXT" desc="The value displayed for a process with memory state 'throttled'.">
-          Throttled
-        </message>
-        <message name="IDS_TASK_MANAGER_MEMORY_STATE_SUSPENDED_TEXT" desc="The value displayed for a process with memory state 'suspended'.">
-          Suspended
         </message>
         <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
           <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
@@ -3183,11 +3173,8 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
           System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
         </message>
-        <message name="IDS_TASK_MANAGER_ISOLATED_SUBFRAMES_PREFIX" desc="The prefix for an out-of-process-iframe row in the Task Manager for subframes that were isolated because of 'top document isolation' mode">
-          Subframes for: <ph name="PARENT_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ISOLATED_INCOGNITO_SUBFRAMES_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row in the Task Manager for subframes that were isolated because of 'top document isolation' mode">
-          Incognito subframes for: <ph name="PARENT_SITE">$1<ex>https://youtube.com/</ex></ph>
+        <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
+          Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
         </message>
       </if>
 
@@ -3198,8 +3185,8 @@ are declared in tools/grit/grit_rule.gni.
         V8 Proxy Resolver
       </message>
       <if expr="chromeos">
-        <message name="IDS_UTILITY_PROCESS_CUPS_IPP_VALIDATOR_SERVICE_NAME" desc="The name of the utility process used for validating IPP requests out-of-process.">
-          CUPS IPP Validator
+        <message name="IDS_UTILITY_PROCESS_CUPS_IPP_PARSER_SERVICE_NAME" desc="The name of the utility process used for parsing IPP requests out-of-process.">
+          CUPS IPP Parser 
         </message>
         <message name="IDS_UTILITY_PROCESS_IME_SERVICE_NAME" desc="The name of the utility process providing the input methods.">
           Chrome OS Input Method
@@ -3492,6 +3479,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_WEB_REQUEST" desc="Permission string for Declarative Web Request API.">
           Block parts of web pages
+        </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_NET_REQUEST" desc="Permission string for Declarative Net Request API.">
+          Block content on any page you visit
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_DOCUMENT_SCAN" desc="Permission string for access to document scanning.">
           Access document scanners attached via USB or on the local network
@@ -4078,7 +4068,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSION_WEB_STORE_TITLE" desc="Text for the Chrome Web Store">
         Chrome Web Store
       </message>
-      <message name="IDS_EXTENSION_WEB_STORE_TITLE_SHORT" desc="Text for the Chrome Web Store">
+      <message name="IDS_EXTENSION_WEB_STORE_TITLE_SHORT" desc="Shortened version of text for the Chrome Web Store">
         Web Store
       </message>
       <message name="IDS_EXTENSIONS_SHOW_DETAILS" desc="Tooltip for the button next to an extension that shows more details">
@@ -4308,11 +4298,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
-      <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE_MANY_ACCOUNTS" desc="The title of the account chooser dialog/infobar for more than one account.">
-        Choose your account saved with <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Chrome</ex></ph> to sign in
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE_ONE_ACCOUNT" desc="The title of the account chooser dialog/infobar for one account.">
-        Sign in with your account saved with <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Chrome</ex></ph>
+      <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE" desc="The title of the account chooser dialog.">
+        Sign in as
       </message>
       <message name="IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE" desc="The title text used in the passwords bubble when the user has saved a password.">
         Password saved
@@ -4327,7 +4314,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Save password?
       </message>
       <message name="IDS_SAVE_ACCOUNT" desc="The title of the save password bubble when a federated credential can be saved.">
-        Do you want <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Chrome</ex></ph> to save your account for this site?
+        Save username?
       </message>
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
@@ -4430,6 +4417,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_PAGE_CAPPING_STOP_MESSAGE" desc="A link on the of infobar notifying the user that data usage on the page is beyond a certain threshold. Clicking the link pauses the resource loading on the page.">
          Stop using data on this page
+      </message>
+
+      <!-- HTTPS Server Previews InfoBar -->
+      <message name="IDS_LITE_PAGE_PREVIEWS_MESSAGE" desc="The text of the infobar notifying the user that Chrome's Lite mode will now also apply to HTTPS pages.">
+        Lite Mode now makes browsing faster on all pages, including HTTPS.
+      </message>
+      <message name="IDS_LITE_PAGE_PREVIEWS_SETTINGS_LINK" desc="This link opens the Data Saver settings to explain and configure Lite mode settings.">
+        Settings
       </message>
 
       <!-- WebRTC logs -->
@@ -4793,7 +4788,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CONFIRM_MSG_RESTORE_DEFAULTS" desc="The text label of the restore default shortcuts button when editing a custom link. (On the New Tab Page)">
         Restore default shortcuts
       </message>
-      <message name="IDS_NTP_CUSTOM_BG_CUSTOMIZE_BACKGROUND" desc="The title for the tooltip for background customization. (On the New Tab Page)">
+      <message name="IDS_NTP_CUSTOM_BG_CUSTOMIZE_BACKGROUND" desc="The title and aria-label for the tooltip for background customization. (On the New Tab Page)">
         Customize this page
       </message>
       <message name="IDS_NTP_CUSTOM_BG_GOOGLE_PHOTOS" desc="The text label of the Google Photos option for background customization. (On the New Tab Page)">
@@ -5186,9 +5181,6 @@ the Bookmarks menu.">
         <message name="IDS_PASSWORD_MANAGER_PASSWORD_LABEL" desc="Label for the password field in a prompt to store new credential">
           Password
         </message>
-        <message name="IDS_PASSWORD_MANAGER_SIGNIN_VIA_FEDERATION" desc="Text for password replacement for federated credential in save prompt.">
-          Sign in with <ph name="PROVIDER">$1<ex>facebook.com</ex></ph>
-        </message>
       </if>
       <if expr="is_android">
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option">
@@ -5555,6 +5547,9 @@ the Bookmarks menu.">
       </message>
       <message name="IDS_PICTURE_IN_PICTURE_CLOSE_CONTROL_TEXT" desc="Text label of the close control button. The button appears when the user hovers over the Picture-in-Picture window.">
         Close
+      </message>
+      <message name="IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT" desc="Text label of the resize handle. The button appears when the user hovers over the Picture-in-Picture window.">
+        Resize
       </message>
       <message name="IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button toggles between play and pause controls.">
         Toggle video to play or pause
@@ -6640,7 +6635,7 @@ the Bookmarks menu.">
         You've signed in and turned on Sync
       </message>
       <message name="IDS_SYNC_CONFIRMATION_DICE_TITLE" desc="Title of the sync confirmation dialog in the tab modal signin flow when Dice is enabled">
-        You've turned on Sync
+        Turn on sync?
       </message>
       <message name="IDS_SYNC_CONFIRMATION_UNITY_TITLE" desc="Title of the sync confirmation dialog in the tab modal signin flow when Unity is enabled">
         Get Google smarts in Chrome
@@ -6710,14 +6705,8 @@ the Bookmarks menu.">
       <message name="IDS_SYNC_CONFIRMATION_DICE_SYNC_SETTINGS_DESCRIPTION" desc="Body of the personalize services section of the sync confirmation dialog in the tab modal signin flow for child accounts">
         Google may use content on sites you visit, plus browser activity and interactions, to personalize Chrome and other Google services like Translate, Search, and ads. You can customize this in Settings.
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
-        Ok, got it
-      </message>
       <message name="IDS_SYNC_CONFIRMATION_DICE_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
         Yes, I'm in
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_UNDO_BUTTON_LABEL" desc="Label of the undo button in the sync confirmation dialog of the tab modal signin flow">
-        Undo
       </message>
       <message name="IDS_SYNC_CONFIRMATION_DICE_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation dialog of the tab modal signin flow to open settings">
         Settings
@@ -7188,15 +7177,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
         <!-- Encryption tab of the configure sync dialog -->
         <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
-          All data is encrypted with your sync passphrase
+          Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
         </message>
         <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          All data was encrypted with your sync passphrase on
-          <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>
+          Data was encrypted with your sync passphrase on
+          <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
         </message>
         <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_GOOGLE_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          All data was encrypted with your Google password as of
-          <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>
+          Data was encrypted with your Google password as of
+          <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
         </message>
 
         <!-- Sync promo page chrome://signin -->
@@ -7964,9 +7953,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_LOCAL_DEVICE" desc="The title of the dialog during the autosign-in first run experience for the Chrome signed out users.">
         Sign in easily
       </message>
-      <message name="IDS_AUTO_SIGNIN_FIRST_RUN_SMART_LOCK_TEXT" desc="The text of the dialog during the autosign-in first run experience for the Chrome syncing users.">
-        <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Smart Lock</ex></ph> automatically signs you in to eligible sites and apps with passwords you saved.
-      </message>
       <message name="IDS_AUTO_SIGNIN_FIRST_RUN_TEXT" desc="The text of the dialog during the autosign-in first run experience for the Chrome signed out users.">
         <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Chrome</ex></ph> automatically signs you in to eligible sites with passwords you saved.
       </message>
@@ -8313,6 +8299,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SEARCH_BOX_HINT_FULLSCREEN" desc="Hint text for the search box in fullscreen app list window.">
           Search your device, apps, web...
         </message>
+        <message name="IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME" desc="Hint text for the search result that performs a specific action with an app.">
+          <ph name="ACTION_NAME">$1<ex>Compose</ex></ph> with <ph name="APP_NAME">$2<ex>GMail</ex></ph>.
+        </message>
         <if expr="not use_titlecase">
           <message name="IDS_APP_LIST_CONTEXT_MENU_NEW_TAB" desc="Title text for the 'open new' context menu item of an app list item configured to open in a tab">
             New tab
@@ -8510,9 +8499,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_LOCAL_DISCOVERY_ADDING_PRINTER" desc="Title for 'adding printer' page">
           Adding printer...
         </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADDING_DEVICE" desc="Title for 'adding device' page">
-          Adding device...
-        </message>
         <message name="IDS_LOCAL_DISCOVERY_ERROR_OCURRED" desc="Title for error page">
           Could not complete registration
         </message>
@@ -8521,15 +8507,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_LOCAL_DISCOVERY_ADDING_PRINTER_MESSAGE2" desc="Message for adding printer number 2">
           Adding the printer to your account - this may take a moment...
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADDING_DEVICE_MESSAGE1" desc="Message for adding device number 1">
-          Adding the device to your account - this may take a moment...
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CONFIRM_CODE_MESSAGE" desc="Message for confirming device security code">
-          Make sure the device is showing the same code.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CONFIRM_CODE" desc="button name to confirming security code">
-          Confirm
         </message>
         <message name="IDS_LOCAL_DISCOVERY_ERROR_OCURRED_MESSAGE" desc="Message for error page">
           An error has occurred. Please check your printer and try again.
@@ -8896,8 +8873,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_BLOCKED_ADS_PROMPT_TITLE" desc="Title of the prompt shown to users in the omnibox or infobar when Chrome has blocked ads on the site because the site tends to show intrusive ads. The title will stand alone next to an icon so there is no need for a period." formatter_data="android_java">
       Ads blocked
     </message>
-    <message name="IDS_BLOCKED_ADS_PROMPT_EXPLANATION" desc="Longer explanation that Chrome has blocked ads on the site. To be shown in an expanded infobar / bubble">
-      Chrome blocked ads on this site because this site tends to show intrusive ads.
+    <message name="IDS_BLOCKED_ADS_PROMPT_EXPLANATION" desc="A warning that a site has, in the past, shown intrusive or misleading ads. To be shown in an expanded infobar / bubble">
+      This site shows intrusive or misleading ads.
     </message>
     <message name="IDS_BLOCKED_ADS_PROMPT_TOOLTIP" desc="Explanation that Chrome blocked ads on this site. To be shown as a tooltip on the Ads blocked desktop bubble">
       Ads blocked on this site
@@ -9045,6 +9022,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_VIDEO_AUDIO_CALL_NOTIFICATION_TEXT_2" desc="Text to be shown as a notification when a WebRTC video and audio call is in progress" formatter_data="android_java">
         Accessing audio and video input
       </message>
+      <message name="IDS_VIDEO_CALL_INCOGNITO_NOTIFICATION_TEXT_2" desc="Text to be shown as a notification when a WebRTC video call is in progress in incognito mode." formatter_data="android_java">
+        A site is accessing video input
+      </message>
+      <message name="IDS_AUDIO_CALL_INCOGNITO_NOTIFICATION_TEXT_2" desc="Text to be shown as a notification when a WebRTC audio call is in progress in incognito mode." formatter_data="android_java">
+        A site is accessing audio input
+      </message>
+      <message name="IDS_VIDEO_AUDIO_CALL_INCOGNITO_NOTIFICATION_TEXT_2" desc="Text to be shown as a notification when a WebRTC video and audio call is in progress in incognito mode." formatter_data="android_java">
+        A site is accessing audio and video input
+      </message>
     </if>
 
     <!-- Download open confirmation dialog -->
@@ -9149,10 +9135,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Something went wrong
       </message>
       <message name="IDS_WEBAUTHN_ERROR_INTERNAL_UNRECOGNIZED_DESCRIPTION" desc="Description in the dialog shown when the user's could not sign in to a web site using a hardware-based authentication mechanism built in to the computer (e.g. a fingerprint reader), because they never registered the device with this website before.">
-        We couldn't verify your identity on this device
+        Your identity couldn't be verified
       </message>
       <message name="IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_TITLE" desc="Title of the dialog shown when the user could not sign in to a web site, because their computer did not support any of the hardware-based authentication mechanisms desired by the web site.">
-        We couldn't verify your identity on this device
+        Your identity couldn't be verified
       </message>
       <message name="IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_DESCRIPTION" desc="Description in the dialog shown when the user could not sign in to a web site, because their computer did not support any of the hardware-based authentication mechanisms desired by the web site.">
         This device doesn't support the type of security key requested by this website
@@ -9200,7 +9186,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Searching...
       </message>
       <message name="IDS_WEBAUTHN_BLE_DEVICE_SELECTION_REMINDER_LABEL" desc="Label text. Reminds the user that their Bluetooth security key (an external physical device for user authentication) will only show up in the list of nearby Bluetooth devices if they put it into pairing mode. This is achieved by holding down the button on the device for 5 seconds, or longer." meaning="Here, `key` refers to a security key, an external physical device for user authentication.">
-        To see your security key, it needs to be in pairing mode. Press the button on your key for at least 5 seconds.
+        If your security key isn't listed, press the key's button for at least 5 seconds.
       </message>
       <message name="IDS_WEBAUTHN_BLE_PIN_ENTRY_TITLE" desc="Title of the dialog shown when instructing the user to enter the PIN code (a 6-digit number) to pair a Bluetooth security key (an external physical device for user authentication) with their computer.">
         Pair with <ph name="DEVICE_NAME">$1<ex>VHGSHSSN</ex></ph>

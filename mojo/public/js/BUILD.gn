@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
@@ -50,6 +51,40 @@ action("bindings") {
   ]
 }
 
+bindings_lite_sources = [ "bindings_lite.js" ]
+
+bindings_lite_compiled_file = "$target_gen_dir/mojo_bindings_lite.js"
+
+if (closure_compile) {
+  js_binary("bindings_lite") {
+    sources = [ "compile_preamble.js" ] + bindings_lite_sources
+    outputs = [
+      bindings_lite_compiled_file,
+    ]
+    externs_list = [
+      "$externs_path/mojo_core.js",
+      "$externs_path/pending.js",
+    ]
+    closure_flags = [
+      "compilation_level=ADVANCED_OPTIMIZATIONS",
+      "generate_exports",
+    ]
+  }
+} else {
+  action("bindings_lite") {
+    script = "//v8/tools/concatenate-files.py"
+    sources = bindings_lite_sources
+    outputs = [
+      bindings_lite_compiled_file,
+    ]
+    args = rebase_path(bindings_lite_sources, root_build_dir)
+    args += [ rebase_path(bindings_lite_compiled_file, root_build_dir) ]
+    deps = [
+      "//mojo/public/interfaces/bindings:bindings_js__generator",
+    ]
+  }
+}
+
 grit("resources") {
   source = "mojo_bindings_resources.grd"
 
@@ -62,11 +97,15 @@ grit("resources") {
     "grit/mojo_bindings_resources_map.h",
     "mojo_bindings_resources.pak",
   ]
+
   grit_flags = [
     "-E",
     "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
+
   deps = [
     ":bindings",
+    ":bindings_lite",
+    "//mojo/public/mojom/base:base_js",
   ]
 }

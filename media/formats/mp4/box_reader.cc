@@ -106,8 +106,7 @@ BoxReader::BoxReader(const BoxReader& other) = default;
 
 BoxReader::~BoxReader() {
   if (scanned_ && !children_.empty()) {
-    for (ChildMap::iterator itr = children_.begin();
-         itr != children_.end(); ++itr) {
+    for (auto itr = children_.begin(); itr != children_.end(); ++itr) {
       DVLOG(1) << "Skipping unknown box: " << FourCCToString(itr->first);
     }
   }
@@ -223,7 +222,7 @@ bool BoxReader::ReadChild(Box* child) {
   DCHECK(scanned_);
   FourCC child_type = child->BoxType();
 
-  ChildMap::iterator itr = children_.find(child_type);
+  auto itr = children_.find(child_type);
   RCHECK(itr != children_.end());
   DVLOG(2) << "Found a " << FourCCToString(child_type) << " box.";
   RCHECK(child->Parse(&itr->second));

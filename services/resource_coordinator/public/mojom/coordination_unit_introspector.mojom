@@ -8,8 +8,15 @@ import "services/resource_coordinator/public/mojom/coordination_unit.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// A |PageInfo| describes some metrics about a particular page with respect to
+// a given process.
 struct PageInfo {
+  // Identifier to distinguish which URL this |PageInfo| corresponds to.
   int64 ukm_source_id;
+  // Identifier to distinguish which tab this |PageInfo| corresponds to.
+  uint64 tab_id;
+  // True iff the process for this |PageInfo| hosts the main frame of the page.
+  bool hosts_main_frame;
   bool is_visible;
   mojo_base.mojom.TimeDelta time_since_last_navigation;
   mojo_base.mojom.TimeDelta time_since_last_visibility_change;

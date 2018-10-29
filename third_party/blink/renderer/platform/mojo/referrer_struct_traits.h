@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_REFERRER_STRUCT_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_REFERRER_STRUCT_TRAITS_H_
 
-#include "third_party/blink/public/platform/referrer_policy_enum_traits.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/platform/referrer.mojom-blink.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer_policy.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -23,18 +23,19 @@ struct StructTraits<blink::mojom::ReferrerDataView, blink::Referrer> {
   }
 
   // Equality of values is asserted in //Source/web/AssertMatchingEnums.cpp.
-  static blink::WebReferrerPolicy policy(const blink::Referrer& referrer) {
-    return static_cast<blink::WebReferrerPolicy>(referrer.referrer_policy);
+  static network::mojom::ReferrerPolicy policy(
+      const blink::Referrer& referrer) {
+    return static_cast<network::mojom::ReferrerPolicy>(
+        referrer.referrer_policy);
   }
 
   static bool Read(blink::mojom::ReferrerDataView data, blink::Referrer* out) {
     blink::KURL referrer;
-    blink::WebReferrerPolicy webReferrerPolicy;
-    if (!data.ReadUrl(&referrer) || !data.ReadPolicy(&webReferrerPolicy))
+    network::mojom::ReferrerPolicy referrer_policy;
+    if (!data.ReadUrl(&referrer) || !data.ReadPolicy(&referrer_policy))
       return false;
 
-    out->referrer_policy =
-        static_cast<blink::ReferrerPolicy>(webReferrerPolicy);
+    out->referrer_policy = static_cast<blink::ReferrerPolicy>(referrer_policy);
     if (referrer.GetString().IsEmpty())
       out->referrer = g_null_atom;
     else

@@ -17,6 +17,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/base/media_switches.h"
@@ -71,8 +72,8 @@ class AudioManagerHelper : public base::PowerObserver {
         base::Bind(&AudioManagerHelper::UpdateLastAudioThreadTimeTick,
                    base::Unretained(this)));
     monitor_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&AudioManagerHelper::RecordAudioThreadStatus,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&AudioManagerHelper::RecordAudioThreadStatus,
+                                  base::Unretained(this)));
   }
 
   bool IsAudioThreadHung() {
@@ -130,8 +131,9 @@ class AudioManagerHelper : public base::PowerObserver {
 
       base::AutoUnlock unlock(hang_lock_);
       monitor_task_runner_->PostTask(
-          FROM_HERE, base::Bind(&AudioManagerHelper::RecordAudioThreadStatus,
-                                base::Unretained(this)));
+          FROM_HERE,
+          base::BindOnce(&AudioManagerHelper::RecordAudioThreadStatus,
+                         base::Unretained(this)));
     }
   }
 
@@ -172,8 +174,9 @@ class AudioManagerHelper : public base::PowerObserver {
 
     // Don't hold the lock while posting the next task.
     monitor_task_runner_->PostDelayedTask(
-        FROM_HERE, base::Bind(&AudioManagerHelper::RecordAudioThreadStatus,
-                              base::Unretained(this)),
+        FROM_HERE,
+        base::BindOnce(&AudioManagerHelper::RecordAudioThreadStatus,
+                       base::Unretained(this)),
         max_hung_task_time_);
   }
 
@@ -217,8 +220,8 @@ class AudioManagerHelper : public base::PowerObserver {
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   base::Lock hang_lock_;
-  bool hang_detection_enabled_ = true;
-  base::TimeTicks last_audio_thread_timer_tick_;
+  bool hang_detection_enabled_ GUARDED_BY(hang_lock_) = true;
+  base::TimeTicks last_audio_thread_timer_tick_ GUARDED_BY(hang_lock_);
   uint32_t failed_pings_ = 0;
   bool io_task_running_ = false;
   bool audio_task_running_ = false;
@@ -342,8 +345,8 @@ bool AudioManager::Shutdown() {
     ShutdownOnAudioThread();
   } else {
     audio_thread_->GetTaskRunner()->PostTask(
-        FROM_HERE, base::Bind(&AudioManager::ShutdownOnAudioThread,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&AudioManager::ShutdownOnAudioThread,
+                                  base::Unretained(this)));
   }
   audio_thread_->Stop();
   shutdown_ = true;

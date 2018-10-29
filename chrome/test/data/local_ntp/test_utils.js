@@ -197,7 +197,7 @@ function elementIsVisible(elem) {
 function initLocalNTP(isGooglePage) {
   configData.isGooglePage = isGooglePage;
   var localNTP = LocalNTP();
-  localNTP.disableIframesForTesting();
+  localNTP.disableIframesAndVoiceSearchForTesting();
   localNTP.init();
 }
 

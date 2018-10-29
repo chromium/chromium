@@ -49,13 +49,11 @@ CustomLayoutFragment* CustomLayoutFragmentRequest::PerformLayout(
           LayoutUnit::FromDoubleRound(options_.fixedInlineSize()));
     }
   } else {
-    if (is_parallel_writing_mode) {
-      box->SetOverrideContainingBlockContentLogicalWidth(
-          LayoutUnit::FromDoubleRound(options_.availableInlineSize()));
-    } else {
-      box->SetOverrideContainingBlockContentLogicalHeight(
-          LayoutUnit::FromDoubleRound(options_.availableInlineSize()));
-    }
+    box->SetOverrideContainingBlockContentLogicalWidth(
+        options_.hasAvailableInlineSize() &&
+                options_.availableInlineSize() >= 0.0
+            ? LayoutUnit::FromDoubleRound(options_.availableInlineSize())
+            : LayoutUnit());
   }
 
   if (options_.hasFixedBlockSize()) {
@@ -67,14 +65,40 @@ CustomLayoutFragment* CustomLayoutFragmentRequest::PerformLayout(
           LayoutUnit::FromDoubleRound(options_.fixedBlockSize()));
     }
   } else {
-    if (is_parallel_writing_mode) {
-      box->SetOverrideContainingBlockContentLogicalHeight(
-          LayoutUnit::FromDoubleRound(options_.availableBlockSize()));
-    } else {
-      box->SetOverrideContainingBlockContentLogicalWidth(
-          LayoutUnit::FromDoubleRound(options_.availableBlockSize()));
+    box->SetOverrideContainingBlockContentLogicalHeight(
+        options_.hasAvailableBlockSize() && options_.availableBlockSize() >= 0.0
+            ? LayoutUnit::FromDoubleRound(options_.availableBlockSize())
+            : LayoutUnit());
+  }
+
+  // We default the percentage resolution block-size to indefinite if nothing
+  // is specified.
+  LayoutUnit percentage_resolution_logical_height(-1);
+
+  if (is_parallel_writing_mode) {
+    if (options_.hasPercentageBlockSize() &&
+        options_.percentageBlockSize() >= 0.0) {
+      percentage_resolution_logical_height =
+          LayoutUnit::FromDoubleRound(options_.percentageBlockSize());
+    } else if (options_.hasAvailableBlockSize() &&
+               options_.availableBlockSize() >= 0.0) {
+      percentage_resolution_logical_height =
+          LayoutUnit::FromDoubleRound(options_.availableBlockSize());
+    }
+  } else {
+    if (options_.hasPercentageInlineSize() &&
+        options_.percentageInlineSize() >= 0.0) {
+      percentage_resolution_logical_height =
+          LayoutUnit::FromDoubleRound(options_.percentageInlineSize());
+    } else if (options_.hasAvailableInlineSize() &&
+               options_.availableInlineSize() >= 0.0) {
+      percentage_resolution_logical_height =
+          LayoutUnit::FromDoubleRound(options_.availableInlineSize());
     }
   }
+
+  box->SetOverrideContainingBlockPercentageResolutionLogicalHeight(
+      percentage_resolution_logical_height);
 
   if (box->IsLayoutCustom())
     ToLayoutCustom(box)->SetConstraintData(constraint_data_);
@@ -82,6 +106,7 @@ CustomLayoutFragment* CustomLayoutFragmentRequest::PerformLayout(
   box->ForceLayout();
 
   box->ClearOverrideContainingBlockContentSize();
+  box->ClearOverrideContainingBlockPercentageResolutionLogicalHeight();
   box->ClearOverrideSize();
 
   if (box->IsLayoutCustom())

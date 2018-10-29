@@ -11,6 +11,7 @@ import android.webkit.WebView;
 
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.SharedStatics;
+import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
@@ -66,12 +67,14 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.PROXY_OVERRIDE,
                     Features.GET_WEB_VIEW_RENDERER,
                     Features.WEB_VIEW_RENDERER_TERMINATE,
+                    Features.TRACING_CONTROLLER_BASIC_USAGE,
             };
     // clang-format on
 
     // Initialization guarded by mAwInit.getLock()
     private InvocationHandler mStatics;
     private InvocationHandler mServiceWorkerController;
+    private InvocationHandler mTracingController;
 
     public SupportLibWebViewChromiumFactory() {
         mCompatConverterAdapter = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -115,13 +118,14 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         }
 
         @Override
-        public void setProxyOverride(String host, int port, String[] exclusionList) {
-            mSharedStatics.setProxyOverride(host, port, exclusionList);
+        public void setProxyOverride(
+                String host, int port, String[] exclusionList, Runnable callback) {
+            mSharedStatics.setProxyOverride(host, port, exclusionList, callback);
         }
 
         @Override
-        public void clearProxyOverride() {
-            mSharedStatics.clearProxyOverride();
+        public void clearProxyOverride(Runnable callback) {
+            mSharedStatics.clearProxyOverride(callback);
         }
     }
 
@@ -153,5 +157,17 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             }
         }
         return mServiceWorkerController;
+    }
+
+    @Override
+    public InvocationHandler getTracingController() {
+        synchronized (mAwInit.getLock()) {
+            if (mTracingController == null) {
+                mTracingController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibTracingControllerAdapter(new SharedTracingControllerAdapter(
+                                mAwInit.getRunQueue(), mAwInit.getAwTracingController())));
+            }
+        }
+        return mTracingController;
     }
 }

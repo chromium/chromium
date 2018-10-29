@@ -25,6 +25,8 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kThrottleDelayable;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kDelayRequestsOnMultiplexedConnections;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kUnthrottleRequestsAfterLongQueuingDelay;
 
 }  // namespace features
 }  // namespace network

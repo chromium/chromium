@@ -4,8 +4,8 @@
 ++++++[section]
 ++++++++[tool bar] name='audio' description='audio' horizontal
 ++++++++++[tool bar] name='audio' description='audio' horizontal
-++++++++++++[push button] name='play' description='begin playback' xml-roles:button
+++++++++++++[push button] name='play' xml-roles:button
 ++++++++++++[text] name='0:00'
 ++++++++++++[text] name='/ 0:00'
 ++++++++++++[slider] description='audio time scrubber' horizontal xml-roles:slider
-++++++++++++[push button] name='mute' description='mute audio track' xml-roles:button
+++++++++++++[push button] name='mute' xml-roles:button

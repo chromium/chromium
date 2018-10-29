@@ -81,7 +81,7 @@ bool DOMStorageDatabase::CommitChanges(bool clear_all_first,
 
   bool did_delete = false;
   bool did_insert = false;
-  DOMStorageValuesMap::const_iterator it = changes.begin();
+  auto it = changes.begin();
   for(; it != changes.end(); ++it) {
     sql::Statement statement;
     base::string16 key = it->first;

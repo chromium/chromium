@@ -99,6 +99,13 @@ class UnlockManagerImpl : public UnlockManager,
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
 
+  // Returns true if the BluetoothAdapter is present and powered.
+  bool IsBluetoothPresentAndPowered() const;
+
+  // If the RemoteDeviceLifeCycle is available, ensure it is started (but only
+  // if Bluetooth is available).
+  void AttemptToStartRemoteDeviceLifecycle();
+
   // Called when auth is attempted to send the sign-in challenge to the remote
   // device for decryption.
   void SendSignInChallenge();

@@ -6,7 +6,6 @@
 #define ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
 
 #include "base/macros.h"
-#include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_manager_factory.h"
 
 namespace ash {
@@ -25,17 +24,6 @@ class AshFocusManagerFactory : public views::FocusManagerFactory {
       bool desktop_widget) override;
 
  private:
-  class Delegate : public views::FocusManagerDelegate {
-   public:
-    Delegate();
-    ~Delegate() override;
-
-    // views::FocusManagerDelegate overrides:
-    bool ProcessAccelerator(const ui::Accelerator& accelerator) override;
-    void OnDidChangeFocus(views::View* focused_before,
-                          views::View* focused_now) override;
-  };
-
   DISALLOW_COPY_AND_ASSIGN(AshFocusManagerFactory);
 };
 

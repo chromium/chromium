@@ -43,3 +43,6 @@ objdump, etc, since llvm symbolizer is more efficient in finding
 function names, line numbers etc.
 
 Speedup symbolization by avoiding unnecessary APK manifest extraction loops.
+
+Changed the symbolizer to act in a passthrough mode when reading from stdin, so
+    adb logcat can be piped through it to symbolize on the fly.

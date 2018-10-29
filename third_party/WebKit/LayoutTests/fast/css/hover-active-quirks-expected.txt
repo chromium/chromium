@@ -2,7 +2,6 @@ Quirks mode - matching :hover and :active
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.eventSender is defined.
 PASS testElement(t1.firstChild, true, false) is green
 PASS testElement(t2.firstChild, true, true) is green
@@ -33,24 +32,26 @@ PASS testElement(t26.firstChild, true, true) is green
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Should stay green when hovered and/or active: 
  
  
  
  
  
- 
+
 Should be green when not hovered: 
- 
+
 Should be green when not active: 
- 
+
 Should be green when hovered and not active: 
  
- 
+
 Should be green when active and not hovered: 
  
- 
+
 Should be green when hovered:       
- 
+
 Should be green when active:       
 

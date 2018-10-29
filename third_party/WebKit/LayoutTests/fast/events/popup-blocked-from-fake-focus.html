@@ -1,31 +1,26 @@
 <html>
     <head>
-        <script src="../../resources/js-test.js"></script>
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
     </head>
     <body>
         <textarea id="test" width="100" onfocus="popup()" onblur="popup()"></textarea>
-        <div id="console"></div>
 
         <script>
             var win;
             function popup() {
                 win = window.open("about:blank", "blank");
-                shouldBeNull("win");
+                assert_equals(win, null);
             }
 
             if (window.testRunner) {
-                testRunner.dumpAsText();
                 testRunner.setCanOpenWindows();
                 testRunner.setPopupBlockingEnabled(true);
                 testRunner.setCloseRemainingWindowsWhenComplete(true);
-                testRunner.waitUntilDone();
             }
 
-            document.getElementById("test").focus();
-            document.getElementById("test").blur();
-
-            if (window.testRunner)
-                testRunner.notifyDone();
+            test(() => document.getElementById("test").focus(), 'focus');
+            test(() => document.getElementById("test").blur(), 'blur');
         </script>
     </body>
 </html>

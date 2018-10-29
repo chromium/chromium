@@ -15,6 +15,10 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
+#if defined(OS_MACOSX)
+#include "device/fido/mac/authenticator_config.h"
+#endif
+
 namespace device {
 class FidoAuthenticator;
 }
@@ -50,7 +54,8 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback);
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      device::FidoRequestHandlerBase::BlePairingCallback ble_pairing_callback);
 
   // Returns true if the given relying party ID is permitted to receive
   // individual attestation certificates. This:
@@ -80,18 +85,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual bool IsFocused();
 
 #if defined(OS_MACOSX)
-  struct TouchIdAuthenticatorConfig {
-    // The keychain-access-group value used for WebAuthn credentials
-    // stored in the macOS keychain by the built-in Touch ID
-    // authenticator. For more information on this, refer to
-    // |device::fido::TouchIdAuthenticator|.
-    std::string keychain_access_group;
-    // The secret used to derive key material when encrypting WebAuthn
-    // credential metadata for storage in the macOS keychain. Chrome returns
-    // different secrets for each user profile in order to logically separate
-    // credentials per profile.
-    std::string metadata_secret;
-  };
+  using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
 
   // Returns configuration data for the built-in Touch ID platform
   // authenticator. May return nullopt if the authenticator is not used or not
@@ -122,6 +116,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
   void FidoAuthenticatorRemoved(base::StringPiece device_id) override;
+  void FidoAuthenticatorIdChanged(base::StringPiece old_authenticator_id,
+                                  std::string new_authenticator_id) override;
+  void FidoAuthenticatorPairingModeChanged(base::StringPiece authenticator_id,
+                                           bool is_in_pairing_mode) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestClientDelegate);

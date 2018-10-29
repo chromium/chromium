@@ -1,8 +1,6 @@
-
 Tests that a 'selected text changed' notification fires on an textarea element when the user moves the cursor.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Got SelectedTextChanged notification on textarea element.
 PASS successfullyParsed is true

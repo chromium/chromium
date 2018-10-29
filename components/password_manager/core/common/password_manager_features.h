@@ -21,7 +21,6 @@ extern const base::Feature kAffiliationBasedMatching;
 extern const base::Feature kAutofillHome;
 extern const base::Feature kDeleteCorruptedPasswords;
 extern const base::Feature kHtmlBasedUsernameDetector;
-extern const base::Feature kPasswordGenerationRequirements;
 extern const base::Feature kPasswordGenerationRequirementsDomainOverrides;
 extern const base::Feature kFillOnAccountSelect;
 extern const base::Feature kMigrateLinuxToLoginDB;

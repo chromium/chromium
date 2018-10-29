@@ -134,11 +134,13 @@ message BackgroundFetchActiveRequest {
 // A background fetch request in the completed state. This means that
 // the DownloadManager returned the download.
 //
-// Next Tag: 6
+// Next Tag: 7
 message BackgroundFetchCompletedRequest {
   optional string unique_id = 1;
   optional int32 request_index = 2;
   optional string serialized_request = 3;
   optional string download_guid = 4;
-  optional bool succeeded = 5;
+  optional bool succeeded = 5 [deprecated = true];
+  optional BackgroundFetchRegistration.BackgroundFetchFailureReason
+      failure_reason = 6;
 }

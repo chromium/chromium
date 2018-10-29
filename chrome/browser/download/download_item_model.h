@@ -14,10 +14,6 @@
 #include "chrome/common/safe_browsing/download_file_types.pb.h"
 #include "components/download/public/common/download_item.h"
 
-namespace gfx {
-class FontList;
-}
-
 // Implementation of DownloadUIModel that wrappers around a |DownloadItem*|. As
 // such, the caller is expected to ensure that the |download| passed into the
 // constructor outlives this |DownloadItemModel|. In addition, multiple
@@ -25,30 +21,23 @@ class FontList;
 class DownloadItemModel : public DownloadUIModel,
                           public download::DownloadItem::Observer {
  public:
+  static DownloadUIModelPtr Wrap(download::DownloadItem* download);
+
   // Constructs a DownloadItemModel. The caller must ensure that |download|
   // outlives this object.
   explicit DownloadItemModel(download::DownloadItem* download);
   ~DownloadItemModel() override;
 
   // DownloadUIModel implementation.
-  void AddObserver(DownloadUIModel::Observer* observer) override;
-  void RemoveObserver(DownloadUIModel::Observer* observer) override;
   ContentId GetContentId() const override;
-  base::string16 GetInterruptReasonText() const override;
-  base::string16 GetStatusText() const override;
+  Profile* profile() const override;
   base::string16 GetTabProgressStatusText() const override;
-  base::string16 GetTooltipText(const gfx::FontList& font_list,
-                                int max_width) const override;
-  base::string16 GetWarningText(const gfx::FontList& font_list,
-                                int base_width) const override;
-  base::string16 GetWarningConfirmButtonText() const override;
   int64_t GetCompletedBytes() const override;
   int64_t GetTotalBytes() const override;
   int PercentComplete() const override;
   bool IsDangerous() const override;
   bool MightBeMalicious() const override;
   bool IsMalicious() const override;
-  bool HasSupportedImageMimeType() const override;
   bool ShouldAllowDownloadFeedback() const override;
   bool ShouldRemoveFromShelfWhenComplete() const override;
   bool ShouldShowDownloadStartedAnimation() const override;
@@ -66,8 +55,6 @@ class DownloadItemModel : public DownloadUIModel,
   bool IsBeingRevived() const override;
   void SetIsBeingRevived(bool is_being_revived) override;
   download::DownloadItem* download() override;
-  base::string16 GetProgressSizesString() const override;
-
   base::FilePath GetFileNameToReportUser() const override;
   base::FilePath GetTargetFilePath() const override;
   void OpenDownload() override;
@@ -79,17 +66,25 @@ class DownloadItemModel : public DownloadUIModel,
   bool GetOpened() const override;
   void SetOpened(bool opened) override;
   bool IsDone() const override;
+  void Pause() override;
   void Cancel(bool user_cancel) override;
+  void Resume() override;
+  void Remove() override;
   void SetOpenWhenComplete(bool open) override;
-  download::DownloadInterruptReason GetLastReason() const override;
   base::FilePath GetFullPath() const override;
   bool CanResume() const override;
   bool AllDataSaved() const override;
   bool GetFileExternallyRemoved() const override;
   GURL GetURL() const override;
+  offline_items_collection::FailState GetLastFailState() const override;
 
 #if !defined(OS_ANDROID)
-  DownloadCommands GetDownloadCommands() const override;
+  bool IsCommandEnabled(const DownloadCommands* download_commands,
+                        DownloadCommands::Command command) const override;
+  bool IsCommandChecked(const DownloadCommands* download_commands,
+                        DownloadCommands::Command command) const override;
+  void ExecuteCommand(DownloadCommands* download_commands,
+                      DownloadCommands::Command command) override;
 #endif
 
   // download::DownloadItem::Observer implementation.
@@ -98,8 +93,9 @@ class DownloadItemModel : public DownloadUIModel,
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
  private:
-  // Returns a string indicating the status of an in-progress download.
-  base::string16 GetInProgressStatusString() const;
+  // DownloadUIModel implementation.
+  std::string GetMimeType() const override;
+  bool IsExtensionDownload() const override;
 
   // The DownloadItem that this model represents. Note that DownloadItemModel
   // itself shouldn't maintain any state since there can be more than one

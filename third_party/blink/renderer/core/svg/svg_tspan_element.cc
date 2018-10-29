@@ -26,7 +26,7 @@
 namespace blink {
 
 inline SVGTSpanElement::SVGTSpanElement(Document& document)
-    : SVGTextPositioningElement(SVGNames::tspanTag, document) {}
+    : SVGTextPositioningElement(svg_names::kTSpanTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGTSpanElement)
 

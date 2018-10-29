@@ -11,19 +11,26 @@ L
 M
 N
 O
-P Q
+P
+Q
 R
-S T
+S
+T
 U
-V W
+V
+W
 X
 Y
-Z AA
+Z
+AA
 BB
-CC DD
+CC
+DD
 EE
-FF GG
+FF
+GG
 HH
-II JJ
+II
+JJ
 KK
 END!

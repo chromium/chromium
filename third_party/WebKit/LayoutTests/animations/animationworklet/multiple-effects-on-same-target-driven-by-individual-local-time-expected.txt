@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: line 62: background-color for the first target is: rgb(0, 255, 0)
+CONSOLE MESSAGE: line 64: width for the first target is: 150px
+

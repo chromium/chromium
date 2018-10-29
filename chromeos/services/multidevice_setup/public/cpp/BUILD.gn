@@ -59,7 +59,34 @@ source_set("prefs") {
 
   deps = [
     "//base",
+    "//chromeos/services/multidevice_setup/public/mojom",
     "//components/prefs:prefs",
+  ]
+}
+
+source_set("first_run_field_trial") {
+  sources = [
+    "first_run_field_trial.cc",
+    "first_run_field_trial.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos",
+    "//components/variations/proto",
+    "//components/variations/service",
+  ]
+}
+
+source_set("oobe_completion_tracker") {
+  sources = [
+    "oobe_completion_tracker.cc",
+    "oobe_completion_tracker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
   ]
 }
 
@@ -89,6 +116,8 @@ static_library("test_support") {
     "fake_multidevice_setup.h",
     "fake_multidevice_setup_client.cc",
     "fake_multidevice_setup_client.h",
+    "fake_privileged_host_device_setter.cc",
+    "fake_privileged_host_device_setter.h",
   ]
 
   public_deps = [

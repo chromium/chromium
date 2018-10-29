@@ -19,16 +19,16 @@ MockBrowsingDataCacheStorageHelper::MockBrowsingDataCacheStorageHelper(
 
 MockBrowsingDataCacheStorageHelper::~MockBrowsingDataCacheStorageHelper() {}
 
-void MockBrowsingDataCacheStorageHelper::StartFetching(
-    const FetchCallback& callback) {
+void MockBrowsingDataCacheStorageHelper::StartFetching(FetchCallback callback) {
   ASSERT_FALSE(callback.is_null());
   ASSERT_TRUE(callback_.is_null());
-  callback_ = callback;
+  callback_ = std::move(callback);
+  fetched_ = true;
 }
 
 void MockBrowsingDataCacheStorageHelper::DeleteCacheStorage(
     const GURL& origin) {
-  ASSERT_FALSE(callback_.is_null());
+  ASSERT_TRUE(fetched_);
   ASSERT_TRUE(origins_.find(origin) != origins_.end());
   origins_[origin] = false;
 }
@@ -45,7 +45,8 @@ void MockBrowsingDataCacheStorageHelper::AddCacheStorageSamples() {
 }
 
 void MockBrowsingDataCacheStorageHelper::Notify() {
-  callback_.Run(response_);
+  ASSERT_FALSE(callback_.is_null());
+  std::move(callback_).Run(response_);
 }
 
 void MockBrowsingDataCacheStorageHelper::Reset() {

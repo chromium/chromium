@@ -107,6 +107,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // be used for any other autofill activity.
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
+  // Event forwarded by AutofillAgent from WebAutofillClient, informing that
+  // the text field editing has ended, which means that the field is not
+  // focused anymore.
+  void DidEndTextFieldEditing();
+
   // Function that should be called whenever the value of |element| changes due
   // to user input. This is separate from TextDidChangeInTextField() as that
   // function may trigger UI and should only be called when other UI won't be
@@ -167,7 +172,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       RendererSavePasswordProgressLogger* logger,
       std::vector<blink::WebInputElement>* elements);
 
-  // Called when the focused node has changed.
+  // Called when the focused node has changed. This is not called if the focus
+  // moves outside the frame.
   void FocusedNodeHasChanged(const blink::WebNode& node);
 
   // Creates a |PasswordForm| from |web_form|.
@@ -261,7 +267,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void WillCommitProvisionalLoad() override;
   void DidCommitProvisionalLoad(bool is_same_document_navigation,
                                 ui::PageTransition transition) override;
-  void FocusedNodeChanged(const blink::WebNode& node) override;
   void OnDestruct() override;
 
   // Scans the given frame for password forms and sends them up to the browser.

@@ -8,6 +8,7 @@
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -57,8 +58,10 @@ void SharedImageStub::OnCreateSharedImage(
     const GpuChannelMsg_CreateSharedImage_Params& params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params.size.width(), "height", params.size.height());
-  if (!MakeContextCurrentAndCreateFactory())
+  if (!MakeContextCurrentAndCreateFactory()) {
+    OnError();
     return;
+  }
 
   if (!factory_->CreateSharedImage(params.mailbox, params.format, params.size,
                                    params.color_space, params.usage)) {
@@ -66,13 +69,21 @@ void SharedImageStub::OnCreateSharedImage(
     OnError();
     return;
   }
+
+  SyncToken sync_token(sync_point_client_state_->namespace_id(),
+                       sync_point_client_state_->command_buffer_id(),
+                       params.release_id);
+  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
+  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(params.release_id);
 }
 
 void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnDestroySharedImage");
-  if (!MakeContextCurrentAndCreateFactory())
+  if (!MakeContextCurrentAndCreateFactory()) {
+    OnError();
     return;
+  }
 
   if (!factory_->DestroySharedImage(mailbox)) {
     LOG(ERROR) << "SharedImageStub: Unable to destroy shared image";
@@ -89,14 +100,12 @@ bool SharedImageStub::MakeContextCurrentAndCreateFactory() {
     context_state_ = channel_manager->GetRasterDecoderContextState(&result);
     if (result != ContextResult::kSuccess) {
       LOG(ERROR) << "SharedImageStub: unable to create context";
-      OnError();
       return false;
     }
     DCHECK(context_state_);
     DCHECK(!context_state_->context_lost);
     if (!context_state_->context->MakeCurrent(context_state_->surface.get())) {
       LOG(ERROR) << "SharedImageStub: MakeCurrent failed";
-      OnError();
       return false;
     }
     gpu::GpuMemoryBufferFactory* gmb_factory =
@@ -104,21 +113,21 @@ bool SharedImageStub::MakeContextCurrentAndCreateFactory() {
     factory_ = std::make_unique<SharedImageFactory>(
         channel_manager->gpu_preferences(),
         channel_manager->gpu_driver_bug_workarounds(),
-        channel_manager->gpu_feature_info(), channel_manager->mailbox_manager(),
+        channel_manager->gpu_feature_info(), context_state_.get(),
+        channel_manager->mailbox_manager(),
+        channel_manager->shared_image_manager(),
         gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this);
     return true;
   } else {
     DCHECK(context_state_);
     if (context_state_->context_lost) {
       LOG(ERROR) << "SharedImageStub: context already lost";
-      OnError();
       return false;
     } else {
       if (context_state_->context->MakeCurrent(context_state_->surface.get()))
         return true;
       context_state_->context_lost = true;
       LOG(ERROR) << "SharedImageStub: MakeCurrent failed";
-      OnError();
       return false;
     }
   }

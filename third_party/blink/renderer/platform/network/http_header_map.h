@@ -60,7 +60,7 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
   typedef MapType::AddResult AddResult;
   typedef MapType::const_iterator const_iterator;
 
-  size_t size() const { return headers_.size(); }
+  wtf_size_t size() const { return headers_.size(); }
   const_iterator begin() const { return headers_.begin(); }
   const_iterator end() const { return headers_.end(); }
   const_iterator Find(const AtomicString& k) const { return headers_.find(k); }

@@ -69,7 +69,7 @@
 </if>
       <paper-button class="action-button" on-click="onPrintClick_"
           disabled$="[[!printButtonEnabled_]]">
-        [[getPrintButton_(destination.id)]]
+        [[printButtonLabel_]]
       </paper-button>
 <if expr="is_win">
       <paper-button class="cancel-button" on-click="onCancelClick_">

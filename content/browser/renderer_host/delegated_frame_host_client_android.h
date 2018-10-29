@@ -31,6 +31,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
+  void WasEvicted() override;
 
   RenderWidgetHostViewAndroid* render_widget_host_view_;
 

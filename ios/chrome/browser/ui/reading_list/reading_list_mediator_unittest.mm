@@ -14,10 +14,10 @@
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_accessibility_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
 #include "ios/web/public/test/test_web_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,20 +70,11 @@ class ReadingListMediatorTest
     large_icon_service_.reset(new favicon::LargeIconService(
         &mock_favicon_service_, /*image_fetcher=*/nullptr));
 
-    if (GetParam() == FaviconServiceType::FAVICON_LOADER) {
       favicon_loader.reset(new FaviconLoader(large_icon_service_.get()));
       mediator_ = [[ReadingListMediator alloc]
             initWithModel:model_.get()
             faviconLoader:favicon_loader.get()
-          listItemFactory:[ReadingListListItemFactory
-                              collectionViewItemFactory]];
-    } else {
-      mediator_ = [[ReadingListMediator alloc]
-             initWithModel:model_.get()
-          largeIconService:large_icon_service_.get()
-           listItemFactory:[ReadingListListItemFactory
-                               collectionViewItemFactory]];
-    }
+          listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
 
  protected:
@@ -111,8 +102,8 @@ TEST_P(ReadingListMediatorTest, fillItems) {
   // Tests.
   EXPECT_EQ(3U, [unreadArray count]);
   EXPECT_EQ(2U, [readArray count]);
-  NSArray<ReadingListCollectionViewItem*>* rlReadArray = [readArray copy];
-  NSArray<ReadingListCollectionViewItem*>* rlUneadArray = [unreadArray copy];
+  NSArray<ReadingListTableViewItem*>* rlReadArray = [readArray copy];
+  NSArray<ReadingListTableViewItem*>* rlUneadArray = [unreadArray copy];
   EXPECT_TRUE([rlUneadArray[0].title isEqualToString:@""]);
   EXPECT_TRUE([rlReadArray[0].title isEqualToString:@"read2"]);
   EXPECT_TRUE([rlReadArray[1].title isEqualToString:@"read1"]);

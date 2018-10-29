@@ -223,7 +223,7 @@ TEST_F(EncodingEventSubscriberTest, EventFiltering) {
   GetEventsAndReset();
 
   ASSERT_EQ(1u, frame_events_.size());
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
 
   const AggregatedFrameEvent* frame_event = it->get();
 
@@ -252,7 +252,7 @@ TEST_F(EncodingEventSubscriberTest, FrameEvent) {
 
   ASSERT_EQ(1u, frame_events_.size());
 
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
 
   const AggregatedFrameEvent* event = it->get();
 
@@ -289,7 +289,7 @@ TEST_F(EncodingEventSubscriberTest, FrameEventDelay) {
 
   ASSERT_EQ(1u, frame_events_.size());
 
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
 
   const AggregatedFrameEvent* event = it->get();
 
@@ -332,7 +332,7 @@ TEST_F(EncodingEventSubscriberTest, FrameEventSize) {
 
   ASSERT_EQ(1u, frame_events_.size());
 
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
 
   const AggregatedFrameEvent* event = it->get();
 
@@ -394,7 +394,7 @@ TEST_F(EncodingEventSubscriberTest, MultipleFrameEvents) {
 
   ASSERT_EQ(2u, frame_events_.size());
 
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
 
   {
     const AggregatedFrameEvent* event = it->get();
@@ -454,7 +454,7 @@ TEST_F(EncodingEventSubscriberTest, PacketEvent) {
 
   ASSERT_EQ(1u, packet_events_.size());
 
-  PacketEventList::iterator it = packet_events_.begin();
+  auto it = packet_events_.begin();
 
   const AggregatedPacketEvent* event = it->get();
 
@@ -509,7 +509,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEventsForPacket) {
 
   ASSERT_EQ(1u, packet_events_.size());
 
-  PacketEventList::iterator it = packet_events_.begin();
+  auto it = packet_events_.begin();
 
   const AggregatedPacketEvent* event = it->get();
 
@@ -564,7 +564,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEventsForFrame) {
 
   ASSERT_EQ(1u, packet_events_.size());
 
-  PacketEventList::iterator it = packet_events_.begin();
+  auto it = packet_events_.begin();
 
   const AggregatedPacketEvent* event = it->get();
 
@@ -625,7 +625,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEvents) {
 
   ASSERT_EQ(2u, packet_events_.size());
 
-  PacketEventList::iterator it = packet_events_.begin();
+  auto it = packet_events_.begin();
 
   {
     const AggregatedPacketEvent* event = it->get();
@@ -689,7 +689,7 @@ TEST_F(EncodingEventSubscriberTest, FirstRtpTimeTicks) {
   GetEventsAndReset();
 
   EXPECT_EQ(rtp_timestamp, first_rtp_timestamp_);
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
   ASSERT_NE(frame_events_.end(), it);
   EXPECT_EQ(0u, (*it)->relative_rtp_timestamp());
 
@@ -740,7 +740,7 @@ TEST_F(EncodingEventSubscriberTest, RelativeRtpTimeTicksWrapAround) {
 
   GetEventsAndReset();
 
-  FrameEventList::iterator it = frame_events_.begin();
+  auto it = frame_events_.begin();
   ASSERT_NE(frame_events_.end(), it);
   EXPECT_EQ(0u, (*it)->relative_rtp_timestamp());
 
@@ -769,7 +769,7 @@ TEST_F(EncodingEventSubscriberTest, MaxEventsPerProto) {
   GetEventsAndReset();
 
   ASSERT_EQ(2u, frame_events_.size());
-  FrameEventList::iterator frame_it = frame_events_.begin();
+  auto frame_it = frame_events_.begin();
   ASSERT_TRUE(frame_it != frame_events_.end());
 
   const AggregatedFrameEvent* frame_event = frame_it->get();
@@ -795,7 +795,7 @@ TEST_F(EncodingEventSubscriberTest, MaxEventsPerProto) {
 
   EXPECT_EQ(2u, packet_events_.size());
 
-  PacketEventList::iterator packet_it = packet_events_.begin();
+  auto packet_it = packet_events_.begin();
   ASSERT_TRUE(packet_it != packet_events_.end());
 
   {

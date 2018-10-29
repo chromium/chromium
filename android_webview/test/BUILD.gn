@@ -17,6 +17,25 @@ group("test") {
   ]
 }
 
+group("webview_cts_tests") {
+  _py_files = read_file("//android_webview/tools/run_cts.pydeps", "list lines")
+  deps = [
+    "//android_webview:system_webview_apk",
+  ]
+
+  data_deps = [
+    "//build/android:logdog_wrapper_py",
+    "//build/android:test_runner_py",
+  ]
+
+  # Filter out comments.
+  set_sources_assignment_filter([ "#*" ])
+  sources = _py_files
+
+  data = sources
+  data += [ "//android_webview/tools/cts_config/" ]
+}
+
 android_apk("webview_instrumentation_apk") {
   deps = [
     ":android_webview_apk_assets",
@@ -116,6 +135,7 @@ shared_library("libstandalonelibwebviewchromium") {
     "//android_webview:common",
     "//components/heap_profiling:test_support",
     "//components/minidump_uploader",
+    "//content/public/test/android:content_native_test_support",
   ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
@@ -159,6 +179,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AndroidViewIntegrationTest.java",
     "../javatests/src/org/chromium/android_webview/test/ArchiveTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwActivityTestRule.java",
+    "../javatests/src/org/chromium/android_webview/test/AwAutocompleteTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwAutofillTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwContentsAnchorViewTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwContentsClientAutoLoginTest.java",

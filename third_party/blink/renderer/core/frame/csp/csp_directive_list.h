@@ -145,7 +145,7 @@ class CORE_EXPORT CSPDirectiveList
   bool AllowDynamic(ContentSecurityPolicy::DirectiveType) const;
   bool AllowDynamicWorker() const;
 
-  bool AllowRequestWithoutIntegrity(WebURLRequest::RequestContext,
+  bool AllowRequestWithoutIntegrity(mojom::RequestContextType,
                                     const KURL&,
                                     ResourceRequest::RedirectStatus,
                                     SecurityViolationReportingPolicy) const;
@@ -278,7 +278,7 @@ class CORE_EXPORT CSPDirectiveList
                       const String& type,
                       const String& type_attribute) const;
   bool CheckAncestors(SourceListDirective*, LocalFrame*) const;
-  bool CheckRequestWithoutIntegrity(WebURLRequest::RequestContext) const;
+  bool CheckRequestWithoutIntegrity(mojom::RequestContextType) const;
 
   void SetEvalDisabledErrorMessage(const String& error_message) {
     eval_disabled_error_message_ = error_message;
@@ -317,7 +317,7 @@ class CORE_EXPORT CSPDirectiveList
                                         LocalFrame*,
                                         const KURL&) const;
   bool CheckRequestWithoutIntegrityAndReportViolation(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       const KURL&,
       ResourceRequest::RedirectStatus) const;
 

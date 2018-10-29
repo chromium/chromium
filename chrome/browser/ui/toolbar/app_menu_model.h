@@ -136,14 +136,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
                                   ui::Accelerator* accelerator) const override;
 
   // Overridden from TabStripModelObserver:
-  void ActiveTabChanged(content::WebContents* old_contents,
-                        content::WebContents* new_contents,
-                        int index,
-                        int reason) override;
-  void TabReplacedAt(TabStripModel* tab_strip_model,
-                     content::WebContents* old_contents,
-                     content::WebContents* new_contents,
-                     int index) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   // Overridden from content::NotificationObserver:
   void Observe(int type,

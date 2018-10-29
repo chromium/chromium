@@ -54,11 +54,27 @@ const char kAutofillLastVersionDisusedAddressesDeleted[] =
 const char kAutofillLastVersionDisusedCreditCardsDeleted[] =
     "autofill.last_version_disused_credit_cards_deleted";
 
+// Boolean that is set to denote whether user cancelled/rejected local card
+// migration prompt.
+const char kAutofillMigrateLocalCardsCancelledPrompt[] =
+    "autofill.migrate_local_card_cancelled_state";
+
 // Boolean that is true if the orphan rows in the autofill table were removed.
 const char kAutofillOrphanRowsRemoved[] = "autofill.orphan_rows_removed";
 
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 const char kAutofillProfileEnabled[] = "autofill.profile_enabled";
+
+// Dictionary pref used to track which form signature uploads have been
+// performed. Each entry in the dictionary maps a form signature (reduced
+// via a 10-bit modulus) to a integer bit-field where each bit denotes whether
+// or not a given upload event has occurred.
+const char kAutofillUploadEvents[] = "autofill.upload_events";
+
+// The timestamp (seconds since the Epoch UTC) for when the the upload event
+// pref was last reset.
+const char kAutofillUploadEventsLastResetTimestamp[] =
+    "autofill.upload_events_last_reset_timestamp";
 
 // Boolean that's true when Wallet card and address import is enabled by the
 // user.
@@ -105,7 +121,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillMigrateLocalCardsCancelledPrompt, false);
   registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
+  registry->RegisterDictionaryPref(prefs::kAutofillUploadEvents);
+  registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
+                             base::Time());
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
@@ -151,6 +172,14 @@ void SetAutofillEnabled(PrefService* prefs, bool enabled) {
   SetCreditCardAutofillEnabled(prefs, enabled);
 }
 
+bool IsCreditCardAutofillEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillCreditCardEnabled);
+}
+
+void SetCreditCardAutofillEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kAutofillCreditCardEnabled, enabled);
+}
+
 bool IsAutofillManaged(const PrefService* prefs) {
   return prefs->IsManagedPreference(kAutofillEnabledDeprecated);
 }
@@ -171,12 +200,13 @@ void SetProfileAutofillEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillProfileEnabled, enabled);
 }
 
-bool IsCreditCardAutofillEnabled(const PrefService* prefs) {
-  return prefs->GetBoolean(kAutofillCreditCardEnabled);
+bool IsLocalCardMigrationPromptPreviouslyCancelled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillMigrateLocalCardsCancelledPrompt);
 }
 
-void SetCreditCardAutofillEnabled(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kAutofillCreditCardEnabled, enabled);
+void SetLocalCardMigrationPromptPreviouslyCancelled(PrefService* prefs,
+                                                    bool enabled) {
+  prefs->SetBoolean(kAutofillMigrateLocalCardsCancelledPrompt, enabled);
 }
 
 bool IsPaymentsIntegrationEnabled(const PrefService* prefs) {

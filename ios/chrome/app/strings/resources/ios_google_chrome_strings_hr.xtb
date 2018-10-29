@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome vam štedi vrijeme sinkronizacijom vaših računa na webu. Račune možete dodavati i uklanjati u postavkama.</translation>
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3345341804167540816">Upotrebljavajte Chrome svugdje</translation>
-<translation id="3678774398092457402">Želite li da Chrome spremi vašu zaporku za ovu web-lokaciju?</translation>
 <translation id="384394811301901750">Google Chrome trenutačno ne može upotrebljavati vaš fotoaparat</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Prebacujete sinkronizaciju s računa <ph name="USER_EMAIL1" /> na račun <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromeu upravlja <ph name="DOMAIN" />. Vaši će se podaci izbrisati s ovog uređaja, no ostat će na računu <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> se mogu prilagoditi u bilo kojem trenutku. Google može upotrebljavati sadržaj na web-lokacijama koje posjećujete, vaše interakcije u pregledniku i aktivnost pregledavanja kako bi prilagodio Chrome i Googleove usluge kao što su Prevoditelj, Pretraživanje i oglasi.</translation>
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Fotoaparat &gt; Google Chrome i uključite fotoaparat.</translation>
 <translation id="5642200033778930880">Google Chrome ne može upotrebljavati vaš fotoaparat u načinu podijeljenog prikaza</translation>
-<translation id="5703130498371792817">Sviđa vam se Chrome? <ph name="BEGIN_LINK" />Ocijenite aplikaciju<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Savjet za Chrome. Neki se gumbi sada nalaze pri dnu zaslona, primjerice za natrag, naprijed i pretraživanje.</translation>
 <translation id="6036420186814142909">Google Chrome ima značajke koje vam mogu pomoći u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Uvjeti pružanja Google Chromea</translation>
 <translation id="7165736900384873061">Upotrijebite QR skener Google Chromea</translation>
 <translation id="7172660552945675509">Savjet: <ph name="BEGIN_LINK" />premjestite Chrome na priključnu stanicu<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome upotrebljava Face ID radi sprječavanja neovlaštenog pristupa vašim zaporkama.</translation>
 <translation id="7265369419224458312">Karticama koje ste otvorili na računalu možete pristupiti i ovdje. Samo otvorite Chrome na računalu, idite na izbornik i odaberite "Prijava na Chrome…"</translation>
 <translation id="728488472449859922">Uključite QR skener Google Chromea</translation>
 <translation id="7400722733683201933">O programu Google Chrome</translation>

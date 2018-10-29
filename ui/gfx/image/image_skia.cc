@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,8 +30,8 @@ namespace {
 
 // static
 gfx::ImageSkiaRep& NullImageRep() {
-  CR_DEFINE_STATIC_LOCAL(ImageSkiaRep, null_image_rep, ());
-  return null_image_rep;
+  static base::NoDestructor<ImageSkiaRep> null_image_rep;
+  return *null_image_rep;
 }
 
 std::vector<float>* g_supported_scales = NULL;
@@ -63,11 +64,11 @@ ImageSkiaRep ScaleImageSkiaRep(const ImageSkiaRep& rep, float target_scale) {
 
   gfx::Size scaled_size =
       gfx::ScaleToCeiledSize(rep.pixel_size(), target_scale / rep.scale());
-  return ImageSkiaRep(skia::ImageOperations::Resize(
-      rep.sk_bitmap(),
-      skia::ImageOperations::RESIZE_LANCZOS3,
-      scaled_size.width(),
-      scaled_size.height()), target_scale);
+  return ImageSkiaRep(
+      skia::ImageOperations::Resize(rep.GetBitmap(),
+                                    skia::ImageOperations::RESIZE_LANCZOS3,
+                                    scaled_size.width(), scaled_size.height()),
+      target_scale);
 }
 
 }  // namespace
@@ -153,7 +154,7 @@ ImageSkiaStorage::ImageSkiaStorage(std::unique_ptr<ImageSkiaSource> source,
                                    float scale)
     : source_(std::move(source)), read_only_(false) {
   DCHECK(source_);
-  ImageSkia::ImageSkiaReps::iterator it = FindRepresentation(scale, true);
+  auto it = FindRepresentation(scale, true);
   if (it == image_reps_.end() || it->is_null())
     source_.reset();
   else
@@ -186,11 +187,11 @@ void ImageSkiaStorage::AddRepresentation(const ImageSkiaRep& image) {
   DCHECK(!HasRepresentationAtAllScales());
 
   if (image.scale() != 1.0f) {
-    for (ImageSkia::ImageSkiaReps::iterator it = image_reps_.begin();
-         it < image_reps_.end(); ++it) {
+    ImageSkia::ImageSkiaReps::iterator it;
+    for (it = image_reps_.begin(); it < image_reps_.end(); ++it) {
       if (it->unscaled()) {
         DCHECK_EQ(1.0f, it->scale());
-        it->SetScaled();
+        *it = ImageSkiaRep(it->GetBitmap(), it->scale());
         break;
       }
     }
@@ -207,12 +208,11 @@ std::vector<ImageSkiaRep>::iterator ImageSkiaStorage::FindRepresentation(
     bool fetch_new_image) const {
   ImageSkiaStorage* non_const = const_cast<ImageSkiaStorage*>(this);
 
-  ImageSkia::ImageSkiaReps::iterator closest_iter =
-      non_const->image_reps().end();
-  ImageSkia::ImageSkiaReps::iterator exact_iter = non_const->image_reps().end();
+  auto closest_iter = non_const->image_reps().end();
+  auto exact_iter = non_const->image_reps().end();
   float smallest_diff = std::numeric_limits<float>::max();
-  for (ImageSkia::ImageSkiaReps::iterator it = non_const->image_reps().begin();
-       it < image_reps_.end(); ++it) {
+  for (auto it = non_const->image_reps().begin(); it < image_reps_.end();
+       ++it) {
     if (it->scale() == scale) {
       // found exact match
       fetch_new_image = false;
@@ -238,8 +238,7 @@ std::vector<ImageSkiaRep>::iterator ImageSkiaStorage::FindRepresentation(
     if (!HasRepresentationAtAllScales() && g_supported_scales)
       resource_scale = MapToSupportedScale(scale);
     if (scale != resource_scale) {
-      std::vector<ImageSkiaRep>::iterator iter =
-          FindRepresentation(resource_scale, fetch_new_image);
+      auto iter = FindRepresentation(resource_scale, fetch_new_image);
       CHECK(iter != image_reps_.end());
       image = iter->unscaled() ? (*iter) : ScaleImageSkiaRep(*iter, scale);
     } else {
@@ -348,8 +347,7 @@ std::unique_ptr<ImageSkia> ImageSkia::DeepCopy() const {
   CHECK(CanRead());
 
   std::vector<gfx::ImageSkiaRep>& reps = storage_->image_reps();
-  for (std::vector<gfx::ImageSkiaRep>::iterator iter = reps.begin();
-       iter != reps.end(); ++iter) {
+  for (auto iter = reps.begin(); iter != reps.end(); ++iter) {
     copy->AddRepresentation(*iter);
   }
   // The copy has its own storage. Detach the copy from the current
@@ -391,8 +389,7 @@ void ImageSkia::RemoveRepresentation(float scale) {
   CHECK(CanModify());
 
   ImageSkiaReps& image_reps = storage_->image_reps();
-  ImageSkiaReps::iterator it =
-      storage_->FindRepresentation(scale, false);
+  auto it = storage_->FindRepresentation(scale, false);
   if (it != image_reps.end() && it->scale() == scale)
     image_reps.erase(it);
 }
@@ -410,7 +407,7 @@ bool ImageSkia::HasRepresentation(float scale) const {
   if (storage_->HasRepresentationAtAllScales())
     return true;
 
-  ImageSkiaReps::iterator it = storage_->FindRepresentation(scale, false);
+  auto it = storage_->FindRepresentation(scale, false);
   return (it != storage_->image_reps().end() && it->scale() == scale);
 }
 
@@ -420,7 +417,7 @@ const ImageSkiaRep& ImageSkia::GetRepresentation(float scale) const {
 
   CHECK(CanRead());
 
-  ImageSkiaReps::iterator it = storage_->FindRepresentation(scale, true);
+  auto it = storage_->FindRepresentation(scale, true);
   if (it == storage_->image_reps().end())
     return NullImageRep();
 
@@ -469,8 +466,8 @@ std::vector<ImageSkiaRep> ImageSkia::image_reps() const {
   // Create list of image reps to return, skipping null image reps which were
   // added for caching purposes only.
   ImageSkiaReps image_reps;
-  for (ImageSkiaReps::iterator it = internal_image_reps.begin();
-       it != internal_image_reps.end(); ++it) {
+  for (auto it = internal_image_reps.begin(); it != internal_image_reps.end();
+       ++it) {
     if (!it->is_null())
       image_reps.push_back(*it);
   }
@@ -499,7 +496,7 @@ void ImageSkia::RemoveUnsupportedRepresentationsForScale(float scale) {
 }
 
 void ImageSkia::Init(const ImageSkiaRep& image_rep) {
-  if (image_rep.sk_bitmap().drawsNothing()) {
+  if (image_rep.GetBitmap().drawsNothing()) {
     storage_ = NULL;
     return;
   }
@@ -512,7 +509,7 @@ const SkBitmap& ImageSkia::GetBitmap() const {
   if (isNull()) {
     // Callers expect a ImageSkiaRep even if it is |isNull()|.
     // TODO(pkotwicz): Fix this.
-    return NullImageRep().sk_bitmap();
+    return NullImageRep().GetBitmap();
   }
 
   // TODO(oshima): This made a few tests flaky on Windows.
@@ -521,10 +518,10 @@ const SkBitmap& ImageSkia::GetBitmap() const {
   CHECK(CanRead());
 #endif
 
-  ImageSkiaReps::iterator it = storage_->FindRepresentation(1.0f, true);
+  auto it = storage_->FindRepresentation(1.0f, true);
   if (it != storage_->image_reps().end())
-    return it->sk_bitmap();
-  return NullImageRep().sk_bitmap();
+    return it->GetBitmap();
+  return NullImageRep().GetBitmap();
 }
 
 bool ImageSkia::CanRead() const {

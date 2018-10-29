@@ -23,8 +23,8 @@ const char kEnableGpuRasterization[] = "enable-gpu-rasterization";
 // test_group ID.
 const char kGpuBlacklistTestGroup[] = "gpu-blacklist-test-group";
 
-// Select a different set of GPU driver bug list entries with the specificed
-// test_group ID.
+// Enable an extra set of GPU driver bug list entries with the specified
+// test_group ID. Note the default test group (group 0) is still active.
 const char kGpuDriverBugListTestGroup[] = "gpu-driver-bug-list-test-group";
 
 // Passes encoded GpuPreferences to GPU process.

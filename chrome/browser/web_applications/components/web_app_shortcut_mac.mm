@@ -44,6 +44,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #import "skia/ext/skia_utils_mac.h"
@@ -399,8 +400,8 @@ bool UpdateAppShortcutsSubdirLocalizedName(
       base::mac::FilePathToNSString(localized.Append(locale + ".strings"));
   [strings_dict writeToFile:strings_path atomically:YES];
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           &GetImageResourcesOnUIThread,
           base::BindOnce(&SetWorkspaceIconOnWorkerThread, apps_directory)));
@@ -790,6 +791,8 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
             forKey:app_mode::kCrAppModeProfileNameKey];
   [plist setObject:[NSNumber numberWithBool:YES]
             forKey:app_mode::kLSHasLocalizedDisplayNameKey];
+  [plist setObject:[NSNumber numberWithBool:YES]
+            forKey:app_mode::kNSHighResolutionCapableKey];
   if (info_->extension_id == app_mode::kAppListModeId) {
     // Prevent the app list from bouncing in the dock, and getting a run light.
     [plist setObject:[NSNumber numberWithBool:YES] forKey:kLSUIElement];

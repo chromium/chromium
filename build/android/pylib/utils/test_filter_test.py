@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import sys
 import unittest
 
@@ -50,6 +51,39 @@ class ParseFilterFileTest(unittest.TestCase):
     actual = test_filter.ParseFilterFile(input_lines)
     expected = 'positive1:positive2-negative1:negative2'
     self.assertEquals(expected, actual)
+
+
+class InitializeFilterFromArgsTest(unittest.TestCase):
+
+  def testInitializeBasicFilter(self):
+    parser = argparse.ArgumentParser()
+    test_filter.AddFilterOptions(parser)
+    args = parser.parse_args([
+        '--test-filter',
+        'FooTest.testFoo:BarTest.testBar'])
+    expected = 'FooTest.testFoo:BarTest.testBar'
+    actual = test_filter.InitializeFilterFromArgs(args)
+    self.assertEquals(actual, expected)
+
+  def testInitializeJavaStyleFilter(self):
+    parser = argparse.ArgumentParser()
+    test_filter.AddFilterOptions(parser)
+    args = parser.parse_args([
+        '--test-filter',
+        'FooTest#testFoo:BarTest#testBar'])
+    expected = 'FooTest.testFoo:BarTest.testBar'
+    actual = test_filter.InitializeFilterFromArgs(args)
+    self.assertEquals(actual, expected)
+
+  def testInitializeBasicIsolatedScript(self):
+    parser = argparse.ArgumentParser()
+    test_filter.AddFilterOptions(parser)
+    args = parser.parse_args([
+        '--isolated-script-test-filter',
+        'FooTest.testFoo::BarTest.testBar'])
+    expected = 'FooTest.testFoo:BarTest.testBar'
+    actual = test_filter.InitializeFilterFromArgs(args)
+    self.assertEquals(actual, expected)
 
 
 if __name__ == '__main__':

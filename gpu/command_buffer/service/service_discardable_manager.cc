@@ -10,7 +10,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 
 namespace gpu {
-namespace {
+
 size_t DiscardableCacheSizeLimit() {
 // Cache size values are designed to roughly correspond to existing image cache
 // sizes for 1-1.5 renderers. These will be updated as more types of data are
@@ -43,7 +43,26 @@ size_t DiscardableCacheSizeLimit() {
 #endif
 }
 
-}  // namespace
+size_t DiscardableCacheSizeLimitForPressure(
+    size_t base_cache_limit,
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  switch (memory_pressure_level) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      // This function is only called with moderate or critical pressure.
+      NOTREACHED();
+      return base_cache_limit;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      // With moderate pressure, shrink to 1/4 our normal size.
+      return base_cache_limit / 4;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      // With critical pressure, purge as much as possible.
+      return 0;
+
+    default:
+      NOTREACHED();
+      return 0;
+  }
+}
 
 ServiceDiscardableManager::GpuDiscardableEntry::GpuDiscardableEntry(
     ServiceDiscardableHandle handle,
@@ -168,22 +187,8 @@ void ServiceDiscardableManager::OnTextureSizeChanged(
 
 void ServiceDiscardableManager::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  size_t limit = 0;
-  switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      // This function is only called with moderate or critical pressure.
-      NOTREACHED();
-      return;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      // With moderate pressure, shrink to 1/4 our normal size.
-      limit = cache_size_limit_ / 4;
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // With critical pressure, purge as much as possible.
-      limit = 0;
-      break;
-  }
-
+  size_t limit = DiscardableCacheSizeLimitForPressure(cache_size_limit_,
+                                                      memory_pressure_level);
   EnforceCacheSizeLimit(limit);
 }
 

@@ -217,8 +217,7 @@ public class ChildProcessLauncher {
                 new ChildProcessConnection.ConnectionCallback() {
                     @Override
                     public void onConnected(ChildProcessConnection connection) {
-                        assert mConnection == connection;
-                        onServiceConnected();
+                        onServiceConnected(connection);
                     }
                 };
         Bundle connectionBundle = createConnectionBundle();
@@ -226,8 +225,9 @@ public class ChildProcessLauncher {
         mConnection.setupConnection(connectionBundle, getClientInterfaces(), connectionCallback);
     }
 
-    private void onServiceConnected() {
+    private void onServiceConnected(ChildProcessConnection connection) {
         assert isRunningOnLauncherThread();
+        assert mConnection == connection || connection == null;
 
         Log.d(TAG, "on connect callback, pid=%d", mConnection.getPid());
 

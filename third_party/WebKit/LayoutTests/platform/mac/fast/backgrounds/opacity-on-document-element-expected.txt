@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x136 transparent
-  LayoutBlockFlow {HTML} at (0,0) size 800x136
-    LayoutBlockFlow {BODY} at (50,50) size 700x36 [bgcolor=#808080]
-      LayoutBlockFlow {P} at (0,0) size 700x36
-        LayoutText {#text} at (0,0) size 684x36
-          text run at (0,0) width 684: "The document background should be red, and the body gray. The rest of the viewport should be white. The"
-          text run at (0,18) width 304: "document and body should have opacity of 0.3."

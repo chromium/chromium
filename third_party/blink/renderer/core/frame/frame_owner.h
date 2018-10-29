@@ -27,7 +27,7 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
 
   virtual bool IsLocal() const = 0;
   virtual bool IsRemote() const = 0;
-  virtual bool IsPlugin() { return false; }
+  virtual bool IsPlugin() const { return false; }
 
   virtual Frame* ContentFrame() const = 0;
   virtual void SetContentFrame(Frame&) = 0;
@@ -43,7 +43,14 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   // On load failure, a frame can ask its owner to render fallback content
   // which replaces the frame contents.
   virtual bool CanRenderFallbackContent() const = 0;
-  virtual void RenderFallbackContent() = 0;
+
+  // The argument refers to the frame with the failed navigation. Note that this
+  // is not always the ContentFrame() for this owner; this argument is needed to
+  // support showing fallback using DOM of parent frame in a separate process.
+  // The use case is limited to RemoteFrameOwner when the corresponding local
+  // FrameOwner in parent process is an <object>. In such cases the frame with
+  // failed navigation could be provisional (cross-site navigations).
+  virtual void RenderFallbackContent(Frame*) = 0;
 
   // The intrinsic dimensions of the embedded object changed. This is only
   // relevant for SVG documents that are embedded via <object> or <embed>.
@@ -87,7 +94,7 @@ class CORE_EXPORT DummyFrameOwner final
   void AddResourceTiming(const ResourceTimingInfo&) override {}
   void DispatchLoad() override {}
   bool CanRenderFallbackContent() const override { return false; }
-  void RenderFallbackContent() override {}
+  void RenderFallbackContent(Frame*) override {}
   void IntrinsicSizingInfoChanged() override {}
   AtomicString BrowsingContextContainerName() const override {
     return AtomicString();

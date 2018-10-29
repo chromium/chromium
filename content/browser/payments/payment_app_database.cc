@@ -146,7 +146,7 @@ void PaymentAppDatabase::DeletePaymentInstrument(
     DeletePaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToDeletePaymentInstrument,
@@ -159,7 +159,7 @@ void PaymentAppDatabase::ReadPaymentInstrument(
     ReadPaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToReadPaymentInstrument,
@@ -171,7 +171,7 @@ void PaymentAppDatabase::KeysOfPaymentInstruments(
     KeysOfPaymentInstrumentsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(&PaymentAppDatabase::DidFindRegistrationToGetKeys,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -183,7 +183,7 @@ void PaymentAppDatabase::HasPaymentInstrument(
     HasPaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToHasPaymentInstrument,
@@ -206,7 +206,7 @@ void PaymentAppDatabase::WritePaymentInstrument(
                        weak_ptr_factory_.GetWeakPtr(), scope, instrument_key,
                        std::move(instrument), std::move(callback)));
   } else {
-    service_worker_context_->FindReadyRegistrationForPattern(
+    service_worker_context_->FindReadyRegistrationForScope(
         scope,
         base::BindOnce(
             &PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument,
@@ -228,7 +228,7 @@ void PaymentAppDatabase::DidFetchedPaymentInstrumentIcon(
     return;
   }
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument,
@@ -255,7 +255,7 @@ void PaymentAppDatabase::FetchPaymentAppInfoCallback(
     std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope, base::BindOnce(
                  &PaymentAppDatabase::DidFindRegistrationToUpdatePaymentAppInfo,
                  weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -274,7 +274,7 @@ void PaymentAppDatabase::DidFindRegistrationToUpdatePaymentAppInfo(
   }
 
   service_worker_context_->GetRegistrationUserDataByKeyPrefix(
-      registration->id(), CreatePaymentAppKey(registration->pattern().spec()),
+      registration->id(), CreatePaymentAppKey(registration->scope().spec()),
       base::BindOnce(
           &PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -299,7 +299,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
     payment_app_proto.ParseFromString(data[0]);
   }
   payment_app_proto.set_registration_id(registration->id());
-  payment_app_proto.set_scope(registration->pattern().spec());
+  payment_app_proto.set_scope(registration->scope().spec());
   // Do not override name and icon if they are invalid.
   if (!app_info->name.empty()) {
     payment_app_proto.set_name(app_info->name);
@@ -321,8 +321,8 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->pattern().GetOrigin(),
-      {{CreatePaymentAppKey(registration->pattern().spec()),
+      registration->id(), registration->scope().GetOrigin(),
+      {{CreatePaymentAppKey(registration->scope().spec()),
         serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidUpdatePaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -350,7 +350,7 @@ void PaymentAppDatabase::ClearPaymentInstruments(
     ClearPaymentInstrumentsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToClearPaymentInstruments,
@@ -361,7 +361,7 @@ void PaymentAppDatabase::SetPaymentAppUserHint(const GURL& scope,
                                                const std::string& user_hint) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  service_worker_context_->FindReadyRegistrationForPattern(
+  service_worker_context_->FindReadyRegistrationForScope(
       scope,
       base::BindOnce(
           &PaymentAppDatabase::DidFindRegistrationToSetPaymentAppUserHint,
@@ -377,10 +377,10 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentAppUserHint(
     return;
 
   service_worker_context_->GetRegistrationUserDataByKeyPrefix(
-      registration->id(), CreatePaymentAppKey(registration->pattern().spec()),
+      registration->id(), CreatePaymentAppKey(registration->scope().spec()),
       base::BindOnce(&PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint,
                      weak_ptr_factory_.GetWeakPtr(), user_hint,
-                     registration->id(), registration->pattern()));
+                     registration->id(), registration->scope()));
 }
 
 void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
@@ -450,7 +450,7 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
 
   StoredPaymentAppProto payment_app_proto;
   payment_app_proto.set_registration_id(registration->id());
-  payment_app_proto.set_scope(registration->pattern().spec());
+  payment_app_proto.set_scope(registration->scope().spec());
   payment_app_proto.set_name(name);
   payment_app_proto.set_icon(icon);
 
@@ -461,8 +461,8 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
   // Constructing registration_id, registration_origin and storage_key before
   // moving registration.
   int64_t registration_id = registration->id();
-  GURL registration_origin = registration->pattern().GetOrigin();
-  std::string storage_key = CreatePaymentAppKey(registration->pattern().spec());
+  GURL registration_origin = registration->scope().GetOrigin();
+  std::string storage_key = CreatePaymentAppKey(registration->scope().spec());
   service_worker_context_->StoreRegistrationUserData(
       registration_id, registration_origin,
       {{storage_key, serialized_payment_app}},
@@ -504,7 +504,7 @@ void PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->pattern().GetOrigin(),
+      registration->id(), registration->scope().GetOrigin(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},
@@ -791,7 +791,7 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->pattern().GetOrigin(),
+      registration->id(), registration->scope().GetOrigin(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},
@@ -847,8 +847,7 @@ void PaymentAppDatabase::DidGetKeysToClearPaymentInstruments(
   }
 
   // Clear payment app info after clearing all payment instruments.
-  keys_with_prefix.push_back(
-      CreatePaymentAppKey(registration->pattern().spec()));
+  keys_with_prefix.push_back(CreatePaymentAppKey(registration->scope().spec()));
 
   service_worker_context_->ClearRegistrationUserData(
       registration->id(), keys_with_prefix,

@@ -10,7 +10,7 @@
 <translation id="149347756975725155">एक्स्टेंशन आयकन '<ph name="ICON" />' लोड करणे शक्य नाही.</translation>
 <translation id="1803557475693955505">'पार्श्वभूमी पृष्ठ '<ph name="BACKGROUND_PAGE" />'  लोड करणे शक्य नाही.</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
-<translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल निर्दिष्ट नाही.</translation>
+<translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
 <translation id="2576842806987913196">या नावाने आधीपासूनच CRX फाइल उपस्थित आहे.</translation>
 <translation id="2753617847762399167">बेकायदेशीर पथ ('..' सह अचूक किंवा संबंधित): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">सामग्री स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
@@ -36,7 +36,7 @@
 <translation id="5098647635849512368">पॅक करण्यासाठी असलेल्या निर्देशिकेचा अचूक पथ शोधणे शक्य नाही.</translation>
 <translation id="5356315618422219272">अॅपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">आकार असलेल्या विंडो समर्थित नाहीत.</translation>
-<translation id="5456409301717116725">हा विस्तार मुख्य फाइल '<ph name="KEY_PATH" />' समाविष्ट करतो. आपण कदाचित ते करू इच्छित नसू शकता.</translation>
+<translation id="5456409301717116725">हा विस्तार मुख्य फाइल '<ph name="KEY_PATH" />' समाविष्ट करतो. तुम्ही कदाचित ते करू इच्छित नसू शकता.</translation>
 <translation id="5486326529110362464">खासगी की साठी इनपुट मूल्य विद्यमान असणे आवश्यक आहे.</translation>
 <translation id="5627523580512561598">विस्तार <ph name="EXTENSION_NAME" /></translation>
 <translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">खासगी की वाचण्यात अयशस्वी.</translation>
 <translation id="6391538222494443604">इनपुट निर्देशिका विद्यमान असणे आवश्यक आहे.</translation>
 <translation id="641087317769093025">विस्तार अनझिप करणे शक्य झाले नाही</translation>
+<translation id="6413453408918378296">आयकन पुरेसा दृश्यमान नाही '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> आपल्या एका किंवा अधिक डिव्हाइसवर प्रवेशाची विनंती करीत आहे:</translation>
 <translation id="657064425229075395">पार्श्वभूमी स्क्रिप्‍ट '<ph name="BACKGROUND_SCRIPT" />' लोड करू शकले नाही.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />) कडील <ph name="PRODUCT_NAME" /></translation>
@@ -65,7 +66,7 @@
 <translation id="8517576857589387417">मॅनिफेस्ट फाइल गहाळ किंवा वाचता न येण्यासारखी आहे</translation>
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> आपल्या एका डिव्हाइसवर प्रवेशाची विनंती करीत आहे:</translation>
-<translation id="8885905466771744233">निर्दिष्ट विस्तारासाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
+<translation id="8885905466771744233">नमूद विस्तारासाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
 <translation id="907841381057066561">पॅकेजिंग दरम्यान तात्पुरती zip फाइल तयार करण्यात अयशस्वी.</translation>
 <translation id="941543339607623937">चुकीची खासगी की.</translation>
 </translationbundle>

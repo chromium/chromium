@@ -2,7 +2,6 @@ This test ensures that legacy color attributes are parsed properly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.body.bgColor='';getComputedStyle(document.body).backgroundColor; is 'rgba(0, 0, 0, 0)'
 PASS document.body.bgColor='transparent';getComputedStyle(document.body).backgroundColor; is 'rgba(0, 0, 0, 0)'
 PASS document.body.bgColor=' transparent ';getComputedStyle(document.body).backgroundColor; is 'rgba(0, 0, 0, 0)'

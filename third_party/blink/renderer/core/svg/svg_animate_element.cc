@@ -91,8 +91,8 @@ QualifiedName ConstructQualifiedName(const SVGElement& svg_element,
   // "Animation elements treat attributeName='xlink:href' as being an alias
   // for targetting the 'href' attribute."
   // https://svgwg.org/svg2-draft/types.html#__svg__SVGURIReference__href
-  if (resolved_attr_name == XLinkNames::hrefAttr)
-    return SVGNames::hrefAttr;
+  if (resolved_attr_name == xlink_names::kHrefAttr)
+    return svg_names::kHrefAttr;
   return resolved_attr_name;
 }
 
@@ -108,19 +108,19 @@ SVGAnimateElement::SVGAnimateElement(const QualifiedName& tag_name,
       attribute_type_(kAttributeTypeAuto) {}
 
 SVGAnimateElement* SVGAnimateElement::Create(Document& document) {
-  return new SVGAnimateElement(SVGNames::animateTag, document);
+  return new SVGAnimateElement(svg_names::kAnimateTag, document);
 }
 
 SVGAnimateElement::~SVGAnimateElement() = default;
 
 bool SVGAnimateElement::IsSVGAnimationAttributeSettingJavaScriptURL(
     const Attribute& attribute) const {
-  if ((attribute.GetName() == SVGNames::fromAttr ||
-       attribute.GetName() == SVGNames::toAttr) &&
+  if ((attribute.GetName() == svg_names::kFromAttr ||
+       attribute.GetName() == svg_names::kToAttr) &&
       AttributeValueIsJavaScriptURL(attribute))
     return true;
 
-  if (attribute.GetName() == SVGNames::valuesAttr) {
+  if (attribute.GetName() == svg_names::kValuesAttr) {
     Vector<String> parts;
     if (!ParseValues(attribute.Value(), parts)) {
       // Assume the worst.
@@ -140,7 +140,7 @@ Node::InsertionNotificationRequest SVGAnimateElement::InsertedInto(
   SVGAnimationElement::InsertedInto(root_parent);
   if (root_parent.isConnected()) {
     SetAttributeName(ConstructQualifiedName(
-        *this, FastGetAttribute(SVGNames::attributeNameAttr)));
+        *this, FastGetAttribute(svg_names::kAttributeNameAttr)));
   }
   return kInsertionDone;
 }
@@ -153,12 +153,12 @@ void SVGAnimateElement::RemovedFrom(ContainerNode& root_parent) {
 
 void SVGAnimateElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == SVGNames::attributeTypeAttr) {
+  if (params.name == svg_names::kAttributeTypeAttr) {
     SetAttributeType(params.new_value);
     AnimationAttributeChanged();
     return;
   }
-  if (params.name == SVGNames::attributeNameAttr) {
+  if (params.name == svg_names::kAttributeNameAttr) {
     SetAttributeName(ConstructQualifiedName(*this, params.new_value));
     AnimationAttributeChanged();
     return;
@@ -465,8 +465,8 @@ void SVGAnimateElement::ClearAnimatedType() {
           target_element->EnsureAnimatedSMILStyleProperties();
       if (property_set->RemoveProperty(css_property_id_)) {
         target_element->SetNeedsStyleRecalc(
-            kLocalStyleChange,
-            StyleChangeReasonForTracing::Create(StyleChangeReason::kAnimation));
+            kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kAnimation));
       }
     }
   }
@@ -507,7 +507,7 @@ void SVGAnimateElement::ApplyResultsToTarget() {
             .did_change) {
       targetElement()->SetNeedsStyleRecalc(
           kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(StyleChangeReason::kAnimation));
+          StyleChangeReasonForTracing::Create(style_change_reason::kAnimation));
     }
   }
   if (IsAnimatingSVGDom()) {

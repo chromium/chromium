@@ -25,9 +25,38 @@
     request.statusText = 'OK';
     request.resourceSize = 1000;
     request._transferSize = 539;  // 39 = header size at the end of the day
+    request.setPriority('VeryHigh');
+
+    // sample timing values used here are copied from a real request
+    request.setIssueTime(357904.060558);
+    request.endTime = 357904.867763;
+    request.timing = {
+      'requestTime': 357904.061527,
+      'proxyStart': 1.68,
+      'proxyEnd': 2.432,
+      'dnsStart': 2.837,
+      'dnsEnd': 86.913,
+      'connectStart': 86.913,
+      'connectEnd': 231.96,
+      'sslStart': 133.24,
+      'sslEnd': 231.942,
+      'workerStart': -1,
+      'workerReady': -1,
+      'sendStart': 232.218,
+      'sendEnd': 232.515,
+      'pushStart': 0,
+      'pushEnd': 0,
+      'receiveHeadersEnd': 800.997
+    };
   }
 
-  var testRequest = new SDK.NetworkRequest('testRequest', 'http://example.com/inspector-test.js', 1);
+  const fakeInitiator = {
+    type: 'parser',
+    url: 'http://example.com/inspector-test.js',
+    lineNumber: 117
+  };
+  var testRequest = new SDK.NetworkRequest(
+      'testRequest', 'http://example.com/inspector-test.js', 'http://example.com/fake-document-url', 1, 1, fakeInitiator);
   setRequestValues(testRequest);
   var headersText = testRequest.requestHeadersText();
   var requestResults = {
@@ -49,7 +78,6 @@
   var stillNondeterministic = {
     'startedDateTime': 'formatAsTypeName',
     'time': 'formatAsTypeName',
-    'timings': 'formatAsTypeName',
     '_transferSize': 'formatAsTypeName',
     '_error': 'skip'
   };

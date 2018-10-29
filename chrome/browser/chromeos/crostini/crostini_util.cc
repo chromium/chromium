@@ -75,14 +75,13 @@ void OnCrostiniRestarted(Profile* profile,
                          const std::string& app_id,
                          Browser* browser,
                          base::OnceClosure callback,
-                         crostini::ConciergeClientResult result) {
-  if (result != crostini::ConciergeClientResult::SUCCESS) {
+                         crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS) {
     OnLaunchFailed(app_id);
     if (browser && browser->window())
       browser->window()->Close();
-    if (result ==
-        crostini::ConciergeClientResult::OFFLINE_WHEN_UPGRADE_REQUIRED) {
-      ShowCrostiniUpgradeView(profile, CrostiniUISurface::kAppList);
+    if (result == crostini::CrostiniResult::OFFLINE_WHEN_UPGRADE_REQUIRED) {
+      ShowCrostiniUpgradeView(profile, crostini::CrostiniUISurface::kAppList);
     }
     return;
   }
@@ -90,8 +89,8 @@ void OnCrostiniRestarted(Profile* profile,
 }
 
 void OnContainerApplicationLaunched(const std::string& app_id,
-                                    crostini::ConciergeClientResult result) {
-  if (result != crostini::ConciergeClientResult::SUCCESS)
+                                    crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS)
     OnLaunchFailed(app_id);
 }
 
@@ -210,6 +209,8 @@ class IconLoadWaiter : public CrostiniAppIcon::Observer {
 
 }  // namespace
 
+namespace crostini {
+
 void SetCrostiniUIAllowedForTesting(bool enabled) {
   g_crostini_ui_allowed_for_testing = enabled;
 }
@@ -218,7 +219,10 @@ bool IsCrostiniAllowedForProfile(Profile* profile) {
   if (g_crostini_ui_allowed_for_testing) {
     return true;
   }
-  if (profile && (profile->IsChild() || profile->IsLegacySupervised())) {
+  if (!profile || profile->IsChild() || profile->IsLegacySupervised() ||
+      profile->IsOffTheRecord() ||
+      chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
+      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
   }
   if (!profile->GetPrefs()->GetBoolean(
@@ -228,6 +232,10 @@ bool IsCrostiniAllowedForProfile(Profile* profile) {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user->IsAffiliated() && !IsUnaffiliatedCrostiniAllowedByPolicy()) {
+    return false;
+  }
+  if (!crostini::CrostiniManager::IsDevKvmPresent()) {
+    // Hardware is physically incapable, no matter what the user wants.
     return false;
   }
   return virtual_machines::AreVirtualMachinesAllowedByVersionAndChannel() &&
@@ -330,8 +338,9 @@ void LaunchCrostiniApp(Profile* profile,
         display_id, std::move(files), registration->IsScaled());
   }
 
-  // Update the last launched time.
+  // Update the last launched time and Termina version.
   registry_service->AppLaunched(app_id);
+  crostini_manager->UpdateLaunchMetricsForEnterpriseReporting();
 
   auto restart_id = crostini_manager->RestartCrostini(
       vm_name, container_name,
@@ -375,8 +384,12 @@ std::string ContainerUserNameForProfile(Profile* profile) {
   return container_username;
 }
 
-base::FilePath HomeDirectoryForProfile(Profile* profile) {
+base::FilePath ContainerHomeDirectoryForProfile(Profile* profile) {
   return base::FilePath("/home/" + ContainerUserNameForProfile(profile));
+}
+
+base::FilePath ContainerChromeOSBaseDirectory() {
+  return base::FilePath("/ChromeOS/");
 }
 
 std::string AppNameFromCrostiniAppId(const std::string& id) {
@@ -402,3 +415,5 @@ bool IsUnaffiliatedCrostiniAllowedByPolicy() {
   // If device policy is not set, allow Crostini.
   return true;
 }
+
+}  // namespace crostini

@@ -60,6 +60,9 @@
                     target:(id)target
                     action:(SEL)action;
 
+// Adds to the infobar a footer label below the title.
+- (void)addFooterLabel:(NSString*)label;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_CONFIRM_INFOBAR_VIEW_H_

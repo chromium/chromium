@@ -60,9 +60,18 @@ Polymer({
     },
   },
 
-  /** @override */
-  ready: function() {
+  /*
+   * Overridden from OobeDialogHostBehavior.
+   * @override
+   */
+  onBeforeShow: function() {
+    this.behaviors.forEach((behavior) => {
+      if (behavior.onBeforeShow)
+        behavior.onBeforeShow.call(this);
+    });
+
     this.showScreen_('setupFingerprint');
+    chrome.send('startEnroll');
   },
 
   focus: function() {
@@ -79,7 +88,8 @@ Polymer({
    */
   onEnrollScanDone: function(scanResult, isComplete, percentComplete) {
     // First tap on the sensor to start fingerprint enrollment.
-    if (this.getActiveScreen_() === this.$.placeFinger) {
+    if (this.getActiveScreen_() === this.$.placeFinger ||
+        this.getActiveScreen_() === this.$.setupFingerprint) {
       this.showScreen_('startFingerprintEnroll');
     }
 
@@ -153,7 +163,6 @@ Polymer({
    */
   onContinueToSensorLocationScreen_: function(e) {
     this.showScreen_('placeFinger');
-    chrome.send('startEnroll');
   },
 
   /**

@@ -26,8 +26,8 @@ bool Contains(const std::string& source, const std::string& target) {
 TEST(WebstoreInstallerTest, PlatformParams) {
   std::string id = crx_file::id_util::GenerateId("some random string");
   std::string source = "inline";
-  GURL url = WebstoreInstaller::GetWebstoreInstallURL(id,
-      WebstoreInstaller::INSTALL_SOURCE_INLINE);
+  GURL url = WebstoreInstaller::GetWebstoreInstallURL(
+      id, WebstoreInstaller::INSTALL_SOURCE_INLINE);
   std::string query = url.query();
   EXPECT_TRUE(
       Contains(query, StringPrintf("os=%s", UpdateQueryParams::GetOS())));

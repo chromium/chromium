@@ -62,6 +62,9 @@ class AutofillWebDataBackendImpl
       AutofillWebDataServiceObserverOnDBSequence* observer) override;
   WebDatabase* GetDatabase() override;
   void RemoveExpiredFormElements() override;
+  void NotifyOfAutofillProfileChanged(
+      const AutofillProfileChange& change) override;
+  void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
   void NotifyOfMultipleAutofillChanges() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
 

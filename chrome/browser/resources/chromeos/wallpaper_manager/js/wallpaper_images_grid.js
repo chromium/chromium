@@ -86,21 +86,18 @@ cr.define('wallpapers', function() {
       }
 
       var imageEl = cr.doc.createElement('img');
-      if (loadTimeData.getBoolean('useNewWallpaperPicker')) {
-        // On the new picker, do not show the image until |cropImageToFitGrid_|
-        // is done.
-        imageEl.style.visibility = 'hidden';
-        imageEl.setAttribute('aria-hidden', 'true');
-        this.setAttribute('aria-label', this.dataItem.ariaLabel);
-        this.tabIndex = 0;
-        this.addEventListener('keypress', e => {
-          if (e.keyCode == 13)
-            this.parentNode.selectedItem = this.dataItem;
-        });
-        this.addEventListener('mousedown', e => {
-          e.preventDefault();
-        });
-      }
+      // Do not show the image until |cropImageToFitGrid_| is done.
+      imageEl.style.visibility = 'hidden';
+      imageEl.setAttribute('aria-hidden', 'true');
+      this.setAttribute('aria-label', this.dataItem.ariaLabel);
+      this.tabIndex = 0;
+      this.addEventListener('keypress', e => {
+        if (e.keyCode == 13)
+          this.parentNode.selectedItem = this.dataItem;
+      });
+      this.addEventListener('mousedown', e => {
+        e.preventDefault();
+      });
 
       imageEl.classList.add('thumbnail');
       cr.defineProperty(imageEl, 'offline', cr.PropertyKind.BOOL_ATTR);
@@ -119,10 +116,7 @@ cr.define('wallpapers', function() {
           window.setTimeout(this.callback_.bind(this, this.dataModelId_), 0);
           break;
         case Constants.WallpaperSourceEnum.Custom:
-          if (loadTimeData.getBoolean('useNewWallpaperPicker'))
-            this.decorateCustomWallpaper_(imageEl, this.dataItem);
-          else
-            this.decorateCustomWallpaperForOldPicker_(imageEl, this.dataItem);
+          this.decorateCustomWallpaper_(imageEl, this.dataItem);
           break;
         case Constants.WallpaperSourceEnum.OEM:
         case Constants.WallpaperSourceEnum.Online:
@@ -141,8 +135,7 @@ cr.define('wallpapers', function() {
     },
 
     /**
-     * Initializes the grid item for custom wallpapers. Used by the new
-     * wallpaper picker.
+     * Initializes the grid item for custom wallpapers.
      * @param {Object} imageElement The image element.
      * @param {{filePath: string, baseURL: string, layout: string,
      *          source: string, availableOffline: boolean}
@@ -182,45 +175,6 @@ cr.define('wallpapers', function() {
     },
 
     /**
-     * Initializes the grid item for custom wallpapers. Used by the old
-     * wallpaper picker (to be deprecated).
-     * @param {Object} imageElement The image element.
-     * @param {{filePath: string, baseURL: string, layout: string,
-     *          source: string, availableOffline: boolean}
-     *     dataItem The info related to the wallpaper image.
-     * @private
-     */
-    decorateCustomWallpaperForOldPicker_(imageElement, dataItem) {
-      if (dataItem.source != Constants.WallpaperSourceEnum.Custom) {
-        console.error(
-            '|decorateCustomWallpaperForOldPicker_| is called but the ' +
-            'wallpaper source is not custom.');
-        return;
-      }
-      var errorHandler = e => {
-        console.error('Can not access file system.');
-        this.callback_(this.dataModelId_);
-      };
-      var setURL = fileEntry => {
-        imageElement.src = fileEntry.toURL();
-        this.callback_(this.dataModelId_, dataItem.wallpaperId, imageElement);
-      };
-      var wallpaperDirectories = WallpaperDirectories.getInstance();
-      var fallback = () => {
-        wallpaperDirectories.getDirectory(
-            Constants.WallpaperDirNameEnum.ORIGINAL, function(dirEntry) {
-              dirEntry.getFile(
-                  dataItem.baseURL, {create: false}, setURL, errorHandler);
-            }, errorHandler);
-      };
-      var success = dirEntry => {
-        dirEntry.getFile(dataItem.baseURL, {create: false}, setURL, fallback);
-      };
-      wallpaperDirectories.getDirectory(
-          Constants.WallpaperDirNameEnum.THUMBNAIL, success, errorHandler);
-    },
-
-    /**
      * Initializes the grid item for online or OEM wallpapers.
      * @param {Object} imageElement The image element.
      * @param {{filePath: string, baseURL: string, layout: string,
@@ -248,11 +202,7 @@ cr.define('wallpapers', function() {
                 } else if (
                     dataItem.source == Constants.WallpaperSourceEnum.Online) {
                   var xhr = new XMLHttpRequest();
-                  xhr.open(
-                      'GET',
-                      dataItem.baseURL +
-                          WallpaperUtil.getOnlineWallpaperThumbnailSuffix(),
-                      true);
+                  xhr.open('GET', dataItem.baseURL, true);
                   xhr.responseType = 'arraybuffer';
                   xhr.send(null);
                   xhr.addEventListener('load', e => {
@@ -443,22 +393,9 @@ cr.define('wallpapers', function() {
         // item is constructed in function itemConstructor below.
         this.pendingItems_ = 0;
 
-        // Only show the spinner on the old wallpaper picker.
-        if (!this.useNewWallpaperPicker_) {
-          this.style.visibility = 'hidden';
-          // If spinner is hidden, schedule to show the spinner after
-          // ShowSpinnerDelayMs delay. Otherwise, keep it spinning.
-          if ($('spinner-container').hidden) {
-            this.spinnerTimeout_ = window.setTimeout(function() {
-              $('spinner-container').hidden = false;
-            }, ShowSpinnerDelayMs);
-          }
-        }
-
         // Add a daily refresh item as the first element of the grid when
-        // showing online wallpapers on the new wallpaper picker.
-        if (this.useNewWallpaperPicker_ &&
-            dataModel.item(0).source == Constants.WallpaperSourceEnum.Online) {
+        // showing online wallpapers.
+        if (dataModel.item(0).source == Constants.WallpaperSourceEnum.Online) {
           dataModel.splice(
               0, 0, {isDailyRefreshItem: true, availableOffline: false});
         }
@@ -542,10 +479,9 @@ cr.define('wallpapers', function() {
       if (opt_wallpaperId && opt_thumbnail)
         this.thumbnailList_[opt_wallpaperId] = opt_thumbnail;
 
-      if (opt_thumbnail && this.useNewWallpaperPicker_)
+      if (opt_thumbnail)
         this.cropImageToFitGrid_(opt_thumbnail);
 
-      // Daily refresh item only exists in new wallpaper picker.
       if (this.isShowingDailyRefresh) {
         var dailyRefreshItemReady = this.dailyRefreshItem &&
             this.dailyRefreshImages.length >= DAILY_REFRESH_IMAGES_NUM;
@@ -592,10 +528,8 @@ cr.define('wallpapers', function() {
           window.clearTimeout(this.dailyRefreshTimer_);
           this.showNextImage_(0);
         }
-        if (this.useNewWallpaperPicker_ &&
-            this.classList.contains('image-picker-offline')) {
+        if (this.classList.contains('image-picker-offline'))
           this.highlightOfflineWallpapers();
-        }
       }
     },
 
@@ -612,8 +546,6 @@ cr.define('wallpapers', function() {
       this.checkmark_.tabIndex = 0;
       this.dataModel = new ArrayDataModel([]);
       this.thumbnailList_ = new ArrayDataModel([]);
-      this.useNewWallpaperPicker_ =
-          loadTimeData.getBoolean('useNewWallpaperPicker');
       var self = this;
       this.itemConstructor = function(value) {
         var dataModelId = self.dataModelId_;
@@ -768,10 +700,8 @@ cr.define('wallpapers', function() {
      * the other wallpapers.
      */
     highlightOfflineWallpapers: function() {
-      if (!this.useNewWallpaperPicker_ ||
-          !this.classList.contains('image-picker-offline')) {
+      if (!this.classList.contains('image-picker-offline'))
         return;
-      }
 
       chrome.wallpaperPrivate.getOfflineWallpaperList(list => {
         var offlineWallpaperList = {};
@@ -802,23 +732,21 @@ cr.define('wallpapers', function() {
       // The active thumbnail maybe deleted in the above redraw(). Sets it again
       // to make sure checkmark shows correctly.
       this.updateActiveThumb_();
-      if (this.useNewWallpaperPicker_) {
-        if (this.dataModel) {
-          var scrollUp =
-              this.cachedScrollTop_ && this.cachedScrollTop_ > this.scrollTop;
-          for (var i = 0; i < this.dataModel.length; ++i) {
-            if (this.getListItemByIndex(i)) {
-              this.getListItemByIndex(i).classList.toggle(
-                  'first-row',
-                  i < this.columns &&
-                      (this.firstIndex_ == 0 || i != this.firstIndex_ ||
-                       scrollUp));
-            }
+      if (this.dataModel) {
+        var scrollUp =
+            this.cachedScrollTop_ && this.cachedScrollTop_ > this.scrollTop;
+        for (var i = 0; i < this.dataModel.length; ++i) {
+          if (this.getListItemByIndex(i)) {
+            this.getListItemByIndex(i).classList.toggle(
+                'first-row',
+                i < this.columns &&
+                    (this.firstIndex_ == 0 || i != this.firstIndex_ ||
+                     scrollUp));
           }
         }
-        wallpaperManager.onScrollPositionChanged(this.scrollTop);
-        this.cachedScrollTop_ = this.scrollTop;
       }
+      wallpaperManager.onScrollPositionChanged(this.scrollTop);
+      this.cachedScrollTop_ = this.scrollTop;
     }
   };
 

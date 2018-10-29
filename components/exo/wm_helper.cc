@@ -10,8 +10,9 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/display/types/display_snapshot.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace exo {
@@ -75,16 +76,6 @@ void WMHelper::AddTabletModeObserver(ash::TabletModeObserver* observer) {
 
 void WMHelper::RemoveTabletModeObserver(ash::TabletModeObserver* observer) {
   ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(observer);
-}
-
-void WMHelper::AddInputDeviceEventObserver(
-    ui::InputDeviceEventObserver* observer) {
-  ui::InputDeviceManager::GetInstance()->AddObserver(observer);
-}
-
-void WMHelper::RemoveInputDeviceEventObserver(
-    ui::InputDeviceEventObserver* observer) {
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(observer);
 }
 
 void WMHelper::AddDisplayConfigurationObserver(
@@ -151,6 +142,21 @@ int WMHelper::OnPerformDrop(const ui::DropTargetEvent& event) {
 const display::ManagedDisplayInfo& WMHelper::GetDisplayInfo(
     int64_t display_id) const {
   return ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
+}
+
+const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
+    int64_t display_id) const {
+  const auto& displays = ash::Shell::Get()
+                             ->window_tree_host_manager()
+                             ->display_configurator()
+                             ->cached_displays();
+
+  for (display::DisplaySnapshot* display : displays)
+    if (display->display_id() == display_id)
+      return display->edid();
+
+  static std::vector<uint8_t> no_data;
+  return no_data;
 }
 
 aura::Window* WMHelper::GetPrimaryDisplayContainer(int container_id) {

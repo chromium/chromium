@@ -31,8 +31,13 @@ CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
     const std::string& settings_entity_id,
     CloudPolicyStore* cloud_policy_store,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : core_(policy_type, settings_entity_id, cloud_policy_store, task_runner),
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
+    : core_(policy_type,
+            settings_entity_id,
+            cloud_policy_store,
+            task_runner,
+            network_connection_tracker_getter),
       waiting_for_policy_refresh_(false) {}
 
 CloudPolicyManager::~CloudPolicyManager() {}

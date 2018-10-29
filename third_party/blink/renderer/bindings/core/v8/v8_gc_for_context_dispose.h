@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_GC_FOR_CONTEXT_DISPOSE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -44,7 +45,12 @@ class V8GCForContextDispose {
   void NotifyContextDisposed(bool is_main_frame, WindowProxy::FrameReuseStatus);
   void NotifyIdle();
 
-  static V8GCForContextDispose& Instance();
+  CORE_EXPORT static V8GCForContextDispose& Instance();
+
+  // Called by OomInterventionImpl. If intervention runs on the previous page,
+  // it means that the memory usage is high and needs gc during navigation to
+  // the next page, so that the memory usage of the two pages would not overlap.
+  CORE_EXPORT void SetForcePageNavigationGC();
 
  private:
   V8GCForContextDispose();  // Use instance() instead.
@@ -54,6 +60,7 @@ class V8GCForContextDispose {
   TaskRunnerTimer<V8GCForContextDispose> pseudo_idle_timer_;
   bool did_dispose_context_for_main_frame_;
   double last_context_disposal_time_;
+  bool force_page_navigation_gc_;
 };
 
 }  // namespace blink

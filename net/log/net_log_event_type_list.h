@@ -1227,9 +1227,6 @@ EVENT_TYPE(HTTP_TRANSACTION_READ_BODY)
 // restarting for authentication, on keep alive connections.
 EVENT_TYPE(HTTP_TRANSACTION_DRAIN_BODY_FOR_AUTH_RESTART)
 
-// Measures the time taken to look up the key used for Token Binding.
-EVENT_TYPE(HTTP_TRANSACTION_GET_TOKEN_BINDING_KEY)
-
 // This event is sent when we try to restart a transaction after an error.
 // The following parameters are attached:
 //   {
@@ -1672,6 +1669,12 @@ EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_CONNECT)
 // before the handshake completed and a new connection on the alternate network
 // will be attempted soon.
 EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_RETRY_ON_ALTERNATE_NETWORK)
+
+// This event indicates that the stale host resolution has failed.
+EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_STALE_HOST_RESOLUTION_FAILED)
+
+// This event indicates that the stale host doesn't match with fresh host.
+EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_STALE_HOST_RESOLUTION_NO_MATCH)
 
 // ------------------------------------------------------------------------
 // quic::QuicSession
@@ -2851,88 +2854,6 @@ EVENT_TYPE(SIMPLE_CACHE_ENTRY_CLOSE_BEGIN)
 // contains no parameters.
 EVENT_TYPE(SIMPLE_CACHE_ENTRY_CLOSE_END)
 
-// -----------------------------------------------------------------------------
-// Data Reduction Proxy events.
-// -----------------------------------------------------------------------------
-
-// This event is created when the data reduction proxy has been turned on or
-// off. It always contains the parameter:
-//  {
-//    "enabled": <true if the proxy is enabled>
-//  }
-//
-// If it is enabled, it contains additional parameters:
-//  {
-//    "primary_restricted": <Whether the primary proxy is restricted or not>,
-//    "fallback_restricted": <Whether the fallback proxy is restricted or not>,
-//    "primary_origin": <The primary proxy origin address>,
-//    "fallback_origin": <The fallback proxy origin address>,
-//    "ssl_origin": <The SSL proxy origin address>,
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_ENABLED)
-
-// The start/end of a canary request is sent to the data reduction proxy.
-//
-// The BEGIN phase contains the following parameters:
-//  {
-//    "url": <The URL of the canary endpoint>,
-//  }
-//
-// The END phase contains the following parameters:
-//  {
-//    "net_error": <The net_error of the completion of the canary request>,
-//    "http_response_code": <The HTTP response code of the canary request>,
-//    "check_succeeded": <Whether a secure Data Reduction Proxy can be used or
-//                        not>
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_CANARY_REQUEST)
-
-// This event is created when a response to the canary request has been
-// received with the following parameters:
-//  {
-//    "headers": <The list of header:value pairs>,
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_CANARY_RESPONSE_RECEIVED)
-
-// This event is created when a bypass event takes place with the following
-// parameters:
-//  {
-//    "action": <For DRP proxy sourced bypasses in the chrome-proxy header,
-//               the bypass type>,
-//    "bypass_type": <For non-DRP proxy sourced bypasses, the bypass type>,
-//    "url": <The origin URL of the remote endpoint which resulted in the
-//            bypass>,
-//    "bypass_duration_seconds": <The length of time to be in a bypass state>,
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_BYPASS_REQUESTED)
-
-// This event is created when the data reduction proxy configuration changes
-// (i.e. a switch between primary and fallback) with the following parameters:
-//  {
-//    "proxy_server": <The URL of the proxy server no longer being used>,
-//    "net_error": <The net_error encountered when using the proxy server; this
-//                  can be 0 if the proxy server is explicitly skipped>,
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_FALLBACK)
-
-// The start/end of a config request is sent to the Data Saver Config API
-// service.
-//
-// The BEGIN phase contains the following parameters:
-//  {
-//    "url": <The URL of the service endpoint>,
-//  }
-//
-// The END phase contains the following parameters:
-//  {
-//    "net_error": <The net_error of the completion of the config request>,
-//    "http_response_code": <The HTTP response code of the config request>,
-//    "failure_count": <The number of consecutive config request failures>,
-//    "retry_delay_seconds": <The length of time after which another config
-//                            request will be made>,
-//  }
-EVENT_TYPE(DATA_REDUCTION_PROXY_CONFIG_REQUEST)
-
 // Marks start of UploadDataStream that is logged on initialization.
 // The END phase contains the following parameters:
 // {
@@ -3141,6 +3062,20 @@ EVENT_TYPE(COOKIE_STORE_COOKIE_REJECTED_SECURE)
 //    "newvalue": <Value of the cookie that would have been added>
 //  }
 EVENT_TYPE(COOKIE_STORE_COOKIE_REJECTED_HTTPONLY)
+
+// Event emitted on preservation of a cookie that would have been
+// overwritten, because cookie addition failed due to a conflict with a secure
+// cookie.
+//  {
+//    "name": <Name of the cookies>
+//    "domain": <Domain of the preserved and new cookies>
+//    "path": <Path of the preserved and new cookies>
+//    "securecookiedomain": <Domain of the secure cookie causing preservation>
+//    "securecookiepath": <Path of the secure cookie causing preservation>
+//    "preservedvalue": <Value of the preserved cookie>
+//    "discardedvalue": <Value of the new cookie whose addition failed>
+//  }
+EVENT_TYPE(COOKIE_STORE_COOKIE_PRESERVED_SKIPPED_SECURE)
 
 // Event emitted on setting store session persistence
 //  {

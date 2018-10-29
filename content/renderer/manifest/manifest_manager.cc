@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/nullable_string16.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/fetchers/manifest_fetcher.h"
@@ -130,8 +131,8 @@ void ManifestManager::FetchManifest() {
 }
 
 static const std::string& GetMessagePrefix() {
-  CR_DEFINE_STATIC_LOCAL(std::string, message_prefix, ("Manifest: "));
-  return message_prefix;
+  static base::NoDestructor<std::string> message_prefix("Manifest: ");
+  return *message_prefix;
 }
 
 void ManifestManager::OnManifestFetchComplete(

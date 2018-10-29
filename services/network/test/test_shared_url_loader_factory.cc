@@ -42,7 +42,7 @@ void TestSharedURLLoaderFactory::CreateLoaderAndStart(
 }
 
 void TestSharedURLLoaderFactory::Clone(mojom::URLLoaderFactoryRequest request) {
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 // SharedURLLoaderFactoryInfo implementation

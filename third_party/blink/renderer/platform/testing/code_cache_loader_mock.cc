@@ -15,6 +15,7 @@ void CodeCacheLoaderMock::FetchFromCodeCacheSynchronously(
 }
 
 void CodeCacheLoaderMock::FetchFromCodeCache(
+    blink::mojom::CodeCacheType cache_type,
     const GURL& kurl,
     CodeCacheLoader::FetchCodeCacheCallback callback) {
   std::move(callback).Run(base::Time(), std::vector<uint8_t>());

@@ -11,15 +11,18 @@ Polymer({
     /** @type {?print_preview.Destination} */
     destination: Object,
 
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+    disabled: Boolean,
 
     /** @private {boolean} */
     shouldShowSystemDialogLink_: {
       type: Boolean,
       computed: 'computeShouldShowSystemDialogLink_(appKioskMode, destination)',
+    },
+
+    /** @private {boolean} */
+    systemDialogLinkDisabled_: {
+      type: Boolean,
+      computed: 'computeSystemDialogLinkDisabled_(disabled)',
     },
 
     /** @private {boolean} */
@@ -50,6 +53,14 @@ Polymer({
         print_preview.Destination.GooglePromotedId.SAVE_AS_PDF;
   },
 
+  /**
+   * @return {boolean} Whether the system dialog link should be disabled
+   * @private
+   */
+  computeSystemDialogLinkDisabled_: function() {
+    return cr.isWindows && this.disabled;
+  },
+
   /** @private */
   onSystemDialogClick_: function() {
     if (!this.shouldShowSystemDialogLink_)
@@ -68,4 +79,9 @@ Polymer({
     this.fire('open-pdf-in-preview');
   },
   // </if>
+
+  /** @return {boolean} Whether the system dialog link is available. */
+  systemDialogLinkAvailable: function() {
+    return this.shouldShowSystemDialogLink_ && !this.systemDialogLinkDisabled_;
+  },
 });

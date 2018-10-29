@@ -10,12 +10,14 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -118,12 +120,13 @@ class DeclarativeApiTest : public ExtensionApiTest {
             extensions::declarative_webrequest_constants::kOnRequest);
 
     std::vector<linked_ptr<api::events::Rule>> rules;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&RulesRegistry::GetAllRules, rules_registry,
                        extension_id, &rules));
     scoped_refptr<base::ThreadTestHelper> io_helper(new base::ThreadTestHelper(
-        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO).get()));
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
+            .get()));
     EXPECT_TRUE(io_helper->Run());
     return rules.size();
   }

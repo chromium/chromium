@@ -129,6 +129,12 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
                    chromeos::IntentPickerCloseReason close_reason,
                    bool should_persist);
 
+  // Returns true if this picker has candidates for the user to choose from, and
+  // false otherwise. For instance, if Chrome was the only app candidate
+  // provided, it will have been erased from |app_infos_| and this method would
+  // return false.
+  bool HasCandidates() const;
+
   // Accessory for |scroll_view_|'s contents size.
   size_t GetScrollViewSize() const;
 

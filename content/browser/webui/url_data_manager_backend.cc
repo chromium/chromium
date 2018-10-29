@@ -28,6 +28,7 @@
 #include "content/browser/webui/url_data_source_impl.h"
 #include "content/browser/webui/web_ui_data_source_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -195,8 +196,8 @@ void URLRequestChromeJob::Start() {
   // TODO(caseq): Fix the race condition and remove this thread hop in
   // https://crbug.com/616641.
   if (url.SchemeIs(kChromeDevToolsScheme)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&URLRequestChromeJob::DelayStartForDevTools,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -338,8 +339,8 @@ int URLRequestChromeJob::PostReadTask(scoped_refptr<net::IOBuffer> buf,
 
 void URLRequestChromeJob::DelayStartForDevTools(
     const base::WeakPtr<URLRequestChromeJob>& job) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&URLRequestChromeJob::StartAsync, job));
 }
 
@@ -444,7 +445,7 @@ void URLDataManagerBackend::AddDataSource(
     URLDataSourceImpl* source) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!source->source()->ShouldReplaceExistingSource()) {
-    DataSourceMap::iterator i = data_sources_.find(source->source_name());
+    auto i = data_sources_.find(source->source_name());
     if (i != data_sources_.end())
       return;
   }
@@ -455,7 +456,7 @@ void URLDataManagerBackend::AddDataSource(
 void URLDataManagerBackend::UpdateWebUIDataSource(
     const std::string& source_name,
     const base::DictionaryValue& update) {
-  DataSourceMap::iterator it = data_sources_.find(source_name);
+  auto it = data_sources_.find(source_name);
   if (it == data_sources_.end() || !it->second->IsWebUIDataSourceImpl()) {
     NOTREACHED();
     return;
@@ -466,8 +467,7 @@ void URLDataManagerBackend::UpdateWebUIDataSource(
 
 bool URLDataManagerBackend::HasPendingJob(
     URLRequestChromeJob* job) const {
-  for (PendingRequestMap::const_iterator i = pending_requests_.begin();
-       i != pending_requests_.end(); ++i) {
+  for (auto i = pending_requests_.begin(); i != pending_requests_.end(); ++i) {
     if (i->second == job)
       return true;
   }
@@ -539,7 +539,7 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
     const GURL& url) {
   // The input usually looks like: chrome://source_name/extra_bits?foo
   // so do a lookup using the host of the URL.
-  DataSourceMap::iterator i = data_sources_.find(url.host());
+  auto i = data_sources_.find(url.host());
   if (i != data_sources_.end())
     return i->second.get();
 
@@ -568,8 +568,7 @@ void URLDataManagerBackend::RemoveRequest(URLRequestChromeJob* job) {
   // Remove the request from our list of pending requests.
   // If/when the source sends the data that was requested, the data will just
   // be thrown away.
-  for (PendingRequestMap::iterator i = pending_requests_.begin();
-       i != pending_requests_.end(); ++i) {
+  for (auto i = pending_requests_.begin(); i != pending_requests_.end(); ++i) {
     if (i->second == job) {
       pending_requests_.erase(i);
       return;
@@ -580,7 +579,7 @@ void URLDataManagerBackend::RemoveRequest(URLRequestChromeJob* job) {
 void URLDataManagerBackend::DataAvailable(RequestID request_id,
                                           base::RefCountedMemory* bytes) {
   // Forward this data on to the pending net::URLRequest, if it exists.
-  PendingRequestMap::iterator i = pending_requests_.find(request_id);
+  auto i = pending_requests_.find(request_id);
   if (i != pending_requests_.end()) {
     URLRequestChromeJob* job = i->second;
     pending_requests_.erase(i);

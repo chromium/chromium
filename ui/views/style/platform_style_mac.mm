@@ -40,9 +40,9 @@ const bool PlatformStyle::kSelectAllOnRightClickWhenUnfocused = true;
 const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = true;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = false;
 const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
-const bool PlatformStyle::kShouldElideBookmarksInBookmarksBar = true;
 const bool PlatformStyle::kUseRipples = false;
 const bool PlatformStyle::kPreferFocusRings = true;
+const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = true;
 
 const Button::NotifyAction PlatformStyle::kMenuNotifyActivationAction =
     Button::NOTIFY_ON_PRESS;

@@ -71,7 +71,8 @@ void CustomLinksStore::ClearLinks() {
 // static
 void CustomLinksStore::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
-  user_prefs->RegisterListPref(prefs::kCustomLinksList);
+  user_prefs->RegisterListPref(prefs::kCustomLinksList,
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace ntp_tiles

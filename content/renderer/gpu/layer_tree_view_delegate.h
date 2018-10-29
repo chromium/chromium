@@ -17,10 +17,6 @@ class LayerTreeFrameSink;
 class SwapPromise;
 }  // namespace cc
 
-namespace gfx {
-class Vector2dF;
-}
-
 namespace viz {
 class CopyOutputRequest;
 }
@@ -36,12 +32,8 @@ class LayerTreeViewDelegate {
 
   // Report viewport related properties during a commit from the compositor
   // thread.
-  virtual void ApplyViewportDeltas(
-      const gfx::Vector2dF& inner_delta,
-      const gfx::Vector2dF& outer_delta,
-      const gfx::Vector2dF& elastic_overscroll_delta,
-      float page_scale,
-      float top_controls_delta) = 0;
+  virtual void ApplyViewportChanges(
+      const cc::ApplyViewportChangesArgs& args) = 0;
 
   // Record use count of wheel/touch sources for scrolling on the compositor
   // thread.
@@ -65,9 +57,11 @@ class LayerTreeViewDelegate {
   // Called by the compositor when page scale animation completed.
   virtual void DidCompletePageScaleAnimation() = 0;
 
-  // Notifies that the last submitted CompositorFrame has been processed and
-  // will be displayed.
-  virtual void DidReceiveCompositorFrameAck() = 0;
+  // Requests that a UMA and UKM metric be recorded for the total frame time.
+  // Call this as soon as the total frame time becomes known for a given frame.
+  // For example, ProxyMain::BeginMainFrame calls it immediately before aborting
+  // or committing a frame (at the same time Tracing measurements are taken).
+  virtual void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) = 0;
 
   // Indicates whether the LayerTreeView is about to close.
   virtual bool IsClosing() const = 0;

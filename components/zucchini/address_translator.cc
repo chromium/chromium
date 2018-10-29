@@ -38,6 +38,8 @@ AddressTranslator::RvaToOffsetCache::RvaToOffsetCache(
     : translator_(translator) {}
 
 bool AddressTranslator::RvaToOffsetCache::IsValid(rva_t rva) const {
+  if (rva == kInvalidRva)
+    return false;
   if (!cached_unit_ || !cached_unit_->CoversRva(rva)) {
     const AddressTranslator::Unit* unit = translator_.RvaToUnit(rva);
     if (!unit)

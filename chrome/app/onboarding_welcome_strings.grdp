@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Shared strings -->
+  <message name="IDS_ONBOARDING_WELCOME_GET_STARTED" desc="Label for a confirmation button to finish adding a bookmark and get the user started with using the browser.">
+    Get started
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_NEXT" desc="Label for a button to confirm and continue from the current onboarding step.">
+    Next
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_SKIP" desc="Label for a button to skip the current onboarding step.">
+    Skip
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_BOOKMARK_ADDED" desc="String read for accessibility to inform the user a bookmark was added.">
+    Bookmark added
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_BOOKMARK_REMOVED" desc="String read for accessibility to inform the user a bookmark was removed.">
+    Bookmark removed
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_BOOKMARK_REPLACED" desc="String read for accessibility to inform the user a bookmark was replaced.">
+    Bookmark replaced
+  </message>
+
+  <!-- NUX email provider selection module -->
+  <message name="IDS_ONBOARDING_WELCOME_NUX_EMAIL_TITLE" desc="Text shown to prompt the users to select an email service to add as bookmark.">
+    Add a bookmark to your email
+  </message>
+
+  <!-- NUX Google apps selection module -->
+  <message name="IDS_ONBOARDING_WELCOME_NUX_GOOGLE_APPS_DESCRIPTION" desc="Description of what this section in the onboarding workflow does.">
+    Add bookmarks to your favorite Google Apps
+  </message>
+
+  <!-- NUX set default module -->
+  <message name="IDS_ONBOARDING_WELCOME_NUX_SET_AS_DEFAULT_HEADER" desc="Header for the page that prompts user to set Chrome as their default browser.">
+    Set Chrome as your default browser
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_NUX_SET_AS_DEFAULT_SUB_HEADER" desc="Sub-header for the page that prompts user to set Chrome as their default browser.">
+    Get Google Search and Google smarts everytime you browse
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_NUX_SET_AS_DEFAULT_SKIP" desc="The label for a button to skip setting Chrome as their default browser.">
+    Skip
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_NUX_SET_AS_DEFAULT_SET_AS_DEFAULT" desc="The label for a button to confirm setting Chrome as their default browser.">
+    Set as default
+  </message>
+
+  <!-- Landing view -->
+  <message name="IDS_ONBOARDING_WELCOME_LANDING_TITLE" desc="Title for the page that prompts user to start setting up their new Chrome.">
+    Make Chrome your own
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_LANDING_DESCRIPTION" desc="Description for the page that prompts user to start setting up their new Chrome.">
+    Set up your browser in a few simple steps
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_LANDING_NEW_USER" desc="Label for a button that prompts new users to start setting up their new Chrome.">
+    Get Started
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_LANDING_EXISTING_USER" desc="Label for a button that prompts existing users to sign in.">
+    Already a Chrome user? Sign in
+  </message>
+
+  <!-- Sign-in view -->
+  <message name="IDS_ONBOARDING_WELCOME_SIGNIN_VIEW_HEADER" desc="Header for the page that prompts user to sign in to chrome.">
+    Save your progress
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_SIGNIN_VIEW_SUB_HEADER" desc="Sub-header for the page that prompts user to sign in to chrome.">
+    Sign in and turn on sync to get your bookmarks, passwords and more on all devices
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_SIGNIN_VIEW_SIGNIN" desc="The label for a button to let users sign in to chrome.">
+    Sign in
+  </message>
+
+  <!-- Email interstitial view -->
+  <message name="IDS_ONBOARDING_WELCOME_EMAIL_INTERSTITIAL_TITLE" desc="Text shown to ask users whether or not they want to be directed to the email provider they previously selected, or skip this and start using the browser.">
+    Continue to your email?
+  </message>
+  <message name="IDS_ONBOARDING_WELCOME_EMAIL_INTERSTITIAL_CONTINUE" desc="Label for the button to direct the user to the email provider they previously selected.">
+    Continue
+  </message>
+</grit-part>

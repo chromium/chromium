@@ -1,0 +1,36 @@
+<!DOCTYPE hmtl>
+<!--
+Used to test that interacting with a <select> tag on a webpage brings up a
+working Android selection dialog.
+-->
+<html>
+  <body>
+    <script src="../../../../../../third_party/WebKit/LayoutTests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>
+      var t = async_test("<select> tag works properly in VR browser.");
+
+      function onSelectChange(newValue) {
+        t.step(() => {
+          assert_not_equals(newValue, "initial_option",
+              "Newly selected value is the starting value");
+          assert_true(newValue.startsWith("option"),
+              "Didn't get initial option, but didn't get valid option either");
+        });
+        t.done();
+      }
+    </script>
+    <select id="selectbox" onchange="onSelectChange(this.value)">
+      <option value="initial_option" selected="true">initial option</option>
+      <option value="option1">option 1</option>
+      <option value="option2">option 2</option>
+      <option value="option3">option 3</option>
+      <option value="option4">option 4</option>
+      <option value="option5">option 5</option>
+      <option value="option6">option 6</option>
+      <option value="option7">option 7</option>
+      <option value="option8">option 8</option>
+      <option value="option9">option 9</option>
+    </select>
+  </body>
+</html>

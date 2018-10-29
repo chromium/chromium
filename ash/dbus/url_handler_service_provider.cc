@@ -69,7 +69,8 @@ void UrlHandlerServiceProvider::OpenUrl(
     return;
   }
 
-  ash::Shell::Get()->new_window_controller()->NewTabWithUrl(gurl);
+  ash::Shell::Get()->new_window_controller()->NewTabWithUrl(
+      gurl, false /* from_user_interaction */);
   response_sender.Run(dbus::Response::FromMethodCall(method_call));
 }
 

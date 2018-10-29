@@ -92,6 +92,28 @@ bool UnifiedSystemTrayModel::IsExpandedOnOpen() const {
          Shell::Get()->accessibility_controller()->IsSpokenFeedbackEnabled();
 }
 
+base::Optional<bool> UnifiedSystemTrayModel::GetNotificationExpanded(
+    const std::string& notification_id) const {
+  auto it = notification_changes_.find(notification_id);
+  return it == notification_changes_.end() ? base::Optional<bool>()
+                                           : base::Optional<bool>(it->second);
+}
+
+void UnifiedSystemTrayModel::SetNotificationExpanded(
+    const std::string& notification_id,
+    bool expanded) {
+  notification_changes_[notification_id] = expanded;
+}
+
+void UnifiedSystemTrayModel::RemoveNotificationExpanded(
+    const std::string& notification_id) {
+  notification_changes_.erase(notification_id);
+}
+
+void UnifiedSystemTrayModel::ClearNotificationChanges() {
+  notification_changes_.clear();
+}
+
 void UnifiedSystemTrayModel::DisplayBrightnessChanged(float brightness,
                                                       bool by_user) {
   display_brightness_ = brightness;

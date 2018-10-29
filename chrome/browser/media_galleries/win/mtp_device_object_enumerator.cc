@@ -7,15 +7,10 @@
 #include "chrome/browser/media_galleries/win/mtp_device_object_enumerator.h"
 
 #include "base/logging.h"
-#include "base/threading/thread_restrictions.h"
 
 MTPDeviceObjectEnumerator::MTPDeviceObjectEnumerator(
     const MTPDeviceObjectEntries& entries)
-    : object_entries_(entries),
-      index_(0U),
-      is_index_ready_(false) {
-  base::AssertBlockingAllowed();
-}
+    : object_entries_(entries), index_(0U), is_index_ready_(false) {}
 
 MTPDeviceObjectEnumerator::~MTPDeviceObjectEnumerator() {
   DCHECK(thread_checker_.CalledOnValidThread());

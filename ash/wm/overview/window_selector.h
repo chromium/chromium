@@ -63,8 +63,6 @@ class ASH_EXPORT WindowSelector : public display::DisplayObserver,
   };
 
   // Enum describing the different ways overview can be entered or exited.
-  // TODO(minch|xdai): Investigate if we should add kWindowDragged and/or
-  // kWindowSnapped to this.
   enum class EnterExitOverviewType {
     // The default way, window(s) animate from their initial bounds to the grid
     // bounds. Window(s) that are not visible to the user do not get animated.
@@ -78,7 +76,14 @@ class ASH_EXPORT WindowSelector : public display::DisplayObserver,
     // Overview can be closed by swiping up from the shelf. In this mode, the
     // call site will handle shifting the bounds of the windows, so overview
     // code does not need to handle any animations. This is an exit only type.
-    kSwipeFromShelf
+    kSwipeFromShelf,
+    // Overview can be opened by start dragging a window from top or be closed
+    // if the dragged window restores back to maximized/full-screened. On enter
+    // this mode is same as kNormal, except when all windows are minimized, the
+    // launcher does not animate in. On exit this mode is used to avoid the
+    // update bounds animation of the windows in overview grid on overview mode
+    // ended.
+    kWindowDragged
   };
 
   // Callback which fills out the passed settings object. Used by several
@@ -140,8 +145,8 @@ class ASH_EXPORT WindowSelector : public display::DisplayObserver,
   // returned to the window grid (e.g. split view divider dragged to either
   // edge, or a window is snapped to a postion that already has a snapped
   // window); 2) when a window (not from overview) is dragged while overview is
-  // open and the window is dropped on the new selector item, the dragged window
-  // is then added to the overview.
+  // open and the window is dropped on the drop target, the dragged window is
+  // then added to the overview.
   void AddItem(aura::Window* window, bool reposition, bool animate);
 
   // Removes the window selector item from the overview window grid. And if
@@ -149,8 +154,8 @@ class ASH_EXPORT WindowSelector : public display::DisplayObserver,
   // This may be called in two scenarioes: 1) when a user drags an overview item
   // to snap to one side of the screen, the item should be removed from the
   // overview grid; 2) when a window (not from overview) ends its dragging while
-  // overview is open, the new selector item should be removed. Note in both
-  // cases, the windows in the window grid do not need to be repositioned.
+  // overview is open, the drop target should be removed. Note in both cases,
+  // the windows in the window grid do not need to be repositioned.
   void RemoveWindowSelectorItem(WindowSelectorItem* item, bool reposition);
 
   void InitiateDrag(WindowSelectorItem* item,
@@ -203,11 +208,14 @@ class ASH_EXPORT WindowSelector : public display::DisplayObserver,
 
   // Shifts and fades the grid in |grid_list_| associated with |location|.
   void UpdateGridAtLocationYPositionAndOpacity(
-      const gfx::Point& location,
+      int64_t display_id,
       int new_y,
       float opacity,
       const gfx::Rect& work_area,
       UpdateAnimationSettingsCallback callback);
+
+  // Shows or hides all the window selector items' mask and shadow.
+  void UpdateMaskAndShadow(bool show);
 
   WindowSelectorDelegate* delegate() { return delegate_; }
 

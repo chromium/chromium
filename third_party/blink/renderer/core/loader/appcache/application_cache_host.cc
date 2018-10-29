@@ -165,7 +165,8 @@ void ApplicationCacheHost::SelectCacheWithManifest(const KURL& manifest_url) {
     // navigation algorithm. The navigation will not result in the same resource
     // being loaded, because "foreign" entries are never picked during
     // navigation. see ApplicationCacheGroup::selectCache()
-    frame->ScheduleNavigation(*document, document->Url(), true,
+    frame->ScheduleNavigation(*document, document->Url(),
+                              WebFrameLoadType::kReplaceCurrentItem,
                               UserGestureStatus::kNone);
   }
 }

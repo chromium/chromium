@@ -23,9 +23,6 @@ class LatencyTracker {
   void OnGpuSwapBuffersCompleted(const std::vector<LatencyInfo>& latency_info);
   void OnGpuSwapBuffersCompleted(const LatencyInfo& latency);
 
-  // Disables sampling of high volume metrics in unit tests.
-  void DisableMetricSamplingForTesting();
-
   using LatencyInfoProcessor =
       base::RepeatingCallback<void(const std::vector<ui::LatencyInfo>&)>;
   static void SetLatencyInfoProcessorForTesting(
@@ -54,39 +51,6 @@ class LatencyTracker {
       base::TimeTicks gpu_swap_end_timestamp,
       const LatencyInfo& latency);
 
-  typedef struct SamplingScheme {
-    SamplingScheme() : interval_(1), last_sample_(0) {}
-    SamplingScheme(int interval)
-        : interval_(interval), last_sample_(rand() % interval) {}
-    bool ShouldReport() {
-      last_sample_++;
-      last_sample_ %= interval_;
-      return last_sample_ == 0;
-    }
-
-   private:
-    int interval_;
-    int last_sample_;
-  } SamplingScheme;
-
-  // Whether the sampling is needed for high volume metrics. This will be off
-  // when we are in unit tests. This is a temporary field so we can come up with
-  // a more permanent solution for crbug.com/739169.
-  bool metric_sampling_ = true;
-
-  // The i'th member of this array stores the sampling rate for the i'th
-  // input metric event type. Initializing SamplingScheme with number X means
-  // that from every X events one will be reported. Note that the first event
-  // to report is also randomized.
-  SamplingScheme sampling_scheme_
-      [static_cast<int>(InputMetricEvent::INPUT_METRIC_EVENT_MAX) + 1] = {
-          SamplingScheme(5),   // SCROLL_BEGIN_TOUCH
-          SamplingScheme(50),  // SCROLL_UPDATE_TOUCH
-          SamplingScheme(5),   // SCROLL_BEGIN_WHEEL
-          SamplingScheme(2),   // SCROLL_UPDATE_WHEEL
-  };
-
-  DISALLOW_COPY_AND_ASSIGN(LatencyTracker);
 };
 
 }  // namespace latency

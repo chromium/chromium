@@ -162,11 +162,14 @@ Polymer({
   },
 
   /**
+   * @param {boolean} bluetoothToggleState
    * @return {string}
    * @private
    */
-  getIcon_: function() {
-    if (!this.bluetoothToggleState_)
+  getIcon_: function(bluetoothToggleState) {
+    // Don't use |this.bluetoothToggleState_| here, since it has not been
+    // updated yet to the latest value.
+    if (!bluetoothToggleState)
       return 'settings:bluetooth-disabled';
     return 'cr:bluetooth';
   },

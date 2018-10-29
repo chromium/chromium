@@ -200,6 +200,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   QuicChromiumClientStream(
       quic::QuicStreamId id,
       quic::QuicSpdyClientSessionBase* session,
+      quic::StreamType type,
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
@@ -290,6 +291,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   bool initial_headers_sent_;
 
   quic::QuicSpdyClientSessionBase* session_;
+  quic::QuicTransportVersion quic_version_;
 
   // Set to false if this stream should not be migrated to a cellular network
   // during connection migration.

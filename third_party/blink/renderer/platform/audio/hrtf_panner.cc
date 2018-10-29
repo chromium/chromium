@@ -56,10 +56,10 @@ HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
       convolver_r2_(FftSizeForSampleRate(sample_rate)),
       delay_line_l_(kMaxDelayTimeSeconds, sample_rate),
       delay_line_r_(kMaxDelayTimeSeconds, sample_rate),
-      temp_l1_(AudioUtilities::kRenderQuantumFrames),
-      temp_r1_(AudioUtilities::kRenderQuantumFrames),
-      temp_l2_(AudioUtilities::kRenderQuantumFrames),
-      temp_r2_(AudioUtilities::kRenderQuantumFrames) {
+      temp_l1_(audio_utilities::kRenderQuantumFrames),
+      temp_r1_(audio_utilities::kRenderQuantumFrames),
+      temp_l2_(audio_utilities::kRenderQuantumFrames),
+      temp_r2_(audio_utilities::kRenderQuantumFrames) {
   DCHECK(database_loader);
 }
 
@@ -75,7 +75,7 @@ size_t HRTFPanner::FftSizeForSampleRate(float sample_rate) {
   // of two that is greater than or equal the resampled length. This power of
   // two is doubled to get the actual FFT size.
 
-  DCHECK(AudioUtilities::IsValidAudioBufferSampleRate(sample_rate));
+  DCHECK(audio_utilities::IsValidAudioBufferSampleRate(sample_rate));
 
   int truncated_impulse_length = 256;
   double sample_rate_ratio = sample_rate / 44100;
@@ -212,12 +212,12 @@ void HRTFPanner::Pan(double desired_azimuth,
   }
 
   // This algorithm currently requires that we process in power-of-two size
-  // chunks at least AudioUtilities::kRenderQuantumFrames.
+  // chunks at least audio_utilities::kRenderQuantumFrames.
   DCHECK_EQ(1UL << static_cast<int>(log2(frames_to_process)),
             frames_to_process);
-  DCHECK_GE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_GE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
-  const unsigned kFramesPerSegment = AudioUtilities::kRenderQuantumFrames;
+  const unsigned kFramesPerSegment = audio_utilities::kRenderQuantumFrames;
   const unsigned number_of_segments = frames_to_process / kFramesPerSegment;
 
   for (unsigned segment = 0; segment < number_of_segments; ++segment) {

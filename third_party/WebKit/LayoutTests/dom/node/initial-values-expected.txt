@@ -2,7 +2,6 @@ Test creation of each type of Node and check initial values
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Attribute creation using createElement on an HTML doc:
 PASS attr.nodeName is 'foo'
 PASS attr.name is 'foo'

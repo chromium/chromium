@@ -138,7 +138,7 @@ bool CSPHandler::Parse(Extension* extension, base::string16* error) {
   std::vector<InstallWarning> warnings;
   content_security_policy = SanitizeContentSecurityPolicy(
       content_security_policy, GetValidatorOptions(extension), &warnings);
-  extension->AddInstallWarnings(warnings);
+  extension->AddInstallWarnings(std::move(warnings));
 
   extension->SetManifestData(
       keys::kContentSecurityPolicy,

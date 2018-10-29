@@ -47,13 +47,13 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 class EncodedFormData;
-class SecurityOrigin;
 
 // A ResourceRequest is a "request" object for ResourceLoader. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-request, but it contains
@@ -104,8 +104,17 @@ class PLATFORM_EXPORT ResourceRequest final {
   const KURL& SiteForCookies() const;
   void SetSiteForCookies(const KURL&);
 
-  scoped_refptr<const SecurityOrigin> RequestorOrigin() const;
-  void SetRequestorOrigin(scoped_refptr<const SecurityOrigin>);
+  // The origin of the request, specified at
+  // https://fetch.spec.whatwg.org/#concept-request-origin. This origin can be
+  // null upon request, corresponding to the "client" value in the spec. In that
+  // case client's origin will be set when requesting. See
+  // ResourceFetcher::RequestResource.
+  const scoped_refptr<const SecurityOrigin>& RequestorOrigin() const {
+    return requestor_origin_;
+  }
+  void SetRequestorOrigin(scoped_refptr<const SecurityOrigin> origin) {
+    requestor_origin_ = std::move(origin);
+  }
 
   const AtomicString& HttpMethod() const;
   void SetHTTPMethod(const AtomicString&);
@@ -251,10 +260,16 @@ class PLATFORM_EXPORT ResourceRequest final {
     }
   }
 
-  WebURLRequest::RequestContext GetRequestContext() const {
+  bool IsDownloadToNetworkCacheOnly() const { return download_to_cache_only_; }
+
+  void SetDownloadToNetworkCacheOnly(bool download_to_cache_only) {
+    download_to_cache_only_ = download_to_cache_only;
+  }
+
+  mojom::RequestContextType GetRequestContext() const {
     return request_context_;
   }
-  void SetRequestContext(WebURLRequest::RequestContext context) {
+  void SetRequestContext(mojom::RequestContextType context) {
     request_context_ = context;
   }
 
@@ -359,6 +374,13 @@ class PLATFORM_EXPORT ResourceRequest final {
   }
   bool UpgradeIfInsecure() const { return upgrade_if_insecure_; }
 
+  bool IsRevalidating() const { return is_revalidating_; }
+  void SetIsRevalidating(bool value) { is_revalidating_ = value; }
+  void SetIsAutomaticUpgrade(bool is_automatic_upgrade) {
+    is_automatic_upgrade_ = is_automatic_upgrade;
+  }
+  bool IsAutomaticUpgrade() const { return is_automatic_upgrade_; }
+
   void SetAllowStaleResponse(bool value) { allow_stale_response_ = value; }
   bool AllowsStaleResponse() const { return allow_stale_response_; }
 
@@ -373,6 +395,9 @@ class PLATFORM_EXPORT ResourceRequest final {
   void SetOriginPolicy(const String& policy) { origin_policy_ = policy; }
   const String& GetOriginPolicy() const { return origin_policy_; }
 
+  void SetRequestedWith(const String& value) { requested_with_ = value; }
+  const String& GetRequestedWith() const { return requested_with_; }
+
  private:
   using SharableExtraData =
       base::RefCountedData<std::unique_ptr<WebURLRequest::ExtraData>>;
@@ -386,11 +411,6 @@ class PLATFORM_EXPORT ResourceRequest final {
   base::TimeDelta timeout_interval_;
   KURL site_for_cookies_;
 
-  // The SecurityOrigin specified by the ResourceLoaderOptions in case e.g.
-  // when the fetching was initiated in an isolated world. Set by
-  // ResourceFetcher but only when needed.
-  //
-  // TODO(crbug.com/811669): Merge with some of the other origin variables.
   scoped_refptr<const SecurityOrigin> requestor_origin_;
 
   AtomicString http_method_;
@@ -407,6 +427,7 @@ class PLATFORM_EXPORT ResourceRequest final {
   bool allow_stale_response_ : 1;
   mojom::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;
+  bool download_to_cache_only_ : 1;
   ResourceLoadPriority priority_;
   int intra_priority_value_;
   int requestor_id_;
@@ -414,7 +435,7 @@ class PLATFORM_EXPORT ResourceRequest final {
   int app_cache_host_id_;
   WebURLRequest::PreviewsState previews_state_;
   scoped_refptr<SharableExtraData> sharable_extra_data_;
-  WebURLRequest::RequestContext request_context_;
+  mojom::RequestContextType request_context_;
   network::mojom::RequestContextFrameType frame_type_;
   network::mojom::FetchRequestMode fetch_request_mode_;
   mojom::FetchImportanceMode fetch_importance_mode_;
@@ -443,9 +464,13 @@ class PLATFORM_EXPORT ResourceRequest final {
   WebContentSecurityPolicyList initiator_csp_;
 
   bool upgrade_if_insecure_ = false;
+  bool is_revalidating_ = false;
+
+  bool is_automatic_upgrade_ = false;
 
   base::Optional<base::UnguessableToken> devtools_token_;
   String origin_policy_;
+  String requested_with_;
 };
 
 }  // namespace blink

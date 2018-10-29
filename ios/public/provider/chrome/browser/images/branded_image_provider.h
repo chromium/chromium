@@ -50,6 +50,9 @@ class BrandedImageProvider {
   // on Download Manager UI.
   virtual UIImage* GetDownloadGoogleDriveImage();
 
+  // Returns the 28pt x 28pt image to use for the "Search" icon in the toolbar.
+  virtual UIImage* GetToolbarSearchIcon(SearchEngineIcon type);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BrandedImageProvider);
 };

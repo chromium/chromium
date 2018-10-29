@@ -105,10 +105,7 @@ std::vector<SkBitmap> LoadResourceBitmaps(
   bitmaps.resize(info_list.size());
 
   int i = 0;
-  for (std::vector<ImageLoader::ImageRepresentation>::const_iterator
-           it = info_list.begin();
-       it != info_list.end();
-       ++it, ++i) {
+  for (auto it = info_list.cbegin(); it != info_list.cend(); ++it, ++i) {
     DCHECK(it->resource.relative_path().empty() ||
            extension->path() == it->resource.extension_root());
 
@@ -291,8 +288,7 @@ void ImageLoader::ReplyBack(const ImageLoaderImageCallback& callback,
 
   gfx::ImageSkia image_skia;
 
-  for (std::vector<LoadResult>::const_iterator it = load_result.begin();
-       it != load_result.end(); ++it) {
+  for (auto it = load_result.cbegin(); it != load_result.cend(); ++it) {
     const SkBitmap& bitmap = it->bitmap;
     const ImageRepresentation& image_rep = it->image_representation;
 
@@ -317,9 +313,7 @@ void ImageLoader::ReplyBackWithImageFamily(
   std::map<std::pair<int, int>, gfx::ImageSkia> image_skia_map;
   gfx::ImageFamily image_family;
 
-  for (std::vector<LoadResult>::const_iterator it = load_result.begin();
-       it != load_result.end();
-       ++it) {
+  for (auto it = load_result.cbegin(); it != load_result.cend(); ++it) {
     const SkBitmap& bitmap = it->bitmap;
     const ImageRepresentation& image_rep = it->image_representation;
     const std::pair<int, int> key = std::make_pair(
@@ -330,10 +324,7 @@ void ImageLoader::ReplyBackWithImageFamily(
         gfx::ImageSkiaRep(bitmap, image_rep.scale_factor));
   }
 
-  for (std::map<std::pair<int, int>, gfx::ImageSkia>::iterator it =
-           image_skia_map.begin();
-       it != image_skia_map.end();
-       ++it) {
+  for (auto it = image_skia_map.begin(); it != image_skia_map.end(); ++it) {
     it->second.MakeThreadSafe();
     image_family.Add(it->second);
   }

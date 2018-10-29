@@ -102,20 +102,21 @@ public class AutofillProfilesFragment
 
         // Add 'Add address' button. Tap of it brings up address editor which allows users type in
         // new addresses.
-        AutofillProfileEditorPreference pref =
-                new AutofillProfileEditorPreference(getActivity(), sObserverForTest);
-        Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
-        plusIcon.mutate();
-        plusIcon.setColorFilter(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.pref_accent_color),
-                PorterDuff.Mode.SRC_IN);
-        pref.setIcon(plusIcon);
-        pref.setTitle(R.string.autofill_create_profile);
-        pref.setKey(PREF_NEW_PROFILE); // For testing.
-        pref.setEnabled(PersonalDataManager.isAutofillProfileEnabled());
+        if (PersonalDataManager.isAutofillProfileEnabled()) {
+            AutofillProfileEditorPreference pref =
+                    new AutofillProfileEditorPreference(getActivity(), sObserverForTest);
+            Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
+            plusIcon.mutate();
+            plusIcon.setColorFilter(
+                    ApiCompatibilityUtils.getColor(getResources(), R.color.pref_accent_color),
+                    PorterDuff.Mode.SRC_IN);
+            pref.setIcon(plusIcon);
+            pref.setTitle(R.string.autofill_create_profile);
+            pref.setKey(PREF_NEW_PROFILE); // For testing.
 
-        try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
-            getPreferenceScreen().addPreference(pref);
+            try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+                getPreferenceScreen().addPreference(pref);
+            }
         }
     }
 

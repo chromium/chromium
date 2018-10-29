@@ -87,14 +87,6 @@ void EndQueryEXT(GLenum target, GLuint submit_count) {
   }
 }
 
-void CompressedCopyTextureCHROMIUM(GLuint source_id, GLuint dest_id) {
-  raster::cmds::CompressedCopyTextureCHROMIUM* c =
-      GetCmdSpace<raster::cmds::CompressedCopyTextureCHROMIUM>();
-  if (c) {
-    c->Init(source_id, dest_id);
-  }
-}
-
 void LoseContextCHROMIUM(GLenum current, GLenum other) {
   raster::cmds::LoseContextCHROMIUM* c =
       GetCmdSpace<raster::cmds::LoseContextCHROMIUM>();
@@ -315,14 +307,6 @@ void SetActiveURLCHROMIUM(GLuint url_bucket_id) {
       GetCmdSpace<raster::cmds::SetActiveURLCHROMIUM>();
   if (c) {
     c->Init(url_bucket_id);
-  }
-}
-
-void ResetActiveURLCHROMIUM() {
-  raster::cmds::ResetActiveURLCHROMIUM* c =
-      GetCmdSpace<raster::cmds::ResetActiveURLCHROMIUM>();
-  if (c) {
-    c->Init();
   }
 }
 

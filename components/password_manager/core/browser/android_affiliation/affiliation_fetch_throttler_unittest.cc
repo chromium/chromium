@@ -19,7 +19,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler_delegate.h"
-#include "net/base/network_change_notifier.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -64,20 +64,24 @@ class MockAffiliationFetchThrottlerDelegate
 class AffiliationFetchThrottlerTest : public testing::Test {
  public:
   AffiliationFetchThrottlerTest()
-      : network_change_notifier_(net::NetworkChangeNotifier::CreateMock()),
-        task_runner_(new base::TestMockTimeTaskRunner),
-        mock_delegate_(task_runner_->GetMockTickClock()) {}
+      : task_runner_(new base::TestMockTimeTaskRunner),
+        mock_delegate_(task_runner_->GetMockTickClock()) {
+    SimulateHasNetworkConnectivity(true);
+  }
+
   ~AffiliationFetchThrottlerTest() override {}
 
   std::unique_ptr<AffiliationFetchThrottler> CreateThrottler() {
     return std::make_unique<AffiliationFetchThrottler>(
-        &mock_delegate_, task_runner_, task_runner_->GetMockTickClock());
+        &mock_delegate_, task_runner_,
+        network::TestNetworkConnectionTracker::GetInstance(),
+        task_runner_->GetMockTickClock());
   }
 
   void SimulateHasNetworkConnectivity(bool has_connectivity) {
-    net::NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
-        has_connectivity ? net::NetworkChangeNotifier::CONNECTION_UNKNOWN
-                         : net::NetworkChangeNotifier::CONNECTION_NONE);
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        has_connectivity ? network::mojom::ConnectionType::CONNECTION_ETHERNET
+                         : network::mojom::ConnectionType::CONNECTION_NONE);
     scoped_task_environment_.RunUntilIdle();
   }
 
@@ -121,10 +125,9 @@ class AffiliationFetchThrottlerTest : public testing::Test {
   }
 
  private:
-  // Needed because NetworkChangeNotifier uses base::ObserverList, which
+  // Needed because NetworkConnectionTracker uses base::ObserverList, which
   // notifies observers on the sequence from which they have registered.
   base::test::ScopedTaskEnvironment scoped_task_environment_;
-  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   MockAffiliationFetchThrottlerDelegate mock_delegate_;
 

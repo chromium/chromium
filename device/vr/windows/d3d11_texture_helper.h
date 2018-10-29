@@ -63,6 +63,8 @@ class D3D11TextureHelper {
     bool submitted_this_frame_ = false;
   };
 
+  bool EnsureOverlayBlendState();
+  bool EnsureContentBlendState();
   bool EnsureRenderTargetView();
   bool EnsureShaders();
   bool EnsureInputLayout();
@@ -88,6 +90,10 @@ class D3D11TextureHelper {
     Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout_;
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer_;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> target_texture_;
+
+    Microsoft::WRL::ComPtr<ID3D11BlendState> content_blend_state_;
+    Microsoft::WRL::ComPtr<ID3D11BlendState> overlay_blend_state_;
+    Microsoft::WRL::ComPtr<ID3D11BlendState> current_blend_state_;
 
     LayerData source_;
     LayerData overlay_;

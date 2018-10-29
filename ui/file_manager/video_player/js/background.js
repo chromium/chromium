@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * Icon of the video player.
- * TODO(yoshiki): Consider providing an exact size icon, instead of relying
- * on downsampling by ash.
+ * Use maximum size and let ash downsample the icon.
  *
  * @type {!string}
  * @const
  */
-var ICON_IMAGE = 'images/icon/video-player-64.png';
+var ICON_IMAGE = 'images/icon/video-player-192.png';
 
 /**
  * Configuration of the video player panel.

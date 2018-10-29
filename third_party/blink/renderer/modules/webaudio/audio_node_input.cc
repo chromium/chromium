@@ -38,7 +38,7 @@ inline AudioNodeInput::AudioNodeInput(AudioHandler& handler)
       handler_(handler) {
   // Set to mono by default.
   internal_summing_bus_ =
-      AudioBus::Create(1, AudioUtilities::kRenderQuantumFrames);
+      AudioBus::Create(1, audio_utilities::kRenderQuantumFrames);
 }
 
 std::unique_ptr<AudioNodeInput> AudioNodeInput::Create(AudioHandler& handler) {
@@ -123,7 +123,7 @@ void AudioNodeInput::UpdateInternalBus() {
     return;
 
   internal_summing_bus_ = AudioBus::Create(
-      number_of_input_channels, AudioUtilities::kRenderQuantumFrames);
+      number_of_input_channels, audio_utilities::kRenderQuantumFrames);
 }
 
 unsigned AudioNodeInput::NumberOfChannels() const {

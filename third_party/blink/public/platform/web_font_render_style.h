@@ -37,10 +37,6 @@
 
 class SkFontMgr;
 
-namespace cc {
-class PaintFont;
-}  // namespace cc
-
 namespace blink {
 
 // WebFontRenderStyle describes the user's preferences for rendering a font at a
@@ -75,7 +71,7 @@ struct WebFontRenderStyle {
   // kNoPreference in |other|.
   void OverrideWith(const WebFontRenderStyle& other);
 
-  void ApplyToPaintFont(cc::PaintFont&, float device_scale_factor) const;
+  void ApplyToSkPaint(SkPaint&, float device_scale_factor) const;
 
   // Each of the use* members below can take one of three values:
   //   0: off

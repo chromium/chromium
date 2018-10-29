@@ -16,7 +16,7 @@ const CGFloat kFaviconMinSize = 16.0f;
 const CGFloat kFaviconPreferredSize = 24.0f;
 }  // namespace
 
-@interface FaviconViewNew : UIView
+@interface FaviconView : UIView
 
 // Configures this view with given attributes.
 - (void)configureWithAttributes:(nullable FaviconAttributes*)attributes;

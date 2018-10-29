@@ -16,10 +16,10 @@ int64_t FakeVolumeReader::Skip(int64_t bytes_to_skip) {
   return 0;  // Not important.
 }
 
-int64_t FakeVolumeReader::Seek(int64_t offset, int whence) {
+int64_t FakeVolumeReader::Seek(int64_t offset, base::File::Whence whence) {
   return 0;  // Not important.
 }
 
-const char* FakeVolumeReader::Passphrase() {
+std::unique_ptr<std::string> FakeVolumeReader::Passphrase() {
   return NULL;  // Not important.
 }

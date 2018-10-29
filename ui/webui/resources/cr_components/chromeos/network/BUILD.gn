@@ -9,7 +9,9 @@ js_type_check("closure_compile") {
     ":network_apnlist",
     ":network_choose_mobile",
     ":network_config",
+    ":network_config_input",
     ":network_config_select",
+    ":network_config_toggle",
     ":network_ip_config",
     ":network_nameservers",
     ":network_password_input",
@@ -48,10 +50,36 @@ js_library("network_config") {
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }
 
+js_library("network_config_element_behavior") {
+  deps = [
+    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_types",
+  ]
+}
+
+js_library("network_config_input") {
+  deps = [
+    ":network_config_element_behavior",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior",
+  ]
+  externs_list = [ "$externs_path/networking_private.js" ]
+  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
+}
+
 js_library("network_config_select") {
   deps = [
+    ":network_config_element_behavior",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
+  ]
+  externs_list = [ "$externs_path/networking_private.js" ]
+  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
+}
+
+js_library("network_config_toggle") {
+  deps = [
+    ":network_config_element_behavior",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior",
   ]
   externs_list = [ "$externs_path/networking_private.js" ]
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
@@ -73,8 +101,12 @@ js_library("network_nameservers") {
 
 js_library("network_password_input") {
   deps = [
+    ":network_config_element_behavior",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior",
     "//ui/webui/resources/js:i18n_behavior",
   ]
+  externs_list = [ "$externs_path/networking_private.js" ]
+  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }
 
 js_library("network_property_list") {

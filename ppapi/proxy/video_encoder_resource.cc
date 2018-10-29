@@ -26,15 +26,6 @@ namespace proxy {
 
 namespace {
 
-void RunCallback(scoped_refptr<TrackedCallback>* callback, int32_t error) {
-  if (!TrackedCallback::IsPending(*callback))
-    return;
-
-  scoped_refptr<TrackedCallback> temp;
-  callback->swap(temp);
-  temp->Run(error);
-}
-
 std::vector<PP_VideoProfileDescription_0_1> PP_VideoProfileDescriptionTo_0_1(
     std::vector<PP_VideoProfileDescription> profiles) {
   std::vector<PP_VideoProfileDescription_0_1> profiles_0_1;
@@ -299,7 +290,7 @@ void VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply(
 
   ArrayWriter writer(output);
   if (!writer.is_valid()) {
-    RunCallback(&get_supported_profiles_callback_, PP_ERROR_BADARGUMENT);
+    SafeRunCallback(&get_supported_profiles_callback_, PP_ERROR_BADARGUMENT);
     return;
   }
 
@@ -311,12 +302,12 @@ void VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply(
     write_result = writer.StoreVector(profiles);
 
   if (!write_result) {
-    RunCallback(&get_supported_profiles_callback_, PP_ERROR_FAILED);
+    SafeRunCallback(&get_supported_profiles_callback_, PP_ERROR_FAILED);
     return;
   }
 
-  RunCallback(&get_supported_profiles_callback_,
-              base::checked_cast<int32_t>(profiles.size()));
+  SafeRunCallback(&get_supported_profiles_callback_,
+                  base::checked_cast<int32_t>(profiles.size()));
 }
 
 void VideoEncoderResource::OnPluginMsgInitializeReply(
@@ -332,7 +323,7 @@ void VideoEncoderResource::OnPluginMsgInitializeReply(
   input_frame_count_ = input_frame_count;
   input_coded_size_ = input_coded_size;
 
-  RunCallback(&initialize_callback_, encoder_last_error_);
+  SafeRunCallback(&initialize_callback_, encoder_last_error_);
 }
 
 void VideoEncoderResource::OnPluginMsgGetVideoFramesReply(
@@ -377,7 +368,7 @@ void VideoEncoderResource::OnPluginMsgEncodeReply(
 
   scoped_refptr<TrackedCallback> callback = it->second;
   encode_callbacks_.erase(it);
-  RunCallback(&callback, encoder_last_error_);
+  SafeRunCallback(&callback, encoder_last_error_);
 
   buffer_manager_.EnqueueBuffer(frame_id);
   // If the plugin is waiting for a video frame, we can give the one
@@ -431,16 +422,16 @@ void VideoEncoderResource::OnPluginMsgNotifyError(
 
 void VideoEncoderResource::NotifyError(int32_t error) {
   encoder_last_error_ = error;
-  RunCallback(&get_supported_profiles_callback_, error);
-  RunCallback(&initialize_callback_, error);
-  RunCallback(&get_video_frame_callback_, error);
+  SafeRunCallback(&get_supported_profiles_callback_, error);
+  SafeRunCallback(&initialize_callback_, error);
+  SafeRunCallback(&get_video_frame_callback_, error);
   get_video_frame_data_ = nullptr;
-  RunCallback(&get_bitstream_buffer_callback_, error);
+  SafeRunCallback(&get_bitstream_buffer_callback_, error);
   get_bitstream_buffer_data_ = nullptr;
   for (EncodeMap::iterator it = encode_callbacks_.begin();
        it != encode_callbacks_.end(); ++it) {
     scoped_refptr<TrackedCallback> callback = it->second;
-    RunCallback(&callback, error);
+    SafeRunCallback(&callback, error);
   }
   encode_callbacks_.clear();
 }
@@ -459,7 +450,7 @@ void VideoEncoderResource::TryWriteVideoFrame() {
 
   *get_video_frame_data_ = resource->GetReference();
   get_video_frame_data_ = nullptr;
-  RunCallback(&get_video_frame_callback_, PP_OK);
+  SafeRunCallback(&get_video_frame_callback_, PP_OK);
 }
 
 void VideoEncoderResource::WriteBitstreamBuffer(const BitstreamBuffer& buffer) {
@@ -469,7 +460,7 @@ void VideoEncoderResource::WriteBitstreamBuffer(const BitstreamBuffer& buffer) {
   get_bitstream_buffer_data_->buffer = shm_buffers_[buffer.id]->shm->memory();
   get_bitstream_buffer_data_->key_frame = PP_FromBool(buffer.key_frame);
   get_bitstream_buffer_data_ = nullptr;
-  RunCallback(&get_bitstream_buffer_callback_, PP_OK);
+  SafeRunCallback(&get_bitstream_buffer_callback_, PP_OK);
 }
 
 void VideoEncoderResource::ReleaseFrames() {

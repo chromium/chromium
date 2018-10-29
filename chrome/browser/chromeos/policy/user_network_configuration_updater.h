@@ -12,11 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/policy/network_configuration_updater.h"
-#include "chrome/browser/chromeos/policy/policy_certificate_provider.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -53,7 +49,6 @@ class PolicyService;
 // expansion with the user's name (or email address, etc.) and handling of "Web"
 // trust of certificates.
 class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
-                                        public PolicyCertificateProvider,
                                         public KeyedService,
                                         public content::NotificationObserver {
  public:
@@ -72,15 +67,6 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
 
-  // PolicyCertificateProvider:
-  void AddPolicyProvidedCertsObserver(
-      PolicyCertificateProvider::Observer* observer) override;
-  void RemovePolicyProvidedCertsObserver(
-      PolicyCertificateProvider::Observer* observer) override;
-  net::CertificateList GetAllServerAndAuthorityCertificates() const override;
-  net::CertificateList GetWebTrustedCertificates() const override;
-  net::CertificateList GetCertificatesWithoutWebTrust() const override;
-
   // Helper method to expose |SetClientCertificateImporter| for usage in tests.
   // Note that the CertificateImporter is only used for importing client
   // certificates.
@@ -90,11 +76,6 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
  private:
   class CrosTrustAnchorProvider;
 
-  // A predicate used for filtering server or authority certificates.
-  using ServerOrAuthorityCertPredicate = base::RepeatingCallback<bool(
-      const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
-          cert)>;
-
   UserNetworkConfigurationUpdater(
       Profile* profile,
       bool allow_trusted_certs_from_policy,
@@ -103,7 +84,8 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
 
   // NetworkConfigurationUpdater:
-  void ImportCertificates(const base::ListValue& certificates_onc) override;
+  void ImportClientCertificates() override;
+
   void ApplyNetworkPolicy(
       base::ListValue* network_configs_onc,
       base::DictionaryValue* global_network_config) override;
@@ -123,24 +105,8 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
   void SetClientCertificateImporter(
       std::unique_ptr<chromeos::onc::CertificateImporter> certificate_importer);
 
-  void NotifyPolicyProvidedCertsChanged();
-
-  // Returns all server and authority certificates successfully parsed from ONC
-  // for which |predicate| returns true.
-  net::CertificateList GetServerAndAuthorityCertificates(
-      ServerOrAuthorityCertPredicate predicate) const;
-
-  // Whether Web trust is allowed or not.
-  bool allow_trusted_certificates_from_policy_;
-
   // The user for whom the user policy will be applied.
   const user_manager::User* user_;
-
-  base::ObserverList<PolicyCertificateProvider::Observer, true>::Unchecked
-      observer_list_;
-
-  // Holds certificates from the last parsed ONC policy.
-  std::unique_ptr<chromeos::onc::OncParsedCertificates> certs_;
 
   // Certificate importer to be used for importing policy defined client
   // certificates. Set by |SetClientCertificateImporter|.
@@ -148,8 +114,6 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
       client_certificate_importer_;
 
   content::NotificationRegistrar registrar_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UserNetworkConfigurationUpdater> weak_factory_;
 

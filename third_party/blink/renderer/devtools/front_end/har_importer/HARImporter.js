@@ -22,7 +22,18 @@ HARImporter.Importer = class {
     for (const entry of log.entries) {
       let pageLoad = pageLoads.get(entry.pageref);
       const documentURL = pageLoad ? pageLoad.mainRequest.url() : entry.request.url;
-      const request = new SDK.NetworkRequest('har-' + requests.length, entry.request.url, documentURL, '', '', null);
+
+      let initiator = null;
+      if (entry._initiator) {
+        initiator = {
+          type: entry._initiator.type,
+          url: entry._initiator.url,
+          lineNumber: entry._initiator.lineNumber
+        };
+      }
+
+      const request = new SDK.NetworkRequest(
+          'har-' + requests.length, entry.request.url, documentURL, '', '', initiator);
       const page = pages.get(entry.pageref);
       if (!pageLoad && page) {
         pageLoad = HARImporter.Importer._buildPageLoad(page, request);
@@ -111,6 +122,10 @@ HARImporter.Importer = class {
     if (!resourceType)
       resourceType = Common.ResourceType.fromURL(entry.request.url) || Common.resourceTypes.Other;
     request.setResourceType(resourceType);
+
+    const priority = entry.customAsString('priority');
+    if (Protocol.Network.ResourcePriority.hasOwnProperty(priority))
+      request.setPriority(/** @type {!Protocol.Network.ResourcePriority} */ (priority));
 
     request.finished = true;
   }

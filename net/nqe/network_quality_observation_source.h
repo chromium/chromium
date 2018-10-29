@@ -48,6 +48,9 @@ enum NetworkQualityObservationSource {
   // at the transport layer.
   NETWORK_QUALITY_OBSERVATION_SOURCE_DEFAULT_TRANSPORT_FROM_PLATFORM = 7,
 
+  // Round trip ping latency reported by H2 connections.
+  NETWORK_QUALITY_OBSERVATION_SOURCE_H2_PINGS = 8,
+
   NETWORK_QUALITY_OBSERVATION_SOURCE_MAX,
 };
 

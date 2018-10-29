@@ -22,6 +22,7 @@ GPU_EXPORT extern const char kWebglAntialiasingMode[];
 GPU_EXPORT extern const char kWebglMSAASampleCount[];
 GPU_EXPORT extern const char kDisableGpuProcessForDX12VulkanInfoCollection[];
 GPU_EXPORT extern const char kEnableUnsafeWebGPU[];
+
 }  // namespace switches
 
 #endif  // GPU_CONFIG_GPU_SWITCHES_H_

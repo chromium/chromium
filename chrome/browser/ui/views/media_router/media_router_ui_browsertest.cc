@@ -41,26 +41,8 @@
 
 namespace media_router {
 
-namespace {
-
-// Returns true if the browser uses Cocoa UI. The Views dialog tests should not
-// be run if this is true.
-bool IsCocoaBrowser() {
-#if defined(OS_MACOSX)
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  return features::IsViewsBrowserCocoa();
-#else  // !BUILDFLAG(MAC_VIEWS_BROWSER)
-  return true;
-#endif
-#else  // !defined(OS_MACOSX)
-  return false;
-#endif
-}
-
-}  // namespace
-
-// Uses the WebUI Cast dialog. The Views Cast dialog is used in
-// MediaRouterViewsUIBrowserTest below.
+// Base class containing setup code and test cases shared between WebUI and
+// Views dialog tests.
 class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
@@ -227,6 +209,42 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
     EXPECT_FALSE(ToolbarIconExists());
   }
 
+  void TestEphemeralToolbarIconForRoutesAndIssues() {
+    action_controller_->OnIssue(issue_);
+    EXPECT_TRUE(ToolbarIconExists());
+    action_controller_->OnIssuesCleared();
+    EXPECT_FALSE(ToolbarIconExists());
+
+    action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+    EXPECT_TRUE(ToolbarIconExists());
+    action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
+                                        std::vector<MediaRoute::Id>());
+    EXPECT_FALSE(ToolbarIconExists());
+
+    SetAlwaysShowActionPref(true);
+    EXPECT_TRUE(ToolbarIconExists());
+    SetAlwaysShowActionPref(false);
+    EXPECT_FALSE(ToolbarIconExists());
+  }
+
+  void TestEphemeralToolbarIconWithMultipleWindows() {
+    action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+    EXPECT_TRUE(ToolbarIconExists());
+
+    // Opening and closing a window shouldn't affect the state of the ephemeral
+    // icon. Creating and removing the icon with multiple windows open should
+    // also work.
+    Browser* browser2 = CreateBrowser(browser()->profile());
+    EXPECT_TRUE(ToolbarIconExists());
+    action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
+                                        std::vector<MediaRoute::Id>());
+    EXPECT_FALSE(ToolbarIconExists());
+    action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+    EXPECT_TRUE(ToolbarIconExists());
+    browser2->window()->Close();
+    EXPECT_TRUE(ToolbarIconExists());
+  }
+
   ToolbarActionsBar* toolbar_actions_bar_ = nullptr;
 
   Issue issue_;
@@ -237,7 +255,18 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   MediaRouterActionController* action_controller_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
+// Runs dialog-related tests with the WebUI Cast dialog.
+class MediaRouterWebUIBrowserTest : public MediaRouterUIBrowserTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(features::kViewsCastDialog);
+    MediaRouterUIBrowserTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest, OpenDialogFromContextMenu) {
   TestOpenDialogFromContextMenu();
 }
 
@@ -248,27 +277,22 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
 #else
 #define MAYBE_OpenDialogFromAppMenu OpenDialogFromAppMenu
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, MAYBE_OpenDialogFromAppMenu) {
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
+                       MAYBE_OpenDialogFromAppMenu) {
   TestOpenDialogFromAppMenu();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
                        EphemeralToolbarIconForDialog) {
   TestEphemeralToolbarIconForDialog();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN) || \
-    defined(OS_MACOSX)
 // Flaky on chromeos, linux, win: https://crbug.com/658005
 // Flaky on MacViews: https://crbug.com/817408
-#define MAYBE_OpenDialogWithMediaRouterAction \
-        DISABLED_OpenDialogWithMediaRouterAction
-#else
-#define MAYBE_OpenDialogWithMediaRouterAction OpenDialogWithMediaRouterAction
-#endif
-
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
-                       MAYBE_OpenDialogWithMediaRouterAction) {
+// TODO(https://crbug.com/678472): Replace this test case with a Views version.
+// Close out the bugs above when doing so.
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
+                       DISABLED_OpenDialogWithMediaRouterAction) {
   // We start off at about:blank page.
   // Make sure there is 1 tab and media router is enabled.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -305,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 #define MAYBE_OpenDialogsInMultipleTabs OpenDialogsInMultipleTabs
 #endif
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
                        MAYBE_OpenDialogsInMultipleTabs) {
   // Start with two tabs.
   chrome::NewTab(browser());
@@ -346,45 +370,17 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   SetAlwaysShowActionPref(false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
                        EphemeralToolbarIconForRoutesAndIssues) {
-  action_controller_->OnIssue(issue_);
-  EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnIssuesCleared();
-  EXPECT_FALSE(ToolbarIconExists());
-
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
-  EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
-                                      std::vector<MediaRoute::Id>());
-  EXPECT_FALSE(ToolbarIconExists());
-
-  SetAlwaysShowActionPref(true);
-  EXPECT_TRUE(ToolbarIconExists());
-  SetAlwaysShowActionPref(false);
-  EXPECT_FALSE(ToolbarIconExists());
+  TestEphemeralToolbarIconForRoutesAndIssues();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest,
                        EphemeralToolbarIconWithMultipleWindows) {
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
-  EXPECT_TRUE(ToolbarIconExists());
-
-  // Opening and closing a window shouldn't affect the state of the ephemeral
-  // icon. Creating and removing the icon with multiple windows open should also
-  // work.
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
-                                      std::vector<MediaRoute::Id>());
-  EXPECT_FALSE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
-  EXPECT_TRUE(ToolbarIconExists());
-  browser2->window()->Close();
-  EXPECT_TRUE(ToolbarIconExists());
+  TestEphemeralToolbarIconWithMultipleWindows();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, UpdateActionLocation) {
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest, UpdateActionLocation) {
   SetAlwaysShowActionPref(true);
 
   // Get the index for "Hide in Chrome menu" / "Show in toolbar" menu item.
@@ -409,21 +405,15 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, UpdateActionLocation) {
       toolbar_actions_bar_->IsActionVisibleOnMainBar(GetMediaRouterAction()));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, PinAndUnpinToolbarIcon) {
+IN_PROC_BROWSER_TEST_F(MediaRouterWebUIBrowserTest, PinAndUnpinToolbarIcon) {
   GetDialogController()->ShowMediaRouterDialog();
   EXPECT_TRUE(ToolbarIconExists());
   // Pin the icon via its context menu.
   ui::SimpleMenuModel* context_menu = GetIconContextMenu();
   const int command_index = context_menu->GetIndexOfCommandId(
       IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION);
-  if (IsCocoaBrowser()) {
-    // With Cocoa, OnContextMenuClosed() gets called before command execution.
-    GetMediaRouterAction()->OnContextMenuClosed();
-    context_menu->ActivatedAt(command_index);
-  } else {
-    context_menu->ActivatedAt(command_index);
-    GetMediaRouterAction()->OnContextMenuClosed();
-  }
+  context_menu->ActivatedAt(command_index);
+  GetMediaRouterAction()->OnContextMenuClosed();
   GetDialogController()->HideMediaRouterDialog();
   EXPECT_TRUE(ToolbarIconExists());
 
@@ -437,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, PinAndUnpinToolbarIcon) {
 class MediaRouterViewsUIBrowserTest : public MediaRouterUIBrowserTest {
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kViewsCastDialog}, {});
+    feature_list_.InitAndEnableFeature(features::kViewsCastDialog);
     MediaRouterUIBrowserTest::SetUp();
   }
 
@@ -446,27 +436,19 @@ class MediaRouterViewsUIBrowserTest : public MediaRouterUIBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest,
                        OpenDialogFromContextMenu) {
-  if (IsCocoaBrowser())
-    return;
   TestOpenDialogFromContextMenu();
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest, OpenDialogFromAppMenu) {
-  if (IsCocoaBrowser())
-    return;
   TestOpenDialogFromAppMenu();
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest,
                        EphemeralToolbarIconForDialog) {
-  if (IsCocoaBrowser())
-    return;
   TestEphemeralToolbarIconForDialog();
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest, PinAndUnpinToolbarIcon) {
-  if (IsCocoaBrowser())
-    return;
   GetDialogController()->ShowMediaRouterDialog();
   EXPECT_TRUE(ToolbarIconExists());
   // Pin the icon via its context menu.
@@ -480,6 +462,16 @@ IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest, PinAndUnpinToolbarIcon) {
   // Unpin the icon via its context menu.
   GetIconContextMenu()->ActivatedAt(command_index);
   EXPECT_FALSE(ToolbarIconExists());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest,
+                       EphemeralToolbarIconForRoutesAndIssues) {
+  TestEphemeralToolbarIconForRoutesAndIssues();
+}
+
+IN_PROC_BROWSER_TEST_F(MediaRouterViewsUIBrowserTest,
+                       EphemeralToolbarIconWithMultipleWindows) {
+  TestEphemeralToolbarIconWithMultipleWindows();
 }
 
 }  // namespace media_router

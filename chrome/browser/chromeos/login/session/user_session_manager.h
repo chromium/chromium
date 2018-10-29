@@ -24,7 +24,6 @@
 #include "chrome/browser/chromeos/eol_notification.h"
 #include "chrome/browser/chromeos/hats/hats_notification_controller.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_notification_controller.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -46,10 +45,6 @@ class TokenHandleFetcher;
 
 namespace base {
 class CommandLine;
-}
-
-namespace net {
-class URLRequestContextGetter;
 }
 
 namespace network {
@@ -288,7 +283,6 @@ class UserSessionManager
 
   // Returns the auth request context/URLLoaderFactory associated with auth
   // data.
-  net::URLRequestContextGetter* GetAuthRequestContext() const;
   scoped_refptr<network::SharedURLLoaderFactory> GetAuthURLLoaderFactory()
       const;
 
@@ -567,18 +561,6 @@ class UserSessionManager
   // Per-user-session EndofLife Notification
   std::map<Profile*, std::unique_ptr<EolNotification>, ProfileCompare>
       eol_notification_handler_;
-
-  // Per-user-session PIN Unlock Feature Notification
-  std::map<Profile*,
-           scoped_refptr<quick_unlock::QuickUnlockNotificationController>,
-           ProfileCompare>
-      pin_unlock_notification_handler_;
-
-  // Per-user-session Fingerprint Unlock Feature Notification
-  std::map<Profile*,
-           scoped_refptr<quick_unlock::QuickUnlockNotificationController>,
-           ProfileCompare>
-      fingerprint_unlock_notification_handler_;
 
   // Maps command-line switch types to the currently set command-line switches
   // for that type. Note: This is not per Profile/AccountId, because session

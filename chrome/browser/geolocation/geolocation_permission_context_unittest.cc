@@ -241,8 +241,7 @@ void GeolocationPermissionContextTests::CheckTabContentsState(
       content_settings->geolocation_usages_state().state_map();
   EXPECT_EQ(1U, state_map.count(requesting_frame.GetOrigin()));
   EXPECT_EQ(0U, state_map.count(requesting_frame));
-  ContentSettingsUsagesState::StateMap::const_iterator settings =
-      state_map.find(requesting_frame.GetOrigin());
+  auto settings = state_map.find(requesting_frame.GetOrigin());
   ASSERT_FALSE(settings == state_map.end())
       << "geolocation state not found " << requesting_frame;
   EXPECT_EQ(expected_content_setting, settings->second);

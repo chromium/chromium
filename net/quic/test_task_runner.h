@@ -14,6 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner.h"
 #include "base/test/test_pending_task.h"
+#include "net/third_party/quic/core/quic_time.h"
 
 namespace quic {
 class MockClock;
@@ -40,9 +41,18 @@ class TestTaskRunner : public base::SequencedTaskRunner {
 
   const std::vector<PostedTask>& GetPostedTasks() const;
 
+  // Returns the delay for next task to run. If there is no pending task,
+  // return QuicTime::Delta::Infinite().
+  quic::QuicTime::Delta NextPendingTaskDelay();
+
   // Finds the next task to run, advances the time to the correct time
   // and then runs the task.
   void RunNextTask();
+
+  // Fast forwards virtual time by |delta|, causing all tasks with a remaining
+  // delay less than or equal to |delta| to be executed. |delta| must be
+  // non-negative.
+  void FastForwardBy(quic::QuicTime::Delta delta);
 
   // While there are posted tasks, finds the next task to run, advances the
   // time to the correct time and then runs the task.

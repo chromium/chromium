@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/ServiceWorker/#enumdef-serviceworkerupdateviacache
-[
-    RuntimeEnabled=ServiceWorkerUpdateViaCache
-] enum ServiceWorkerUpdateViaCache {
+enum ServiceWorkerUpdateViaCache {
     "imports",
     "all",
     "none"
@@ -23,7 +21,7 @@
     readonly attribute NavigationPreloadManager navigationPreload;
 
     readonly attribute USVString scope;
-    [RuntimeEnabled=ServiceWorkerUpdateViaCache] readonly attribute ServiceWorkerUpdateViaCache updateViaCache;
+    readonly attribute ServiceWorkerUpdateViaCache updateViaCache;
 
     [CallWith=ScriptState] Promise<ServiceWorkerRegistration> update();
     [CallWith=ScriptState] Promise<boolean> unregister();

@@ -11,6 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/action_executor.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/curtain_mode.h"
 #include "remoting/host/desktop_resizer.h"
@@ -33,6 +34,13 @@ namespace remoting {
 
 Me2MeDesktopEnvironment::~Me2MeDesktopEnvironment() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
+}
+
+std::unique_ptr<ActionExecutor>
+Me2MeDesktopEnvironment::CreateActionExecutor() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  return ActionExecutor::Create();
 }
 
 std::unique_ptr<ScreenControls>

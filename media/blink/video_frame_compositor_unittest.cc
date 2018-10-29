@@ -28,8 +28,10 @@ class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
  public:
   // blink::WebVideoFrameSubmitter implementation.
   void StopUsingProvider() override {}
-  MOCK_METHOD2(EnableSubmission,
-               void(viz::SurfaceId, blink::WebFrameSinkDestroyedCallback));
+  MOCK_METHOD3(EnableSubmission,
+               void(viz::SurfaceId,
+                    base::TimeTicks,
+                    blink::WebFrameSinkDestroyedCallback));
   MOCK_METHOD0(StartRendering, void());
   MOCK_METHOD0(StopRendering, void());
   MOCK_CONST_METHOD0(IsDrivingFrameUpdates, bool(void));
@@ -75,9 +77,9 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
       EXPECT_CALL(*submitter_,
                   SetRotation(Eq(media::VideoRotation::VIDEO_ROTATION_90)));
       EXPECT_CALL(*submitter_, SetForceSubmit(false));
-      EXPECT_CALL(*submitter_, EnableSubmission(Eq(viz::SurfaceId()), _));
+      EXPECT_CALL(*submitter_, EnableSubmission(Eq(viz::SurfaceId()), _, _));
       EXPECT_CALL(*submitter_, SetIsOpaque(true));
-      compositor_->EnableSubmission(viz::SurfaceId(),
+      compositor_->EnableSubmission(viz::SurfaceId(), base::TimeTicks(),
                                     media::VideoRotation::VIDEO_ROTATION_90,
                                     false, true, base::BindRepeating([] {}));
     }

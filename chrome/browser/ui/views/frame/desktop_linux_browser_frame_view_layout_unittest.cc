@@ -50,9 +50,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   }
   bool ShouldShowCaptionButtons() const override { return true; }
   bool IsRegularOrGuestSession() const override { return true; }
-  gfx::ImageSkia GetIncognitoAvatarIcon() const override {
-    return gfx::ImageSkia();
-  }
   bool IsMaximized() const override { return false; }
   bool IsMinimized() const override { return false; }
   bool IsTabStripVisible() const override { return true; }
@@ -62,9 +59,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsToolbarVisible() const override { return true; }
   gfx::Size GetTabstripPreferredSize() const override {
     return gfx::Size(78, 29);
-  }
-  gfx::Size GetNewTabButtonPreferredSize() const override {
-    return gfx::Size(28, 28);
   }
   int GetTopAreaHeight() const override { return 0; }
   bool UseCustomFrame() const override { return true; }
@@ -120,17 +114,6 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   int GetInterNavButtonSpacing() const override {
     return kInterNavButtonSpacing;
   }
-
-  std::unique_ptr<views::Background> CreateAvatarButtonBackground(
-      const views::Button* avatar_button) const override {
-    return nullptr;
-  }
-
-  void CalculateCaptionButtonLayout(
-      const gfx::Size& content_size,
-      int top_area_height,
-      gfx::Size* caption_button_size,
-      gfx::Insets* caption_button_spacing) const override {}
 };
 
 }  // namespace

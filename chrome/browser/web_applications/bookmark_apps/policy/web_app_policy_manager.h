@@ -30,8 +30,7 @@ class WebAppPolicyManager {
   // Constructs a WebAppPolicyManager instance that uses
   // |pending_app_manager| to manage apps. |pending_app_manager| should outlive
   // this class.
-  explicit WebAppPolicyManager(Profile* profile,
-                               PendingAppManager* pending_app_manager);
+  WebAppPolicyManager(Profile* profile, PendingAppManager* pending_app_manager);
   ~WebAppPolicyManager();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

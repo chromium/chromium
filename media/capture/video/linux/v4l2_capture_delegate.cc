@@ -279,7 +279,7 @@ void V4L2CaptureDelegate::AllocateAndStart(
   // favour mjpeg over raw formats.
   const std::vector<uint32_t>& desired_v4l2_formats =
       GetListOfUsableFourCcs(width > kMjpegWidth || height > kMjpegHeight);
-  std::vector<uint32_t>::const_iterator best = desired_v4l2_formats.end();
+  auto best = desired_v4l2_formats.end();
 
   v4l2_fmtdesc fmtdesc = {};
   fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -379,7 +379,7 @@ void V4L2CaptureDelegate::AllocateAndStart(
 
   // Post task to start fetching frames from v4l2.
   v4l2_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2CaptureDelegate::DoCapture, GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::DoCapture, GetWeakPtr()));
 }
 
 void V4L2CaptureDelegate::StopAndDeAllocate() {
@@ -468,7 +468,15 @@ void V4L2CaptureDelegate::GetPhotoState(
             : MeteringMode::CONTINUOUS;
   }
 
+  // Exposure compensation is valid if V4L2_CID_EXPOSURE_AUTO control is set to
+  // AUTO, SHUTTER_PRIORITY or APERTURE_PRIORITY. Drivers should interpret the
+  // values as 0.001 EV units, where the value 1000 stands for +1 EV.
   photo_capabilities->exposure_compensation =
+      RetrieveUserControlRange(V4L2_CID_AUTO_EXPOSURE_BIAS);
+
+  // Determines the exposure time of the camera sensor. Drivers interpret values
+  // as 100 µs units, same as specs.
+  photo_capabilities->exposure_time =
       RetrieveUserControlRange(V4L2_CID_EXPOSURE_ABSOLUTE);
 
   photo_capabilities->color_temperature =
@@ -577,12 +585,29 @@ void V4L2CaptureDelegate::SetPhotoOptions(
     v4l2_control auto_exposure_current = {};
     auto_exposure_current.id = V4L2_CID_EXPOSURE_AUTO;
     const int result = DoIoctl(VIDIOC_G_CTRL, &auto_exposure_current);
-    // Exposure Compensation can only be applied if Auto Exposure is off.
-    if (result >= 0 && auto_exposure_current.value == V4L2_EXPOSURE_MANUAL) {
+    // Exposure Compensation is effective only when V4L2_CID_EXPOSURE_AUTO
+    // control is set to AUTO, SHUTTER_PRIORITY or APERTURE_PRIORITY.
+    if (result >= 0 && auto_exposure_current.value != V4L2_EXPOSURE_MANUAL) {
       v4l2_control set_exposure = {};
-      set_exposure.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+      set_exposure.id = V4L2_CID_AUTO_EXPOSURE_BIAS;
       set_exposure.value = settings->exposure_compensation;
       DoIoctl(VIDIOC_S_CTRL, &set_exposure);
+    }
+  }
+
+  if (settings->has_exposure_time) {
+    v4l2_control exposure_time_current = {};
+    exposure_time_current.id = V4L2_CID_EXPOSURE_AUTO;
+    const int result = DoIoctl(VIDIOC_G_CTRL, &exposure_time_current);
+    // Exposure time can only be applied if V4L2_CID_EXPOSURE_AUTO is set to
+    // V4L2_EXPOSURE_MANUAL or V4L2_EXPOSURE_SHUTTER_PRIORITY.
+    if (result >= 0 &&
+        (exposure_time_current.value == V4L2_EXPOSURE_MANUAL ||
+         exposure_time_current.value == V4L2_EXPOSURE_SHUTTER_PRIORITY)) {
+      v4l2_control set_exposure_time = {};
+      set_exposure_time.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+      set_exposure_time.value = settings->exposure_time;
+      DoIoctl(VIDIOC_S_CTRL, &set_exposure_time);
     }
   }
 
@@ -890,7 +915,7 @@ void V4L2CaptureDelegate::DoCapture() {
   }
 
   v4l2_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2CaptureDelegate::DoCapture, GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::DoCapture, GetWeakPtr()));
 }
 
 void V4L2CaptureDelegate::SetErrorState(VideoCaptureError error,

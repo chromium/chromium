@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/tts_messages.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -65,8 +67,8 @@ bool TtsMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void TtsMessageFilter::OnChannelClosing() {
   base::AutoLock lock(mutex_);
   valid_ = false;
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&TtsMessageFilter::OnChannelClosingInUIThread, this));
 }
 

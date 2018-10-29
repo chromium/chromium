@@ -31,5 +31,6 @@ group("monochrome_apk_checker") {
     "./scripts/monochrome_apk_checker.py",
     "//testing/scripts/monochrome_apk_checker_wrapper.py",
     "//testing/scripts/common.py",
+    "//testing/xvfb.py",
   ]
 }

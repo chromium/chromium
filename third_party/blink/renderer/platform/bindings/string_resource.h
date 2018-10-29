@@ -164,7 +164,9 @@ class ParkableStringResource16 final
     DCHECK(!parkable_string_.Is8Bit());
   }
 
-  bool IsCacheable() const override { return !parkable_string_.is_parkable(); }
+  bool IsCacheable() const override {
+    return !parkable_string_.may_be_parked();
+  }
 
   void Lock() const override { parkable_string_.Lock(); }
 
@@ -188,7 +190,9 @@ class ParkableStringResource8 final
     DCHECK(parkable_string_.Is8Bit());
   }
 
-  bool IsCacheable() const override { return !parkable_string_.is_parkable(); }
+  bool IsCacheable() const override {
+    return !parkable_string_.may_be_parked();
+  }
 
   void Lock() const override { parkable_string_.Lock(); }
 

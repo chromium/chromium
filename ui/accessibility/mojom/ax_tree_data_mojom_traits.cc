@@ -10,9 +10,12 @@ namespace mojo {
 bool StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData>::Read(
     ax::mojom::AXTreeDataDataView data,
     ui::AXTreeData* out) {
-  out->tree_id = data.tree_id();
-  out->parent_tree_id = data.parent_tree_id();
-  out->focused_tree_id = data.focused_tree_id();
+  if (!data.ReadTreeId(&out->tree_id))
+    return false;
+  if (!data.ReadParentTreeId(&out->parent_tree_id))
+    return false;
+  if (!data.ReadFocusedTreeId(&out->focused_tree_id))
+    return false;
   if (!data.ReadDoctype(&out->doctype))
     return false;
   out->loaded = data.loaded();

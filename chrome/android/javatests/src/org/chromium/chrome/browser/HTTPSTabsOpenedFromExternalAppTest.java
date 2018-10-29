@@ -16,11 +16,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.blink_public.web.WebReferrerPolicy;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.network.mojom.ReferrerPolicy;
 
 /**
  * Test the behavior of tabs when opening an HTTPS URL from an external app.
@@ -53,8 +53,8 @@ public class HTTPSTabsOpenedFromExternalAppTest {
                 InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
         try {
             String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-            TabsOpenedFromExternalAppTest.launchAndVerifyReferrerWithPolicy(url, mActivityTestRule,
-                    WebReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
+            TabsOpenedFromExternalAppTest.launchAndVerifyReferrerWithPolicy(
+                    url, mActivityTestRule, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
         } finally {
             if (mTestServer != null) mTestServer.stopAndDestroyServer();
         }

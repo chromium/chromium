@@ -64,6 +64,34 @@ void Portal::Navigate(const GURL& url) {
   portal_contents_->GetController().LoadURLWithParams(load_url_params);
 }
 
+void Portal::Activate(
+    base::OnceCallback<void(blink::mojom::PortalActivationStatus)> callback) {
+  WebContents* outer_contents =
+      WebContents::FromRenderFrameHost(owner_render_frame_host_);
+  WebContentsDelegate* delegate = outer_contents->GetDelegate();
+  if (delegate) {
+    bool is_loading = portal_contents_->IsLoading();
+    WebContents* portal_contents = portal_contents_.get();
+    std::unique_ptr<WebContents> contents = delegate->SwapWebContents(
+        outer_contents, std::move(portal_contents_), true, is_loading);
+
+    if (contents.get() == outer_contents) {
+      // TODO(lfg): The old WebContents is currently discarded, but should be
+      // kept and passed to the new page.
+      std::move(callback).Run(blink::mojom::PortalActivationStatus::kSuccess);
+    } else {
+      DCHECK_EQ(portal_contents, contents.get());
+      portal_contents_ = std::move(contents);
+      std::move(callback).Run(
+          blink::mojom::PortalActivationStatus::kNotSupported);
+    }
+
+    return;
+  }
+
+  std::move(callback).Run(blink::mojom::PortalActivationStatus::kNotSupported);
+}
+
 void Portal::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
   if (render_frame_host == owner_render_frame_host_)
     binding_->Close();  // Also deletes |this|.

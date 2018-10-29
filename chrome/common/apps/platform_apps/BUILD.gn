@@ -13,6 +13,13 @@ source_set("platform_apps") {
     "chrome_apps_api_permissions.h",
     "chrome_apps_api_provider.cc",
     "chrome_apps_api_provider.h",
+    "chrome_apps_message_generator.cc",
+    "chrome_apps_message_generator.h",
+    "chrome_apps_messages.h",
+    "media_galleries_permission.cc",
+    "media_galleries_permission.h",
+    "media_galleries_permission_data.cc",
+    "media_galleries_permission_data.h",
   ]
 
   deps = [
@@ -20,5 +27,6 @@ source_set("platform_apps") {
     "//chrome/common/apps/platform_apps/api",
     "//chrome/common/apps/platform_apps/api:apps_features",
     "//extensions/common",
+    "//ipc",
   ]
 }

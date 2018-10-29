@@ -22,6 +22,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToByteVector;
+using base::android::JavaByteArrayToString;
 using base::android::JavaParamRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::RunObjectCallbackAndroid;
@@ -69,7 +70,8 @@ void MediaDrmStorageBridge::OnLoadInfo(
     // Callback<PersistentInfo>
     const JavaParamRef<jobject>& j_callback) {
   DCHECK(impl_);
-  std::string session_id = JavaBytesToString(env, j_session_id);
+  std::string session_id;
+  JavaByteArrayToString(env, j_session_id, &session_id);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -90,14 +92,14 @@ void MediaDrmStorageBridge::OnSaveInfo(
   DCHECK(impl_);
   std::vector<uint8_t> key_set_id;
   JavaByteArrayToByteVector(
-      env, Java_PersistentInfo_keySetId(env, j_persist_info).obj(),
-      &key_set_id);
+      env, Java_PersistentInfo_keySetId(env, j_persist_info), &key_set_id);
 
   std::string mime = ConvertJavaStringToUTF8(
       env, Java_PersistentInfo_mimeType(env, j_persist_info));
 
-  std::string session_id = JavaBytesToString(
-      env, Java_PersistentInfo_emeId(env, j_persist_info).obj());
+  std::string session_id;
+  JavaByteArrayToString(env, Java_PersistentInfo_emeId(env, j_persist_info),
+                        &session_id);
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -117,11 +119,13 @@ void MediaDrmStorageBridge::OnClearInfo(
     // Callback<Boolean>
     const JavaParamRef<jobject>& j_callback) {
   DCHECK(impl_);
+  std::string session_id;
+  JavaByteArrayToString(env, j_session_id, &session_id);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MediaDrmStorage::RemovePersistentSession, impl_->AsWeakPtr(),
-          JavaBytesToString(env, j_session_id),
+          std::move(session_id),
           base::BindOnce(&MediaDrmStorageBridge::RunAndroidBoolCallback,
                          weak_factory_.GetWeakPtr(),
                          base::Passed(CreateJavaObjectPtr(j_callback.obj())))));
@@ -153,7 +157,7 @@ void MediaDrmStorageBridge::OnSessionDataLoaded(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_eme_id = StringToJavaBytes(env, session_id);
+  ScopedJavaLocalRef<jbyteArray> j_eme_id = ToJavaByteArray(env, session_id);
   ScopedJavaLocalRef<jbyteArray> j_key_set_id = ToJavaByteArray(
       env, session_data->key_set_id.data(), session_data->key_set_id.size());
   ScopedJavaLocalRef<jstring> j_mime =

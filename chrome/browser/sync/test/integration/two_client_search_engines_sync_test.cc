@@ -5,6 +5,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/search_engines_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -12,19 +13,22 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync/driver/sync_driver_switches.h"
 
 using base::ASCIIToUTF16;
 
-class TwoClientSearchEnginesSyncTest : public SyncTest {
+class TwoClientSearchEnginesSyncTest : public FeatureToggler, public SyncTest {
  public:
-  TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientSearchEnginesSyncTest()
+      : FeatureToggler(switches::kSyncPseudoUSSSearchEngines),
+        SyncTest(TWO_CLIENT) {}
   ~TwoClientSearchEnginesSyncTest() override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TwoClientSearchEnginesSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 
@@ -38,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(search_engines_helper::HasSearchEngine(1, search_engine_seed));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 
@@ -57,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Delete)) {
   ASSERT_FALSE(search_engines_helper::HasSearchEngine(1, search_engine_seed));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(AddMultiple)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -69,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, Duplicates) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, Duplicates) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 
@@ -86,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, Duplicates) {
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateKeyword)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -103,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 
@@ -119,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(UpdateName)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -135,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   DisableVerifier();
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -155,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   DisableVerifier();
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -180,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, DisableSync) {
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest, DisableSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 
@@ -195,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, DisableSync) {
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(SyncDefault)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -212,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 
 // Ensure that we can change the search engine and immediately delete it
 // without putting the clients out of sync.
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSearchEnginesSyncTest,
                        E2E_ENABLED(DeleteSyncedDefault)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
@@ -229,3 +233,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   search_engines_helper::DeleteSearchEngineBySeed(0, 0);
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
+
+INSTANTIATE_TEST_CASE_P(USS,
+                        TwoClientSearchEnginesSyncTest,
+                        ::testing::Values(false, true));

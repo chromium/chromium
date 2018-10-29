@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting;
 
-// Next Id: 13
+// Next Id: 14
 message FrameStatsMessage {
   // Frame ID.
   optional uint32 frame_id = 1;
@@ -49,5 +49,8 @@ message FrameStatsMessage {
   // The capturer Id to indicate the implementation of ScreenCapturer that
   // generates this frame.
   optional uint32 capturer_id = 12;
-}
 
+  // A simple indication of the quality of the frame, scored between 0 and 100,
+  // with 100 representing a lossless encoded frame.
+  optional uint32 frame_quality = 13;
+}

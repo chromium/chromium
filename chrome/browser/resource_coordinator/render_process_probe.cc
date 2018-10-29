@@ -8,12 +8,13 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/resource_coordinator/public/cpp/process_resource_coordinator.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "services/resource_coordinator/public/mojom/coordination_unit.mojom.h"
 
 #if defined(OS_MACOSX)
@@ -33,8 +34,7 @@ RenderProcessProbe* RenderProcessProbe::GetInstance() {
 // static
 bool RenderProcessProbe::IsEnabled() {
   // Check that service_manager is active and GRC is enabled.
-  return content::ServiceManagerConnection::GetForProcess() != nullptr &&
-         resource_coordinator::IsResourceCoordinatorEnabled();
+  return content::ServiceManagerConnection::GetForProcess() != nullptr;
 }
 
 RenderProcessProbeImpl::RenderProcessInfo::RenderProcessInfo() = default;
@@ -64,8 +64,8 @@ void RenderProcessProbeImpl::RegisterAliveRenderProcessesOnUIThread() {
 
   is_gathering_ = true;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &RenderProcessProbeImpl::
               CollectRenderProcessMetricsAndStartMemoryDumpOnIOThread,
@@ -81,7 +81,7 @@ void RenderProcessProbeImpl::
 
   StartMemoryMeasurement(collection_start_time);
 
-  RenderProcessInfoMap::iterator iter = render_process_info_map_.begin();
+  auto iter = render_process_info_map_.begin();
   while (iter != render_process_info_map_.end()) {
     auto& render_process_info = iter->second;
 
@@ -193,8 +193,8 @@ void RenderProcessProbeImpl::ProcessGlobalMemoryDumpAndDispatchOnIOThread(
   UMA_HISTOGRAM_TIMES("ResourceCoordinator.Measurement.Duration",
                       batch->batch_ended_time - batch->batch_started_time);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&RenderProcessProbeImpl::FinishCollectionOnUIThread,
                      base::Unretained(this), std::move(batch)));
 }

@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
 namespace blink {
@@ -55,7 +55,7 @@ bool NGUnpositionedListMarker::AddToBox(
     FontBaseline baseline_type,
     const NGPhysicalFragment& content,
     NGLogicalOffset* content_offset,
-    NGFragmentBuilder* container_builder,
+    NGBoxFragmentBuilder* container_builder,
     const NGBoxStrut& border_scrollbar_padding) const {
   // Baselines from two different writing-mode cannot be aligned.
   if (UNLIKELY(space.GetWritingMode() != content.Style().GetWritingMode()))
@@ -125,7 +125,7 @@ bool NGUnpositionedListMarker::AddToBox(
 LayoutUnit NGUnpositionedListMarker::AddToBoxWithoutLineBoxes(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
-    NGFragmentBuilder* container_builder) const {
+    NGBoxFragmentBuilder* container_builder) const {
   // Layout the list marker.
   scoped_refptr<NGLayoutResult> marker_layout_result =
       Layout(space, baseline_type);
@@ -149,7 +149,7 @@ LayoutUnit NGUnpositionedListMarker::AddToBoxWithoutLineBoxes(
 // diff as intruded offset.
 LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
     const NGConstraintSpace& space,
-    const NGFragmentBuilder* container_builder,
+    const NGBoxFragmentBuilder* container_builder,
     const NGBoxStrut& border_scrollbar_padding,
     LayoutUnit marker_block_offset) const {
   DCHECK(container_builder);

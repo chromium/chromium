@@ -35,6 +35,7 @@ class WebGL2ComputeRenderingContextBase : public WebGL2RenderingContextBase {
 
   /* WebGLRenderingContextBase overrides */
   void InitializeNewContext() override;
+  ScriptValue getParameter(ScriptState*, GLenum pname) override;
 
   void Trace(blink::Visitor*) override;
 

@@ -56,12 +56,15 @@
              selector:@selector(voiceOverStatusChanged)
                  name:UIAccessibilityVoiceOverStatusDidChangeNotification
                object:nil];
-    } else {
+    }
+#if !defined(__IPHONE_11_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0
+    else {
       [defaultCenter addObserver:self
                         selector:@selector(voiceOverStatusChanged)
                             name:UIAccessibilityVoiceOverStatusChanged
                           object:nil];
     }
+#endif
     // Create a disabler if VoiceOver is enabled.
     if (UIAccessibilityIsVoiceOverRunning()) {
       _voiceOverDisabler =

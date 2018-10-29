@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 
 class BrowserView;
 
@@ -33,7 +32,6 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
 
  private:
   BrowserView* browser_view_;  // Not owned.
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   DISALLOW_COPY_AND_ASSIGN(TestWithBrowserView);
 };

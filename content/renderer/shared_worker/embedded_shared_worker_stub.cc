@@ -15,6 +15,8 @@
 #include "content/public/common/appcache_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/renderer_preferences.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -101,7 +103,7 @@ class WebServiceWorkerNetworkProviderForSharedWorker
     extra_data->set_initiated_in_secure_context(is_secure_context_);
     if (response_override_) {
       DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
-      DCHECK_EQ(blink::WebURLRequest::kRequestContextSharedWorker,
+      DCHECK_EQ(blink::mojom::RequestContextType::SHARED_WORKER,
                 request.GetRequestContext());
       extra_data->set_navigation_response_override(
           std::move(response_override_));
@@ -115,7 +117,7 @@ class WebServiceWorkerNetworkProviderForSharedWorker
     // controller (i.e., via claim()) on the browser-side could handle the
     // request and break the assumptions of the renderer.
     if (request.GetRequestContext() !=
-            blink::WebURLRequest::kRequestContextSharedWorker &&
+            blink::mojom::RequestContextType::SHARED_WORKER &&
         provider_->IsControlledByServiceWorker() ==
             blink::mojom::ControllerServiceWorkerMode::kNoController) {
       request.SetSkipServiceWorker(true);
@@ -154,7 +156,7 @@ class WebServiceWorkerNetworkProviderForSharedWorker
     // If the request is for the main script, use the script_loader_factory.
     if (provider_->script_loader_factory() &&
         request.GetRequestContext() ==
-            blink::WebURLRequest::kRequestContextSharedWorker) {
+            blink::mojom::RequestContextType::SHARED_WORKER) {
       // TODO(crbug.com/796425): Temporarily wrap the raw
       // mojom::URLLoaderFactory pointer into SharedURLLoaderFactory.
       return std::make_unique<WebURLLoaderImpl>(
@@ -217,7 +219,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     network::mojom::URLLoaderFactoryAssociatedPtrInfo
         main_script_loader_factory,
     blink::mojom::SharedWorkerMainScriptLoadParamsPtr main_script_load_params,
-    std::unique_ptr<URLLoaderFactoryBundleInfo> subresource_loader_factories,
+    std::unique_ptr<URLLoaderFactoryBundleInfo> factory_bundle,
     mojom::ControllerServiceWorkerInfoPtr controller_info,
     mojom::SharedWorkerHostPtr host,
     mojom::SharedWorkerRequest request,
@@ -272,21 +274,32 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         base::nullopt /* subresource_overrides */);
   }
 
-  if (subresource_loader_factories) {
+  // |factory_bundle| is provided in the
+  // ServiceWorkerServicification or NetworkService case.
+  DCHECK(factory_bundle ||
+         !blink::ServiceWorkerUtils::IsServicificationEnabled());
+  if (factory_bundle) {
+    // If the network service crashes, then self-destruct so clients don't get
+    // stuck with a worker with a broken loader. Self-destruction is effectively
+    // the same as the worker's process crashing.
+    // The default factory might not be to the network service if a feature like
+    // AppCache set itself to the default, but treat a connection error as fatal
+    // anyway so clients don't get stuck.
+    if (IsOutOfProcessNetworkService()) {
+      default_factory_connection_error_handler_holder_.Bind(
+          std::move(factory_bundle->default_factory_info()));
+      default_factory_connection_error_handler_holder_->Clone(
+          mojo::MakeRequest(&factory_bundle->default_factory_info()));
+      default_factory_connection_error_handler_holder_
+          .set_connection_error_handler(base::BindOnce(
+              &EmbeddedSharedWorkerStub::Terminate, base::Unretained(this)));
+    }
+
     subresource_loader_factories_->Update(
         std::make_unique<ChildURLLoaderFactoryBundleInfo>(
-            std::move(subresource_loader_factories)),
+            std::move(factory_bundle)),
         base::nullopt /* subresource_overrides */);
   }
-
-  // It is important to understand the default factory of
-  // |subresource_loader_factories_|. |subresource_loader_factories_| was made
-  // from CreateDefaultURLLoaderFactoryBundle, which does not set a default
-  // factory, and |subresource_loader_factories| passed from the browser, whose
-  // default factory is the direct network factory (as SharedWorkerHost sets it
-  // that way). Therefore, the default factory either does not exist or is the
-  // direct network factory. So we don't need to call CloneWithoutDefault() to
-  // bypass features like AppCache, unlike the bundle created for a frame.
 
   impl_->StartWorkerContext(
       url_, blink::WebString::FromUTF8(name_),
@@ -413,18 +426,10 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
   if (blink::ServiceWorkerUtils::IsServicificationEnabled())
     container_host_ptr_info = context->CloneContainerHostPtrInfo();
 
-  // We know |subresource_loader_factories_|'s default factory is not a feature
-  // like AppCache, so it's OK to call Clone() and not CloneWithoutDefault() to
-  // get the fallback factory. We don't want to call CloneWithoutDefault()
-  // because the default is a NetworkService-backed factory with auto-reconnect
-  // when NetworkService is enabled (it will support auto-reconnect once
-  // https://crbug.com/848256 is addressed). See comments in the constructor.
-  //
-  // TODO(nhiroki): We might need to set the default factory of
-  // |subresource_loader_factories_| to AppCache if requests from this shared
-  // worker are supposed to go through AppCache.
+  // Make the factory used for service worker network fallback. Omit the default
+  // factory in case it is for a non-network factory like AppCache.
   std::unique_ptr<network::SharedURLLoaderFactoryInfo> fallback_factory =
-      subresource_loader_factories_->Clone();
+      subresource_loader_factories_->CloneWithoutDefaultFactory();
 
   auto worker_fetch_context = std::make_unique<WebWorkerFetchContextImpl>(
       std::move(renderer_preferences_), std::move(preference_watcher_request_),
@@ -482,14 +487,15 @@ void EmbeddedSharedWorkerStub::Connect(int connection_request_id,
 }
 
 void EmbeddedSharedWorkerStub::Terminate() {
-  // After this we wouldn't get any IPC for this stub.
+  // After this we should ignore any IPC for this stub.
   running_ = false;
   impl_->TerminateWorkerContext();
 }
 
 void EmbeddedSharedWorkerStub::BindDevToolsAgent(
+    blink::mojom::DevToolsAgentHostAssociatedPtrInfo host,
     blink::mojom::DevToolsAgentAssociatedRequest request) {
-  impl_->BindDevToolsAgent(request.PassHandle());
+  impl_->BindDevToolsAgent(host.PassHandle(), request.PassHandle());
 }
 
 }  // namespace content

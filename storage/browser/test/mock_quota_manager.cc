@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -15,16 +16,14 @@
 
 namespace content {
 
-MockQuotaManager::OriginInfo::OriginInfo(
-    const GURL& origin,
-    StorageType type,
-    int quota_client_mask,
-    base::Time modified)
+MockQuotaManager::OriginInfo::OriginInfo(const url::Origin& origin,
+                                         StorageType type,
+                                         int quota_client_mask,
+                                         base::Time modified)
     : origin(origin),
       type(type),
       quota_client_mask(quota_client_mask),
-      modified(modified) {
-}
+      modified(modified) {}
 
 MockQuotaManager::OriginInfo::~OriginInfo() = default;
 
@@ -35,16 +34,16 @@ MockQuotaManager::StorageInfo::~StorageInfo() = default;
 MockQuotaManager::MockQuotaManager(
     bool is_incognito,
     const base::FilePath& profile_path,
-    const scoped_refptr<base::SingleThreadTaskRunner>& io_thread,
-    const scoped_refptr<SpecialStoragePolicy>& special_storage_policy)
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread,
+    scoped_refptr<SpecialStoragePolicy> special_storage_policy)
     : QuotaManager(is_incognito,
                    profile_path,
-                   io_thread,
-                   special_storage_policy,
+                   std::move(io_thread),
+                   std::move(special_storage_policy),
                    storage::GetQuotaSettingsFunc()),
       weak_factory_(this) {}
 
-void MockQuotaManager::GetUsageAndQuota(const GURL& origin,
+void MockQuotaManager::GetUsageAndQuota(const url::Origin& origin,
                                         StorageType type,
                                         UsageAndQuotaCallback callback) {
   StorageInfo& info = usage_and_quota_map_[std::make_pair(origin, type)];
@@ -52,31 +51,26 @@ void MockQuotaManager::GetUsageAndQuota(const GURL& origin,
                           info.quota);
 }
 
-void MockQuotaManager::SetQuota(const GURL& origin,
+void MockQuotaManager::SetQuota(const url::Origin& origin,
                                 StorageType type,
                                 int64_t quota) {
   usage_and_quota_map_[std::make_pair(origin, type)].quota = quota;
 }
 
-bool MockQuotaManager::AddOrigin(
-    const GURL& origin,
-    StorageType type,
-    int quota_client_mask,
-    base::Time modified) {
+bool MockQuotaManager::AddOrigin(const url::Origin& origin,
+                                 StorageType type,
+                                 int quota_client_mask,
+                                 base::Time modified) {
   origins_.push_back(OriginInfo(origin, type, quota_client_mask, modified));
   return true;
 }
 
-bool MockQuotaManager::OriginHasData(
-    const GURL& origin,
-    StorageType type,
-    QuotaClient::ID quota_client) const {
-  for (std::vector<OriginInfo>::const_iterator current = origins_.begin();
-       current != origins_.end();
-       ++current) {
-    if (current->origin == origin &&
-        current->type == type &&
-        current->quota_client_mask & quota_client)
+bool MockQuotaManager::OriginHasData(const url::Origin& origin,
+                                     StorageType type,
+                                     QuotaClient::ID quota_client) const {
+  for (const auto& info : origins_) {
+    if (info.origin == origin && info.type == type &&
+        info.quota_client_mask & quota_client)
       return true;
   }
   return false;
@@ -85,27 +79,23 @@ bool MockQuotaManager::OriginHasData(
 void MockQuotaManager::GetOriginsModifiedSince(StorageType type,
                                                base::Time modified_since,
                                                GetOriginsCallback callback) {
-  std::set<GURL>* origins_to_return = new std::set<GURL>();
-  for (std::vector<OriginInfo>::const_iterator current = origins_.begin();
-       current != origins_.end();
-       ++current) {
-    if (current->type == type && current->modified >= modified_since)
-      origins_to_return->insert(current->origin);
+  auto origins_to_return = std::make_unique<std::set<url::Origin>>();
+  for (const auto& info : origins_) {
+    if (info.type == type && info.modified >= modified_since)
+      origins_to_return->insert(info.origin);
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&MockQuotaManager::DidGetModifiedSince,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
-                                base::Owned(origins_to_return), type));
+                                std::move(origins_to_return), type));
 }
 
-void MockQuotaManager::DeleteOriginData(const GURL& origin,
+void MockQuotaManager::DeleteOriginData(const url::Origin& origin,
                                         StorageType type,
                                         int quota_client_mask,
                                         StatusCallback callback) {
-  for (std::vector<OriginInfo>::iterator current = origins_.begin();
-       current != origins_.end();
-       ++current) {
+  for (auto current = origins_.begin(); current != origins_.end(); ++current) {
     if (current->origin == origin && current->type == type) {
       // Modify the mask: if it's 0 after "deletion", remove the origin.
       current->quota_client_mask &= ~quota_client_mask;
@@ -123,15 +113,16 @@ void MockQuotaManager::DeleteOriginData(const GURL& origin,
 
 MockQuotaManager::~MockQuotaManager() = default;
 
-void MockQuotaManager::UpdateUsage(const GURL& origin,
+void MockQuotaManager::UpdateUsage(const url::Origin& origin,
                                    StorageType type,
                                    int64_t delta) {
   usage_and_quota_map_[std::make_pair(origin, type)].usage += delta;
 }
 
-void MockQuotaManager::DidGetModifiedSince(GetOriginsCallback callback,
-                                           std::set<GURL>* origins,
-                                           StorageType storage_type) {
+void MockQuotaManager::DidGetModifiedSince(
+    GetOriginsCallback callback,
+    std::unique_ptr<std::set<url::Origin>> origins,
+    StorageType storage_type) {
   std::move(callback).Run(*origins, storage_type);
 }
 

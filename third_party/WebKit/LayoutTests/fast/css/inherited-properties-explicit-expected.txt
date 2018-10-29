@@ -7,6 +7,6 @@ PASS test('test3b') is "10px"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Test that the matched declaration cache handles explicitly inherited properties correctly.
-
-

@@ -96,6 +96,11 @@ public class ContentSettingsResources {
                             R.string.ads_permission_title, ContentSetting.ALLOW,
                             ContentSetting.BLOCK, 0,
                             R.string.website_settings_category_ads_blocked));
+            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+                    new ResourceItem(R.drawable.infobar_downloading,
+                            R.string.automatic_downloads_permission_title,
+                            R.string.automatic_downloads_permission_title, ContentSetting.ASK,
+                            ContentSetting.BLOCK, R.string.website_settings_category_ask, 0));
             localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY,
                     new ResourceItem(R.drawable.settings_autoplay, R.string.autoplay_title,
                                  R.string.autoplay_title, ContentSetting.ALLOW,

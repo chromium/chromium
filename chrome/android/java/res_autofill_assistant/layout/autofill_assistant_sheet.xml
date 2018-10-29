@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/autofill_assistant"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/control_container_height"
+    android:visibility="invisible"
+    android:gravity="bottom">
+
+    <LinearLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_alpha_90"
+        android:gravity="center"
+        android:clickable="true"
+        android:visibility="gone"
+        android:focusable="false"
+        android:orientation="vertical">
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottombar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/autofill_assistant_bottombar_bg"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:srcCompat="@drawable/chrome_sync_logo" />
+
+            <TextView
+                android:id="@+id/status_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:textAppearance="@style/BlackTitle2"
+                android:layout_weight="1.0"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <ImageButton
+                android:id="@+id/feedback_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/help_outline"
+                android:tint="@color/light_icon_color"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/menu_send_feedback" />
+
+            <ImageButton
+                android:id="@+id/close_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/btn_delete_24dp"
+                android:tint="@color/light_icon_color"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/close" />
+        </LinearLayout>
+
+        <org.chromium.chrome.browser.widget.MaterialProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            app:colorBackground="@color/modern_grey_300"
+            app:colorProgress="@color/modern_blue_600"
+            android:visibility="invisible" />
+
+        <RelativeLayout
+            android:id="@+id/details"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/autofill_assistant_details_image_size"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/details_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/details_image"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/BlackTitle2"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+            <TextView
+                android:id="@+id/details_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/details_title"
+                android:layout_above="@+id/details_time"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/details_image"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/BlackBody"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+            <TextView
+                android:id="@+id/details_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.AutofillAssistantDetailsTime"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/details_image"
+                android:layout_width="@dimen/autofill_assistant_details_image_size"
+                android:layout_height="@dimen/autofill_assistant_details_image_size"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:scaleType="centerCrop">
+            </android.support.v7.widget.AppCompatImageView>
+        </RelativeLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/carousel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+</FrameLayout>

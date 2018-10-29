@@ -140,7 +140,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   bool NeedsDistributionRecalc() const { return needs_distribution_recalc_; }
 
   void DistributeIfNeeded();
-  void DistributeV1();
 
   Element* ActiveElement() const;
 

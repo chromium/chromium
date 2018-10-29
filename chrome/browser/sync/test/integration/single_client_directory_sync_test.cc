@@ -9,10 +9,10 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDirectorySyncTest,
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   browser_sync::ProfileSyncService* sync_service = GetSyncService(0);
-  FilePath directory_path = sync_service->GetSyncClient()
+  FilePath directory_path = sync_service->GetSyncClientForTest()
                                 ->GetModelTypeStoreService()
                                 ->GetSyncDataPath();
   ASSERT_TRUE(FolderContainsFiles(directory_path));
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDirectorySyncTest,
   WaitForExistingTasksOnLoop(sync_loop);
 
   // Now corrupt the database.
-  FilePath directory_path = sync_service->GetSyncClient()
+  FilePath directory_path = sync_service->GetSyncClientForTest()
                                 ->GetModelTypeStoreService()
                                 ->GetSyncDataPath();
   const FilePath sync_db(directory_path.Append(

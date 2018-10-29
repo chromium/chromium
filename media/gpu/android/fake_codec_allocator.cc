@@ -8,7 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "media/base/android/mock_media_codec_bridge.h"
-#include "media/gpu/android/avda_codec_allocator.h"
+#include "media/gpu/android/codec_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,16 +16,16 @@ namespace media {
 
 FakeCodecAllocator::FakeCodecAllocator(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : testing::NiceMock<AVDACodecAllocator>(
+    : testing::NiceMock<CodecAllocator>(
           base::BindRepeating(&MockMediaCodecBridge::CreateVideoDecoder),
           task_runner),
       most_recent_config(new CodecConfig()) {}
 
 FakeCodecAllocator::~FakeCodecAllocator() = default;
 
-void FakeCodecAllocator::StartThread(AVDACodecAllocatorClient* client) {}
+void FakeCodecAllocator::StartThread(CodecAllocatorClient* client) {}
 
-void FakeCodecAllocator::StopThread(AVDACodecAllocatorClient* client) {}
+void FakeCodecAllocator::StopThread(CodecAllocatorClient* client) {}
 
 std::unique_ptr<MediaCodecBridge> FakeCodecAllocator::CreateMediaCodecSync(
     scoped_refptr<CodecConfig> config) {
@@ -47,7 +47,7 @@ std::unique_ptr<MediaCodecBridge> FakeCodecAllocator::CreateMediaCodecSync(
 }
 
 void FakeCodecAllocator::CreateMediaCodecAsync(
-    base::WeakPtr<AVDACodecAllocatorClient> client,
+    base::WeakPtr<CodecAllocatorClient> client,
     scoped_refptr<CodecConfig> config) {
   // Clear |most_recent_codec| until somebody calls Provide*CodecAsync().
   most_recent_codec = nullptr;

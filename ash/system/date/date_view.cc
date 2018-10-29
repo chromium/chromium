@@ -4,7 +4,6 @@
 
 #include "ash/system/date/date_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -181,13 +180,14 @@ void DateView::SetAction(DateAction action) {
   // Disable |this| when not clickable so that the ripple is not shown.
   SetEnabled(action_ != DateAction::NONE);
   if (action_ != DateAction::NONE)
-    SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
 }
 
 void DateView::UpdateTextInternal(const base::Time& now) {
   BaseDateTimeView::UpdateTextInternal(now);
   date_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE, FormatDayOfWeek(now), FormatDate(now)));
+  date_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 void DateView::OnSystemClockCanSetTimeChanged(bool can_set_time) {
@@ -237,6 +237,8 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       now, model_->hour_clock_type(), base::kDropAmPm);
   horizontal_label_->SetText(current_time);
   horizontal_label_->SetTooltipText(base::TimeFormatFriendlyDate(now));
+  horizontal_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                                              true);
 
   // Calculate vertical clock layout labels.
   size_t colon_pos = current_time.find(base::ASCIIToUTF16(":"));
@@ -250,6 +252,10 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
 
   vertical_label_hours_->SetText(hour);
   vertical_label_minutes_->SetText(minute);
+  vertical_label_hours_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kTextChanged, true);
+  vertical_label_minutes_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kTextChanged, true);
   Layout();
 }
 
@@ -271,7 +277,7 @@ void TimeView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
-  SetBorderFromLayout(clock_layout);
+  SetBorder(views::NullBorder());
   if (clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
     RemoveChildView(vertical_label_hours_.get());
     RemoveChildView(vertical_label_minutes_.get());
@@ -310,15 +316,6 @@ void TimeView::SetTextColorBasedOnSession(
 
 void TimeView::Refresh() {
   UpdateText();
-}
-
-void TimeView::SetBorderFromLayout(ClockLayout clock_layout) {
-  if (!features::IsSystemTrayUnifiedEnabled() &&
-      clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(0, kTrayImageItemPadding)));
-  } else {
-    SetBorder(views::NullBorder());
-  }
 }
 
 void TimeView::SetupLabels() {

@@ -121,7 +121,7 @@ class CORE_EXPORT LayoutTableSection final : public LayoutTableBoxComponent {
   int CalcRowLogicalHeight();
   void LayoutRows();
   void ComputeOverflowFromDescendants();
-  bool RecalcOverflowAfterStyleChange() override;
+  bool RecalcOverflow() override;
 
   void MarkAllCellsWidthsDirtyAndOrNeedsLayout(LayoutTable::WhatToMarkAllCells);
 
@@ -299,6 +299,9 @@ class CORE_EXPORT LayoutTableSection final : public LayoutTableBoxComponent {
                    HitTestAction) override;
 
  private:
+  void ComputeVisualOverflowFromDescendants();
+  void ComputeLayoutOverflowFromDescendants();
+
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectTableSection || LayoutBox::IsOfType(type);
   }
@@ -395,7 +398,7 @@ class CORE_EXPORT LayoutTableSection final : public LayoutTableBoxComponent {
   bool GroupShouldRepeat() const;
 
   struct TableGridRow {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     inline void SetRowLogicalHeightToRowStyleLogicalHeight();

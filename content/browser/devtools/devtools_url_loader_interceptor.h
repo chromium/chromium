@@ -11,7 +11,7 @@
 
 namespace content {
 
-class FrameTreeNode;
+class RenderFrameHostImpl;
 
 class DevToolsURLLoaderInterceptor {
  public:
@@ -28,8 +28,7 @@ class DevToolsURLLoaderInterceptor {
       const scoped_refptr<net::AuthChallengeInfo>& auth_info,
       HandleAuthRequestCallback callback);
 
-  DevToolsURLLoaderInterceptor(
-      FrameTreeNode* local_root,
+  explicit DevToolsURLLoaderInterceptor(
       DevToolsNetworkInterceptor::RequestInterceptedCallback callback);
   ~DevToolsURLLoaderInterceptor();
 
@@ -51,15 +50,12 @@ class DevToolsURLLoaderInterceptor {
           callback);
 
   bool CreateProxyForInterception(
-      const base::UnguessableToken frame_token,
-      int process_id,  // 0 for navigation
+      RenderFrameHostImpl* rfh,
+      bool is_navigation,
       bool is_download,
-      network::mojom::URLLoaderFactoryRequest* request) const;
+      network::mojom::URLLoaderFactoryRequest* target_factory_request) const;
 
  private:
-  void UpdateSubresourceLoaderFactories();
-
-  FrameTreeNode* const local_root_;
   bool enabled_;
   std::unique_ptr<Impl, base::OnTaskRunnerDeleter> impl_;
   base::WeakPtr<Impl> weak_impl_;

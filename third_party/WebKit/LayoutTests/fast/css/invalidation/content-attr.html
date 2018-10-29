@@ -2,6 +2,7 @@
 <script src="../../../resources/js-test.js"></script>
 <style>
 #before::before, #after::after { content: attr(my-value); }
+#before2::before { content: "before"; }
 </style>
 <div id="before">
     <div></div>
@@ -10,6 +11,12 @@
     </div>
 </div>
 <div id="after">
+    <div></div>
+    <div>
+        <div></div>
+    </div>
+</div>
+<div id="before2">
     <div></div>
     <div>
         <div></div>
@@ -25,7 +32,7 @@ document.body.offsetTop; // force layout
 
 before.setAttribute("attr-unused", "unused");
 if (window.internals)
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "0");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "2");
 
 document.body.offsetTop; // force layout
 
@@ -38,4 +45,10 @@ document.body.offsetTop; // force layout
 after.setAttribute("my-value", "after");
 if (window.internals)
     shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "2");
+
+document.body.offsetTop; // force layout
+
+before2.setAttribute("my-value", "before");
+if (window.internals)
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "0");
 </script>

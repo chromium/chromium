@@ -265,7 +265,7 @@ void SourceBufferStream<RangeClass>::OnStartOfCodedFrameGroupInternal(
   coded_frame_group_start_time_ = coded_frame_group_start_time;
   new_coded_frame_group_ = true;
 
-  typename RangeList::iterator last_range = range_for_next_append_;
+  auto last_range = range_for_next_append_;
   range_for_next_append_ = FindExistingRangeFor(coded_frame_group_start_time);
 
   // Only reset |last_appended_buffer_timestamp_| if this new coded frame group
@@ -632,7 +632,7 @@ void SourceBufferStream<RangeClass>::RemoveInternal(
   // Doing this upfront simplifies decisions about range_for_next_append_ below.
   UpdateLastAppendStateForRemove(start, end, exclude_start);
 
-  typename RangeList::iterator itr = ranges_.begin();
+  auto itr = ranges_.begin();
   while (itr != ranges_.end()) {
     RangeClass* range = itr->get();
     if (RangeGetStartTimestamp(range) >= end)
@@ -790,8 +790,7 @@ bool SourceBufferStream<RangeClass>::IsDtsMonotonicallyIncreasing(
 
 template <typename RangeClass>
 bool SourceBufferStream<RangeClass>::OnlySelectedRangeIsSeeked() const {
-  for (typename RangeList::const_iterator itr = ranges_.begin();
-       itr != ranges_.end(); ++itr) {
+  for (auto itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     if ((*itr)->HasNextBufferPosition() && itr->get() != selected_range_)
       return false;
   }
@@ -1088,7 +1087,7 @@ size_t SourceBufferStream<RangeClass>::GetRemovalRange(
 
   size_t bytes_freed = 0;
 
-  for (typename RangeList::iterator itr = ranges_.begin();
+  for (auto itr = ranges_.begin();
        itr != ranges_.end() && bytes_freed < total_bytes_to_free; ++itr) {
     RangeClass* range = itr->get();
     if (RangeGetStartTimestamp(range) >= end_timestamp)
@@ -1199,7 +1198,7 @@ size_t SourceBufferStream<RangeClass>::FreeBuffers(size_t total_bytes_to_free,
     // Merging is necessary if there were no buffers (or very few buffers)
     // deleted after creating that added range.
     if (range_for_next_append_ != ranges_.begin()) {
-      typename RangeList::iterator range_before_next = range_for_next_append_;
+      auto range_before_next = range_for_next_append_;
       --range_before_next;
       MergeWithNextRangeIfNecessary(range_before_next);
     }
@@ -1218,7 +1217,7 @@ void SourceBufferStream<RangeClass>::TrimSpliceOverlap(
   const base::TimeDelta splice_timestamp = new_buffers.front()->timestamp();
   const DecodeTimestamp splice_dts =
       DecodeTimestamp::FromPresentationTime(splice_timestamp);
-  typename RangeList::iterator range_itr = FindExistingRangeFor(splice_dts);
+  auto range_itr = FindExistingRangeFor(splice_dts);
   if (range_itr == ranges_.end()) {
     DVLOG(3) << __func__ << " No splice trimming. No range overlap at time "
              << splice_timestamp.InMicroseconds();
@@ -1566,7 +1565,7 @@ void SourceBufferStream<RangeClass>::MergeAllAdjacentRanges() {
   DVLOG(1) << __func__ << " " << GetStreamTypeName()
            << ": Before: ranges_=" << RangesToString<RangeClass>(ranges_);
 
-  typename RangeList::iterator range_itr = ranges_.begin();
+  auto range_itr = ranges_.begin();
 
   while (range_itr != ranges_.end()) {
     const size_t old_ranges_size = ranges_.size();
@@ -1600,7 +1599,7 @@ void SourceBufferStream<RangeClass>::Seek(base::TimeDelta timestamp) {
 
   DecodeTimestamp seek_dts = DecodeTimestamp::FromPresentationTime(timestamp);
 
-  typename RangeList::iterator itr = ranges_.end();
+  auto itr = ranges_.end();
   for (itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     if (RangeCanSeekTo(itr->get(), seek_dts))
       break;
@@ -1816,8 +1815,7 @@ template <typename RangeClass>
 typename SourceBufferStream<RangeClass>::RangeList::iterator
 SourceBufferStream<RangeClass>::FindExistingRangeFor(
     DecodeTimestamp start_timestamp) {
-  for (typename RangeList::iterator itr = ranges_.begin(); itr != ranges_.end();
-       ++itr) {
+  for (auto itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     if (RangeBelongsToRange(itr->get(), start_timestamp))
       return itr;
   }
@@ -1829,7 +1827,7 @@ typename SourceBufferStream<RangeClass>::RangeList::iterator
 SourceBufferStream<RangeClass>::AddToRanges(
     std::unique_ptr<RangeClass> new_range) {
   DecodeTimestamp start_timestamp = RangeGetStartTimestamp(new_range.get());
-  typename RangeList::iterator itr = ranges_.end();
+  auto itr = ranges_.end();
   for (itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     if (RangeGetStartTimestamp(itr->get()) > start_timestamp)
       break;
@@ -1841,7 +1839,7 @@ template <typename RangeClass>
 typename SourceBufferStream<RangeClass>::RangeList::iterator
 SourceBufferStream<RangeClass>::GetSelectedRangeItr() {
   DCHECK(selected_range_);
-  typename RangeList::iterator itr = ranges_.end();
+  auto itr = ranges_.end();
   for (itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     if (itr->get() == selected_range_)
       break;
@@ -1874,8 +1872,7 @@ template <typename RangeClass>
 Ranges<base::TimeDelta> SourceBufferStream<RangeClass>::GetBufferedTime()
     const {
   Ranges<base::TimeDelta> ranges;
-  for (typename RangeList::const_iterator itr = ranges_.begin();
-       itr != ranges_.end(); ++itr) {
+  for (auto itr = ranges_.begin(); itr != ranges_.end(); ++itr) {
     ranges.Add(RangeGetStartTimestamp(itr->get()).ToPresentationTime(),
                RangeGetBufferedEndTimestamp(itr->get()).ToPresentationTime());
   }
@@ -2112,7 +2109,7 @@ SourceBufferStream<RangeClass>::FindNewSelectedRangeSeekTimestamp(
   DCHECK(start_timestamp != kNoDecodeTimestamp());
   DCHECK(start_timestamp >= DecodeTimestamp());
 
-  typename RangeList::iterator itr = ranges_.begin();
+  auto itr = ranges_.begin();
 
   // When checking a range to see if it has or begins soon enough after
   // |start_timestamp|, use the fudge room to determine "soon enough".
@@ -2150,7 +2147,7 @@ DecodeTimestamp SourceBufferStream<RangeClass>::FindKeyframeAfterTimestamp(
     const DecodeTimestamp timestamp) {
   DCHECK(timestamp != kNoDecodeTimestamp());
 
-  typename RangeList::iterator itr = FindExistingRangeFor(timestamp);
+  auto itr = FindExistingRangeFor(timestamp);
 
   if (itr == ranges_.end())
     return kNoDecodeTimestamp();

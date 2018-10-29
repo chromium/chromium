@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -151,7 +152,7 @@ void ProfileResetterTest::SetUp() {
 
   profile()->CreateWebDataService();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), &CreateTemplateURLServiceForTesting);
+      profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
   resetter_.reset(new ProfileResetter(profile()));
 }
 
@@ -777,8 +778,7 @@ TEST_F(ConfigParserTest, ParseConfig) {
       settings->GetUrlsToRestoreOnStartup());
   EXPECT_TRUE(startup_list);
   std::vector<std::string> startup_pages;
-  for (base::ListValue::iterator i = startup_list->begin();
-       i != startup_list->end(); ++i) {
+  for (auto i = startup_list->begin(); i != startup_list->end(); ++i) {
     std::string url;
     EXPECT_TRUE(i->GetAsString(&url));
     startup_pages.push_back(url);

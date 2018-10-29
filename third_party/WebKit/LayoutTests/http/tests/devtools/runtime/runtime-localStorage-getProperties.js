@@ -10,9 +10,10 @@
 
   var result = await TestRunner.RuntimeAgent.evaluate('localStorage');
   var localStorageHandle = TestRunner.runtimeModel.createRemoteObject(result);
-  localStorageHandle.getOwnProperties(false, step2);
+  localStorageHandle.getOwnProperties(false).then(step2);
 
-  function step2(properties) {
+  function step2(allProperties) {
+    const properties = allProperties.properties;
     for (var property of properties) {
       if (property.name !== 'testProperty')
         continue;

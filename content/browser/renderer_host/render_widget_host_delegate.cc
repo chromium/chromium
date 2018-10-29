@@ -12,6 +12,10 @@
 
 namespace content {
 
+bool RenderWidgetHostDelegate::DoBrowserControlsShrinkRendererSize() const {
+  return false;
+}
+
 int RenderWidgetHostDelegate::GetTopControlsHeight() const {
   return 0;
 }
@@ -28,6 +32,11 @@ bool RenderWidgetHostDelegate::PreHandleMouseEvent(
 
 bool RenderWidgetHostDelegate::HandleWheelEvent(
     const blink::WebMouseWheelEvent& event) {
+  return false;
+}
+
+bool RenderWidgetHostDelegate::HandleKeyboardEvent(
+    const NativeWebKeyboardEvent& event) {
   return false;
 }
 
@@ -146,6 +155,10 @@ WebContents* RenderWidgetHostDelegate::GetAsWebContents() {
 
 bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {
   return false;
+}
+
+InputEventShim* RenderWidgetHostDelegate::GetInputEventShim() const {
+  return nullptr;
 }
 
 }  // namespace content

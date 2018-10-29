@@ -54,6 +54,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
                        const url::Origin& constructor_origin) override;
 
   void TerminateAllWorkersForTesting(base::OnceClosure callback);
+  void SetWorkerTerminationCallbackForTesting(base::OnceClosure callback);
 
   // Creates the worker if necessary or connects to an already existing worker.
   void ConnectToWorker(
@@ -72,9 +73,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
  private:
   friend class SharedWorkerServiceImplTest;
   friend class SharedWorkerHostTest;
+  FRIEND_TEST_ALL_PREFIXES(NetworkServiceRestartBrowserTest, SharedWorker);
 
-  static void AddAdditionalRequestHeaders(net::HttpRequestHeaders* headers,
-                                          BrowserContext* browser_context);
+  static void AddAdditionalRequestHeaders(
+      network::ResourceRequest* resource_request,
+      BrowserContext* browser_context);
 
   void CreateWorker(
       std::unique_ptr<SharedWorkerInstance> instance,

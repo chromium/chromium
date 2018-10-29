@@ -11,8 +11,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_type.h"
+#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -29,11 +32,8 @@
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/cookies/cookie_store.h"
-#include "net/http/http_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
-#include "net/url_request/url_request_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -231,31 +231,13 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, SetProxyConfig) {
   EXPECT_TRUE(browser_context->GetAllWebContents().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, SetHostResolverRules) {
-  EXPECT_TRUE(embedded_test_server()->Start());
-
-  std::string host_resolver_rules =
-      base::StringPrintf("MAP not-an-actual-domain.tld 127.0.0.1:%d",
-                         embedded_test_server()->host_port_pair().port());
-
-  HeadlessBrowserContext* browser_context =
-      browser()
-          ->CreateBrowserContextBuilder()
-          .SetHostResolverRules(host_resolver_rules)
-          .Build();
-
-  // Load a page which doesn't actually exist, but which is turned into a valid
-  // address by our host resolver rules.
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(GURL("http://not-an-actual-domain.tld/hello.html"))
-          .Build();
-  EXPECT_TRUE(web_contents);
-
-  EXPECT_TRUE(WaitForLoad(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
+// TODO(crbug.com/867447): Flaky on Windows 10 debug.
+#if defined(OS_WIN) && !defined(NDEBUG)
+#define MAYBE_WebGLSupported DISABLED_WebGLSupported
+#else
+#define MAYBE_WebGLSupported WebGLSupported
+#endif
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, MAYBE_WebGLSupported) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 
@@ -702,6 +684,31 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ServerWantsClientCertificate) {
           .SetInitialURL(server.GetURL("/hello.html"))
           .Build();
   EXPECT_TRUE(WaitForLoad(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, AIAFetching) {
+  net::SpawnedTestServer::SSLOptions ssl_options(
+      net::SpawnedTestServer::SSLOptions::CERT_AUTO_AIA_INTERMEDIATE);
+  net::SpawnedTestServer server(
+      net::SpawnedTestServer::TYPE_HTTPS, ssl_options,
+      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  ASSERT_TRUE(server.Start());
+
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+  browser()->SetDefaultBrowserContext(browser_context);
+
+  GURL url = server.GetURL("/defaultresponse");
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
+  EXPECT_TRUE(WaitForLoad(web_contents));
+  content::NavigationEntry* last_entry =
+      HeadlessWebContentsImpl::From(web_contents)
+          ->web_contents()
+          ->GetController()
+          .GetLastCommittedEntry();
+  EXPECT_FALSE(net::IsCertStatusError(last_entry->GetSSL().cert_status));
+  EXPECT_EQ(url, last_entry->GetURL());
 }
 
 }  // namespace headless

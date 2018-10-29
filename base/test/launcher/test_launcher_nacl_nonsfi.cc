@@ -147,7 +147,7 @@ int TestLauncherNonSfiMain(const std::string& test_binary) {
 
   base::MessageLoopForIO message_loop;
 #if defined(OS_POSIX)
-  FileDescriptorWatcher file_descriptor_watcher(&message_loop);
+  FileDescriptorWatcher file_descriptor_watcher(message_loop.task_runner());
 #endif
 
   NonSfiUnitTestPlatformDelegate platform_delegate;

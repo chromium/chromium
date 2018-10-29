@@ -32,7 +32,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
 
   // Creates with a specific |storage_factory|.
   static std::unique_ptr<StorageFrontend> CreateForTesting(
-      const scoped_refptr<ValueStoreFactory>& storage_factory,
+      scoped_refptr<ValueStoreFactory> storage_factory,
       content::BrowserContext* context);
 
   // Public so tests can create and delete their own instances.
@@ -75,10 +75,10 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   explicit StorageFrontend(content::BrowserContext* context);
 
   // Constructor for tests.
-  StorageFrontend(const scoped_refptr<ValueStoreFactory>& storage_factory,
+  StorageFrontend(scoped_refptr<ValueStoreFactory> storage_factory,
                   content::BrowserContext* context);
 
-  void Init(const scoped_refptr<ValueStoreFactory>& storage_factory);
+  void Init(scoped_refptr<ValueStoreFactory> storage_factory);
 
   // The (non-incognito) browser context this Frontend belongs to.
   content::BrowserContext* const browser_context_;

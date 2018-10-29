@@ -9,9 +9,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxWalkerUnitTestBase() {}
+function ChromeVoxWalkerUnitTestBase() {}
 
-CvoxWalkerUnitTestBase.prototype = {
+ChromeVoxWalkerUnitTestBase.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -79,7 +79,8 @@ CvoxWalkerUnitTestBase.prototype = {
     if (opt_cmdOrDest instanceof cvox.CursorSelection) {
       var ret = opt_cmdOrDest;
     } else {
-      if (CvoxWalkerUnitTestBase.CMD_WHITELIST.indexOf(opt_cmdOrDest) == -1) {
+      if (ChromeVoxWalkerUnitTestBase.CMD_WHITELIST.indexOf(opt_cmdOrDest) ==
+          -1) {
         // Intentionally fail the test if there's a typo.
         throw 'Got an invalid command: "' + opt_cmdOrDest + '".';
       }
@@ -97,7 +98,7 @@ CvoxWalkerUnitTestBase.prototype = {
     }
 
     for (var key in desc) {
-      if (CvoxWalkerUnitTestBase.DESC_WHITELIST.indexOf(key) == -1) {
+      if (ChromeVoxWalkerUnitTestBase.DESC_WHITELIST.indexOf(key) == -1) {
         throw 'Invalid key in desc parameter: "' + key + '".';
       }
     }
@@ -152,14 +153,15 @@ CvoxWalkerUnitTestBase.prototype = {
  * @type {Array.string}
  * @const
  */
-CvoxWalkerUnitTestBase.CMD_WHITELIST = ['next', 'sync', 'nextRow', 'nextCol'];
+ChromeVoxWalkerUnitTestBase.CMD_WHITELIST =
+    ['next', 'sync', 'nextRow', 'nextCol'];
 
 /**
  * Whitelist for the properties that can be asserted with go().
  * @type {Array.string}
  * @const
  */
-CvoxWalkerUnitTestBase.DESC_WHITELIST = [
+ChromeVoxWalkerUnitTestBase.DESC_WHITELIST = [
   'selText', 'selNodeId', 'selParentNodeId', 'selStartIndex', 'selEndIndex',
   'selReversed', 'descText', 'descContext', 'descAnnotation', 'descUserValue',
   'descPersonality'
@@ -169,7 +171,7 @@ CvoxWalkerUnitTestBase.DESC_WHITELIST = [
  * Adds common walker tests
  * @param {string} testFixture Name of the test fixture class.
  */
-CvoxWalkerUnitTestBase.addCommonTests = function(testFixture) {
+ChromeVoxWalkerUnitTestBase.addCommonTests = function(testFixture) {
   /**
    * Ensures that syncing to the beginning and ends of the page return
    * not null.

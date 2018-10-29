@@ -30,8 +30,10 @@ namespace aura {
 class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
                                            public ui::PlatformWindowDelegate {
  public:
+  // See Compositor() for details on |trace_environment_name|.
   explicit WindowTreeHostPlatform(ui::PlatformWindowInitProperties properties,
-                                  std::unique_ptr<Window> = nullptr);
+                                  std::unique_ptr<Window> = nullptr,
+                                  const char* trace_environment_name = nullptr);
   ~WindowTreeHostPlatform() override;
 
   // WindowTreeHost:
@@ -40,8 +42,10 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void ShowImpl() override;
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
-  void SetBoundsInPixels(const gfx::Rect& bounds,
-                         const viz::LocalSurfaceId& local_surface_id) override;
+  void SetBoundsInPixels(
+      const gfx::Rect& bounds,
+      const viz::LocalSurfaceId& local_surface_id,
+      base::TimeTicks local_surface_id_allocation_time) override;
   gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;
@@ -95,12 +99,13 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
 
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 
-  // |pending_local_surface_id_| and |pending_size_| are set when the
-  // PlatformWindow instance is requested to adopt a new size (in
-  // SetBoundsInPixels()). When the platform confirms the new size (by way of
-  // OnBoundsChanged() callback), the LocalSurfaceId is set on the compositor,
-  // by WindowTreeHost.
+  // |pending_local_surface_id_|, |pending_local_surface_id_allocation_time_|
+  // and |pending_size_| are set when the PlatformWindow instance is requested
+  // to adopt a new size (in SetBoundsInPixels()). When the platform confirms
+  // the new size (by way of OnBoundsChanged() callback), the LocalSurfaceId and
+  // its allocation time is set on the compositor, by WindowTreeHost.
   viz::LocalSurfaceId pending_local_surface_id_;
+  base::TimeTicks pending_local_surface_id_allocation_time_;
   gfx::Size pending_size_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowTreeHostPlatform);

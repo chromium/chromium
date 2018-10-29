@@ -25,7 +25,6 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   virtual ~HitTestManager();
 
   // SurfaceObserver:
-  void OnSurfaceCreated(const SurfaceId& surface_id) override {}
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
   void OnSurfaceActivated(const SurfaceId& surface_id,
                           base::Optional<base::TimeDelta> duration) override;
@@ -46,10 +45,14 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   // Returns the HitTestRegionList corresponding to the given
   // |frame_sink_id| and the active CompositorFrame matched by frame_index.
   // The returned pointer is not stable and should not be stored or used after
-  // calling any non-const methods on this class.
+  // calling any non-const methods on this class. ActiveFrameIndex is stored
+  // if |store_active_frame_index| is given, which is used to detect updates.
   const HitTestRegionList* GetActiveHitTestRegionList(
       LatestLocalSurfaceIdLookupDelegate* delegate,
-      const FrameSinkId& frame_sink_id) const;
+      const FrameSinkId& frame_sink_id,
+      uint64_t* store_active_frame_index = nullptr) const;
+
+  int64_t GetTraceId(const SurfaceId& id) const;
 
  private:
   bool ValidateHitTestRegionList(const SurfaceId& surface_id,

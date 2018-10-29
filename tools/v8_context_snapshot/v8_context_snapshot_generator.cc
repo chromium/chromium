@@ -12,7 +12,6 @@
 #include "gin/v8_initializer.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_v8_context_snapshot.h"
 #include "v8/include/v8.h"

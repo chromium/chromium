@@ -28,6 +28,9 @@ class TestAutofillClock {
   // Set the time to be returned from AutofillClock::Now() calls.
   void SetNow(base::Time now);
 
+  // Advances the clock by |delta|.
+  void Advance(base::TimeDelta delta);
+
  private:
   base::SimpleTestClock test_clock_;
 

@@ -397,7 +397,10 @@ void XMLDocumentParser::end() {
   if (parser_paused_)
     return;
 
-  if (saw_error_)
+  // StopParsing() calls InsertErrorMessageBlock() if there was a parsing
+  // error. Avoid showing the error message block twice.
+  // TODO(crbug.com/898775): Rationalize this.
+  if (saw_error_ && !IsStopped())
     InsertErrorMessageBlock();
   else
     UpdateLeafTextNode();
@@ -866,7 +869,7 @@ static inline void HandleNamespaceAttributes(
           WTF::g_xmlns_with_colon + ToAtomicString(namespaces[i].prefix);
 
     QualifiedName parsed_name = g_any_name;
-    if (!Element::ParseAttributeName(parsed_name, XMLNSNames::xmlnsNamespaceURI,
+    if (!Element::ParseAttributeName(parsed_name, xmlns_names::kNamespaceURI,
                                      namespace_q_name, exception_state))
       return;
 
@@ -1580,6 +1583,9 @@ TextPosition XMLDocumentParser::GetTextPosition() const {
 }
 
 void XMLDocumentParser::StopParsing() {
+  // See comment before InsertErrorMessageBlock() in XMLDocumentParser::end.
+  if (saw_error_)
+    InsertErrorMessageBlock();
   DocumentParser::StopParsing();
   if (Context())
     xmlStopParser(Context());

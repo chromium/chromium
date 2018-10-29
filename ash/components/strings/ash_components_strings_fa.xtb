@@ -36,7 +36,7 @@
 <translation id="2397416548179033562">‏نمایش منوی Chrome</translation>
 <translation id="2424073332829844142">‏روشن و خاموش کردن Caps Lock</translation>
 <translation id="2441202986792279177">جابه‌جا شدن سریع بین پنجره‌ها</translation>
-<translation id="2454251766545114447">کوچک کردن صفحه‌نمایش</translation>
+<translation id="2454251766545114447">دورنمایی صفحه‌نمایش</translation>
 <translation id="2478303094958140141">‏روشن یا خاموش کردن ChromeVox (بازخورد گفتاری)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">پیمایش به پایین صفحه وب</translation>
@@ -47,7 +47,7 @@
 <translation id="2699509451653686398">ذخیره صفحه وب کنونی شما به‌عنوان نشانک</translation>
 <translation id="2750942583782703988">بارگیری مجدد صفحه کنونی</translation>
 <translation id="2764005613199379871">قرار دادن تمرکز روی نوار نشانی جستجو</translation>
-<translation id="2789868185375229787">کوچک‌نمایی روی صفحه</translation>
+<translation id="2789868185375229787">دورنمایی کردن روی صفحه</translation>
 <translation id="2804480015716812239"><ph name="ALT" /> را فشار دهید و روی پیوند کلیک کنید</translation>
 <translation id="2830827904629746450">ثابت کردن یک پنجره در سمت راست</translation>
 <translation id="2840766858109427815">رفتن به صفحه بعدی</translation>
@@ -135,7 +135,7 @@
 <translation id="6425378783626925378">کلیک کردن نمادهای ۱ تا ۸ در قفسه</translation>
 <translation id="6435207348963613811">برجسته‌سازی مورد قبلی روی قفسه شما</translation>
 <translation id="6445033640292336367">برگرداندن برگه به جای اول</translation>
-<translation id="6474744297082284761">کوچک کردن (وقتی ذره‌بین متصل یا ذره‌بین تمام‌صفحه فعال است)</translation>
+<translation id="6474744297082284761">دورنمایی کردن (وقتی ذره‌بین متصل یا ذره‌بین تمام‌صفحه فعال است)</translation>
 <translation id="649811797655257835">فایلی را انتخاب کنید و سپس <ph name="SPACE" /> را فشار دهید</translation>
 <translation id="6556040137485212400">باز کردن پنجره‌ای که طی طولانی‌ترین زمان استفاده نشده است</translation>
 <translation id="666343722268997814">باز کردن منوی کلیک راست برای مورد برجسته‌شده</translation>

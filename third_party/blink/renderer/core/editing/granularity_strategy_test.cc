@@ -43,7 +43,7 @@ class GranularityStrategyTest : public PageTestBase {
 
   Text* AppendTextNode(const String& data);
   void SetInnerHTML(const char*);
-  // Parses the text node, appending the info to m_letterPos and m_wordMiddles.
+  // Parses the text node, appending the info to letter_pos_ and word_middles_.
   void ParseText(Text*);
   void ParseText(const TextNodeVector&);
 
@@ -74,7 +74,7 @@ class GranularityStrategyTest : public PageTestBase {
   // tested.
   Vector<IntPoint> letter_pos_;
   // Pixel coordinates of the middles of the words in the text being tested.
-  // (y coordinate is based on y coordinates of m_letterPos)
+  // (y coordinate is based on y coordinates of letter_pos_)
   Vector<IntPoint> word_middles_;
 };
 

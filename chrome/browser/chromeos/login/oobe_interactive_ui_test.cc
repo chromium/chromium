@@ -4,7 +4,9 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
 #include "chrome/browser/chromeos/login/screens/gaia_view.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chromeos/chromeos_switches.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "content/public/browser/notification_service.h"
 
@@ -60,10 +63,41 @@ class JsConditionWaiter {
   DISALLOW_COPY_AND_ASSIGN(JsConditionWaiter);
 };
 
-class OobeInteractiveUITest : public OobeBaseTest {
+class ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver {
+ public:
+  explicit ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver(
+      extensions::QuickUnlockPrivateGetAuthTokenFunction::TestObserver*
+          observer) {
+    extensions::QuickUnlockPrivateGetAuthTokenFunction::SetTestObserver(
+        observer);
+  }
+  ~ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver() {
+    extensions::QuickUnlockPrivateGetAuthTokenFunction::SetTestObserver(
+        nullptr);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(
+      ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver);
+};
+
+class OobeInteractiveUITest
+    : public OobeBaseTest,
+      public extensions::QuickUnlockPrivateGetAuthTokenFunction::TestObserver {
  public:
   OobeInteractiveUITest() = default;
   ~OobeInteractiveUITest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableMarketingOptInScreen);
+
+    OobeBaseTest::SetUpCommandLine(command_line);
+  }
+
+  // QuickUnlockPrivateGetAuthTokenFunction::TestObserver:
+  void OnGetAuthTokenCalled(const std::string& password) override {
+    quick_unlock_private_get_auth_token_password_ = password;
+  }
 
   void TearDownOnMainThread() override {
     // If the login display is still showing, exit gracefully.
@@ -212,6 +246,41 @@ class OobeInteractiveUITest : public OobeBaseTest {
 
     screen->SetProfileSyncDisabledByPolicyForTesting(true);
     screen->OnStateChanged(nullptr);
+    JsConditionWaiter(js_checker_,
+                      "Oobe.getInstance().currentScreen.id != 'sync-consent'")
+        .Wait();
+    LOG(INFO) << "OobeInteractiveUITest: 'sync-consent' screen done.";
+  }
+
+  void WaitForDiscoverScreen() {
+    JsConditionWaiter(js_checker_,
+                      "Oobe.getInstance().currentScreen.id == 'discover'")
+        .Wait();
+    LOG(INFO) << "OobeInteractiveUITest: Switched to 'discover' screen.";
+  }
+
+  void RunDiscoverScreenChecks() {
+    js_checker_.ExpectTrue("!$('discover').hidden");
+    js_checker_.ExpectTrue("!$('discover-impl').hidden");
+    js_checker_.ExpectTrue(
+        "!$('discover-impl').root.querySelector('discover-pin-setup-module')."
+        "hidden");
+    js_checker_.ExpectTrue(
+        "!$('discover-impl').root.querySelector('discover-pin-setup-module').$."
+        "setup.hidden");
+    EXPECT_TRUE(quick_unlock_private_get_auth_token_password_.has_value());
+    EXPECT_EQ(quick_unlock_private_get_auth_token_password_,
+              OobeBaseTest::kFakeUserPassword);
+  }
+
+  void ExitDiscoverPinSetupScreen() {
+    js_checker_.Evaluate(
+        "$('discover-impl').root.querySelector('discover-pin-setup-module')."
+        "$.setupSkipButton.click()");
+    JsConditionWaiter(js_checker_,
+                      "Oobe.getInstance().currentScreen.id != 'discover'")
+        .Wait();
+    LOG(INFO) << "OobeInteractiveUITest: 'discover' screen done.";
   }
 
   void WaitForMarketingOptInScreen() {
@@ -253,11 +322,16 @@ class OobeInteractiveUITest : public OobeBaseTest {
     WaitForLoginDisplayHostShutdown();
   }
 
+  base::Optional<std::string> quick_unlock_private_get_auth_token_password_;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(OobeInteractiveUITest);
 };
 
-IN_PROC_BROWSER_TEST_F(OobeInteractiveUITest, SimpleEndToEnd) {
+// Flakily times out: crbug.com/891484.
+IN_PROC_BROWSER_TEST_F(OobeInteractiveUITest, DISABLED_SimpleEndToEnd) {
+  ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver scoped_observer(this);
+
   WaitForOobeWelcomeScreen();
   RunWelcomeScreenChecks();
   TapWelcomeNext();
@@ -282,6 +356,10 @@ IN_PROC_BROWSER_TEST_F(OobeInteractiveUITest, SimpleEndToEnd) {
   WaitForSyncConsentScreen();
   ExitScreenSyncConsent();
 #endif
+
+  WaitForDiscoverScreen();
+  RunDiscoverScreenChecks();
+  ExitDiscoverPinSetupScreen();
 
   WaitForMarketingOptInScreen();
   RunMarketingOptInScreenChecks();

@@ -51,7 +51,7 @@ StoreInitResultForHistogram LevelDbStatusToStoreInitResult(
 }  // namespace
 
 // static
-std::unique_ptr<ModelTypeStoreBackend>
+scoped_refptr<ModelTypeStoreBackend>
 ModelTypeStoreBackend::CreateInMemoryForTest() {
   std::unique_ptr<leveldb::Env> env =
       leveldb_chrome::NewMemEnv("ModelTypeStore");
@@ -61,22 +61,21 @@ ModelTypeStoreBackend::CreateInMemoryForTest() {
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(test_directory_str)
                                   .Append(FILE_PATH_LITERAL("in-memory"));
 
-  // WrapUnique() used because of private constructor.
-  auto backend = base::WrapUnique(new ModelTypeStoreBackend(std::move(env)));
+  scoped_refptr<ModelTypeStoreBackend> backend =
+      new ModelTypeStoreBackend(std::move(env));
+
   base::Optional<ModelError> error = backend->Init(path);
   DCHECK(!error);
   return backend;
 }
 
 // static
-std::unique_ptr<ModelTypeStoreBackend>
+scoped_refptr<ModelTypeStoreBackend>
 ModelTypeStoreBackend::CreateUninitialized() {
-  return base::WrapUnique(new ModelTypeStoreBackend(/*env=*/nullptr));
+  return new ModelTypeStoreBackend(/*env=*/nullptr);
 }
 
-ModelTypeStoreBackend::~ModelTypeStoreBackend() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+ModelTypeStoreBackend::~ModelTypeStoreBackend() {}
 
 base::Optional<ModelError> ModelTypeStoreBackend::Init(
     const base::FilePath& path) {
@@ -133,6 +132,8 @@ leveldb::Status ModelTypeStoreBackend::OpenDatabase(const std::string& path,
   leveldb_env::Options options;
   options.create_if_missing = true;
   options.paranoid_checks = true;
+  options.write_buffer_size = 512 * 1024;
+
   if (env)
     options.env = env;
 
@@ -157,6 +158,7 @@ base::Optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
   record_list->reserve(id_list.size());
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
+  read_options.fill_cache = false;
   std::string key;
   std::string value;
   for (const std::string& id : id_list) {
@@ -180,6 +182,7 @@ base::Optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
   DCHECK(db_);
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
+  read_options.fill_cache = false;
   std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
@@ -211,8 +214,9 @@ ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   leveldb::WriteBatch write_batch;
-  std::unique_ptr<leveldb::Iterator> iter(
-      db_->NewIterator(leveldb::ReadOptions()));
+  leveldb::ReadOptions read_options;
+  read_options.fill_cache = false;
+  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
   const leveldb::Slice prefix_slice(prefix);
   for (iter->Seek(prefix_slice); iter->Valid(); iter->Next()) {
     leveldb::Slice key = iter->key();
@@ -240,6 +244,7 @@ int64_t ModelTypeStoreBackend::GetStoreVersion() {
   DCHECK(db_);
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
+  read_options.fill_cache = false;
   std::string value;
   ModelTypeStoreSchemaDescriptor schema_descriptor;
   leveldb::Status status =

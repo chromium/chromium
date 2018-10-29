@@ -716,7 +716,7 @@ std::set<base::string16> AutofillProfileComparator::GetNamePartVariants(
     return {name_part};
 
   // Start with the empty string as a variant.
-  std::set<base::string16> variants = {base::EmptyString16()};
+  std::set<base::string16> variants = {{}};
 
   // For each sub-name, add a variant of all the already existing variants that
   // appends this sub-name and one that appends the initial of this sub-name.

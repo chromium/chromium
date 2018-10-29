@@ -56,6 +56,11 @@ class AccessibilityWikipediaStory(_AccessibilityStory):
   URL = 'https://en.wikipedia.org/wiki/Accessibility'
   TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2016]
 
+class AccessibilityWikipediaStory2018(_AccessibilityStory):
+  """Wikipedia page on Accessibility. Long, but very simple, clean layout."""
+  NAME = 'load_accessibility:media:wikipedia:2018'
+  URL = 'https://en.wikipedia.org/wiki/Accessibility'
+  TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2018]
 
 class AccessibilityAmazonStory(_AccessibilityStory):
   """Amazon results page. Good example of a site with a data table."""
@@ -63,6 +68,11 @@ class AccessibilityAmazonStory(_AccessibilityStory):
   URL = 'https://www.amazon.com/gp/offer-listing/B01IENFJ14'
   TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2016]
 
+class AccessibilityAmazonStory2018(_AccessibilityStory):
+  """Amazon results page. Good example of a site with a data table."""
+  NAME = 'load_accessibility:shopping:amazon:2018'
+  URL = 'https://www.amazon.com/gp/offer-listing/B01IENFJ14'
+  TAGS = [story_tags.ACCESSIBILITY, story_tags.YEAR_2018]
 
 class AccessibilityYouTubeHomepageStory(_AccessibilityStory):
   """Tests interacting with the YouTube home page."""

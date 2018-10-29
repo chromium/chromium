@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_FETCH_OPTIONS_H_
 
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -28,6 +29,9 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   // cryptographic nonce is the empty string, integrity metadata is the empty
   // string, parser metadata is "not-parser-inserted", and credentials mode
   // is "omit"." [spec text]
+  // TODO(domfarolino): Update this to use probably "include" or "same-origin"
+  // credentials mode, once spec decision is made at
+  // https://github.com/whatwg/html/pull/3656.
   ScriptFetchOptions()
       : parser_state_(ParserDisposition::kNotParserInserted),
         credentials_mode_(network::mojom::FetchCredentialsMode::kOmit),
@@ -64,6 +68,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   // Steps 1 and 3.
   FetchParameters CreateFetchParameters(const KURL&,
                                         const SecurityOrigin*,
+                                        CrossOriginAttributeValue,
                                         const WTF::TextEncoding&,
                                         FetchParameters::DeferOption) const;
 

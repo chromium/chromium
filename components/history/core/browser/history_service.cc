@@ -751,6 +751,19 @@ base::CancelableTaskTracker::TaskId HistoryService::GetHistoryCount(
       callback);
 }
 
+void HistoryService::CountUniqueHostsVisitedLastMonth(
+    const GetHistoryCountCallback& callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindRepeating(&HistoryBackend::CountUniqueHostsVisitedLastMonth,
+                          history_backend_),
+      callback);
+}
+
 // Downloads -------------------------------------------------------------------
 
 // Handle creation of a download by creating an entry in the history service's

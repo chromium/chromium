@@ -88,6 +88,14 @@ class CC_EXPORT RasterBufferProvider {
 
   // Shutdown for doing cleanup.
   virtual void Shutdown() = 0;
+
+  // Checks whether GPU side queries issued for previous raster work have been
+  // finished. Note that this will acquire the worker context lock so it can be
+  // used from any thread. But usage from the compositor thread should be
+  // avoided to prevent contention with worker threads.
+  // Returns true if there are pending queries that could not be completed in
+  // this check.
+  virtual bool CheckRasterFinishedQueries() = 0;
 };
 
 }  // namespace cc

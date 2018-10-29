@@ -119,7 +119,7 @@ void DownloadsListTracker::StartAndSendChunk() {
 
   CHECK_LE(sent_to_page_, sorted_items_.size());
 
-  SortedSet::iterator it = sorted_items_.begin();
+  auto it = sorted_items_.begin();
   std::advance(it, sent_to_page_);
 
   base::ListValue list;
@@ -330,7 +330,7 @@ const DownloadItem* DownloadsListTracker::GetItemForTesting(size_t index)
   if (index >= sorted_items_.size())
     return nullptr;
 
-  SortedSet::iterator it = sorted_items_.begin();
+  auto it = sorted_items_.begin();
   std::advance(it, index);
   return *it;
 }

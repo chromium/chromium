@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.infobar;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.infobar.translate.TranslateMenuHelper;
 import org.chromium.chrome.browser.infobar.translate.TranslateTabLayout;
 import org.chromium.chrome.browser.snackbar.Snackbar;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -29,6 +29,7 @@ import org.chromium.ui.widget.Toast;
 public class TranslateCompactInfoBar extends InfoBar
         implements TabLayout.OnTabSelectedListener, TranslateMenuHelper.TranslateMenuListener {
     public static final int TRANSLATING_INFOBAR = 1;
+    public static final int AFTER_TRANSLATING_INFOBAR = 2;
 
     private static final int SOURCE_TAB_INDEX = 0;
     private static final int TARGET_TAB_INDEX = 1;
@@ -104,7 +105,7 @@ public class TranslateCompactInfoBar extends InfoBar
     private TranslateMenuHelper mOverflowMenuHelper;
     private TranslateMenuHelper mLanguageMenuHelper;
 
-    private TintedImageButton mMenuButton;
+    private AppCompatImageButton mMenuButton;
     private InfoBarCompactLayout mParent;
 
     private TranslateSnackbarController mSnackbarController;
@@ -207,11 +208,14 @@ public class TranslateCompactInfoBar extends InfoBar
         }
         mTabLayout.addTabs(mOptions.sourceLanguageName(), mOptions.targetLanguageName());
 
-        // Set translating status in the beginning for pages translated automatically.
         if (mInitialStep == TRANSLATING_INFOBAR) {
+            // Set translating status in the beginning for pages translated automatically.
             mTabLayout.getTabAt(TARGET_TAB_INDEX).select();
             mTabLayout.showProgressBarOnTab(TARGET_TAB_INDEX);
             mUserInteracted = true;
+        } else if (mInitialStep == AFTER_TRANSLATING_INFOBAR) {
+            // Focus on target tab since we are after translation.
+            mTabLayout.getTabAt(TARGET_TAB_INDEX).select();
         }
 
         mTabLayout.addOnTabSelectedListener(this);
@@ -239,7 +243,8 @@ public class TranslateCompactInfoBar extends InfoBar
             }
         });
 
-        mMenuButton = (TintedImageButton) content.findViewById(R.id.translate_infobar_menu_button);
+        mMenuButton =
+                (AppCompatImageButton) content.findViewById(R.id.translate_infobar_menu_button);
         mMenuButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -495,6 +500,28 @@ public class TranslateCompactInfoBar extends InfoBar
     public boolean isShowingLanguageMenuForTesting() {
         if (mLanguageMenuHelper == null) return false;
         return mLanguageMenuHelper.isShowing();
+    }
+
+    /**
+     * Returns true if the tab at the given |tabIndex| is selected. This is only used for automation
+     * testing.
+     */
+    private boolean isTabSelectedForTesting(int tabIndex) {
+        return mTabLayout.getTabAt(tabIndex).isSelected();
+    }
+
+    /**
+     * Returns true if the target tab is selected. This is only used for automation testing.
+     */
+    public boolean isSourceTabSelectedForTesting() {
+        return this.isTabSelectedForTesting(SOURCE_TAB_INDEX);
+    }
+
+    /**
+     * Returns true if the target tab is selected. This is only used for automation testing.
+     */
+    public boolean isTargetTabSelectedForTesting() {
+        return this.isTabSelectedForTesting(TARGET_TAB_INDEX);
     }
 
     private void createAndShowSnackbar(String title, int umaType, int actionId) {

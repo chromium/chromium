@@ -12,12 +12,14 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/plugin_service_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_flash_file_message_filter.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_constants.h"
@@ -48,8 +50,7 @@ void PluginDataRemover::GetSupportedPlugins(
   PluginService::GetInstance()->GetPluginInfoArray(
       GURL(), kFlashPluginSwfMimeType, allow_wildcard, &plugins, nullptr);
   base::Version min_version(kMinFlashVersion);
-  for (std::vector<WebPluginInfo>::iterator it = plugins.begin();
-       it != plugins.end(); ++it) {
+  for (auto it = plugins.begin(); it != plugins.end(); ++it) {
     base::Version version;
     WebPluginInfo::CreateVersionFromString(it->version, &version);
     if (version.IsValid() && min_version.CompareTo(version) == -1)
@@ -74,11 +75,12 @@ class PluginDataRemoverImpl::Context
   }
 
   void Init(const std::string& mime_type) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&Context::InitOnIOThread, this, mime_type));
-    BrowserThread::PostDelayedTask(
-        BrowserThread::IO, FROM_HERE, base::BindOnce(&Context::OnTimeout, this),
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
+        base::BindOnce(&Context::OnTimeout, this),
         base::TimeDelta::FromMilliseconds(kRemovalTimeoutMs));
   }
 

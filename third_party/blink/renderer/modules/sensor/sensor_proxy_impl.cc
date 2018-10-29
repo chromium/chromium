@@ -264,8 +264,9 @@ void SensorProxyImpl::AddActiveFrequency(double frequency) {
   if (it == active_frequencies_.end()) {
     active_frequencies_.push_back(frequency);
   } else {
-    active_frequencies_.insert(std::distance(active_frequencies_.begin(), it),
-                               frequency);
+    active_frequencies_.insert(
+        static_cast<wtf_size_t>(std::distance(active_frequencies_.begin(), it)),
+        frequency);
   }
   UpdatePollingStatus();
 }

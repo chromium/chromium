@@ -11,8 +11,8 @@ namespace test {
 
 std::string ChildLayerNamesAsString(const ui::Layer& parent) {
   std::string names;
-  for (std::vector<Layer*>::const_iterator it = parent.children().begin();
-       it != parent.children().end(); ++it) {
+  for (auto it = parent.children().begin(); it != parent.children().end();
+       ++it) {
     if (!names.empty())
       names += " ";
     names += (*it)->name();

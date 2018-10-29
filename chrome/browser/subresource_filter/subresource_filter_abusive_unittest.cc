@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
 #include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
-#include "chrome/browser/ui/blocked_content/popup_blocker_tab_helper.h"
+#include "chrome/browser/ui/blocked_content/popup_blocker.h"
 #include "chrome/browser/ui/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/safe_browsing/db/util.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
@@ -79,8 +79,9 @@ class SubresourceFilterAbusiveTest
         subresource_filter::Configuration::MakePresetForLiveRunForBetterAds()};
     scoped_configuration().ResetConfiguration(configs);
 
+    SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
     popup_blocker_ =
-        SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
+        SafeBrowsingTriggeredPopupBlocker::FromWebContents(web_contents());
   }
 
   void ConfigureUrl(const GURL& url) {
@@ -103,7 +104,7 @@ class SubresourceFilterAbusiveTest
   MetadataLevel bas_level_ = METADATA_NONE;
   bool enable_adblock_on_abusive_sites_ = false;
 
-  std::unique_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_;
+  SafeBrowsingTriggeredPopupBlocker* popup_blocker_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_features_;

@@ -10,7 +10,6 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/numerics/checked_math.h"
 #include "base/process/process_metrics.h"
 
 namespace base {
@@ -108,24 +107,16 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
   return true;
 }
 
-bool PlatformSharedMemoryRegion::MapAt(off_t offset,
-                                       size_t size,
-                                       void** memory,
-                                       size_t* mapped_size) const {
-  if (!IsValid())
-    return false;
-
-  size_t end_byte;
-  if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
-    return false;
-  }
-
-  bool write_allowed = mode_ != Mode::kReadOnly;
+bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
+                                               size_t size,
+                                               void** memory,
+                                               size_t* mapped_size) const {
   uintptr_t addr;
+  zx_vm_option_t options = ZX_VM_REQUIRE_NON_RESIZABLE | ZX_VM_FLAG_PERM_READ;
+  if (mode_ != Mode::kReadOnly)
+    options |= ZX_VM_FLAG_PERM_WRITE;
   zx_status_t status = zx::vmar::root_self()->map(
-      0, handle_, offset, size,
-      ZX_VM_FLAG_PERM_READ | (write_allowed ? ZX_VM_FLAG_PERM_WRITE : 0),
-      &addr);
+      /*vmar_offset=*/0, handle_, offset, size, options, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
     return false;
@@ -133,8 +124,6 @@ bool PlatformSharedMemoryRegion::MapAt(off_t offset,
 
   *memory = reinterpret_cast<void*>(addr);
   *mapped_size = size;
-  DCHECK_EQ(0U,
-            reinterpret_cast<uintptr_t>(*memory) & (kMapMinimumAlignment - 1));
   return true;
 }
 
@@ -152,7 +141,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                      "lead to this region being non-modifiable";
 
   zx::vmo vmo;
-  zx_status_t status = zx::vmo::create(rounded_size, 0, &vmo);
+  zx_status_t status =
+      zx::vmo::create(rounded_size, ZX_VMO_NON_RESIZABLE, &vmo);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmo_create";
     return {};

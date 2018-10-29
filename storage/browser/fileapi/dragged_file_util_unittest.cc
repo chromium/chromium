@@ -401,7 +401,7 @@ TEST_F(DraggedFileUtilTest, ReadDirectoryTest) {
     EXPECT_EQ(expected_entry_map.size(), entries.size());
     for (size_t i = 0; i < entries.size(); ++i) {
       const filesystem::mojom::DirectoryEntry& entry = entries[i];
-      EntryMap::iterator found = expected_entry_map.find(entry.name.value());
+      auto found = expected_entry_map.find(entry.name.value());
       EXPECT_TRUE(found != expected_entry_map.end());
       EXPECT_EQ(found->second.name, entry.name);
       EXPECT_EQ(found->second.type, entry.type);

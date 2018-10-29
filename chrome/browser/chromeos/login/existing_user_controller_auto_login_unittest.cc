@@ -14,8 +14,7 @@
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
+#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -64,6 +63,9 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         .WillRepeatedly(Return(mock_user_manager_->CreatePublicAccountUser(
             auto_login_account_id_)));
 
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
+    settings_helper_.SetFakeSessionManager();
+
     std::unique_ptr<base::DictionaryValue> account(new base::DictionaryValue);
     account->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
                     base::Value(auto_login_user_id_));
@@ -72,7 +74,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         base::Value(policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
     base::ListValue accounts;
     accounts.Append(std::move(account));
-    CrosSettings::Get()->Set(kAccountsPrefDeviceLocalAccounts, accounts);
+    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts, accounts);
 
     // Prevent settings changes from auto-starting the timer.
     existing_user_controller_->local_account_auto_login_id_subscription_
@@ -86,10 +88,10 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   }
 
   void SetAutoLoginSettings(const std::string& user_id, int delay) {
-    CrosSettings::Get()->SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
-                                   user_id);
-    CrosSettings::Get()->SetInteger(
-        kAccountsPrefDeviceLocalAccountAutoLoginDelay, delay);
+    settings_helper_.SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
+                               user_id);
+    settings_helper_.SetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+                                delay);
   }
 
   // ExistingUserController private member accessors.
@@ -138,9 +140,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   ScopedTestingLocalState local_state_;
 
   // Required by ExistingUserController:
-  ScopedStubInstallAttributes test_install_attributes_;
-  ScopedDeviceSettingsTestHelper device_settings_test_helper_;
-  ScopedTestCrosSettings test_cros_settings_;
+  ScopedCrosSettingsTestHelper settings_helper_;
   MockUserManager* mock_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;

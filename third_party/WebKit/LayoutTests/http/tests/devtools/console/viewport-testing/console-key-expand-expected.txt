@@ -1,0 +1,210 @@
+Tests that console artifacts can be expanded, collapsed via keyboard.
+
+
+Running: testExpandingTraces
+Evaluating: console.warn("warning")
+Message count: 1
+
+Force selecting index 0
+Viewport virtual selection: 0
+Is trace expanded: NO
+
+ArrowRight:
+Viewport virtual selection: 0
+Is trace expanded: YES
+
+ArrowLeft:
+Viewport virtual selection: 0
+Is trace expanded: NO
+
+Running: testExpandingGroups
+Evaluating: console.group("group"); console.log("log child");
+Message count: 2
+
+Force selecting index 0
+Viewport virtual selection: 0
+Is group expanded: YES
+console-key-expand.js:35 group
+console-key-expand.js:35 log child
+
+ArrowLeft:
+Viewport virtual selection: 0
+Is group expanded: NO
+console-key-expand.js:35 group
+
+ArrowRight:
+Viewport virtual selection: 0
+Is group expanded: YES
+console-key-expand.js:35 group
+console-key-expand.js:35 log child
+
+Running: testNavigateBetweenObjectsAndLogs
+Evaluating: console.log("before");console.log("text", obj1, obj2);console.log("after");
+Message count: 3
+
+Force selecting index 1
+Viewport virtual selection: 1
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:51 text {x: 1} {y: 2}
+
+ArrowRight:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {x: 1}
+
+ArrowDown:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {y: 2}
+
+ArrowDown:
+Viewport virtual selection: 2
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:51 after
+
+ArrowUp:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {y: 2}
+
+ArrowLeft:
+Viewport virtual selection: 1
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:51 text {x: 1} {y: 2}
+
+Running: testExpandingObjects
+Evaluating: console.log("before");console.log("text", obj1, obj2);console.log("after");
+Message count: 3
+
+Force selecting index 1
+Viewport virtual selection: 1
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 text {x: 1} {y: 2}
+
+ArrowRight:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {x: 1}
+
+ArrowRight:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected.expanded
+active text: {x: 1}
+
+ArrowDown:
+Viewport virtual selection: 1
+activeElement: LI.selected
+active text: x: 1
+
+ArrowDown:
+
+ArrowDown:
+Viewport virtual selection: 2
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 after
+
+ArrowRight:
+Viewport virtual selection: 2
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 after
+
+ArrowDown:
+
+ArrowDown:
+
+ArrowDown:
+
+ArrowDown:
+Viewport virtual selection: 2
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 after
+
+ArrowUp:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {y: 2}
+
+ArrowLeft:
+Viewport virtual selection: 1
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 text {x: 1}x: 1 {y: 2}y: 2
+
+ArrowLeft:
+Viewport virtual selection: 1
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:70 text {x: 1}x: 1 {y: 2}y: 2
+
+Running: testExpandingObjectInTrace
+Evaluating: console.log("before");console.warn("warning", obj1);console.log("after");
+Message count: 3
+
+Force selecting index 1
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: NO
+activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
+active text: console-key-expand.js:112 warning {x: 1}
+(anonymous) @ console-key-expand.js:112
+
+ArrowRight:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: YES
+activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
+active text: console-key-expand.js:112 warning {x: 1}
+(anonymous) @ console-key-expand.js:112
+
+ArrowRight:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: YES
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {x: 1}
+
+ArrowDown:
+Viewport virtual selection: 2
+Has object: collapsed
+Is trace expanded: YES
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:112 after
+
+ArrowDown:
+
+ArrowDown:
+Viewport virtual selection: 2
+Has object: collapsed
+Is trace expanded: YES
+activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
+active text: console-key-expand.js:112 after
+
+ArrowUp:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: YES
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {x: 1}
+
+ArrowUp:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: YES
+activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
+active text: console-key-expand.js:112 warning {x: 1}
+(anonymous) @ console-key-expand.js:112
+
+ArrowLeft:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: NO
+activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
+active text: console-key-expand.js:112 warning {x: 1}
+(anonymous) @ console-key-expand.js:112
+
+ArrowLeft:
+Viewport virtual selection: 1
+Has object: collapsed
+Is trace expanded: NO
+activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
+active text: console-key-expand.js:112 warning {x: 1}
+(anonymous) @ console-key-expand.js:112
+

@@ -127,14 +127,14 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   Member<const Node> end_node_;
   int end_offset_;
 
-  // Whether m_node has advanced beyond the iteration range (i.e. m_startNode).
+  // Whether m_node has advanced beyond the iteration range (i.e. start_node_).
   bool have_passed_start_node_;
 
   // Should handle first-letter layoutObject in the next call to handleTextNode.
   bool should_handle_first_letter_;
 
-  // Used when m_stopsOnFormControls is set to determine if the iterator should
-  // keep advancing.
+  // Used when behavior_.StopOnFormControls() is true to determine if the
+  // iterator should keep advancing.
   bool should_stop_;
 };
 

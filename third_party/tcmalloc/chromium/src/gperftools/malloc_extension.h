@@ -164,6 +164,14 @@ class PERFTOOLS_DLL_DECL MallocExtension {
   //            freed memory regions
   //      This property is not writable.
   //
+  //  "generic.total_physical_bytes"
+  //      Estimate of total bytes of the physical memory usage by the
+  //      allocator ==
+  //            current_allocated_bytes +
+  //            fragmentation +
+  //            metadata
+  //      This property is not writable.
+  //
   // tcmalloc
   // --------
   // "tcmalloc.max_total_thread_cache_bytes"

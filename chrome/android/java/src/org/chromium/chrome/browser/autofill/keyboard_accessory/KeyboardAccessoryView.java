@@ -72,6 +72,7 @@ class KeyboardAccessoryView extends LinearLayout {
         });
         setOnClickListener(view -> {});
         setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
+        setSoundEffectsEnabled(false);
     }
 
     void setVisible(boolean visible) {

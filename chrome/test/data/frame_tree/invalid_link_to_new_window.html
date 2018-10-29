@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+<script>
+function simulateClick() {
+  var evt = new MouseEvent("click", {});
+  target = document.getElementById("invalid_url_link");
+  return target.dispatchEvent(evt);
+}
+</script>
+</head>
+<body>
+<a href="a.a:@javascript:foo()"
+   id="invalid_url_link"
+   target="win">Link to invalid URL in new window</a>
+</body>
+</html>

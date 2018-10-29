@@ -3,7 +3,6 @@ This tests that cellForRowAndColumn work as expected when cells are hidden in se
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Table1 has a hidden first row. Verify accessing cells works as expected.
 PASS table1.rowCount is 2
 PASS !table1cell1 || !table1cell1.isValid is true

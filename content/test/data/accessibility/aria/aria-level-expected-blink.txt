@@ -21,7 +21,7 @@ rootWebArea
 ++++staticText name='Level 5'
 ++++++inlineTextBox name='Level 5'
 ++tree
-++++treeItem name='Tree item at level 1 ' hierarchicalLevel=1 selected=false
+++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++staticText name='Tree item at level 1'
 ++++++++inlineTextBox name='Tree item at level 1'
 ++++++group

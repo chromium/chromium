@@ -39,7 +39,6 @@ struct CHROME_VIEWS_EXPORT TabRendererData {
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;
-  bool app = false;
   TabAlertState alert_state = TabAlertState::NONE;
   bool should_hide_throbber = false;
 };

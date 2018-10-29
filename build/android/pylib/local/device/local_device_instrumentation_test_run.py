@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import contextlib
+import copy
 import hashlib
 import json
 import logging
@@ -126,6 +127,7 @@ class LocalDeviceInstrumentationTestRun(
         env, test_instance)
     self._flag_changers = {}
     self._replace_package_contextmanager = None
+    self._shared_prefs_to_restore = []
 
   #override
   def TestPackage(self):
@@ -226,6 +228,10 @@ class LocalDeviceInstrumentationTestRun(
           shared_pref = shared_prefs.SharedPrefs(
               dev, setting['package'], setting['filename'],
               use_encrypted_path=setting.get('supports_encrypted_path', False))
+          pref_to_restore = copy.copy(shared_pref)
+          pref_to_restore.Load()
+          self._shared_prefs_to_restore.append(pref_to_restore)
+
           shared_preference_utils.ApplySharedPreferenceSetting(
               shared_pref, setting)
 
@@ -310,6 +316,13 @@ class LocalDeviceInstrumentationTestRun(
       dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
 
       valgrind_tools.SetChromeTimeoutScale(dev, None)
+
+      # Restore any shared preference files that we stored during setup.
+      # This should be run sometime before the replace package contextmanager
+      # gets exited so we don't have to special case restoring files of
+      # replaced system apps.
+      for pref_to_restore in self._shared_prefs_to_restore:
+        pref_to_restore.Commit(force_commit=True)
 
       if self._replace_package_contextmanager:
         # See pylint-related commend above with __enter__()

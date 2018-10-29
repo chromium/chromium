@@ -13,20 +13,20 @@ namespace device {
 
 class VRDeviceProvider;
 
-class DEVICE_VR_EXPORT ARCoreDeviceProviderFactory {
+class DEVICE_VR_EXPORT ArCoreDeviceProviderFactory {
  public:
   static std::unique_ptr<device::VRDeviceProvider> Create();
-  static void Install(std::unique_ptr<ARCoreDeviceProviderFactory> factory);
+  static void Install(std::unique_ptr<ArCoreDeviceProviderFactory> factory);
 
-  virtual ~ARCoreDeviceProviderFactory() = default;
+  virtual ~ArCoreDeviceProviderFactory() = default;
 
  protected:
-  ARCoreDeviceProviderFactory() = default;
+  ArCoreDeviceProviderFactory() = default;
 
   virtual std::unique_ptr<device::VRDeviceProvider> CreateDeviceProvider() = 0;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ARCoreDeviceProviderFactory);
+  DISALLOW_COPY_AND_ASSIGN(ArCoreDeviceProviderFactory);
 };
 
 }  // namespace device

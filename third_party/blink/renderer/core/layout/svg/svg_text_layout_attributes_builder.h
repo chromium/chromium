@@ -50,7 +50,7 @@ class SVGTextLayoutAttributesBuilder {
   void BuildLayoutAttributes();
 
   struct TextPosition {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     TextPosition(SVGTextPositioningElement* new_element = nullptr,

@@ -15,7 +15,7 @@
 #include "content/browser/web_contents/aura/types.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/frame_messages.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/common/browser_side_navigation_policy.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -139,8 +139,7 @@ class OverscrollNavigationOverlayTest : public RenderViewHostImplTestHarness {
   }
 
   void ReceivePaintUpdate() {
-    ViewHostMsg_DidFirstVisuallyNonEmptyPaint msg(test_rvh()->GetRoutingID());
-    RenderViewHostTester::TestOnMessageReceived(test_rvh(), msg);
+    RenderViewHostTester::SimulateFirstPaint(test_rvh());
   }
 
   void PerformBackNavigationViaSliderCallbacks(OverscrollSource source) {

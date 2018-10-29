@@ -49,6 +49,8 @@ class LayoutTableCaption : public LayoutBlockFlow {
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
 
  protected:
+  bool CreatesNewFormattingContext() const final { return true; }
+
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectTableCaption || LayoutBlockFlow::IsOfType(type);
   }

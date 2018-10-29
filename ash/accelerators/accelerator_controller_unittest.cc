@@ -8,6 +8,7 @@
 
 #include "ash/accelerators/accelerator_confirmation_dialog.h"
 #include "ash/accelerators/accelerator_table.h"
+#include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -40,6 +41,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -57,6 +59,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
+#include "ui/wm/core/accelerator_filter.h"
 
 namespace ash {
 
@@ -509,14 +512,45 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display::Rotation initial_rotation =
       GetActiveDisplayRotation(display.id());
   ui::test::EventGenerator* generator = GetEventGenerator();
+  AccessibilityController* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+
+  EXPECT_FALSE(accessibility_controller
+                   ->HasDisplayRotationAcceleratorDialogBeenAccepted());
   generator->PressKey(ui::VKEY_BROWSER_REFRESH,
                       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   generator->ReleaseKey(ui::VKEY_BROWSER_REFRESH,
                         ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  display::Display::Rotation new_rotation =
+  // Dialog should be open.
+  EXPECT_TRUE(IsConfirmationDialogOpen());
+  // Cancel on the dialog should have no effect.
+  CancelConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(accessibility_controller
+                   ->HasDisplayRotationAcceleratorDialogBeenAccepted());
+
+  display::Display::Rotation rotation_after_cancel =
+      GetActiveDisplayRotation(display.id());
+  // Screen rotation should not have been triggered.
+  EXPECT_EQ(initial_rotation, rotation_after_cancel);
+
+  // Use short cut again.
+  generator->PressKey(ui::VKEY_BROWSER_REFRESH,
+                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  generator->ReleaseKey(ui::VKEY_BROWSER_REFRESH,
+                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(IsConfirmationDialogOpen());
+  AcceptConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+
+  // Dialog should be closed.
+  EXPECT_FALSE(IsConfirmationDialogOpen());
+  EXPECT_TRUE(accessibility_controller
+                  ->HasDisplayRotationAcceleratorDialogBeenAccepted());
+  display::Display::Rotation rotation_after_accept =
       GetActiveDisplayRotation(display.id());
   // |new_rotation| is determined by the AcceleratorController.
-  EXPECT_NE(initial_rotation, new_rotation);
+  EXPECT_NE(initial_rotation, rotation_after_accept);
 }
 
 TEST_F(AcceleratorControllerTest, AutoRepeat) {
@@ -838,25 +872,6 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   RunAllPendingInMessageLoop();
   GetAppListTestHelper()->CheckVisibility(true);
-}
-
-TEST_F(AcceleratorControllerTest, MediaGlobalAccelerators) {
-  TestMediaClient client;
-  Shell::Get()->media_controller()->SetClient(client.CreateAssociatedPtrInfo());
-  EXPECT_EQ(0, client.handle_media_next_track_count());
-  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, client.handle_media_next_track_count());
-
-  EXPECT_EQ(0, client.handle_media_play_pause_count());
-  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, client.handle_media_play_pause_count());
-
-  EXPECT_EQ(0, client.handle_media_prev_track_count());
-  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_PREV_TRACK, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, client.handle_media_prev_track_count());
 }
 
 TEST_F(AcceleratorControllerTest, ImeGlobalAccelerators) {
@@ -1499,6 +1514,139 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(ContainsDockedMagnifierNotification());
 
   RemoveAllNotifications();
+}
+
+// MediaSessionAcceleratorTest tests media key handling with media session
+// service integration. The parameter is a boolean as to whether the feature is
+// enabled or disabled.
+class MediaSessionAcceleratorTest : public AcceleratorControllerTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  MediaSessionAcceleratorTest() = default;
+  ~MediaSessionAcceleratorTest() override = default;
+
+  // AcceleratorControllerTest:
+  void SetUp() override {
+    if (service_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kMediaSessionAccelerators);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kMediaSessionAccelerators);
+    }
+
+    AcceleratorControllerTest::SetUp();
+
+    client_ = std::make_unique<TestMediaClient>();
+    controller_ = std::make_unique<media_session::test::TestMediaController>();
+
+    MediaController* media_controller = Shell::Get()->media_controller();
+    media_controller->SetClient(client_->CreateAssociatedPtrInfo());
+    media_controller->SetMediaSessionControllerForTest(
+        controller_->CreateMediaControllerPtr());
+  }
+
+  TestMediaClient* client() const { return client_.get(); }
+
+  media_session::test::TestMediaController* controller() const {
+    return controller_.get();
+  }
+
+  bool service_enabled() const { return GetParam(); }
+
+ private:
+  std::unique_ptr<TestMediaClient> client_;
+  std::unique_ptr<media_session::test::TestMediaController> controller_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(MediaSessionAcceleratorTest);
+};
+
+INSTANTIATE_TEST_CASE_P(, MediaSessionAcceleratorTest, testing::Bool());
+
+TEST_P(MediaSessionAcceleratorTest, MediaPlaybackAcceleratorsBehavior) {
+  const ui::KeyboardCode media_keys[] = {ui::VKEY_MEDIA_NEXT_TRACK,
+                                         ui::VKEY_MEDIA_PLAY_PAUSE,
+                                         ui::VKEY_MEDIA_PREV_TRACK};
+
+  std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
+      std::make_unique<ui::AcceleratorHistory>());
+  ::wm::AcceleratorFilter filter(
+      std::make_unique<PreTargetAcceleratorHandler>(),
+      accelerator_history.get());
+
+  for (ui::KeyboardCode key : media_keys) {
+    // If the media session service integration is enabled then media keys will
+    // be handled in ash.
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(1));
+    {
+      ui::KeyEvent press_key(ui::ET_KEY_PRESSED, key, ui::EF_NONE);
+      ui::Event::DispatcherApi dispatch_helper(&press_key);
+      dispatch_helper.set_target(window.get());
+      filter.OnKeyEvent(&press_key);
+      EXPECT_EQ(service_enabled(), press_key.stopped_propagation());
+    }
+
+    // Setting a window property on the target allows media keys to pass
+    // through.
+    wm::GetWindowState(window.get())->SetCanConsumeSystemKeys(true);
+    {
+      ui::KeyEvent press_key(ui::ET_KEY_PRESSED, key, ui::EF_NONE);
+      ui::Event::DispatcherApi dispatch_helper(&press_key);
+      dispatch_helper.set_target(window.get());
+      filter.OnKeyEvent(&press_key);
+      EXPECT_FALSE(press_key.stopped_propagation());
+    }
+  }
+}
+
+TEST_P(MediaSessionAcceleratorTest, MediaGlobalAccelerators_NextTrack) {
+  EXPECT_EQ(0, client()->handle_media_next_track_count());
+  EXPECT_EQ(0, controller()->next_track_count());
+
+  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE));
+  Shell::Get()->media_controller()->FlushForTesting();
+
+  if (service_enabled()) {
+    EXPECT_EQ(0, client()->handle_media_next_track_count());
+    EXPECT_EQ(1, controller()->next_track_count());
+  } else {
+    EXPECT_EQ(1, client()->handle_media_next_track_count());
+    EXPECT_EQ(0, controller()->next_track_count());
+  }
+}
+
+TEST_P(MediaSessionAcceleratorTest, MediaGlobalAccelerators_PlayPause) {
+  EXPECT_EQ(0, client()->handle_media_play_pause_count());
+  EXPECT_EQ(0, controller()->toggle_suspend_resume_count());
+
+  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE));
+  Shell::Get()->media_controller()->FlushForTesting();
+
+  if (service_enabled()) {
+    EXPECT_EQ(0, client()->handle_media_play_pause_count());
+    EXPECT_EQ(1, controller()->toggle_suspend_resume_count());
+  } else {
+    EXPECT_EQ(1, client()->handle_media_play_pause_count());
+    EXPECT_EQ(0, controller()->toggle_suspend_resume_count());
+  }
+}
+
+TEST_P(MediaSessionAcceleratorTest, MediaGlobalAccelerators_PrevTrack) {
+  EXPECT_EQ(0, client()->handle_media_prev_track_count());
+  EXPECT_EQ(0, controller()->previous_track_count());
+
+  ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_PREV_TRACK, ui::EF_NONE));
+  Shell::Get()->media_controller()->FlushForTesting();
+
+  if (service_enabled()) {
+    EXPECT_EQ(0, client()->handle_media_prev_track_count());
+    EXPECT_EQ(1, controller()->previous_track_count());
+  } else {
+    EXPECT_EQ(1, client()->handle_media_prev_track_count());
+    EXPECT_EQ(0, controller()->previous_track_count());
+  }
 }
 
 }  // namespace ash

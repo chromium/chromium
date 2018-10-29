@@ -23,7 +23,8 @@ PointerEvent::PointerEvent(const AtomicString& type,
       tangential_pressure_(0),
       twist_(0),
       is_primary_(false),
-      coalesced_events_targets_dirty_(false) {
+      coalesced_events_targets_dirty_(false),
+      predicted_events_targets_dirty_(false) {
   if (initializer.hasPointerId())
     pointer_id_ = initializer.pointerId();
   if (initializer.hasWidth())
@@ -47,6 +48,10 @@ PointerEvent::PointerEvent(const AtomicString& type,
   if (initializer.hasCoalescedEvents()) {
     for (auto coalesced_event : initializer.coalescedEvents())
       coalesced_events_.push_back(coalesced_event);
+  }
+  if (initializer.hasPredictedEvents()) {
+    for (auto predicted_event : initializer.predictedEvents())
+      predicted_events_.push_back(predicted_event);
   }
 }
 
@@ -124,6 +129,7 @@ double PointerEvent::offsetY() {
 
 void PointerEvent::ReceivedTarget() {
   coalesced_events_targets_dirty_ = true;
+  predicted_events_targets_dirty_ = true;
   MouseEvent::ReceivedTarget();
 }
 
@@ -144,6 +150,15 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
   return coalesced_events_;
 }
 
+HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
+  if (predicted_events_targets_dirty_) {
+    for (auto predicted_event : predicted_events_)
+      predicted_event->SetTarget(target());
+    predicted_events_targets_dirty_ = false;
+  }
+  return predicted_events_;
+}
+
 TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
   if (coalesced_events_.size() > 0) {
     // Assume that time stamps of coalesced events are in ascending order.
@@ -154,6 +169,7 @@ TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
 
 void PointerEvent::Trace(blink::Visitor* visitor) {
   visitor->Trace(coalesced_events_);
+  visitor->Trace(predicted_events_);
   MouseEvent::Trace(visitor);
 }
 

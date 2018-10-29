@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/renderer/frame_status.h"
-#include "third_party/blink/renderer/platform/scheduler/util/aggregated_metric_reporter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 
 namespace blink {
 
@@ -365,8 +365,10 @@ ResourceLoadScheduler::ResourceLoadScheduler(FetchContext* context)
 }
 
 ResourceLoadScheduler* ResourceLoadScheduler::Create(FetchContext* context) {
-  return new ResourceLoadScheduler(context ? context
-                                           : &FetchContext::NullInstance());
+  return new ResourceLoadScheduler(
+      context ? context
+              : &FetchContext::NullInstance(
+                    Platform::Current()->CurrentThread()->GetTaskRunner()));
 }
 
 ResourceLoadScheduler::~ResourceLoadScheduler() = default;

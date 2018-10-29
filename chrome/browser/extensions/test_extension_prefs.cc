@@ -189,7 +189,7 @@ std::string TestExtensionPrefs::AddExtensionAndReturnId(
   return extension->id();
 }
 
-void TestExtensionPrefs::AddExtension(Extension* extension) {
+void TestExtensionPrefs::AddExtension(const Extension* extension) {
   prefs()->OnExtensionInstalled(extension,
                                 Extension::ENABLED,
                                 syncer::StringOrdinal::CreateInitialOrdinal(),

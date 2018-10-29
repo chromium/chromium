@@ -97,4 +97,26 @@ TEST(System, PathExistsWithBadPath) {
   EXPECT_FALSE(PathExists("/tmp/foo"));
 }
 
+TEST(System, IsSystemLibraryPath) {
+  static const struct TestPath {
+    bool expected;
+    const char* path;
+  } kTestPaths[] = {
+#ifdef __ANDROID__
+      {true, "/system/lib/libfoo.so"},
+      {true, "/system/lib64/libbar.so"},
+      {true, "/system/lib/egl/libEGL_emulation.so"},
+      {true, "/vendor/lib/egl/libEGL_swiftshader.so"},
+      {true, "/vendor/lib64/libfirmware.so"},
+      {false, "/system/app/Foo/lib/libfoo.so"},
+      {false, "/system/app/Foo/Foo.apk!lib/x86/libfoo.so"},
+#else
+      {true, "/usr/lib/libfoo.so"}, {false, "/opt/foo/lib/libfoo.so"},
+#endif
+  };
+  for (const TestPath& path : kTestPaths) {
+    EXPECT_EQ(path.expected, IsSystemLibraryPath(path.path)) << path.path;
+  }
+}
+
 }  // namespace crazy

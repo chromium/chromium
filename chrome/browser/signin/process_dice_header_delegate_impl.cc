@@ -9,9 +9,9 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "url/gurl.h"
 
 namespace {
@@ -28,18 +28,20 @@ void RedirectToNtp(content::WebContents* contents) {
 ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
     content::WebContents* web_contents,
     signin::AccountConsistencyMethod account_consistency,
-    SigninManager* signin_manager,
+    identity::IdentityManager* identity_manager,
     bool is_sync_signin_tab,
     EnableSyncCallback enable_sync_callback,
-    ShowSigninErrorCallback show_signin_error_callback)
+    ShowSigninErrorCallback show_signin_error_callback,
+    const GURL& redirect_url)
     : content::WebContentsObserver(web_contents),
       account_consistency_(account_consistency),
-      signin_manager_(signin_manager),
+      identity_manager_(identity_manager),
       enable_sync_callback_(std::move(enable_sync_callback)),
       show_signin_error_callback_(std::move(show_signin_error_callback)),
-      is_sync_signin_tab_(is_sync_signin_tab) {
+      is_sync_signin_tab_(is_sync_signin_tab),
+      redirect_url_(redirect_url) {
   DCHECK(web_contents);
-  DCHECK(signin_manager_);
+  DCHECK(identity_manager_);
 }
 
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
@@ -54,7 +56,7 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
     return false;
   }
 
-  if (signin_manager_->IsAuthenticated()) {
+  if (identity_manager_->HasPrimaryAccount()) {
     VLOG(1) << "Do not start sync after web sign-in [already authenticated].";
     return false;
   }
@@ -81,8 +83,17 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(const std::string& account_id) {
   if (!web_contents)
     return;
 
-  // After signing in to Chrome, the user should be redirected to the NTP.
-  RedirectToNtp(web_contents);
+  // After signing in to Chrome, the user should be redirected to the NTP,
+  // unless specified otherwise.
+  if (redirect_url_.is_empty()) {
+    RedirectToNtp(web_contents);
+    return;
+  }
+
+  DCHECK(redirect_url_.is_valid());
+  web_contents->GetController().LoadURL(redirect_url_, content::Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        std::string());
 }
 
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(

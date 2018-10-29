@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/nqe/network_qualities_prefs_manager.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -94,8 +96,8 @@ UINetworkQualityEstimatorService::UINetworkQualityEstimatorService(
   prefs_manager_ = base::WrapUnique(
       new net::NetworkQualitiesPrefsManager(std::move(pref_delegate)));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&SetNQEOnIOThread, prefs_manager_.get(),
                      g_browser_process->io_thread()));
 }

@@ -25,12 +25,6 @@
       "transform": 1
     },
     {
-      "name": "Child Containment Layer",
-      "bounds": [784, 10],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
       "name": "LayoutBlockFlow DIV id='inner'",
       "bounds": [784, 10],
       "contentsOpaque": true,

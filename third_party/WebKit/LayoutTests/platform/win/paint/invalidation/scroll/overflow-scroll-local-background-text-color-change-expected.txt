@@ -1,0 +1,103 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='scroller'",
+      "position": [8, 8],
+      "bounds": [200, 200],
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "position": [8, 8],
+      "bounds": [185, 185],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [8, 8],
+      "bounds": [185, 552],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutBlockFlow DIV id='scroller'",
+          "rect": [0, 0, 185, 552],
+          "reason": "background"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "Overflow Controls Host Layer",
+      "position": [8, 8],
+      "bounds": [200, 200],
+      "drawsContent": false
+    },
+    {
+      "name": "Horizontal Scrollbar Layer",
+      "position": [8, 193],
+      "bounds": [185, 15],
+      "drawsContent": false,
+      "paintInvalidations": [
+        {
+          "object": "Horizontal Scrollbar Layer",
+          "rect": [0, 0, 185, 15],
+          "reason": "full layer"
+        }
+      ]
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [193, 8],
+      "bounds": [15, 185],
+      "drawsContent": false,
+      "paintInvalidations": [
+        {
+          "object": "Vertical Scrollbar Layer",
+          "rect": [0, 0, 15, 185],
+          "reason": "full layer"
+        },
+        {
+          "object": "Vertical Scrollbar Layer",
+          "rect": [0, 0, 15, 185],
+          "reason": "full layer"
+        }
+      ]
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [193, 193],
+      "bounds": [15, 15]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -367, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    }
+  ]
+}
+

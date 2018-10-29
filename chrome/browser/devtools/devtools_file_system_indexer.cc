@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_task_runner.h"
 #include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #include "content/public/browser/browser_thread.h"
 
@@ -183,7 +184,7 @@ void Index::SetTrigramsForFile(const FilePath& file_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureInitialized();
   FileId file_id = GetFileId(file_path);
-  vector<Trigram>::const_iterator it = index.begin();
+  auto it = index.begin();
   for (; it != index.end(); ++it) {
     Trigram trigram = *it;
     index_[trigram].push_back(file_id);
@@ -322,8 +323,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
   }
 
   if (file_path.empty()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         BindOnce(total_work_callback_, file_path_times_.size()));
     indexing_it_ = file_path_times_.begin();
     IndexFiles();
@@ -360,7 +361,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::IndexFiles() {
     return;
   if (indexing_it_ == file_path_times_.end()) {
     g_trigram_index.Get().NormalizeVectors();
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, done_callback_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, done_callback_);
     return;
   }
   FilePath file_path = indexing_it_->first;
@@ -452,8 +453,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReportWorked() {
   ++files_indexed_;
   if (should_send_worked_nitification) {
     last_worked_notification_time_ = current_time;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            BindOnce(worked_callback_, files_indexed_));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             BindOnce(worked_callback_, files_indexed_));
     files_indexed_ = 0;
   }
 }
@@ -516,6 +517,6 @@ void DevToolsFileSystemIndexer::SearchInPathOnImplSequence(
     if (path.IsParent(*it))
       result.push_back(it->AsUTF8Unsafe());
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          BindOnce(callback, std::move(result)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           BindOnce(callback, std::move(result)));
 }

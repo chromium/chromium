@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/address_i18n.h"
 #include "components/autofill/core/browser/autofill_country.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -279,10 +280,31 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   server_id_ = profile.server_id();
   has_converted_ = profile.has_converted();
+  is_client_validity_states_updated_ =
+      profile.is_client_validity_states_updated();
   SetClientValidityFromBitfieldValue(profile.GetClientValidityBitfieldValue());
   server_validity_states_ = profile.GetServerValidityMap();
 
   return *this;
+}
+
+AutofillMetadata AutofillProfile::GetMetadata() const {
+  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
+  metadata.id = (record_type_ == LOCAL_PROFILE ? guid() : server_id_);
+  metadata.has_converted = has_converted_;
+  return metadata;
+}
+
+bool AutofillProfile::SetMetadata(const AutofillMetadata metadata) {
+  // Make sure the ids matches.
+  if (metadata.id != (record_type_ == LOCAL_PROFILE ? guid() : server_id_))
+    return false;
+
+  if (!AutofillDataModel::SetMetadata(metadata))
+    return false;
+
+  has_converted_ = metadata.has_converted;
+  return true;
 }
 
 // TODO(crbug.com/589535): Disambiguate similar field types before uploading.
@@ -298,16 +320,6 @@ void AutofillProfile::GetMatchingTypes(
   }
 
   for (auto type : matching_types_in_this_profile) {
-    if (GetValidityState(type, CLIENT) == INVALID ||
-        GetValidityState(type, SERVER) == INVALID ||
-        IsAnInvalidPhoneNumber(type)) {
-      bool vote_using_invalid_data = base::FeatureList::IsEnabled(
-          features::kAutofillVoteUsingInvalidProfileData);
-      UMA_HISTOGRAM_BOOLEAN("Autofill.InvalidProfileData.UsedForMetrics",
-                            vote_using_invalid_data);
-      if (!vote_using_invalid_data)
-        continue;
-    }
     matching_types->insert(type);
   }
 }
@@ -329,16 +341,6 @@ void AutofillProfile::GetMatchingTypesAndValidities(
   }
 
   for (auto type : matching_types_in_this_profile) {
-    if (GetValidityState(type, CLIENT) == INVALID ||
-        GetValidityState(type, SERVER) == INVALID ||
-        IsAnInvalidPhoneNumber(type)) {
-      bool vote_using_invalid_data = base::FeatureList::IsEnabled(
-          features::kAutofillVoteUsingInvalidProfileData);
-      UMA_HISTOGRAM_BOOLEAN("Autofill.InvalidProfileData.UsedForMetrics",
-                            vote_using_invalid_data);
-      if (!vote_using_invalid_data)
-        continue;
-    }
     if (matching_types_validities) {
       // TODO(crbug.com/879655): Set the client validities and look them up when
       // the server validities are not available.
@@ -360,8 +362,11 @@ base::string16 AutofillProfile::GetRawInfo(ServerFieldType type) const {
 void AutofillProfile::SetRawInfo(ServerFieldType type,
                                  const base::string16& value) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
-  if (form_group)
+  if (form_group) {
+    is_client_validity_states_updated_ &=
+        !IsClientValidationSupportedForType(type);
     form_group->SetRawInfo(type, value);
+  }
 }
 
 void AutofillProfile::GetSupportedTypes(
@@ -434,8 +439,8 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 bool AutofillProfile::EqualsSansOrigin(const AutofillProfile& profile) const {
   return guid() == profile.guid() &&
          language_code() == profile.language_code() &&
-         GetClientValidityBitfieldValue() ==
-             profile.GetClientValidityBitfieldValue() &&
+         is_client_validity_states_updated() ==
+             profile.is_client_validity_states_updated() &&
          Compare(profile) == 0;
 }
 
@@ -517,7 +522,6 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   // values.
   std::string language_code_value = language_code();
   std::string origin_value = origin();
-  int validity_bitfield_value = GetClientValidityBitfieldValue();
   base::string16 name_full_value = GetRawInfo(NAME_FULL);
 
   *this = profile;
@@ -526,8 +530,6 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
     set_origin(origin_value);
   if (language_code().empty())
     set_language_code(language_code_value);
-  if (GetClientValidityBitfieldValue() == 0)
-    SetClientValidityFromBitfieldValue(validity_bitfield_value);
   if (!HasRawInfo(NAME_FULL))
     SetRawInfo(NAME_FULL, name_full_value);
 }
@@ -607,6 +609,8 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
     address_ = address;
     modified = true;
   }
+
+  is_client_validity_states_updated_ &= !modified;
 
   return modified;
 }
@@ -954,6 +958,9 @@ bool AutofillProfile::SetInfoImpl(const AutofillType& type,
   if (!form_group)
     return false;
 
+  is_client_validity_states_updated_ &=
+      !IsClientValidationSupportedForType(type.GetStorableType());
+
   base::string16 trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
   return form_group->SetInfoImpl(type, trimmed_value, app_locale);
@@ -1001,8 +1008,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     std::vector<ServerFieldType> label_fields;
     bool found_differentiating_field = false;
-    for (std::vector<ServerFieldType>::const_iterator field = fields.begin();
-         field != fields.end(); ++field) {
+    for (auto field = fields.begin(); field != fields.end(); ++field) {
       // Skip over empty fields.
       base::string16 field_text =
           profile->GetInfo(AutofillType(*field), app_locale);
@@ -1087,8 +1093,8 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
   return origin() == profile.origin() &&
          language_code() == profile.language_code() &&
-         GetClientValidityBitfieldValue() ==
-             profile.GetClientValidityBitfieldValue() &&
+         is_client_validity_states_updated() ==
+             profile.is_client_validity_states_updated() &&
          Compare(profile) == 0;
 }
 

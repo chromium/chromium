@@ -48,6 +48,7 @@ class LayoutTestDevToolsBindings;
 class RenderFrameHost;
 class RenderProcessHost;
 class Shell;
+struct TestInfo;
 
 #if defined(OS_ANDROID)
 // Android uses a nested run loop for running layout tests because the
@@ -131,10 +132,7 @@ class BlinkTestController : public WebContentsObserver,
   ~BlinkTestController() override;
 
   // True if the controller is ready for testing.
-  bool PrepareForLayoutTest(const GURL& test_url,
-                            const base::FilePath& current_working_directory,
-                            bool enable_pixel_dumping,
-                            const std::string& expected_pixel_hash);
+  bool PrepareForLayoutTest(const TestInfo& test_info);
   // True if the controller was reset successfully.
   bool ResetAfterLayoutTest();
 
@@ -243,18 +241,28 @@ class BlinkTestController : public WebContentsObserver,
   void OnSendBluetoothManualChooserEvent(const std::string& event,
                                          const std::string& argument);
   void OnBlockThirdPartyCookies(bool block);
-  mojom::LayoutTestControl* GetLayoutTestControlPtr(RenderFrameHost* frame);
+  mojom::LayoutTestControlAssociatedPtr& GetLayoutTestControlPtr(
+      RenderFrameHost* frame);
   void HandleLayoutTestControlError(const GlobalFrameRoutingId& key);
 
   void OnCleanupFinished();
   void OnCaptureDumpCompleted(mojom::LayoutTestDumpPtr dump);
   void OnPixelDumpCaptured(const SkBitmap& snapshot);
   void ReportResults();
+  void EnqueueSurfaceCopyRequest();
 
-  void CompositeAllFrames();
-  Node* BuildFrameTree(const std::vector<RenderFrameHost*>& frames,
-                       std::vector<Node>* storage) const;
-  void CompositeDepthFirst(Node* node);
+  // CompositeAllFramesThen() first builds a frame tree based on
+  // frame->GetParent(). Then, it builds a queue of frames in depth-first order,
+  // so that compositing happens from the leaves up. Finally,
+  // CompositeNodeQueueThen() is used to composite one frame at a time,
+  // asynchronously, continuing on to the next frame once each composite
+  // finishes. Once all nodes have been composited, the final callback is run.
+  // Each call to CompositeWithRaster() is an asynchronous Mojo call, to avoid
+  // reentrancy problems.
+  void CompositeAllFramesThen(base::OnceCallback<void()> callback);
+  Node* BuildFrameTree(const std::vector<RenderFrameHost*>& frames);
+  void CompositeNodeQueueThen(base::OnceCallback<void()> callback);
+  void BuildDepthFirstQueue(Node* node);
 
   std::unique_ptr<BlinkTestResultPrinter> printer_;
 
@@ -285,10 +293,10 @@ class BlinkTestController : public WebContentsObserver,
   bool is_compositing_test_;
 
   // Per test config.
-  bool enable_pixel_dumping_;
   std::string expected_pixel_hash_;
   gfx::Size initial_size_;
   GURL test_url_;
+  bool protocol_mode_;
 
   // Stores the default test-adapted WebPreferences which is then used to fully
   // reset the main window's preferences if and when it is reused.
@@ -328,6 +336,9 @@ class BlinkTestController : public WebContentsObserver,
   mojom::LayoutTestDumpPtr main_frame_dump_;
   bool waiting_for_pixel_results_ = false;
   bool waiting_for_main_frame_dump_ = false;
+
+  std::vector<Node> composite_all_frames_node_storage_;
+  std::queue<Node*> composite_all_frames_node_queue_;
 
   // Map from one frame to one mojo pipe.
   std::map<GlobalFrameRoutingId, mojom::LayoutTestControlAssociatedPtr>

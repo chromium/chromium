@@ -25,7 +25,7 @@ const char kWhitelistedId[] = "cbkkbcmdlboombapidmoeolnmdacpkch";
 // Use an extension ID that will never be whitelisted.
 const char kNonWhitelistedId[] = "bogus";
 
-scoped_refptr<Extension> CreateExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test").SetID(id).Build();
 }
 

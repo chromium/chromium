@@ -88,7 +88,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
 PerformanceResourceTiming::~PerformanceResourceTiming() = default;
 
 AtomicString PerformanceResourceTiming::entryType() const {
-  return PerformanceEntryNames::resource;
+  return performance_entry_names::kResource;
 }
 
 PerformanceEntryType PerformanceResourceTiming::EntryTypeEnum() const {

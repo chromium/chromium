@@ -42,7 +42,7 @@
 namespace blink {
 
 struct DeferredFrameData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   DeferredFrameData()
@@ -91,6 +91,7 @@ DeferredImageDecoder::DeferredImageDecoder(
       all_data_received_(false),
       can_yuv_decode_(false),
       has_hot_spot_(false),
+      image_is_high_bit_depth_(false),
       complete_frame_content_id_(PaintImage::GetNextContentId()) {}
 
 DeferredImageDecoder::~DeferredImageDecoder() = default;
@@ -128,6 +129,8 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator(size_t index) {
   SkImageInfo info =
       SkImageInfo::MakeN32(decoded_size.width(), decoded_size.height(),
                            alpha_type, color_space_for_sk_images_);
+  if (image_is_high_bit_depth_)
+    info = info.makeColorType(kRGBA_F16_SkColorType);
 
   std::vector<FrameMetadata> frames(frame_data_.size());
   for (size_t i = 0; i < frame_data_.size(); ++i) {
@@ -265,6 +268,7 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
     return;
 
   size_ = metadata_decoder_->Size();
+  image_is_high_bit_depth_ = metadata_decoder_->ImageIsHighBitDepth();
   has_hot_spot_ = metadata_decoder_->HotSpot(hot_spot_);
   filename_extension_ = metadata_decoder_->FilenameExtension();
   // JPEG images support YUV decoding; other decoders do not. (WebP could in the

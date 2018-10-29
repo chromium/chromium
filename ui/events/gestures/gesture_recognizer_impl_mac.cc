@@ -45,7 +45,7 @@ void GestureRecognizerImplMac::CancelActiveTouchesExcept(
 void GestureRecognizerImplMac::TransferEventsTo(
     GestureConsumer* current_consumer,
     GestureConsumer* new_consumer,
-    ShouldCancelTouches should_cancel_touches) {}
+    TransferTouchesBehavior transfer_touches_behavior) {}
 
 bool GestureRecognizerImplMac::GetLastTouchPointForTarget(
     GestureConsumer* consumer,

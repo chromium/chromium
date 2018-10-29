@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
@@ -45,12 +46,14 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
@@ -341,6 +344,26 @@ class LeftMouseClick {
 };
 
 #endif
+
+bool AreCommittedInterstitialsEnabled() {
+  return base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials);
+}
+
+bool IsShowingInterstitial(content::WebContents* tab) {
+  if (AreCommittedInterstitialsEnabled()) {
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            tab);
+    if (!helper) {
+      return false;
+    } else {
+      return helper
+                 ->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
+             nullptr;
+    }
+  }
+  return tab->GetInterstitialPage() != nullptr;
+}
 
 }  // namespace
 
@@ -714,7 +737,12 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
         GetGuestViewManager()->WaitForSingleGuestCreated();
     ASSERT_TRUE(
         guest_web_contents->GetMainFrame()->GetProcess()->IsForGuestsOnly());
-    content::WaitForInterstitialAttach(guest_web_contents);
+    if (AreCommittedInterstitialsEnabled()) {
+      content::TestNavigationObserver observer(guest_web_contents);
+      observer.Wait();
+    } else {
+      content::WaitForInterstitialAttach(guest_web_contents);
+    }
   }
 
   // Runs media_access/allow tests.
@@ -1835,14 +1863,17 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPage) {
 
   content::WebContents* guest_web_contents =
       GetGuestViewManager()->WaitForSingleGuestCreated();
-
-  EXPECT_TRUE(guest_web_contents->ShowingInterstitialPage());
-  EXPECT_TRUE(guest_web_contents->GetInterstitialPage()
-                  ->GetMainFrame()
-                  ->GetView()
-                  ->IsShowing());
-  EXPECT_TRUE(content::IsInnerInterstitialPageConnected(
-      guest_web_contents->GetInterstitialPage()));
+  if (AreCommittedInterstitialsEnabled()) {
+    EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
+  } else {
+    EXPECT_TRUE(guest_web_contents->ShowingInterstitialPage());
+    EXPECT_TRUE(guest_web_contents->GetInterstitialPage()
+                    ->GetMainFrame()
+                    ->GetView()
+                    ->IsShowing());
+    EXPECT_TRUE(content::IsInnerInterstitialPageConnected(
+        guest_web_contents->GetInterstitialPage()));
+  }
 }
 
 // Test makes sure that interstitial pages are registered in the
@@ -1863,13 +1894,20 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPageRouteEvents) {
   content::WebContents* outer_web_contents = GetFirstAppWindowWebContents();
   content::WebContents* guest_web_contents =
       GetGuestViewManager()->WaitForSingleGuestCreated();
-  content::InterstitialPage* interstitial_page =
-      guest_web_contents->GetInterstitialPage();
 
   std::vector<content::RenderWidgetHostView*> hosts =
       content::GetInputEventRouterRenderWidgetHostViews(outer_web_contents);
-  EXPECT_TRUE(
-      base::ContainsValue(hosts, interstitial_page->GetMainFrame()->GetView()));
+
+  if (AreCommittedInterstitialsEnabled()) {
+    // With committed interstitials, interstitials are no longer a special case
+    // so we can just use the main frame from the WebContents.
+    EXPECT_TRUE(base::ContainsValue(
+        hosts, outer_web_contents->GetMainFrame()->GetView()));
+  } else {
+    EXPECT_TRUE(base::ContainsValue(
+        hosts,
+        guest_web_contents->GetInterstitialPage()->GetMainFrame()->GetView()));
+  }
 }
 
 // Test makes sure that interstitial pages will receive input events and can be
@@ -1891,10 +1929,18 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPageFocusedWidget) {
   content::WebContents* outer_web_contents = GetFirstAppWindowWebContents();
   content::WebContents* guest_web_contents =
       GetGuestViewManager()->WaitForSingleGuestCreated();
-  content::InterstitialPage* interstitial_page =
-      guest_web_contents->GetInterstitialPage();
-  content::RenderFrameHost* interstitial_main_frame =
-      interstitial_page->GetMainFrame();
+
+  content::RenderFrameHost* interstitial_main_frame;
+
+  if (AreCommittedInterstitialsEnabled()) {
+    // With committed interstitials, interstitials are no longer a special case
+    // so we can just use the main frame from the WebContents.
+    interstitial_main_frame = guest_web_contents->GetMainFrame();
+  } else {
+    interstitial_main_frame =
+        guest_web_contents->GetInterstitialPage()->GetMainFrame();
+  }
+
   content::RenderWidgetHost* interstitial_widget =
       interstitial_main_frame->GetRenderViewHost()->GetWidget();
 
@@ -1944,7 +1990,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_InterstitialPageDetach) {
 
   content::WebContents* guest_web_contents =
       GetGuestViewManager()->WaitForSingleGuestCreated();
-  EXPECT_TRUE(guest_web_contents->ShowingInterstitialPage());
+  EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
 
   // Navigate to about:blank.
   content::TestNavigationObserver load_observer(guest_web_contents);
@@ -3293,7 +3339,14 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_Shim_TestFindAPI_findupdate) {
   TestHelper("testFindAPI_findupdate", "web_view/shim", NO_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_testFindInMultipleWebViews) {
+// TODO(crbug.com/892085): Disabled on Windows due to flakiness. Re-enable.
+#if defined(OS_WIN)
+#define MAYBE_Shim_testFindInMultipleWebViews \
+  DISABLED_Shim_testFindInMultipleWebViews
+#else
+#define MAYBE_Shim_testFindInMultipleWebViews Shim_testFindInMultipleWebViews
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_Shim_testFindInMultipleWebViews) {
   TestHelper("testFindInMultipleWebViews", "web_view/shim", NO_TEST_SERVER);
 }
 

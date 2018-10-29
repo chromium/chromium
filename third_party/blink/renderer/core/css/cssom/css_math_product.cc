@@ -89,7 +89,7 @@ CSSCalcExpressionNode* CSSMathProduct::ToCalcExpressionNode() const {
       NumericValues()[0]->ToCalcExpressionNode(),
       NumericValues()[1]->ToCalcExpressionNode(), kCalcMultiply);
 
-  for (size_t i = 2; i < NumericValues().size(); i++) {
+  for (wtf_size_t i = 2; i < NumericValues().size(); i++) {
     node = CSSCalcValue::CreateExpressionNode(
         node, NumericValues()[i]->ToCalcExpressionNode(), kCalcMultiply);
   }
@@ -107,7 +107,7 @@ void CSSMathProduct::BuildCSSText(Nested nested,
   DCHECK(!values.IsEmpty());
   values[0]->BuildCSSText(Nested::kYes, ParenLess::kNo, result);
 
-  for (size_t i = 1; i < values.size(); i++) {
+  for (wtf_size_t i = 1; i < values.size(); i++) {
     const auto& arg = *values[i];
     if (arg.GetType() == CSSStyleValue::kInvertType) {
       result.Append(" / ");

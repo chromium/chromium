@@ -309,8 +309,6 @@ class STORAGE_EXPORT FileSystemContext
                                    StatusCallback callback);
 
  private:
-  using FileSystemBackendMap = std::map<FileSystemType, FileSystemBackend*>;
-
   // For CreateFileSystemOperation.
   friend class FileSystemOperationRunner;
 
@@ -395,7 +393,7 @@ class STORAGE_EXPORT FileSystemContext
   // This map itself doesn't retain each backend's ownership; ownerships
   // of the backends are held by additional_backends_ or other scoped_ptr
   // backend fields.
-  FileSystemBackendMap backend_map_;
+  std::map<FileSystemType, FileSystemBackend*> backend_map_;
 
   // External mount points visible in the file system context (excluding system
   // external mount points).

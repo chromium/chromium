@@ -11,7 +11,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/task/post_task.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 #include "third_party/zlib/zlib.h"
@@ -37,8 +39,8 @@ class StringTraceDataEndpoint : public TracingController::TraceDataEndpoint {
     scoped_refptr<base::RefCountedString> str =
         base::RefCountedString::TakeString(&tmp);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(completion_callback_, std::move(metadata),
                        base::RetainedRef(str)));
   }
@@ -89,7 +91,8 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   }
 
   bool OpenFileIfNeededOnBlockingThread() {
-    base::AssertBlockingAllowed();
+    base::ScopedBlockingCall scoped_blocking_call(
+        base::BlockingType::MAY_BLOCK);
     if (file_ != nullptr)
       return true;
     file_ = base::OpenFile(file_path_, "w");
@@ -106,8 +109,8 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
       file_ = nullptr;
     }
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&FileTraceDataEndpoint::FinalizeOnUIThread, this));
   }
 

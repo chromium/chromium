@@ -45,9 +45,6 @@
 - (ToolbarButton*)forwardButton;
 // Tab Grid ToolbarButton.
 - (ToolbarTabGridButton*)tabGridButton;
-// StackView ToolbarButton.
-// TODO(crbug.com/800266): Remove this.
-- (ToolbarButton*)stackViewButton;
 // Tools Menu ToolbarButton.
 - (ToolbarToolsMenuButton*)toolsMenuButton;
 // Share ToolbarButton.
@@ -58,27 +55,10 @@
 - (ToolbarButton*)stopButton;
 // Bookmark ToolbarButton.
 - (ToolbarButton*)bookmarkButton;
-// VoiceSearch ToolbarButton.
-// TODO(crbug.com/800266): Remove this.
-- (ToolbarButton*)voiceSearchButton;
-// ContractToolbar ToolbarButton.
-// TODO(crbug.com/800266): Remove this.
-- (ToolbarButton*)contractButton;
 // ToolbarButton to focus the omnibox.
 - (ToolbarButton*)omniboxButton;
-// LocationBar LeadingButton. Currently used for the incognito icon when the
-// Toolbar is expanded on incognito mode. It can return nil.
-- (ToolbarButton*)locationBarLeadingButton;
 // Button to cancel the edit of the location bar.
 - (UIButton*)cancelButton;
-
-// Returns images for Voice Search in an array representing the NORMAL/PRESSED
-// state
-// TODO(crbug.com/800266): Remove this.
-- (NSArray<UIImage*>*)voiceSearchImages;
-// Returns images for TTS in an array representing the NORMAL/PRESSED states.
-// TODO(crbug.com/800266): Remove this.
-- (NSArray<UIImage*>*)TTSImages;
 
 @end
 

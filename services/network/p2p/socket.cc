@@ -67,12 +67,7 @@ P2PSocket::P2PSocket(Delegate* delegate,
     : delegate_(delegate),
       client_(std::move(client)),
       binding_(this, std::move(socket)),
-      state_(STATE_UNINITIALIZED),
       protocol_type_(protocol_type),
-      send_packets_delayed_total_(0),
-      send_packets_total_(0),
-      send_bytes_delayed_max_(0),
-      send_bytes_delayed_cur_(0),
       weak_ptr_factory_(this) {
   binding_.set_connection_error_handler(
       base::BindOnce(&P2PSocket::OnError, base::Unretained(this)));

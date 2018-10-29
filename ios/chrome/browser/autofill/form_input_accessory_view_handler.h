@@ -19,6 +19,9 @@
 // Resets the metrics logger of the instance.
 - (void)reset;
 
+// Sets the frameId of the frame containing the form with the latest focus.
+- (void)setLastFocusFormActivityWebFrameID:(NSString*)frameID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_VIEW_HANDLER_H_

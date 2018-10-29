@@ -169,9 +169,7 @@ std::unique_ptr<base::ListValue> WebDriverLog::GetAndClearEntries() {
 
 bool GetFirstErrorMessageFromList(const base::ListValue* list,
                                   std::string* message) {
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end();
-       ++it) {
+  for (auto it = list->begin(); it != list->end(); ++it) {
     const base::DictionaryValue* log_entry = NULL;
     it->GetAsDictionary(&log_entry);
     if (log_entry != NULL) {
@@ -236,15 +234,20 @@ Log::Level WebDriverLog::min_level() const {
 
 bool InitLogging() {
   g_start_time = base::TimeTicks::Now().ToInternalValue();
-
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+
   if (cmd_line->HasSwitch("log-path")) {
     g_log_level = Log::kInfo;
     base::FilePath log_path = cmd_line->GetSwitchValuePath("log-path");
+
+    const base::FilePath::CharType* logMode = FILE_PATH_LITERAL("w");
+    if (cmd_line->HasSwitch("append-log")) {
+        logMode = FILE_PATH_LITERAL("a");
+    }
 #if defined(OS_WIN)
-    FILE* redir_stderr = _wfreopen(log_path.value().c_str(), L"w", stderr);
+    FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
 #else
-    FILE* redir_stderr = freopen(log_path.value().c_str(), "w", stderr);
+    FILE* redir_stderr = freopen(log_path.value().c_str(), logMode, stderr);
 #endif
     if (!redir_stderr) {
       printf("Failed to redirect stderr to log file.\n");
@@ -309,9 +312,7 @@ Status CreateLogs(
   Log::Level browser_log_level = Log::kWarning;
   const LoggingPrefs& prefs = capabilities.logging_prefs;
 
-  for (LoggingPrefs::const_iterator iter = prefs.begin();
-       iter != prefs.end();
-       ++iter) {
+  for (auto iter = prefs.begin(); iter != prefs.end(); ++iter) {
     std::string type = iter->first;
     Log::Level level = iter->second;
     if (type == WebDriverLog::kPerformanceType) {

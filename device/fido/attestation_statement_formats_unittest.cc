@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/writer.h"
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -83,17 +83,17 @@ constexpr uint8_t kCertificates[] = {
 
 TEST(PackedAttestationStatementTest, CBOR) {
   EXPECT_THAT(
-      *cbor::CBORWriter::Write(
-          cbor::CBORValue(PackedAttestationStatement(
-                              CoseAlgorithmIdentifier::kCoseEs256,
-                              fido_parsing_utils::Materialize(kSignature),
-                              {fido_parsing_utils::Materialize(kCertificates)})
-                              .GetAsCBORMap())),
+      *cbor::Writer::Write(
+          cbor::Value(PackedAttestationStatement(
+                          CoseAlgorithmIdentifier::kCoseEs256,
+                          fido_parsing_utils::Materialize(kSignature),
+                          {fido_parsing_utils::Materialize(kCertificates)})
+                          .GetAsCBORMap())),
       testing::ElementsAreArray(test_data::kPackedAttestationStatementCBOR));
 }
 
 TEST(PackedAttestationStatementTest, CBOR_NoCerts) {
-  EXPECT_THAT(*cbor::CBORWriter::Write(cbor::CBORValue(
+  EXPECT_THAT(*cbor::Writer::Write(cbor::Value(
                   PackedAttestationStatement(
                       CoseAlgorithmIdentifier::kCoseEs256,
                       fido_parsing_utils::Materialize(kSignature), {})
@@ -104,7 +104,7 @@ TEST(PackedAttestationStatementTest, CBOR_NoCerts) {
 
 TEST(OpaqueAttestationStatementTest, GetLeafCertificate) {
   auto attestation_map =
-      cbor::CBORReader::Read(test_data::kPackedAttestationStatementCBOR);
+      cbor::Reader::Read(test_data::kPackedAttestationStatementCBOR);
   ASSERT_TRUE(attestation_map);
   OpaqueAttestationStatement statement("packed", std::move(*attestation_map));
   EXPECT_FALSE(statement.IsSelfAttestation());

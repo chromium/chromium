@@ -31,7 +31,8 @@ class UserContext;
 // NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE notification.
 class LoginManagerTest : public MixinBasedBrowserTest {
  public:
-  explicit LoginManagerTest(bool should_launch_browser);
+  LoginManagerTest(bool should_launch_browser,
+                   bool should_initialize_webui);
   ~LoginManagerTest() override;
 
   // Overridden from InProcessBrowserTest.
@@ -88,17 +89,19 @@ class LoginManagerTest : public MixinBasedBrowserTest {
   static const char kEnterpriseUser2GaiaId[];
 
  protected:
+  void InitializeWebContents();
+
   FakeGaia fake_gaia_;
   HTTPSForwarder gaia_https_forwarder_;
 
  private:
-  void InitializeWebContents();
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
 
-  bool should_launch_browser_;
+  const bool should_launch_browser_;
+  const bool should_initialize_webui_;
   content::WebContents* web_contents_;
   test::JSChecker js_checker_;
 

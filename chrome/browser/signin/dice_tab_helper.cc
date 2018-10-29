@@ -24,7 +24,8 @@ void DiceTabHelper::InitializeSigninFlow(
     const GURL& signin_url,
     signin_metrics::AccessPoint access_point,
     signin_metrics::Reason reason,
-    signin_metrics::PromoAction promo_action) {
+    signin_metrics::PromoAction promo_action,
+    const GURL& redirect_url) {
   DCHECK(signin_url.is_valid());
   DCHECK(signin_url_.is_empty() || signin_url_ == signin_url);
 
@@ -39,6 +40,7 @@ void DiceTabHelper::InitializeSigninFlow(
   signin_promo_action_ = promo_action;
   is_chrome_signin_page_ = true;
   signin_page_load_recorded_ = false;
+  redirect_url_ = redirect_url;
 
   if (reason == signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT) {
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);

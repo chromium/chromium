@@ -305,7 +305,7 @@ bool MultipartParser::ParseHeaderFields(const char** bytes_pointer,
     header_size = buffered_header_bytes_.size();
   }
 
-  size_t end = 0u;
+  wtf_size_t end = 0u;
   if (!ParseMultipartFormHeadersFromBody(header_bytes, header_size,
                                          header_fields, &end)) {
     // Store the current header bytes for the next call unless that has

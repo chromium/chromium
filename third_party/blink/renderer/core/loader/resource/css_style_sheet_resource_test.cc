@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -45,8 +46,8 @@ namespace {
 class CSSStyleSheetResourceTest : public PageTestBase {
  protected:
   CSSStyleSheetResourceTest() {
-    original_memory_cache_ =
-        ReplaceMemoryCacheForTesting(MemoryCache::Create());
+    original_memory_cache_ = ReplaceMemoryCacheForTesting(MemoryCache::Create(
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
   }
 
   ~CSSStyleSheetResourceTest() override {

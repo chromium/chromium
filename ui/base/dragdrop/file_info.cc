@@ -14,4 +14,8 @@ FileInfo::FileInfo(const base::FilePath& path,
 
 FileInfo::~FileInfo() {}
 
+bool FileInfo::operator==(const FileInfo& other) const {
+  return path == other.path && display_name == other.display_name;
+}
+
 }  // namespace ui

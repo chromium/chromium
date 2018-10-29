@@ -4,6 +4,8 @@
 
 #include "chrome/browser/spellchecker/test/spellcheck_content_browser_client.h"
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_names.mojom.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
@@ -23,8 +25,8 @@ void SpellCheckContentBrowserClient::OverrideOnBindInterface(
   spellcheck::mojom::SpellCheckPanelHostRequest request(std::move(*handle));
 
   // Override the default SpellCheckHost interface.
-  auto ui_task_runner = content::BrowserThread::GetTaskRunnerForThread(
-      content::BrowserThread::UI);
+  auto ui_task_runner = base::CreateSingleThreadTaskRunnerWithTraits(
+      {content::BrowserThread::UI});
   ui_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -83,9 +83,6 @@ struct AXTextEdit {
 - (NSString*)valueForRange:(NSRange)range;
 - (NSAttributedString*)attributedValueForRange:(NSRange)range;
 
-- (BOOL)isRowHeaderForCurrentCell:(content::BrowserAccessibility*)header;
-- (BOOL)isColumnHeaderForCurrentCell:(content::BrowserAccessibility*)header;
-
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;
 

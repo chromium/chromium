@@ -6,9 +6,12 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
+#include "content/browser/renderer_host/render_widget_host_ns_view_client_helper.h"
 #include "content/common/cursors/webcursor.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
+#include "ui/base/cocoa/ns_view_ids.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -17,12 +20,35 @@ namespace content {
 
 RenderWidgetHostNSViewBridgeLocal::RenderWidgetHostNSViewBridgeLocal(
     mojom::RenderWidgetHostNSViewClient* client,
-    RenderWidgetHostNSViewLocalClient* local_client) {
+    RenderWidgetHostNSViewClientHelper* client_helper)
+    : binding_(nullptr) {
+  Initialize(client, client_helper);
+}
+
+RenderWidgetHostNSViewBridgeLocal::RenderWidgetHostNSViewBridgeLocal(
+    mojom::RenderWidgetHostNSViewClientAssociatedPtr client,
+    mojom::RenderWidgetHostNSViewBridgeAssociatedRequest bridge_request)
+    : remote_client_(std::move(client)), binding_(this) {
+  binding_.Bind(std::move(bridge_request),
+                ui::WindowResizeHelperMac::Get()->task_runner());
+  // This object will be destroyed when its connection is closed.
+  binding_.set_connection_error_handler(
+      base::BindOnce(&RenderWidgetHostNSViewBridgeLocal::OnConnectionError,
+                     base::Unretained(this)));
+  remote_client_helper_ =
+      RenderWidgetHostNSViewClientHelper::CreateForMojoClient(
+          remote_client_.get());
+  Initialize(remote_client_.get(), remote_client_helper_.get());
+}
+
+void RenderWidgetHostNSViewBridgeLocal::Initialize(
+    mojom::RenderWidgetHostNSViewClient* client,
+    RenderWidgetHostNSViewClientHelper* client_helper) {
   display::Screen::GetScreen()->AddObserver(this);
 
   cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
-       initWithClient:client
-      withLocalClient:local_client]);
+        initWithClient:client
+      withClientHelper:client_helper]);
 
   background_layer_.reset([[CALayer alloc] init]);
   display_ca_layer_tree_ =
@@ -45,6 +71,10 @@ RenderWidgetHostNSViewBridgeLocal::~RenderWidgetHostNSViewBridgeLocal() {
   popup_window_.reset();
 }
 
+void RenderWidgetHostNSViewBridgeLocal::OnConnectionError() {
+  delete this;
+}
+
 RenderWidgetHostViewCocoa*
 RenderWidgetHostNSViewBridgeLocal::GetRenderWidgetHostViewCocoa() {
   return cocoa_view_;
@@ -53,6 +83,18 @@ RenderWidgetHostNSViewBridgeLocal::GetRenderWidgetHostViewCocoa() {
 void RenderWidgetHostNSViewBridgeLocal::InitAsPopup(
     const gfx::Rect& content_rect) {
   popup_window_ = std::make_unique<PopupWindowMac>(content_rect, cocoa_view_);
+}
+
+void RenderWidgetHostNSViewBridgeLocal::SetParentWebContentsNSView(
+    uint64_t parent_ns_view_id) {
+  NSView* parent_ns_view = ui::NSViewIds::GetNSView(parent_ns_view_id);
+  // If the browser passed an invalid handle, then there is no recovery.
+  CHECK(parent_ns_view);
+  // Set the frame and autoresizing mask of the RenderWidgetHostViewCocoa as is
+  // done by WebContentsViewMac.
+  [cocoa_view_ setFrame:[parent_ns_view bounds]];
+  [cocoa_view_ setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [parent_ns_view addSubview:cocoa_view_];
 }
 
 void RenderWidgetHostNSViewBridgeLocal::MakeFirstResponder() {

@@ -1,0 +1,47 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library fidljstest;
+
+enum Blorp : int8 {
+  ALPHA = 1;
+  BETA = 2;
+  GAMMA = 0x48;
+};
+
+// A struct of basic types, some with defaults and some without to test various
+// paths of the generator.
+struct BasicStruct {
+  bool b;
+  int8 i8;
+  int16 i16 = 18;
+  int32 i32;
+  uint8 u8;
+  uint16 u16;
+  uint32 u32 = 4000000000;
+};
+
+struct StuffAndThings {
+  int32 count;
+  string id;
+  vector<int32> a_vector;
+  BasicStruct basic;
+  string later_string;
+};
+
+interface Testola {
+  1: DoSomething();
+
+  2: PrintInt(int32 num);
+
+  3: PrintMsg(string msg);
+
+  4: VariousArgs(Blorp blorp, string:32 msg, vector<uint32> stuff);
+
+  5: WithResponse(int32 a, int32 b) -> (int32 sum);
+
+  6: SendAStruct(BasicStruct basic);
+
+  7: NestedStructsWithResponse(BasicStruct basic) -> (StuffAndThings resp);
+};

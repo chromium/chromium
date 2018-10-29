@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1422,7 +1423,8 @@ SelectionModel RenderTextHarfBuzz::AdjacentWordSelectionModel(
     size_t cursor = current.caret_pos();
 #if defined(OS_WIN)
     // Windows generally advances to the start of a word in either direction.
-    // TODO: Break on the end of a word when the neighboring text is puctuation.
+    // TODO: Break on the end of a word when the neighboring text is
+    // punctuation.
     if (iter.IsStartOfWord(cursor))
       break;
 #else
@@ -1595,10 +1597,9 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer) {
             SkIntToScalar(origin.x()) + offset_x,
             SkIntToScalar(origin.y() + run.font_params.baseline_offset));
       }
-      for (BreakList<SkColor>::const_iterator it =
-               colors().GetBreak(segment.char_range.start());
+      for (auto it = colors().GetBreak(segment.char_range.start());
            it != colors().breaks().end() &&
-               it->first < segment.char_range.end();
+           it->first < segment.char_range.end();
            ++it) {
         const Range intersection =
             colors().GetRange(it).Intersect(segment.char_range);
@@ -1787,7 +1788,6 @@ void RenderTextHarfBuzz::ShapeRuns(
   TRACE_EVENT1("ui", "RenderTextHarfBuzz::ShapeRuns", "run_count", runs.size());
 
   const Font& primary_font = font_list().GetPrimaryFont();
-  Font best_font(primary_font);
 
   for (const Font& font : font_list().GetFonts()) {
     internal::TextRunHarfBuzz::FontParams test_font_params = font_params;
@@ -1817,33 +1817,43 @@ void RenderTextHarfBuzz::ShapeRuns(
   }
 #endif
 
-  std::vector<Font> fallback_font_list = GetFallbackFonts(primary_font);
+  std::vector<Font> fallback_font_list;
+  {
+    SCOPED_UMA_HISTOGRAM_LONG_TIMER("RenderTextHarfBuzz.GetFallbackFontsTime");
+    TRACE_EVENT0("ui", "RenderTextHarfBuzz::GetFallbackFonts");
+    fallback_font_list = GetFallbackFonts(primary_font);
 
 #if defined(OS_WIN)
-  // Append fonts in the fallback list of the preferred fallback font.
-  // TODO(tapted): Investigate whether there's a case that benefits from this on
-  // Mac.
-  if (!preferred_fallback_family.empty()) {
-    std::vector<Font> fallback_fonts = GetFallbackFonts(fallback_font);
-    fallback_font_list.insert(fallback_font_list.end(), fallback_fonts.begin(),
-                              fallback_fonts.end());
-  }
+    // Append fonts in the fallback list of the preferred fallback font.
+    // TODO(tapted): Investigate whether there's a case that benefits from this
+    // on Mac.
+    if (!preferred_fallback_family.empty()) {
+      std::vector<Font> fallback_fonts = GetFallbackFonts(fallback_font);
+      fallback_font_list.insert(fallback_font_list.end(),
+                                fallback_fonts.begin(), fallback_fonts.end());
+    }
 
-  // Add Segoe UI and its associated linked fonts to the fallback font list to
-  // ensure that the fallback list covers the basic cases.
-  // http://crbug.com/467459. On some Windows configurations the default font
-  // could be a raster font like System, which would not give us a reasonable
-  // fallback font list.
-  if (!base::LowerCaseEqualsASCII(primary_font.GetFontName(), "segoe ui") &&
-      !base::LowerCaseEqualsASCII(preferred_fallback_family, "segoe ui")) {
-    std::vector<Font> default_fallback_families =
-        GetFallbackFonts(Font("Segoe UI", 13));
-    fallback_font_list.insert(fallback_font_list.end(),
-        default_fallback_families.begin(), default_fallback_families.end());
-  }
+    // Add Segoe UI and its associated linked fonts to the fallback font list to
+    // ensure that the fallback list covers the basic cases.
+    // http://crbug.com/467459. On some Windows configurations the default font
+    // could be a raster font like System, which would not give us a reasonable
+    // fallback font list.
+    if (!base::LowerCaseEqualsASCII(primary_font.GetFontName(), "segoe ui") &&
+        !base::LowerCaseEqualsASCII(preferred_fallback_family, "segoe ui")) {
+      std::vector<Font> default_fallback_families =
+          GetFallbackFonts(Font("Segoe UI", 13));
+      fallback_font_list.insert(fallback_font_list.end(),
+                                default_fallback_families.begin(),
+                                default_fallback_families.end());
+    }
 #endif
+  }
 
   // Use a set to track the fallback fonts and avoid duplicate entries.
+  SCOPED_UMA_HISTOGRAM_LONG_TIMER(
+      "RenderTextHarfBuzz.ShapeRunsWithFallbackFontsTime");
+  TRACE_EVENT1("ui", "RenderTextHarfBuzz::ShapeRunsWithFallbackFonts",
+               "fonts_count", fallback_font_list.size());
   std::set<Font, CaseInsensitiveCompare> fallback_fonts;
 
   // Try shaping with the fallback fonts.
@@ -1866,8 +1876,12 @@ void RenderTextHarfBuzz::ShapeRuns(
     if (test_font_params.SetFontAndRenderParams(font, fallback_render_params)) {
       ShapeRunsWithFont(text, test_font_params, &runs);
     }
-    if (runs.empty())
+    if (runs.empty()) {
+      TRACE_EVENT_INSTANT1("ui", "RenderTextHarfBuzz::FallbackFont",
+                           TRACE_EVENT_SCOPE_THREAD, "font_name",
+                           TRACE_STR_COPY(font_name.c_str()));
       return;
+    }
   }
 
   for (internal::TextRunHarfBuzz*& run : runs) {

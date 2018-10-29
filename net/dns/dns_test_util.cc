@@ -106,7 +106,7 @@ class MockTransaction : public DnsTransaction,
         memcpy(buffer, query.io_buffer()->data(), nbytes);
         dns_protocol::Header* header =
             reinterpret_cast<dns_protocol::Header*>(buffer);
-        header->flags |= dns_protocol::kFlagResponse;
+        header->flags |= base::HostToNet16(dns_protocol::kFlagResponse);
         if (MockDnsClientRule::NODOMAIN == result_.type) {
           header->flags |= base::HostToNet16(dns_protocol::kRcodeNXDOMAIN);
         }
@@ -126,14 +126,51 @@ class MockTransaction : public DnsTransaction,
           // 12 is the sum of sizes of the compressed name reference, TYPE,
           // CLASS, TTL and RDLENGTH.
           size_t answer_size = 12 + rdata_size;
-          header->ancount = base::HostToNet16(1);
+          uint16_t answer_count = 1;
+
+          // Compressed name reference for the owner of the current RR.
+          uint16_t last_owner_ptr = kPointerToQueryName;
+
+          std::string cname_as_labels;
+
+          // There are two modes of operation distinguished based on whether
+          // |result_.canonical_name| is empty or not. If it's empty, then the
+          // resource records presented are of the form:
+          //
+          //     <question>       86400 IN <question type> <answer>
+          //
+          // However, if the canonical name is not empty, then:
+          //
+          //     <question>       86400 IN CNAME <canonical name>
+          //     <canonical name> 86400 IN <question type> <answer>
+          if (!result_.canonical_name.empty()) {
+            DNSDomainFromDot(result_.canonical_name, &cname_as_labels);
+            EXPECT_FALSE(cname_as_labels.empty());
+            answer_size += 12 + cname_as_labels.size();
+            ++answer_count;
+          }
+          header->ancount = base::HostToNet16(answer_count);
+
           base::BigEndianWriter writer(buffer + nbytes, answer_size);
-          writer.WriteU16(kPointerToQueryName);
+
+          // CNAME record goes first.
+          if (!result_.canonical_name.empty()) {
+            writer.WriteU16(last_owner_ptr);
+            writer.WriteU16(dns_protocol::kTypeCNAME);
+            writer.WriteU16(dns_protocol::kClassIN);
+            writer.WriteU32(kTTL);
+            writer.WriteU16(static_cast<uint16_t>(cname_as_labels.size()));
+            writer.WriteBytes(cname_as_labels.data(), cname_as_labels.size());
+            last_owner_ptr = static_cast<uint16_t>(0xc000 | (nbytes + 12));
+          }
+
+          writer.WriteU16(last_owner_ptr);
           writer.WriteU16(qtype_);
           writer.WriteU16(dns_protocol::kClassIN);
           writer.WriteU32(kTTL);
           writer.WriteU16(static_cast<uint16_t>(rdata_size));
           writer.WriteBytes(result_.ip.bytes().data(), rdata_size);
+
           nbytes += answer_size;
         } else {
           // authority will be 12 bytes.
@@ -208,7 +245,7 @@ class MockTransactionFactory : public DnsTransactionFactory {
   void CompleteDelayedTransactions() {
     DelayedTransactionList old_delayed_transactions;
     old_delayed_transactions.swap(delayed_transactions_);
-    for (DelayedTransactionList::iterator it = old_delayed_transactions.begin();
+    for (auto it = old_delayed_transactions.begin();
          it != old_delayed_transactions.end(); ++it) {
       if (it->get())
         (*it)->FinishDelayedTransaction();

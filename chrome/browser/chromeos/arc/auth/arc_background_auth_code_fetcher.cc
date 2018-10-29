@@ -61,9 +61,9 @@ ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
 
 ArcBackgroundAuthCodeFetcher::~ArcBackgroundAuthCodeFetcher() = default;
 
-void ArcBackgroundAuthCodeFetcher::Fetch(const FetchCallback& callback) {
+void ArcBackgroundAuthCodeFetcher::Fetch(FetchCallback callback) {
   DCHECK(callback_.is_null());
-  callback_ = callback;
+  callback_ = std::move(callback);
   context_.Prepare(base::Bind(&ArcBackgroundAuthCodeFetcher::OnPrepared,
                               weak_ptr_factory_.GetWeakPtr()));
 }

@@ -5,12 +5,14 @@
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
 
 #include "base/barrier_closure.h"
+#include "base/task/post_task.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -440,7 +442,7 @@ ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() = default;
 bool ProxyingURLLoaderFactory::MaybeProxyRequest(
     content::RenderFrameHost* render_frame_host,
     bool is_navigation,
-    const GURL& url,
+    const url::Origin& request_initiator,
     network::mojom::URLLoaderFactoryRequest* factory_request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -450,9 +452,8 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
 
   // This proxy should only be installed for subresource requests from a frame
   // that is rendering the GAIA signon realm.
-  if (!render_frame_host || !gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+  if (!gaia::IsGaiaSignonRealm(request_initiator.GetURL()))
     return false;
-  }
 
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -480,8 +481,8 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
       base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
                           render_frame_host->GetFrameTreeNodeId());
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ResourceContextData::StartProxying,
                      profile->GetResourceContext(),
                      std::move(web_contents_getter), std::move(proxied_request),

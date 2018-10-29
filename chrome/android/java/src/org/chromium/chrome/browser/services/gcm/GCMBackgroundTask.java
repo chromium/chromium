@@ -35,12 +35,13 @@ public class GCMBackgroundTask implements BackgroundTask {
     public boolean onStartTask(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         Bundle extras = taskParameters.getExtras();
-        if (!GCMMessage.validateBundle(extras)) {
+        GCMMessage message = GCMMessage.createFromBundle(extras);
+        if (message == null) {
             Log.e(TAG, "The received bundle containing message data could not be validated.");
             return false;
         }
 
-        ChromeGcmListenerService.dispatchMessageToDriver(context, new GCMMessage(extras));
+        ChromeGcmListenerService.dispatchMessageToDriver(context, message);
         return false;
     }
 

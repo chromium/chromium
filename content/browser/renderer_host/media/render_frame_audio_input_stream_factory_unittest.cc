@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,8 +11,11 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
+#include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -52,7 +54,8 @@ class RenderFrameAudioInputStreamFactoryTest
         audio_system_(media::AudioSystemImpl::CreateInstance()),
         media_stream_manager_(std::make_unique<MediaStreamManager>(
             audio_system_.get(),
-            BrowserThread::GetTaskRunnerForThread(BrowserThread::UI))) {}
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {BrowserThread::UI}))) {}
 
   ~RenderFrameAudioInputStreamFactoryTest() override {}
 
@@ -63,6 +66,7 @@ class RenderFrameAudioInputStreamFactoryTest
     // Set up the ForwardingAudioStreamFactory.
     service_manager::Connector::TestApi connector_test_api(
         ForwardingAudioStreamFactory::ForFrame(main_rfh())
+            ->core()
             ->get_connector_for_testing());
     connector_test_api.OverrideBinderForTesting(
         service_manager::Identity(audio::mojom::kServiceName),
@@ -180,17 +184,15 @@ class RenderFrameAudioInputStreamFactoryTest
 
 TEST_F(RenderFrameAudioInputStreamFactoryTest, ConstructDestruct) {
   mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
-  RenderFrameAudioInputStreamFactory factory(mojo::MakeRequest(&factory_ptr),
-                                             audio_input_device_manager(),
-                                             main_rfh());
+  RenderFrameAudioInputStreamFactory factory(
+      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
 }
 
 TEST_F(RenderFrameAudioInputStreamFactoryTest,
        CreateOpenedStream_ForwardsCall) {
   mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
-  RenderFrameAudioInputStreamFactory factory(mojo::MakeRequest(&factory_ptr),
-                                             audio_input_device_manager(),
-                                             main_rfh());
+  RenderFrameAudioInputStreamFactory factory(
+      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
 
   int session_id = audio_input_device_manager()->Open(
       MediaStreamDevice(MEDIA_DEVICE_AUDIO_CAPTURE, kDeviceId, kDeviceName));
@@ -210,9 +212,8 @@ TEST_F(RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCapture_ForwardsCall) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
   mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
-  RenderFrameAudioInputStreamFactory factory(mojo::MakeRequest(&factory_ptr),
-                                             audio_input_device_manager(),
-                                             main_rfh());
+  RenderFrameAudioInputStreamFactory factory(
+      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
@@ -235,9 +236,8 @@ TEST_F(RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCaptureAfterCaptureSourceDestructed_Fails) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
   mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
-  RenderFrameAudioInputStreamFactory factory(mojo::MakeRequest(&factory_ptr),
-                                             audio_input_device_manager(),
-                                             main_rfh());
+  RenderFrameAudioInputStreamFactory factory(
+      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
@@ -260,9 +260,8 @@ TEST_F(RenderFrameAudioInputStreamFactoryTest,
 TEST_F(RenderFrameAudioInputStreamFactoryTest,
        CreateStreamWithoutValidSessionId_Fails) {
   mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
-  RenderFrameAudioInputStreamFactory factory(mojo::MakeRequest(&factory_ptr),
-                                             audio_input_device_manager(),
-                                             main_rfh());
+  RenderFrameAudioInputStreamFactory factory(
+      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
 
   int session_id = 123;
   mojom::RendererAudioInputStreamFactoryClientPtr client;

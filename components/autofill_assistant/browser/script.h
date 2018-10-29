@@ -15,14 +15,17 @@ namespace autofill_assistant {
 // Minimal information about a script necessary to display and run it.
 struct ScriptHandle {
   ScriptHandle();
+  ScriptHandle(const ScriptHandle& orig);
   ~ScriptHandle();
 
   std::string name;
   std::string path;
+  std::string initial_prompt;
 
   // When set to true this script can be run in 'autostart mode'. Script won't
   // be shown.
   bool autostart;
+  bool highlight;
 };
 
 // Script represents a sequence of actions.

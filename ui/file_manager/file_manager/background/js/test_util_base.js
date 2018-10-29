@@ -32,6 +32,7 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
     // The hidden attribute is not in the element.attributes even if
     // element.hasAttribute('hidden') is true.
     hidden: !!element.hidden,
+    hasShadowRoot: !!element.shadowRoot
   };
 
   const styleNames = opt_styleNames || [];
@@ -258,6 +259,30 @@ test.util.sync.deepQuerySelectorAll_ = function(root, targetQuery) {
 };
 
 /**
+ * Executes a script in the context of the first <webview> element contained in
+ * the window, including shadow DOM subtrees if given, and returns the script
+ * result via the callback.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {!Array<string>} targetQuery Query for the <webview> element.
+ *   |targetQuery[0]| specifies the first element. |targetQuery[1]| specifies
+ *   an element inside the shadow DOM of the first element, etc. The last
+ *   targetQuery item must return the <webview> element.
+ * @param {string} script Javascript code to be executed within the <webview>.
+ * @param {function(*)} callback Callback function to be called with the
+ *   result of the |script|.
+ */
+test.util.async.deepExecuteScriptInWebView = function(
+    contentWindow, targetQuery, script, callback) {
+  const webviews =
+      test.util.sync.deepQuerySelectorAll_(contentWindow.document, targetQuery);
+  if (!webviews || webviews.length !== 1)
+    throw new Error('<webview> not found: [' + targetQuery.join(',') + ']');
+  const webview = /** @type {WebView} */ (webviews[0]);
+  webview.executeScript({code: script}, callback);
+};
+
+/**
  * Gets the information of the active element.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -350,29 +375,27 @@ test.util.sync.fakeEvent = function(contentWindow,
 
 /**
  * Sends a fake key event to the element specified by |targetQuery| or active
- * element with the given |keyIdentifier| and optional |ctrl| modifier.
+ * element with the given |key| and optional |ctrl,shift,alt| modifier.
  *
  * @param {Window} contentWindow Window to be tested.
  * @param {?string} targetQuery Query to specify the element. If this value is
  *     null, key event is dispatched to active element of the document.
  * @param {string} key DOM UI Events key value.
- * @param {string} keyIdentifier Identifier of the emulated key.
  * @param {boolean} ctrl Whether CTRL should be pressed, or not.
  * @param {boolean} shift whether SHIFT should be pressed, or not.
  * @param {boolean} alt whether ALT should be pressed, or not.
  * @return {boolean} True if the event is sent to the target, false otherwise.
  */
 test.util.sync.fakeKeyDown = function(
-    contentWindow, targetQuery, key, keyIdentifier, ctrl, shift, alt) {
-  var event = new KeyboardEvent('keydown',
-      {
-        bubbles: true,
-        key: key,
-        keyIdentifier: keyIdentifier,
-        ctrlKey: ctrl,
-        shiftKey: shift,
-        altKey: alt
-      });
+    contentWindow, targetQuery, key, ctrl, shift, alt) {
+  const event = new KeyboardEvent('keydown', {
+    bubbles: true,
+    composed: true,  // Allow the event to bubble past shadow DOM root.
+    key: key,
+    ctrlKey: ctrl,
+    shiftKey: shift,
+    altKey: alt
+  });
   return test.util.sync.sendEvent(contentWindow, targetQuery, event);
 };
 
@@ -391,17 +414,22 @@ test.util.sync.fakeKeyDown = function(
  *     otherwise.
  */
 test.util.sync.fakeMouseClick = function(contentWindow, targetQuery) {
-  var mouseOverEvent = new MouseEvent('mouseover', {bubbles: true, detail: 1});
-  var resultMouseOver =
+  const props = {
+    bubbles: true,
+    detail: 1,
+    composed: true,  // Allow the event to bubble past shadow DOM root.
+  };
+  const mouseOverEvent = new MouseEvent('mouseover', props);
+  const resultMouseOver =
       test.util.sync.sendEvent(contentWindow, targetQuery, mouseOverEvent);
-  var mouseDownEvent = new MouseEvent('mousedown', {bubbles: true, detail: 1});
-  var resultMouseDown =
+  const mouseDownEvent = new MouseEvent('mousedown', props);
+  const resultMouseDown =
       test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent);
-  var mouseUpEvent = new MouseEvent('mouseup', {bubbles: true, detail: 1});
-  var resultMouseUp =
+  const mouseUpEvent = new MouseEvent('mouseup', props);
+  const resultMouseUp =
       test.util.sync.sendEvent(contentWindow, targetQuery, mouseUpEvent);
-  var clickEvent = new MouseEvent('click', {bubbles: true, detail: 1});
-  var resultClick =
+  const clickEvent = new MouseEvent('click', props);
+  const resultClick =
       test.util.sync.sendEvent(contentWindow, targetQuery, clickEvent);
   return resultMouseOver && resultMouseDown && resultMouseUp && resultClick;
 };
@@ -416,12 +444,14 @@ test.util.sync.fakeMouseClick = function(contentWindow, targetQuery) {
  *     otherwise.
  */
 test.util.sync.fakeMouseRightClick = function(contentWindow, targetQuery) {
-  var mouseDownEvent = new MouseEvent('mousedown', {bubbles: true, button: 2});
+  const mouseDownEvent =
+      new MouseEvent('mousedown', {bubbles: true, button: 2, composed: true});
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent)) {
     return false;
   }
 
-  var contextMenuEvent = new MouseEvent('contextmenu', {bubbles: true});
+  const contextMenuEvent =
+      new MouseEvent('contextmenu', {bubbles: true, composed: true});
   return test.util.sync.sendEvent(contentWindow, targetQuery, contextMenuEvent);
 };
 
@@ -435,22 +465,24 @@ test.util.sync.fakeMouseRightClick = function(contentWindow, targetQuery) {
  *     otherwise.
  */
 test.util.sync.fakeTouchClick = function(contentWindow, targetQuery) {
-  var touchStartEvent = new TouchEvent('touchstart');
+  const touchStartEvent = new TouchEvent('touchstart');
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, touchStartEvent)) {
     return false;
   }
 
-  var mouseDownEvent = new MouseEvent('mousedown', {bubbles: true, button: 2});
+  const mouseDownEvent =
+      new MouseEvent('mousedown', {bubbles: true, button: 2, composed: true});
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent)) {
     return false;
   }
 
-  var touchEndEvent = new TouchEvent('touchend');
+  const touchEndEvent = new TouchEvent('touchend');
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, touchEndEvent)) {
     return false;
   }
 
-  var contextMenuEvent = new MouseEvent('contextmenu', {bubbles: true});
+  const contextMenuEvent =
+      new MouseEvent('contextmenu', {bubbles: true, composed: true});
   return test.util.sync.sendEvent(contentWindow, targetQuery, contextMenuEvent);
 };
 
@@ -470,13 +502,14 @@ test.util.sync.fakeMouseDoubleClick = function(contentWindow, targetQuery) {
 
   // Send the second click event, but with detail equal to 2 (number of clicks)
   // in a row.
-  var event = new MouseEvent('click', { bubbles: true, detail: 2 });
+  let event =
+      new MouseEvent('click', {bubbles: true, detail: 2, composed: true});
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, event)) {
     return false;
   }
 
   // Send the double click event.
-  var event = new MouseEvent('dblclick', { bubbles: true });
+  event = new MouseEvent('dblclick', {bubbles: true, composed: true});
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, event)) {
     return false;
   }
@@ -492,7 +525,7 @@ test.util.sync.fakeMouseDoubleClick = function(contentWindow, targetQuery) {
  * @return {boolean} True if the event is sent to the target, false otherwise.
  */
 test.util.sync.fakeMouseDown = function(contentWindow, targetQuery) {
-  var event = new MouseEvent('mousedown', { bubbles: true });
+  const event = new MouseEvent('mousedown', {bubbles: true, composed: true});
   return test.util.sync.sendEvent(contentWindow, targetQuery, event);
 };
 
@@ -504,7 +537,7 @@ test.util.sync.fakeMouseDown = function(contentWindow, targetQuery) {
  * @return {boolean} True if the event is sent to the target, false otherwise.
  */
 test.util.sync.fakeMouseUp = function(contentWindow, targetQuery) {
-  var event = new MouseEvent('mouseup', { bubbles: true });
+  const event = new MouseEvent('mouseup', {bubbles: true, composed: true});
   return test.util.sync.sendEvent(contentWindow, targetQuery, event);
 };
 
@@ -651,5 +684,42 @@ test.util.registerRemoteTestUtils = function() {
       console.error('Invalid function name.');
       return false;
     }
+  });
+};
+
+/**
+ * Returns the MetadataStats collected in MetadataModel, it will be serialized
+ * as a plain object when sending to test extension.
+ *
+ * @suppress {missingProperties} metadataStats is only defined for foreground
+ *   Window so it isn't visible in the background. Here it will return as JSON
+ *   object to test extension.
+ */
+test.util.sync.getMetadataStats = function(contentWindow) {
+  return contentWindow.fileManager.metadataModel.getStats();
+};
+
+/**
+ * Returns true when FileManager has finished loading, by checking the attribute
+ * "loaded" on its root element.
+ */
+test.util.sync.isFileManagerLoaded = function(contentWindow) {
+  if (contentWindow && contentWindow.fileManager &&
+      contentWindow.fileManager.ui)
+    return contentWindow.fileManager.ui.element.hasAttribute('loaded');
+
+  return false;
+};
+
+/**
+ * Reports to the given |callback| the number of volumes available in
+ * VolumeManager in the background page.
+ *
+ * @param {function(number)} callback Callback function to be called with the
+ *   number of volumes.
+ */
+test.util.async.getVolumesCount = function(callback) {
+  return volumeManagerFactory.getInstance().then((volumeManager) => {
+    callback(volumeManager.volumeInfoList.length);
   });
 };

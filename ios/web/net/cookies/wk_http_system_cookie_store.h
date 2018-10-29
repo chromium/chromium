@@ -10,8 +10,6 @@
 
 #import "ios/net/cookies/system_cookie_store.h"
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
-
 namespace web {
 
 // This class is an implementation of SystemCookieStore, WKHTTPSystemCookieStore
@@ -60,7 +58,5 @@ class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStore
 };
 
 }  // namespace web
-
-#endif
 
 #endif  // IOS_WEB_NET_COOKIES_WK_HTTP_SYSTEM_COOKIE_STORE_H_

@@ -17,7 +17,8 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "components/download/quarantine/common_mac.h"
 #include "url/gurl.h"
 
 namespace {
@@ -30,34 +31,6 @@ namespace {
     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_10
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-bool GetQuarantinePropertiesDeprecated(
-    const base::FilePath& file,
-    base::scoped_nsobject<NSMutableDictionary>* properties) {
-  const UInt8* path = reinterpret_cast<const UInt8*>(file.value().c_str());
-  FSRef file_ref;
-  if (FSPathMakeRef(path, &file_ref, nullptr) != noErr)
-    return false;
-
-  base::ScopedCFTypeRef<CFTypeRef> quarantine_properties;
-  OSStatus status =
-      LSCopyItemAttribute(&file_ref, kLSRolesAll, kLSItemQuarantineProperties,
-                          quarantine_properties.InitializeInto());
-  if (status != noErr)
-    return true;
-
-  CFDictionaryRef quarantine_properties_dict =
-      base::mac::CFCast<CFDictionaryRef>(quarantine_properties.get());
-  if (!quarantine_properties_dict) {
-    LOG(WARNING) << "kLSItemQuarantineProperties is not a dictionary on file "
-                 << file.value();
-    return false;
-  }
-
-  properties->reset(
-      [base::mac::CFToNSCast(quarantine_properties_dict) mutableCopy]);
-  return true;
-}
-
 bool SetQuarantinePropertiesDeprecated(const base::FilePath& file,
                                        NSDictionary* properties) {
   const UInt8* path = reinterpret_cast<const UInt8*>(file.value().c_str());
@@ -76,43 +49,6 @@ bool SetQuarantinePropertiesDeprecated(const base::FilePath& file,
 }
 #pragma clang diagnostic pop
 #endif
-
-API_AVAILABLE(macos(10.10))
-bool GetQuarantineProperties(
-    const base::FilePath& file,
-    base::scoped_nsobject<NSMutableDictionary>* properties) {
-  base::scoped_nsobject<NSURL> file_url([[NSURL alloc]
-      initFileURLWithPath:base::SysUTF8ToNSString(file.value())]);
-  if (!file_url)
-    return false;
-
-  NSError* error = nil;
-  id quarantine_properties = nil;
-  BOOL success = [file_url getResourceValue:&quarantine_properties
-                                     forKey:NSURLQuarantinePropertiesKey
-                                      error:&error];
-  if (!success) {
-    std::string error_message(error ? error.description.UTF8String : "");
-    LOG(WARNING) << "Unable to get quarantine attributes for file "
-                 << file.value() << ". Error: " << error_message;
-    return false;
-  }
-
-  if (!quarantine_properties)
-    return true;
-
-  NSDictionary* quarantine_properties_dict =
-      base::mac::ObjCCast<NSDictionary>(quarantine_properties);
-  if (!quarantine_properties_dict) {
-    LOG(WARNING) << "Quarantine properties have wrong class: "
-                 << base::SysNSStringToUTF8(
-                        [[quarantine_properties class] description]);
-    return false;
-  }
-
-  properties->reset([quarantine_properties_dict mutableCopy]);
-  return true;
-}
 
 API_AVAILABLE(macos(10.10))
 bool SetQuarantineProperties(const base::FilePath& file,
@@ -163,7 +99,7 @@ namespace {
 bool AddOriginMetadataToFile(const base::FilePath& file,
                              const GURL& source,
                              const GURL& referrer) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   // There's no declaration for MDItemSetAttribute in any known public SDK.
   // It exists in the 10.4 and 10.5 runtimes.  To play it safe, do the lookup
   // at runtime instead of declaring it ourselves and linking against what's
@@ -192,7 +128,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
   if (!md_item_set_attribute_func)
     return false;
 
-  NSString* file_path = [NSString stringWithUTF8String:file.value().c_str()];
+  NSString* file_path = base::mac::FilePathToNSString(file);
   if (!file_path)
     return false;
 
@@ -208,11 +144,10 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
 
   // Follow Safari's lead: the first item in the list is the source URL of
   // the downloaded file. If the referrer is known, store that, too.
-  NSString* origin_url = [NSString stringWithUTF8String:source.spec().c_str()];
+  NSString* origin_url = base::SysUTF8ToNSString(source.spec());
   if (origin_url)
     [list addObject:origin_url];
-  NSString* referrer_url =
-      [NSString stringWithUTF8String:referrer.spec().c_str()];
+  NSString* referrer_url = base::SysUTF8ToNSString(referrer.spec());
   if (referrer_url)
     [list addObject:referrer_url];
 
@@ -233,7 +168,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
 bool AddQuarantineMetadataToFile(const base::FilePath& file,
                                  const GURL& source,
                                  const GURL& referrer) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   base::scoped_nsobject<NSMutableDictionary> properties;
   bool success = false;
   if (@available(macos 10.10, *)) {
@@ -267,16 +202,14 @@ bool AddQuarantineMetadataToFile(const base::FilePath& file,
 
   if (![properties valueForKey:(NSString*)kLSQuarantineOriginURLKey] &&
       referrer.is_valid()) {
-    NSString* referrer_url =
-        [NSString stringWithUTF8String:referrer.spec().c_str()];
+    NSString* referrer_url = base::SysUTF8ToNSString(referrer.spec());
     [properties setValue:referrer_url
                   forKey:(NSString*)kLSQuarantineOriginURLKey];
   }
 
   if (![properties valueForKey:(NSString*)kLSQuarantineDataURLKey] &&
       source.is_valid()) {
-    NSString* origin_url =
-        [NSString stringWithUTF8String:source.spec().c_str()];
+    NSString* origin_url = base::SysUTF8ToNSString(source.spec());
     [properties setValue:origin_url forKey:(NSString*)kLSQuarantineDataURLKey];
   }
 
@@ -302,41 +235,6 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
       AddQuarantineMetadataToFile(file, source_url, referrer_url);
   return quarantine_succeeded ? QuarantineFileResult::OK
                               : QuarantineFileResult::ANNOTATION_FAILED;
-}
-
-bool IsFileQuarantined(const base::FilePath& file,
-                       const GURL& expected_source_url,
-                       const GURL& referrer_url) {
-  base::AssertBlockingAllowed();
-
-  if (!base::PathExists(file))
-    return false;
-
-  base::scoped_nsobject<NSMutableDictionary> properties;
-  bool success = false;
-  if (@available(macos 10.10, *)) {
-    success = GetQuarantineProperties(file, &properties);
-  } else {
-    success = GetQuarantinePropertiesDeprecated(file, &properties);
-  }
-
-  if (!success || !properties)
-    return false;
-
-  NSString* source_url =
-      [[properties valueForKey:(NSString*)kLSQuarantineDataURLKey] description];
-
-  if (!expected_source_url.is_valid())
-    return [source_url length] > 0;
-
-  if (![source_url
-          isEqualToString:base::SysUTF8ToNSString(expected_source_url.spec())])
-    return false;
-
-  return !referrer_url.is_valid() ||
-         [[[properties valueForKey:(NSString*)kLSQuarantineOriginURLKey]
-             description]
-             isEqualToString:base::SysUTF8ToNSString(referrer_url.spec())];
 }
 
 }  // namespace download

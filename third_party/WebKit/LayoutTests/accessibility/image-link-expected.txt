@@ -1,4 +1,5 @@
 Image link in the presence of inline continuations
+
 This test checks that the right accessibility tree is generated for a link inside an image
 
 

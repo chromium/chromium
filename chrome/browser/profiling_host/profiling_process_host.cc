@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sys_info.h"
 #include "base/task/post_task.h"
@@ -24,6 +25,7 @@
 #include "components/services/heap_profiling/public/cpp/controller.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/zlib/zlib.h"
@@ -42,6 +44,7 @@ const char kConfigModeKey[] = "mode";
 const char kConfigScenarioName[] = "scenario_name";
 const char kConfigCategoryKey[] = "category";
 const char kConfigCategoryMemlog[] = "MEMLOG";
+const char kOOPHeapProfilingUploadUrl[] = "upload_url";
 
 void OnTraceUploadComplete(TraceCrashServiceUploader* uploader,
                            bool success,
@@ -58,7 +61,8 @@ void OnTraceUploadComplete(TraceCrashServiceUploader* uploader,
   LOG(WARNING) << "slow-reports sent: '" << feedback << '"';
 }
 
-void UploadTraceToCrashServer(std::string file_contents,
+void UploadTraceToCrashServer(std::string upload_url,
+                              std::string file_contents,
                               std::string trigger_name,
                               uint32_t sampling_rate) {
   // Traces has been observed as small as 4k. Seems likely to be a bug. To
@@ -88,6 +92,8 @@ void UploadTraceToCrashServer(std::string file_contents,
 
   TraceCrashServiceUploader* uploader = new TraceCrashServiceUploader(
       g_browser_process->shared_url_loader_factory());
+  if (!upload_url.empty())
+    uploader->SetUploadURL(upload_url);
 
   uploader->DoUpload(file_contents, content::TraceUploader::COMPRESSED_UPLOAD,
                      std::move(metadata),
@@ -97,7 +103,12 @@ void UploadTraceToCrashServer(std::string file_contents,
 
 }  // namespace
 
-ProfilingProcessHost::ProfilingProcessHost() : background_triggers_(this) {}
+ProfilingProcessHost::ProfilingProcessHost() : background_triggers_(this) {
+  const std::string upload_url = base::GetFieldTrialParamValueByFeature(
+      kOOPHeapProfilingFeature, kOOPHeapProfilingUploadUrl);
+  if (GURL(upload_url).is_valid())
+    upload_url_ = upload_url;
+}
 
 ProfilingProcessHost::~ProfilingProcessHost() = default;
 
@@ -128,8 +139,8 @@ void ProfilingProcessHost::SaveTraceWithHeapDumpToFile(
       [](base::FilePath dest, SaveTraceFinishedCallback done, bool success,
          std::string trace) {
         if (!success) {
-          content::BrowserThread::GetTaskRunnerForThread(
-              content::BrowserThread::UI)
+          base::CreateSingleThreadTaskRunnerWithTraits(
+              {content::BrowserThread::UI})
               ->PostTask(FROM_HERE, base::BindOnce(std::move(done), false));
           return;
         }
@@ -152,16 +163,16 @@ void ProfilingProcessHost::RequestProcessReport(std::string trigger_name) {
   // It's safe to pass a raw pointer for ProfilingProcessHost because it's a
   // singleton that's never destroyed.
   auto finish_report_callback = base::BindOnce(
-      [](ProfilingProcessHost* host, std::string trigger_name,
+      [](std::string upload_url, std::string trigger_name,
          uint32_t sampling_rate, bool success, std::string trace) {
         UMA_HISTOGRAM_BOOLEAN("OutOfProcessHeapProfiling.RecordTrace.Success",
                               success);
         if (success) {
-          UploadTraceToCrashServer(std::move(trace), std::move(trigger_name),
-                                   sampling_rate);
+          UploadTraceToCrashServer(std::move(upload_url), std::move(trace),
+                                   std::move(trigger_name), sampling_rate);
         }
       },
-      base::Unretained(this), std::move(trigger_name),
+      upload_url_, std::move(trigger_name),
       Supervisor::GetInstance()->GetSamplingRate());
   Supervisor::GetInstance()->RequestTraceWithHeapDump(
       std::move(finish_report_callback), true /* anonymize */);
@@ -185,7 +196,7 @@ void ProfilingProcessHost::SaveTraceToFileOnBlockingThread(
   gzFile gz_file = gzdopen(fd, "w");
   if (!gz_file) {
     DLOG(ERROR) << "Cannot compress trace file";
-    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+    base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
         ->PostTask(FROM_HERE, base::BindOnce(std::move(done), false));
     return;
   }
@@ -193,7 +204,7 @@ void ProfilingProcessHost::SaveTraceToFileOnBlockingThread(
   size_t written_bytes = gzwrite(gz_file, trace.c_str(), trace.size());
   gzclose(gz_file);
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(FROM_HERE, base::BindOnce(std::move(done),
                                            written_bytes == trace.size()));
 }

@@ -29,7 +29,7 @@ const CSSValue* FontFeatureSettings::CSSValueFromComputedStyleInternal(
   if (!feature_settings || !feature_settings->size())
     return CSSIdentifierValue::Create(CSSValueNormal);
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (unsigned i = 0; i < feature_settings->size(); ++i) {
+  for (wtf_size_t i = 0; i < feature_settings->size(); ++i) {
     const FontFeature& feature = feature_settings->at(i);
     cssvalue::CSSFontFeatureValue* feature_value =
         cssvalue::CSSFontFeatureValue::Create(feature.Tag(), feature.Value());

@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_path_challenge_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 #include "net/third_party/quic/platform/api/quic_bug_tracker.h"
 
 namespace quic {
 
-QuicPathChallengeFrame::QuicPathChallengeFrame() : QuicControlFrame(0) {}
+QuicPathChallengeFrame::QuicPathChallengeFrame()
+    : control_frame_id(kInvalidControlFrameId) {}
 
 QuicPathChallengeFrame::QuicPathChallengeFrame(
     QuicControlFrameId control_frame_id,
     const QuicPathFrameBuffer& data_buff)
-    : QuicControlFrame(control_frame_id) {
+    : control_frame_id(control_frame_id) {
   memcpy(data_buffer.data(), data_buff.data(), data_buffer.size());
 }
 

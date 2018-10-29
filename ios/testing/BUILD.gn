@@ -91,6 +91,7 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/testpage.pdf",
     "data/http_server_files/two_pages.pdf",
     "data/http_server_files/user_agent_test_page.html",
+    "data/http_server_files/username_password_field_form.html",
     "data/http_server_files/window_close.html",
     "data/http_server_files/window_location.html",
     "data/http_server_files/window_location.js",

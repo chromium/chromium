@@ -21,6 +21,7 @@ enum AuthenticatorStatus {
   CREDENTIAL_NOT_RECOGNIZED,
   NOT_IMPLEMENTED,
   NOT_FOCUSED,
+  RESIDENT_CREDENTIALS_UNSUPPORTED,
   USER_VERIFICATION_UNSUPPORTED,
   ALGORITHM_UNSUPPORTED,
   EMPTY_ALLOW_CREDENTIALS,
@@ -61,6 +62,12 @@ struct MakeCredentialAuthenticatorResponse {
   // A list of transports that the authenticator supports, with the transport
   // used for the registration as the first element.
   array<AuthenticatorTransport> transports;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain an `hmacCreateSecret`
+  // extension output. If so, |hmac_create_secret| contains the actual value.
+  bool echo_hmac_create_secret;
+  bool hmac_create_secret;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -256,6 +263,10 @@ struct PublicKeyCredentialCreationOptions {
   // devices to establish a pairingless BLE connection.
   // TODO(crbug.com/842371): Add link to spec when available.
   CableRegistration? cable_registration_data;
+
+  // The contents of the hmacCreateSecret extension, if any. See
+  // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
+  bool hmac_create_secret;
 };
 
 enum PublicKeyCredentialType {

@@ -20,9 +20,11 @@
 #include "mojo/public/cpp/bindings/binding.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/log/net_log.h"
+#include "net/log/trace_net_log_observer.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
+#include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -30,6 +32,7 @@
 #include "services/service_manager/public/cpp/service.h"
 
 namespace net {
+class FileNetLogObserver;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class LoggingNetworkChangeObserver;
@@ -47,7 +50,6 @@ namespace network {
 class CRLSetDistributor;
 class NetworkContext;
 class NetworkUsageAccumulator;
-class MojoNetLog;
 class URLRequestContextBuilderMojo;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
@@ -122,12 +124,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   // mojom::NetworkService implementation:
   void SetClient(mojom::NetworkServiceClientPtr client) override;
-  void StartNetLog(base::File file, base::Value constants) override;
+  void StartNetLog(base::File file,
+                   mojom::NetLogCaptureMode capture_mode,
+                   base::Value constants) override;
+  void SetSSLKeyLogFile(const base::FilePath& file) override;
   void CreateNetworkContext(mojom::NetworkContextRequest request,
                             mojom::NetworkContextParamsPtr params) override;
   void ConfigureStubHostResolver(
       bool stub_resolver_enabled,
-      base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
+      base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
           dns_over_https_servers) override;
   void DisableQuic() override;
   void SetUpHttpAuth(
@@ -143,6 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::NetworkService::GetTotalNetworkUsagesCallback callback) override;
   void UpdateSignedTreeHead(const net::ct::SignedTreeHead& sth) override;
   void UpdateCRLSet(base::span<const uint8_t> crl_set) override;
+  void OnCertDBChanged() override;
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   void SetCryptConfig(mojom::CryptConfigPtr crypt_config) override;
 #endif
@@ -151,6 +157,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void AddCorbExceptionForPlugin(uint32_t process_id) override;
   void RemoveCorbExceptionForPlugin(uint32_t process_id) override;
+#if defined(OS_ANDROID)
+  void OnApplicationStateChange(base::android::ApplicationState state) override;
+#endif
 
   // Returns the shared HttpAuthHandlerFactory for the NetworkService, creating
   // one if needed.
@@ -209,10 +218,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // Starts timer call UpdateLoadInfo() again, if needed.
   void AckUpdateLoadInfo();
 
-  MojoNetLog* network_service_net_log_ = nullptr;
-  // TODO(https://crbug.com/767450): Remove this, once Chrome no longer creates
-  // its own NetLog.
-  net::NetLog* net_log_;
+  net::NetLog* net_log_ = nullptr;
+
+  std::unique_ptr<net::FileNetLogObserver> file_net_log_observer_;
+  net::TraceNetLogObserver trace_net_log_observer_;
 
   mojom::NetworkServiceClientPtr client_;
 

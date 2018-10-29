@@ -48,9 +48,17 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      * @param webContents {@link WebContents} object.
      * @return {@link TextSuggestionHost} object.
      */
-    public static TextSuggestionHost fromWebContents(WebContents webContents) {
+    @VisibleForTesting
+    static TextSuggestionHost fromWebContents(WebContents webContents) {
         return ((WebContentsImpl) webContents)
                 .getOrSetUserData(TextSuggestionHost.class, UserDataFactoryLazyHolder.INSTANCE);
+    }
+
+    @CalledByNative
+    private static TextSuggestionHost create(WebContents webContents, long nativePtr) {
+        TextSuggestionHost host = fromWebContents(webContents);
+        host.setNativePtr(nativePtr);
+        return host;
     }
 
     /**
@@ -63,9 +71,12 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
         mWindowAndroid = mWebContents.getTopLevelNativeWindow();
         mViewDelegate = mWebContents.getViewAndroidDelegate();
         assert mViewDelegate != null;
-        mNativeTextSuggestionHost = nativeInit(mWebContents);
         PopupController.register(mWebContents, this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
+    }
+
+    private void setNativePtr(long nativePtr) {
+        mNativeTextSuggestionHost = nativePtr;
     }
 
     private float getContentOffsetYPix() {
@@ -221,7 +232,6 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
         return mSpellCheckPopupWindow;
     }
 
-    private native long nativeInit(WebContents webContents);
     private native void nativeApplySpellCheckSuggestion(
             long nativeTextSuggestionHostAndroid, String suggestion);
     private native void nativeApplyTextSuggestion(

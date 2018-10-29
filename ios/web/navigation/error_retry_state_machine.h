@@ -15,10 +15,9 @@ namespace web {
 // reload of the original URL. This is achieved in four steps:
 // 1) A NavigationItem is put into
 //    kDisplaying(Native|Web)ErrorForFailedNavigation when it first failed to
-//    load and a native error view displayed (base::Feature kWebErrorPages flag
-//    is off) or a web error is displayed (base::Feature kWebErrorPages flag is
-//    on) If the failure occurred during provisional navigation, a placeholder
-//    entry is inserted into WKBackForwardList for this item.
+//    load and a web error is displayed. If the failure occurred during
+//    provisional navigation, a placeholder entry is inserted into
+//    WKBackForwardList for this item.
 // 2) Upon navigation to this item, use |loadHTMLString:| to modify the URL of
 //    the placeholder entry to the original URL and change the item state to
 //    kNavigatingToFailedNavigationItem.
@@ -81,8 +80,8 @@ class ErrorRetryStateMachine {
   // Returns the current error retry state.
   ErrorRetryState state() const;
 
-  // Transitions the state machine to kDisplayingNativeErrorForFailedNavigation.
-  void SetDisplayingNativeError();
+  // Transitions the state machine to kDisplayingWebErrorForFailedNavigation.
+  void SetDisplayingWebError();
 
   // Runs state transitions upon a failed provisional navigation.
   ErrorRetryCommand DidFailProvisionalNavigation(const GURL& web_view_url,

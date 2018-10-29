@@ -45,6 +45,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityMonoAudioEnabled,
     ash::prefs::kAccessibilityAutoclickEnabled,
     ash::prefs::kAccessibilityAutoclickDelayMs,
+    ash::prefs::kAccessibilityAutoclickEventType,
+    ash::prefs::kAccessibilityAutoclickRevertToLeftClick,
     ash::prefs::kAccessibilityCaretHighlightEnabled,
     ash::prefs::kAccessibilityCursorHighlightEnabled,
     ash::prefs::kAccessibilityFocusHighlightEnabled,
@@ -60,6 +62,9 @@ const char* const kPersistentPrefNames[] = {
 #if !defined(OS_ANDROID)
     kAnimationPolicyAllowed, kAnimationPolicyOnce, kAnimationPolicyNone,
 #endif  // !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    prefs::kAnimationPolicy,
+#endif
 
     // Bookmark preferences are common between incognito and regular mode.
     bookmarks::prefs::kBookmarkEditorExpandedNodes,
@@ -69,6 +74,9 @@ const char* const kPersistentPrefNames[] = {
     bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
     bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
     bookmarks::prefs::kShowBookmarkBar,
+#if defined(OS_ANDROID)
+    prefs::kPartnerBookmarkMappings,
+#endif  // defined(OS_ANDROID)
 
     // Metrics preferences are out of profile scope and are merged between
     // incognito and regular modes.
@@ -141,6 +149,12 @@ const char* const kPersistentPrefNames[] = {
     // Google URL prefs don't store user data and just keep track of the URL.
     prefs::kLastKnownGoogleURL, prefs::kLastPromptedGoogleURL,
 
+#if defined(OS_WIN)
+    // The total number of times that network profile warning is shown is
+    // aggregated between regular and incognito modes.
+    prefs::kNetworkProfileWarningsLeft,
+#endif
+
     // Tab stats metrics are aggregated between regular and incognio mode.
     prefs::kTabStatsTotalTabCountMax, prefs::kTabStatsMaxTabsPerWindow,
     prefs::kTabStatsWindowCountMax, prefs::kTabStatsDailySample,
@@ -149,9 +163,9 @@ const char* const kPersistentPrefNames[] = {
     prefs::kShowFullscreenToolbar,
 #endif
 
-// Toggleing custom frames affects all open windows in the profile, hence
-// should be written to the regular profile when changed in incognito mode.
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+    // Toggleing custom frames affects all open windows in the profile, hence
+    // should be written to the regular profile when changed in incognito mode.
     prefs::kUseCustomChromeFrame,
 #endif
 
@@ -190,92 +204,6 @@ const char* const kPersistentPrefNames[] = {
     variations::prefs::kVariationsSeedSignature,
 };
 
-// TODO(https://crbug.com/861722): Remove this list.
-// WARNING: PLEASE DO NOT ADD ANYTHING TO THIS LIST.
-// This list is temporarily added for transition of incognito preferences
-// storage default, from on disk to in memory. All items in this list will be
-// audited, checked with owners, and removed or transfered to
-// |kPersistentPrefNames|.
-const char* const kTemporaryIncognitoWhitelist[] = {
-    // chrome/common/pref_names.h
-    prefs::kEnableHyperlinkAuditing,
-
-    prefs::kEnableDoNotTrack,
-    prefs::kEnableEncryptedMedia,
-
-#if defined(OS_ANDROID)
-    prefs::kClearedBlockedSiteNotificationChannels,
-#endif
-
-    prefs::kPushMessagingAppIdentifierMap,
-
-    prefs::kWebRTCMultipleRoutesEnabled,
-    prefs::kWebRTCNonProxiedUdpEnabled,
-    prefs::kWebRTCIPHandlingPolicy,
-
-#if defined(OS_WIN)
-#if defined(GOOGLE_CHROME_BUILD)
-    prefs::kHasSeenGoogleAppsPromoPage,
-#endif  // defined(GOOGLE_CHROME_BUILD)
-#endif  // defined(OS_WIN)
-
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX)
-    prefs::kOpenPdfDownloadInSystemReader,
-#endif
-
-    prefs::kDefaultTasksByMimeType,
-    prefs::kDefaultTasksBySuffix,
-
-    prefs::kWebAppCreateOnDesktop,
-    prefs::kWebAppCreateInAppsMenu,
-    prefs::kWebAppCreateInQuickLaunchBar,
-
-    prefs::kDefaultAudioCaptureDevice,
-    prefs::kDefaultVideoCaptureDevice,
-    prefs::kMediaDeviceIdSalt,
-    prefs::kMediaStorageIdSalt,
-
-    prefs::kClearPluginLSODataEnabled,
-    prefs::kPepperFlashSettingsEnabled,
-
-    prefs::kPerformanceTracingEnabled,
-
-#if !defined(OS_ANDROID)
-    prefs::kMediaGalleriesUniqueId,
-    prefs::kMediaGalleriesRememberedGalleries,
-#endif  // !defined(OS_ANDROID)
-
-#if defined(OS_WIN)
-    prefs::kNetworkProfileWarningsLeft,
-    prefs::kNetworkProfileLastWarningTime,
-#endif
-
-#if BUILDFLAG(ENABLE_APP_LIST)
-    prefs::kAppListLocalState,
-#endif  // BUILDFLAG(ENABLE_APP_LIST)
-
-    prefs::kDRMSalt,
-    prefs::kEnableDRM,
-
-    prefs::kWatchdogExtensionActive,
-
-#if defined(OS_ANDROID)
-    prefs::kPartnerBookmarkMappings,
-#endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-// prefs::kRestartInBackground,
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    prefs::kAnimationPolicy,
-#endif
-
-    prefs::kBackgroundTracingLastUpload,
-
-    prefs::kMediaEngagementSchemaVersion,
-};
-
 }  // namespace
 
 namespace prefs {
@@ -284,12 +212,6 @@ std::vector<const char*> GetIncognitoPersistentPrefsWhitelist() {
   std::vector<const char*> whitelist;
   whitelist.insert(whitelist.end(), kPersistentPrefNames,
                    kPersistentPrefNames + base::size(kPersistentPrefNames));
-
-  // TODO(https://crbug.com/861722): Remove after the list is audited and
-  // emptied.
-  whitelist.insert(
-      whitelist.end(), kTemporaryIncognitoWhitelist,
-      kTemporaryIncognitoWhitelist + base::size(kTemporaryIncognitoWhitelist));
   return whitelist;
 }
 

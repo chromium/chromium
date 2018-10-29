@@ -96,7 +96,7 @@ void ScopedVirtualAuthenticatorEnvironment::ClearAuthenticators(
   std::move(callback).Run();
 }
 
-std::unique_ptr<::device::FidoDiscovery>
+std::unique_ptr<::device::FidoDeviceDiscovery>
 ScopedVirtualAuthenticatorEnvironment::CreateFidoDiscovery(
     device::FidoTransportProtocol transport,
     ::service_manager::Connector* connector) {

@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_DIRECTION_H_
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"  // nogncheck
 #endif
 
 namespace blink {

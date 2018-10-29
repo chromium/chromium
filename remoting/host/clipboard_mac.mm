@@ -80,6 +80,7 @@ void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
   // Write text to clipboard.
   NSString* text = base::SysUTF8ToNSString(event.data());
   NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard clearContents];
   [pasteboard writeObjects:@[ text ]];
 
   // Update local change-count to prevent this change from being picked up by

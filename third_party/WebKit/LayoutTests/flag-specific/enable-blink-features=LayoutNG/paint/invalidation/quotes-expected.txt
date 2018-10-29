@@ -20,32 +20,27 @@
         {
           "object": "NGPhysicalTextFragment 'quote 2'",
           "rect": [17, 28, 47, 19],
-          "reason": "disappeared"
+          "reason": "style change"
         },
         {
           "object": "NGPhysicalTextFragment 'quote 2'",
           "rect": [16, 28, 47, 19],
-          "reason": "appeared"
+          "reason": "style change"
         },
         {
-          "object": "NGPhysicalTextFragment '\u003E'",
+          "object": "NGPhysicalTextFragment '}'",
           "rect": [64, 28, 9, 19],
-          "reason": "disappeared"
+          "reason": "style change"
         },
         {
-          "object": "NGPhysicalTextFragment '\u003C'",
+          "object": "NGPhysicalTextFragment '{'",
           "rect": [8, 28, 9, 19],
-          "reason": "disappeared"
+          "reason": "style change"
         },
         {
           "object": "NGPhysicalTextFragment '}'",
           "rect": [63, 28, 8, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '{'",
-          "rect": [8, 28, 8, 19],
-          "reason": "appeared"
+          "reason": "style change"
         }
       ]
     }

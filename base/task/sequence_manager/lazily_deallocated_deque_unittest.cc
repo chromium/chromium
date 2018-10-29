@@ -254,7 +254,7 @@ TEST_F(LazilyDeallocatedDequeTest, PushBackAndFront) {
   }
 }
 
-TEST_F(LazilyDeallocatedDequeTest, SetCapacity) {
+TEST_F(LazilyDeallocatedDequeTest, PushBackThenSetCapacity) {
   LazilyDeallocatedDeque<int> d;
   for (int i = 0; i < 1000; i++) {
     d.push_back(i);
@@ -265,7 +265,77 @@ TEST_F(LazilyDeallocatedDequeTest, SetCapacity) {
   // We need 1 more spot than the size due to the way the Ring works.
   d.SetCapacity(1001);
 
+  EXPECT_EQ(1000u, d.size());
+  EXPECT_EQ(0, d.front());
+  EXPECT_EQ(999, d.back());
+
   for (int i = 0; i < 1000; i++) {
+    EXPECT_EQ(d.front(), i);
+    d.pop_front();
+  }
+}
+
+TEST_F(LazilyDeallocatedDequeTest, PushFrontThenSetCapacity) {
+  LazilyDeallocatedDeque<int> d;
+  for (int i = 0; i < 1000; i++) {
+    d.push_front(i);
+  }
+
+  EXPECT_EQ(1336u, d.capacity());
+
+  // We need 1 more spot than the size due to the way the Ring works.
+  d.SetCapacity(1001);
+
+  EXPECT_EQ(1000u, d.size());
+  EXPECT_EQ(999, d.front());
+  EXPECT_EQ(0, d.back());
+
+  for (int i = 0; i < 1000; i++) {
+    EXPECT_EQ(d.front(), 999 - i);
+    d.pop_front();
+  }
+}
+
+TEST_F(LazilyDeallocatedDequeTest, PushFrontThenSetCapacity2) {
+  LazilyDeallocatedDeque<std::unique_ptr<int>> d;
+  for (int i = 0; i < 1000; i++) {
+    d.push_front(std::make_unique<int>(i));
+  }
+
+  EXPECT_EQ(1336u, d.capacity());
+
+  // We need 1 more spot than the size due to the way the Ring works.
+  d.SetCapacity(1001);
+
+  EXPECT_EQ(1000u, d.size());
+  EXPECT_EQ(999, *d.front());
+  EXPECT_EQ(0, *d.back());
+
+  for (int i = 0; i < 1000; i++) {
+    EXPECT_EQ(*d.front(), 999 - i);
+    d.pop_front();
+  }
+}
+
+TEST_F(LazilyDeallocatedDequeTest, PushBackAndFrontThenSetCapacity) {
+  LazilyDeallocatedDeque<int> d;
+
+  int j = 1;
+  for (int i = 0; i < 1000; i++) {
+    d.push_back(j++);
+    d.push_back(j++);
+    d.push_back(j++);
+    d.push_back(j++);
+    d.push_front(-i);
+  }
+
+  d.SetCapacity(5001);
+
+  EXPECT_EQ(5000u, d.size());
+  EXPECT_EQ(-999, d.front());
+  EXPECT_EQ(4000, d.back());
+
+  for (int i = -999; i < 4000; i++) {
     EXPECT_EQ(d.front(), i);
     d.pop_front();
   }
@@ -352,6 +422,86 @@ TEST_F(LazilyDeallocatedDequeTest, RingPushPopPushPop) {
   r.pop_front();
 
   EXPECT_FALSE(r.CanPop());
+}
+
+TEST_F(LazilyDeallocatedDequeTest, PushAndIterate) {
+  LazilyDeallocatedDeque<int> d;
+
+  for (int i = 0; i < 1000; i++) {
+    d.push_front(i);
+  }
+
+  int expected = 999;
+  for (int value : d) {
+    EXPECT_EQ(expected, value);
+    expected--;
+  }
+}
+
+TEST_F(LazilyDeallocatedDequeTest, Swap) {
+  LazilyDeallocatedDeque<int> a;
+  LazilyDeallocatedDeque<int> b;
+
+  a.push_back(1);
+  a.push_back(2);
+
+  for (int i = 0; i < 1000; i++) {
+    b.push_back(i);
+  }
+
+  EXPECT_EQ(2u, a.size());
+  EXPECT_EQ(1, a.front());
+  EXPECT_EQ(2, a.back());
+  EXPECT_EQ(1000u, b.size());
+  EXPECT_EQ(0, b.front());
+  EXPECT_EQ(999, b.back());
+
+  a.swap(b);
+
+  EXPECT_EQ(1000u, a.size());
+  EXPECT_EQ(0, a.front());
+  EXPECT_EQ(999, a.back());
+  EXPECT_EQ(2u, b.size());
+  EXPECT_EQ(1, b.front());
+  EXPECT_EQ(2, b.back());
+}
+
+class DestructorTestItem {
+ public:
+  DestructorTestItem() : v_(-1) {}
+
+  DestructorTestItem(int v) : v_(v) {}
+
+  ~DestructorTestItem() { destructor_count_++; }
+
+  int v_;
+  static int destructor_count_;
+};
+
+int DestructorTestItem::destructor_count_ = 0;
+
+TEST_F(LazilyDeallocatedDequeTest, PopFrontCallsDestructor) {
+  LazilyDeallocatedDeque<DestructorTestItem> a;
+
+  a.push_front(DestructorTestItem(123));
+
+  DestructorTestItem::destructor_count_ = 0;
+  a.pop_front();
+  EXPECT_EQ(1, DestructorTestItem::destructor_count_);
+}
+
+TEST_F(LazilyDeallocatedDequeTest, ExpectedNumberOfDestructorsCalled) {
+  {
+    LazilyDeallocatedDeque<DestructorTestItem> a;
+
+    for (int i = 0; i < 100; i++) {
+      a.push_front(DestructorTestItem(i));
+    }
+
+    DestructorTestItem::destructor_count_ = 0;
+  }
+
+  EXPECT_EQ(100, DestructorTestItem::destructor_count_);
 }
 
 }  // namespace internal

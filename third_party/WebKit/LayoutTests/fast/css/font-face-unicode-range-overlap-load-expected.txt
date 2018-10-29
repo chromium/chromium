@@ -2,7 +2,6 @@ Tests that only necessary fonts are loaded when font faces have overlapping unic
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS faces.length is 6
 PASS faces[0].status is "unloaded"
 PASS faces[1].status is "loaded"
@@ -13,6 +12,8 @@ PASS faces[5].status is "loaded"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 I
 
 J

@@ -21,8 +21,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_enumerator.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/media_galleries/win/snapshot_file_details.h"
 #include "components/services/filesystem/public/interfaces/types.mojom.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/common/fileapi/file_system_util.h"
 
@@ -68,7 +70,6 @@ bool GetStorageInfoOnUIThread(const base::string16& storage_path,
 base::string16 GetFileObjectIdFromPathOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     const base::FilePath& file_path) {
-  base::AssertBlockingAllowed();
   DCHECK(!file_path.empty());
   IPortableDevice* device =
       PortableDeviceMapService::GetInstance()->GetPortableDevice(
@@ -106,7 +107,6 @@ std::unique_ptr<MTPDeviceObjectEnumerator>
 CreateFileEnumeratorOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     const base::FilePath& root) {
-  base::AssertBlockingAllowed();
   DCHECK(!device_info.registered_device_path.empty());
   DCHECK(!root.empty());
   IPortableDevice* device =
@@ -137,7 +137,6 @@ CreateFileEnumeratorOnBlockingPoolThread(
 bool OpenDeviceOnBlockingPoolThread(
     const base::string16& pnp_device_id,
     const base::string16& registered_device_path) {
-  base::AssertBlockingAllowed();
   DCHECK(!pnp_device_id.empty());
   DCHECK(!registered_device_path.empty());
   Microsoft::WRL::ComPtr<IPortableDevice> device =
@@ -158,7 +157,6 @@ base::File::Error GetFileInfoOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     const base::FilePath& file_path,
     base::File::Info* file_info) {
-  base::AssertBlockingAllowed();
   DCHECK(!device_info.registered_device_path.empty());
   DCHECK(!file_path.empty());
   DCHECK(file_info);
@@ -184,7 +182,7 @@ base::File::Error ReadDirectoryOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     const base::FilePath& root,
     storage::AsyncFileUtil::EntryList* entries) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   DCHECK(!root.empty());
   DCHECK(entries);
   base::File::Info file_info;
@@ -219,7 +217,6 @@ base::File::Error ReadDirectoryOnBlockingPoolThread(
 base::File::Error GetFileStreamOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     SnapshotFileDetails* file_details) {
-  base::AssertBlockingAllowed();
   DCHECK(file_details);
   DCHECK(!file_details->request_info().device_file_path.empty());
   DCHECK(!file_details->request_info().snapshot_file_path.empty());
@@ -276,7 +273,6 @@ base::File::Error GetFileStreamOnBlockingPoolThread(
 // files, or 0 on failure. For empty files, just return 0.
 DWORD WriteDataChunkIntoSnapshotFileOnBlockingPoolThread(
     const SnapshotFileDetails& file_details) {
-  base::AssertBlockingAllowed();
   if (file_details.file_info().size == 0)
     return 0;
   return media_transfer_protocol::CopyDataChunkToLocalFile(
@@ -287,7 +283,6 @@ DWORD WriteDataChunkIntoSnapshotFileOnBlockingPoolThread(
 
 void DeletePortableDeviceOnBlockingPoolThread(
     const base::string16& registered_device_path) {
-  base::AssertBlockingAllowed();
   PortableDeviceMapService::GetInstance()->RemovePortableDevice(
       registered_device_path);
 }
@@ -324,18 +319,13 @@ void CreateMTPDeviceAsyncDelegate(
   DCHECK(!device_location.empty());
   base::string16* pnp_device_id = new base::string16;
   base::string16* storage_object_id = new base::string16;
-  content::BrowserThread::PostTaskAndReplyWithResult<bool>(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      base::Bind(&GetStorageInfoOnUIThread,
-                 device_location,
+  base::PostTaskWithTraitsAndReplyWithResult<bool>(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::Bind(&GetStorageInfoOnUIThread, device_location,
                  base::Unretained(pnp_device_id),
                  base::Unretained(storage_object_id)),
-      base::Bind(&OnGetStorageInfoCreateDelegate,
-                 device_location,
-                 callback,
-                 base::Owned(pnp_device_id),
-                 base::Owned(storage_object_id)));
+      base::Bind(&OnGetStorageInfoCreateDelegate, device_location, callback,
+                 base::Owned(pnp_device_id), base::Owned(storage_object_id)));
 }
 
 // MTPDeviceDelegateImplWin ---------------------------------------------------

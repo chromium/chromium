@@ -2,7 +2,6 @@ Moving pending scripts between detached and non-detached documents should not cr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

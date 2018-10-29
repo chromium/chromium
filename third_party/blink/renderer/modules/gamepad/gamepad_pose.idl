@@ -4,7 +4,7 @@
 
 // https://w3c.github.io/gamepad/extensions.html#gamepadpose-interface
 [
-    RuntimeEnabled=GamepadExtensions
+    OriginTrialEnabled=GamepadExtensions
 ] interface GamepadPose {
     [MeasureAs=GamepadPoseHasOrientation] readonly attribute boolean hasOrientation;
     [MeasureAs=GamepadPoseHasPosition] readonly attribute boolean hasPosition;

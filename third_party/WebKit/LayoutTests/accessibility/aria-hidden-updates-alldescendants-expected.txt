@@ -3,10 +3,10 @@ test
 Step 1: Do something
 Step 2: Do another thing
 Step 3: Do one last thing
+
 This tests that if aria-hidden changes on an element, all it's existing children will update their children caches
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS main.childrenCount is 1
 PASS main.childrenCount is 2

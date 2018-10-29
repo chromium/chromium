@@ -182,14 +182,4 @@ bool ParseListAccountsData(const std::string& data,
   return true;
 }
 
-bool RequestOriginatedFromGaia(const net::URLRequest& request) {
-  return request.GetUserData(kURLRequestUserDataKey) != nullptr;
-}
-
-void MarkURLFetcherAsGaia(net::URLFetcher* fetcher) {
-  DCHECK(fetcher);
-  fetcher->SetURLRequestUserData(kURLRequestUserDataKey,
-                                 base::Bind(&GaiaURLRequestUserData::Create));
-}
-
 }  // namespace gaia

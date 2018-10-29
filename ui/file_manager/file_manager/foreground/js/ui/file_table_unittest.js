@@ -221,6 +221,7 @@ function testSetWidthAndKeepTotal() {
   });
   var minWidth = FileTableColumnModel.MIN_WIDTH_;
   // Total width = 500.
-  expectedWidths = [100, 100, 500 - 100 * 2 - minWidth * 2, minWidth, minWidth];
+  const expectedWidths =
+      [100, 100, 500 - 100 * 2 - minWidth * 2, minWidth, minWidth];
   assertArrayEquals(expectedWidths, getColumnWidths(model));
 }

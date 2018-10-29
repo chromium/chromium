@@ -111,18 +111,18 @@ Vector<AtomicString> UserPreferredLanguages() {
   return languages;
 }
 
-size_t IndexOfBestMatchingLanguageInList(
+wtf_size_t IndexOfBestMatchingLanguageInList(
     const AtomicString& language,
     const Vector<AtomicString>& language_list) {
   AtomicString language_without_locale_match;
   AtomicString language_match_but_not_locale;
-  size_t language_without_locale_match_index = 0;
-  size_t language_match_but_not_locale_match_index = 0;
+  wtf_size_t language_without_locale_match_index = 0;
+  wtf_size_t language_match_but_not_locale_match_index = 0;
   bool can_match_language_only =
       (language.length() == 2 ||
        (language.length() >= 3 && language[2] == '-'));
 
-  for (size_t i = 0; i < language_list.size(); ++i) {
+  for (wtf_size_t i = 0; i < language_list.size(); ++i) {
     String canonicalized_language_from_list =
         CanonicalizeLanguageIdentifier(language_list[i]);
 

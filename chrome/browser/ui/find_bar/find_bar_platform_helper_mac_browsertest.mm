@@ -11,14 +11,12 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/cocoa/find_pasteboard.h"
 
-class FindBarPlatformHelperMacTest : public InProcessBrowserTest,
-                                     public testing::WithParamInterface<bool> {
+class FindBarPlatformHelperMacTest : public InProcessBrowserTest {
  public:
-  FindBarPlatformHelperMacTest() : scoped_macviews_browser_mode_(GetParam()) {}
+  FindBarPlatformHelperMacTest() {}
   ~FindBarPlatformHelperMacTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -31,20 +29,14 @@ class FindBarPlatformHelperMacTest : public InProcessBrowserTest,
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  static std::string ParamInfoToString(
-      ::testing::TestParamInfo<bool> param_info) {
-    return param_info.param ? "Views" : "Cocoa";
-  }
-
  private:
-  test::ScopedMacViewsBrowserMode scoped_macviews_browser_mode_;
   NSString* old_find_text_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelperMacTest);
 };
 
 // Tests that the find bar is populated with the pasteboard at construction.
-IN_PROC_BROWSER_TEST_P(FindBarPlatformHelperMacTest,
+IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
                        FindBarPopulatedWithPasteboardOnConstruction) {
   ASSERT_FALSE(browser()->HasFindBarController());
 
@@ -59,7 +51,7 @@ IN_PROC_BROWSER_TEST_P(FindBarPlatformHelperMacTest,
 }
 
 // Tests that the find bar is updated as the pasteboard updates.
-IN_PROC_BROWSER_TEST_P(FindBarPlatformHelperMacTest,
+IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
                        FindBarUpdatedFromPasteboard) {
   FindBarController* find_bar_controller = browser()->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
@@ -76,8 +68,3 @@ IN_PROC_BROWSER_TEST_P(FindBarPlatformHelperMacTest,
   EXPECT_EQ(base::SysNSStringToUTF16(next_string),
             find_bar_controller->find_bar()->GetFindText());
 }
-
-INSTANTIATE_TEST_CASE_P(,
-                        FindBarPlatformHelperMacTest,
-                        ::testing::Bool(),
-                        FindBarPlatformHelperMacTest::ParamInfoToString);

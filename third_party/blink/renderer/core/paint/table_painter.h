@@ -26,10 +26,6 @@ class TablePainter {
 
  private:
   void PaintCollapsedBorders(const PaintInfo&);
-  // Paint a hit test display item and record hit test data. This should be
-  // called in the background paint phase even if there is no other painted
-  // content.
-  void RecordHitTestData(const PaintInfo&, const LayoutPoint& paint_offset);
 
   const LayoutTable& layout_table_;
 };

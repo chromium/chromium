@@ -34,8 +34,10 @@
 #include "third_party/blink/renderer/core/animation/animatable/animatable_filter_operations.h"
 #include "third_party/blink/renderer/core/animation/animatable/animatable_transform.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -52,11 +54,18 @@ static AnimatableValue* CreateFromTransformProperties(
   return AnimatableTransform::Create(operation, has_transform ? zoom : 1);
 }
 
-AnimatableValue* CSSAnimatableValueFactory::Create(const CSSProperty& property,
-                                                   const ComputedStyle& style) {
-  DCHECK(property.IsInterpolable());
-  DCHECK(property.IsCompositableProperty());
-  switch (property.PropertyID()) {
+AnimatableValue* CSSAnimatableValueFactory::Create(
+    const PropertyHandle& property,
+    const ComputedStyle& style) {
+  const CSSProperty& css_property = property.GetCSSProperty();
+#if DCHECK_IS_ON()
+  // Variables are conditionally interpolable and compositable.
+  if (css_property.PropertyID() != CSSPropertyVariable) {
+    DCHECK(css_property.IsInterpolable());
+    DCHECK(css_property.IsCompositableProperty());
+  }
+#endif
+  switch (css_property.PropertyID()) {
     case CSSPropertyOpacity:
       return AnimatableDouble::Create(style.Opacity());
     case CSSPropertyFilter:
@@ -77,6 +86,19 @@ AnimatableValue* CSSAnimatableValueFactory::Create(const CSSProperty& property,
     case CSSPropertyScale: {
       return CreateFromTransformProperties(style.Scale(), style.EffectiveZoom(),
                                            nullptr);
+    }
+    case CSSPropertyVariable: {
+      if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
+        return nullptr;
+      }
+      const AtomicString& property_name = property.CustomPropertyName();
+      const CSSValue* value = style.GetRegisteredVariable(property_name);
+      if (!value || !value->IsPrimitiveValue() ||
+          !ToCSSPrimitiveValue(*value).IsNumber()) {
+        return nullptr;
+      }
+      return AnimatableDouble::Create(
+          ToCSSPrimitiveValue(*value).GetFloatValue());
     }
     default:
       NOTREACHED();

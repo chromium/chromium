@@ -162,10 +162,9 @@ Polymer({
   /**
    * Event triggered when the selected type changes. Updates nameservers and
    * sends the change value if necessary.
-   * @param {!Event} event
    * @private
    */
-  onTypeChange_: function(event) {
+  onTypeChange_: function() {
     var type = this.$$('#nameserverType').selected;
     this.nameserversType_ = type;
     if (type == 'custom') {

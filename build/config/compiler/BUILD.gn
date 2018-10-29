@@ -13,6 +13,7 @@ import("//build/config/host_byteorder.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -501,8 +502,7 @@ config("compiler") {
     }
   }
 
-  if (is_clang && !is_nacl && current_toolchain == host_toolchain &&
-      target_os != "chromeos") {
+  if (is_clang && !is_nacl && !use_xcode_clang) {
     cflags += [
       # TODO(hans): Remove this once Clang generates better optimized debug info
       # by default. https://crbug.com/765793
@@ -538,8 +538,20 @@ config("compiler") {
     ]
 
     if (is_win && use_lld) {
-      # Absolutize source file path for PDB.
-      ldflags += [ "/PDBSourcePath:" + rebase_path(root_build_dir) ]
+      if (symbol_level == 2 || (is_clang && using_sanitizer)) {
+        # Absolutize source file path for PDB. Pass the real build directory
+        # if the pdb contains source-level debug information.
+        ldflags += [ "/PDBSourcePath:" + rebase_path(root_build_dir) ]
+      } else {
+        # On Windows, (non-sanitizier) symbol_level 1 builds don't contain
+        # debug information in obj files; the linker just creates enough
+        # debug info at link time to produce symbolized stacks (without line
+        # numbers). In that case, there's no downside in using a fake fixed
+        # base directory for paths in the pdb. This makes the pdb output
+        # fully deterministic and independent of the build directory.
+        assert(symbol_level == 1 && !(is_clang && using_sanitizer))
+        ldflags += [ "/PDBSourcePath:o:\fake\prefix" ]
+      }
     }
   }
 
@@ -1057,29 +1069,16 @@ config("compiler_cpu_abi") {
         ]
       }
     } else if (current_cpu == "ppc64") {
-      if (v8_current_cpu == "ppc") {
-        cflags += [ "-m32" ]
-        ldflags += [ "-m32" ]
-      } else if (v8_current_cpu == "ppc64") {
-        if (current_os == "aix") {
-          cflags += [ "-maix64" ]
-          ldflags += [ "-maix64" ]
-        } else {
-          cflags += [ "-m64" ]
-          ldflags += [ "-m64" ]
-        }
-      }
-    } else if (current_cpu == "s390x") {
-      if (v8_current_cpu == "s390" && host_byteorder == "little") {
-        cflags += [ "-m32" ]
-        ldflags += [ "-m32" ]
-      } else if (v8_current_cpu == "s390") {
-        cflags += [ "-m31" ]
-        ldflags += [ "-m31" ]
-      } else if (v8_current_cpu == "s390x") {
+      if (current_os == "aix") {
+        cflags += [ "-maix64" ]
+        ldflags += [ "-maix64" ]
+      } else {
         cflags += [ "-m64" ]
         ldflags += [ "-m64" ]
       }
+    } else if (current_cpu == "s390x") {
+      cflags += [ "-m64" ]
+      ldflags += [ "-m64" ]
     }
   }
 
@@ -1432,14 +1431,6 @@ config("default_warnings") {
       cflags += [ "-Wno-maybe-uninitialized" ]
       cflags += [ "-Wno-deprecated-declarations" ]
 
-      # GCC assumes 'this' is never nullptr and optimizes away code
-      # like "if (this == nullptr) ...": [1].  However, some Chromium
-      # code relies on these types of null pointer checks [2], so
-      # disable this optimization.
-      # [1] https://gcc.gnu.org/gcc-6/porting_to.html#this-cannot-be-null
-      # [2] https://crbug.com/784492#c13
-      cflags += [ "-fno-delete-null-pointer-checks" ]
-
       # -Wcomment gives too many false positives in the case a
       # backslash ended comment line is followed by a new line of
       # comments
@@ -1468,10 +1459,6 @@ config("default_warnings") {
       # this is worth fixing.
       "-Wno-c++11-narrowing",
 
-      # Warns on switches on enums that cover all enum values but
-      # also contain a default: branch. Chrome is full of that.
-      "-Wno-covered-switch-default",
-
       # TODO(thakis): This used to be implied by -Wno-unused-function,
       # which we no longer use. Check if it makes sense to remove
       # this as well. http://crbug.com/316352
@@ -1484,37 +1471,27 @@ config("default_warnings") {
       cflags += [
         # TODO(thakis): https://crbug.com/604888
         "-Wno-undefined-var-template",
+
+        # TODO(hans): https://crbug.com/766891
+        "-Wno-null-pointer-arithmetic",
       ]
-      if (current_toolchain == host_toolchain || !use_xcode_clang ||
-          xcode_version_int >= 930) {
-        cflags += [
-          # TODO(thakis): https://crbug.com/617318
-          "-Wno-nonportable-include-path",
 
-          # TODO(thakis): https://crbug.com/683349
-          "-Wno-user-defined-warnings",
+      if (is_win) {
+        # TODO(thakis): https://crbug.com/617318
+        # Currently goma can not handle case sensitiveness for windows well.
+        cflags += [ "-Wno-nonportable-include-path" ]
+      }
 
-          # TODO(hans): https://crbug.com/681136
-          "-Wno-unused-lambda-capture",
-        ]
-      }
-      if (current_toolchain == host_toolchain || !use_xcode_clang ||
-          xcode_version_int >= 1000) {
-        cflags += [
-          # TODO(hans): https://crbug.com/766891
-          "-Wno-null-pointer-arithmetic",
-        ]
-      }
       if (current_toolchain == host_toolchain || !use_xcode_clang) {
         # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
         # recognize.
         cflags += [
-          # TODO(thakis): https://crbug.com/753973
-          "-Wno-enum-compare-switch",
-
           # Ignore warnings about MSVC optimization pragmas.
           # TODO(thakis): Only for no_chromium_code? http://crbug.com/505314
           "-Wno-ignored-pragma-optimize",
+
+          # TODO(hans): https://crbug.com/890307
+          "-Wno-defaulted-function-deleted",
         ]
       }
     }
@@ -1630,6 +1607,13 @@ config("no_chromium_code") {
       # suppressing them individually, we just blanket suppress them here.
       "-Wno-unused-variable",
     ]
+
+    if (!is_nacl) {
+      cflags += [
+        # TODO(hans): https://crbug.com/681136
+        "-Wno-unused-lambda-capture",
+      ]
+    }
   }
 
   configs = [ ":default_warnings" ]
@@ -1782,7 +1766,7 @@ config("no_size_t_to_int_warning") {
 # Code that currently generates warnings for this can include this
 # config to disable them.
 config("no_shorten_64_warnings") {
-  if (current_cpu == "x64") {
+  if (current_cpu == "x64" || current_cpu == "arm64") {
     if (is_clang) {
       cflags = [ "-Wno-shorten-64-to-32" ]
     } else {
@@ -2192,6 +2176,22 @@ config("afdo") {
 #   configs -= [ "//build/config/compiler:default_symbols" ]
 #   configs += [ "//build/config/compiler:symbols" ]
 
+# A helper config that all configs passing /DEBUG to the linker should
+# include as sub-config.
+config("win_pdbaltpath") {
+  visibility = [
+    ":symbols",
+    ":minimal_symbols",
+  ]
+
+  # /DEBUG causes the linker to generate a pdb file, and to write the absolute
+  # path to it in the executable file it generates.  This flag turns that
+  # absolute path into just the basename of the pdb file, which helps with
+  # build reproducibility. Debuggers look for pdb files next to executables,
+  # so there's no downside to always using this.
+  ldflags = [ "/pdbaltpath:%_PDB%" ]
+}
+
 # Full symbols.
 config("symbols") {
   if (is_win) {
@@ -2222,6 +2222,9 @@ config("symbols") {
       ldflags = [ "/DEBUG" ]
     }
 
+    # All configs using /DEBUG should include this:
+    configs = [ ":win_pdbaltpath" ]
+
     if (is_clang) {
       # /DEBUG:FASTLINK requires every object file to have standalone debug
       # information.
@@ -2244,7 +2247,7 @@ config("symbols") {
       }
     } else {
       cflags = []
-      if (!use_debug_fission && target_cpu == "arm") {
+      if (!use_debug_fission && current_cpu == "arm") {
         # dump_syms has issues with dwarf4 on arm, https://crbug.com/744956
         # TODO(thakis): Remove this again once dump_syms is fixed.
         #
@@ -2274,7 +2277,7 @@ config("symbols") {
     # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
     # DWARF info may be corrupt; offsets in a range list entry are in different
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    if (!is_mac && !is_ios && !is_nacl && target_cpu != "x86" &&
+    if (!is_mac && !is_ios && !is_nacl && current_cpu != "x86" &&
         (use_gold || use_lld)) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
@@ -2297,6 +2300,9 @@ config("minimal_symbols") {
     cflags = []
     ldflags = [ "/DEBUG" ]
 
+    # All configs using /DEBUG should include this:
+    configs = [ ":win_pdbaltpath" ]
+
     # For win/asan, get stack traces with full line numbers.
     # AddressSanitizerTests.TestAddressSanitizer needs this, and since
     # win/asan isn't a default cq bot the build time hit is ok.
@@ -2307,7 +2313,7 @@ config("minimal_symbols") {
     }
   } else {
     cflags = []
-    if (target_cpu == "arm") {
+    if (current_cpu == "arm") {
       # dump_syms has issues with dwarf4 on arm, https://crbug.com/744956
       # TODO(thakis): Remove this again once dump_syms is fixed.
       cflags += [ "-gdwarf-3" ]

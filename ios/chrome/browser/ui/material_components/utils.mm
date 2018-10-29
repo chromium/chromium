@@ -36,18 +36,6 @@ void CustomizeAppBarShadow(
                           intensityDidChangeBlock:intensityBlock];
 }
 
-void ConfigureAppBarWithCardStyle(MDCAppBar* appBar) {
-  appBar.headerViewController.headerView.canOverExtend = NO;
-  appBar.headerViewController.headerView.shiftBehavior =
-      MDCFlexibleHeaderShiftBehaviorDisabled;
-  appBar.headerViewController.headerView.backgroundColor =
-      [[MDCPalette greyPalette] tint200];
-  appBar.navigationBar.tintColor = [[MDCPalette greyPalette] tint900];
-  appBar.navigationBar.titleAlignment = MDCNavigationBarTitleAlignmentLeading;
-
-  CustomizeAppBarShadow(appBar.headerViewController);
-}
-
 void ConfigureAppBarViewControllerWithCardStyle(
     MDCAppBarViewController* viewController) {
   viewController.headerView.canOverExtend = NO;

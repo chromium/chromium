@@ -354,23 +354,18 @@ TEST_F(RegistryLoggerTest, RecordFoundPUPsDuplicates) {
     EXPECT_EQ(1UL, expected_pups.count(pup_id));
 }
 
-// TODO(joenotcharles):
-// Have components/chrome_cleaner/public/constants/constant.cc use branding
-// instead of hardcoded strings so that we expect the correct company name here
-// on all builds
-TEST_F(RegistryLoggerTest, DISABLED_LoggingKeyPathContainsCompanyName) {
+TEST_F(RegistryLoggerTest, LoggingKeyPathContainsCompanyName) {
   const RegistryLogger::Mode mode = RegistryLogger::Mode::REPORTER;
   TestRegistryLogger logger(mode);
-  const base::string16 expected_name = base::StrCat(
-      {L"Software\\", COMPANY_SHORTNAME_STRING, L"\\Software Removal Tool"});
+  // This checks directly for the company name Google, instead of using
+  // COMPANY_SHORTNAME_STRING, because it's used for communication with Chrome
+  // so it needs to use Chrome's company name.
+  const base::string16 expected_name =
+      L"Software\\Google\\Software Removal Tool";
   EXPECT_EQ(expected_name, logger.GetLoggingKeyPath(mode));
 }
 
-// TODO(joenotcharles):
-// Have components/chrome_cleaner/public/constants/constant.cc use branding
-// instead of hardcoded strings so that we expect the correct company name here
-// on all builds
-TEST_F(RegistryLoggerTest, DISABLED_UseSuffixRegistryKey) {
+TEST_F(RegistryLoggerTest, UseSuffixRegistryKey) {
   const RegistryLogger::Mode mode = RegistryLogger::Mode::REPORTER;
   TestRegistryLogger logger(mode, kTestSuffix);
   TestRegistryLogger no_suffix_logger(mode);
@@ -379,10 +374,13 @@ TEST_F(RegistryLoggerTest, DISABLED_UseSuffixRegistryKey) {
   EXPECT_EQ(base::string16::npos,
             key_name.find(base::UTF8ToUTF16(kTestSuffix).c_str()));
 
+  // This checks directly for the company name Google, instead of using
+  // COMPANY_SHORTNAME_STRING, because it's used for communication with Chrome
+  // so it needs to use Chrome's company name.
   key_name = logger.GetLoggingKeyPath(mode);
-  base::string16 expected_name = base::StrCat(
-      {L"Software\\", COMPANY_SHORTNAME_STRING, L"\\Software Removal Tool\\",
-       base::UTF8ToUTF16(kTestSuffix)});
+  const base::string16 expected_name =
+      base::StrCat({L"Software\\Google\\Software Removal Tool\\",
+                    base::UTF8ToUTF16(kTestSuffix)});
   EXPECT_EQ(expected_name, key_name);
 
   base::win::RegKey no_suffix_key;

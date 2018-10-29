@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/thread_checker.h"
+#include "base/single_thread_task_runner.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/net/wifi_access_point_info_provider.h"
 #include "net/base/network_change_notifier.h"
@@ -19,18 +21,14 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-namespace net {
-class NetworkQualityEstimator;
-}
-
 namespace metrics {
 
 SystemProfileProto::Network::EffectiveConnectionType
 ConvertEffectiveConnectionType(
     net::EffectiveConnectionType effective_connection_type);
 
-// Registers as observer with net::NetworkChangeNotifier and keeps track of
-// the network environment.
+// Registers as observer with net::NetworkChangeNotifier and
+// network::NetworkQualityTracker to keep track of the network environment.
 class NetworkMetricsProvider
     : public MetricsProvider,
       public net::NetworkChangeNotifier::NetworkChangeObserver {
@@ -40,15 +38,11 @@ class NetworkMetricsProvider
    public:
     virtual ~NetworkQualityEstimatorProvider() {}
 
-    // Returns the network quality estimator by calling |io_callback|. The
-    // returned network quality estimator may be nullptr. |io_callback| must be
-    // called on the IO thread. |io_callback| can be destroyed on IO thread only
-    // after |this| is destroyed.
-    virtual void PostReplyNetworkQualityEstimator(
-        base::Callback<void(net::NetworkQualityEstimator*)> io_callback) = 0;
-
-    // Returns the task runner on which |this| should be used and destroyed.
-    virtual scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() = 0;
+    // Provides |this| with |callback| that would be invoked by |this| every
+    // time there is a change in the network quality estimates.
+    virtual void PostReplyOnNetworkQualityChanged(
+        base::RepeatingCallback<void(net::EffectiveConnectionType)>
+            callback) = 0;
 
    protected:
     NetworkQualityEstimatorProvider() {}
@@ -70,12 +64,9 @@ class NetworkMetricsProvider
   FRIEND_TEST_ALL_PREFIXES(NetworkMetricsProviderTest,
                            ECTAmbiguousOnConnectionTypeChange);
   FRIEND_TEST_ALL_PREFIXES(NetworkMetricsProviderTest,
-                           ECTNotAmbiguousOnOffline);
+                           ECTNotAmbiguousOnUnknownOrOffline);
   FRIEND_TEST_ALL_PREFIXES(NetworkMetricsProviderTest,
                            ConnectionTypeIsAmbiguous);
-
-  // Listens to the changes in the effective conection type.
-  class EffectiveConnectionTypeObserver;
 
   // MetricsProvider:
   void ProvideCurrentSessionData(
@@ -105,8 +96,6 @@ class NetworkMetricsProvider
   // Logs metrics that are functions of other metrics being uploaded.
   void LogAggregatedMetrics();
 
-  // Notifies |this| that the effective connection type of the current network
-  // has changed to |type|.
   void OnEffectiveConnectionTypeChanged(net::EffectiveConnectionType type);
 
   // True if |connection_type_| changed during the lifetime of the log.
@@ -134,11 +123,6 @@ class NetworkMetricsProvider
   std::unique_ptr<NetworkQualityEstimatorProvider>
       network_quality_estimator_provider_;
 
-  // Listens to the changes in the effective connection type. Initialized and
-  // destroyed on the IO thread. May be null.
-  std::unique_ptr<EffectiveConnectionTypeObserver>
-      effective_connection_type_observer_;
-
   // Last known effective connection type.
   net::EffectiveConnectionType effective_connection_type_;
 
@@ -147,7 +131,7 @@ class NetworkMetricsProvider
   net::EffectiveConnectionType min_effective_connection_type_;
   net::EffectiveConnectionType max_effective_connection_type_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkMetricsProvider> weak_ptr_factory_;
 

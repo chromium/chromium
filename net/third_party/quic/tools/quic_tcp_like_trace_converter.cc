@@ -1,3 +1,7 @@
+// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "net/third_party/quic/tools/quic_tcp_like_trace_converter.h"
 
 #include "net/third_party/quic/core/quic_constants.h"

@@ -19,16 +19,16 @@ TEST(WebAppHelpers, GenerateApplicationNameFromURL) {
             GenerateApplicationNameFromURL(GURL("https://example.com/path")));
 }
 
-TEST(WebAppHelpers, GenerateExtensionIdFromURL) {
-  EXPECT_EQ("fedbieoalmbobgfjapopkghdmhgncnaa",
-            GenerateExtensionIdFromURL(
-                GURL("https://www.chromestatus.com/features")));
+TEST(WebAppHelpers, GenerateAppIdFromURL) {
+  EXPECT_EQ(
+      "fedbieoalmbobgfjapopkghdmhgncnaa",
+      GenerateAppIdFromURL(GURL("https://www.chromestatus.com/features")));
 
   // The io2016 example is also walked through at
   // https://play.golang.org/p/VrIq_QKFjiV
   EXPECT_EQ(
       "mjgafbdfajpigcjmkgmeokfbodbcfijl",
-      GenerateExtensionIdFromURL(GURL(
+      GenerateAppIdFromURL(GURL(
           "https://events.google.com/io2016/?utm_source=web_app_manifest")));
 }
 

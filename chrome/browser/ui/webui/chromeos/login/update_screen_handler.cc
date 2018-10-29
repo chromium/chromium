@@ -55,6 +55,11 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("cancelledUpdateMessage", IDS_EMPTY_STRING);
 #endif
 
+  builder->Add("updateOverCellularPromptTitle",
+               IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE);
+  builder->Add("updateOverCellularPromptMessage",
+               IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
+
   // For Material Design OOBE
   builder->Add("updatingScreenTitle", IDS_UPDATING_SCREEN_TITLE);
 }

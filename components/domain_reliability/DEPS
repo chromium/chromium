@@ -8,6 +8,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+services/network/public/cpp",
   "+third_party/blink/public",
 ]
 

@@ -62,7 +62,7 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
 
   // Deletes a UI resource.  May safely be called more than once.
   void DeleteUIResource(UIResourceId id) override {
-    UIResourceBitmapMap::iterator iter = ui_resource_bitmap_map_.find(id);
+    auto iter = ui_resource_bitmap_map_.find(id);
     if (iter != ui_resource_bitmap_map_.end()) {
       ui_resource_bitmap_map_.erase(iter);
       total_ui_resource_deleted_++;
@@ -74,14 +74,14 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
   int TotalUIResourceCreated() { return total_ui_resource_created_; }
 
   gfx::Size ui_resource_size(UIResourceId id) {
-    UIResourceBitmapMap::iterator iter = ui_resource_bitmap_map_.find(id);
+    auto iter = ui_resource_bitmap_map_.find(id);
     if (iter != ui_resource_bitmap_map_.end())
       return iter->second.GetSize();
     return gfx::Size();
   }
 
   UIResourceBitmap* ui_resource_bitmap(UIResourceId id) {
-    UIResourceBitmapMap::iterator iter = ui_resource_bitmap_map_.find(id);
+    auto iter = ui_resource_bitmap_map_.find(id);
     if (iter != ui_resource_bitmap_map_.end())
       return &iter->second;
     return nullptr;
@@ -1342,7 +1342,8 @@ class ScaledScrollbarLayerTestResourceCreation : public ScrollbarLayerTest {
 
     layer_tree_host_->SetViewportSizeAndScale(
         layer_tree_host_->device_viewport_size(), test_scale,
-        layer_tree_host_->local_surface_id_from_parent());
+        layer_tree_host_->local_surface_id_from_parent(),
+        layer_tree_host_->local_surface_id_allocation_time_from_parent());
 
     scrollbar_layer->Update();
 
@@ -1407,7 +1408,8 @@ class ScaledScrollbarLayerTestScaledRasterization : public ScrollbarLayerTest {
 
     layer_tree_host_->SetViewportSizeAndScale(
         layer_tree_host_->device_viewport_size(), test_scale,
-        layer_tree_host_->local_surface_id_from_parent());
+        layer_tree_host_->local_surface_id_from_parent(),
+        layer_tree_host_->local_surface_id_allocation_time_from_parent());
 
     scrollbar_layer->Update();
 

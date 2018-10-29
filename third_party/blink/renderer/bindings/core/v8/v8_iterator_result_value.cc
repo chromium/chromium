@@ -4,22 +4,19 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+
 namespace blink {
 
-v8::Local<v8::Object> V8IteratorResultValue(v8::Isolate* isolate,
+v8::Local<v8::Object> V8IteratorResultValue(ScriptState* script_state,
                                             bool done,
                                             v8::Local<v8::Value> value) {
-  v8::Local<v8::Object> result = v8::Object::New(isolate);
   if (value.IsEmpty())
-    value = v8::Undefined(isolate);
-  if (!V8CallBoolean(result->CreateDataProperty(
-          isolate->GetCurrentContext(), V8AtomicString(isolate, "done"),
-          v8::Boolean::New(isolate, done))) ||
-      !V8CallBoolean(
-          result->CreateDataProperty(isolate->GetCurrentContext(),
-                                     V8AtomicString(isolate, "value"), value)))
-    return v8::Local<v8::Object>();
-  return result;
+    value = v8::Undefined(script_state->GetIsolate());
+  return V8ObjectBuilder(script_state)
+      .Add("done", done)
+      .Add("value", value)
+      .V8Value();
 }
 
 v8::MaybeLocal<v8::Value> V8UnpackIteratorResult(ScriptState* script_state,

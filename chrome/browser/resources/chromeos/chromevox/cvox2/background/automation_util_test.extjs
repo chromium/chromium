@@ -13,11 +13,11 @@ GEN_INCLUDE(['../../testing/snippets.js']);
  * @constructor
  * @extends {ChromeVoxE2ETestBase}
  */
-function AutomationUtilE2ETest() {
+function ChromeVoxAutomationUtilE2ETest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-AutomationUtilE2ETest.prototype = {
+ChromeVoxAutomationUtilE2ETest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** @override */
@@ -63,7 +63,7 @@ AutomationUtilE2ETest.prototype = {
   */}
 };
 
-TEST_F('AutomationUtilE2ETest', 'GetAncestors', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'GetAncestors', function() {
   this.runWithLoadedTree(this.basicDoc, function(root) {
     var expectedLength = 1;
     while (root) {
@@ -74,7 +74,7 @@ TEST_F('AutomationUtilE2ETest', 'GetAncestors', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'GetUniqueAncestors', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'GetUniqueAncestors', function() {
   this.runWithLoadedTree(this.basicDoc, function(root) {
     var leftmost = root, rightmost = root;
     while (leftmost.firstChild)
@@ -117,7 +117,7 @@ TEST_F('AutomationUtilE2ETest', 'GetUniqueAncestors', function() {
   }.bind(this));
 });
 
-TEST_F('AutomationUtilE2ETest', 'GetDirection', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'GetDirection', function() {
   this.runWithLoadedTree(this.basicDoc, function(root) {
     var left = root, right = root;
 
@@ -138,7 +138,7 @@ TEST_F('AutomationUtilE2ETest', 'GetDirection', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'VisitContainer', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'VisitContainer', function() {
   this.runWithLoadedTree(toolbarDoc, function(r) {
     var pred = function(n) { return n.role != 'rootWebArea'; };
 
@@ -157,7 +157,7 @@ TEST_F('AutomationUtilE2ETest', 'VisitContainer', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'HitTest', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'HitTest', function() {
   this.runWithLoadedTree(headingDoc, function(r) {
     // Gets the center point of a rect.
     function getCP(node) {
@@ -179,7 +179,7 @@ TEST_F('AutomationUtilE2ETest', 'HitTest', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'FindLastNodeSimple', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'FindLastNodeSimple', function() {
   this.runWithLoadedTree(function() {/*!
     <p aria-label=" "><div aria-label="x"></div></p>
   */}, function(r) {
@@ -190,7 +190,7 @@ TEST_F('AutomationUtilE2ETest', 'FindLastNodeSimple', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'FindLastNodeNonLeaf', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'FindLastNodeNonLeaf', function() {
   this.runWithLoadedTree(function() {/*!
     <div aria-label="x"><div aria-label=" "></div></div>
   */}, function(r) {
@@ -201,7 +201,7 @@ TEST_F('AutomationUtilE2ETest', 'FindLastNodeNonLeaf', function() {
   });
 });
 
-TEST_F('AutomationUtilE2ETest', 'FindLastNodeComplex', function() {
+TEST_F('ChromeVoxAutomationUtilE2ETest', 'FindLastNodeComplex', function() {
   this.runWithLoadedTree(function() {/*!
     <p>start</p>
     <div aria-label="x"><div aria-label=" "></div></div>

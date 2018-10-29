@@ -284,7 +284,7 @@ void StorageAreaImpl::Put(
     new_item_memory = key.size() + sizeof(size_t);
   } else {
     DCHECK_EQ(map_state_, MapState::LOADED_KEYS_AND_VALUES);
-    ValueMap::iterator found = keys_values_map_.find(key);
+    auto found = keys_values_map_.find(key);
     if (found != keys_values_map_.end()) {
       if (found->second == value) {
         std::move(callback).Run(true);  // Key already has this value.
@@ -398,7 +398,7 @@ void StorageAreaImpl::Delete(
       commit_batch_->changed_values[key] = std::vector<uint8_t>();
   } else {
     DCHECK_EQ(map_state_, MapState::LOADED_KEYS_AND_VALUES);
-    ValueMap::iterator found = keys_values_map_.find(key);
+    auto found = keys_values_map_.find(key);
     if (found == keys_values_map_.end()) {
       std::move(callback).Run(true);
       return;

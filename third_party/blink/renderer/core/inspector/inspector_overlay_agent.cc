@@ -540,11 +540,15 @@ bool InspectorOverlayAgent::HandleInputEvent(const WebInputEvent& input_event) {
       return true;
 
     if (mouse_event.GetType() == WebInputEvent::kMouseMove) {
-      handled = OverlayMainFrame()->GetEventHandler().HandleMouseMoveEvent(
-                    mouse_event, TransformWebMouseEventVector(
-                                     frame_impl_->GetFrameView(),
-                                     std::vector<const WebInputEvent*>())) !=
-                WebInputEventResult::kNotHandled;
+      handled =
+          OverlayMainFrame()->GetEventHandler().HandleMouseMoveEvent(
+              mouse_event,
+              TransformWebMouseEventVector(frame_impl_->GetFrameView(),
+                                           std::vector<const WebInputEvent*>()),
+              TransformWebMouseEventVector(
+                  frame_impl_->GetFrameView(),
+                  std::vector<const WebInputEvent*>())) !=
+          WebInputEventResult::kNotHandled;
     }
     if (mouse_event.GetType() == WebInputEvent::kMouseDown) {
       handled = OverlayMainFrame()->GetEventHandler().HandleMousePressEvent(
@@ -564,7 +568,8 @@ bool InspectorOverlayAgent::HandleInputEvent(const WebInputEvent& input_event) {
     if (handled)
       return true;
     OverlayMainFrame()->GetEventHandler().HandlePointerEvent(
-        transformed_event, Vector<WebPointerEvent>());
+        transformed_event, Vector<WebPointerEvent>(),
+        Vector<WebPointerEvent>());
   }
   if (WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
     OverlayMainFrame()->GetEventHandler().KeyEvent(
@@ -759,7 +764,7 @@ Page* InspectorOverlayAgent::OverlayPage() {
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
-  DEFINE_STATIC_LOCAL(LocalFrameClient, dummy_local_frame_client,
+  DEFINE_STATIC_LOCAL(Persistent<LocalFrameClient>, dummy_local_frame_client,
                       (EmptyLocalFrameClient::Create()));
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
@@ -791,13 +796,9 @@ Page* InspectorOverlayAgent::OverlayPage() {
   overlay_settings.SetScriptEnabled(true);
   overlay_settings.SetPluginsEnabled(false);
   overlay_settings.SetLoadsImagesAutomatically(true);
-  // FIXME: http://crbug.com/363843. Inspector should probably create its
-  // own graphics layers and attach them to the tree rather than going
-  // through some non-composited paint function.
-  overlay_settings.SetAcceleratedCompositingEnabled(false);
 
   LocalFrame* frame =
-      LocalFrame::Create(&dummy_local_frame_client, *overlay_page_, nullptr);
+      LocalFrame::Create(dummy_local_frame_client, *overlay_page_, nullptr);
   frame->SetView(LocalFrameView::Create(*frame));
   frame->Init();
   frame->View()->SetCanHaveScrollbars(false);
@@ -903,7 +904,7 @@ String InspectorOverlayAgent::EvaluateInOverlayForTest(const String& script) {
           ->GetScriptController()
           .ExecuteScriptInMainWorldAndReturnValue(
               ScriptSourceCode(script, ScriptSourceLocationType::kInspector),
-              KURL(), kNotSharableCrossOrigin, ScriptFetchOptions(),
+              KURL(), kOpaqueResource, ScriptFetchOptions(),
               ScriptController::kExecuteScriptWhenScriptsDisabled);
   return ToCoreStringWithUndefinedOrNullCheck(string);
 }

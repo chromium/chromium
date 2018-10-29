@@ -90,8 +90,8 @@ FloatRect FEMorphology::MapEffect(const FloatRect& rect) const {
 }
 
 sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
-  sk_sp<PaintFilter> input(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> input(paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace()));
   int radius_x = clampTo<int>(GetFilter()->ApplyHorizontalScale(radius_x_));
   int radius_y = clampTo<int>(GetFilter()->ApplyVerticalScale(radius_y_));
   PaintFilter::CropRect rect = GetCropRect();

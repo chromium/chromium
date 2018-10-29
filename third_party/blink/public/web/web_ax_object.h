@@ -118,7 +118,7 @@ class WebAXObject {
 
   BLINK_EXPORT bool IsAnchor() const;
   BLINK_EXPORT bool IsAutofillAvailable() const;
-  BLINK_EXPORT WebAXCheckedState CheckedState() const;
+  BLINK_EXPORT ax::mojom::CheckedState CheckedState() const;
   BLINK_EXPORT bool IsCheckable() const;
   BLINK_EXPORT bool IsClickable() const;
   BLINK_EXPORT bool IsControl() const;
@@ -148,8 +148,8 @@ class WebAXObject {
   BLINK_EXPORT unsigned ColorValue() const;
   BLINK_EXPORT WebAXObject AriaActiveDescendant() const;
   BLINK_EXPORT WebString AriaAutoComplete() const;
-  BLINK_EXPORT WebAXAriaCurrentState AriaCurrentState() const;
-  BLINK_EXPORT WebAXHasPopup HasPopup() const;
+  BLINK_EXPORT ax::mojom::AriaCurrentState AriaCurrentState() const;
+  BLINK_EXPORT ax::mojom::HasPopup HasPopup() const;
   BLINK_EXPORT bool IsEditableRoot() const;
   BLINK_EXPORT bool IsEditable() const;
   BLINK_EXPORT bool IsMultiline() const;
@@ -161,7 +161,7 @@ class WebAXObject {
   // If this is an image, returns the image (scaled to maxSize) as a data url.
   BLINK_EXPORT WebString ImageDataUrl(const WebSize& max_size) const;
   BLINK_EXPORT WebAXRestriction Restriction() const;
-  BLINK_EXPORT WebAXInvalidState InvalidState() const;
+  BLINK_EXPORT ax::mojom::InvalidState InvalidState() const;
   // Only used when invalidState() returns WebAXInvalidStateOther.
   BLINK_EXPORT WebString AriaInvalidValue() const;
   BLINK_EXPORT double EstimatedLoadingProgress() const;
@@ -175,15 +175,15 @@ class WebAXObject {
   BLINK_EXPORT WebVector<WebAXObject> RadioButtonsInGroup() const;
   BLINK_EXPORT ax::mojom::Role Role() const;
   BLINK_EXPORT WebString StringValue() const;
-  BLINK_EXPORT WebAXTextDirection GetTextDirection() const;
-  BLINK_EXPORT WebAXTextPosition GetTextPosition() const;
+  BLINK_EXPORT ax::mojom::TextDirection GetTextDirection() const;
+  BLINK_EXPORT ax::mojom::TextPosition GetTextPosition() const;
   BLINK_EXPORT WebAXTextStyle TextStyle() const;
   BLINK_EXPORT WebURL Url() const;
 
   // Retrieves the accessible name of the object, an enum indicating where the
   // name was derived from, and a list of related objects that were used to
   // derive the name, if any.
-  BLINK_EXPORT WebString GetName(WebAXNameFrom&,
+  BLINK_EXPORT WebString GetName(ax::mojom::NameFrom&,
                                  WebVector<WebAXObject>& name_objects) const;
   // Simplified version of |name| when nameFrom and nameObjects aren't needed.
   BLINK_EXPORT WebString GetName() const;
@@ -192,22 +192,22 @@ class WebAXObject {
   // indicating where the description was derived from, and a list of objects
   // that were used to derive the description, if any.
   BLINK_EXPORT WebString
-  Description(WebAXNameFrom,
-              WebAXDescriptionFrom&,
+  Description(ax::mojom::NameFrom,
+              ax::mojom::DescriptionFrom&,
               WebVector<WebAXObject>& description_objects) const;
   // Takes the result of nameFrom and descriptionFrom from calling |name| and
   // |description|, above, and retrieves the placeholder of the object, if
   // present and if it wasn't already exposed by one of the two functions above.
-  BLINK_EXPORT WebString Placeholder(WebAXNameFrom) const;
+  BLINK_EXPORT WebString Placeholder(ax::mojom::NameFrom) const;
 
   // The following selection functions get or set the global document
   // selection and can be called on any object in the tree.
   BLINK_EXPORT void Selection(WebAXObject& anchor_object,
                               int& anchor_offset,
-                              WebAXTextAffinity& anchor_affinity,
+                              ax::mojom::TextAffinity& anchor_affinity,
                               WebAXObject& focus_object,
                               int& focus_offset,
-                              WebAXTextAffinity& focus_affinity) const;
+                              ax::mojom::TextAffinity& focus_affinity) const;
 
   // The following selection functions return text offsets calculated starting
   // the current object. They only report on a selection that is placed on
@@ -245,12 +245,12 @@ class WebAXObject {
   BLINK_EXPORT WebString ComputedStyleDisplay() const;
   BLINK_EXPORT bool AccessibilityIsIgnored() const;
   BLINK_EXPORT bool LineBreaks(WebVector<int>&) const;
-  BLINK_EXPORT void Markers(WebVector<WebAXMarkerType>& types,
+  BLINK_EXPORT void Markers(WebVector<ax::mojom::MarkerType>& types,
                             WebVector<int>& starts,
                             WebVector<int>& ends) const;
 
   // Actions. Return true if handled.
-  BLINK_EXPORT WebAXDefaultActionVerb Action() const;
+  BLINK_EXPORT ax::mojom::DefaultActionVerb Action() const;
   BLINK_EXPORT bool ClearAccessibilityFocus() const;
   BLINK_EXPORT bool Click() const;
   BLINK_EXPORT bool Decrement() const;
@@ -300,7 +300,7 @@ class WebAXObject {
   BLINK_EXPORT unsigned CellColumnSpan() const;
   BLINK_EXPORT unsigned CellRowIndex() const;
   BLINK_EXPORT unsigned CellRowSpan() const;
-  BLINK_EXPORT WebAXSortDirection SortDirection() const;
+  BLINK_EXPORT ax::mojom::SortDirection SortDirection() const;
 
   // Load inline text boxes for just this subtree, even if
   // settings->inlineTextBoxAccessibilityEnabled() is false.

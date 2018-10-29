@@ -66,17 +66,6 @@ void LoginScreenPolicyTest::RefreshDevicePolicyAndWaitForSettingChange(
   runner->Run();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginScreenPolicyTest, DisableSupervisedUsers) {
-  EXPECT_FALSE(user_manager::UserManager::Get()->AreSupervisedUsersAllowed());
-
-  em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-  proto.mutable_supervised_users_settings()->set_supervised_users_enabled(true);
-  RefreshDevicePolicyAndWaitForSettingChange(
-      chromeos::kAccountsPrefSupervisedUsersEnabled);
-
-  EXPECT_TRUE(user_manager::UserManager::Get()->AreSupervisedUsersAllowed());
-}
-
 IN_PROC_BROWSER_TEST_F(LoginScreenPolicyTest, RestrictInputMethods) {
   content::WindowedNotificationObserver(
       chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,

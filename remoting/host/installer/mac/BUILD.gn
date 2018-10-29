@@ -36,6 +36,10 @@ action("remoting_me2me_host_archive") {
 
   script = "//remoting/host/installer/build-installer-archive.py"
 
+  sources = [
+    "//build/android/gyp/util/build_utils.py",
+  ]
+
   args = [
            rebase_path("$target_gen_dir/remoting_installation", root_build_dir),
            rebase_path(zip_path, root_build_dir),

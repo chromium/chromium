@@ -202,9 +202,9 @@ void MultipleFieldsTemporalInputTypeView::EditControlValueChanged() {
     GetElement().SetNeedsValidityCheck();
   } else {
     GetElement().SetNonAttributeValueByUserEdit(new_value);
-    GetElement().SetNeedsStyleRecalc(
-        kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(StyleChangeReason::kControlValue));
+    GetElement().SetNeedsStyleRecalc(kSubtreeStyleChange,
+                                     StyleChangeReasonForTracing::Create(
+                                         style_change_reason::kControlValue));
     GetElement().DispatchInputEvent();
   }
   GetElement().NotifyFormStateChanged();
@@ -351,7 +351,6 @@ MultipleFieldsTemporalInputTypeView::CustomStyleForLayoutObject(
   scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(*original_style);
   style->SetDirection(content_direction);
   style->SetDisplay(new_display);
-  style->SetUnique();
   return style;
 }
 

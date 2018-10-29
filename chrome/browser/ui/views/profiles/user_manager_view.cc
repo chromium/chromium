@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -142,12 +141,6 @@ void UserManagerProfileDialogDelegate::OnDialogDestroyed() {
 void UserManager::Show(
     const base::FilePath& profile_path_to_focus,
     profiles::UserManagerAction user_manager_action) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::ShowCocoa(profile_path_to_focus, user_manager_action);
-  }
-#endif
-
   DCHECK(profile_path_to_focus != ProfileManager::GetGuestProfilePath());
 
   ProfileMetrics::LogProfileOpenMethod(ProfileMetrics::OPEN_USER_MANAGER);
@@ -189,11 +182,6 @@ void UserManager::Show(
 
 // static
 void UserManager::Hide() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::HideCocoa();
-  }
-#endif
   if (g_user_manager_view)
     g_user_manager_view->GetWidget()->Close();
 }
@@ -201,30 +189,20 @@ void UserManager::Hide() {
 // static
 bool UserManager::IsShowing() {
 #if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::IsShowingCocoa();
-  } else {
-    // Widget activation works differently on Mac: the UserManager is a child
-    // widget, so it is not active in the IsActive() sense even when showing
-    // and interactable. Test for IsVisible instead - this is what the Cocoa
-    // UserManager::IsShowing() does as well.
-    return g_user_manager_view ? g_user_manager_view->GetWidget()->IsVisible()
-                               : false;
-  }
-#endif
-
+  // Widget activation works differently on Mac: the UserManager is a child
+  // widget, so it is not active in the IsActive() sense even when showing
+  // and interactable. Test for IsVisible instead - this is what the Cocoa
+  // UserManager::IsShowing() does as well.
+  return g_user_manager_view ? g_user_manager_view->GetWidget()->IsVisible()
+                             : false;
+#else
   return g_user_manager_view ? g_user_manager_view->GetWidget()->IsActive()
                              : false;
+#endif
 }
 
 // static
 void UserManager::OnUserManagerShown() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::OnUserManagerShownCocoa();
-  }
-#endif
-
   if (g_user_manager_view) {
     g_user_manager_view->LogTimeToOpen();
     if (g_user_manager_shown_callback_for_testing) {
@@ -240,23 +218,12 @@ void UserManager::OnUserManagerShown() {
 // static
 void UserManager::AddOnUserManagerShownCallbackForTesting(
     const base::Closure& callback) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::AddOnUserManagerShownCallbackForTestingCocoa(callback);
-  }
-#endif
   DCHECK(!g_user_manager_shown_callback_for_testing);
   g_user_manager_shown_callback_for_testing = new base::Closure(callback);
 }
 
 // static
 base::FilePath UserManager::GetSigninProfilePath() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManager::GetSigninProfilePathCocoa();
-  }
-#endif
-
   return g_user_manager_view->GetSigninProfilePath();
 }
 
@@ -281,12 +248,6 @@ void UserManagerProfileDialog::ShowReauthDialogWithProfilePath(
   CHECK(signin_util::IsForceSigninEnabled() ||
         reason != signin_metrics::Reason::REASON_UNLOCK)
       << "Legacy supervised users are no longer supported.";
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManagerProfileDialog::ShowReauthDialogWithProfilePathCocoa(
-        browser_context, email, profile_path, reason);
-  }
-#endif
   // This method should only be called if the user manager is already showing.
   if (!UserManager::IsShowing())
     return;
@@ -304,13 +265,6 @@ void UserManagerProfileDialog::ShowSigninDialog(
     content::BrowserContext* browser_context,
     const base::FilePath& profile_path,
     signin_metrics::Reason reason) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManagerProfileDialog::ShowSigninDialogCocoa(
-        browser_context, profile_path, reason);
-  }
-#endif
-
   if (!UserManager::IsShowing())
     return;
   DCHECK(reason ==
@@ -324,13 +278,6 @@ void UserManagerProfileDialog::ShowSigninDialog(
 
 void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
     content::BrowserContext* browser_context) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManagerProfileDialog::ShowDialogAndDisplayErrorMessageCocoa(
-        browser_context);
-  }
-#endif
-
   if (!UserManager::IsShowing())
     return;
   // The error occurred before sign in happened, reset |signin_profile_path_|
@@ -343,12 +290,6 @@ void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
 
 // static
 void UserManagerProfileDialog::DisplayErrorMessage() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManagerProfileDialog::DisplayErrorMessageCocoa();
-  }
-#endif
-
   // This method should only be called if the user manager is already showing.
   DCHECK(g_user_manager_view);
   g_user_manager_view->DisplayErrorMessage();
@@ -356,12 +297,6 @@ void UserManagerProfileDialog::DisplayErrorMessage() {
 
 // static
 void UserManagerProfileDialog::HideDialog() {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa()) {
-    return UserManagerProfileDialog::HideDialogCocoa();
-  }
-#endif
-
   if (g_user_manager_view && g_user_manager_view->GetWidget()->IsVisible())
     g_user_manager_view->HideDialog();
 }

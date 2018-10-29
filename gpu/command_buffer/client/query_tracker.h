@@ -170,7 +170,12 @@ class GLES2_IMPL_EXPORT QueryTracker {
       return state_ == kPending;
     }
 
-    bool CheckResultsAvailable(CommandBufferHelper* helper);
+    // Checks whether the result of this query is available.
+    // If the result is pending and |flush_if_pending| is true, this will ensure
+    // that at least the commands up till the EndQuery for this query are
+    // flushed.
+    bool CheckResultsAvailable(CommandBufferHelper* helper,
+                               bool flush_if_pending);
 
     uint64_t GetResult() const;
 

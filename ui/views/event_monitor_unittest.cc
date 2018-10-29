@@ -5,12 +5,29 @@
 #include "ui/views/event_monitor.h"
 
 #include "base/macros.h"
+#include "ui/events/event_observer.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/events/test/test_event_handler.h"
 #include "ui/views/test/widget_test.h"
 
 namespace views {
 namespace test {
+
+// A simple event observer that records the number of events.
+class TestEventObserver : public ui::EventObserver {
+ public:
+  TestEventObserver() = default;
+  ~TestEventObserver() override = default;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override { ++observed_event_count_; }
+
+  size_t observed_event_count() const { return observed_event_count_; }
+
+ private:
+  size_t observed_event_count_ = 0;
+
+  DISALLOW_COPY_AND_ASSIGN(TestEventObserver);
+};
 
 class EventMonitorTest : public WidgetTest {
  public:
@@ -39,7 +56,7 @@ class EventMonitorTest : public WidgetTest {
  protected:
   Widget* widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  ui::test::TestEventHandler handler_;
+  TestEventObserver observer_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(EventMonitorTest);
@@ -47,84 +64,97 @@ class EventMonitorTest : public WidgetTest {
 
 TEST_F(EventMonitorTest, ShouldReceiveAppEventsWhileInstalled) {
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateApplicationMonitor(
-      &handler_, widget_->GetNativeWindow()));
+      &observer_, widget_->GetNativeWindow(),
+      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
 
   generator_->ClickLeftButton();
-  EXPECT_EQ(2, handler_.num_mouse_events());
+  EXPECT_EQ(2u, observer_.observed_event_count());
 
   monitor.reset();
   generator_->ClickLeftButton();
-  EXPECT_EQ(2, handler_.num_mouse_events());
+  EXPECT_EQ(2u, observer_.observed_event_count());
 }
 
 TEST_F(EventMonitorTest, ShouldReceiveWindowEventsWhileInstalled) {
-  std::unique_ptr<EventMonitor> monitor(
-      EventMonitor::CreateWindowMonitor(&handler_, widget_->GetNativeWindow()));
+  std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
+      &observer_, widget_->GetNativeWindow(),
+      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
 
   generator_->ClickLeftButton();
-  EXPECT_EQ(2, handler_.num_mouse_events());
+  EXPECT_EQ(2u, observer_.observed_event_count());
 
   monitor.reset();
   generator_->ClickLeftButton();
-  EXPECT_EQ(2, handler_.num_mouse_events());
+  EXPECT_EQ(2u, observer_.observed_event_count());
 }
 
 TEST_F(EventMonitorTest, ShouldNotReceiveEventsFromOtherWindow) {
   Widget* widget2 = CreateTopLevelNativeWidget();
-  std::unique_ptr<EventMonitor> monitor(
-      EventMonitor::CreateWindowMonitor(&handler_, widget2->GetNativeWindow()));
+  std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
+      &observer_, widget2->GetNativeWindow(),
+      {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED}));
 
   generator_->ClickLeftButton();
-  EXPECT_EQ(0, handler_.num_mouse_events());
+  EXPECT_EQ(0u, observer_.observed_event_count());
 
   monitor.reset();
   widget2->CloseNow();
 }
 
+TEST_F(EventMonitorTest, ShouldOnlyReceiveRequestedEventTypes) {
+  // This event monitor only listens to mouse press, not release.
+  std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
+      &observer_, widget_->GetNativeWindow(), {ui::ET_MOUSE_PRESSED}));
+
+  generator_->ClickLeftButton();
+  EXPECT_EQ(1u, observer_.observed_event_count());
+
+  monitor.reset();
+}
+
 namespace {
-class DeleteOtherOnEventHandler : public ui::EventHandler {
+class DeleteOtherOnEventObserver : public ui::EventObserver {
  public:
-  explicit DeleteOtherOnEventHandler(gfx::NativeWindow context) {
-    monitor_ = EventMonitor::CreateApplicationMonitor(this, context);
+  explicit DeleteOtherOnEventObserver(gfx::NativeWindow context) {
+    monitor_ = EventMonitor::CreateApplicationMonitor(
+        this, context, {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_RELEASED});
   }
 
-  bool DidDelete() const { return !handler_to_delete_; }
+  bool DidDelete() const { return !observer_to_delete_; }
 
   void set_monitor_to_delete(
-      std::unique_ptr<DeleteOtherOnEventHandler> handler_to_delete) {
-    handler_to_delete_ = std::move(handler_to_delete);
+      std::unique_ptr<DeleteOtherOnEventObserver> observer_to_delete) {
+    observer_to_delete_ = std::move(observer_to_delete);
   }
 
-  // EventHandler::
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    handler_to_delete_ = nullptr;
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    observer_to_delete_ = nullptr;
   }
 
  private:
   std::unique_ptr<EventMonitor> monitor_;
-  std::unique_ptr<DeleteOtherOnEventHandler> handler_to_delete_;
+  std::unique_ptr<DeleteOtherOnEventObserver> observer_to_delete_;
 
-  DISALLOW_COPY_AND_ASSIGN(DeleteOtherOnEventHandler);
+  DISALLOW_COPY_AND_ASSIGN(DeleteOtherOnEventObserver);
 };
 }  // namespace
 
 // Ensure correct behavior when an event monitor is removed while iterating
 // over the OS-controlled observer list.
 TEST_F(EventMonitorTest, TwoMonitors) {
-  auto deleter =
-      std::make_unique<DeleteOtherOnEventHandler>(widget_->GetNativeWindow());
-  deleter->set_monitor_to_delete(
-      std::make_unique<DeleteOtherOnEventHandler>(widget_->GetNativeWindow()));
+  gfx::NativeWindow window = widget_->GetNativeWindow();
+  auto deleter = std::make_unique<DeleteOtherOnEventObserver>(window);
+  auto deletee = std::make_unique<DeleteOtherOnEventObserver>(window);
+  deleter->set_monitor_to_delete(std::move(deletee));
 
   EXPECT_FALSE(deleter->DidDelete());
   generator_->PressLeftButton();
   EXPECT_TRUE(deleter->DidDelete());
 
   // Now try setting up observers in the alternate order.
-  auto deletee =
-      std::make_unique<DeleteOtherOnEventHandler>(widget_->GetNativeWindow());
-  deleter =
-      std::make_unique<DeleteOtherOnEventHandler>(widget_->GetNativeWindow());
+  deletee = std::make_unique<DeleteOtherOnEventObserver>(window);
+  deleter = std::make_unique<DeleteOtherOnEventObserver>(window);
   deleter->set_monitor_to_delete(std::move(deletee));
 
   EXPECT_FALSE(deleter->DidDelete());

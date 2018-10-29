@@ -1,8 +1,7 @@
-CONSOLE WARNING: line 1: 'webkitURL' is deprecated. Please use 'URL' instead.
+CONSOLE WARNING: 'webkitURL' is deprecated. Please use 'URL' instead.
 Test instanceof functions and properties of URL and webkitURL.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS 'createObjectURL' in URL is true
 PASS 'revokeObjectURL' in URL is true

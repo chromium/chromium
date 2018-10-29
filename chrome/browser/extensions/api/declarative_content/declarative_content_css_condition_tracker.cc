@@ -200,8 +200,7 @@ void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
       continue;
     for (const DeclarativeContentCssPredicate* predicate : loc->second) {
       for (const std::string& selector : predicate->css_selectors()) {
-        std::map<std::string, int>::iterator loc =
-            watched_css_selector_predicate_count_.find(selector);
+        auto loc = watched_css_selector_predicate_count_.find(selector);
         DCHECK(loc != watched_css_selector_predicate_count_.end());
         if (--loc->second == 0) {
           watched_css_selector_predicate_count_.erase(loc);

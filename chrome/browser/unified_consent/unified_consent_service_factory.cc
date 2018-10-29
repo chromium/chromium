@@ -52,8 +52,9 @@ KeyedService* UnifiedConsentServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   if (!unified_consent::IsUnifiedConsentFeatureEnabled()) {
+    ChromeUnifiedConsentServiceClient service_client(profile->GetPrefs());
     unified_consent::UnifiedConsentService::RollbackIfNeeded(
-        profile->GetPrefs(), sync_service);
+        profile->GetPrefs(), sync_service, &service_client);
     return nullptr;
   }
 

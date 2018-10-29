@@ -65,6 +65,11 @@ void LoginDisplayHostCommon::BeforeSessionStart() {
 }
 
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
+  // If finalize is called twice the LoginDisplayHost instance will be deleted
+  // multiple times.
+  CHECK(!is_finalizing_);
+  is_finalizing_ = true;
+
   completion_callbacks_.push_back(std::move(completion_callback));
   OnFinalize();
 }

@@ -16,6 +16,8 @@ component("webrtc") {
   output_name = "media_webrtc"
 
   sources = [
+    "audio_delay_stats_reporter.cc",
+    "audio_delay_stats_reporter.h",
     "echo_information.cc",
     "echo_information.h",
     "webrtc_switches.cc",

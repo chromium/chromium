@@ -62,9 +62,9 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
  private:
   bool should_collect_gradient_attributes_ : 1;
-  using GradientMap = PersistentHeapHashMap<Member<const SVGResourceClient>,
-                                            std::unique_ptr<GradientData>>;
-  GradientMap gradient_map_;
+  using GradientMap = HeapHashMap<Member<const SVGResourceClient>,
+                                  std::unique_ptr<GradientData>>;
+  Persistent<GradientMap> gradient_map_;
 };
 
 }  // namespace blink

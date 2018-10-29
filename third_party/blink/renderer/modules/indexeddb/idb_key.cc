@@ -34,6 +34,40 @@
 
 namespace blink {
 
+namespace {
+
+size_t CalculateIDBKeyArraySize(const IDBKey::KeyArray& keys) {
+  size_t size(0);
+  for (const auto& key : keys)
+    size += key.get()->SizeEstimate();
+  return size;
+}
+
+}  // namespace
+
+IDBKey::IDBKey() : type_(kInvalidType), size_estimate_(kIDBKeyOverheadSize) {}
+
+IDBKey::IDBKey(Type type, double number)
+    : type_(type),
+      number_(number),
+      size_estimate_(kIDBKeyOverheadSize + sizeof(number_)) {}
+
+IDBKey::IDBKey(const class String& value)
+    : type_(kStringType),
+      string_(value),
+      size_estimate_(kIDBKeyOverheadSize + (string_.length() * sizeof(UChar))) {
+}
+
+IDBKey::IDBKey(scoped_refptr<SharedBuffer> value)
+    : type_(kBinaryType),
+      binary_(std::move(value)),
+      size_estimate_(kIDBKeyOverheadSize + binary_.get()->size()) {}
+
+IDBKey::IDBKey(KeyArray key_array)
+    : type_(kArrayType),
+      array_(std::move(key_array)),
+      size_estimate_(kIDBKeyOverheadSize + CalculateIDBKeyArraySize(array_)) {}
+
 IDBKey::~IDBKey() = default;
 
 bool IDBKey::IsValid() const {
@@ -41,8 +75,8 @@ bool IDBKey::IsValid() const {
     return false;
 
   if (type_ == kArrayType) {
-    for (size_t i = 0; i < array_.size(); i++) {
-      if (!array_[i]->IsValid())
+    for (const auto& element : array_) {
+      if (!element->IsValid())
         return false;
     }
   }
@@ -67,7 +101,8 @@ int IDBKey::Compare(const IDBKey* other) const {
 
   switch (type_) {
     case kArrayType:
-      for (size_t i = 0; i < array_.size() && i < other->array_.size(); ++i) {
+      for (wtf_size_t i = 0; i < array_.size() && i < other->array_.size();
+           ++i) {
         if (int result = array_[i]->Compare(other->array_[i].get()))
           return result;
       }
@@ -123,7 +158,7 @@ WebVector<WebIDBKey> IDBKey::ToMultiEntryArray(
         return static_cast<IDBKey*>(a)->IsLessThan(static_cast<IDBKey*>(b));
       });
   const auto end = std::unique(result.begin(), result.end());
-  DCHECK_LE(static_cast<size_t>(end - result.begin()), result.size());
+  DCHECK_LE(static_cast<wtf_size_t>(end - result.begin()), result.size());
   result.resize(end - result.begin());
 
   return result;

@@ -85,18 +85,6 @@ template <int BITS> class MapSelector {
   typedef TCMalloc_PageMap3<BITS-kPageShift> Type;
 };
 
-#ifndef TCMALLOC_SMALL_BUT_SLOW
-// x86-64 and arm64 are using 48 bits of address space. So we can use
-// just two level map, but since initial ram consumption of this mode
-// is a bit on the higher side, we opt-out of it in
-// TCMALLOC_SMALL_BUT_SLOW mode.
-template <> class MapSelector<48> {
- public:
-  typedef TCMalloc_PageMap2<48-kPageShift> Type;
-};
-
-#endif // TCMALLOC_SMALL_BUT_SLOW
-
 // A two-level map for 32-bit machines
 template <> class MapSelector<32> {
  public:
@@ -247,11 +235,13 @@ class PERFTOOLS_DLL_DECL PageHeap {
   // Never delay scavenging for more than the following number of
   // deallocated pages.  With 4K pages, this comes to 4GB of
   // deallocation.
-  static const int kMaxReleaseDelay = 1 << 20;
+  // Chrome:  Changed to 64MB
+  static const int kMaxReleaseDelay = 1 << 14;
 
   // If there is nothing to release, wait for so many pages before
   // scavenging again.  With 4K pages, this comes to 1GB of memory.
-  static const int kDefaultReleaseDelay = 1 << 18;
+  // Chrome:  Changed to 16MB
+  static const int kDefaultReleaseDelay = 1 << 12;
 
   // Pick the appropriate map and cache types based on pointer size
   typedef MapSelector<kAddressBits>::Type PageMap;

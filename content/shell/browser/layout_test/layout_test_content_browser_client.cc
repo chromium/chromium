@@ -6,15 +6,15 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
+#include "base/task/post_task.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/overlay_window.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_dispatcher_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_package_context.h"
 #include "content/shell/browser/layout_test/blink_test_controller.h"
 #include "content/shell/browser/layout_test/fake_bluetooth_chooser.h"
 #include "content/shell/browser/layout_test/layout_test_bluetooth_fake_adapter_setter_impl.h"
@@ -30,9 +30,7 @@
 #include "content/test/mock_platform_notification_service.h"
 #include "device/bluetooth/test/fake_bluetooth.h"
 #include "gpu/config/gpu_switches.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "third_party/blink/public/mojom/web_package/web_package_internals.mojom.h"
 
 namespace content {
 namespace {
@@ -43,34 +41,6 @@ void BindLayoutTestHelper(mojom::MojoLayoutTestHelperRequest request,
                           RenderFrameHost* render_frame_host) {
   MojoLayoutTestHelper::Create(std::move(request));
 }
-
-class WebPackageInternalsImpl : public blink::test::mojom::WebPackageInternals {
- public:
-  explicit WebPackageInternalsImpl(WebPackageContext* web_package_context)
-      : web_package_context_(web_package_context) {}
-  ~WebPackageInternalsImpl() override = default;
-
-  static void Create(WebPackageContext* web_package_context,
-                     blink::test::mojom::WebPackageInternalsRequest request) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    mojo::MakeStrongBinding(
-        std::make_unique<WebPackageInternalsImpl>(web_package_context),
-        std::move(request));
-  }
-
- private:
-  void SetSignedExchangeVerificationTime(
-      base::Time time,
-      SetSignedExchangeVerificationTimeCallback callback) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    web_package_context_->SetSignedExchangeVerificationTimeForTesting(time);
-    std::move(callback).Run();
-  }
-
-  WebPackageContext* web_package_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPackageInternalsImpl);
-};
 
 class TestOverlayWindow : public OverlayWindow {
  public:
@@ -95,6 +65,7 @@ class TestOverlayWindow : public OverlayWindow {
   gfx::Rect GetBounds() const override { return gfx::Rect(); }
   void UpdateVideoSize(const gfx::Size& natural_size) override {}
   void SetPlaybackState(PlaybackState playback_state) override {}
+  void SetAlwaysHidePlayPauseButton(bool is_visible) override {}
   ui::Layer* GetWindowBackgroundLayer() override { return nullptr; }
   ui::Layer* GetVideoLayer() override { return nullptr; }
   gfx::Rect GetVideoBounds() override { return gfx::Rect(); }
@@ -159,8 +130,8 @@ void LayoutTestContentBrowserClient::ExposeInterfacesToRenderer(
     blink::AssociatedInterfaceRegistry* associated_registry,
     RenderProcessHost* render_process_host) {
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI);
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::UI});
   registry->AddInterface(
       base::BindRepeating(&LayoutTestBluetoothFakeAdapterSetterImpl::Create),
       ui_task_runner);
@@ -176,10 +147,6 @@ void LayoutTestContentBrowserClient::ExposeInterfacesToRenderer(
           &LayoutTestContentBrowserClient::CreateFakeBluetoothChooser,
           base::Unretained(this)),
       ui_task_runner);
-  registry->AddInterface(base::BindRepeating(
-      &WebPackageInternalsImpl::Create,
-      base::Unretained(
-          render_process_host->GetStoragePartition()->GetWebPackageContext())));
   registry->AddInterface(base::BindRepeating(&MojoLayoutTestHelper::Create));
   registry->AddInterface(
       base::BindRepeating(&LayoutTestContentBrowserClient::BindClipboardHost,
@@ -292,6 +259,11 @@ bool LayoutTestContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   // test failures (see https://crbug.com/477150), layout tests still use no
   // isolation by default.
   return false;
+}
+
+bool LayoutTestContentBrowserClient::CanIgnoreCertificateErrorIfNeeded() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kRunWebTests);
 }
 
 void LayoutTestContentBrowserClient::ExposeInterfacesToFrame(

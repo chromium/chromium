@@ -532,7 +532,8 @@ gfx::Rect DesktopWindowTreeHostWin::GetBoundsInPixels() const {
 
 void DesktopWindowTreeHostWin::SetBoundsInPixels(
     const gfx::Rect& bounds,
-    const viz::LocalSurfaceId& local_surface_id) {
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks local_surface_id_allocation_time) {
   // On Windows, the callers of SetBoundsInPixels() shouldn't need to (or be
   // able to) allocate LocalSurfaceId for the compositor. Aura itself should
   // allocate the new ids as needed, instead.
@@ -771,8 +772,6 @@ void DesktopWindowTreeHostWin::HandleActivationChanged(bool active) {
   if (!dispatcher())
     return;
 
-  if (active)
-    OnHostActivated();
   desktop_native_widget_aura_->HandleActivationChanged(active);
 }
 
@@ -881,11 +880,6 @@ void DesktopWindowTreeHostWin::HandleNativeBlur(HWND focused_window) {
 }
 
 bool DesktopWindowTreeHostWin::HandleMouseEvent(ui::MouseEvent* event) {
-  SendEventToSink(event);
-  return event->handled();
-}
-
-bool DesktopWindowTreeHostWin::HandlePointerEvent(ui::PointerEvent* event) {
   SendEventToSink(event);
   return event->handled();
 }
@@ -1007,7 +1001,8 @@ void DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
   if (compositor()) {
     compositor()->SetScaleAndSize(
         window_scale_factor, message_handler_->GetClientAreaBounds().size(),
-        window()->GetLocalSurfaceId());
+        window()->GetLocalSurfaceId(),
+        window()->GetLocalSurfaceIdAllocationTime());
   }
 }
 

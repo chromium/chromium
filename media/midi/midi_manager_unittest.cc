@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "base/system_monitor/system_monitor.h"
+#include "base/system/system_monitor.h"
 #include "build/build_config.h"
 #include "media/midi/midi_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +33,7 @@ class FakeMidiManager : public MidiManager {
   explicit FakeMidiManager(MidiService* service)
       : MidiManager(service), weak_factory_(this) {}
 
-  ~FakeMidiManager() override { DCHECK_EQ(initialized_, finalized_); }
+  ~FakeMidiManager() override = default;
 
   base::WeakPtr<FakeMidiManager> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -43,11 +43,6 @@ class FakeMidiManager : public MidiManager {
   void StartInitialization() override {
     DCHECK(!initialized_);
     initialized_ = true;
-  }
-  void Finalize() override {
-    DCHECK(initialized_);
-    DCHECK(!finalized_);
-    finalized_ = true;
   }
   void DispatchSendMidiData(MidiManagerClient* client,
                             uint32_t port_index,
@@ -59,19 +54,14 @@ class FakeMidiManager : public MidiManager {
     CompleteInitialization(result);
   }
 
-  size_t GetClientCount() const {
-    return clients_size_for_testing();
-  }
+  size_t GetClientCount() { return GetClientCountForTesting(); }
 
-  size_t GetPendingClientCount() const {
-    return pending_clients_size_for_testing();
-  }
+  size_t GetPendingClientCount() { return GetPendingClientCountForTesting(); }
 
   bool IsInitialized() const { return initialized_; }
 
  private:
   bool initialized_ = false;
-  bool finalized_ = false;
 
   base::WeakPtrFactory<FakeMidiManager> weak_factory_;
 
@@ -119,8 +109,8 @@ class FakeMidiManagerClient : public MidiManagerClient {
   ~FakeMidiManagerClient() override = default;
 
   // MidiManagerClient implementation.
-  void AddInputPort(const MidiPortInfo& info) override {}
-  void AddOutputPort(const MidiPortInfo& info) override {}
+  void AddInputPort(const mojom::PortInfo& info) override {}
+  void AddOutputPort(const mojom::PortInfo& info) override {}
   void SetInputPortState(uint32_t port_index, PortState state) override {}
   void SetOutputPortState(uint32_t port_index, PortState state) override {}
   void CompleteStartSession(Result result) override {

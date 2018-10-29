@@ -82,12 +82,13 @@ const char* NotificationTemplateBuilder::context_menu_label_override_ = nullptr;
 
 // static
 std::unique_ptr<NotificationTemplateBuilder> NotificationTemplateBuilder::Build(
-    NotificationImageRetainer* notification_image_retainer,
+    NotificationImageRetainer* image_retainer,
     const NotificationLaunchId& launch_id,
-    const std::string& profile_id,
     const message_center::Notification& notification) {
-  std::unique_ptr<NotificationTemplateBuilder> builder = base::WrapUnique(
-      new NotificationTemplateBuilder(notification_image_retainer, profile_id));
+  DCHECK(image_retainer);
+
+  // Use base::WrapUnique + new because the constructor is private.
+  auto builder = base::WrapUnique(new NotificationTemplateBuilder());
 
   builder->StartToastElement(launch_id, notification);
   builder->StartVisualElement();
@@ -117,10 +118,10 @@ std::unique_ptr<NotificationTemplateBuilder> NotificationTemplateBuilder::Build(
     builder->WriteTextElement(attribution, TextType::ATTRIBUTION);
 
   if (!notification.icon().IsEmpty())
-    builder->WriteIconElement(notification);
+    builder->WriteIconElement(image_retainer, notification);
 
   if (!notification.image().IsEmpty())
-    builder->WriteLargeImageElement(notification);
+    builder->WriteLargeImageElement(image_retainer, notification);
 
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS)
     builder->WriteProgressElement(notification);
@@ -130,7 +131,7 @@ std::unique_ptr<NotificationTemplateBuilder> NotificationTemplateBuilder::Build(
 
   builder->StartActionsElement();
   if (!notification.buttons().empty())
-    builder->AddActions(notification, launch_id);
+    builder->AddActions(image_retainer, notification, launch_id);
   builder->EnsureReminderHasButton(notification, launch_id);
   builder->AddContextMenu(launch_id);
   builder->EndActionsElement();
@@ -143,12 +144,8 @@ std::unique_ptr<NotificationTemplateBuilder> NotificationTemplateBuilder::Build(
   return builder;
 }
 
-NotificationTemplateBuilder::NotificationTemplateBuilder(
-    NotificationImageRetainer* notification_image_retainer,
-    const std::string& profile_id)
-    : xml_writer_(std::make_unique<XmlWriter>()),
-      image_retainer_(notification_image_retainer),
-      profile_id_(profile_id) {
+NotificationTemplateBuilder::NotificationTemplateBuilder()
+    : xml_writer_(std::make_unique<XmlWriter>()) {
   xml_writer_->StartWriting();
 }
 
@@ -250,24 +247,24 @@ void NotificationTemplateBuilder::WriteItems(
 }
 
 void NotificationTemplateBuilder::WriteIconElement(
+    NotificationImageRetainer* image_retainer,
     const message_center::Notification& notification) {
-  WriteImageElement(notification.icon(), notification.origin_url(),
+  WriteImageElement(image_retainer, notification.icon(),
                     kPlacementAppLogoOverride, kHintCropNone);
 }
 
 void NotificationTemplateBuilder::WriteLargeImageElement(
+    NotificationImageRetainer* image_retainer,
     const message_center::Notification& notification) {
-  WriteImageElement(notification.image(), notification.origin_url(), kHero,
-                    std::string());
+  WriteImageElement(image_retainer, notification.image(), kHero, std::string());
 }
 
 void NotificationTemplateBuilder::WriteImageElement(
+    NotificationImageRetainer* image_retainer,
     const gfx::Image& image,
-    const GURL& origin,
     const std::string& placement,
     const std::string& hint_crop) {
-  base::FilePath path =
-      image_retainer_->RegisterTemporaryImage(image, profile_id_, origin);
+  base::FilePath path = image_retainer->RegisterTemporaryImage(image);
   if (!path.empty()) {
     xml_writer_->StartElement(kImageElement);
     xml_writer_->AddAttribute(kPlacement, placement);
@@ -292,6 +289,7 @@ void NotificationTemplateBuilder::WriteProgressElement(
 }
 
 void NotificationTemplateBuilder::AddActions(
+    NotificationImageRetainer* image_retainer,
     const message_center::Notification& notification,
     const NotificationLaunchId& launch_id) {
   const std::vector<message_center::ButtonInfo>& buttons =
@@ -316,7 +314,7 @@ void NotificationTemplateBuilder::AddActions(
   }
 
   for (size_t i = 0; i < buttons.size(); ++i)
-    WriteActionElement(buttons[i], i, notification.origin_url(), launch_id);
+    WriteActionElement(image_retainer, buttons[i], i, launch_id);
 }
 
 void NotificationTemplateBuilder::AddContextMenu(
@@ -346,9 +344,9 @@ void NotificationTemplateBuilder::WriteAudioSilentElement() {
 }
 
 void NotificationTemplateBuilder::WriteActionElement(
+    NotificationImageRetainer* image_retainer,
     const message_center::ButtonInfo& button,
     int index,
-    const GURL& origin,
     NotificationLaunchId copied_launch_id) {
   xml_writer_->StartElement(kActionElement);
   xml_writer_->AddAttribute(kActivationType, kForeground);
@@ -357,8 +355,7 @@ void NotificationTemplateBuilder::WriteActionElement(
   xml_writer_->AddAttribute(kArguments, copied_launch_id.Serialize());
 
   if (!button.icon.IsEmpty()) {
-    base::FilePath path = image_retainer_->RegisterTemporaryImage(
-        button.icon, profile_id_, origin);
+    base::FilePath path = image_retainer->RegisterTemporaryImage(button.icon);
     if (!path.empty())
       xml_writer_->AddAttribute(kImageUri, path.AsUTF8Unsafe());
   }

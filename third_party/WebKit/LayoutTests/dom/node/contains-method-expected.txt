@@ -1,8 +1,8 @@
 This test checks behavior of Node.contains.
 
 [test1 [test 2]]
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS typeof document.contains is "function"
 PASS test1.contains(test2) is true
@@ -24,4 +24,5 @@ PASS document.contains(iframeBody) is false
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

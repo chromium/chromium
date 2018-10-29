@@ -6,13 +6,10 @@
 
 #include <algorithm>
 
-#import "ios/chrome/browser/experimental_flags.h"
-#import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
-#include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,7 +34,7 @@ const CGFloat kIconImageSize = 28;
 // labels.
 const CGFloat kMinTextWidthRatio = 0.75f;
 const CGFloat kMinDetailTextWidthRatio = 0.25f;
-}
+}  // namespace
 
 @implementation SettingsDetailItem
 
@@ -50,17 +47,20 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [SettingsDetailCell class];
+    _cellBackgroundColor = [UIColor whiteColor];
   }
   return self;
 }
 
-#pragma mark CollectionViewItem
+#pragma mark TableViewItem
 
-- (void)configureCell:(SettingsDetailCell*)cell {
-  [super configureCell:cell];
-  [cell cr_setAccessoryType:self.accessoryType];
+- (void)configureCell:(SettingsDetailCell*)cell
+           withStyler:(ChromeTableViewStyler*)styler {
+  [super configureCell:cell withStyler:styler];
+  cell.accessoryType = self.accessoryType;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
+  cell.backgroundColor = self.cellBackgroundColor;
 
   // Update the icon image, if one is present.
   UIImage* iconImage = nil;
@@ -69,6 +69,20 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
   }
   [cell setIconImage:iconImage];
 }
+
+@end
+
+#pragma mark - SettingsDetailCell
+
+@interface SettingsDetailCell ()
+
+// When they are activated, the labels are on one line.
+// They conflict with the accessibilityConstraints.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* standardConstraints;
+// When they are activated, each label is on its own line, with no line number
+// limit. They conflict with the standardConstraints.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* accessibilityConstraints;
 
 @end
 
@@ -84,8 +98,9 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
 @synthesize detailTextLabel = _detailTextLabel;
 @synthesize textLabel = _textLabel;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(NSString*)reuseIdentifier {
+  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
@@ -102,26 +117,20 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _textLabel.adjustsFontForContentSizeCategory = YES;
+    _textLabel.textColor = [UIColor blackColor];
     _textLabel.backgroundColor = [UIColor clearColor];
     [contentView addSubview:_textLabel];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _detailTextLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _detailTextLabel.adjustsFontForContentSizeCategory = YES;
+    _detailTextLabel.textColor = UIColorFromRGB(kSettingsCellsDetailTextColor);
     _detailTextLabel.backgroundColor = [UIColor clearColor];
     [contentView addSubview:_detailTextLabel];
-
-    // Fonts and colors vary based on whether the settings reboot is enabled.
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-      _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-      _detailTextLabel.font = [UIFont systemFontOfSize:kUIKitDetailFontSize];
-      _detailTextLabel.textColor = UIColorFromRGB(kUIKitDetailTextColor);
-    } else {
-      _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-      _textLabel.textColor = [[MDCPalette greyPalette] tint900];
-      _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-      _detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
-    }
 
     // Set up the width constraints. They are activated here and updated in
     // layoutSubviews.
@@ -139,6 +148,39 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
         constraintEqualToAnchor:_iconImageView.trailingAnchor
                        constant:kIconTrailingPadding];
 
+    _standardConstraints = @[
+      _textLabelWidthConstraint,
+      _detailTextLabelWidthConstraint,
+      // Set up the vertical constraints and align the baselines of the two text
+      // labels.
+      [_textLabel.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
+      [_detailTextLabel.firstBaselineAnchor
+          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
+      [_detailTextLabel.trailingAnchor
+          constraintEqualToAnchor:_labelContainerGuide.trailingAnchor],
+    ];
+
+    _accessibilityConstraints = @[
+      [_textLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor
+                                           constant:kVerticalPadding],
+      [_detailTextLabel.bottomAnchor
+          constraintEqualToAnchor:self.contentView.bottomAnchor
+                         constant:-kVerticalPadding],
+      [_textLabel.bottomAnchor
+          constraintEqualToAnchor:_detailTextLabel.topAnchor
+                         constant:-kVerticalPadding],
+      [_textLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
+                                   constant:-kHorizontalPadding],
+      [_detailTextLabel.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:kHorizontalPadding],
+      [_detailTextLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:_labelContainerGuide.trailingAnchor
+                                   constant:-kHorizontalPadding],
+    ];
+
     [NSLayoutConstraint activateConstraints:@[
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
@@ -149,39 +191,26 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
       // Fix the edges of the text labels.
       [_textLabel.leadingAnchor
           constraintEqualToAnchor:_labelContainerGuide.leadingAnchor],
-      [_detailTextLabel.trailingAnchor
-          constraintEqualToAnchor:_labelContainerGuide.trailingAnchor],
       [_labelContainerGuide.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor
                          constant:-kHorizontalPadding],
 
-      // Set up the vertical constraints and align the baselines of the two text
-      // labels.
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
-      [_textLabel.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
-      [_detailTextLabel.firstBaselineAnchor
-          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
-
-      _textLabelWidthConstraint,
-      _detailTextLabelWidthConstraint,
       _iconHiddenConstraint,
     ]];
 
     AddOptionalVerticalPadding(contentView, _textLabel, kVerticalPadding);
+
+    [self updateForAccessibilityContentSizeCategory:
+              ContentSizeCategoryIsAccessibilityCategory(
+                  self.traitCollection.preferredContentSizeCategory)];
   }
   return self;
 }
 
 - (void)setIconImage:(UIImage*)image {
   BOOL hidden = (image == nil);
-
-  // If the settings reboot is not enabled, the icon must always be hidden.
-  if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-    hidden = YES;
-  }
-
   if (hidden == _iconImageView.hidden) {
     return;
   }
@@ -194,6 +223,21 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
   } else {
     _iconHiddenConstraint.active = NO;
     _iconVisibleConstraint.active = YES;
+  }
+}
+
+#pragma mark - UIView
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  BOOL isCurrentCategoryAccessibility =
+      ContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      ContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
   }
 }
 
@@ -215,10 +259,32 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
   [super layoutSubviews];
 }
 
+#pragma mark - UITableViewCell
+
 - (void)prepareForReuse {
   [super prepareForReuse];
 
   [self setIconImage:nil];
+}
+
+#pragma mark - Private
+
+// Updates the cell such as it is layouted correctly with regard to the
+// preferred content size category, if it is an
+// |accessibilityContentSizeCategory| or not.
+- (void)updateForAccessibilityContentSizeCategory:
+    (BOOL)accessibilityContentSizeCategory {
+  if (accessibilityContentSizeCategory) {
+    [NSLayoutConstraint deactivateConstraints:_standardConstraints];
+    [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+    _detailTextLabel.numberOfLines = 0;
+    _textLabel.numberOfLines = 0;
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
+    [NSLayoutConstraint activateConstraints:_standardConstraints];
+    _detailTextLabel.numberOfLines = 1;
+    _textLabel.numberOfLines = 1;
+  }
 }
 
 - (CGFloat)textLabelTargetWidth {

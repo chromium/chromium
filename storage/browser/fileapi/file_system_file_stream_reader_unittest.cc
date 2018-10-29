@@ -263,7 +263,7 @@ TEST_F(FileSystemFileStreamReaderTest, DeleteWithUnfinishedRead) {
   net::TestCompletionCallback callback;
   scoped_refptr<net::IOBufferWithSize> buf =
       base::MakeRefCounted<net::IOBufferWithSize>(kTestDataSize);
-  int rv = reader->Read(buf.get(), buf->size(), base::Bind(&NeverCalled));
+  int rv = reader->Read(buf.get(), buf->size(), base::BindOnce(&NeverCalled));
   ASSERT_TRUE(rv == net::ERR_IO_PENDING || rv >= 0);
 
   // Delete immediately.

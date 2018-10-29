@@ -45,12 +45,10 @@
         sub-label="$i18n{safeBrowsingEnableProtectionDesc}"
         disabled="[[unifiedConsentGiven]]">
     </settings-toggle-button>
-    <settings-toggle-button id="safeBrowsingExtendedReportingControl"
-        pref="[[safeBrowsingExtendedReportingPref_]]"
+    <settings-toggle-button
+        pref="{{prefs.safebrowsing.scout_reporting_enabled}}"
         label="$i18n{safeBrowsingEnableExtendedReporting}"
         sub-label="$i18n{safeBrowsingEnableExtendedReportingDesc}"
-        on-settings-boolean-control-change="onSberChange_"
-        no-set-pref
         disabled="[[unifiedConsentGiven]]">
     </settings-toggle-button>
 <if expr="_google_chrome">
@@ -85,11 +83,12 @@
       </settings-toggle-button>
     </template>
 <if expr="_google_chrome">
-    <settings-toggle-button
+    <settings-toggle-button id="spellCheckControl"
         pref="{{prefs.spellcheck.use_spelling_service}}"
         label="$i18n{spellingPref}"
         sub-label="$i18n{spellingDescription}"
-        disabled="[[unifiedConsentGiven]]">
+        disabled="[[unifiedConsentGiven]]"
+        hidden="[[!showSpellCheckControl_(prefs.spellcheck.dictionaries)]]">
     </settings-toggle-button>
 </if><!-- _google_chrome -->
   </template>

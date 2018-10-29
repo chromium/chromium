@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxPageSelectionUnitTest() {}
+function ChromeVoxPageSelectionUnitTest() {}
 
-CvoxPageSelectionUnitTest.prototype = {
+ChromeVoxPageSelectionUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -49,7 +49,7 @@ CvoxPageSelectionUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxPageSelectionUnitTest', 'BasicExtend', function() {
+TEST_F('ChromeVoxPageSelectionUnitTest', 'BasicExtend', function() {
   var pageSel = new cvox.PageSelection(this.pSel);
   pageSel.extend(this.hSel);
   this.assertSelection_('The quick\n\nbrown fox\njumped over');
@@ -61,7 +61,7 @@ TEST_F('CvoxPageSelectionUnitTest', 'BasicExtend', function() {
 
 
 /** Tests a reverse extension. */
-TEST_F('CvoxPageSelectionUnitTest', 'ReverseExtend', function() {
+TEST_F('ChromeVoxPageSelectionUnitTest', 'ReverseExtend', function() {
   var pageSel = new cvox.PageSelection(this.pSel);
   this.assertSelection_('The quick');
   pageSel.extend(this.hSel);
@@ -81,7 +81,7 @@ TEST_F('CvoxPageSelectionUnitTest', 'ReverseExtend', function() {
 /** Tests all possible configurations of PageSelection's and extending
  * CursorSelection's.
  */
-TEST_F('CvoxPageSelectionUnitTest', 'ExtendDirections', function() {
+TEST_F('ChromeVoxPageSelectionUnitTest', 'ExtendDirections', function() {
   // A normal page selection, with a normal extension.
   var pageSel = new cvox.PageSelection(this.aSel);
   assertTrue(pageSel.extend(this.hSel));
@@ -99,7 +99,7 @@ TEST_F('CvoxPageSelectionUnitTest', 'ExtendDirections', function() {
 
 
 /** Tests degenerate extensions. */
-TEST_F('CvoxPageSelectionUnitTest', 'DegenerateExtensions', function() {
+TEST_F('ChromeVoxPageSelectionUnitTest', 'DegenerateExtensions', function() {
   var pageSel = new cvox.PageSelection(this.aSel);
 
   // A normal page selection, with a normal extension not in document order.

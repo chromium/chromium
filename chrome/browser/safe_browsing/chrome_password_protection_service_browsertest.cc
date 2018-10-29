@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -94,9 +95,10 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     // Replace the signin manager and account fetcher service with fakes.
     SigninManagerFactory::GetInstance()->SetTestingFactory(
-        context, &BuildFakeSigninManagerBase);
+        context, base::BindRepeating(&BuildFakeSigninManagerForTesting));
     AccountFetcherServiceFactory::GetInstance()->SetTestingFactory(
-        context, &FakeAccountFetcherServiceBuilder::BuildForTests);
+        context,
+        base::BindRepeating(&FakeAccountFetcherServiceBuilder::BuildForTests));
   }
 
   // Makes user signed-in as |email| with |hosted_domain|.
@@ -184,19 +186,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   content::TestNavigationObserver observer(new_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
-  // chrome://settings page should be opened in a new foreground tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(GURL(chrome::kChromeUISettingsURL),
-            new_web_contents->GetVisibleURL());
-
-  // Simulates clicking "Change password" button on the chrome://settings card.
-  service->OnUserAction(new_web_contents, PasswordReuseEvent::SIGN_IN_PASSWORD,
-                        WarningUIType::CHROME_SETTINGS,
-                        WarningAction::CHANGE_PASSWORD);
-  base::RunLoop().RunUntilIdle();
   // Verify myaccount.google.com or Google signin page should be opened in a
   // new foreground tab.
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_TRUE(browser()
                   ->tab_strip_model()
                   ->GetActiveWebContents()
@@ -213,6 +205,36 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   EXPECT_EQ(security_state::DANGEROUS, security_info.security_level);
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING,
             security_info.malicious_content_status);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
+                       SuccessfullyShowWarningIncognito) {
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/true);
+  Profile* profile = browser()->profile()->GetOffTheRecordProfile();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  security_state::SecurityInfo security_info;
+
+  // Initialize and verify initial state.
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_FALSE(
+      ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
+          web_contents, PasswordReuseEvent::SIGN_IN_PASSWORD));
+  GetSecurityInfo(web_contents, &security_info);
+  ASSERT_EQ(security_state::NONE, security_info.security_level);
+  ASSERT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
+            security_info.malicious_content_status);
+
+  // Shows modal dialog on current web_contents.
+  service->ShowModalWarning(web_contents, "unused_token",
+                            PasswordReuseEvent::SIGN_IN_PASSWORD);
+  base::RunLoop().RunUntilIdle();
+  // Change password card on chrome settings page should NOT show.
+  ASSERT_FALSE(
+      ChromePasswordProtectionService::ShouldShowChangePasswordSettingUI(
+          profile));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -313,11 +335,14 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   content::TestNavigationObserver observer(new_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
-  // chrome://settings page should be opened in a new foreground tab.
+  // Verify myaccount.google.com or Google signin page should be opened in a
+  // new foreground tab.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(
-      GURL(chrome::kChromeUISettingsURL),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetVisibleURL()
+                  .DomainIs("google.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,

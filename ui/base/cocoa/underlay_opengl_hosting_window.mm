@@ -8,10 +8,10 @@
 
 @implementation UnderlayOpenGLHostingWindow
 
-- (id)initWithContentRect:(NSRect)contentRect
-                styleMask:(NSUInteger)windowStyle
-                  backing:(NSBackingStoreType)bufferingType
-                    defer:(BOOL)deferCreation {
+- (instancetype)initWithContentRect:(NSRect)contentRect
+                          styleMask:(NSUInteger)windowStyle
+                            backing:(NSBackingStoreType)bufferingType
+                              defer:(BOOL)deferCreation {
   // It is invalid to create windows with zero width or height. It screws things
   // up royally:
   // - It causes console spew: <http://crbug.com/78973>

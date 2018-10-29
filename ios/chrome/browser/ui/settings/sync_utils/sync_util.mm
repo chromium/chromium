@@ -37,10 +37,8 @@ enum ErrorState {
 
 }  // namespace
 
-NSString* GetSyncErrorDescriptionForBrowserState(
-    ios::ChromeBrowserState* browserState) {
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browserState);
+NSString* GetSyncErrorDescriptionForSyncSetupService(
+    SyncSetupService* syncSetupService) {
   DCHECK(syncSetupService);
   SyncSetupService::SyncServiceState syncState =
       syncSetupService->GetSyncServiceState();

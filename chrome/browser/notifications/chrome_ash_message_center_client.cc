@@ -12,7 +12,10 @@
 #include "chrome/browser/notifications/arc_application_notifier_controller.h"
 #include "chrome/browser/notifications/extension_notifier_controller.h"
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -176,6 +179,11 @@ void ChromeAshMessageCenterClient::GetArcAppIdByPackageName(
   std::move(callback).Run(
       ArcAppListPrefs::Get(arc::ArcSessionManager::Get()->profile())
           ->GetAppIdByPackageName(package_name));
+}
+
+void ChromeAshMessageCenterClient::ShowLockScreenNotificationSettings() {
+  chrome::ShowSettingsSubPageForProfile(ProfileManager::GetActiveUserProfile(),
+                                        chrome::kLockScreenSubPage);
 }
 
 void ChromeAshMessageCenterClient::OnIconImageUpdated(

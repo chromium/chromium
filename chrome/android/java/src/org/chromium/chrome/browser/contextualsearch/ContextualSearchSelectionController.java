@@ -197,6 +197,15 @@ public class ContextualSearchSelectionController {
     }
 
     /**
+     * Overrides the current internal setting that tracks the selection.
+     *
+     * @param selection The new selection value.
+     */
+    void setSelectedText(String selection) {
+        mSelectedText = selection;
+    }
+
+    /**
      * @return The Pixel to Device independent Pixel ratio.
      */
     float getPxToDp() {

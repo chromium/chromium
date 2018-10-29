@@ -120,9 +120,9 @@ class BrowserList {
   // desktops.
   static bool IsIncognitoSessionActive();
 
-  // Returns true if at least one incognito session is active for |profile|
-  // across all desktops.
-  static bool IsIncognitoSessionActiveForProfile(Profile* profile);
+  // Returns the number of active incognito sessions for |profile| across all
+  // desktops.
+  static int GetIncognitoSessionsActiveForProfile(Profile* profile);
 
  private:
   BrowserList();

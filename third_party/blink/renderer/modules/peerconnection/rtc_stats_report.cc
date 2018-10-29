@@ -4,153 +4,87 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+
 namespace blink {
 
 namespace {
 
-template <typename T>
-bool AddPropertyValue(v8::Local<v8::Object>& v8_object,
-                      v8::Isolate* isolate,
-                      T name,
-                      v8::Local<v8::Value> value) {
-  return V8CallBoolean(v8_object->CreateDataProperty(
-      isolate->GetCurrentContext(), V8String(isolate, name), value));
-}
-
-bool AddPropertySequenceOfBooleans(v8::Local<v8::Object>& v8_object,
-                                   v8::Isolate* isolate,
-                                   WebString name,
-                                   const WebVector<int>& web_vector) {
-  v8::Local<v8::Array> v8_array = v8::Array::New(isolate, web_vector.size());
-  for (size_t i = 0; i < web_vector.size(); ++i) {
-    if (!V8CallBoolean(v8_array->CreateDataProperty(
-            isolate->GetCurrentContext(), static_cast<uint32_t>(i),
-            v8::Boolean::New(isolate, static_cast<bool>(web_vector[i])))))
-      return false;
-  }
-  return AddPropertyValue(v8_object, isolate, name, v8_array);
-}
-
-template <typename T>
-bool AddPropertySequenceOfNumbers(v8::Local<v8::Object>& v8_object,
-                                  v8::Isolate* isolate,
-                                  WebString name,
-                                  const WebVector<T>& web_vector) {
-  v8::Local<v8::Array> v8_array = v8::Array::New(isolate, web_vector.size());
-  for (size_t i = 0; i < web_vector.size(); ++i) {
-    if (!V8CallBoolean(v8_array->CreateDataProperty(
-            isolate->GetCurrentContext(), static_cast<uint32_t>(i),
-            v8::Number::New(isolate, static_cast<double>(web_vector[i])))))
-      return false;
-  }
-  return AddPropertyValue(v8_object, isolate, name, v8_array);
-}
-
-bool AddPropertySequenceOfStrings(v8::Local<v8::Object>& v8_object,
-                                  v8::Isolate* isolate,
-                                  WebString name,
-                                  const WebVector<WebString>& web_vector) {
-  v8::Local<v8::Array> v8_array = v8::Array::New(isolate, web_vector.size());
-  for (size_t i = 0; i < web_vector.size(); ++i) {
-    if (!V8CallBoolean(v8_array->CreateDataProperty(
-            isolate->GetCurrentContext(), static_cast<uint32_t>(i),
-            V8String(isolate, web_vector[i]))))
-      return false;
-  }
-  return AddPropertyValue(v8_object, isolate, name, v8_array);
-}
-
 v8::Local<v8::Value> WebRTCStatsToValue(ScriptState* script_state,
                                         const WebRTCStats* stats) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Object> v8_object = v8::Object::New(isolate);
+  V8ObjectBuilder builder(script_state);
 
-  bool success = true;
-  success &= AddPropertyValue(v8_object, isolate, "id",
-                              V8String(isolate, stats->Id()));
-  success &= AddPropertyValue(v8_object, isolate, "timestamp",
-                              v8::Number::New(isolate, stats->Timestamp()));
-  success &= AddPropertyValue(v8_object, isolate, "type",
-                              V8String(isolate, stats->GetType()));
-  for (size_t i = 0; i < stats->MembersCount() && success; ++i) {
+  builder.AddString("id", stats->Id());
+  builder.AddNumber("timestamp", stats->Timestamp());
+  builder.AddString("type", stats->GetType());
+
+  auto add_vector = [&builder](const WebString& name, auto web_vector) {
+    Vector<typename decltype(web_vector)::value_type> vector(web_vector.size());
+    std::move(web_vector.begin(), web_vector.end(), vector.begin());
+    builder.Add(name, vector);
+  };
+
+  for (size_t i = 0; i < stats->MembersCount(); ++i) {
     std::unique_ptr<WebRTCStatsMember> member = stats->GetMember(i);
     if (!member->IsDefined())
       continue;
     WebString name = member->GetName();
     switch (member->GetType()) {
       case kWebRTCStatsMemberTypeBool:
-        success &=
-            AddPropertyValue(v8_object, isolate, name,
-                             v8::Boolean::New(isolate, member->ValueBool()));
+        builder.AddBoolean(name, member->ValueBool());
         break;
       case kWebRTCStatsMemberTypeInt32:
-        success &= AddPropertyValue(
-            v8_object, isolate, name,
-            v8::Number::New(isolate,
-                            static_cast<double>(member->ValueInt32())));
+        builder.AddNumber(name, static_cast<double>(member->ValueInt32()));
         break;
       case kWebRTCStatsMemberTypeUint32:
-        success &= AddPropertyValue(
-            v8_object, isolate, name,
-            v8::Number::New(isolate,
-                            static_cast<double>(member->ValueUint32())));
+        builder.AddNumber(name, static_cast<double>(member->ValueUint32()));
         break;
       case kWebRTCStatsMemberTypeInt64:
-        success &= AddPropertyValue(
-            v8_object, isolate, name,
-            v8::Number::New(isolate,
-                            static_cast<double>(member->ValueInt64())));
+        builder.AddNumber(name, static_cast<double>(member->ValueInt64()));
         break;
       case kWebRTCStatsMemberTypeUint64:
-        success &= AddPropertyValue(
-            v8_object, isolate, name,
-            v8::Number::New(isolate,
-                            static_cast<double>(member->ValueUint64())));
+        builder.AddNumber(name, static_cast<double>(member->ValueUint64()));
         break;
       case kWebRTCStatsMemberTypeDouble:
-        success &=
-            AddPropertyValue(v8_object, isolate, name,
-                             v8::Number::New(isolate, member->ValueDouble()));
+        builder.AddNumber(name, member->ValueDouble());
         break;
       case kWebRTCStatsMemberTypeString:
-        success &= AddPropertyValue(v8_object, isolate, name,
-                                    V8String(isolate, member->ValueString()));
+        builder.AddString(name, member->ValueString());
         break;
-      case kWebRTCStatsMemberTypeSequenceBool:
-        success &= AddPropertySequenceOfBooleans(v8_object, isolate, name,
-                                                 member->ValueSequenceBool());
+      case kWebRTCStatsMemberTypeSequenceBool: {
+        WebVector<int> sequence = member->ValueSequenceBool();
+        Vector<bool> vector(sequence.size());
+        std::copy(sequence.begin(), sequence.end(), vector.begin());
+        builder.Add(name, vector);
         break;
+      }
       case kWebRTCStatsMemberTypeSequenceInt32:
-        success &= AddPropertySequenceOfNumbers(v8_object, isolate, name,
-                                                member->ValueSequenceInt32());
+        add_vector(name, member->ValueSequenceInt32());
         break;
       case kWebRTCStatsMemberTypeSequenceUint32:
-        success &= AddPropertySequenceOfNumbers(v8_object, isolate, name,
-                                                member->ValueSequenceUint32());
+        add_vector(name, member->ValueSequenceUint32());
         break;
       case kWebRTCStatsMemberTypeSequenceInt64:
-        success &= AddPropertySequenceOfNumbers(v8_object, isolate, name,
-                                                member->ValueSequenceInt64());
+        add_vector(name, member->ValueSequenceInt64());
         break;
       case kWebRTCStatsMemberTypeSequenceUint64:
-        success &= AddPropertySequenceOfNumbers(v8_object, isolate, name,
-                                                member->ValueSequenceUint64());
+        add_vector(name, member->ValueSequenceUint64());
         break;
       case kWebRTCStatsMemberTypeSequenceDouble:
-        success &= AddPropertySequenceOfNumbers(v8_object, isolate, name,
-                                                member->ValueSequenceDouble());
+        add_vector(name, member->ValueSequenceDouble());
         break;
       case kWebRTCStatsMemberTypeSequenceString:
-        success &= AddPropertySequenceOfStrings(v8_object, isolate, name,
-                                                member->ValueSequenceString());
+        add_vector(name, member->ValueSequenceString());
         break;
       default:
         NOTREACHED();
     }
   }
-  if (!success) {
+
+  v8::Local<v8::Object> v8_object = builder.V8Value();
+  if (v8_object.IsEmpty()) {
     NOTREACHED();
-    return v8::Undefined(isolate);
+    return v8::Undefined(script_state->GetIsolate());
   }
   return v8_object;
 }
@@ -181,6 +115,10 @@ class RTCStatsReportIterationSource final
 
 RTCStatsReport::RTCStatsReport(std::unique_ptr<WebRTCStatsReport> report)
     : report_(std::move(report)) {}
+
+uint32_t RTCStatsReport::size() const {
+  return base::saturated_cast<uint32_t>(report_->Size());
+}
 
 PairIterable<String, v8::Local<v8::Value>>::IterationSource*
 RTCStatsReport::StartIteration(ScriptState*, ExceptionState&) {

@@ -104,15 +104,6 @@ void RasterImplementation::DeleteQueriesEXT(GLsizei n, const GLuint* queries) {
   CheckGLError();
 }
 
-void RasterImplementation::CompressedCopyTextureCHROMIUM(GLuint source_id,
-                                                         GLuint dest_id) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCompressedCopyTextureCHROMIUM("
-                     << source_id << ", " << dest_id << ")");
-  helper_->CompressedCopyTextureCHROMIUM(source_id, dest_id);
-  CheckGLError();
-}
-
 void RasterImplementation::LoseContextCHROMIUM(GLenum current, GLenum other) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glLoseContextCHROMIUM("

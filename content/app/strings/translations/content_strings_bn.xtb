@@ -2,10 +2,9 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1018939186200882850">মেনু আইটেম</translation>
-<translation id="1020833440720551630">অডিও ট্র্যাক মিউট করুন</translation>
 <translation id="10623998915015855">টগল বোতাম</translation>
 <translation id="1088086359088493902">সেকেন্ড</translation>
-<translation id="1171774979989969504">অনুগ্রহ করে কোনও ইমেল আইডি লিখুন।</translation>
+<translation id="1171774979989969504">অনুগ্রহ করে কোন ইমেল আইডি লিখুন:</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1188858454923323853">পরিপূরক</translation>
 <translation id="1206619573307042055">marquee</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">ক্রেডিট</translation>
 <translation id="1342835525016946179">নিবন্ধ</translation>
 <translation id="1359897965706325498">ব্যানার</translation>
-<translation id="1548116112524424341">ছবির-মধ্যে-ছবি মোডে ভিডিও চালান</translation>
 <translation id="1589122976691792535">অঞ্চল</translation>
 <translation id="1591562245178063882">এই মাস</translation>
 <translation id="1637811476055996098">ফাইল বেছে নিন</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">ট্রি গ্রিড</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">রিমোট ডিভাইসে প্লে করুন</translation>
-<translation id="1838818994221231429">ডিসপ্লে কাট-আউট থেকে ফুল-স্ক্রিনে টগল করুন</translation>
 <translation id="190587075670221089">মোছা হচ্ছে</translation>
 <translation id="1907737156431278478">উদাহরণ</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">১০ সেকেন্ড আগে পরে করার জন্য বাঁ অথবা ডান দিকে ডবল ট্যাপ করুন</translation>
 <translation id="5631759159893697722">বিমূর্ত</translation>
-<translation id="5641012560118721995">প্লেব্যাক বিরতি</translation>
 <translation id="5643186887447432888">বোতাম</translation>
 <translation id="5677946354068040947">আরও বিকল্প</translation>
 <translation id="576709008726043716">পরিচয়</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="5966707198760109579">সপ্তাহ</translation>
 <translation id="5987525920412732405">ঘোড়ানোর বোতাম</translation>
+<translation id="6011459053400940133">ভলিউম স্লাইডার</translation>
 <translation id="6015796118275082299">বছর</translation>
 <translation id="6023896073578205740">তালিকা বাক্স</translation>
-<translation id="6101327004457443354">অডিও ট্র্যাক সশব্দ করুন</translation>
 <translation id="6150588977291308318">বিবলিওগ্রাফি</translation>
 <translation id="6164829606128959761">মিটার</translation>
 <translation id="6166809985690652833">পরিশিষ্ট</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ঘণ্টা</translation>
 <translation id="7681220483256441252">সূচি</translation>
 <translation id="7720026100085573005">অবশিষ্ট সময়</translation>
-<translation id="7740016676195725605">বদ্ধ পরিচয়লিপিগুলির প্রদর্শন থামান</translation>
 <translation id="7740050170769002709">HTML সামগ্রী</translation>
 <translation id="7750228210027921155">ছবির-মধ্যে-ছবি</translation>
 <translation id="7789962463072032349">বিরাম</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">সার্চ পাঠ্য ফিল্ড</translation>
 <translation id="8057695513531652401">বিজ্ঞপ্তি</translation>
 <translation id="8105797009065549151">নোটের রেফারেন্স</translation>
-<translation id="8115662671911883373">বন্ধ পরিচয়লিপিগুলির প্রদর্শন শুরু করুন</translation>
 <translation id="8117451130807776954">এই সপ্তাহ</translation>
-<translation id="819205353528511139">পূর্ণ স্ক্রিন মোডে চলচ্চিত্র চালান</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="835897206747267392">অকার্যকর মান৷</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">রিমোট প্লেব্যাক নিয়ন্ত্রণ করুন</translation>
 <translation id="862370744433916922">সাবটাইটেল</translation>
 <translation id="8750798805984357768">দয়া করে বিকল্পগুলির একটি নির্বাচন করুন৷</translation>
-<translation id="8785498733064193001">প্লেব্যাক শুরু করুন</translation>
 <translation id="8808573423886751634">অধ্যায়</translation>
 <translation id="8845239796550121995">এখন আপনার TV তে কাস্ট করা হচ্ছে</translation>
 <translation id="8851136666856101339">প্রধান</translation>

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/threading/thread_restrictions.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -17,8 +16,6 @@ namespace declarative_net_request {
 
 bool HasValidIndexedRuleset(const Extension& extension,
                             content::BrowserContext* browser_context) {
-  base::AssertBlockingAllowed();
-
   int expected_checksum;
   if (!ExtensionPrefs::Get(browser_context)
            ->GetDNRRulesetChecksum(extension.id(), &expected_checksum)) {

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "services/ws/public/cpp/property_type_converters.h"
 #include "services/ws/public/mojom/window_manager.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/ime/candidate_view.h"
 #include "ui/chromeos/ime/candidate_window_constants.h"
 #include "ui/display/display.h"
@@ -37,11 +38,10 @@ namespace {
 
 class CandidateWindowBorder : public views::BubbleBorder {
  public:
-  explicit CandidateWindowBorder(gfx::NativeView parent)
+  CandidateWindowBorder()
       : views::BubbleBorder(views::BubbleBorder::TOP_CENTER,
                             views::BubbleBorder::BIG_SHADOW,
                             gfx::kPlaceholderColor),
-        parent_(parent),
         offset_(0) {
     set_use_theme_background_color(true);
   }
@@ -62,9 +62,8 @@ class CandidateWindowBorder : public views::BubbleBorder {
     // It cannot use the normal logic of arrow offset for horizontal offscreen,
     // because the arrow must be in the content's edge. But CandidateWindow has
     // to be visible even when |anchor_rect| is out of the screen.
-    gfx::Rect work_area = display::Screen::GetScreen()
-                              ->GetDisplayNearestWindow(parent_)
-                              .work_area();
+    gfx::Rect work_area =
+        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
     if (bounds.right() > work_area.right())
       bounds.set_x(work_area.right() - bounds.width());
     if (bounds.x() < work_area.x())
@@ -75,7 +74,6 @@ class CandidateWindowBorder : public views::BubbleBorder {
 
   gfx::Insets GetInsets() const override { return gfx::Insets(); }
 
-  gfx::NativeView parent_;
   int offset_;
 
   DISALLOW_COPY_AND_ASSIGN(CandidateWindowBorder);
@@ -157,6 +155,7 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent,
       was_candidate_window_open_(false),
       window_shell_id_(window_shell_id) {
   set_can_activate(false);
+  DCHECK(parent || features::IsUsingWindowService());
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
@@ -200,8 +199,8 @@ views::Widget* CandidateWindowView::InitWidget() {
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeView(),
                                              wm::ANIMATE_NONE);
 
-  GetBubbleFrameView()->SetBubbleBorder(std::unique_ptr<views::BubbleBorder>(
-      new CandidateWindowBorder(parent_window())));
+  GetBubbleFrameView()->SetBubbleBorder(
+      std::make_unique<CandidateWindowBorder>());
   GetBubbleFrameView()->OnNativeThemeChanged(widget->GetNativeTheme());
   return widget;
 }
@@ -414,6 +413,9 @@ void CandidateWindowView::OnBeforeBubbleWidgetInit(
   params->mus_properties[WindowManager::kContainerId_InitProperty] =
       mojo::ConvertTo<std::vector<uint8_t>>(
           static_cast<int32_t>(window_shell_id_));
+  params->mus_properties[WindowManager::kDisplayId_InitProperty] =
+      mojo::ConvertTo<std::vector<uint8_t>>(
+          display::Screen::GetScreen()->GetDisplayForNewWindows().id());
 }
 
 void CandidateWindowView::ButtonPressed(views::Button* sender,

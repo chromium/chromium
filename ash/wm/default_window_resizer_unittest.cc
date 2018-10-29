@@ -55,7 +55,7 @@ class DefaultWindowResizerTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(DefaultWindowResizerTest);
 };
 
-// Tests window dragging with a square aspect ratio.
+// Tests window resizing with a square aspect ratio.
 TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioSquare) {
   aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
                                     new gfx::SizeF(1.0, 1.0));
@@ -80,7 +80,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioSquare) {
   EXPECT_EQ("250,250 150x150", aspect_ratio_window_->bounds().ToString());
 }
 
-// Tests window dragging with a horizontal orientation aspect ratio.
+// Tests window resizing with a horizontal orientation aspect ratio.
 TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioHorizontal) {
   aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
                                     new gfx::SizeF(2.0, 1.0));
@@ -105,7 +105,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioHorizontal) {
   EXPECT_EQ("200,200 500x250", aspect_ratio_window_->bounds().ToString());
 }
 
-// Tests window dragging with a vertical orientation aspect ratio.
+// Tests window resizing with a vertical orientation aspect ratio.
 TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioVertical) {
   aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
                                     new gfx::SizeF(1.0, 2.0));
@@ -128,6 +128,31 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioVertical) {
   resizer->CompleteDrag();
   EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
   EXPECT_EQ("200,200 225x450", aspect_ratio_window_->bounds().ToString());
+}
+
+// Tests window dragging with a vertical orientation aspect ratio.
+TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
+  aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
+                                    new gfx::SizeF(1.0, 2.0));
+
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(1U, root_windows.size());
+  EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
+
+  aspect_ratio_window_->SetBoundsInScreen(
+      gfx::Rect(200, 200, 200, 400),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+  EXPECT_EQ("200,200 200x400", aspect_ratio_window_->bounds().ToString());
+
+  std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
+      aspect_ratio_window_.get(), gfx::Point(), HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  // Move the mouse near the top left edge.
+  resizer->Drag(gfx::Point(50, 50), 0);
+  resizer->CompleteDrag();
+  EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
+  EXPECT_EQ("250,250 200x400", aspect_ratio_window_->bounds().ToString());
 }
 
 }  // namespace ash

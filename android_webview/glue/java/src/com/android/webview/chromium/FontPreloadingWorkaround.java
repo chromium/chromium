@@ -9,7 +9,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -42,7 +41,8 @@ public class FontPreloadingWorkaround {
      */
     public static void maybeInstallWorkaround(Context appContext) {
         // Only isolated renderer processes running on O devices need this workaround.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || BuildInfo.isAtLeastP()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                 || !ContextUtils.isIsolatedProcess()) {
             return;
         }

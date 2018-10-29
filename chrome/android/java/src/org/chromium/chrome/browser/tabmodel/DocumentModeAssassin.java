@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.util.Pair;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -19,6 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.TabState;
 import org.chromium.chrome.browser.document.DocumentActivity;
 import org.chromium.chrome.browser.document.DocumentUtils;
@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.document.DocumentTabModelImpl;
 import org.chromium.chrome.browser.tabmodel.document.DocumentTabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.StorageDelegate;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.toolbar.TabSwitcherCallout;
 import org.chromium.chrome.browser.util.FeatureUtilities;
 
 import java.io.File;
@@ -407,7 +406,6 @@ public class DocumentModeAssassin {
         // safely copied to the other directory.
         Log.d(TAG, "Setting tabbed mode preference.");
         setOptedOutState(OPTED_OUT_OF_DOCUMENT_MODE);
-        TabSwitcherCallout.setIsTabSwitcherCalloutNecessary(true);
 
         // Remove all the {@link DocumentActivity} tasks from Android's Recents list.  Users
         // viewing Recents during migration will continue to see their tabs until they exit.

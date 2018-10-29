@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/webauthn/authenticator_transport_selector_sheet_view.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 
 #include <utility>
 
@@ -10,16 +11,18 @@ AuthenticatorTransportSelectorSheetView::
     AuthenticatorTransportSelectorSheetView(
         std::unique_ptr<AuthenticatorTransportSelectorSheetModel> model)
     : AuthenticatorRequestSheetView(std::move(model)) {}
+
 AuthenticatorTransportSelectorSheetView::
     ~AuthenticatorTransportSelectorSheetView() = default;
 
 std::unique_ptr<views::View>
 AuthenticatorTransportSelectorSheetView::BuildStepSpecificContent() {
-  return std::make_unique<TransportListView>(
-      model()->dialog_model()->transport_list_model(), this);
+  return std::make_unique<HoverListView>(
+      std::make_unique<TransportHoverListModel>(
+          model()->dialog_model()->available_transports(), this));
 }
 
-void AuthenticatorTransportSelectorSheetView::OnListItemSelected(
+void AuthenticatorTransportSelectorSheetView::OnItemSelected(
     AuthenticatorTransport transport) {
   model()->OnTransportSelected(transport);
 }

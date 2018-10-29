@@ -1,5 +1,3 @@
 This test checks for :read-only right behavior. Fails if FAILURE is shown below.
 
-
-
 SUCCESS

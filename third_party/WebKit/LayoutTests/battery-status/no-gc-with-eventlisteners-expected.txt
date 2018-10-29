@@ -2,7 +2,6 @@ Test no garbage collection of battery manager object when listeners are attached
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS batteryInfo is defined.
 PASS lastSetMockBatteryInfo is defined.
 PASS batteryInfo.charging is lastSetMockBatteryInfo.charging

@@ -32,7 +32,7 @@ void HintCache::LoadHint(const std::string& host, HintLoadedCallback callback) {
   // TODO(dougarnett): Add backing store support to load from.
 }
 
-bool HintCache::IsHintLoaded(const std::string& host) {
+bool HintCache::IsHintLoaded(const std::string& host) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string host_suffix = DetermineHostSuffix(host);
   if (host_suffix.empty()) {

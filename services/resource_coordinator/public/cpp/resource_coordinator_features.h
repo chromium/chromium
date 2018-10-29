@@ -8,32 +8,29 @@
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_RESOURCE_COORDINATOR_FEATURES_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_RESOURCE_COORDINATOR_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_export.h"
 
 namespace features {
 
 // The features should be documented alongside the definition of their values
 // in the .cc file.
-extern const SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT base::Feature
-    kGlobalResourceCoordinator;
-extern const SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT base::Feature
-    kPageAlmostIdle;
-extern const SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT base::Feature
-    kPerformanceMeasurement;
+extern const COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES)
+    base::Feature kGlobalResourceCoordinator;
+extern const COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES)
+    base::Feature kPageAlmostIdle;
+extern const COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES)
+    base::Feature kPerformanceMeasurement;
 
 }  // namespace features
 
 namespace resource_coordinator {
 
-bool SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT
-IsResourceCoordinatorEnabled();
+bool COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES)
+    IsPageAlmostIdleSignalEnabled();
 
-bool SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT
-IsPageAlmostIdleSignalEnabled();
-
-int SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT
-GetMainThreadTaskLoadLowThreshold();
+int COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES)
+    GetMainThreadTaskLoadLowThreshold();
 
 }  // namespace resource_coordinator
 

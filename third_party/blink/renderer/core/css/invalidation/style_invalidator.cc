@@ -169,9 +169,9 @@ bool StyleInvalidator::SiblingData::MatchCurrentInvalidationSets(
     if (const DescendantInvalidationSet* descendants =
             invalidation_set.SiblingDescendants()) {
       if (descendants->WholeSubtreeInvalid()) {
-        element.SetNeedsStyleRecalc(kSubtreeStyleChange,
-                                    StyleChangeReasonForTracing::Create(
-                                        StyleChangeReason::kStyleInvalidator));
+        element.SetNeedsStyleRecalc(
+            kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                     style_change_reason::kStyleInvalidator));
         return true;
       }
 
@@ -276,7 +276,7 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     } else if (CheckInvalidationSetsAgainstElement(element, sibling_data)) {
       element.SetNeedsStyleRecalc(kLocalStyleChange,
                                   StyleChangeReasonForTracing::Create(
-                                      StyleChangeReason::kStyleInvalidator));
+                                      style_change_reason::kStyleInvalidator));
     }
     if (UNLIKELY(element.NeedsStyleInvalidation()))
       PushInvalidationSetsForContainerNode(element, sibling_data);
@@ -295,7 +295,7 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     if (InsertionPointCrossing() && element.IsV0InsertionPoint()) {
       element.SetNeedsStyleRecalc(kSubtreeStyleChange,
                                   StyleChangeReasonForTracing::Create(
-                                      StyleChangeReason::kStyleInvalidator));
+                                      style_change_reason::kStyleInvalidator));
     }
   }
 
@@ -320,10 +320,11 @@ void StyleInvalidator::InvalidateSlotDistributedElements(
       continue;
     if (!distributed_node->IsElementNode())
       continue;
-    if (MatchesCurrentInvalidationSetsAsSlotted(ToElement(*distributed_node)))
+    if (MatchesCurrentInvalidationSetsAsSlotted(ToElement(*distributed_node))) {
       distributed_node->SetNeedsStyleRecalc(
           kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                 StyleChangeReason::kStyleInvalidator));
+                                 style_change_reason::kStyleInvalidator));
+    }
   }
 }
 

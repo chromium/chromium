@@ -11,6 +11,7 @@ class TimeDelta;
 
 class PrefRegistrySimple;
 class PrefService;
+class Profile;
 
 namespace chromeos {
 namespace quick_unlock {
@@ -38,8 +39,8 @@ bool IsPinDisabledByPolicy(PrefService* pref_service);
 // Returns true if the quick unlock feature flag is present.
 bool IsPinEnabled(PrefService* pref_service);
 
-// Returns true if the fingerprint unlock feature flag is present.
-bool IsFingerprintEnabled();
+// Returns true if the fingerprint is allowed for specified profile.
+bool IsFingerprintEnabled(Profile* profile);
 
 // Forcibly enable all quick-unlock modes for testing.
 void EnableForTesting();

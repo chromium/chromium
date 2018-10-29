@@ -94,7 +94,7 @@ class CORE_EXPORT StyleInvalidator {
 
    private:
     struct Entry {
-      DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+      DISALLOW_NEW();
       Entry(const SiblingInvalidationSet* invalidation_set,
             unsigned invalidation_limit)
           : invalidation_set_(invalidation_set),

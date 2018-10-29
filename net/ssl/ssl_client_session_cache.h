@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -31,7 +30,7 @@ class ProcessMemoryDump;
 
 namespace net {
 
-class NET_EXPORT SSLClientSessionCache : public base::MemoryCoordinatorClient {
+class NET_EXPORT SSLClientSessionCache {
  public:
   struct Config {
     // The maximum number of entries in the cache.
@@ -41,7 +40,7 @@ class NET_EXPORT SSLClientSessionCache : public base::MemoryCoordinatorClient {
   };
 
   explicit SSLClientSessionCache(const Config& config);
-  ~SSLClientSessionCache() override;
+  ~SSLClientSessionCache();
 
   // Returns true if |entry| is expired as of |now|.
   static bool IsExpired(SSL_SESSION* session, time_t now);
@@ -90,9 +89,6 @@ class NET_EXPORT SSLClientSessionCache : public base::MemoryCoordinatorClient {
 
     bssl::UniquePtr<SSL_SESSION> sessions[2] = {nullptr};
   };
-
-  // base::MemoryCoordinatorClient implementation:
-  void OnPurgeMemory() override;
 
   // Removes all expired sessions from the cache.
   void FlushExpiredSessions();

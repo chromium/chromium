@@ -262,8 +262,8 @@ BASE_EXPORT size_t find_first_not_of(const StringPiece16& self,
 
   for (size_t self_i = pos; self_i < self.size(); ++self_i) {
     bool found = false;
-    for (size_t s_i = 0; s_i < s.size(); ++s_i) {
-      if (self[self_i] == s[s_i]) {
+    for (auto c : s) {
+      if (self[self_i] == c) {
         found = true;
         break;
       }
@@ -330,8 +330,8 @@ size_t find_last_of(const StringPiece16& self,
 
   for (size_t self_i = std::min(pos, self.size() - 1); ;
        --self_i) {
-    for (size_t s_i = 0; s_i < s.size(); s_i++) {
-      if (self.data()[self_i] == s[s_i])
+    for (auto c : s) {
+      if (self.data()[self_i] == c)
         return self_i;
     }
     if (self_i == 0)
@@ -375,8 +375,8 @@ size_t find_last_not_of(const StringPiece16& self,
 
   for (size_t self_i = std::min(pos, self.size() - 1); ; --self_i) {
     bool found = false;
-    for (size_t s_i = 0; s_i < s.size(); s_i++) {
-      if (self.data()[self_i] == s[s_i]) {
+    for (auto c : s) {
+      if (self.data()[self_i] == c) {
         found = true;
         break;
       }

@@ -131,7 +131,7 @@ TEST SUCCEEDED: The value was the string 'null'. [tested HTMLImageElement.useMap
 TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.accept]
 TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.align]
 TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.alt]
-TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.autocomplete]
+TEST SUCCEEDED: The value was the empty string. [tested HTMLInputElement.autocomplete]
 TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.defaultValue]
 TEST SUCCEEDED: The value was the string 'null'. [tested HTMLInputElement.dirName]
 TEST SUCCEEDED: The value was the string 'null' resolved as a URL. [tested HTMLInputElement.formAction]

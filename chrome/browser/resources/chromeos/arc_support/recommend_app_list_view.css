@@ -77,11 +77,26 @@ body {
       1px 1px 4px rgba(60, 64, 67, 0.30),
       1px 2px 4px 1px rgba(60, 64, 67, 0.15);
   height: 60px;
-  overflow: hidden;
   position: relative;
   width: 192px;
   --x: 0;
   --y: 0;
+}
+
+#recommend-apps-container .item .chip .chip-content-container {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#recommend-apps-container .item .chip:focus,
+#recommend-apps-container .item .chip .chip-content-container:focus {
+  outline: none;
+}
+
+#recommend-apps-container .item .chip:focus > .chip-content-container {
+  outline: 2px solid rgba(26, 115, 232, 0.5);
 }
 
 @keyframes ripple {
@@ -93,7 +108,7 @@ body {
   }
 }
 
-#recommend-apps-container .item .chip .ripple {
+#recommend-apps-container .item .chip .chip-content-container .ripple {
   animation: ripple 1s forwards;
   background: rgba(32, 33, 36, 0.14);
   border-radius: 50%;

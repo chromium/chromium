@@ -25,7 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#mediastreamaudiosourcenode
 [
-    Constructor(BaseAudioContext context, MediaStreamAudioSourceOptions options),
+    Constructor(AudioContext context, MediaStreamAudioSourceOptions options),
     RaisesException=Constructor,
     Measure
 ]

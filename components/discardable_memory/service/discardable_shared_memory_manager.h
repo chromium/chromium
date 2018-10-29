@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/discardable_shared_memory.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -49,7 +48,6 @@ namespace discardable_memory {
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
-      public base::MemoryCoordinatorClient,
       public base::MessageLoopCurrent::DestructionObserver {
  public:
   DiscardableSharedMemoryManager();
@@ -116,10 +114,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     // In this system, LRU memory segment is evicted first.
     return a->memory()->last_known_usage() > b->memory()->last_known_usage();
   }
-
-  // base::MemoryCoordinatorClient implementation:
-  void OnMemoryStateChange(base::MemoryState state) override;
-  void OnPurgeMemory() override;
 
   // base::MessageLoopCurrent::DestructionObserver implementation:
   void WillDestroyCurrentMessageLoop() override;

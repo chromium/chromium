@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -32,8 +33,15 @@
 #include "ui/base/ui_base_features.h"
 
 using autofill::PasswordForm;
-using autofill::password_generation::PasswordGenerationUserEvent;
 using Item = PasswordAccessoryViewInterface::AccessoryItem;
+
+namespace {
+
+void RecordGenerationDialogDismissal(bool accepted) {
+  UMA_HISTOGRAM_BOOLEAN("KeyboardAccessory.GeneratedPasswordDialog", accepted);
+}
+
+}  // namespace
 
 struct PasswordAccessoryController::GenerationElementData {
   GenerationElementData(autofill::PasswordForm form,
@@ -80,53 +88,6 @@ struct PasswordAccessoryController::FaviconRequestData {
 
   // Cached image for this origin. |IsEmpty()| unless a favicon was found.
   gfx::Image cached_icon;
-};
-
-class PasswordAccessoryController::GeneratedPasswordMetricsRecorder {
- public:
-  explicit GeneratedPasswordMetricsRecorder(const base::string16& password)
-      : initial_password_(password), was_edited_(false) {}
-
-  void PasswordAccepted() {
-    autofill::password_generation::LogPasswordGenerationUserEvent(
-        PasswordGenerationUserEvent::kPasswordAccepted);
-  }
-
-  // Called when a generated password was presaved, which signals a possible
-  // change in the password.
-  void MaybePasswordChanged(const base::string16& new_password) {
-    if (was_edited_)
-      return;
-    // Check if the password is different from the accepted password, as this
-    // method is also called on the first presave after the user accepts the
-    // generated password.
-    if (new_password != initial_password_) {
-      was_edited_ = true;
-      autofill::password_generation::LogPasswordGenerationUserEvent(
-          PasswordGenerationUserEvent::kPasswordEdited);
-    }
-  }
-
-  void PasswordDeleted() {
-    autofill::password_generation::LogPasswordGenerationUserEvent(
-        PasswordGenerationUserEvent::kPasswordDeleted);
-  }
-
-  void PasswordRejected() {
-    autofill::password_generation::LogPasswordGenerationUserEvent(
-        PasswordGenerationUserEvent::kPasswordRejectedInDialog);
-  }
-
- private:
-  // The initial password that was accepted by the user. Used to detect
-  // that the password was edited.
-  base::string16 initial_password_;
-
-  // Whether or not the password was edited. Used to prevent logging the same
-  // event multiple times.
-  bool was_edited_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPasswordMetricsRecorder);
 };
 
 PasswordAccessoryController::PasswordAccessoryController(
@@ -190,9 +151,7 @@ void PasswordAccessoryController::SavePasswordsForOrigin(
   for (const auto& pair : best_matches) {
     const PasswordForm* form = pair.second;
     suggestions->emplace_back(form->password_value, GetDisplayUsername(*form),
-                              form->username_value.empty()
-                                  ? Item::Type::NON_INTERACTIVE_SUGGESTION
-                                  : Item::Type::SUGGESTION);
+                              Item::Type::NON_INTERACTIVE_SUGGESTION);
   }
 }
 
@@ -216,16 +175,6 @@ void PasswordAccessoryController::OnAutomaticGenerationStatusChanged(
   }
   DCHECK(view_);
   view_->OnAutomaticGenerationStatusChanged(available);
-}
-
-void PasswordAccessoryController::MaybeGeneratedPasswordChanged(
-    const base::string16& changed_password) {
-  generated_password_metrics_recorder_->MaybePasswordChanged(changed_password);
-}
-
-void PasswordAccessoryController::GeneratedPasswordDeleted() {
-  generated_password_metrics_recorder_->PasswordDeleted();
-  generated_password_metrics_recorder_.reset();
 }
 
 void PasswordAccessoryController::OnFilledIntoFocusedField(
@@ -263,7 +212,16 @@ void PasswordAccessoryController::DidNavigateMainFrame() {
   origin_suggestions_.clear();
 }
 
+void PasswordAccessoryController::ShowWhenKeyboardIsVisible() {
+  view_->ShowWhenKeyboardIsVisible();
+}
+
+void PasswordAccessoryController::Hide() {
+  view_->Hide();
+}
+
 void PasswordAccessoryController::GetFavicon(
+    int desired_size_in_pixel,
     base::OnceCallback<void(const gfx::Image&)> icon_callback) {
   url::Origin origin = current_origin_;  // Copy origin in case it changes.
   // Check whether this request can be immediately answered with a cached icon.
@@ -283,8 +241,10 @@ void PasswordAccessoryController::GetFavicon(
   if (icon_request->pending_requests.size() > 1)
     return;  // The favicon for this origin was already requested.
 
-  favicon_service_->GetFaviconImageForPageURL(
-      origin.GetURL(),
+  favicon_service_->GetRawFaviconForPageURL(
+      origin.GetURL(), {favicon_base::IconType::kFavicon},
+      desired_size_in_pixel,
+      /* fallback_to_host = */ false,
       base::BindRepeating(  // FaviconService doesn't support BindOnce yet.
           &PasswordAccessoryController::OnImageFetched,
           weak_factory_.GetWeakPtr(), origin),
@@ -340,8 +300,6 @@ void PasswordAccessoryController::OnGenerationRequested() {
         ->ReportSpecPriorityForGeneratedPassword(generation_element_data_->form,
                                                  spec_priority);
   }
-  generated_password_metrics_recorder_ =
-      std::make_unique<GeneratedPasswordMetricsRecorder>(password);
   dialog_view_->Show(password);
 }
 
@@ -349,14 +307,13 @@ void PasswordAccessoryController::GeneratedPasswordAccepted(
     const base::string16& password) {
   if (!target_frame_driver_)
     return;
+  RecordGenerationDialogDismissal(true);
   target_frame_driver_->GeneratedPasswordAccepted(password);
-  generated_password_metrics_recorder_->PasswordAccepted();
   dialog_view_.reset();
 }
 
 void PasswordAccessoryController::GeneratedPasswordRejected() {
-  generated_password_metrics_recorder_->PasswordRejected();
-  generated_password_metrics_recorder_.reset();
+  RecordGenerationDialogDismissal(false);
   dialog_view_.reset();
 }
 
@@ -375,6 +332,10 @@ std::vector<Item> PasswordAccessoryController::CreateViewItems(
     bool is_password_field) {
   std::vector<Item> items;
   base::string16 passwords_title_str;
+
+  // Create a horizontal divider line before the title.
+  items.emplace_back(base::string16(), base::string16(), false,
+                     Item::Type::TOP_DIVIDER);
 
   // Create the title element
   passwords_title_str = l10n_util::GetStringFUTF16(
@@ -413,8 +374,14 @@ std::vector<Item> PasswordAccessoryController::CreateViewItems(
 
 void PasswordAccessoryController::OnImageFetched(
     url::Origin origin,
-    const favicon_base::FaviconImageResult& image_result) {
+    const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   FaviconRequestData* icon_request = &icons_request_data_[origin];
+
+  favicon_base::FaviconImageResult image_result;
+  if (bitmap_result.is_valid()) {
+    image_result.image = gfx::Image::CreateFrom1xPNGBytes(
+        bitmap_result.bitmap_data->front(), bitmap_result.bitmap_data->size());
+  }
   icon_request->cached_icon = image_result.image;
   // Only trigger all the callbacks if they still affect a displayed origin.
   if (origin == current_origin_) {

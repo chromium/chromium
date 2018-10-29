@@ -20,10 +20,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/secure_origin_whitelist.h"
+#include "components/omnibox/browser/toolbar_field_trial.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/features.h"
 #include "components/security_state/content/content_utils.h"
-#include "components/toolbar/toolbar_field_trial.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -148,7 +148,7 @@ void SecurityStateTabHelper::DidFinishNavigation(
     UMA_HISTOGRAM_ENUMERATION(
         "Security.CertificateTransparency.MainFrameNavigationCompliance",
         entry->GetSSL().ct_policy_compliance,
-        net::ct::CTPolicyCompliance::CT_POLICY_MAX);
+        net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
   logged_http_warning_on_current_navigation_ = false;

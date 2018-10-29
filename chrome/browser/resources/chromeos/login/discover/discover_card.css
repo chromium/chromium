@@ -9,6 +9,7 @@
   flex-direction: row;
   font-family: var(--oobe-title-font-family);
   height: 208px;
+  min-height: 0;
   position: relative;
   width: 312px;
 }

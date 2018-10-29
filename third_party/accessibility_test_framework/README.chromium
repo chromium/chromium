@@ -7,4 +7,6 @@ Security Critical: no
 Description:
 Library that contains accessibility-related checks for Android View and
 AccessibilityNodeInfo objects.
-Local Modifications: None
+Local Modifications:
+ - Added proguard.flags to suppress warnings about this library using protobuf
+   instead of protolite.

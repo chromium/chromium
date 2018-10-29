@@ -26,9 +26,9 @@
 
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 
+#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -81,7 +81,7 @@ void SecurityContext::ApplySandboxFlags(SandboxFlags mask,
   if (IsSandboxed(kSandboxOrigin) && GetSecurityOrigin() &&
       !GetSecurityOrigin()->IsOpaque()) {
     scoped_refptr<SecurityOrigin> security_origin =
-        SecurityOrigin::CreateUniqueOpaque();
+        GetSecurityOrigin()->DeriveNewOpaqueOrigin();
     security_origin->SetOpaqueOriginIsPotentiallyTrustworthy(
         is_potentially_trustworthy);
     SetSecurityOrigin(std::move(security_origin));
@@ -118,6 +118,20 @@ void SecurityContext::InitializeFeaturePolicy(
   feature_policy_ = FeaturePolicy::CreateFromParentPolicy(
       parent_feature_policy, container_policy, security_origin_->ToUrlOrigin());
   feature_policy_->SetHeaderPolicy(parsed_header);
+}
+
+bool SecurityContext::IsFeatureEnabled(mojom::FeaturePolicyFeature feature,
+                                       ReportOptions report_on_failure,
+                                       const String& message) const {
+  // The policy should always be initialized before checking it to ensure we
+  // properly inherit the parent policy.
+  DCHECK(feature_policy_);
+
+  if (feature_policy_->IsFeatureEnabled(feature))
+    return true;
+  if (report_on_failure == ReportOptions::kReportOnFailure)
+    ReportFeaturePolicyViolation(feature, message);
+  return false;
 }
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -53,9 +54,6 @@ class TranslateClient {
   // Returns the associated TranslateAcceptLanguages.
   virtual TranslateAcceptLanguages* GetTranslateAcceptLanguages() = 0;
 
-  // Returns the resource ID of the icon to be shown for the Translate infobars.
-  virtual int GetInfobarIconID() const = 0;
-
   // Record language detection event.
   virtual void RecordLanguageDetectionEvent(
       const LanguageDetectionDetails& details) const = 0;
@@ -66,10 +64,13 @@ class TranslateClient {
   // we care about.
   virtual void RecordTranslateEvent(const metrics::TranslateEventProto&) = 0;
 
-#if !defined(USE_AURA)
+#if defined(OS_ANDROID) || defined(OS_IOS)
   // Returns a translate infobar that owns |delegate|.
   virtual std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<TranslateInfoBarDelegate> delegate) const = 0;
+
+  // Returns the resource ID of the icon to be shown for the Translate infobars.
+  virtual int GetInfobarIconID() const = 0;
 #endif
 
   // Called when the embedder should present UI to the user corresponding to the

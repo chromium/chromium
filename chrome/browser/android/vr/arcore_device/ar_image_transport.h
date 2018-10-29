@@ -27,22 +27,22 @@ struct SharedFrameBufferSwapChain;
 
 // This class copies the camera texture to a shared image and returns a mailbox
 // holder which is suitable for mojo transport to the Renderer.
-class ARImageTransport {
+class ArImageTransport {
  public:
-  explicit ARImageTransport(
+  explicit ArImageTransport(
       std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge);
-  ~ARImageTransport();
+  virtual ~ArImageTransport();
 
   // Initialize() must be called on a valid GL thread.
-  bool Initialize();
+  virtual bool Initialize();
 
-  GLuint GetCameraTextureId() { return camera_texture_id_arcore_; }
+  virtual GLuint GetCameraTextureId();
 
   // This transfers whatever the contents of the texture specified
   // by GetCameraTextureId() is at the time it is called and returns
   // a gpu::MailboxHolder with that texture copied to a shared buffer.
-  gpu::MailboxHolder TransferFrame(const gfx::Size& frame_size,
-                                   const gfx::Transform& uv_transform);
+  virtual gpu::MailboxHolder TransferFrame(const gfx::Size& frame_size,
+                                           const gfx::Transform& uv_transform);
 
  private:
   void SetupHardwareBuffers();
@@ -60,7 +60,14 @@ class ARImageTransport {
   std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge_;
   std::unique_ptr<SharedFrameBufferSwapChain> swap_chain_;
 
-  DISALLOW_COPY_AND_ASSIGN(ARImageTransport);
+  DISALLOW_COPY_AND_ASSIGN(ArImageTransport);
+};
+
+class ArImageTransportFactory {
+ public:
+  virtual ~ArImageTransportFactory() = default;
+  virtual std::unique_ptr<ArImageTransport> Create(
+      std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge);
 };
 
 }  // namespace device

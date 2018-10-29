@@ -86,24 +86,24 @@ class TargetView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(TargetView);
 };
 
-std::unique_ptr<ui::PointerEvent> CreateMouseMoveEvent(int x, int y) {
-  return std::make_unique<ui::PointerEvent>(ui::MouseEvent(
+std::unique_ptr<ui::MouseEvent> CreateMouseMoveEvent(int x, int y) {
+  return std::make_unique<ui::MouseEvent>(
       ui::ET_MOUSE_MOVED, gfx::Point(x, y), gfx::Point(x, y),
-      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_NONE));
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_NONE);
 }
 
-std::unique_ptr<ui::PointerEvent> CreateMouseDownEvent(int x, int y) {
-  return std::make_unique<ui::PointerEvent>(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(x, y), gfx::Point(x, y),
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                     ui::EF_LEFT_MOUSE_BUTTON));
+std::unique_ptr<ui::MouseEvent> CreateMouseDownEvent(int x, int y) {
+  return std::make_unique<ui::MouseEvent>(
+      ui::ET_MOUSE_PRESSED, gfx::Point(x, y), gfx::Point(x, y),
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+      ui::EF_LEFT_MOUSE_BUTTON);
 }
 
-std::unique_ptr<ui::PointerEvent> CreateMouseUpEvent(int x, int y) {
-  return std::make_unique<ui::PointerEvent>(
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(x, y), gfx::Point(x, y),
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                     ui::EF_LEFT_MOUSE_BUTTON));
+std::unique_ptr<ui::MouseEvent> CreateMouseUpEvent(int x, int y) {
+  return std::make_unique<ui::MouseEvent>(
+      ui::ET_MOUSE_RELEASED, gfx::Point(x, y), gfx::Point(x, y),
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+      ui::EF_LEFT_MOUSE_BUTTON);
 }
 
 }  // namespace

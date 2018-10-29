@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -161,7 +162,7 @@ void ArcIntentHelperBridge::OnOpenDownloads() {
 void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, std::string()));
+  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
   if (!gurl.is_valid())
     return;
 
@@ -206,6 +207,25 @@ void ArcIntentHelperBridge::OpenVolumeControl() {
   auto* audio = ArcAudioBridge::GetForBrowserContext(context_);
   DCHECK(audio);
   audio->ShowVolumeControls();
+}
+
+void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Converts |url| to a fixed-up one and checks validity.
+  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  if (!gurl.is_valid())
+    return;
+
+  // Web app launches should only be invoked on HTTPS URLs.
+  if (gurl.SchemeIs(url::kHttpsScheme))
+    g_open_url_delegate->OpenWebAppFromArc(gurl);
+}
+
+void ArcIntentHelperBridge::RecordShareFilesMetrics(mojom::ShareFiles flag) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Record metrics coming from ARC, these are related Share files feature
+  // stability.
+  UMA_HISTOGRAM_ENUMERATION("Arc.ShareFilesOnExit", flag);
 }
 
 ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(

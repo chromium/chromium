@@ -14,6 +14,8 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.annotation.Px;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
@@ -32,6 +34,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.InsetObserverView;
+import org.chromium.chrome.browser.autofill.keyboard_accessory.KeyboardExtensionSizeManager;
 import org.chromium.chrome.browser.compositor.Invalidator.Client;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -72,7 +75,8 @@ import java.util.List;
  */
 public class CompositorViewHolder extends FrameLayout
         implements ContentOffsetProvider, LayoutManagerHost, LayoutRenderHost, Invalidator.Host,
-                   FullscreenListener, InsetObserverView.WindowInsetObserver {
+                   FullscreenListener, InsetObserverView.WindowInsetObserver,
+                   KeyboardExtensionSizeManager.Observer {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
 
     private boolean mIsKeyboardShowing;
@@ -103,6 +107,7 @@ public class CompositorViewHolder extends FrameLayout
     /** The toolbar control container. **/
     private ControlContainer mControlContainer;
 
+    private @Nullable KeyboardExtensionSizeManager mKeyboardExtensionSizeManager;
     private InsetObserverView mInsetObserverView;
     private boolean mShowingFullscreen;
     private Runnable mSystemUiFullscreenResizeRunnable;
@@ -374,6 +379,38 @@ public class CompositorViewHolder extends FrameLayout
     public void onSafeAreaChanged(Rect area) {}
 
     /**
+     * Allows to set (or unset if called with null) the {@link KeyboardExtensionSizeManager} that
+     * provides the dimensions of any keyboard extensions or replacements. Registers an observer to
+     * react to size changes immediately.
+     * @param manager A {@link KeyboardExtensionSizeManager}. Optional.
+     */
+    public void setKeyboardExtensionView(@Nullable KeyboardExtensionSizeManager manager) {
+        if (mKeyboardExtensionSizeManager != null) {
+            mKeyboardExtensionSizeManager.removeObserver(this);
+        }
+        mKeyboardExtensionSizeManager = manager;
+        if (mKeyboardExtensionSizeManager != null) {
+            mKeyboardExtensionSizeManager.addObserver(this);
+            onViewportChanged();
+        }
+    }
+
+    @Override
+    public void onKeyboardExtensionHeightChanged(int keyboardHeight) {
+        onUpdateViewportSize();
+    }
+
+    /**
+     * Returns the combined height of all extensions to or replacements of the keyboard which
+     * consume space at the bottom of the content area.
+     * @return the full height in pixels.
+     */
+    public @Px int getKeyboardExtensionsHeight() {
+        if (mKeyboardExtensionSizeManager == null) return 0;
+        return mKeyboardExtensionSizeManager.getKeyboardExtensionHeight();
+    }
+
+    /**
      * Should be called for cleanup when the CompositorView instance is no longer used.
      */
     public void shutDown() {
@@ -572,6 +609,7 @@ public class CompositorViewHolder extends FrameLayout
         int controlsHeight = controlsResizeView()
                 ? getTopControlsHeightPixels() + getBottomControlsHeightPixels()
                 : 0;
+        controlsHeight += getKeyboardExtensionsHeight();
         if (isAttachedToWindow(view)) {
             webContents.setSize(w, h - controlsHeight);
         } else {

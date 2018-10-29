@@ -8,6 +8,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
+#include "cc/trees/layer_tree_host.h"
 
 namespace cc {
 
@@ -26,6 +27,32 @@ HeadsUpDisplayLayer::HeadsUpDisplayLayer()
 }
 
 HeadsUpDisplayLayer::~HeadsUpDisplayLayer() = default;
+
+void HeadsUpDisplayLayer::UpdateLocationAndSize(
+    const gfx::Size& device_viewport,
+    float device_scale_factor) {
+  gfx::Size device_viewport_in_layout_pixels =
+      gfx::Size(device_viewport.width() / device_scale_factor,
+                device_viewport.height() / device_scale_factor);
+
+  gfx::Size bounds;
+  gfx::Transform matrix;
+  matrix.MakeIdentity();
+
+  if (layer_tree_host()->GetDebugState().ShowHudRects()) {
+    bounds = device_viewport_in_layout_pixels;
+  } else {
+    // If the HUD is not displaying full-viewport rects (e.g., it is showing the
+    // FPS meter), use a fixed size.
+    constexpr int kDefaultHUDSize = 256;
+    bounds.SetSize(kDefaultHUDSize, kDefaultHUDSize);
+    matrix.Translate(device_viewport_in_layout_pixels.width() - kDefaultHUDSize,
+                     0.0);
+  }
+
+  SetBounds(bounds);
+  SetTransform(matrix);
+}
 
 bool HeadsUpDisplayLayer::HasDrawableContent() const {
   return true;

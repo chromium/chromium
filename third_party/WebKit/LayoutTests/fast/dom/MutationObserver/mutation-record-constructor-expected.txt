@@ -2,7 +2,6 @@ MutationRecord should be exposed on window but not constructable
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.MutationRecord is non-null.
 PASS typeof MutationRecord is "function"
 PASS new MutationRecord threw exception TypeError: Illegal constructor.

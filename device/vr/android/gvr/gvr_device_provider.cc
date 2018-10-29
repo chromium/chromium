@@ -4,6 +4,7 @@
 
 #include "device/vr/android/gvr/gvr_device_provider.h"
 
+#include "base/android/build_info.h"
 #include "device/vr/android/gvr/gvr_device.h"
 
 namespace device {
@@ -17,7 +18,12 @@ void GvrDeviceProvider::Initialize(
                                  mojom::XRRuntimePtr)> add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
     base::OnceClosure initialization_complete) {
-  vr_device_ = GvrDevice::Create();
+  // Version check should match MIN_SDK_VERSION in VrCoreVersionChecker.java.
+  // We only expose GvrDevice if we could potentially install VRServices to
+  // support presentation.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_KITKAT)
+    vr_device_ = base::WrapUnique(new GvrDevice());
   if (vr_device_)
     add_device_callback.Run(vr_device_->GetId(), vr_device_->GetVRDisplayInfo(),
                             vr_device_->BindXRRuntimePtr());

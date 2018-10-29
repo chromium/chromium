@@ -6,4 +6,3 @@ PASS event.wheelDeltaX is window.givenScrollLeft*-3
 PASS event.wheelDelta is window.givenScrollLeft*-3
 PASS div.scrollTop is window.expectedScrollTop
 PASS div.scrollLeft is window.expectedScrollLeft
-

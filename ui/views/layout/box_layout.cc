@@ -363,7 +363,7 @@ void BoxLayout::ViewRemoved(View* host, View* view) {
 }
 
 int BoxLayout::GetFlexForView(const View* view) const {
-  FlexMap::const_iterator it = flex_map_.find(view);
+  auto it = flex_map_.find(view);
   if (it == flex_map_.end())
     return default_flex_;
 
@@ -371,7 +371,7 @@ int BoxLayout::GetFlexForView(const View* view) const {
 }
 
 int BoxLayout::GetMinimumSizeForView(const View* view) const {
-  FlexMap::const_iterator it = flex_map_.find(view);
+  auto it = flex_map_.find(view);
   if (it == flex_map_.end() || !it->second.use_min_size)
     return 0;
 

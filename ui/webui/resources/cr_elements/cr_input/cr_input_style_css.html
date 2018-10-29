@@ -35,6 +35,15 @@
         @apply --cr-input-container;
       }
 
+      #inner-input-container {
+        background-color: var(--cr-input-background-color,
+            var(--google-grey-refresh-100));
+        box-sizing: border-box;
+        padding: 0;
+
+        @apply --cr-input-inner-container;
+      }
+
       #input {
         -webkit-appearance: none;
         background-color: var(--cr-input-background-color,

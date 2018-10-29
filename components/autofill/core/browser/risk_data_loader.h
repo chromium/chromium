@@ -15,7 +15,7 @@ class RiskDataLoader {
  public:
   // Gathers risk data and provides it to |callback|.
   virtual void LoadRiskData(
-      const base::Callback<void(const std::string&)>& callback) = 0;
+      base::OnceCallback<void(const std::string&)> callback) = 0;
 
  protected:
   virtual ~RiskDataLoader() {}

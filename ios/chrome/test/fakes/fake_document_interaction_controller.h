@@ -19,6 +19,8 @@
 // present any UI, but simply captures the presentation requests.
 @interface FakeDocumentInteractionController : NSObject
 
+// Fake implementations of UIDocumentInteractionController properties:
+@property(nonatomic, copy) NSString* UTI;
 @property(nonatomic, weak) id<UIDocumentInteractionControllerDelegate> delegate;
 
 // Whether or not this controller can present Open In... menu. Defaults to YES.

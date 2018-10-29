@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 515 tests; 394 PASS, 121 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 516 tests; 394 PASS, 122 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -111,6 +111,7 @@ PASS Parsing: </a/%2f/c> against <http://example.org/foo/bar>
 PASS Parsing: <#β> against <http://example.org/foo/bar>
 PASS Parsing: <data:text/html,test#test> against <http://example.org/foo/bar>
 PASS Parsing: <tel:1234567890> against <http://example.org/foo/bar>
+FAIL Parsing: <ssh://example.com/foo/bar.git> against <http://example.org/> assert_equals: host expected "example.com" but got ""
 FAIL Parsing: <file:c:\foo\bar.html> against <file:///tmp/mock/path> assert_equals: href expected "file:///c:/foo/bar.html" but got "file:///C:/foo/bar.html"
 FAIL Parsing: <  File:c|////foo\bar.html> against <file:///tmp/mock/path> assert_equals: href expected "file:///c:////foo/bar.html" but got "file:///C:////foo/bar.html"
 PASS Parsing: <C|/foo/bar> against <file:///tmp/mock/path>

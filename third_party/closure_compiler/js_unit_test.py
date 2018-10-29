@@ -26,6 +26,8 @@ def main():
                       help='List of additional js files to load before others')
   parser.add_argument('-o', '--output',
                       help='Generated html output with flattened dependencies')
+  parser.add_argument('-I', '--include_prefix', default='',
+                      help='Prefix added to src= paths to find .js files')
   args = parser.parse_args()
 
   uniquedeps = Flatten([args.input])
@@ -46,9 +48,9 @@ window.addEventListener('error', function(e) {
 
 """)
     for file in args.mocks:
-      out.write('<script src="%s"></script>\n' % (file))
+      out.write('<script src="%s%s"></script>\n' % (args.include_prefix, file))
     for file in uniquedeps:
-      out.write('<script src="%s"></script>\n' % (file))
+      out.write('<script src="%s%s"></script>\n' % (args.include_prefix, file))
     out.write('</body>\n</html>\n')
 
 if __name__ == '__main__':

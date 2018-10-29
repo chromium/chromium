@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include <string>
 
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -18,7 +18,7 @@ namespace gfx {
 // to a 'position' in blink.  In blink, 'offset' means something else.  See
 // third_party/WebKit/Source/core/layout/README.md for more information.
 
-class GFX_EXPORT ScrollOffset {
+class GEOMETRY_EXPORT ScrollOffset {
  public:
   ScrollOffset() : x_(0), y_(0) {}
   ScrollOffset(float x, float y) : x_(x), y_(y) {}

@@ -267,19 +267,19 @@ class CircleContentLayerClient : public ContentLayerClient {
   gfx::Size bounds_;
 };
 
-using LayerTreeHostMasksForBackgroundFiltersPixelTest =
+using LayerTreeHostMasksForBackdropFiltersPixelTest =
     ParameterizedPixelResourceTest;
 
 INSTANTIATE_TEST_CASE_P(
     PixelResourceTest,
-    LayerTreeHostMasksForBackgroundFiltersPixelTest,
+    LayerTreeHostMasksForBackdropFiltersPixelTest,
     ::testing::Combine(
         ::testing::Values(SOFTWARE, GPU, ONE_COPY, ZERO_COPY),
         ::testing::Values(Layer::LayerMaskType::SINGLE_TEXTURE_MASK,
                           Layer::LayerMaskType::MULTI_TEXTURE_MASK)));
 
-TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
-       MaskOfLayerWithBackgroundFilter) {
+TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTest,
+       MaskOfLayerWithBackdropFilter) {
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(100, 100), SK_ColorWHITE);
 
@@ -296,7 +296,7 @@ TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
 
   FilterOperations filters;
   filters.Append(FilterOperation::CreateGrayscaleFilter(1.0));
-  blur->SetBackgroundFilters(filters);
+  blur->SetBackdropFilters(filters);
 
   gfx::Size mask_bounds(100, 100);
   CircleContentLayerClient mask_client(mask_bounds);
@@ -322,14 +322,12 @@ TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
 
   base::FilePath image_name =
       (test_case_ == GPU)
-          ? base::FilePath(
-                FILE_PATH_LITERAL("mask_of_background_filter_gpu.png"))
-          : base::FilePath(FILE_PATH_LITERAL("mask_of_background_filter.png"));
+          ? base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter_gpu.png"))
+          : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
   RunPixelResourceTest(background, image_name);
 }
 
-TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
-       MaskOfLayerWithBlend) {
+TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTest, MaskOfLayerWithBlend) {
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(128, 128), SK_ColorWHITE);
 
@@ -733,8 +731,8 @@ TEST_P(LayerTreeHostMaskAsBlendingPixelTest, RotatedClippedCircleUnderflow) {
   RunPixelResourceTest(root, image_name);
 }
 
-TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
-       MaskOfLayerWithBackgroundFilterAndBlend) {
+TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTest,
+       MaskOfLayerWithBackdropFilterAndBlend) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(128, 128), SK_ColorWHITE);
 
@@ -757,7 +755,7 @@ TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
 
   FilterOperations filters;
   filters.Append(FilterOperation::CreateGrayscaleFilter(1.0));
-  picture_horizontal->SetBackgroundFilters(filters);
+  picture_horizontal->SetBackdropFilters(filters);
 
   background->AddChild(picture_vertical);
   background->AddChild(picture_horizontal);
@@ -783,7 +781,7 @@ TEST_P(LayerTreeHostMasksForBackgroundFiltersPixelTest,
 
   RunPixelResourceTest(background,
                        base::FilePath(FILE_PATH_LITERAL(
-                           "mask_of_background_filter_and_blend.png")));
+                           "mask_of_backdrop_filter_and_blend.png")));
 }
 
 }  // namespace

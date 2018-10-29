@@ -99,8 +99,6 @@ const TableColumnData kColumns[] = {
 #endif  // defined(OS_LINUX)
     {IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN, ui::TableColumn::LEFT, -1, 0,
      arraysize("background") * kCharWidth, -1, true, true, false},
-    {IDS_TASK_MANAGER_MEMORY_STATE_COLUMN, ui::TableColumn::LEFT, -1, 0,
-     arraysize("throttled") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      arraysize("999") * kCharWidth, -1, false, false, false},
 };
@@ -144,7 +142,6 @@ std::string GetColumnIdAsString(int column_id) {
     COLUMN_CASE(IDS_TASK_MANAGER_HARD_FAULTS_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN);
-    COLUMN_CASE(IDS_TASK_MANAGER_MEMORY_STATE_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN);
     default:
       NOTREACHED();

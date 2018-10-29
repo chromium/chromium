@@ -7,7 +7,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/task/post_task.h"
 #include "components/arc/arc_service_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -29,8 +31,8 @@ ArcFileSystemOperationRunner* GetArcFileSystemOperationRunner() {
 template <typename T>
 void PostToIOThread(base::OnceCallback<void(T)> callback, T result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), std::move(result)));
 }
 
@@ -63,8 +65,8 @@ void OpenFileToReadOnUIThread(const GURL& url,
 
 void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &GetFileSizeOnUIThread, url,
           base::BindOnce(&PostToIOThread<int64_t>, std::move(callback))));
@@ -73,8 +75,8 @@ void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
 void OpenFileToReadOnIOThread(const GURL& url,
                               OpenFileToReadCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OpenFileToReadOnUIThread, url,
                      base::BindOnce(&PostToIOThread<mojo::ScopedHandle>,
                                     std::move(callback))));

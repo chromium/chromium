@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../resources/webgl-test-utils-full.js"></script>
+<script src="../resources/tex-image-and-sub-image-utils.js"></script>
+<script src="../../../resources/js-test.js"></script>
+<script>
+
+window.jsTestIsAsync = true;
+
+var wtu = WebGLTestUtils;
+var tiu = TexImageUtils;
+var gl = null;
+
+var video, canvas;
+
+function pass()
+{
+    document.getElementById("results").innerHTML = "Test <span style='color:green'>PASSED</span>";
+}
+
+function runTest()
+{
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+    var passing = true;
+    passing &= texture.lastUploadedVideoHeight === 64;
+    passing &= texture.lastUploadedVideoWidth === 64;
+    passing &= Math.abs(texture.lastUploadedVideoTimestamp - 2.0) < 0.001;
+    passing &= texture.lastUploadedVideoFrameWasSkipped === false;
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+    passing &= texture.lastUploadedVideoFrameWasSkipped === true;
+    if (passing) {
+        pass();
+    }
+    finishJSTest();
+}
+
+function init()
+{
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+    }
+
+    video = document.getElementById("video");
+    canvas = document.getElementById("example");
+    gl = canvas.getContext("webgl");
+
+    video.oncanplaythrough = function() {
+        video.oncanplaythrough = runTest;
+        video.currentTime = 2.0;
+    };
+    video.src = "../resources/red-green.ogv";
+}
+</script>
+</head>
+<body onload="init()">
+<video id="video"></video>
+<canvas id="example" width="32" height="32"></canvas>
+<div id="results">Test <span style="color:red">FAILED</span></div>
+</body>
+</html>

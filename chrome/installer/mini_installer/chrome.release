@@ -23,6 +23,7 @@ chrome_child.dll: %(VersionDir)s\
 chrome_elf.dll: %(VersionDir)s\
 chrome_watcher.dll: %(VersionDir)s\
 d3dcompiler_47.dll: %(VersionDir)s\
+elevation_service.exe: %(VersionDir)s\
 eventlog_provider.dll: %(VersionDir)s\
 ffmpeg.dll: %(VersionDir)s\
 icudt.dll: %(VersionDir)s\

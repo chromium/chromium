@@ -27,7 +27,7 @@
       // reference file, use the task 'generate-reference' below.
       audit.define('load-reference', (task, should) => {
         let loader = new BufferLoader(
-            context, ['audiobuffersource-playbackrate-modulation-expected.wav'],
+            context, ['resources/audiobuffersource-playbackrate-modulation-expected.wav'],
             function(bufferList) {
               referenceBuffer = bufferList[0];
               should(true, 'Loaded reference file').beTrue();
@@ -63,7 +63,7 @@
               });
 
               let filename =
-                  'audiobuffersource-playbackrate-modulation-actual.wav';
+                  'resources/audiobuffersource-playbackrate-modulation-actual.wav';
               if (downloadAudioBuffer(renderedBuffer, filename))
                 should(true, 'Saved reference file').message(filename, '');
             })

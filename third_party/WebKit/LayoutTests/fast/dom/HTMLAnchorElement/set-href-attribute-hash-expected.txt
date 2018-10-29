@@ -2,7 +2,6 @@ Test setting the hash attribute of the URL in HTMLAnchorElement.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Hash value does not start with '#'
 PASS a.href is 'https://www.mydomain.com:8080/path/testurl.html#hash-value'
 Hash value starts with '#'

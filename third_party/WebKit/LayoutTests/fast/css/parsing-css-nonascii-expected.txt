@@ -13,6 +13,8 @@ Rules from the stylesheet:
 #b160_  { color: green; }
 #a384_ƀ { color: red; }
 #b384_ƀ { color: green; }
+
+
 Expected result:
 
 #a127_\7f  { color: red; }

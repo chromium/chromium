@@ -27,7 +27,7 @@ std::vector<PhotoCapabilities::AndroidMeteringMode> ToAndroidMeteringModes(
   std::vector<PhotoCapabilities::AndroidMeteringMode> modes;
   if (jni_modes.obj()) {
     base::android::JavaIntArrayToIntVector(
-        env, jni_modes.obj(), reinterpret_cast<std::vector<int>*>(&modes));
+        env, jni_modes, reinterpret_cast<std::vector<int>*>(&modes));
   }
   return modes;
 }
@@ -256,7 +256,7 @@ PhotoCapabilities::getFillLightModes() const {
       Java_PhotoCapabilities_getFillLightModes(env, object_);
   if (jni_modes.obj()) {
     base::android::JavaIntArrayToIntVector(
-        env, jni_modes.obj(), reinterpret_cast<std::vector<int>*>(&modes));
+        env, jni_modes, reinterpret_cast<std::vector<int>*>(&modes));
   }
   return modes;
 }

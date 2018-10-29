@@ -1,0 +1,40 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module keyboard.mojom;
+
+// Determines how the keyboard overscroll enabled state is set.
+enum KeyboardOverscrollBehavior {
+  // Use the default behavior.
+  kDefault,
+
+  // Enable keyboard overscroll if allowed.
+  kEnabled,
+
+  // Do not enable keyboard overscroll.
+  kDisabled,
+};
+
+struct KeyboardConfig {
+  // Whether the virtual keyboard can provide auto-complete.
+  bool auto_complete = true;
+
+  // Whether the virtual keyboard can provide auto-correct.
+  bool auto_correct = true;
+
+  // Whether the virtual keyboard can provide auto-capitalization.
+  bool auto_capitalize = true;
+
+  // Whether the virtual keyboard can provide input via handwriting recognition.
+  bool handwriting = true;
+
+  // Whether the virtual keyboard can provide spell-check.
+  bool spell_check = true;
+
+  // Whether the virtual keyboard can provide voice input.
+  bool voice_input = true;
+
+  // Whether overscroll is currently allowed by the active keyboard container.
+  KeyboardOverscrollBehavior overscroll_behavior = kDefault;
+};

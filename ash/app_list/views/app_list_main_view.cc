@@ -35,7 +35,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
@@ -53,8 +52,6 @@ AppListMainView::AppListMainView(AppListViewDelegate* delegate,
       search_box_view_(nullptr),
       contents_view_(nullptr),
       app_list_view_(app_list_view) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(), 0));
   model_->AddObserver(this);
 }
 
@@ -80,10 +77,6 @@ void AppListMainView::AddContentsViews() {
   AddChildView(contents_view_);
 
   search_box_view_->set_contents_view(contents_view_);
-
-  contents_view_->SetPaintToLayer();
-  contents_view_->layer()->SetFillsBoundsOpaquely(false);
-  contents_view_->layer()->SetMasksToBounds(true);
 
   // Clear the old query and start search.
   search_box_view_->ClearSearch();
@@ -149,6 +142,12 @@ const char* AppListMainView::GetClassName() const {
   return "AppListMainView";
 }
 
+void AppListMainView::Layout() {
+  gfx::Rect rect = GetContentsBounds();
+  if (!rect.IsEmpty())
+    contents_view_->SetBoundsRect(rect);
+}
+
 void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
   // TODO(jennyz): Activate the folder via AppListModel notification.
   if (item->GetItemType() == AppListFolderItem::kItemType) {
@@ -181,7 +180,7 @@ void AppListMainView::QueryChanged(search_box::SearchBoxViewBase* sender) {
   base::string16 query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   bool should_show_search =
-      features::IsZeroStateSuggestionsEnabled()
+      app_list_features::IsZeroStateSuggestionsEnabled()
           ? search_box_view_->is_search_box_active() || !query.empty()
           : !query.empty();
   contents_view_->ShowSearchResults(should_show_search);
@@ -190,7 +189,7 @@ void AppListMainView::QueryChanged(search_box::SearchBoxViewBase* sender) {
 }
 
 void AppListMainView::ActiveChanged(search_box::SearchBoxViewBase* sender) {
-  if (!features::IsZeroStateSuggestionsEnabled())
+  if (!app_list_features::IsZeroStateSuggestionsEnabled())
     return;
 
   if (search_box_view_->is_search_box_active()) {

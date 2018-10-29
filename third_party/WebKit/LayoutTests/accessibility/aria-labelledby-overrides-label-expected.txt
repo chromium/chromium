@@ -3,10 +3,10 @@ A
 B
 C
 
+
 This tests that if aria-labelledby is used, then label elements are not used
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS axTarget.name is 'A B C'
 PASS axTarget.nameElementCount() is 3

@@ -882,15 +882,14 @@ void TestGLES2Interface::GetTexParameteriv(GLenum target,
   base::AutoLock lock_for_texture_access(namespace_->lock);
   scoped_refptr<TestTexture> texture = BoundTexture(target);
   DCHECK(texture->IsValidParameter(pname));
-  TestTexture::TextureParametersMap::iterator it = texture->params.find(pname);
+  auto it = texture->params.find(pname);
   if (it != texture->params.end())
     *value = it->second;
 }
 
 void TestGLES2Interface::TextureTargets::UnbindTexture(GLuint id) {
   // Bind zero to any targets that the id is bound to.
-  for (TargetTextureMap::iterator it = bound_textures_.begin();
-       it != bound_textures_.end(); it++) {
+  for (auto it = bound_textures_.begin(); it != bound_textures_.end(); it++) {
     if (it->second == id)
       it->second = 0;
   }

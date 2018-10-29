@@ -32,8 +32,7 @@
     Constructor(optional (Path2D or DOMString) path),
     Exposed(Worker OffscreenCanvas, Window StableBlinkFeatures, PaintWorklet StableBlinkFeatures)
 ] interface Path2D {
-
-    void addPath(Path2D path, optional DOMMatrix2DInit transform);
+    [RaisesException] void addPath(Path2D path, optional DOMMatrix2DInit transform);
 };
 
 Path2D implements CanvasPath;

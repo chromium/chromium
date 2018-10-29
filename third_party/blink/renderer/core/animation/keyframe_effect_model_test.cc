@@ -37,10 +37,14 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/property_descriptor.h"
+#include "third_party/blink/renderer/core/css/property_registration.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -103,6 +107,25 @@ StringKeyframeVector KeyframesAtZeroAndOne(CSSPropertyID property,
   keyframes[1]->SetOffset(1.0);
   keyframes[1]->SetCSSPropertyValue(
       property, one_value, SecureContextMode::kInsecureContext, nullptr);
+  return keyframes;
+}
+
+StringKeyframeVector KeyframesAtZeroAndOne(
+    AtomicString property_name,
+    const PropertyRegistry* property_registry,
+    const String& zero_value,
+    const String& one_value) {
+  StringKeyframeVector keyframes(2);
+  keyframes[0] = StringKeyframe::Create();
+  keyframes[0]->SetOffset(0.0);
+  keyframes[0]->SetCSSPropertyValue(
+      property_name, property_registry, zero_value,
+      SecureContextMode::kInsecureContext, nullptr);
+  keyframes[1] = StringKeyframe::Create();
+  keyframes[1]->SetOffset(1.0);
+  keyframes[1]->SetCSSPropertyValue(property_name, property_registry, one_value,
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
   return keyframes;
 }
 
@@ -650,6 +673,45 @@ TEST_F(AnimationKeyframeEffectModel,
               ->GetAnimatableValue();
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->IsFilterOperations());
+}
+
+TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateCustomProperty) {
+  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
+  DummyExceptionStateForTesting exception_state;
+  PropertyDescriptor property_descriptor;
+  property_descriptor.setName("--foo");
+  property_descriptor.setSyntax("<number>");
+  property_descriptor.setInitialValue("0");
+  property_descriptor.setInherits(false);
+  PropertyRegistration::registerProperty(&GetDocument(), property_descriptor,
+                                         exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  StringKeyframeVector keyframes = KeyframesAtZeroAndOne(
+      AtomicString("--foo"), GetDocument().GetPropertyRegistry(), "0", "100");
+
+  element->style()->setProperty(&GetDocument(), "--foo", "0", g_empty_string,
+                                exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  StringKeyframeEffectModel* effect =
+      StringKeyframeEffectModel::Create(keyframes);
+
+  auto style = GetDocument().EnsureStyleResolver().StyleForElement(element);
+
+  const AnimatableValue* value;
+
+  // Snapshot should update first time after construction
+  EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
+      *element, *style, nullptr));
+
+  // Animatable value should be available after snapshot
+  value = effect
+              ->GetPropertySpecificKeyframes(
+                  PropertyHandle(AtomicString("--foo")))[0]
+              ->GetAnimatableValue();
+  EXPECT_TRUE(value);
+  EXPECT_TRUE(value->IsDouble());
 }
 
 }  // namespace blink

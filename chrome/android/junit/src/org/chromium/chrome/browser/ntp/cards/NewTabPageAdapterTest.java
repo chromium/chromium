@@ -50,13 +50,13 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.asynctask.CustomShadowAsyncTask;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.modelutil.RecyclerViewAdapter;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo.SigninObserver;
 import org.chromium.chrome.browser.ntp.snippets.CategoryInt;
@@ -910,7 +910,7 @@ public class NewTabPageAdapterTest {
         resetUiDelegate();
         reloadNtp();
 
-        assertItemsFor(sectionWithStatusCard().withProgress(), signinPromo());
+        assertItemsFor(signinPromo(), sectionWithStatusCard().withProgress());
         assertTrue(isSignInPromoVisible());
 
         List<DestructionObserver> observers = getDestructionObserver(mUiDelegate);

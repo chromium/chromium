@@ -1,0 +1,9 @@
+include_rules = [
+  "+services/device/public",
+]
+
+specific_include_rules = {
+  "tray_bluetooth_helper_legacy_unittest.cc": [
+    "+dbus",
+  ],
+}

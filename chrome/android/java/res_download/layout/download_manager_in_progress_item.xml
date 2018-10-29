@@ -43,7 +43,7 @@
         app:layout_row="1"
         app:layout_gravity="fill_horizontal" />
 
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/cancel_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -54,6 +54,6 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
-        app:chrometint="@color/default_icon_color" />
+        app:tint="@color/default_icon_color" />
 
 </android.support.v7.widget.GridLayout>

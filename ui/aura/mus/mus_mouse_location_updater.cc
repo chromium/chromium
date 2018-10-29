@@ -38,27 +38,17 @@ MusMouseLocationUpdater::~MusMouseLocationUpdater() {
 }
 
 void MusMouseLocationUpdater::OnEventProcessingStarted(const ui::Event& event) {
-  if (!IsMouseEventWithLocation(event) ||
-      Env::GetInstance()->always_use_last_mouse_location_) {
+  Env* env = Env::GetInstance();
+  if (!IsMouseEventWithLocation(event) || env->always_use_last_mouse_location_)
     return;
-  }
 
   is_processing_trigger_event_ = true;
-  gfx::Point location_in_screen = event.AsMouseEvent()->root_location();
   // event.target() may not exist in some tests.
-  if (event.target()) {
-    aura::Window* root_window =
-        static_cast<aura::Window*>(event.target())->GetRootWindow();
-    auto* screen_position_client =
-        aura::client::GetScreenPositionClient(root_window);
-    // screen_position_client may not exist in tests.
-    if (screen_position_client) {
-      screen_position_client->ConvertPointToScreen(root_window,
-                                                   &location_in_screen);
-    }
-  }
-  Env::GetInstance()->SetLastMouseLocation(location_in_screen);
-  Env::GetInstance()->get_last_mouse_location_from_mus_ = false;
+  const gfx::Point screen_location =
+      event.target() ? event.target()->GetScreenLocation(*event.AsMouseEvent())
+                     : event.AsMouseEvent()->root_location();
+  env->SetLastMouseLocation(screen_location);
+  env->get_last_mouse_location_from_mus_ = false;
 }
 
 void MusMouseLocationUpdater::OnEventProcessingFinished() {

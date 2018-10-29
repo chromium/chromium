@@ -96,7 +96,7 @@ void EventPath::CalculatePath() {
   // For performance and memory usage reasons we want to store the
   // path using as few bytes as possible and with as few allocations
   // as possible which is why we gather the data on the stack before
-  // storing it in a perfectly sized m_nodeEventContexts Vector.
+  // storing it in a perfectly sized node_event_contexts_ Vector.
   HeapVector<Member<Node>, 64> nodes_in_path;
   Node* current = node_;
 
@@ -141,8 +141,8 @@ void EventPath::CalculatePath() {
 
 void EventPath::CalculateTreeOrderAndSetNearestAncestorClosedTree() {
   // Precondition:
-  //   - TreeScopes in m_treeScopeEventContexts must be *connected* in the same
-  //     composed tree.
+  //   - TreeScopes in tree_scope_event_contexts_ must be *connected* in the
+  //     same composed tree.
   //   - The root tree must be included.
   TreeScopeEventContext* root_tree = nullptr;
   for (const auto& tree_scope_event_context : tree_scope_event_contexts_) {

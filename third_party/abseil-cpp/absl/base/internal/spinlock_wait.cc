@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // The OS-specific header included below must provide two calls:
-// base::subtle::SpinLockDelay() and base::subtle::SpinLockWake().
+// AbslInternalSpinLockDelay() and AbslInternalSpinLockWake().
 // See spinlock_wait.h for the specs.
 
 #include <atomic>
@@ -23,6 +23,8 @@
 
 #if defined(_WIN32)
 #include "absl/base/internal/spinlock_win32.inc"
+#elif defined(__linux__)
+#include "absl/base/internal/spinlock_linux.inc"
 #elif defined(__akaros__)
 #include "absl/base/internal/spinlock_akaros.inc"
 #else

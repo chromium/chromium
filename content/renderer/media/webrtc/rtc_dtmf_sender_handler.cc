@@ -22,39 +22,40 @@ class RtcDtmfSenderHandler::Observer :
     public base::RefCountedThreadSafe<Observer>,
     public webrtc::DtmfSenderObserverInterface {
  public:
-  explicit Observer(const base::WeakPtr<RtcDtmfSenderHandler>& handler)
-      : main_thread_(base::ThreadTaskRunnerHandle::Get()), handler_(handler) {}
+  explicit Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+                    const base::WeakPtr<RtcDtmfSenderHandler>& handler)
+      : main_thread_(std::move(main_thread)), handler_(handler) {}
 
  private:
   friend class base::RefCountedThreadSafe<Observer>;
 
   ~Observer() override {}
 
-  void OnToneChange(const std::string& tone,
-                    const std::string& tone_buffer) override {
+  void OnToneChange(const std::string& tone) override {
     main_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &RtcDtmfSenderHandler::Observer::OnToneChangeOnMainThread, this,
-            tone, tone_buffer));
+            tone));
   }
 
-  void OnToneChangeOnMainThread(const std::string& tone,
-                                const std::string& tone_buffer) {
-    DCHECK(thread_checker_.CalledOnValidThread());
+  void OnToneChangeOnMainThread(const std::string& tone) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (handler_)
-      handler_->OnToneChange(tone, tone_buffer);
+      handler_->OnToneChange(tone);
   }
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   base::WeakPtr<RtcDtmfSenderHandler> handler_;
 };
 
-RtcDtmfSenderHandler::RtcDtmfSenderHandler(DtmfSenderInterface* dtmf_sender)
+RtcDtmfSenderHandler::RtcDtmfSenderHandler(
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+    DtmfSenderInterface* dtmf_sender)
     : dtmf_sender_(dtmf_sender), webkit_client_(nullptr), weak_factory_(this) {
   DVLOG(1) << "::ctor";
-  observer_ = new Observer(weak_factory_.GetWeakPtr());
+  observer_ = new Observer(std::move(main_thread), weak_factory_.GetWeakPtr());
   dtmf_sender_->RegisterObserver(observer_.get());
 }
 
@@ -87,14 +88,12 @@ bool RtcDtmfSenderHandler::InsertDTMF(const blink::WebString& tones,
                                   static_cast<int>(interToneGap));
 }
 
-void RtcDtmfSenderHandler::OnToneChange(const std::string& tone,
-                                        const std::string& tone_buffer) {
+void RtcDtmfSenderHandler::OnToneChange(const std::string& tone) {
   if (!webkit_client_) {
     LOG(ERROR) << "WebRTCDTMFSenderHandlerClient not set.";
     return;
   }
-  webkit_client_->DidPlayTone(blink::WebString::FromUTF8(tone),
-                              blink::WebString::FromUTF8(tone_buffer));
+  webkit_client_->DidPlayTone(blink::WebString::FromUTF8(tone));
 }
 
 }  // namespace content

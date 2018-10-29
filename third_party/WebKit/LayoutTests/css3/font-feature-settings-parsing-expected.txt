@@ -2,7 +2,6 @@ Test parsing of the CSS3 font-feature-settings property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 - Tests valid inputs.
 PASS parseResultOf("valid_normal") is "normal"
 PASS parseResultOf("valid_value_1") is "\"dlig\""

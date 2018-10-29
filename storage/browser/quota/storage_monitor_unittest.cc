@@ -37,8 +37,11 @@ namespace content {
 
 namespace {
 
-const char kDefaultOrigin[] = "http://www.foo.com/";
-const char kAlternativeOrigin[] = "http://www.bar.com/";
+// TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+const url::Origin kDefaultOrigin =
+    url::Origin::Create(GURL("http://www.foo.com/"));
+const url::Origin kAlternativeOrigin =
+    url::Origin::Create(GURL("http://www.bar.com/"));
 
 class MockObserver : public StorageObserver {
  public:
@@ -86,7 +89,7 @@ class UsageMockQuotaManager : public QuotaManager {
         .Run(callback_status_, callback_usage_, callback_quota_);
   }
 
-  void GetUsageAndQuotaForWebApps(const GURL& origin,
+  void GetUsageAndQuotaForWebApps(const url::Origin& origin,
                                   StorageType type,
                                   UsageAndQuotaCallback callback) override {
     if (initialized_)
@@ -186,7 +189,7 @@ using StorageObserverListTest = StorageMonitorTestBase;
 // Test dispatching events to one observer.
 TEST_F(StorageObserverListTest, DispatchEventToSingleObserver) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer;
   StorageObserverList observer_list;
@@ -237,8 +240,7 @@ TEST_F(StorageObserverListTest, DispatchEventToMultipleObservers) {
   MockObserver mock_observer1;
   MockObserver mock_observer2;
   StorageObserverList observer_list;
-  StorageObserver::Filter filter(StorageType::kPersistent,
-                                 GURL(kDefaultOrigin));
+  StorageObserver::Filter filter(StorageType::kPersistent, kDefaultOrigin);
   observer_list.AddObserver(
       &mock_observer1,
       StorageObserver::MonitorParams(
@@ -290,7 +292,7 @@ TEST_F(StorageObserverListTest, DispatchEventToMultipleObservers) {
 // observer on registration.
 TEST_F(StorageObserverListTest, ReplaceEventOrigin) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer;
   StorageObserverList observer_list;
@@ -298,7 +300,8 @@ TEST_F(StorageObserverListTest, ReplaceEventOrigin) {
 
   StorageObserver::Event dispatched_event;
   dispatched_event.filter = params.filter;
-  dispatched_event.filter.origin = GURL("https://www.foo.com/bar");
+  dispatched_event.filter.origin =
+      url::Origin::Create(GURL("https://www.foo.com/bar"));
   observer_list.OnStorageChange(dispatched_event);
 
   EXPECT_EQ(params.filter.origin, mock_observer.LastEvent().filter.origin);
@@ -311,7 +314,7 @@ using HostStorageObserversTest = StorageTestWithManagerBase;
 // Verify that HostStorageObservers is initialized after the first usage change.
 TEST_F(HostStorageObserversTest, InitializeOnUsageChange) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   const int64_t kUsage = 324554;
   const int64_t kQuota = 234354354;
@@ -349,7 +352,7 @@ TEST_F(HostStorageObserversTest, InitializeOnObserver) {
   // |host_observers| should not be initialized after the first observer is
   // added because it did not elect to receive the initial state.
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer1;
   host_observers.AddObserver(&mock_observer1, params);
@@ -395,7 +398,7 @@ TEST_F(HostStorageObserversTest, InitializeOnObserver) {
 // Verify that negative usage and quota is changed to zero.
 TEST_F(HostStorageObserversTest, NegativeUsageAndQuota) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   const int64_t kUsage = -324554;
   const int64_t kQuota = -234354354;
@@ -413,7 +416,7 @@ TEST_F(HostStorageObserversTest, NegativeUsageAndQuota) {
 // Verify that HostStorageObservers can recover from a bad initialization.
 TEST_F(HostStorageObserversTest, RecoverFromBadUsageInit) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer;
   HostStorageObservers host_observers(quota_manager_.get());
@@ -446,7 +449,7 @@ TEST_F(HostStorageObserversTest, RecoverFromBadUsageInit) {
 // and quota correctly.
 TEST_F(HostStorageObserversTest, AsyncInitialization) {
   StorageObserver::MonitorParams params(StorageType::kPersistent,
-                                        GURL(kDefaultOrigin),
+                                        kDefaultOrigin,
                                         base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer;
   HostStorageObservers host_observers(quota_manager_.get());
@@ -491,13 +494,13 @@ TEST_F(StorageTypeObserversTest, AddRemoveObservers) {
   StorageTypeObservers type_observers(quota_manager_.get());
 
   StorageObserver::MonitorParams params1(StorageType::kPersistent,
-                                         GURL(kDefaultOrigin),
+                                         kDefaultOrigin,
                                          base::TimeDelta::FromHours(1), false);
   StorageObserver::MonitorParams params2(StorageType::kPersistent,
-                                         GURL(kAlternativeOrigin),
+                                         kAlternativeOrigin,
                                          base::TimeDelta::FromHours(1), false);
-  std::string host1 = net::GetHostOrSpecFromURL(params1.filter.origin);
-  std::string host2 = net::GetHostOrSpecFromURL(params2.filter.origin);
+  std::string host1 = net::GetHostOrSpecFromURL(params1.filter.origin.GetURL());
+  std::string host2 = net::GetHostOrSpecFromURL(params2.filter.origin.GetURL());
 
   MockObserver mock_observer1;
   MockObserver mock_observer2;
@@ -537,11 +540,11 @@ class StorageMonitorTest : public StorageTestWithManagerBase {
   StorageMonitorTest()
       : storage_monitor_(nullptr),
         params1_(StorageType::kTemporary,
-                 GURL(kDefaultOrigin),
+                 kDefaultOrigin,
                  base::TimeDelta::FromHours(1),
                  false),
         params2_(StorageType::kPersistent,
-                 GURL(kDefaultOrigin),
+                 kDefaultOrigin,
                  base::TimeDelta::FromHours(1),
                  false) {}
 
@@ -550,7 +553,7 @@ class StorageMonitorTest : public StorageTestWithManagerBase {
     StorageTestWithManagerBase::SetUp();
 
     storage_monitor_ = quota_manager_->storage_monitor_.get();
-    host_ = net::GetHostOrSpecFromURL(params1_.filter.origin);
+    host_ = net::GetHostOrSpecFromURL(params1_.filter.origin.GetURL());
 
     storage_monitor_->AddObserver(&mock_observer1_, params1_);
     storage_monitor_->AddObserver(&mock_observer2_, params1_);
@@ -658,16 +661,13 @@ TEST_F(StorageMonitorIntegrationTest, NotifyUsageEvent) {
   const int64_t kTestUsage = 234743;
 
   // Register the observer.
-  StorageObserver::MonitorParams params(kTestStorageType,
-                                        GURL(kDefaultOrigin),
-                                        base::TimeDelta::FromHours(1),
-                                        false);
+  StorageObserver::MonitorParams params(kTestStorageType, kDefaultOrigin,
+                                        base::TimeDelta::FromHours(1), false);
   MockObserver mock_observer;
   quota_manager_->AddStorageObserver(&mock_observer, params);
 
   // Fire a usage change.
-  client_->AddOriginAndNotify(url::Origin::Create(GURL(kDefaultOrigin)),
-                              kTestStorageType, kTestUsage);
+  client_->AddOriginAndNotify(kDefaultOrigin, kTestStorageType, kTestUsage);
   scoped_task_environment_.RunUntilIdle();
 
   // Verify that the observer receives it.

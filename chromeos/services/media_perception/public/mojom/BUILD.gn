@@ -6,7 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "connector.mojom",
+    "media_perception.mojom",
+    "media_perception_service.mojom",
   ]
 
   public_deps = [

@@ -1,0 +1,65 @@
+<!doctype HTML>
+
+<!--
+Runs an acquireDisplayLock, which first schedules a continuation and then
+appends the first child. The continuation appends the second child.
+-->
+
+<style>
+#parent {
+  contain: paint;
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+#child1 {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+#child2 {
+  width: 50px;
+  height: 50px;
+  background: lightyellow;
+}
+</style>
+
+<div id="log"></div>
+<div id="parent"></div>
+
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+function createChild(id) {
+  let child = document.createElement("div");
+  child.id = id;
+  return child;
+}
+
+function addChild2(context) {
+  document.getElementById("parent").appendChild(createChild("child2"));
+}
+
+function addChild1(context) {
+  context.schedule(addChild2);
+  document.getElementById("parent").appendChild(createChild("child1"));
+}
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+
+function acquire() {
+  document.getElementById("parent").acquireDisplayLock(addChild1).then(
+    () => { finishTest("PASS"); },
+    () => { finishTest("FAIL"); });
+}
+
+window.onload = acquire;
+
+</script>
+

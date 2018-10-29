@@ -25,6 +25,7 @@
   SDK.consoleModel.addEventListener(
       SDK.ConsoleModel.Events.MessageUpdated, ConsoleTestRunner.wrapListener(messageUpdated));
 
+  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
   TestRunner.addResult('Creating worker with promise');
   TestRunner.evaluateInPageWithTimeout('createPromise()');
 
@@ -42,6 +43,12 @@
 
   async function messageUpdated() {
     await ConsoleTestRunner.dumpConsoleCounters();
+
+    // Turn on verbose filter.
+    TestRunner.addResult(`\nEnable verbose filter`);
+    Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
+    await ConsoleTestRunner.dumpConsoleCounters();
+
     TestRunner.completeTest();
   }
 })();

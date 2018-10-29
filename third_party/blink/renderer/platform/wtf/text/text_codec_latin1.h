@@ -37,15 +37,15 @@ class TextCodecLatin1 final : public TextCodec {
 
  private:
   String Decode(const char*,
-                size_t length,
+                wtf_size_t length,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  CString Encode(const UChar*, size_t length, UnencodableHandling) override;
-  CString Encode(const LChar*, size_t length, UnencodableHandling) override;
+  CString Encode(const UChar*, wtf_size_t length, UnencodableHandling) override;
+  CString Encode(const LChar*, wtf_size_t length, UnencodableHandling) override;
 
   template <typename CharType>
-  CString EncodeCommon(const CharType*, size_t length, UnencodableHandling);
+  CString EncodeCommon(const CharType*, wtf_size_t length, UnencodableHandling);
 };
 
 }  // namespace WTF

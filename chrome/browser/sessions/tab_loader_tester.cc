@@ -47,10 +47,6 @@ void TabLoaderTester::OnMemoryPressure(
   tab_loader_->OnMemoryPressure(memory_pressure_level);
 }
 
-void TabLoaderTester::OnMemoryStateChange(base::MemoryState state) {
-  tab_loader_->OnMemoryStateChange(state);
-}
-
 void TabLoaderTester::SetTabLoadingEnabled(bool enabled) {
   tab_loader_->SetTabLoadingEnabled(enabled);
 }

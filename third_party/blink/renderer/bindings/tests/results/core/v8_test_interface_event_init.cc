@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/dictionary_v8.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/dictionary_v8.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -44,18 +44,18 @@ void V8TestInterfaceEventInit::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value>
   const v8::Eternal<v8::Name>* keys = eternalV8TestInterfaceEventInitKeys(isolate);
   v8::TryCatch block(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Value> stringMemberValue;
-  if (!v8Object->Get(context, keys[0].Get(isolate)).ToLocal(&stringMemberValue)) {
+  v8::Local<v8::Value> string_member_value;
+  if (!v8Object->Get(context, keys[0].Get(isolate)).ToLocal(&string_member_value)) {
     exceptionState.RethrowV8Exception(block.Exception());
     return;
   }
-  if (stringMemberValue.IsEmpty() || stringMemberValue->IsUndefined()) {
+  if (string_member_value.IsEmpty() || string_member_value->IsUndefined()) {
     // Do nothing.
   } else {
-    V8StringResource<> stringMemberCppValue = stringMemberValue;
-    if (!stringMemberCppValue.Prepare(exceptionState))
+    V8StringResource<> string_member_cpp_value = string_member_value;
+    if (!string_member_cpp_value.Prepare(exceptionState))
       return;
-    impl.setStringMember(stringMemberCppValue);
+    impl.setStringMember(string_member_cpp_value);
   }
 }
 
@@ -72,14 +72,26 @@ bool toV8TestInterfaceEventInit(const TestInterfaceEventInit& impl, v8::Local<v8
 
   const v8::Eternal<v8::Name>* keys = eternalV8TestInterfaceEventInitKeys(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Value> stringMemberValue;
-  bool stringMemberHasValueOrDefault = false;
+
+  auto create_property = [dictionary, context, keys, isolate](
+                             size_t key_index, v8::Local<v8::Value> value) {
+    bool added_property;
+    v8::Local<v8::Name> key = keys[key_index].Get(isolate);
+    if (!dictionary->CreateDataProperty(context, key, value)
+             .To(&added_property)) {
+      return false;
+    }
+    return added_property;
+  };
+
+  v8::Local<v8::Value> string_member_value;
+  bool string_member_has_value_or_default = false;
   if (impl.hasStringMember()) {
-    stringMemberValue = V8String(isolate, impl.stringMember());
-    stringMemberHasValueOrDefault = true;
+    string_member_value = V8String(isolate, impl.stringMember());
+    string_member_has_value_or_default = true;
   }
-  if (stringMemberHasValueOrDefault &&
-      !V8CallBoolean(dictionary->CreateDataProperty(context, keys[0].Get(isolate), stringMemberValue))) {
+  if (string_member_has_value_or_default &&
+      !create_property(0, string_member_value)) {
     return false;
   }
 

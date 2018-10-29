@@ -66,7 +66,7 @@ void StartSmartSelectionActionMenu::InitMenu(
   // Add placeholder items.
   for (size_t i = 0; i < kMaxMainMenuCommands; ++i) {
     proxy_->AddMenuItem(IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1 + i,
-                        /*title=*/base::EmptyString16());
+                        /*title=*/base::string16());
   }
 }
 

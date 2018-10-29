@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x68
-  LayoutBlockFlow {HTML} at (0,0) size 800x68
-    LayoutBlockFlow {BODY} at (8,16) size 784x36
-      LayoutBlockFlow {P} at (0,0) size 784x36
-        LayoutText {#text} at (0,0) size 768x36
-          text run at (0,0) width 768: "Any textual selection in this long paragraph should have green background. Any textual selection in this long paragraph"
-          text run at (0,18) width 688: "should have green background. Any textual selection in this long paragraph should have green background."

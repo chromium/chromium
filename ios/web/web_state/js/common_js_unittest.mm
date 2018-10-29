@@ -5,7 +5,7 @@
 #include <stddef.h>
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +86,7 @@ TEST_F(CommonJsTest, IsTestField) {
       {"state", 0, false},
       {"cars", 0, false},
       {"submit", 0, false}};
-  for (size_t i = 0; i < arraysize(testElements); ++i) {
+  for (size_t i = 0; i < base::size(testElements); ++i) {
     TextFieldTestElement element = testElements[i];
     id result = ExecuteJavaScript([NSString
         stringWithFormat:@"__gCrWeb.common.isTextField("
@@ -130,7 +130,7 @@ TEST_F(CommonJsTest, Stringify) {
       {@"__gCrWeb.stringify(undefined)", @"undefined"},
   };
 
-  for (size_t i = 0; i < arraysize(test_data); i++) {
+  for (size_t i = 0; i < base::size(test_data); i++) {
     TestScriptAndExpectedValue& data = test_data[i];
     // Load a sample HTML page. As a side-effect, loading HTML via
     // |webController_| will also inject web_bundle.js.
@@ -161,7 +161,7 @@ TEST_F(CommonJsTest, RemoveQueryAndReferenceFromURL) {
       {@"data:abc", @"data:abc"},
       {@"javascript:login()", @"javascript:login()"},
   };
-  for (size_t i = 0; i < arraysize(test_data); i++) {
+  for (size_t i = 0; i < base::size(test_data); i++) {
     LoadHtml(@"<p>");
     TestData& data = test_data[i];
     id result = ExecuteJavaScript(
@@ -181,7 +181,7 @@ TEST_F(CommonJsTest, IsSameOrigin) {
       {@"'http://abc.com', 'http://def.com'", @NO},
       {@"'http://abc.com/def', 'http://abc.com/xyz'", @YES}};
 
-  for (size_t i = 0; i < arraysize(test_data); i++) {
+  for (size_t i = 0; i < base::size(test_data); i++) {
     TestScriptAndExpectedValue& data = test_data[i];
     LoadHtml(@"<p>");
     id result = ExecuteJavaScript(

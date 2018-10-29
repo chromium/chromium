@@ -91,8 +91,11 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
     auto power_manager_client =
         std::make_unique<chromeos::FakePowerManagerClient>();
     power_manager_client_ = power_manager_client.get();
-    power_manager_client_->SetScreenBrightnessPercent(kVisibleBrightnessPercent,
-                                                      false /*gradual*/);
+
+    power_manager::SetBacklightBrightnessRequest request;
+    request.set_percent(kVisibleBrightnessPercent);
+    power_manager_client_->SetScreenBrightness(request);
+
     power_manager_observer_ =
         std::make_unique<TestPowerManagerObserver>(power_manager_client_);
     chromeos::DBusThreadManager::GetSetterForTesting()->SetPowerManagerClient(

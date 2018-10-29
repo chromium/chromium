@@ -29,9 +29,6 @@
 namespace ash {
 namespace {
 
-// Color of the ink drop ripple.
-constexpr SkColor kInkDropRippleColor = SkColorSetARGB(0x0F, 0xFF, 0xFF, 0xFF);
-
 // Color of the ink drop highlight.
 constexpr SkColor kInkDropHighlightColor =
     SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF);
@@ -154,7 +151,7 @@ class BasePinButton : public views::InkDropHostView {
 
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetLocalBounds().InsetsFrom(bounds),
-        GetInkDropCenterBasedOnLastEvent(), kInkDropRippleColor,
+        GetInkDropCenterBasedOnLastEvent(), GetInkDropBaseColor(),
         1.f /*visible_opacity*/);
   }
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
@@ -163,6 +160,9 @@ class BasePinButton : public views::InkDropHostView {
         gfx::PointF(GetLocalBounds().CenterPoint()),
         std::make_unique<views::CircleLayerDelegate>(kInkDropHighlightColor,
                                                      GetInkDropRadius()));
+  }
+  SkColor GetInkDropBaseColor() const override {
+    return SkColorSetA(SK_ColorWHITE, 0x0F);
   }
 
   int GetInkDropRadius() const { return kRippleSizeDp / 2; }

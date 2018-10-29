@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/desktop_ios_promotion/desktop_ios_promotion_bubble_controller.h"
 
+#include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -62,7 +63,7 @@ class DesktopIOSPromotionBubbleControllerTest : public testing::Test {
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(pref_service_));
     builder.AddTestingFactory(SMSServiceFactory::GetInstance(),
-                              BuildFakeSMSService);
+                              base::BindRepeating(&BuildFakeSMSService));
     profile_ = builder.Build();
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     TestingBrowserProcess::GetGlobal()->SetLocalState(local_state_.get());

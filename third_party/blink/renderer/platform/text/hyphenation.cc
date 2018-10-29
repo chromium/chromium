@@ -8,9 +8,9 @@
 
 namespace blink {
 
-size_t Hyphenation::FirstHyphenLocation(const StringView& text,
-                                        size_t after_index) const {
-  Vector<size_t, 8> hyphen_locations = HyphenLocations(text);
+wtf_size_t Hyphenation::FirstHyphenLocation(const StringView& text,
+                                            wtf_size_t after_index) const {
+  Vector<wtf_size_t, 8> hyphen_locations = HyphenLocations(text);
   for (auto it = hyphen_locations.rbegin(); it != hyphen_locations.rend();
        ++it) {
     if (*it > after_index)
@@ -19,9 +19,10 @@ size_t Hyphenation::FirstHyphenLocation(const StringView& text,
   return 0;
 }
 
-Vector<size_t, 8> Hyphenation::HyphenLocations(const StringView& text) const {
-  Vector<size_t, 8> hyphen_locations;
-  size_t hyphen_location = text.length();
+Vector<wtf_size_t, 8> Hyphenation::HyphenLocations(
+    const StringView& text) const {
+  Vector<wtf_size_t, 8> hyphen_locations;
+  wtf_size_t hyphen_location = text.length();
   if (hyphen_location <= kMinimumSuffixLength)
     return hyphen_locations;
   hyphen_location -= kMinimumSuffixLength;

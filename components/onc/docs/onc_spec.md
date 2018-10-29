@@ -141,6 +141,63 @@ has the [UnencryptedConfiguration](#UnencryptedConfiguration-type) type.
     however it should not be considered an error if no such field is present.
 ---
 
+## Global Network Configuration
+
+Field **GlobaNetworkConfiguration** has the [GlobalNetworkConfiguration]
+(#GlobalNetworkConfiguration-type) type.
+
+### GlobalNetworkConfiguration type
+
+The [GlobalNetworkConfiguration](#GlobalNetworkConfiguration-type) contains
+settings which apply to all of the networks that the device may connect to. The
+client supports this only in device-level policy; the client-side ONC validator
+fails if it appears in user policy.
+To avoid bricking devices, these policies will only be enforced in user
+sessions. The login screen ignores these policies and may still be used for
+fetching new policy or logging in.
+A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
+warns admins of the implications of mis-using this policy for Chrome OS.
+
+
+* **AllowOnlyPolicyNetworksToAutoconnect**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present and set to true, on startup the device will
+      only auto connect to those networks that are present in its policy. This
+      is necessary for devices that are used as kiosks, for example, so that
+      they can’t be hijacked by some other user on startup.
+
+* **AllowOnlyPolicyNetworksToConnect**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present and set to true, only networks present in
+      policy may be connected to. This allows schools to enforce that only
+      known-good networks (e.g., filtered student networks) may be used.
+      Existing connections to unmanaged networks will be disconnected on policy
+      fetch.
+
+* **AllowOnlyPolicyNetworksToConnectIfAvailable**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present, set to true and a policy network is in range,
+      only policy networks may be connected to. If no managed network is in
+      range (e.g. user’s home), the device may connect to any network. If
+      enabled and a network scan shows a new policy managed network, the device
+      will automatically switch to the managed network.
+
+* **BlacklistedHexSSIDs**
+    * (optional) - **array of string**
+    * List of strings containing blacklisted hex SSIDs. Networks included in
+      this list will not be connectable. Existing connections to networks
+      contained in this list will be disconnected on policy fetch.
+
+* **DisableNetworkTypes**
+    * (optional) - **array of string**
+    * Allowed values are:
+        * Cellular
+        * Ethernet
+        * WiFi
+        * WiMAX
+        * Tether
+    * List of strings containing disabled network interfaces.
+
 ## Network Configuration
 
 Field **NetworkConfigurations** is an array of
@@ -164,7 +221,7 @@ Field **NetworkConfigurations** is an array of
       if **NameServersConfigType** is specified) - **string**
     * Allowed values are:
         * *DHCP*
-        * *Static*.
+        * *Static*
     * Determines whether the IP Address configuration is statically configured,
       see **StaticIPConfig**, or automatically configured
       using DHCP.
@@ -174,7 +231,7 @@ Field **NetworkConfigurations** is an array of
     if **IPAddressConfigType** is specified) - **string**
     * Allowed values are:
         * *DHCP*
-        * *Static*.
+        * *Static*
     * Determines whether the NameServers configuration is statically configured,
       see **StaticIPConfig**, or automatically configured
       using DHCP.
@@ -1805,6 +1862,29 @@ the substitution variable is required in order to substitute the real value.
 
 * "${PASSWORD}foo" -> "${PASSWORD}foo"
 
+## Recommended Values
+When a policy is providing ONC configurations, the assumption is that all values
+are mandatory and immutable. To specify values that can be overridden by a user
+(e.g. proxy or username), use the **Recommended** property.
+
+* **Recommended**
+  * (optional) - **array of string**
+  * The field(s) with the names in the strings in this array are to be treated
+    as recommended settings. Any fields not mentioned in this array remain
+    mandatory. This also means that fields that are not mentioned in the array
+    and also not mentioned in the objects are mandatory and have the default
+    value of the field. If not present, all fields are mandatory. Fields that
+    are objects or arrays of objects included in Recommended will be ignored. In
+    those cases, the nested objects should have their own Recommended fields. A
+    special case is if the string "." is included in the list. When this is
+    present, it means that the entire certificate or network can be forgotten or
+    deleted by the user. Including the "." has no implications on the rest of
+    the settings. For instance, a network may have Recommended set to [ "." ],
+    in which case its settings may not be changed by the user, but the whole
+    network can be forgotten by the user.  The "." is valid in a Certificate
+    object and the NetworkConfiguration object, it is ignored elsewhere.
+
+
 ## Detection
 
 This format should be sent in files ending in the .onc extension. When
@@ -1830,6 +1910,25 @@ here, for instance, referencing certificates by identifiers not tied to a
 particular PKCS#11 token, and tying to one OS's connection manager.
 
 ## Examples
+
+### GlobalNetworkConfiguration Example
+
+In this example, we only allow managed networks to auto connect and
+disallow any other networks if a managed network is available. We also blacklist
+the "Guest" network (hex("Guest")=4775657374) and disable Cellular and WiMAX
+services.
+```
+{
+  "Type": "UnencryptedConfiguration",
+  "GlobalNetworkConfiguration": {
+    "AllowOnlyPolicyNetworksToAutoconnect": true,
+    “AllowOnlyPolicyNetworksToConnect”: false,
+    “AllowOnlyPolicyNetworksToConnectIfAvailable”: true,
+    “BlacklistedHexSSIDs”: [“4775657374”],
+    "DisableNetworkTypes": ["Cellular", "WiMAX"]
+  }
+}
+```
 
 ### Simple format example: PEAP/MSCHAPv2 network (per device)
 
@@ -1945,6 +2044,40 @@ with the passphrase "test0000".
   "Salt": "/3O73QadCzA=",
   "Stretch": "PBKDF2",
   "Type": "EncryptedConfiguration"
+}
+```
+
+### Recommended values example
+
+In this example, the EAP Identity and Password are marked as recommended, i.e.
+they can be edited by the user. All other values are mandatory.
+
+```
+{
+  "Type": "UnencryptedConfiguration",
+  "GlobalNetworkConfiguration": {},
+  "NetworkConfigurations": [
+    {
+      "GUID": "{485e6176-dd34-6b6d-1234}",
+      "Name": "wifi_test",
+      "Type": "WiFi",
+      "WiFi": {
+        "SSID": "wifi_test",
+        "Security": "WPA-EAP",
+        "AutoConnect": true,
+        "EAP": {
+          "Inner": "MSCHAPv2",
+          "Outer": "PEAP",
+          "SaveCredentials": true,
+          "UseSystemCAs": false,
+          "Identity": "john-doe",
+          "Password": "secret-password-123",
+          "Recommended": ["Identity", "Password"]
+        }
+      }
+    }
+    }
+  ]
 }
 ```
 

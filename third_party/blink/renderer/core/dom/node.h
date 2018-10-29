@@ -34,11 +34,12 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
-// This needs to be here because Element.cpp also depends on it.
+// This needs to be here because element.cc also depends on it.
 #define DUMP_NODE_STATISTICS 0
 
 namespace blink {
@@ -67,11 +68,14 @@ class NodeRareData;
 class QualifiedName;
 class RegisteredEventListener;
 class SVGQualifiedName;
+class ScrollState;
+class ScrollStateCallback;
 class ShadowRoot;
 template <typename NodeType>
 class StaticNodeTypeList;
 using StaticNodeList = StaticNodeTypeList<Node>;
 class StyleChangeReasonForTracing;
+class V8ScrollStateCallback;
 class WebPluginContainerImpl;
 
 const int kNodeStyleChangeShift = 18;
@@ -190,6 +194,22 @@ class CORE_EXPORT Node : public EventTarget {
   Node* firstChild() const;
   Node* lastChild() const;
   Node* getRootNode(const GetRootNodeOptions&) const;
+
+  // Scroll Customization API. See crbug.com/410974 for details.
+  void setDistributeScroll(V8ScrollStateCallback*,
+                           const String& native_scroll_behavior);
+  void setApplyScroll(V8ScrollStateCallback*,
+                      const String& native_scroll_behavior);
+  void SetApplyScroll(ScrollStateCallback*);
+  void RemoveApplyScroll();
+  ScrollStateCallback* GetApplyScroll();
+  void NativeDistributeScroll(ScrollState&);
+  void NativeApplyScroll(ScrollState&);
+  void CallDistributeScroll(ScrollState&);
+  void CallApplyScroll(ScrollState&);
+  void WillBeginCustomizedScrollPhase(ScrollCustomization::ScrollDirection);
+  void DidEndCustomizedScrollPhase();
+
   Node& TreeRoot() const;
   Node& ShadowIncludingRoot() const;
   // closed-shadow-hidden is defined at
@@ -327,9 +347,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   // If this node is in a shadow tree, returns its shadow host. Otherwise,
   // returns nullptr.
-  // TODO(kochi): crbug.com/507413 ownerShadowHost() can return nullptr even
-  // when it is in a shadow tree but its root is detached from its host. This
-  // can happen when handling queued events (e.g. during execCommand()).
   Element* OwnerShadowHost() const;
   // crbug.com/569532: containingShadowRoot() can return nullptr even if
   // isInShadowTree() returns true.
@@ -500,8 +517,7 @@ class CORE_EXPORT Node : public EventTarget {
   void SetNeedsStyleInvalidation();
 
   // This needs to be called before using FlatTreeTraversal.
-  // Once 1) IncrementalShadowDOM is launched, and 2) Shadow DOM v0 is removed,
-  // this function can be removed.
+  // Once Shadow DOM v0 is removed, this function can be removed.
   void UpdateDistributionForFlatTreeTraversal() {
     UpdateDistributionInternal();
   }
@@ -516,7 +532,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   // Please don't use this function.
   // Background: When we investigated the usage of (old) UpdateDistribution,
-  // some caller's intents were unclear. Thus, we had to introduce this funtion
+  // some caller's intents were unclear. Thus, we had to introduce this function
   // for the sake of safety. If we can figure out the intent of each caller, we
   // can replace that with calling UpdateDistributionForFlatTreeTraversal (or
   // just RecalcSlotAssignments()) on a case-by-case basis.
@@ -684,7 +700,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   // -----------------------------------------------------------------------------
-  // Notification of document structure changes (see ContainerNode.h for more
+  // Notification of document structure changes (see container_node.h for more
   // notification methods)
   //
   // At first, Blinkt notifies the node that it has been inserted into the
@@ -845,6 +861,8 @@ class CORE_EXPORT Node : public EventTarget {
   bool InDOMNodeRemovedHandler() const {
     return GetFlag(kInDOMNodeRemovedHandler);
   }
+
+  bool IsEffectiveRootScroller() const;
 
   // If the node is a plugin, then this returns its WebPluginContainer.
   WebPluginContainerImpl* GetWebPluginContainer() const;

@@ -33,7 +33,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
       UnregistrationCallback;
 
   ServiceWorkerUnregisterJob(base::WeakPtr<ServiceWorkerContextCore> context,
-                             const GURL& pattern);
+                             const GURL& scope);
   ~ServiceWorkerUnregisterJob() override;
 
   // Registers a callback to be called when the job completes (whether
@@ -57,7 +57,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                       blink::ServiceWorkerStatusCode status);
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
-  const GURL pattern_;
+  const GURL scope_;
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_;

@@ -21,7 +21,8 @@ class TestRebaselineTest(BaseTestCase):
             'test': 'userscripts/another-test.html',
             'suffixes': 'txt',
             'results_directory': None,
-            'build_number': None
+            'build_number': None,
+            'step_name': None,
         }, **kwargs))
 
     def test_rebaseline_test_internal_with_port_that_lacks_buildbot(self):
@@ -44,7 +45,8 @@ class TestRebaselineTest(BaseTestCase):
                 'verbose': True,
                 'test': 'failures/expected/image.html',
                 'results_directory': None,
-                'build_number': None
+                'build_number': None,
+                'step_name': None,
             })
             oc.capture_output()
             self.command.execute(options, [], self.tool)
@@ -64,16 +66,16 @@ class TestRebaselineTest(BaseTestCase):
     def test_baseline_directory(self):
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.11'),
-            '/test.checkout/LayoutTests/platform/test-mac-mac10.11')
+            '/test.checkout/wtests/platform/test-mac-mac10.11')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.10'),
-            '/test.checkout/LayoutTests/platform/test-mac-mac10.10')
+            '/test.checkout/wtests/platform/test-mac-mac10.10')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Trusty'),
-            '/test.checkout/LayoutTests/platform/test-linux-trusty')
+            '/test.checkout/wtests/platform/test-linux-trusty')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Precise'),
-            '/test.checkout/LayoutTests/platform/test-linux-precise')
+            '/test.checkout/wtests/platform/test-linux-precise')
 
     def test_rebaseline_updates_expectations_file_noop(self):
         # pylint: disable=protected-access

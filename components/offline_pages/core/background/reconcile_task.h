@@ -37,7 +37,7 @@ class ReconcileTask : public Task {
                  std::vector<std::unique_ptr<SavePageRequest>> requests);
 
   // Step 3. Processes update result.
-  void UpdateCompleted(std::unique_ptr<UpdateRequestsResult> update_result);
+  void UpdateCompleted(UpdateRequestsResult update_result);
 
   // Member variables, all pointers are not owned here.
   RequestQueueStore* store_;

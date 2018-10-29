@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
@@ -52,7 +53,7 @@ class MEDIA_EXPORT SilentSinkSuspender
              AudioBus* dest) override;
   void OnRenderError() override;
 
-  bool is_using_fake_sink_for_testing() const { return is_using_fake_sink_; }
+  bool IsUsingFakeSinkForTesting();
 
  private:
   // If |use_fake_sink| is true, pauses |sink_| and plays |fake_sink_|; if
@@ -88,11 +89,11 @@ class MEDIA_EXPORT SilentSinkSuspender
 
   // Whether audio output is directed to |fake_sink_|. Must only be used when
   // |transition_lock_| is held or both sinks are stopped.
-  bool is_using_fake_sink_ = false;
+  bool is_using_fake_sink_ GUARDED_BY(transition_lock_) = false;
 
   // Whether we're in the middle of a transition to or from |fake_sink_|. Must
   // only be used when |transition_lock_| is held or both sinks are stopped.
-  bool is_transition_pending_ = false;
+  bool is_transition_pending_ GUARDED_BY(transition_lock_) = false;
 
   // Buffers accumulated during the transition from |fake_sink_| to |sink_|.
   base::circular_deque<std::unique_ptr<AudioBus>> buffers_after_silence_;

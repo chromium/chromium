@@ -18,8 +18,6 @@ import org.chromium.android_webview.command_line.CommandLineUtil;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.services.CrashReceiverService;
 import org.chromium.android_webview.services.ICrashReceiverService;
-import org.chromium.base.AsyncTask;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -30,6 +28,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.ProcessInitException;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
@@ -105,7 +104,7 @@ public final class AwBrowserProcess {
     public static void start() {
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwBrowserProcess.start")) {
             final Context appContext = ContextUtils.getApplicationContext();
-            tryObtainingDataDirLock();
+            tryObtainingDataDirLock(appContext);
             // We must post to the UI thread to cover the case that the user
             // has invoked Chromium startup by using the (thread-safe)
             // CookieManager rather than creating a WebView.
@@ -152,12 +151,13 @@ public final class AwBrowserProcess {
         }
     }
 
-    private static void tryObtainingDataDirLock() {
+    private static void tryObtainingDataDirLock(final Context appContext) {
         try (ScopedSysTraceEvent e1 =
                         ScopedSysTraceEvent.scoped("AwBrowserProcess.tryObtainingDataDirLock")) {
             // Many existing apps rely on this even though it's known to be unsafe.
             // Make it fatal when on P for apps that target P or higher
-            boolean dieOnFailure = BuildInfo.isAtLeastP() && BuildInfo.targetsAtLeastP();
+            boolean dieOnFailure = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                    && appContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P;
 
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
             try {

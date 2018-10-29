@@ -233,6 +233,7 @@ class ConfigSingleton {
   void SetErrorAssistantProto(
       std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
           error_assistant_proto);
+
   void SetEnterpriseManagedForTesting(bool enterprise_managed);
   bool IsEnterpriseManagedFlagSetForTesting() const;
   int GetErrorAssistantProtoVersionIdForTesting() const;
@@ -726,6 +727,7 @@ bool SSLErrorHandler::IsTimerRunningForTesting() const {
   return timer_.IsRunning();
 }
 
+// static
 void SSLErrorHandler::SetErrorAssistantProto(
     std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig> config_proto) {
   g_config.Pointer()->SetErrorAssistantProto(std::move(config_proto));

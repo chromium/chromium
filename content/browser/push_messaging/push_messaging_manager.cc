@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -22,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_storage.h"
 #include "content/common/push_messaging.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -321,7 +323,7 @@ void PushMessagingManager::Subscribe(int32_t render_frame_id,
                           mojom::PushRegistrationStatus::NO_SERVICE_WORKER);
     return;
   }
-  data.requesting_origin = service_worker_registration->pattern().GetOrigin();
+  data.requesting_origin = service_worker_registration->scope().GetOrigin();
 
   DCHECK(!(data.options.sender_info.empty() && data.FromDocument()));
 
@@ -369,8 +371,8 @@ void PushMessagingManager::DidCheckForExistingRegistration(
   // the subscription algorithm instead of trying to subscribe.
 
   if (!data.options.sender_info.empty()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&Core::RegisterOnUI, base::Unretained(ui_core_.get()),
                        std::move(data)));
   } else {
@@ -405,8 +407,8 @@ void PushMessagingManager::DidGetSenderIdFromStorage(
     return;
   }
   data.options.sender_info = fixed_sender_id;
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&Core::RegisterOnUI, base::Unretained(ui_core_.get()),
                      std::move(data)));
 }
@@ -419,8 +421,8 @@ void PushMessagingManager::Core::RegisterOnUI(
     if (!is_incognito()) {
       // This might happen if InstanceIDProfileService::IsInstanceIDEnabled
       // returns false because the Instance ID kill switch was enabled.
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&PushMessagingManager::SendSubscriptionError,
                          io_parent_, std::move(data),
                          mojom::PushRegistrationStatus::SERVICE_NOT_AVAILABLE));
@@ -429,8 +431,8 @@ void PushMessagingManager::Core::RegisterOnUI(
       // have happened if we had a PushMessagingService available.
       if (!data.FromDocument() || !data.options.user_visible_only) {
         // Throw a permission denied error under the same circumstances.
-        BrowserThread::PostTask(
-            BrowserThread::IO, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::IO},
             base::BindOnce(
                 &PushMessagingManager::SendSubscriptionError, io_parent_,
                 std::move(data),
@@ -487,8 +489,8 @@ void PushMessagingManager::Core::DidRequestPermissionInIncognito(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Notification permission should always be denied in incognito.
   DCHECK_EQ(blink::mojom::PermissionStatus::DENIED, status);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &PushMessagingManager::SendSubscriptionError, io_parent_,
           std::move(data),
@@ -511,8 +513,8 @@ void PushMessagingManager::Core::DidRegister(
       data.existing_subscription_id.value() != push_subscription_id;
 
   if (status == mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &PushMessagingManager::PersistRegistrationOnIO, io_parent_,
             std::move(data), push_subscription_id, p256dh, auth,
@@ -521,8 +523,8 @@ void PushMessagingManager::Core::DidRegister(
                       SUCCESS_NEW_SUBSCRIPTION_FROM_PUSH_SERVICE
                 : mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE));
   } else {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&PushMessagingManager::SendSubscriptionError, io_parent_,
                        std::move(data), status));
   }
@@ -621,7 +623,7 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
       base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
                      weak_factory_io_to_io_.GetWeakPtr(), std::move(callback),
                      service_worker_registration_id,
-                     service_worker_registration->pattern().GetOrigin()));
+                     service_worker_registration->scope().GetOrigin()));
 }
 
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
@@ -637,8 +639,8 @@ void PushMessagingManager::UnsubscribeHavingGottenSenderId(
     DCHECK_EQ(1u, sender_ids.size());
     sender_id = sender_ids[0];
   }
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&Core::UnregisterFromService,
                      base::Unretained(ui_core_.get()), std::move(callback),
                      service_worker_registration_id, requesting_origin,
@@ -656,8 +658,8 @@ void PushMessagingManager::Core::UnregisterFromService(
     // This shouldn't be possible in incognito mode, since we've already checked
     // that we have an existing registration. Hence it's ok to throw an error.
     DCHECK(!is_incognito());
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&PushMessagingManager::DidUnregister, io_parent_,
                        std::move(callback),
                        mojom::PushUnregistrationStatus::SERVICE_NOT_AVAILABLE));
@@ -678,8 +680,8 @@ void PushMessagingManager::Core::DidUnregisterFromService(
     mojom::PushUnregistrationStatus unregistration_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PushMessagingManager::DidUnregister, io_parent_,
                      std::move(callback), unregistration_status));
 }
@@ -766,14 +768,14 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      const GURL origin = registration->pattern().GetOrigin();
+      const GURL origin = registration->scope().GetOrigin();
 
       const bool uses_standard_protocol = IsApplicationServerKey(sender_info);
       const GURL endpoint =
           CreateEndpoint(uses_standard_protocol, push_subscription_id);
 
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&Core::GetSubscriptionInfoOnUI,
                          base::Unretained(ui_core_.get()), origin,
                          service_worker_registration_id, sender_info,
@@ -845,9 +847,9 @@ void PushMessagingManager::Core::GetSubscriptionDidGetInfoOnUI(
     mojom::PushGetRegistrationStatus status =
         mojom::PushGetRegistrationStatus::SUCCESS;
 
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(std::move(callback), status,
-                                           endpoint, options, p256dh, auth));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(std::move(callback), status,
+                                            endpoint, options, p256dh, auth));
 
     RecordGetRegistrationStatus(status);
   } else {
@@ -856,8 +858,8 @@ void PushMessagingManager::Core::GetSubscriptionDidGetInfoOnUI(
       // Shouldn't be possible to have a stored push subscription in a profile
       // with no push service, but this case can occur when the renderer is
       // shutting down.
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(std::move(callback),
                          mojom::PushGetRegistrationStatus::RENDERER_SHUTDOWN,
                          base::nullopt /* endpoint */,
@@ -889,8 +891,8 @@ void PushMessagingManager::Core::GetSubscriptionDidUnsubscribe(
     mojom::PushGetRegistrationStatus get_status,
     mojom::PushUnregistrationStatus unsubscribe_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), get_status,
                      base::nullopt /* endpoint */, base::nullopt /* options */,
                      base::nullopt /* p256dh */, base::nullopt /* auth */));

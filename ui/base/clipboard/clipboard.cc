@@ -80,7 +80,7 @@ void Clipboard::DestroyClipboardForCurrentThread() {
 
   ClipboardMap* clipboard_map = clipboard_map_.Pointer();
   base::PlatformThreadId id = base::PlatformThread::CurrentId();
-  ClipboardMap::iterator it = clipboard_map->find(id);
+  auto it = clipboard_map->find(id);
   if (it != clipboard_map->end())
     clipboard_map->erase(it);
 }

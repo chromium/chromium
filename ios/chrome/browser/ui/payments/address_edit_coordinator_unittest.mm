@@ -96,8 +96,9 @@ class PaymentRequestAddressEditCoordinatorTest
  protected:
   PaymentRequestAddressEditCoordinatorTest() {}
 
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     autofill::CountryNames::SetLocaleString("en-US");
     personal_data_manager_.SetPrefService(pref_service());
@@ -110,10 +111,11 @@ class PaymentRequestAddressEditCoordinatorTest
     payment_request_->SetRegionDataLoader(&test_region_data_loader_);
   }
 
+  // PlatformTest:
   void TearDown() override {
     personal_data_manager_.SetPrefService(nullptr);
 
-    PaymentRequestUnitTestBase::TearDown();
+    DoTearDown();
   }
 
   autofill::TestPersonalDataManager personal_data_manager_;

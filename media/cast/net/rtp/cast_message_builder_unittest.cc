@@ -36,8 +36,7 @@ class NackFeedbackVerification : public RtpPayloadFeedback {
 
     last_frame_acked_ = cast_feedback.ack_frame_id;
 
-    MissingFramesAndPacketsMap::const_iterator frame_it =
-        cast_feedback.missing_frames_and_packets.begin();
+    auto frame_it = cast_feedback.missing_frames_and_packets.begin();
 
     // Keep track of the number of missing packets per frame.
     missing_packets_.clear();

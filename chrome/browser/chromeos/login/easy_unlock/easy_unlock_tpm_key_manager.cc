@@ -24,6 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/nss_util_internal.h"
@@ -237,8 +238,8 @@ bool EasyUnlockTpmKeyManager::PrepareTpmKey(bool check_private_key,
         base::Bind(&EasyUnlockTpmKeyManager::OnUserTPMInitialized,
                    get_tpm_slot_weak_ptr_factory_.GetWeakPtr(), key);
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&EnsureUserTPMInitializedOnIOThread, username_hash_,
                        base::ThreadTaskRunnerHandle::Get(), on_user_tpm_ready));
   }
@@ -287,11 +288,10 @@ void EasyUnlockTpmKeyManager::SignUsingTpmKey(
       base::Bind(&EasyUnlockTpmKeyManager::SignDataWithSystemSlot,
                  weak_ptr_factory_.GetWeakPtr(), key, data, callback);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&GetSystemSlotOnIOThread,
-                     base::ThreadTaskRunnerHandle::Get(),
-                     sign_with_system_slot));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce(&GetSystemSlotOnIOThread,
+                                          base::ThreadTaskRunnerHandle::Get(),
+                                          sign_with_system_slot));
 }
 
 bool EasyUnlockTpmKeyManager::StartedCreatingTpmKeys() const {
@@ -319,11 +319,10 @@ void EasyUnlockTpmKeyManager::OnUserTPMInitialized(
       base::Bind(&EasyUnlockTpmKeyManager::CreateKeyInSystemSlot,
                  get_tpm_slot_weak_ptr_factory_.GetWeakPtr(), public_key);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&GetSystemSlotOnIOThread,
-                     base::ThreadTaskRunnerHandle::Get(),
-                     create_key_with_system_slot));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce(&GetSystemSlotOnIOThread,
+                                          base::ThreadTaskRunnerHandle::Get(),
+                                          create_key_with_system_slot));
 }
 
 void EasyUnlockTpmKeyManager::CreateKeyInSystemSlot(

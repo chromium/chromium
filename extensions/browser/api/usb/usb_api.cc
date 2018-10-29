@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "device/base/device_client.h"
-#include "device/usb/public/cpp/filter_utils.h"
+#include "device/usb/public/cpp/usb_utils.h"
 #include "device/usb/public/mojom/device_manager.mojom.h"
 #include "device/usb/usb_descriptors.h"
 #include "device/usb/usb_device_handle.h"

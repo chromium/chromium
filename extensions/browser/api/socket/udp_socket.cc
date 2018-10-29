@@ -298,8 +298,8 @@ void UDPSocket::OnLeaveGroupCompleted(
     const std::string& normalized_address,
     int result) {
   if (result == net::OK) {
-    std::vector<std::string>::iterator find_result = std::find(
-        multicast_groups_.begin(), multicast_groups_.end(), normalized_address);
+    auto find_result = std::find(multicast_groups_.begin(),
+                                 multicast_groups_.end(), normalized_address);
     multicast_groups_.erase(find_result);
   }
 
@@ -334,8 +334,8 @@ void UDPSocket::LeaveGroup(const std::string& address,
   }
 
   std::string normalized_address = ip.ToString();
-  std::vector<std::string>::iterator find_result = std::find(
-      multicast_groups_.begin(), multicast_groups_.end(), normalized_address);
+  auto find_result = std::find(multicast_groups_.begin(),
+                               multicast_groups_.end(), normalized_address);
   if (find_result == multicast_groups_.end()) {
     callback.Run(net::ERR_ADDRESS_INVALID);
     return;

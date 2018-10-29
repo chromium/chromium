@@ -304,8 +304,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
   std::vector<GURL> redirects = GetRedirects(first_url);
   // Check to make sure our request for /title2.html doesn't get flagged
   // as a client redirect from the first (/client-redirect?) page.
-  for (std::vector<GURL>::iterator it = redirects.begin();
-       it != redirects.end(); ++it) {
+  for (auto it = redirects.begin(); it != redirects.end(); ++it) {
     if (final_url.spec() == it->spec()) {
       final_navigation_not_redirect = false;
       break;

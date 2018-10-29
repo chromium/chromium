@@ -129,6 +129,7 @@ class OfflineContentProviderObserver : public OfflineContentProvider::Observer {
  public:
   using ItemsAddedCallback =
       base::OnceCallback<void(const std::vector<OfflineItem>&)>;
+  using ItemUpdatedCallback = base::OnceCallback<void(const OfflineItem&)>;
   using FinishedProcessingItemCallback =
       base::OnceCallback<void(const OfflineItem&)>;
 
@@ -139,10 +140,20 @@ class OfflineContentProviderObserver : public OfflineContentProvider::Observer {
     items_added_callback_ = std::move(callback);
   }
 
+  void set_item_updated_callback(ItemUpdatedCallback callback) {
+    items_updated_callback_ = std::move(callback);
+  }
+
   void set_finished_processing_item_callback(
       FinishedProcessingItemCallback callback) {
     finished_processing_item_callback_ = std::move(callback);
   }
+
+  void set_delegate(BackgroundFetchDelegateImpl* delegate) {
+    delegate_ = delegate;
+  }
+
+  void PauseOnNextUpdate() { pause_ = true; }
 
   // OfflineContentProvider::Observer implementation:
   void OnItemsAdded(
@@ -153,18 +164,41 @@ class OfflineContentProviderObserver : public OfflineContentProvider::Observer {
 
   void OnItemRemoved(const ContentId& id) override {}
   void OnItemUpdated(const OfflineItem& item) override {
+    if (items_updated_callback_) {
+      std::move(items_updated_callback_).Run(item);
+    }
+
     if (item.state != offline_items_collection::OfflineItemState::IN_PROGRESS &&
         item.state != offline_items_collection::OfflineItemState::PENDING &&
-        finished_processing_item_callback_)
+        item.state != offline_items_collection::OfflineItemState::PAUSED &&
+        finished_processing_item_callback_) {
       std::move(finished_processing_item_callback_).Run(item);
+    }
+
+    if (pause_) {
+      if (item.state == offline_items_collection::OfflineItemState::PAUSED) {
+        Resume(item.id);
+        pause_ = false;
+      } else {
+        delegate_->PauseDownload(item.id);
+      }
+    }
+
     latest_item_ = item;
   }
 
   const OfflineItem& latest_item() const { return latest_item_; }
 
  private:
+  void Resume(const ContentId& id) {
+    delegate_->ResumeDownload(id, false /* has_user_gesture */);
+  }
+
   ItemsAddedCallback items_added_callback_;
+  ItemUpdatedCallback items_updated_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
+  BackgroundFetchDelegateImpl* delegate_ = nullptr;
+  bool pause_ = false;
 
   OfflineItem latest_item_;
 
@@ -206,6 +240,13 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
         ->AddObserver(offline_content_provider_observer_.get());
 
     SetUpBrowser(browser());
+
+    BackgroundFetchDelegateImpl* delegate =
+        static_cast<BackgroundFetchDelegateImpl*>(
+            active_browser_->profile()->GetBackgroundFetchDelegate());
+    DCHECK(delegate);
+
+    offline_content_provider_observer_->set_delegate(delegate);
   }
 
   void SetUpBrowser(Browser* browser) {
@@ -280,14 +321,6 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   // ---------------------------------------------------------------------------
   // Helper functions.
-
-  // Helper function for getting the expected title given the |developer_title|.
-  std::string GetExpectedTitle(const char* developer_title) {
-    url::Origin origin = url::Origin::Create(https_server_->base_url());
-
-    return base::StringPrintf("%s (%s)", developer_title,
-                              origin.Serialize().c_str());
-  }
 
   // Runs the |script| in the current tab and writes the output to |*result|.
   bool RunScript(const std::string& script, std::string* result) {
@@ -369,6 +402,13 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     settings_map->SetContentSettingCustomScope(
         host_pattern, host_pattern, content_type,
         std::string() /* resource_identifier */, setting);
+  }
+
+  void DidUpdateItem(base::OnceClosure quit_closure,
+                     OfflineItem* out_item,
+                     const OfflineItem& item) {
+    *out_item = item;
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -472,9 +512,10 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   const OfflineItem& offline_item = items[0];
 
   // Verify that the appropriate data is being set.
-  EXPECT_EQ(offline_item.title, GetExpectedTitle(kSingleFileDownloadTitle));
+  EXPECT_EQ(offline_item.title, kSingleFileDownloadTitle);
   EXPECT_EQ(offline_item.filter, OfflineItemFilter::FILTER_OTHER);
   EXPECT_TRUE(offline_item.is_transient);
+  EXPECT_TRUE(offline_item.is_resumable);
   EXPECT_FALSE(offline_item.is_suggested);
   EXPECT_FALSE(offline_item.is_off_the_record);
 
@@ -486,7 +527,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   // Change-detector tests for values we might want to provide or change.
   EXPECT_TRUE(offline_item.description.empty());
   EXPECT_TRUE(offline_item.page_url.is_empty());
-  EXPECT_FALSE(offline_item.is_resumable);
   EXPECT_FALSE(offline_item.is_off_the_record);
 }
 
@@ -642,6 +682,12 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        "New Failed Title!", base::CompareCase::SENSITIVE));
 }
 
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchCanBePausedAndResumed) {
+  offline_content_provider_observer_->PauseOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
+      "RunFetchTillCompletion()", "backgroundfetchsuccess"));
+}
+
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        FetchRejectedWithoutPermission) {
   RevokeDownloadPermission();
@@ -658,7 +704,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromServiceWorker) {
   // Give the needed permissions.
   SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
                 CONTENT_SETTING_ALLOW);
-  SetPermission(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, CONTENT_SETTING_ALLOW);
 
   // The fetch should succeed.
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
@@ -671,15 +716,34 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromServiceWorker) {
   // This should fail without the Automatic Downloads permission.
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "StartFetchFromServiceWorker()", "permissionerror"));
+}
 
-  // Reset Automatic Downloads permission and remove Background Sync permission
-  SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
-                CONTENT_SETTING_ALLOW);
-  SetPermission(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, CONTENT_SETTING_BLOCK);
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
+                       FetchFromServiceWorkerWithAsk) {
+  auto* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  DCHECK(settings_map);
 
-  // This should also fail now.
-  ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
-      "StartFetchFromServiceWorker()", "permissionerror"));
+  SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS, CONTENT_SETTING_ASK);
+
+  // The fetch doesn't start in a paused state, but is paused after the first
+  // update.
+  std::vector<OfflineItem> items;
+  OfflineItem updated_item;
+  base::RunLoop run_loop;
+  offline_content_provider_observer_->set_item_updated_callback(base::BindOnce(
+      &BackgroundFetchBrowserTest::DidUpdateItem, base::Unretained(this),
+      run_loop.QuitClosure(), &updated_item));
+
+  ASSERT_NO_FATAL_FAILURE(RunScriptAndWaitForOfflineItems(
+      "StartFetchFromServiceWorkerNoWait()", &items));
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].state,
+            offline_items_collection::OfflineItemState::IN_PROGRESS);
+
+  run_loop.Run();
+  EXPECT_EQ(updated_item.state,
+            offline_items_collection::OfflineItemState::PAUSED);
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
@@ -687,17 +751,36 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   // Give the needed permissions.
   SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
                 CONTENT_SETTING_ALLOW);
-  SetPermission(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, CONTENT_SETTING_ALLOW);
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "StartFetchFromIframe()", "backgroundfetchsuccess"));
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromChildFrameWithAsk) {
+  SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS, CONTENT_SETTING_ASK);
+
+  // The fetch doesn't start in a paused state, but is paused after the first
+  // update.
+  std::vector<OfflineItem> items;
+  OfflineItem updated_item;
+  base::RunLoop run_loop;
+  offline_content_provider_observer_->set_item_updated_callback(base::BindOnce(
+      &BackgroundFetchBrowserTest::DidUpdateItem, base::Unretained(this),
+      run_loop.QuitClosure(), &updated_item));
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndWaitForOfflineItems("StartFetchFromIframeNoWait()", &items));
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].state,
+            offline_items_collection::OfflineItemState::IN_PROGRESS);
+
+  run_loop.Run();
+  EXPECT_EQ(updated_item.state,
+            offline_items_collection::OfflineItemState::PAUSED);
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                        FetchFromChildFrameWithMissingPermissions) {
   SetPermission(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
-                CONTENT_SETTING_ALLOW);
-  // Revoke Background Sync permission.
-  SetPermission(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, CONTENT_SETTING_BLOCK);
+                CONTENT_SETTING_BLOCK);
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "StartFetchFromIframe()", "permissionerror"));
 }

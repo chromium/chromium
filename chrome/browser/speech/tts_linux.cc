@@ -15,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/speech/tts_platform.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "library_loaders/libspeechd.h"
@@ -180,8 +181,7 @@ bool TtsPlatformImplLinux::Speak(
   float pitch = params.pitch > 3 ? 3 : params.pitch;
   pitch = params.pitch < 0.334 ? 0.334 : pitch;
 
-  std::map<std::string, SPDChromeVoice>::iterator it =
-      all_native_voices_->find(voice.name);
+  auto it = all_native_voices_->find(voice.name);
   if (it != all_native_voices_->end()) {
     libspeechd_loader_.spd_set_output_module(conn_, it->second.module.c_str());
     libspeechd_loader_.spd_set_synthesis_voice(conn_, it->second.name.c_str());
@@ -266,10 +266,8 @@ void TtsPlatformImplLinux::GetVoices(
     }
   }
 
-  for (std::map<std::string, SPDChromeVoice>::iterator it =
-           all_native_voices_->begin();
-       it != all_native_voices_->end();
-       it++) {
+  for (auto it = all_native_voices_->begin(); it != all_native_voices_->end();
+       ++it) {
     out_voices->push_back(VoiceData());
     VoiceData& voice = out_voices->back();
     voice.native = true;
@@ -317,9 +315,8 @@ void TtsPlatformImplLinux::NotificationCallback(
   // be in a separate thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     current_notification_ = type;
-    BrowserThread::PostTask(
-        BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&TtsPlatformImplLinux::OnSpeechEvent,
                    base::Unretained(TtsPlatformImplLinux::GetInstance()),
                    type));
@@ -338,10 +335,11 @@ void TtsPlatformImplLinux::IndexMarkCallback(size_t msg_id,
   // be in a separate thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     current_notification_ = state;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&TtsPlatformImplLinux::OnSpeechEvent,
-        base::Unretained(TtsPlatformImplLinux::GetInstance()),
-        state));
+                   base::Unretained(TtsPlatformImplLinux::GetInstance()),
+                   state));
   }
 }
 

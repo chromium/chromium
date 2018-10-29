@@ -666,8 +666,8 @@ Job* AsyncCertNetFetcherImpl::FindJob(const RequestParams& params) {
 
   // The JobSet is kept in sorted order so items can be found using binary
   // search.
-  JobSet::iterator it = std::lower_bound(jobs_.begin(), jobs_.end(), params,
-                                         JobToRequestParamsComparator());
+  auto it = std::lower_bound(jobs_.begin(), jobs_.end(), params,
+                             JobToRequestParamsComparator());
   if (it != jobs_.end() && !(params < (*it).first->request_params()))
     return (*it).first;
   return nullptr;

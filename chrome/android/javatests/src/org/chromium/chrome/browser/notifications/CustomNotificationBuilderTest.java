@@ -69,16 +69,11 @@ public class CustomNotificationBuilderTest {
         Bitmap smallIcon =
                 BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chrome);
 
-        Bitmap largeIcon = Bitmap.createBitmap(
-                new int[] {Color.RED}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        largeIcon = largeIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
-
-        Bitmap actionIcon = Bitmap.createBitmap(
-                new int[] {Color.WHITE}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        actionIcon = actionIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+        Bitmap largeIcon = createIcon(Color.RED);
+        Bitmap actionIcon = createIcon(Color.WHITE);
 
         Notification notification = new CustomNotificationBuilder(context)
-                                            .setSmallIcon(R.drawable.ic_chrome)
+                                            .setSmallIconId(R.drawable.ic_chrome)
                                             .setLargeIcon(largeIcon)
                                             .setTitle("title")
                                             .setBody("body")
@@ -194,43 +189,73 @@ public class CustomNotificationBuilderTest {
     @SmallTest
     @Feature({"Browser", "Notifications"})
     @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
-    public void testPaintIcons() {
+    public void largeIconShouldBePaintedWithoutChange() {
         Context context = InstrumentationRegistry.getTargetContext();
 
-        Bitmap largeIcon = Bitmap.createBitmap(
-                new int[] {Color.RED}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        largeIcon = largeIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
-
-        Bitmap smallIcon = Bitmap.createBitmap(
-                new int[] {Color.RED}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        smallIcon = smallIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
-
-        Bitmap actionIcon = Bitmap.createBitmap(
-                new int[] {Color.RED}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        actionIcon = actionIcon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+        Bitmap largeIcon = createIcon(Color.RED);
 
         Notification notification = new CustomNotificationBuilder(context)
                                             .setChannelId(ChannelDefinitions.ChannelId.SITES)
                                             .setLargeIcon(largeIcon)
-                                            .setSmallIcon(smallIcon)
-                                            .addButtonAction(actionIcon, "button",
-                                                    createIntent(context, "ActionButton"))
+                                            .setSmallIconId(R.drawable.ic_chrome)
                                             .build();
 
-        // The large icon should be unchanged.
         assertLargeNotificationIconAsExpected(context, notification, largeIcon);
+    }
 
-        // Small icons should be painted white.
-        Bitmap whiteIcon = Bitmap.createBitmap(
-                new int[] {Color.WHITE}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
-        assertSmallNotificationIconAsExpected(context, notification, whiteIcon);
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Notifications"})
+    public void smallIconsArePaintedWhite() {
+        Context context = InstrumentationRegistry.getTargetContext();
 
-        // Action icons should be painted white.
+        Bitmap smallIcon = createIcon(Color.RED);
+
+        Notification notification = new CustomNotificationBuilder(context)
+                .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                .setSmallIconForContent(smallIcon)
+                .setStatusBarIcon(smallIcon)
+                .build();
+
+        // Note that small icon as a Bitmap should be present on pre-M, even though it can't
+        // be shown in the status bar
+        assertSmallNotificationIconAsExpected(context, notification, createIcon(Color.WHITE));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Notifications"})
+    public void actionIconsArePaintedWhite() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        Bitmap actionIcon = createIcon(Color.RED);
+
+        Notification notification = new CustomNotificationBuilder(context)
+                .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                .setSmallIconId(R.drawable.ic_chrome)
+                .addButtonAction(actionIcon, "button",
+                        createIntent(context, "ActionButton"))
+                .build();
+
+        Bitmap whiteIcon = createIcon(Color.WHITE);
+
         Assert.assertEquals(1, NotificationTestUtil.getActions(notification).length);
         View bigView = notification.bigContentView.apply(context, new LinearLayout(context));
         ImageView actionIconView = (ImageView) bigView.findViewById(R.id.button_icon);
         Bitmap actionIconBitmap = ((BitmapDrawable) actionIconView.getDrawable()).getBitmap();
         Assert.assertTrue(whiteIcon.sameAs(actionIconBitmap));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Notifications"})
+    @DisableIf.Build(sdk_is_greater_than = 22)
+    public void statusBarIconAsBitmapIsIgnoredIfNotSupported() {
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        NotificationBuilderBase notificationBuilder = new CustomNotificationBuilder(context)
+                .setStatusBarIcon(createIcon(Color.RED));
+
+        Assert.assertFalse(notificationBuilder.hasStatusBarIconBitmap());
     }
 
     @Test
@@ -440,5 +465,11 @@ public class CustomNotificationBuilderTest {
         char[] chars = new char[length];
         Arrays.fill(chars, character);
         return new String(chars);
+    }
+
+    private static Bitmap createIcon(int color) {
+        Bitmap icon = Bitmap.createBitmap(
+                new int[] {color}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
+        return icon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
     }
 }

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
-#include <string>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -13,7 +12,7 @@
 namespace blink {
 
 struct ScriptTestRun {
-  std::string text;
+  const char* const text;
   UScriptCode code;
 };
 
@@ -290,7 +289,7 @@ class ScriptRunIteratorTest : public testing::Test {
     String text(g_empty_string16_bit);
     Vector<ScriptExpectedRun> expect;
     for (auto& run : runs) {
-      text.append(String::FromUTF8(run.text.c_str()));
+      text.append(String::FromUTF8(run.text));
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
     ScriptRunIterator script_run_iterator(text.Characters16(), text.length());

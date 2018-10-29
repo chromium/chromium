@@ -267,6 +267,34 @@ TEST_F(AccessibilityHighlightControllerTest, CaretRingDrawnOnlyWithinBounds) {
   EXPECT_FALSE(focus_ring_controller->caret_layer_for_testing());
 }
 
+// Tests that a zero-width text caret still results in a visible highlight.
+// https://crbug.com/882762
+TEST_F(AccessibilityHighlightControllerTest, ZeroWidthCaretRingVisible) {
+  AccessibilityHighlightController highlight_controller;
+  MockTextInputClient text_input_client;
+  highlight_controller.HighlightCaret(true);
+
+  // Simulate a zero-width text caret.
+  gfx::Rect zero_width(0, 16);
+  text_input_client.SetCaretBounds(zero_width);
+  highlight_controller.OnCaretBoundsChanged(&text_input_client);
+
+  // Caret ring is created.
+  EXPECT_TRUE(Shell::Get()
+                  ->accessibility_focus_ring_controller()
+                  ->caret_layer_for_testing());
+
+  // Simulate an empty text caret.
+  gfx::Rect empty;
+  text_input_client.SetCaretBounds(empty);
+  highlight_controller.OnCaretBoundsChanged(&text_input_client);
+
+  // Caret ring is gone.
+  EXPECT_FALSE(Shell::Get()
+                   ->accessibility_focus_ring_controller()
+                   ->caret_layer_for_testing());
+}
+
 // Tests setting the caret bounds explicitly via AccessibilityController, rather
 // than via the input method observer. This path is used in production in mash.
 TEST_F(AccessibilityHighlightControllerTest, SetCaretBounds) {

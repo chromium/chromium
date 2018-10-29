@@ -33,8 +33,7 @@ void PopulateBlacklistSet(const SuggestionsBlacklist& blacklist_proto,
 void PopulateBlacklistProto(const std::set<std::string>& blacklist_set,
                             SuggestionsBlacklist* blacklist_proto) {
   blacklist_proto->Clear();
-  for (std::set<std::string>::const_iterator it = blacklist_set.begin();
-       it != blacklist_set.end(); ++it) {
+  for (auto it = blacklist_set.begin(); it != blacklist_set.end(); ++it) {
     blacklist_proto->add_urls(*it);
   }
 }

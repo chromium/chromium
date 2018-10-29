@@ -69,6 +69,8 @@ class ChromeDataUseAscriber : public DataUseAscriber {
   void OnBeforeUrlRequest(net::URLRequest* request) override;
   void OnUrlRequestCompleted(net::URLRequest* request, bool started) override;
   void OnUrlRequestDestroyed(net::URLRequest* request) override;
+  std::unique_ptr<net::NetworkDelegate> CreateNetworkDelegate(
+      std::unique_ptr<net::NetworkDelegate> wrapped_network_delegate) override;
   std::unique_ptr<URLRequestClassifier> CreateURLRequestClassifier()
       const override;
 
@@ -223,9 +225,9 @@ class ChromeDataUseAscriber : public DataUseAscriber {
   // Detects heavy pages. Can be null when the feature is disabled.
   std::unique_ptr<DataUseAscriber::PageLoadObserver> page_capping_observer_;
 
-  // True if the dtaa use ascriber should be disabled. The ascriber is enabled
+  // True if the data use ascriber should be disabled. The ascriber is disabled
   // by default.
-  bool disable_ascriber_ = false;
+  bool disable_ascriber_ = true;
 
   // Set of requests that are currently in-flight.
   std::unordered_set<const net::URLRequest*> requests_;

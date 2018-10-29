@@ -31,6 +31,7 @@ enum class ContextType {
   MUS_CLIENT,
   UNKNOWN,
   FOR_TESTING,
+  XR_COMPOSITING,
 };
 
 std::string ContextTypeToString(ContextType type);

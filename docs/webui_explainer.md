@@ -653,6 +653,38 @@ reduces the surface to only a single global (`cr.webUIResponse`) instead of
 many. It also makes per-request responses easier, which is helpful when multiple
 are in flight.
 
+
+## Security considerations
+
+Because WebUI pages are highly privileged, they are often targets for attack,
+since taking control of a WebUI page can sometimes be sufficient to escape
+Chrome's sandbox.  To make sure that the special powers granted to WebUI pages
+are safe, WebUI pages are restricted in what they can do:
+
+* WebUI pages cannot embed http/https resources or frames
+* WebUI pages cannot issue http/https fetches
+
+In the rare case that a WebUI page really needs to include web content, the safe
+way to do this is by using a `<webview>` tag.  Using a `<webview>` tag is more
+secure than using an iframe for multiple reasons, even if Site Isolation and
+out-of-process iframes keep the web content out of the privileged WebUI process.
+
+First, the content inside the `<webview>` tag has a much reduced attack surface,
+since it does not have a window reference to its embedder or any other frames.
+Only postMessage channel is supported, and this needs to be initiated by the
+embedder, not the guest.
+
+Second, the content inside the `<webview>` tag is hosted in a separate
+StoragePartition. Thus, cookies and other persistent storage for both the WebUI
+page and other browser tabs are inaccessible to it.
+
+This greater level of isolation makes it safer to load possibly untrustworthy or
+compromised web content, reducing the risk of sandbox escapes.
+
+For an example of switching from iframe to webview tag see
+https://crrev.com/c/710738.
+
+
 ## See also
 
 * WebUI's C++ code follows the [Chromium C++ styleguide](../styleguide/c++/c++.md).

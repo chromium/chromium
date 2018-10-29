@@ -9,14 +9,15 @@
 
 namespace blink {
 
-void BackgroundScheduler::PostOnBackgroundThread(const base::Location& location,
-                                                 CrossThreadClosure closure) {
+void background_scheduler::PostOnBackgroundThread(
+    const base::Location& location,
+    CrossThreadClosure closure) {
   PostOnBackgroundThreadWithTraits(
       location, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       std::move(closure));
 }
 
-void BackgroundScheduler::PostOnBackgroundThreadWithTraits(
+void background_scheduler::PostOnBackgroundThreadWithTraits(
     const base::Location& location,
     const base::TaskTraits& traits,
     CrossThreadClosure closure) {

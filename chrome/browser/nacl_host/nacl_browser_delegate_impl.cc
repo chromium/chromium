@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pepper_permission_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
@@ -62,10 +64,9 @@ NaClBrowserDelegateImpl::~NaClBrowserDelegateImpl() {
 
 void NaClBrowserDelegateImpl::ShowMissingArchInfobar(int render_process_id,
                                                      int render_view_id) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&CreateInfoBarOnUiThread, render_process_id,
-                     render_view_id));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(&CreateInfoBarOnUiThread,
+                                          render_process_id, render_view_id));
 }
 
 bool NaClBrowserDelegateImpl::DialogsAreSuppressed() {
@@ -144,8 +145,8 @@ bool NaClBrowserDelegateImpl::URLMatchesDebugPatterns(
     return true;
   }
   bool matches = false;
-  for (std::vector<URLPattern>::iterator iter = debug_patterns_.begin();
-       iter != debug_patterns_.end(); ++iter) {
+  for (auto iter = debug_patterns_.begin(); iter != debug_patterns_.end();
+       ++iter) {
     if (iter->MatchesURL(manifest_url)) {
       matches = true;
       break;

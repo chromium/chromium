@@ -26,6 +26,11 @@ class MockMediaSource {
                   const std::string& mimetype,
                   size_t initial_append_size,
                   bool initial_sequence_mode = false);
+  // Same as the constructor above, but use GetMimeTypeForFile() to get the mime
+  // type.
+  MockMediaSource(const std::string& filename,
+                  size_t initial_append_size,
+                  bool initial_sequence_mode = false);
   MockMediaSource(scoped_refptr<DecoderBuffer> data,
                   const std::string& mimetype,
                   size_t initial_append_size,

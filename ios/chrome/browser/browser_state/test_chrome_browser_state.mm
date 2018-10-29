@@ -133,8 +133,8 @@ TestChromeBrowserState::TestChromeBrowserState(
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& path,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-    const TestingFactories& testing_factories,
-    const RefcountedTestingFactories& refcounted_testing_factories)
+    TestingFactories testing_factories,
+    RefcountedTestingFactories refcounted_testing_factories)
     : ChromeBrowserState(base::CreateSequencedTaskRunnerWithTraits(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       state_path_(path),
@@ -145,11 +145,11 @@ TestChromeBrowserState::TestChromeBrowserState(
   Init();
 
   for (const auto& pair : testing_factories) {
-    pair.first->SetTestingFactory(this, pair.second);
+    pair.first->SetTestingFactory(this, std::move(pair.second));
   }
 
   for (const auto& pair : refcounted_testing_factories) {
-    pair.first->SetTestingFactory(this, pair.second);
+    pair.first->SetTestingFactory(this, std::move(pair.second));
   }
 }
 
@@ -294,7 +294,7 @@ TestChromeBrowserState::CreateIsolatedRequestContext(
 void TestChromeBrowserState::CreateWebDataService() {
   ignore_result(
       ios::WebDataServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, &BuildWebDataService));
+          this, base::BindRepeating(&BuildWebDataService)));
 
   // Wait a bit after creating the WebDataService to allow the initialisation
   // to complete (otherwise the TestChromeBrowserState may be destroyed before
@@ -311,7 +311,7 @@ void TestChromeBrowserState::CreateBookmarkModel(bool delete_file) {
   }
   ignore_result(
       ios::BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, &BuildBookmarkModel));
+          this, base::BindRepeating(&BuildBookmarkModel)));
 }
 
 bool TestChromeBrowserState::CreateHistoryService(bool delete_file) {
@@ -331,11 +331,12 @@ bool TestChromeBrowserState::CreateHistoryService(bool delete_file) {
   history::HistoryService* history_service =
       static_cast<history::HistoryService*>(
           ios::HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              this, &BuildHistoryService));
+              this, base::BindRepeating(&BuildHistoryService)));
   if (!history_service->Init(
           history::HistoryDatabaseParamsForPath(
               GetOriginalChromeBrowserState()->GetStatePath()))) {
-    ios::HistoryServiceFactory::GetInstance()->SetTestingFactory(this, nullptr);
+    ios::HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        this, BrowserStateKeyedServiceFactory::TestingFactory());
     return false;
   }
 
@@ -344,8 +345,8 @@ bool TestChromeBrowserState::CreateHistoryService(bool delete_file) {
   ios::InMemoryURLIndexFactory::GetInstance()->SetTestingFactory(
       this, ios::InMemoryURLIndexFactory::GetDefaultFactory());
   // Disable WebHistoryService by default, since it makes network requests.
-  ios::WebHistoryServiceFactory::GetInstance()->SetTestingFactory(this,
-                                                                  nullptr);
+  ios::WebHistoryServiceFactory::GetInstance()->SetTestingFactory(
+      this, BrowserStateKeyedServiceFactory::TestingFactory());
 
   return true;
 }
@@ -363,16 +364,17 @@ TestChromeBrowserState::Builder::~Builder() {}
 
 void TestChromeBrowserState::Builder::AddTestingFactory(
     BrowserStateKeyedServiceFactory* service_factory,
-    BrowserStateKeyedServiceFactory::TestingFactoryFunction cb) {
+    BrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
   DCHECK(!build_called_);
-  testing_factories_.push_back(std::make_pair(service_factory, cb));
+  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
 }
 
 void TestChromeBrowserState::Builder::AddTestingFactory(
     RefcountedBrowserStateKeyedServiceFactory* service_factory,
-    RefcountedBrowserStateKeyedServiceFactory::TestingFactoryFunction cb) {
+    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
   DCHECK(!build_called_);
-  refcounted_testing_factories_.push_back(std::make_pair(service_factory, cb));
+  refcounted_testing_factories_.emplace_back(service_factory,
+                                             std::move(testing_factory));
 }
 
 void TestChromeBrowserState::Builder::SetPath(const base::FilePath& path) {
@@ -389,7 +391,8 @@ void TestChromeBrowserState::Builder::SetPrefService(
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
+  build_called_ = true;
   return base::WrapUnique(new TestChromeBrowserState(
-      state_path_, std::move(pref_service_), testing_factories_,
-      refcounted_testing_factories_));
+      state_path_, std::move(pref_service_), std::move(testing_factories_),
+      std::move(refcounted_testing_factories_)));
 }

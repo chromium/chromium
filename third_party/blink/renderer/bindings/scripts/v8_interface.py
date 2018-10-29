@@ -287,6 +287,7 @@ def interface_context(interface, interfaces):
         'has_partial_interface': len(interface.partial_interfaces) > 0,
         'header_includes': header_includes,
         'interface_name': interface.name,
+        'internal_namespace': internal_namespace(interface),
         'is_array_buffer_or_view': is_array_buffer_or_view,
         'is_check_security': is_check_security,
         'is_event_target': is_event_target,
@@ -924,8 +925,8 @@ def overloads_context(interface, overloads):
                     break
                 runtime_determined_lengths.append(
                     (length, sorted(runtime_enabled_feature_names)))
-            function_length = ('%sV8Internal::%sMethodLength()'
-                               % (cpp_name_or_partial(interface), name))
+            function_length = ('%s::%sMethodLength()'
+                               % (internal_namespace(interface), name))
 
         # Check if all overloads with the longest required arguments list are
         # runtime enabled, in which case we need to have a runtime determined
@@ -947,8 +948,8 @@ def overloads_context(interface, overloads):
                     break
                 runtime_determined_maxargs.append(
                     (length, sorted(runtime_enabled_feature_names)))
-            maxarg = ('%sV8Internal::%sMethodMaxArg()'
-                      % (cpp_name_or_partial(interface), name))
+            maxarg = ('%s::%sMethodMaxArg()' %
+                      (internal_namespace(interface), name))
 
     # Check and fail if overloads disagree about whether the return type
     # is a Promise or not.
@@ -1353,6 +1354,11 @@ def common_value(dicts, key):
     that appears with the same value on all items in an overload set.
     """
     return common(dicts, lambda d: d.get(key))
+
+
+def internal_namespace(interface):
+    return (v8_utilities.to_snake_case(cpp_name_or_partial(interface)) +
+            '_v8_internal')
 
 
 ################################################################################

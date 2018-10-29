@@ -25,8 +25,12 @@ source_set("lib") {
     "device_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
+    "//device/usb/mojo",
+    "//device/usb/public/mojom",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",

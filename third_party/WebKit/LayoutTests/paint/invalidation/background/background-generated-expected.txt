@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow DIV",
           "rect": [8, 8, 100, 300],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     }

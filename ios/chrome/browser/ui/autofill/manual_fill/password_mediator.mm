@@ -29,6 +29,15 @@
 #error "This file requires ARC support."
 #endif
 
+namespace manual_fill {
+
+NSString* const ManagePasswordsAccessibilityIdentifier =
+    @"kManualFillManagePasswordsAccessibilityIdentifier";
+NSString* const OtherPasswordsAccessibilityIdentifier =
+    @"kManualFillOtherPasswordsAccessibilityIdentifier";
+
+}  // namespace manual_fill
+
 @interface ManualFillPasswordMediator ()<ManualFillContentDelegate,
                                          PasswordFetcherDelegate>
 // The |WebStateList| containing the active web state. Used to filter the list
@@ -166,16 +175,28 @@
     return;
   }
   if (self.isAllPasswordButtonEnabled) {
-    NSString* titleString = l10n_util::GetNSString(
+    NSString* otherPasswordsTitleString = l10n_util::GetNSString(
         IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
     __weak __typeof(self) weakSelf = self;
 
     auto otherPasswordsItem = [[ManualFillActionItem alloc]
-        initWithTitle:titleString
+        initWithTitle:otherPasswordsTitleString
                action:^{
                  [weakSelf.navigationDelegate openAllPasswordsList];
                }];
-    [self.consumer presentActions:@[ otherPasswordsItem ]];
+    otherPasswordsItem.accessibilityIdentifier =
+        manual_fill::OtherPasswordsAccessibilityIdentifier;
+
+    NSString* managePasswordsTitle =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
+    auto managePasswordsItem = [[ManualFillActionItem alloc]
+        initWithTitle:managePasswordsTitle
+               action:^{
+                 [weakSelf.navigationDelegate openPasswordSettings];
+               }];
+    managePasswordsItem.accessibilityIdentifier =
+        manual_fill::ManagePasswordsAccessibilityIdentifier;
+    [self.consumer presentActions:@[ otherPasswordsItem, managePasswordsItem ]];
   } else {
     [self.consumer presentActions:@[]];
   }

@@ -37,7 +37,7 @@ void Http2PriorityDependencies::OnStreamCreation(
   }
 
   id_priority_lists_[priority].push_back(std::make_pair(id, priority));
-  IdList::iterator it = id_priority_lists_[priority].end();
+  auto it = id_priority_lists_[priority].end();
   --it;
   entry_by_stream_id_[id] = it;
 }
@@ -56,11 +56,11 @@ bool Http2PriorityDependencies::PriorityLowerBound(spdy::SpdyPriority priority,
 
 bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
                                                IdList::iterator* parent) {
-  EntryMap::iterator entry = entry_by_stream_id_.find(id);
+  auto entry = entry_by_stream_id_.find(id);
   DCHECK(entry != entry_by_stream_id_.end());
 
   spdy::SpdyPriority priority = entry->second->second;
-  IdList::iterator curr = entry->second;
+  auto curr = entry->second;
   if (curr != id_priority_lists_[priority].begin()) {
     *parent = curr;
     --(*parent);
@@ -77,7 +77,7 @@ bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
 
 bool Http2PriorityDependencies::ChildOfStream(spdy::SpdyStreamId id,
                                               IdList::iterator* child) {
-  EntryMap::iterator entry = entry_by_stream_id_.find(id);
+  auto entry = entry_by_stream_id_.find(id);
   DCHECK(entry != entry_by_stream_id_.end());
 
   spdy::SpdyPriority priority = entry->second->second;
@@ -105,7 +105,7 @@ Http2PriorityDependencies::OnStreamUpdate(spdy::SpdyStreamId id,
   std::vector<DependencyUpdate> result;
   result.reserve(2);
 
-  EntryMap::iterator curr_entry = entry_by_stream_id_.find(id);
+  auto curr_entry = entry_by_stream_id_.find(id);
   if (curr_entry == entry_by_stream_id_.end()) {
     return result;
   }
@@ -154,10 +154,10 @@ Http2PriorityDependencies::OnStreamUpdate(spdy::SpdyStreamId id,
   }
 
   // Move to the new priority.
-  EntryMap::iterator old = entry_by_stream_id_.find(id);
+  auto old = entry_by_stream_id_.find(id);
   id_priority_lists_[old->second->second].erase(old->second);
   id_priority_lists_[new_priority].push_back(std::make_pair(id, new_priority));
-  IdList::iterator it = id_priority_lists_[new_priority].end();
+  auto it = id_priority_lists_[new_priority].end();
   --it;
   entry_by_stream_id_[id] = it;
 
@@ -165,11 +165,11 @@ Http2PriorityDependencies::OnStreamUpdate(spdy::SpdyStreamId id,
 }
 
 void Http2PriorityDependencies::OnStreamDestruction(spdy::SpdyStreamId id) {
-  EntryMap::iterator emit = entry_by_stream_id_.find(id);
+  auto emit = entry_by_stream_id_.find(id);
   if (emit == entry_by_stream_id_.end())
     return;
 
-  IdList::iterator it = emit->second;
+  auto it = emit->second;
   id_priority_lists_[it->second].erase(it);
   entry_by_stream_id_.erase(emit);
 }

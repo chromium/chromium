@@ -109,9 +109,8 @@ class MockProducerClient : public ProducerClient {
 
   size_t send_packet_count() const { return send_packet_count_; }
 
-  void CreateDataSourceInstance(
-      uint64_t id,
-      mojom::DataSourceConfigPtr data_source_config) override {
+  void StartDataSource(uint64_t id,
+                       mojom::DataSourceConfigPtr data_source_config) override {
     enabled_data_source_ = std::make_unique<TestDataSource>(
         this, send_packet_count_, data_source_config->trace_config,
         data_source_config->target_buffer);
@@ -121,9 +120,7 @@ class MockProducerClient : public ProducerClient {
     }
   }
 
-  void TearDownDataSourceInstance(
-      uint64_t id,
-      TearDownDataSourceInstanceCallback callback) override {
+  void StopDataSource(uint64_t id, StopDataSourceCallback callback) override {
     enabled_data_source_.reset();
 
     if (client_disabled_callback_) {

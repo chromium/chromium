@@ -112,103 +112,6 @@ namespace blink {
 
 using namespace HTMLNames;
 
-static inline LayoutObject* FirstChildInContinuation(
-    const LayoutInline& layout_object) {
-  LayoutBoxModelObject* r = layout_object.Continuation();
-
-  while (r) {
-    if (r->IsLayoutBlock())
-      return r;
-    if (LayoutObject* child = r->SlowFirstChild())
-      return child;
-    r = ToLayoutInline(r)->Continuation();
-  }
-
-  return nullptr;
-}
-
-static inline bool IsInlineWithContinuation(LayoutObject* object) {
-  if (!object->IsBoxModelObject())
-    return false;
-
-  LayoutBoxModelObject* layout_object = ToLayoutBoxModelObject(object);
-  if (!layout_object->IsLayoutInline())
-    return false;
-
-  return ToLayoutInline(layout_object)->Continuation();
-}
-
-static inline LayoutObject* FirstChildConsideringContinuation(
-    LayoutObject* layout_object) {
-  if (layout_object->IsLayoutNGListMarker()) {
-    // We don't care tree structure of list marker.
-    return nullptr;
-  }
-  LayoutObject* first_child = layout_object->SlowFirstChild();
-
-  // CSS first-letter pseudo element is handled as continuation. Returning it
-  // will result in duplicated elements.
-  if (first_child && first_child->IsText() &&
-      ToLayoutText(first_child)->IsTextFragment() &&
-      ToLayoutTextFragment(first_child)->GetFirstLetterPseudoElement())
-    return nullptr;
-
-  if (!first_child && IsInlineWithContinuation(layout_object))
-    first_child = FirstChildInContinuation(ToLayoutInline(*layout_object));
-
-  return first_child;
-}
-
-static inline LayoutInline* StartOfContinuations(LayoutObject* r) {
-  if (r->IsInlineElementContinuation()) {
-    return ToLayoutInline(r->GetNode()->GetLayoutObject());
-  }
-
-  // Blocks with a previous continuation always have a next continuation
-  if (r->IsLayoutBlockFlow() &&
-      ToLayoutBlockFlow(r)->InlineElementContinuation())
-    return ToLayoutInline(ToLayoutBlockFlow(r)
-                              ->InlineElementContinuation()
-                              ->GetNode()
-                              ->GetLayoutObject());
-
-  return nullptr;
-}
-
-static inline LayoutObject* EndOfContinuations(LayoutObject* layout_object) {
-  LayoutObject* prev = layout_object;
-  LayoutObject* cur = layout_object;
-
-  if (!cur->IsLayoutInline() && !cur->IsLayoutBlockFlow())
-    return layout_object;
-
-  while (cur) {
-    prev = cur;
-    if (cur->IsLayoutInline()) {
-      cur = ToLayoutInline(cur)->InlineElementContinuation();
-      DCHECK(cur || !ToLayoutInline(prev)->Continuation());
-    } else {
-      cur = ToLayoutBlockFlow(cur)->InlineElementContinuation();
-    }
-  }
-
-  return prev;
-}
-
-static inline bool LastChildHasContinuation(LayoutObject* layout_object) {
-  LayoutObject* last_child = layout_object->SlowLastChild();
-  return last_child && IsInlineWithContinuation(last_child);
-}
-
-static LayoutBoxModelObject* NextContinuation(LayoutObject* layout_object) {
-  DCHECK(layout_object);
-  if (layout_object->IsLayoutInline() && !layout_object->IsAtomicInlineLevel())
-    return ToLayoutInline(layout_object)->Continuation();
-  if (layout_object->IsLayoutBlockFlow())
-    return ToLayoutBlockFlow(layout_object)->InlineElementContinuation();
-  return nullptr;
-}
-
 AXLayoutObject::AXLayoutObject(LayoutObject* layout_object,
                                AXObjectCacheImpl& ax_object_cache)
     : AXNodeObject(layout_object->GetNode(), ax_object_cache),
@@ -629,6 +532,30 @@ static bool HasLineBox(const LayoutBlockFlow& block_flow) {
   return false;
 }
 
+// Is this the anonymous placeholder for a text control?
+bool AXLayoutObject::IsPlaceholder() const {
+  AXObject* parent_object = ParentObject();
+  if (!parent_object)
+    return false;
+
+  LayoutObject* parent_layout_object = parent_object->GetLayoutObject();
+  if (!parent_layout_object || !parent_layout_object->IsTextControl())
+    return false;
+
+  LayoutTextControl* layout_text_control =
+      ToLayoutTextControl(parent_layout_object);
+  DCHECK(layout_text_control);
+
+  TextControlElement* text_control_element =
+      layout_text_control->GetTextControlElement();
+  if (!text_control_element)
+    return false;
+
+  HTMLElement* placeholder_element = text_control_element->PlaceholderElement();
+
+  return GetElement() == static_cast<Element*>(placeholder_element);
+}
+
 bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
 #if DCHECK_IS_ON()
@@ -648,6 +575,11 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return true;
 
   if (layout_object_->IsAnonymousBlock() && !IsEditable())
+    return true;
+
+  // Ignore continuations, since those are essentially duplicate copies
+  // of inline nodes with blocks inside.
+  if (layout_object_->IsElementContinuation())
     return true;
 
   // If this element is within a parent that cannot have children, it should not
@@ -687,8 +619,18 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
 
   // Make sure renderers with layers stay in the tree.
   if (GetLayoutObject() && GetLayoutObject()->HasLayer() && GetNode() &&
-      GetNode()->hasChildren())
+      GetNode()->hasChildren()) {
+    if (IsPlaceholder()) {
+      // Placeholder is already exposed via AX attributes, do not expose as
+      // child of text input. Therefore, if there is a child of a text input,
+      // it will contain the value.
+      if (ignored_reasons)
+        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+      return true;
+    }
+
     return false;
+  }
 
   // Find out if this element is inside of a label element.  If so, it may be
   // ignored because it's the label for a checkbox or radio button.
@@ -722,8 +664,8 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
 
   // A click handler might be placed on an otherwise ignored non-empty block
   // element, e.g. a div. We shouldn't ignore such elements because if an AT
-  // sees the |AXDefaultActionVerb::kClickAncestor|, it will look for the
-  // clickable ancestor and it expects to find one.
+  // sees the |ax::mojom::DefaultActionVerb::kClickAncestor|, it will look for
+  // the clickable ancestor and it expects to find one.
   if (IsClickable())
     return false;
 
@@ -818,7 +760,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return false;
 
   // if this element has aria attributes on it, it should not be ignored.
-  if (SupportsARIAAttributes())
+  if (HasGlobalARIAAttribute())
     return false;
 
   if (IsImage())
@@ -871,6 +813,14 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (layout_object_->IsPositioned())
     return false;
 
+  // Inner editor element of editable area with empty text provides bounds
+  // used to compute the character extent for index 0. This is the same as
+  // what the caret's bounds would be if the editable area is focused.
+  if (ParentObject() && ParentObject()->GetLayoutObject() &&
+      ParentObject()->GetLayoutObject()->IsTextControl()) {
+    return false;
+  }
+
   // Ignore layout objects that are block flows with inline children. These
   // are usually dummy layout objects that pad out the tree, but there are
   // some exceptions below.
@@ -920,7 +870,7 @@ bool AXLayoutObject::CanIgnoreSpaceNextTo(LayoutObject* layout,
     LayoutText* layout_text = ToLayoutText(layout);
     if (layout_text->HasEmptyText())
       return false;
-    if (layout_text->GetText().Impl()->ContainsOnlyWhitespace())
+    if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
       return true;
     auto adjacent_char =
         is_after ? layout_text->FirstCharacterAfterWhitespaceCollapsing()
@@ -1153,7 +1103,8 @@ String AXLayoutObject::ImageDataUrl(const IntSize& max_size) const {
   SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
                                        kUnpremul_SkAlphaType);
   size_t row_bytes = info.minRowBytes();
-  Vector<char> pixel_storage(info.computeByteSize(row_bytes));
+  Vector<char> pixel_storage(
+      SafeCast<wtf_size_t>(info.computeByteSize(row_bytes)));
   SkPixmap pixmap(info, pixel_storage.data(), row_bytes);
   if (!SkImage::MakeFromBitmap(bitmap)->readPixels(pixmap, 0, 0))
     return String();
@@ -1206,7 +1157,7 @@ String AXLayoutObject::GetText() const {
   return AXNodeObject::GetText();
 }
 
-AccessibilityTextDirection AXLayoutObject::GetTextDirection() const {
+ax::mojom::TextDirection AXLayoutObject::GetTextDirection() const {
   if (!GetLayoutObject())
     return AXNodeObject::GetTextDirection();
 
@@ -1217,23 +1168,23 @@ AccessibilityTextDirection AXLayoutObject::GetTextDirection() const {
   if (style->IsHorizontalWritingMode()) {
     switch (style->Direction()) {
       case TextDirection::kLtr:
-        return kAccessibilityTextDirectionLTR;
+        return ax::mojom::TextDirection::kLtr;
       case TextDirection::kRtl:
-        return kAccessibilityTextDirectionRTL;
+        return ax::mojom::TextDirection::kRtl;
     }
   } else {
     switch (style->Direction()) {
       case TextDirection::kLtr:
-        return kAccessibilityTextDirectionTTB;
+        return ax::mojom::TextDirection::kTtb;
       case TextDirection::kRtl:
-        return kAccessibilityTextDirectionBTT;
+        return ax::mojom::TextDirection::kBtt;
     }
   }
 
   return AXNodeObject::GetTextDirection();
 }
 
-AXTextPosition AXLayoutObject::GetTextPosition() const {
+ax::mojom::TextPosition AXLayoutObject::GetTextPosition() const {
   if (!GetLayoutObject())
     return AXNodeObject::GetTextPosition();
 
@@ -1252,9 +1203,9 @@ AXTextPosition AXLayoutObject::GetTextPosition() const {
     case EVerticalAlign::kLength:
       return AXNodeObject::GetTextPosition();
     case EVerticalAlign::kSub:
-      return kAXTextPositionSubscript;
+      return ax::mojom::TextPosition::kSubscript;
     case EVerticalAlign::kSuper:
-      return kAXTextPositionSuperscript;
+      return ax::mojom::TextPosition::kSuperscript;
   }
 }
 
@@ -1325,7 +1276,7 @@ void AXLayoutObject::LoadInlineTextBoxes() {
 
 static bool ShouldUseLayoutNG(const LayoutObject& layout_object) {
   return (layout_object.IsLayoutInline() || layout_object.IsText()) &&
-         layout_object.EnclosingNGBlockFlow();
+         layout_object.ContainingNGBlockFlow();
 }
 
 // Note: |NextOnLineInternalNG()| returns null when fragment for |layout_object|
@@ -1540,7 +1491,7 @@ String AXLayoutObject::StringValue() const {
 String AXLayoutObject::TextAlternative(bool recursive,
                                        bool in_aria_labelled_by_traversal,
                                        AXObjectSet& visited,
-                                       AXNameFrom& name_from,
+                                       ax::mojom::NameFrom& name_from,
                                        AXRelatedObjectVector* related_objects,
                                        NameSources* name_sources) const {
   if (layout_object_) {
@@ -1581,7 +1532,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
     }
 
     if (found_text_alternative) {
-      name_from = kAXNameFromContents;
+      name_from = ax::mojom::NameFrom::kContents;
       if (name_sources) {
         name_sources->push_back(NameSource(false));
         name_sources->back().type = name_from;
@@ -1610,24 +1561,24 @@ void AXLayoutObject::AriaDescribedbyElements(
                                        describedby);
 }
 
-AXHasPopup AXLayoutObject::HasPopup() const {
+ax::mojom::HasPopup AXLayoutObject::HasPopup() const {
   const AtomicString& has_popup =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kHasPopUp);
   if (!has_popup.IsNull()) {
     if (EqualIgnoringASCIICase(has_popup, "false"))
-      return kAXHasPopupFalse;
+      return ax::mojom::HasPopup::kFalse;
 
     if (EqualIgnoringASCIICase(has_popup, "listbox"))
-      return kAXHasPopupListbox;
+      return ax::mojom::HasPopup::kListbox;
 
     if (EqualIgnoringASCIICase(has_popup, "tree"))
-      return kAXHasPopupTree;
+      return ax::mojom::HasPopup::kTree;
 
     if (EqualIgnoringASCIICase(has_popup, "grid"))
-      return kAXHasPopupGrid;
+      return ax::mojom::HasPopup::kGrid;
 
     if (EqualIgnoringASCIICase(has_popup, "dialog"))
-      return kAXHasPopupDialog;
+      return ax::mojom::HasPopup::kDialog;
 
     // To provide backward compatibility with ARIA 1.0 content,
     // user agents MUST treat an aria-haspopup value of true
@@ -1635,13 +1586,13 @@ AXHasPopup AXLayoutObject::HasPopup() const {
     // And unknown value also return menu too.
     if (EqualIgnoringASCIICase(has_popup, "true") ||
         EqualIgnoringASCIICase(has_popup, "menu") || !has_popup.IsEmpty())
-      return kAXHasPopupMenu;
+      return ax::mojom::HasPopup::kMenu;
   }
 
   // ARIA 1.1 default value of haspopup for combobox is "listbox".
   if (RoleValue() == ax::mojom::Role::kComboBoxMenuButton ||
       RoleValue() == ax::mojom::Role::kTextFieldWithComboBox)
-    return kAXHasPopupListbox;
+    return ax::mojom::HasPopup::kListbox;
 
   return AXObject::HasPopup();
 }
@@ -1787,6 +1738,230 @@ AXObject* AXLayoutObject::ElementAccessibilityHitTest(
 }
 
 //
+// Low-level accessibility tree exploration, only for use within the
+// accessibility module.
+//
+// LAYOUT TREE WALKING ALGORITHM
+//
+// The fundamental types of elements in the Blink layout tree are block
+// elements and inline elements. It can get a little confusing when
+// an inline element has both inline and block children, for example:
+//
+//   <a href="#">
+//     Before Block
+//     <div>
+//       In Block
+//     </div>
+//     Outside Block
+//   </a>
+//
+// Blink wants to maintain the invariant that all of the children of a node
+// are either all block or all inline, so it creates three anonymous blocks:
+//
+//      #1 LayoutBlockFlow (anonymous)
+//        #2 LayoutInline A continuation=#4
+//          #3 LayoutText "Before Block"
+//      #4 LayoutBlockFlow (anonymous) continuation=#8
+//        #5 LayoutBlockFlow DIV
+//          #6 LayoutText "In Block"
+//      #7 LayoutBlockFlow (anonymous)
+//        #8 LayoutInline A is_continuation
+//          #9 LayoutText "Outside Block"
+//
+// For a good explanation of why this is done, see this blog entry. It's
+// describing WebKit in 2007, but the fundamentals haven't changed much.
+//
+// https://webkit.org/blog/115/webcore-rendering-ii-blocks-and-inlines/
+//
+// Now, it's important to understand that we couldn't just use the layout
+// tree as the accessibility tree as-is, because the div is no longer
+// inside the link! In fact, the link has been split into two different
+// nodes, #2 and #8. Luckily, the layout tree contains continuations to
+// help us untangle situations like this.
+//
+// Here's the algorithm we use to walk the layout tree in order to build
+// the accessibility tree:
+//
+// 1. When computing the first child or next sibling of a node, skip over any
+//    LayoutObjects that are continuations.
+//
+// 2. When computing the next sibling of a node and there are no more siblings
+//    in the layout tree, see if the parent node has a continuation, and if
+//    so follow it and make that the next sibling.
+//
+// 3. When computing the first child of a node that has a continuation but
+//    no children in the layout tree, the continuation is the first child.
+//
+// The end result is this tree, which we use as the basis for the
+// accessibility tree.
+//
+//      #1 LayoutBlockFlow (anonymous)
+//        #2 LayoutInline A
+//          #3 LayoutText "Before Block"
+//          #4 LayoutBlockFlow (anonymous)
+//            #5 LayoutBlockFlow DIV
+//              #6 LayoutText "In Block"
+//            #8 LayoutInline A is_continuation
+//              #9 LayoutText "Outside Block"
+//      #7 LayoutBlockFlow (anonymous)
+//
+// This algorithm results in an accessibility tree that preserves containment
+// (i.e. the contents of the link in the example above are descendants of the
+// link node) while including all of the rich layout detail from the layout
+// tree.
+//
+// There are just a couple of other corner cases to walking the layout tree:
+//
+// * Walk tables in table order (thead, tbody, tfoot), which may not match
+//   layout order.
+// * Skip CSS first-letter nodes.
+//
+
+// Given a layout object, return the start of the continuation chain.
+static inline LayoutInline* StartOfContinuations(LayoutObject* layout_object) {
+  // See LAYOUT TREE WALKING ALGORITHM, above, for more context as to why
+  // we need to do this.
+
+  // For inline elements, if it's a continuation, the start of the chain
+  // is always the primary layout object associated with the node.
+  if (layout_object->IsInlineElementContinuation())
+    return ToLayoutInline(layout_object->GetNode()->GetLayoutObject());
+
+  // Blocks with a previous continuation always have a next continuation,
+  // so we can get the next continuation and do the same trick to get
+  // the primary layout object associated with the node.
+  if (layout_object->IsLayoutBlockFlow() &&
+      ToLayoutBlockFlow(layout_object)->InlineElementContinuation()) {
+    LayoutInline* result = ToLayoutInline(ToLayoutBlockFlow(layout_object)
+                                              ->InlineElementContinuation()
+                                              ->GetNode()
+                                              ->GetLayoutObject());
+    DCHECK_NE(result, layout_object);
+    return result;
+  }
+
+  return nullptr;
+}
+
+// See LAYOUT TREE WALKING ALGORITHM, above, for details.
+static inline LayoutObject* ParentLayoutObject(LayoutObject* layout_object) {
+  if (!layout_object)
+    return nullptr;
+
+  // If the node is a continuation, the parent is the start of the continuation
+  // chain.  See LAYOUT TREE WALKING ALGORITHM, above, for more context as to
+  // why we need to do this.
+  LayoutObject* start_of_conts = StartOfContinuations(layout_object);
+  if (start_of_conts)
+    return start_of_conts;
+
+  // Otherwise just return the parent in the layout tree.
+  return layout_object->Parent();
+}
+
+// See LAYOUT TREE WALKING ALGORITHM, above, for details.
+// Return true if this layout object is the continuation of some other
+// layout object.
+static bool IsContinuation(LayoutObject* layout_object) {
+  if (layout_object->IsElementContinuation())
+    return true;
+
+  if (layout_object->IsAnonymousBlock() && layout_object->IsLayoutBlockFlow() &&
+      ToLayoutBlockFlow(layout_object)->Continuation())
+    return true;
+
+  return false;
+}
+
+// See LAYOUT TREE WALKING ALGORITHM, above, for details.
+// Return the continuation of this layout object, or nullptr if it doesn't
+// have one.
+LayoutObject* GetContinuation(LayoutObject* layout_object) {
+  if (layout_object->IsLayoutInline())
+    return ToLayoutInline(layout_object)->Continuation();
+
+  if (layout_object->IsLayoutBlockFlow())
+    return ToLayoutBlockFlow(layout_object)->Continuation();
+
+  return nullptr;
+}
+
+// See LAYOUT TREE WALKING ALGORITHM, above, for details.
+AXObject* AXLayoutObject::RawFirstChild() const {
+  if (!layout_object_)
+    return nullptr;
+
+  // Walk sections of a table (thead, tbody, tfoot) in visual order.
+  // Note: always call RecalcSectionsIfNeeded() before accessing
+  // the sections of a LayoutTable.
+  if (layout_object_->IsTable()) {
+    LayoutTable* table = ToLayoutTable(layout_object_);
+    table->RecalcSectionsIfNeeded();
+    return AXObjectCache().GetOrCreate(table->TopSection());
+  }
+
+  LayoutObject* first_child = layout_object_->SlowFirstChild();
+
+  // CSS first-letter pseudo element is handled as continuation. Returning it
+  // will result in duplicated elements.
+  if (first_child && first_child->IsText() &&
+      ToLayoutText(first_child)->IsTextFragment() &&
+      ToLayoutTextFragment(first_child)->GetFirstLetterPseudoElement())
+    return nullptr;
+
+  // Skip over continuations.
+  while (first_child && IsContinuation(first_child))
+    first_child = first_child->NextSibling();
+
+  // If there's a first child that's not a continuation, return that.
+  if (first_child)
+    return AXObjectCache().GetOrCreate(first_child);
+
+  // Finally check if this object has no children but it has a continuation
+  // itself - and if so, it's the first child.
+  LayoutObject* continuation = GetContinuation(layout_object_);
+  if (continuation)
+    return AXObjectCache().GetOrCreate(continuation);
+
+  return nullptr;
+}
+
+// See LAYOUT TREE WALKING ALGORITHM, above, for details.
+AXObject* AXLayoutObject::RawNextSibling() const {
+  if (!layout_object_)
+    return nullptr;
+
+  // Walk sections of a table (thead, tbody, tfoot) in visual order.
+  if (layout_object_->IsTableSection()) {
+    LayoutTableSection* section = ToLayoutTableSection(layout_object_);
+    return AXObjectCache().GetOrCreate(
+        section->Table()->SectionBelow(section, kSkipEmptySections));
+  }
+
+  // If it's not a continuation, just get the next sibling from the
+  // layout tree, skipping over continuations.
+  if (!IsContinuation(layout_object_)) {
+    LayoutObject* next_sibling = layout_object_->NextSibling();
+    while (next_sibling && IsContinuation(next_sibling))
+      next_sibling = next_sibling->NextSibling();
+
+    if (next_sibling)
+      return AXObjectCache().GetOrCreate(next_sibling);
+  }
+
+  // If we've run out of siblings, check to see if the parent of this
+  // object has a continuation, and if so, follow it.
+  LayoutObject* parent = layout_object_->Parent();
+  if (parent) {
+    LayoutObject* continuation = GetContinuation(parent);
+    if (continuation)
+      return AXObjectCache().GetOrCreate(continuation);
+  }
+
+  return nullptr;
+}
+
+//
 // High-level accessibility tree access.
 //
 
@@ -1806,9 +1981,9 @@ AXObject* AXLayoutObject::ComputeParent() const {
       return parent;
   }
 
-  LayoutObject* parent_obj = LayoutParentObject();
-  if (parent_obj)
-    return AXObjectCache().GetOrCreate(parent_obj);
+  LayoutObject* parent_layout_obj = ParentLayoutObject(layout_object_);
+  if (parent_layout_obj)
+    return AXObjectCache().GetOrCreate(parent_layout_obj);
 
   // A WebArea's parent should be the page popup owner, if any, otherwise null.
   if (IsWebArea()) {
@@ -1834,9 +2009,9 @@ AXObject* AXLayoutObject::ComputeParentIfExists() const {
       return parent;
   }
 
-  LayoutObject* parent_obj = LayoutParentObject();
-  if (parent_obj)
-    return AXObjectCache().Get(parent_obj);
+  LayoutObject* parent_layout_obj = ParentLayoutObject(layout_object_);
+  if (parent_layout_obj)
+    return AXObjectCache().Get(parent_layout_obj);
 
   // A WebArea's parent should be the page popup owner, if any, otherwise null.
   if (IsWebArea()) {
@@ -1845,95 +2020,6 @@ AXObject* AXLayoutObject::ComputeParentIfExists() const {
   }
 
   return nullptr;
-}
-
-//
-// Low-level accessibility tree exploration, only for use within the
-// accessibility module.
-//
-
-AXObject* AXLayoutObject::RawFirstChild() const {
-  if (!layout_object_)
-    return nullptr;
-
-  // Walk sections of a table (thead, tbody, tfoot) in visual order.
-  // Note: always call RecalcSectionsIfNeeded() before accessing
-  // the sections of a LayoutTable.
-  if (layout_object_->IsTable()) {
-    LayoutTable* table = ToLayoutTable(layout_object_);
-    table->RecalcSectionsIfNeeded();
-    return AXObjectCache().GetOrCreate(table->TopSection());
-  }
-
-  LayoutObject* first_child = FirstChildConsideringContinuation(layout_object_);
-
-  if (!first_child)
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(first_child);
-}
-
-AXObject* AXLayoutObject::RawNextSibling() const {
-  if (!layout_object_)
-    return nullptr;
-
-  // Walk sections of a table (thead, tbody, tfoot) in visual order.
-  if (layout_object_->IsTableSection()) {
-    LayoutTableSection* section = ToLayoutTableSection(layout_object_);
-    return AXObjectCache().GetOrCreate(
-        section->Table()->SectionBelow(section, kSkipEmptySections));
-  }
-
-  LayoutObject* next_sibling = nullptr;
-
-  LayoutInline* inline_continuation =
-      layout_object_->IsLayoutBlockFlow()
-          ? ToLayoutBlockFlow(layout_object_)->InlineElementContinuation()
-          : nullptr;
-  if (inline_continuation) {
-    // Case 1: node is a block and has an inline continuation. Next sibling is
-    // the inline continuation's first child.
-    next_sibling = FirstChildConsideringContinuation(inline_continuation);
-  } else if (layout_object_->IsAnonymousBlock() &&
-             LastChildHasContinuation(layout_object_)) {
-    // Case 2: Anonymous block parent of the start of a continuation - skip all
-    // the way to after the parent of the end, since everything in between will
-    // be linked up via the continuation.
-    LayoutObject* last_parent =
-        EndOfContinuations(ToLayoutBlock(layout_object_)->LastChild())
-            ->Parent();
-    while (LastChildHasContinuation(last_parent))
-      last_parent = EndOfContinuations(last_parent->SlowLastChild())->Parent();
-    next_sibling = last_parent->NextSibling();
-  } else if (LayoutObject* ns = layout_object_->NextSibling()) {
-    // Case 3: node has an actual next sibling
-    next_sibling = ns;
-  } else if (IsInlineWithContinuation(layout_object_)) {
-    // Case 4: node is an inline with a continuation. Next sibling is the next
-    // sibling of the end of the continuation chain.
-    next_sibling = EndOfContinuations(layout_object_)->NextSibling();
-  } else if (layout_object_->Parent() &&
-             IsInlineWithContinuation(layout_object_->Parent())) {
-    // Case 5: node has no next sibling, and its parent is an inline with a
-    // continuation.
-    LayoutObject* continuation =
-        ToLayoutInline(layout_object_->Parent())->Continuation();
-
-    if (continuation->IsLayoutBlock()) {
-      // Case 5a: continuation is a block - in this case the block itself is the
-      // next sibling.
-      next_sibling = continuation;
-    } else {
-      // Case 5b: continuation is an inline - in this case the inline's first
-      // child is the next sibling.
-      next_sibling = FirstChildConsideringContinuation(continuation);
-    }
-  }
-
-  if (!next_sibling)
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(next_sibling);
 }
 
 void AXLayoutObject::AddChildren() {
@@ -2992,25 +3078,25 @@ unsigned AXLayoutObject::RowSpan() const {
   return cell->ResolvedRowSpan();
 }
 
-SortDirection AXLayoutObject::GetSortDirection() const {
+ax::mojom::SortDirection AXLayoutObject::GetSortDirection() const {
   if (RoleValue() != ax::mojom::Role::kRowHeader &&
       RoleValue() != ax::mojom::Role::kColumnHeader)
-    return kSortDirectionUndefined;
+    return ax::mojom::SortDirection::kNone;
 
   const AtomicString& aria_sort =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kSort);
   if (aria_sort.IsEmpty())
-    return kSortDirectionUndefined;
+    return ax::mojom::SortDirection::kNone;
   if (EqualIgnoringASCIICase(aria_sort, "none"))
-    return kSortDirectionNone;
+    return ax::mojom::SortDirection::kNone;
   if (EqualIgnoringASCIICase(aria_sort, "ascending"))
-    return kSortDirectionAscending;
+    return ax::mojom::SortDirection::kAscending;
   if (EqualIgnoringASCIICase(aria_sort, "descending"))
-    return kSortDirectionDescending;
+    return ax::mojom::SortDirection::kDescending;
 
   // Technically, illegal values should be exposed as is, but this does
   // not seem to be worth the implementation effort at this time.
-  return kSortDirectionOther;
+  return ax::mojom::SortDirection::kOther;
 }
 
 static ax::mojom::Role DecideRoleFromSibling(LayoutTableCell* sibling_cell) {
@@ -3253,57 +3339,6 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
   }
 
   return nullptr;
-}
-
-LayoutObject* AXLayoutObject::LayoutParentObject() const {
-  if (!layout_object_)
-    return nullptr;
-
-  LayoutObject* start_of_conts = layout_object_->IsLayoutBlockFlow()
-                                     ? StartOfContinuations(layout_object_)
-                                     : nullptr;
-  if (start_of_conts) {
-    // Case 1: node is a block and is an inline's continuation. Parent
-    // is the start of the continuation chain.
-    return start_of_conts;
-  }
-
-  LayoutObject* parent = layout_object_->Parent();
-  start_of_conts = parent && parent->IsLayoutInline()
-                       ? StartOfContinuations(parent)
-                       : nullptr;
-  if (start_of_conts) {
-    // Case 2: node's parent is an inline which is some node's continuation;
-    // parent is the earliest node in the continuation chain.
-    return start_of_conts;
-  }
-
-  LayoutObject* first_child = parent ? parent->SlowFirstChild() : nullptr;
-  if (first_child && first_child->GetNode()) {
-    // Case 3: The first sibling is the beginning of a continuation chain. Find
-    // the origin of that continuation.  Get the node's layoutObject and follow
-    // that continuation chain until the first child is found.
-    for (LayoutObject* node_layout_first_child =
-             first_child->GetNode()->GetLayoutObject();
-         node_layout_first_child != first_child;
-         node_layout_first_child = first_child->GetNode()->GetLayoutObject()) {
-      for (LayoutObject* conts_test = node_layout_first_child; conts_test;
-           conts_test = NextContinuation(conts_test)) {
-        if (conts_test == first_child) {
-          parent = node_layout_first_child->Parent();
-          break;
-        }
-      }
-      LayoutObject* new_first_child = parent->SlowFirstChild();
-      if (first_child == new_first_child)
-        break;
-      first_child = new_first_child;
-      if (!first_child->GetNode())
-        break;
-    }
-  }
-
-  return parent;
 }
 
 bool AXLayoutObject::IsSVGImage() const {

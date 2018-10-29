@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
@@ -33,9 +32,6 @@ class UnifiedSystemTrayTest : public AshTestBase {
 };
 
 TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
-  if (!features::IsSystemTrayUnifiedEnabled())
-    return;
-
   // The volume popup is not visible initially.
   EXPECT_FALSE(IsSliderBubbleShown());
 

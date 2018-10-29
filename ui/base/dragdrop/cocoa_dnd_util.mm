@@ -37,7 +37,7 @@ BOOL PopulateURLAndTitleFromPasteboard(GURL* url,
   // It's possible that no URLs were actually provided!
   if (![url_array count])
     return NO;
-  NSString* url_string = [url_array objectAtIndex:0];
+  NSString* url_string = url_array[0];
   if ([url_string length]) {
     // Check again just to make sure to not assign NULL into a std::string,
     // which throws an exception.
@@ -46,7 +46,7 @@ BOOL PopulateURLAndTitleFromPasteboard(GURL* url,
       *url = GURL(utf8_url);
       // Extra paranoia check.
       if (title && [title_array count])
-        *title = base::SysNSStringToUTF16([title_array objectAtIndex:0]);
+        *title = base::SysNSStringToUTF16(title_array[0]);
     }
   }
   return YES;

@@ -24,8 +24,7 @@ using ::base::SharedMemory;
 
 namespace gpu {
 
-TransferBufferManager::TransferBufferManager(
-    gles2::MemoryTracker* memory_tracker)
+TransferBufferManager::TransferBufferManager(MemoryTracker* memory_tracker)
     : shared_memory_bytes_allocated_(0), memory_tracker_(memory_tracker) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.

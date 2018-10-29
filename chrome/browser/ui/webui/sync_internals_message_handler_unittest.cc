@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -114,10 +115,11 @@ class SyncInternalsMessageHandlerTest : public ::testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
     test_sync_service_ = static_cast<TestSyncService*>(
         ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            &profile_, &BuildTestSyncService));
+            &profile_, base::BindRepeating(&BuildTestSyncService)));
     fake_user_event_service_ = static_cast<FakeUserEventService*>(
         browser_sync::UserEventServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(&profile_, &BuildFakeUserEventService));
+            ->SetTestingFactoryAndUse(
+                &profile_, base::BindRepeating(&BuildFakeUserEventService)));
     handler_.reset(new TestableSyncInternalsMessageHandler(
         &web_ui_,
         base::BindRepeating(
@@ -257,8 +259,8 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(profile(),
-                                                              nullptr);
+  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   ListValue empty_list;
   handler()->HandleRegisterForEvents(&empty_list);
@@ -321,8 +323,8 @@ TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfoSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(profile(),
-                                                              nullptr);
+  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   handler()->AllowJavascriptForTesting();
   handler()->OnStateChanged(nullptr);

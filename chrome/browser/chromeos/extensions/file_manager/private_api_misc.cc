@@ -15,6 +15,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/i18n/encoding_detection.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,8 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -54,8 +54,6 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/zoom/page_zoom.h"
 #include "content/public/browser/web_contents.h"
@@ -65,6 +63,8 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "google_apis/drive/auth_service.h"
+#include "net/base/hex_utils.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/common/fileapi/file_system_types.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -356,24 +356,22 @@ bool FileManagerPrivateRequestWebStoreAccessTokenFunction::RunAsync() {
   std::vector<std::string> scopes;
   scopes.emplace_back(kCWSScope);
 
-  ProfileOAuth2TokenService* oauth_service =
-      ProfileOAuth2TokenServiceFactory::GetForProfile(GetProfile());
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
 
-  if (!oauth_service) {
+  if (!identity_manager) {
     drive::EventLogger* logger = file_manager::util::GetLogger(GetProfile());
     if (logger) {
       logger->Log(logging::LOG_ERROR,
-                  "CWS OAuth token fetch failed. OAuth2TokenService can't "
+                  "CWS Access token fetch failed. IdentityManager can't "
                   "be retrieved.");
     }
     SetResult(std::make_unique<base::Value>());
     return false;
   }
 
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfile(GetProfile());
   auth_service_ = std::make_unique<google_apis::AuthService>(
-      oauth_service, signin_manager->GetAuthenticatedAccountId(),
+      identity_manager, identity_manager->GetPrimaryAccountId(),
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       scopes);
@@ -645,8 +643,9 @@ void FileManagerPrivateConfigureVolumeFunction::OnCompleted(
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateIsCrostiniEnabledFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      IsCrostiniEnabled(Profile::FromBrowserContext(browser_context())))));
+  return RespondNow(
+      OneArgument(std::make_unique<base::Value>(crostini::IsCrostiniEnabled(
+          Profile::FromBrowserContext(browser_context())))));
 }
 
 FileManagerPrivateMountCrostiniFunction::
@@ -660,17 +659,17 @@ bool FileManagerPrivateMountCrostiniFunction::RunAsync() {
   // files into Linux files should still work.
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
-  DCHECK(IsCrostiniEnabled(profile));
+  DCHECK(crostini::IsCrostiniEnabled(profile));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
-      kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
+      crostini::kCrostiniDefaultVmName, crostini::kCrostiniDefaultContainerName,
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::RestartCallback,
                      this));
   return true;
 }
 
 void FileManagerPrivateMountCrostiniFunction::RestartCallback(
-    crostini::ConciergeClientResult result) {
-  if (result != crostini::ConciergeClientResult::SUCCESS) {
+    crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS) {
     Respond(Error(
         base::StringPrintf("Error mounting crostini container: %d", result)));
     return;
@@ -679,8 +678,8 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
 }
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateInternalSharePathWithCrostiniFunction::Run() {
-  using extensions::api::file_manager_private_internal::SharePathWithCrostini::
+FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
+  using extensions::api::file_manager_private_internal::SharePathsWithCrostini::
       Params;
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -689,33 +688,25 @@ FileManagerPrivateInternalSharePathWithCrostiniFunction::Run() {
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
-  storage::FileSystemURL cracked =
-      file_system_context->CrackURL(GURL(params->url));
-
-  // TODO(joelhockey): Seneschal currently only supports sharing
-  // directories under Downloads.
-  std::string downloads_mount_name =
-      file_manager::util::GetDownloadsMountPointName(profile);
-  if (cracked.filesystem_id() != downloads_mount_name) {
-    return RespondNow(Error(
-        "Share with Linux only allowed for directories within Downloads."));
+  std::vector<base::FilePath> paths;
+  for (size_t i = 0; i < params->urls.size(); ++i) {
+    storage::FileSystemURL cracked =
+        file_system_context->CrackURL(GURL(params->urls[i]));
+    paths.emplace_back(cracked.path());
   }
 
-  // Path must be relative under Downloads/
-  std::string share_path =
-      cracked.virtual_path().value().substr(downloads_mount_name.size() + 1);
-  crostini::CrostiniSharePath::GetInstance()->SharePath(
-      profile, kCrostiniDefaultVmName, share_path,
-      base::BindOnce(&FileManagerPrivateInternalSharePathWithCrostiniFunction::
-                         SharePathCallback,
+  crostini::SharePaths(
+      profile, crostini::kCrostiniDefaultVmName, std::move(paths),
+      params->persist,
+      base::BindOnce(&FileManagerPrivateInternalSharePathsWithCrostiniFunction::
+                         SharePathsCallback,
                      this));
 
   return RespondLater();
 }
 
-void FileManagerPrivateInternalSharePathWithCrostiniFunction::SharePathCallback(
-    bool success,
-    std::string failure_reason) {
+void FileManagerPrivateInternalSharePathsWithCrostiniFunction::
+    SharePathsCallback(bool success, std::string failure_reason) {
   Respond(success ? NoArguments() : Error(failure_reason));
 }
 
@@ -723,18 +714,16 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   file_manager::util::FileDefinitionList file_definition_list;
-  auto shared_paths =
-      crostini::CrostiniSharePath::GetInstance()->GetSharedPaths(profile);
-  for (const std::string& path : shared_paths) {
+  auto shared_paths = crostini::GetPersistedSharedPaths(profile);
+  for (const base::FilePath& path : shared_paths) {
     file_manager::util::FileDefinition file_definition;
     // All shared paths should be directories.  Even if this is not true, it
     // is fine for foreground/js/crostini.js class to think so.
     // We verify that the paths are in fact valid directories before calling
-    // seneschal/9p.
+    // seneschal/9p in CrostiniSharePath::CallSeneschalSharePath().
     file_definition.is_directory = true;
     if (file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            profile, extension_id(), base::FilePath(path),
-            &file_definition.virtual_path)) {
+            profile, extension_id(), path, &file_definition.virtual_path)) {
       file_definition_list.emplace_back(std::move(file_definition));
     }
   }
@@ -759,6 +748,53 @@ void FileManagerPrivateInternalGetCrostiniSharedPathsFunction::
 }
 
 ExtensionFunction::ResponseAction
+FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
+  using api::file_manager_private_internal::GetLinuxPackageInfo::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  const scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+
+  base::FilePath path;
+  if (!file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
+          profile, file_system_context->CrackURL(GURL(params->url)), &path)) {
+    return RespondNow(Error("Invalid url: " + params->url));
+  }
+
+  crostini::CrostiniPackageInstallerService::GetForProfile(profile)
+      ->GetLinuxPackageInfo(
+          crostini::kCrostiniDefaultVmName,
+          crostini::kCrostiniDefaultContainerName, path.value(),
+          base::BindOnce(
+              &FileManagerPrivateInternalGetLinuxPackageInfoFunction::
+                  OnGetLinuxPackageInfo,
+              this));
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalGetLinuxPackageInfoFunction::
+    OnGetLinuxPackageInfo(
+        const crostini::LinuxPackageInfo& linux_package_info) {
+  api::file_manager_private::LinuxPackageInfo result;
+  if (!linux_package_info.success) {
+    Respond(Error(linux_package_info.failure_reason));
+    return;
+  }
+
+  result.name = linux_package_info.name;
+  result.version = linux_package_info.version;
+  result.summary = std::make_unique<std::string>(linux_package_info.summary);
+  result.description =
+      std::make_unique<std::string>(linux_package_info.description);
+
+  Respond(ArgumentList(extensions::api::file_manager_private_internal::
+                           GetLinuxPackageInfo::Results::Create(result)));
+}
+
+ExtensionFunction::ResponseAction
 FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
   using extensions::api::file_manager_private_internal::InstallLinuxPackage::
       Params;
@@ -770,12 +806,16 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  std::string url =
-      file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
-          profile, file_system_context->CrackURL(GURL(params->url)));
+  base::FilePath path;
+  if (!file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
+          profile, file_system_context->CrackURL(GURL(params->url)), &path)) {
+    return RespondNow(Error("Invalid url: " + params->url));
+  }
+
   crostini::CrostiniPackageInstallerService::GetForProfile(profile)
       ->InstallLinuxPackage(
-          kCrostiniDefaultVmName, kCrostiniDefaultContainerName, url,
+          crostini::kCrostiniDefaultVmName,
+          crostini::kCrostiniDefaultContainerName, path.value(),
           base::BindOnce(
               &FileManagerPrivateInternalInstallLinuxPackageFunction::
                   OnInstallLinuxPackage,
@@ -784,19 +824,19 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
 }
 
 void FileManagerPrivateInternalInstallLinuxPackageFunction::
-    OnInstallLinuxPackage(crostini::ConciergeClientResult result,
+    OnInstallLinuxPackage(crostini::CrostiniResult result,
                           const std::string& failure_reason) {
   extensions::api::file_manager_private::InstallLinuxPackageResponse response;
   switch (result) {
-    case crostini::ConciergeClientResult::SUCCESS:
+    case crostini::CrostiniResult::SUCCESS:
       response = extensions::api::file_manager_private::
           INSTALL_LINUX_PACKAGE_RESPONSE_STARTED;
       break;
-    case crostini::ConciergeClientResult::INSTALL_LINUX_PACKAGE_FAILED:
+    case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED:
       response = extensions::api::file_manager_private::
           INSTALL_LINUX_PACKAGE_RESPONSE_FAILED;
       break;
-    case crostini::ConciergeClientResult::INSTALL_LINUX_PACKAGE_ALREADY_ACTIVE:
+    case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_ALREADY_ACTIVE:
       response = extensions::api::file_manager_private::
           INSTALL_LINUX_PACKAGE_RESPONSE_INSTALL_ALREADY_ACTIVE;
       break;
@@ -973,6 +1013,19 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
 
   Respond(OneArgument(file_manager::util::ConvertEntryDefinitionListToListValue(
       *entry_definition_list)));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateDetectCharacterEncodingFunction::Run() {
+  using extensions::api::file_manager_private::DetectCharacterEncoding::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string input = net::HexDecode(params->bytes);
+  std::string encoding;
+  bool success = base::DetectEncoding(input, &encoding);
+  return RespondNow(OneArgument(
+      std::make_unique<base::Value>(success ? encoding : std::string())));
 }
 
 }  // namespace extensions

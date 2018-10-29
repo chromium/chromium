@@ -1260,14 +1260,19 @@ class BookmarkAppNavigationThrottleBaseCommonBrowserTest
     : public BookmarkAppNavigationBrowserTest {
  protected:
   void EnableFeaturesForTest(bool should_enable_link_capturing) {
+    // These tests expect that navigation to an out of scope URL will open in a
+    // new window, however, this behaviour is in the process of being changed
+    // (with the flag desktop-pwas-stay-in-window), so until the change is made
+    // permanent and these tests are removed, explicitly disable the flag.
     if (should_enable_link_capturing) {
       scoped_feature_list_.InitWithFeatures(
           {features::kDesktopPWAWindowing, features::kDesktopPWAsLinkCapturing},
-          {});
+          {features::kDesktopPWAsStayInWindow});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {features::kDesktopPWAWindowing},
-          {features::kDesktopPWAsLinkCapturing});
+          {features::kDesktopPWAsLinkCapturing,
+           features::kDesktopPWAsStayInWindow});
     }
   }
 

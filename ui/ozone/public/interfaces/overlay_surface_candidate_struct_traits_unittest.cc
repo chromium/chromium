@@ -12,16 +12,7 @@
 
 namespace ui {
 
-namespace {
-
-class OverlaySurfaceCandidateStructTraitsTest : public testing::Test {
- public:
-  OverlaySurfaceCandidateStructTraitsTest() {}
-};
-
-}  // namespace
-
-TEST_F(OverlaySurfaceCandidateStructTraitsTest, FieldsEqual) {
+TEST(OverlaySurfaceCandidateStructTraitsTest, FieldsEqual) {
   ui::OverlaySurfaceCandidate input;
 
   input.transform = gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL;
@@ -52,7 +43,7 @@ TEST_F(OverlaySurfaceCandidateStructTraitsTest, FieldsEqual) {
   EXPECT_EQ(input.overlay_handled, output.overlay_handled);
 }
 
-TEST_F(OverlaySurfaceCandidateStructTraitsTest, FalseBools) {
+TEST(OverlaySurfaceCandidateStructTraitsTest, FalseBools) {
   ui::OverlaySurfaceCandidate input;
 
   input.is_clipped = false;
@@ -68,7 +59,7 @@ TEST_F(OverlaySurfaceCandidateStructTraitsTest, FalseBools) {
   EXPECT_EQ(input.overlay_handled, output.overlay_handled);
 }
 
-TEST_F(OverlaySurfaceCandidateStructTraitsTest, OverlayStatus) {
+TEST(OverlaySurfaceCandidateStructTraitsTest, OverlayStatus) {
   using OverlayStatusTraits =
       mojo::EnumTraits<ui::ozone::mojom::OverlayStatus, ui::OverlayStatus>;
 

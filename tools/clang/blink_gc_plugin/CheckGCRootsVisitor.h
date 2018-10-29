@@ -27,7 +27,6 @@ class CheckGCRootsVisitor : public RecursiveEdgeVisitor {
 
   void VisitValue(Value* edge) override;
   void VisitPersistent(Persistent* edge) override;
-  void AtCollection(Collection* edge) override;
 
  private:
   RootPath current_;

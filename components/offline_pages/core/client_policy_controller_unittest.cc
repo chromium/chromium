@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/stl_util.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,10 +64,9 @@ void ClientPolicyControllerTest::ExpectRemovedOnCacheReset(
 
 void ClientPolicyControllerTest::ExpectDownloadSupport(std::string name_space,
                                                        bool expectation) {
-  std::vector<std::string> cache =
-      controller()->GetNamespacesSupportedByDownload();
-  auto result = std::find(cache.begin(), cache.end(), name_space);
-  EXPECT_EQ(expectation, result != cache.end())
+  EXPECT_EQ(expectation,
+            base::ContainsValue(
+                controller()->GetNamespacesSupportedByDownload(), name_space))
       << "Namespace " << name_space
       << " had incorrect download support when getting namespaces supported by"
          " download.";
@@ -79,10 +79,10 @@ void ClientPolicyControllerTest::ExpectDownloadSupport(std::string name_space,
 void ClientPolicyControllerTest::ExpectUserRequestedDownloadSupport(
     std::string name_space,
     bool expectation) {
-  std::vector<std::string> cache =
-      controller()->GetNamespacesForUserRequestedDownload();
-  auto result = std::find(cache.begin(), cache.end(), name_space);
-  EXPECT_EQ(expectation, result != cache.end())
+  EXPECT_EQ(
+      expectation,
+      base::ContainsValue(controller()->GetNamespacesForUserRequestedDownload(),
+                          name_space))
       << "Namespace " << name_space
       << " had incorrect user generated download support when getting"
          " namespaces supported by user generaged download.";
@@ -94,10 +94,10 @@ void ClientPolicyControllerTest::ExpectUserRequestedDownloadSupport(
 
 void ClientPolicyControllerTest::ExpectRecentTab(std::string name_space,
                                                  bool expectation) {
-  std::vector<std::string> cache =
-      controller()->GetNamespacesShownAsRecentlyVisitedSite();
-  auto result = std::find(cache.begin(), cache.end(), name_space);
-  EXPECT_EQ(expectation, result != cache.end())
+  EXPECT_EQ(
+      expectation,
+      base::ContainsValue(
+          controller()->GetNamespacesShownAsRecentlyVisitedSite(), name_space))
       << "Namespace " << name_space
       << " had incorrect recent tab support when getting namespaces shown as a"
          " recently visited site.";
@@ -110,10 +110,10 @@ void ClientPolicyControllerTest::ExpectRecentTab(std::string name_space,
 void ClientPolicyControllerTest::ExpectRestrictedToTabFromClientId(
     std::string name_space,
     bool expectation) {
-  std::vector<std::string> cache =
-      controller()->GetNamespacesRestrictedToTabFromClientId();
-  auto result = std::find(cache.begin(), cache.end(), name_space);
-  EXPECT_EQ(expectation, result != cache.end())
+  EXPECT_EQ(
+      expectation,
+      base::ContainsValue(
+          controller()->GetNamespacesRestrictedToTabFromClientId(), name_space))
       << "Namespace " << name_space
       << " had incorrect restriction when getting namespaces restricted to"
          " the tab from the client id field";
@@ -127,10 +127,10 @@ void ClientPolicyControllerTest::ExpectRestrictedToTabFromClientId(
 void ClientPolicyControllerTest::ExpectDisabledWhenPrefetchDisabled(
     std::string name_space,
     bool expectation) {
-  std::vector<std::string> cache =
-      controller()->GetNamespacesDisabledWhenPrefetchDisabled();
-  auto result = std::find(cache.begin(), cache.end(), name_space);
-  EXPECT_EQ(expectation, result != cache.end())
+  EXPECT_EQ(expectation,
+            base::ContainsValue(
+                controller()->GetNamespacesDisabledWhenPrefetchDisabled(),
+                name_space))
       << "Namespace " << name_space
       << " had incorrect prefetch pref support when getting namespaces"
          " disabled when prefetch settings are disabled.";

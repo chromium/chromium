@@ -114,13 +114,13 @@ void ServiceWorkerJobCoordinator::Register(
 }
 
 void ServiceWorkerJobCoordinator::Unregister(
-    const GURL& pattern,
+    const GURL& scope,
     ServiceWorkerUnregisterJob::UnregistrationCallback callback) {
   std::unique_ptr<ServiceWorkerRegisterJobBase> job(
-      new ServiceWorkerUnregisterJob(context_, pattern));
+      new ServiceWorkerUnregisterJob(context_, scope));
   ServiceWorkerUnregisterJob* queued_job =
       static_cast<ServiceWorkerUnregisterJob*>(
-          job_queues_[pattern].Push(std::move(job)));
+          job_queues_[scope].Push(std::move(job)));
   queued_job->AddCallback(std::move(callback));
 }
 
@@ -128,7 +128,7 @@ void ServiceWorkerJobCoordinator::Update(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache) {
   DCHECK(registration);
-  job_queues_[registration->pattern()].Push(
+  job_queues_[registration->scope()].Push(
       base::WrapUnique<ServiceWorkerRegisterJobBase>(
           new ServiceWorkerRegisterJob(context_, registration,
                                        force_bypass_cache,
@@ -142,7 +142,7 @@ void ServiceWorkerJobCoordinator::Update(
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   DCHECK(registration);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
-      job_queues_[registration->pattern()].Push(
+      job_queues_[registration->scope()].Push(
           base::WrapUnique<ServiceWorkerRegisterJobBase>(
               new ServiceWorkerRegisterJob(context_, registration,
                                            force_bypass_cache,
@@ -156,9 +156,9 @@ void ServiceWorkerJobCoordinator::AbortAll() {
   job_queues_.clear();
 }
 
-void ServiceWorkerJobCoordinator::FinishJob(const GURL& pattern,
+void ServiceWorkerJobCoordinator::FinishJob(const GURL& scope,
                                             ServiceWorkerRegisterJobBase* job) {
-  auto pending_jobs = job_queues_.find(pattern);
+  auto pending_jobs = job_queues_.find(scope);
   DCHECK(pending_jobs != job_queues_.end()) << "Deleting non-existent job.";
   pending_jobs->second.Pop(job);
   if (pending_jobs->second.empty())

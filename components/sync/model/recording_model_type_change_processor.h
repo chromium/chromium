@@ -35,6 +35,7 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
   void UntrackEntityForStorageKey(const std::string& storage_key) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() override;
+  std::string TrackedAccountId() override;
 
   void SetIsTrackingMetadata(bool is_tracking);
 
@@ -65,8 +66,7 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
   // while the unique pointer is owned by the bridge being tested.
   static std::unique_ptr<ModelTypeChangeProcessor>
   CreateProcessorAndAssignRawPointer(
-      RecordingModelTypeChangeProcessor** processor_address,
-      bool expect_error = false);
+      RecordingModelTypeChangeProcessor** processor_address);
 
  private:
   std::multimap<std::string, std::unique_ptr<EntityData>> put_multimap_;

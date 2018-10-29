@@ -119,13 +119,13 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   std::vector<int32_t> excluding_domain_reasons;
   std::vector<std::string> ignoring_domains;
   std::vector<int32_t> ignoring_domain_reasons;
-  base::android::AppendJavaStringArrayToStringVector(
-      env, jexcluding_domains.obj(), &excluding_domains);
-  base::android::JavaIntArrayToIntVector(env, jexcluding_domain_reasons.obj(),
+  base::android::AppendJavaStringArrayToStringVector(env, jexcluding_domains,
+                                                     &excluding_domains);
+  base::android::JavaIntArrayToIntVector(env, jexcluding_domain_reasons,
                                          &excluding_domain_reasons);
-  base::android::AppendJavaStringArrayToStringVector(
-      env, jignoring_domains.obj(), &ignoring_domains);
-  base::android::JavaIntArrayToIntVector(env, jignoring_domain_reasons.obj(),
+  base::android::AppendJavaStringArrayToStringVector(env, jignoring_domains,
+                                                     &ignoring_domains);
+  base::android::JavaIntArrayToIntVector(env, jignoring_domain_reasons,
                                          &ignoring_domain_reasons);
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(
       content::BrowsingDataFilterBuilder::Create(

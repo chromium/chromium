@@ -269,7 +269,7 @@ void MediaSource::OnReadyStateChange(const AtomicString& old_state,
   active_source_buffers_->Clear();
 
   // Clear SourceBuffer references to this object.
-  for (unsigned long i = 0; i < source_buffers_->length(); ++i)
+  for (unsigned i = 0; i < source_buffers_->length(); ++i)
     source_buffers_->item(i)->RemovedFromMediaSource();
   source_buffers_->Clear();
 
@@ -280,7 +280,7 @@ void MediaSource::OnReadyStateChange(const AtomicString& old_state,
 
 bool MediaSource::IsUpdating() const {
   // Return true if any member of |m_sourceBuffers| is updating.
-  for (unsigned long i = 0; i < source_buffers_->length(); ++i) {
+  for (unsigned i = 0; i < source_buffers_->length(); ++i) {
     if (source_buffers_->item(i)->updating())
       return true;
   }
@@ -379,7 +379,7 @@ TimeRanges* MediaSource::Buffered() const {
   // Implements MediaSource algorithm for HTMLMediaElement.buffered.
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#htmlmediaelement-extensions
   HeapVector<Member<TimeRanges>> ranges(active_source_buffers_->length());
-  for (size_t i = 0; i < active_source_buffers_->length(); ++i)
+  for (unsigned i = 0; i < active_source_buffers_->length(); ++i)
     ranges[i] = active_source_buffers_->item(i)->buffered(ASSERT_NO_EXCEPTION);
 
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
@@ -391,7 +391,7 @@ TimeRanges* MediaSource::Buffered() const {
   //    SourceBuffer object in activeSourceBuffers.
   // 3. Let highest end time be the largest range end time in the active ranges.
   double highest_end_time = -1;
-  for (size_t i = 0; i < ranges.size(); ++i) {
+  for (wtf_size_t i = 0; i < ranges.size(); ++i) {
     unsigned length = ranges[i]->length();
     if (length)
       highest_end_time = std::max(
@@ -409,7 +409,7 @@ TimeRanges* MediaSource::Buffered() const {
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
   bool ended = readyState() == EndedKeyword();
-  for (size_t i = 0; i < ranges.size(); ++i) {
+  for (wtf_size_t i = 0; i < ranges.size(); ++i) {
     // 5.1 Let source ranges equal the ranges returned by the buffered attribute
     //     on the current SourceBuffer.
     TimeRanges* source_ranges = ranges[i].Get();
@@ -545,7 +545,7 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
   // media are disallowed. When truncation is necessary, use remove() to
   // reduce the buffered range before updating duration.
   double highest_buffered_presentation_timestamp = 0;
-  for (size_t i = 0; i < source_buffers_->length(); ++i) {
+  for (unsigned i = 0; i < source_buffers_->length(); ++i) {
     highest_buffered_presentation_timestamp =
         std::max(highest_buffered_presentation_timestamp,
                  source_buffers_->item(i)->HighestPresentationTimestamp());
@@ -582,7 +582,7 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
     // Deprecated behavior: if the new duration is less than old duration,
     // then call remove(new duration, old duration) on all all objects in
     // sourceBuffers.
-    for (size_t i = 0; i < source_buffers_->length(); ++i)
+    for (unsigned i = 0; i < source_buffers_->length(); ++i)
       source_buffers_->item(i)->remove(new_duration, old_duration,
                                        ASSERT_NO_EXCEPTION);
   }
@@ -716,10 +716,10 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
   // SourceBuffer transitions to active are not guaranteed to occur in the
   // same order as buffers in |m_sourceBuffers|, so this method needs to
   // insert |sourceBuffer| into |m_activeSourceBuffers|.
-  size_t index_in_source_buffers = source_buffers_->Find(source_buffer);
+  wtf_size_t index_in_source_buffers = source_buffers_->Find(source_buffer);
   DCHECK(index_in_source_buffers != kNotFound);
 
-  size_t insert_position = 0;
+  wtf_size_t insert_position = 0;
   while (insert_position < active_source_buffers_->length() &&
          source_buffers_->Find(active_source_buffers_->item(insert_position)) <
              index_in_source_buffers) {

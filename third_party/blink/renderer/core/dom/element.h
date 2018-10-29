@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_H_
 
 #include "third_party/blink/public/platform/web_focus_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/core/html/focus_options.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
-#include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/scroll/scroll_types.h"
@@ -73,8 +73,6 @@ class PseudoStyleRequest;
 class ResizeObservation;
 class ScrollIntoViewOptions;
 class ScrollIntoViewOptionsOrBoolean;
-class ScrollState;
-class ScrollStateCallback;
 class ScrollToOptions;
 class ShadowRoot;
 class ShadowRootInit;
@@ -87,7 +85,7 @@ class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class USVStringOrTrustedURL;
 class V0CustomElementDefinition;
-class V8ScrollStateCallback;
+class V8DisplayLockCallback;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -161,13 +159,7 @@ class CORE_EXPORT Element : public ContainerNode {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecopy);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforecut);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(beforepaste);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(copy);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(cut);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(gotpointercapture);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(lostpointercapture);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(paste);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search);
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(selectstart);
 
   bool hasAttribute(const QualifiedName&) const;
   const AtomicString& getAttribute(const QualifiedName&) const;
@@ -322,12 +314,10 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual void scrollTo(const ScrollToOptions&);
 
   IntRect BoundsInViewport() const;
-  // For elements that are not contained in any OOPIFs, this returns an
-  // intersection rectangle of the bounds rectangle and the viewport
-  // rectangle, in the visual viewport coordinate. For elements within OOPIFs,
-  // the returned rect is the intersection with the viewport but in the
-  // coordinate space of the local frame root.
-  // This function is used to show popups beside this element.
+  // Returns an intersection rectangle of the bounds rectangle and the visual
+  // viewport's rectangle in the visual viewport's coordinate space.
+  // Applies ancestors' frames' clipping, but does not (yet) apply (overflow)
+  // element clipping (crbug.com/889840).
   IntRect VisibleBoundsInVisualViewport() const;
 
   DOMRectList* getClientRects();
@@ -384,7 +374,7 @@ class CORE_EXPORT Element : public ContainerNode {
     return ContainerNode::HasTagName(tag_name);
   }
 
-  // Should be called only by Document::createElementNS to fix up m_tagName
+  // Should be called only by Document::createElementNS to fix up tag_name_
   // immediately after construction.
   void SetTagNameForCreateElementNS(const QualifiedName&);
 
@@ -644,20 +634,6 @@ class CORE_EXPORT Element : public ContainerNode {
                                                 const FocusOptions&);
   virtual void blur();
 
-  void setDistributeScroll(V8ScrollStateCallback*,
-                           const String& native_scroll_behavior);
-  void NativeDistributeScroll(ScrollState&);
-  void setApplyScroll(V8ScrollStateCallback*,
-                      const String& native_scroll_behavior);
-  void SetApplyScroll(ScrollStateCallback*);
-  void RemoveApplyScroll();
-  void NativeApplyScroll(ScrollState&);
-
-  void CallDistributeScroll(ScrollState&);
-  void CallApplyScroll(ScrollState&);
-
-  ScrollStateCallback* GetApplyScroll();
-
   // Whether this element can receive focus at all. Most elements are not
   // focusable but some elements, such as form controls and links, are. Unlike
   // layoutObjectIsFocusable(), this method may be called when layout is not up
@@ -911,8 +887,7 @@ class CORE_EXPORT Element : public ContainerNode {
   EnsureResizeObserverData();
   void SetNeedsResizeObserverUpdate();
 
-  void WillBeginCustomizedScrollPhase(ScrollCustomization::ScrollDirection);
-  void DidEndCustomizedScrollPhase();
+  ScriptPromise acquireDisplayLock(ScriptState*, V8DisplayLockCallback*);
 
  protected:
   Element(const QualifiedName& tag_name, Document*, ConstructionType);

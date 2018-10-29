@@ -41,7 +41,6 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
   if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
     return status;
 
-  wchar_t* name = nullptr;
   do {
     if (!ValidParameter(file, sizeof(HANDLE), WRITE))
       break;
@@ -52,6 +51,7 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     if (!memory)
       break;
 
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     NTSTATUS ret =
         AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
@@ -63,7 +63,8 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     uint32_t disposition_uint32 = disposition;
     uint32_t broker = BROKER_FALSE;
     CountedParameterSet<OpenFile> params;
-    params[OpenFile::NAME] = ParamPickerMake(name);
+    const wchar_t* name_ptr = name.get();
+    params[OpenFile::NAME] = ParamPickerMake(name_ptr);
     params[OpenFile::ACCESS] = ParamPickerMake(desired_access_uint32);
     params[OpenFile::DISPOSITION] = ParamPickerMake(disposition_uint32);
     params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
@@ -76,9 +77,10 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     CrossCallReturn answer = {0};
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
-    ResultCode code = CrossCall(ipc, IPC_NTCREATEFILE_TAG, name, attributes,
-                                desired_access_uint32, file_attributes, sharing,
-                                disposition, options_uint32, &answer);
+    ResultCode code =
+        CrossCall(ipc, IPC_NTCREATEFILE_TAG, name.get(), attributes,
+                  desired_access_uint32, file_attributes, sharing, disposition,
+                  options_uint32, &answer);
     if (SBOX_ALL_OK != code)
       break;
 
@@ -95,9 +97,6 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
       break;
     }
   } while (false);
-
-  if (name)
-    operator delete(name, NT_ALLOC);
 
   return status;
 }
@@ -119,7 +118,6 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
   if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
     return status;
 
-  wchar_t* name = nullptr;
   do {
     if (!ValidParameter(file, sizeof(HANDLE), WRITE))
       break;
@@ -130,6 +128,7 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     if (!memory)
       break;
 
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes;
     NTSTATUS ret =
         AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
@@ -140,8 +139,9 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     uint32_t options_uint32 = options;
     uint32_t disposition_uint32 = FILE_OPEN;
     uint32_t broker = BROKER_FALSE;
+    const wchar_t* name_ptr = name.get();
     CountedParameterSet<OpenFile> params;
-    params[OpenFile::NAME] = ParamPickerMake(name);
+    params[OpenFile::NAME] = ParamPickerMake(name_ptr);
     params[OpenFile::ACCESS] = ParamPickerMake(desired_access_uint32);
     params[OpenFile::DISPOSITION] = ParamPickerMake(disposition_uint32);
     params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
@@ -153,7 +153,7 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code =
-        CrossCall(ipc, IPC_NTOPENFILE_TAG, name, attributes,
+        CrossCall(ipc, IPC_NTOPENFILE_TAG, name.get(), attributes,
                   desired_access_uint32, sharing, options_uint32, &answer);
     if (SBOX_ALL_OK != code)
       break;
@@ -172,9 +172,6 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     }
   } while (false);
 
-  if (name)
-    operator delete(name, NT_ALLOC);
-
   return status;
 }
 
@@ -191,7 +188,6 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
   if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
     return status;
 
-  wchar_t* name = nullptr;
   do {
     if (!ValidParameter(file_attributes, sizeof(FILE_BASIC_INFORMATION), WRITE))
       break;
@@ -200,6 +196,7 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
     if (!memory)
       break;
 
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     NTSTATUS ret =
         AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
@@ -211,7 +208,8 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
 
     uint32_t broker = BROKER_FALSE;
     CountedParameterSet<FileName> params;
-    params[FileName::NAME] = ParamPickerMake(name);
+    const wchar_t* name_ptr = name.get();
+    params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
     if (!QueryBroker(IPC_NTQUERYATTRIBUTESFILE_TAG, params.GetBase()))
@@ -219,7 +217,7 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IPC_NTQUERYATTRIBUTESFILE_TAG, name,
+    ResultCode code = CrossCall(ipc, IPC_NTQUERYATTRIBUTESFILE_TAG, name.get(),
                                 attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -228,9 +226,6 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
     status = answer.nt_status;
 
   } while (false);
-
-  if (name)
-    operator delete(name, NT_ALLOC);
 
   return status;
 }
@@ -249,7 +244,6 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
   if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
     return status;
 
-  wchar_t* name = nullptr;
   do {
     if (!ValidParameter(file_attributes, sizeof(FILE_NETWORK_OPEN_INFORMATION),
                         WRITE))
@@ -259,6 +253,7 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
     if (!memory)
       break;
 
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     NTSTATUS ret =
         AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
@@ -270,7 +265,8 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
 
     uint32_t broker = BROKER_FALSE;
     CountedParameterSet<FileName> params;
-    params[FileName::NAME] = ParamPickerMake(name);
+    const wchar_t* name_ptr = name.get();
+    params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
     if (!QueryBroker(IPC_NTQUERYFULLATTRIBUTESFILE_TAG, params.GetBase()))
@@ -278,17 +274,14 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IPC_NTQUERYFULLATTRIBUTESFILE_TAG, name,
-                                attributes, file_info, &answer);
+    ResultCode code = CrossCall(ipc, IPC_NTQUERYFULLATTRIBUTESFILE_TAG,
+                                name.get(), attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
       break;
 
     status = answer.nt_status;
   } while (false);
-
-  if (name)
-    operator delete(name, NT_ALLOC);
 
   return status;
 }
@@ -310,7 +303,6 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
   if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
     return status;
 
-  wchar_t* name = nullptr;
   do {
     void* memory = GetGlobalIPCMemory();
     if (!memory)
@@ -341,6 +333,7 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
       break;
     }
 
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     NTSTATUS ret =
         AllocAndCopyName(&object_attributes, &name, nullptr, nullptr);
     if (!NT_SUCCESS(ret) || !name)
@@ -348,7 +341,8 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
 
     uint32_t broker = BROKER_FALSE;
     CountedParameterSet<FileName> params;
-    params[FileName::NAME] = ParamPickerMake(name);
+    const wchar_t* name_ptr = name.get();
+    params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
     if (!QueryBroker(IPC_NTSETINFO_RENAME_TAG, params.GetBase()))
@@ -370,9 +364,6 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
 
     status = answer.nt_status;
   } while (false);
-
-  if (name)
-    operator delete(name, NT_ALLOC);
 
   return status;
 }

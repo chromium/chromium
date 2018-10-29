@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "content/public/browser/notification_source.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -76,11 +75,6 @@ ToolbarActionView::ToolbarActionView(
 
   set_ink_drop_visible_opacity(kToolbarInkDropVisibleOpacity);
 
-  const int size = GetLayoutConstant(LOCATION_BAR_HEIGHT);
-  const int radii = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, gfx::Size(size, size));
-  set_ink_drop_corner_radii(radii, radii);
-
   UpdateState();
 }
 
@@ -90,15 +84,14 @@ ToolbarActionView::~ToolbarActionView() {
 
 void ToolbarActionView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // TODO(pbos): Consolidate with ToolbarButton::OnBoundsChanged.
-  if (focus_ring()) {
-    focus_ring()->SetPath(CreateToolbarFocusRingPath(this, gfx::Insets()));
-  }
+  SetToolbarButtonHighlightPath(this, gfx::Insets());
+
   MenuButton::OnBoundsChanged(previous_bounds);
 }
 
 gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
-  bounds.Inset(GetInkDropInsets(this, gfx::Insets()));
+  bounds.Inset(GetToolbarInkDropInsets(this, gfx::Insets()));
   return bounds;
 }
 
@@ -136,28 +129,23 @@ bool ToolbarActionView::ShouldUseFloodFillInkDrop() const {
 }
 
 std::unique_ptr<views::InkDrop> ToolbarActionView::CreateInkDrop() {
-  auto ink_drop = CreateToolbarInkDrop<MenuButton>(this);
-
+  auto ink_drop = CreateToolbarInkDrop(this);
   ink_drop->SetShowHighlightOnHover(!delegate_->ShownInsideMenu());
   ink_drop->SetShowHighlightOnFocus(!focus_ring());
   return ink_drop;
 }
 
-std::unique_ptr<views::InkDropRipple> ToolbarActionView::CreateInkDropRipple()
-    const {
-  return CreateToolbarInkDropRipple<MenuButton>(
-      this, GetInkDropCenterBasedOnLastEvent(), gfx::Insets());
-}
-
 std::unique_ptr<views::InkDropHighlight>
 ToolbarActionView::CreateInkDropHighlight() const {
-  return CreateToolbarInkDropHighlight<MenuButton>(
-      this, GetMirroredRect(GetContentsBounds()).CenterPoint());
+  return CreateToolbarInkDropHighlight(this);
 }
 
-std::unique_ptr<views::InkDropMask> ToolbarActionView::CreateInkDropMask()
-    const {
-  return CreateToolbarInkDropMask<MenuButton>(this, gfx::Insets());
+bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_DOWN) {
+    ShowContextMenuForView(this, gfx::Point(), ui::MENU_SOURCE_KEYBOARD);
+    return true;
+  }
+  return MenuButton::OnKeyPressed(event);
 }
 
 content::WebContents* ToolbarActionView::GetCurrentWebContents() const {
@@ -316,9 +304,6 @@ void ToolbarActionView::DoShowContextMenu(
 
   DCHECK(visible());  // We should never show a context menu for a hidden item.
 
-  gfx::Point screen_loc;
-  ConvertPointToScreen(this, &screen_loc);
-
   int run_types =
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
   if (delegate_->ShownInsideMenu())
@@ -339,7 +324,7 @@ void ToolbarActionView::DoShowContextMenu(
   menu_ = menu_adapter_->CreateMenu();
   menu_runner_.reset(new views::MenuRunner(menu_, run_types));
 
-  menu_runner_->RunMenuAt(parent, this, gfx::Rect(screen_loc, size()),
+  menu_runner_->RunMenuAt(parent, this, GetAnchorBoundsInScreen(),
                           views::MENU_ANCHOR_TOPLEFT, source_type);
 }
 

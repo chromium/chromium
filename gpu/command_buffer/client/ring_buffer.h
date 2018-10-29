@@ -41,7 +41,10 @@ class GPU_EXPORT RingBuffer {
 
   // Allocates a block of memory. If the buffer is out of directly available
   // memory, this function may wait until memory that was freed "pending a
-  // token" can be re-used.
+  // token" can be re-used.  The safest pattern of allocation is to only have
+  // one used allocation at once.  Allocating while NumUsedBlocks > 0 can
+  // lead to deadlock if the entire buffer is exhausted.  In this case, it is
+  // recommended to only Alloc smaller than GetFreeSizeNoWaiting.
   //
   // Parameters:
   //   size: the size of the memory block to allocate.
@@ -52,6 +55,8 @@ class GPU_EXPORT RingBuffer {
 
   // Frees a block of memory, pending the passage of a token. That memory won't
   // be re-allocated until the token has passed through the command stream.
+  // If a block is freed out of order, that hole will be counted as used
+  // in the Get*FreeSize* functions below.
   //
   // Parameters:
   //   pointer: the pointer to the memory block to free.
@@ -82,6 +87,8 @@ class GPU_EXPORT RingBuffer {
 
   // Total size minus usable size.
   unsigned int GetUsedSize() { return size_ - GetLargestFreeSizeNoWaiting(); }
+
+  unsigned int NumUsedBlocks() const { return num_used_blocks_; }
 
   // Gets a pointer to a memory block given the base memory and the offset.
   void* GetPointer(RingBuffer::Offset offset) const {
@@ -140,14 +147,17 @@ class GPU_EXPORT RingBuffer {
   Offset size_;
 
   // Offset of first free byte.
-  Offset free_offset_;
+  Offset free_offset_ = 0;
 
   // Offset of first used byte.
   // Range between in_use_mark and free_mark is in use.
-  Offset in_use_offset_;
+  Offset in_use_offset_ = 0;
 
   // Alignment for allocations.
   unsigned int alignment_;
+
+  // Number of blocks in |blocks_| that are in the IN_USE state.
+  unsigned int num_used_blocks_ = 0;
 
   // The physical address that corresponds to base_offset.
   void* base_;

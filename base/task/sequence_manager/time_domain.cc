@@ -50,30 +50,37 @@ void TimeDomain::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   LazyNow lazy_now(CreateLazyNow());
-  SetNextWakeUpForQueue(queue, nullopt, &lazy_now);
+  SetNextWakeUpForQueue(queue, nullopt, internal::WakeUpResolution::kLow,
+                        &lazy_now);
 }
 
 void TimeDomain::SetNextWakeUpForQueue(
     internal::TaskQueueImpl* queue,
-    Optional<internal::TaskQueueImpl::DelayedWakeUp> wake_up,
+    Optional<internal::DelayedWakeUp> wake_up,
+    internal::WakeUpResolution resolution,
     LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
   Optional<TimeTicks> previous_wake_up;
+  Optional<internal::WakeUpResolution> previous_queue_resolution;
   if (!delayed_wake_up_queue_.empty())
     previous_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
+  if (queue->heap_handle().IsValid()) {
+    previous_queue_resolution =
+        delayed_wake_up_queue_.at(queue->heap_handle()).resolution;
+  }
 
   if (wake_up) {
     // Insert a new wake-up into the heap.
     if (queue->heap_handle().IsValid()) {
       // O(log n)
       delayed_wake_up_queue_.ChangeKey(queue->heap_handle(),
-                                       {wake_up.value(), queue});
+                                       {wake_up.value(), resolution, queue});
     } else {
       // O(log n)
-      delayed_wake_up_queue_.insert({wake_up.value(), queue});
+      delayed_wake_up_queue_.insert({wake_up.value(), resolution, queue});
     }
   } else {
     // Remove a wake-up from heap if present.
@@ -84,6 +91,14 @@ void TimeDomain::SetNextWakeUpForQueue(
   Optional<TimeTicks> new_wake_up;
   if (!delayed_wake_up_queue_.empty())
     new_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
+
+  if (previous_queue_resolution &&
+      *previous_queue_resolution == internal::WakeUpResolution::kHigh) {
+    pending_high_res_wake_up_count_--;
+  }
+  if (wake_up && resolution == internal::WakeUpResolution::kHigh)
+    pending_high_res_wake_up_count_++;
+  DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
   // TODO(kraynov): https://crbug.com/857101 Review the relationship with
   // SequenceManager's time. Right now it's not an issue since
@@ -135,6 +150,10 @@ void TimeDomain::AsValueInto(trace_event::TracedValue* state) const {
 
 void TimeDomain::AsValueIntoInternal(trace_event::TracedValue* state) const {
   // Can be overriden to trace some additional state.
+}
+
+bool TimeDomain::HasPendingHighResolutionTasks() const {
+  return pending_high_res_wake_up_count_;
 }
 
 }  // namespace sequence_manager

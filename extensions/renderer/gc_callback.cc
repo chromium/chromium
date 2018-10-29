@@ -42,8 +42,8 @@ GCCallback::GCCallback(ScriptContext* context,
   if (!v8_callback.IsEmpty())
     v8_callback_.Reset(context->isolate(), v8_callback);
   object_.SetWeak(this, OnObjectGC, v8::WeakCallbackType::kParameter);
-  context->AddInvalidationObserver(base::Bind(&GCCallback::OnContextInvalidated,
-                                              weak_ptr_factory_.GetWeakPtr()));
+  context->AddInvalidationObserver(base::BindOnce(
+      &GCCallback::OnContextInvalidated, weak_ptr_factory_.GetWeakPtr()));
 }
 
 GCCallback::~GCCallback() {}

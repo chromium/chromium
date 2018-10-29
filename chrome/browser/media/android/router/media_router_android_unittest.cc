@@ -97,12 +97,6 @@ TEST_F(MediaRouterAndroidTest, DetachRoute) {
 }
 
 TEST_F(MediaRouterAndroidTest, OnRouteTerminated) {
-  base::MockCallback<content::PresentationConnectionStateChangedCallback>
-      callback;
-  content::PresentationConnectionStateChangeInfo change_info_terminated(
-      PresentationConnectionState::TERMINATED);
-  EXPECT_CALL(callback, Run(StateChangeInfoEquals(change_info_terminated)));
-
   Expectation createRouteExpectation =
       EXPECT_CALL(*mock_bridge_, CreateRoute(_, _, _, _, _, _, 1))
           .WillOnce(Return());
@@ -113,9 +107,10 @@ TEST_F(MediaRouterAndroidTest, OnRouteTerminated) {
 
   EXPECT_NE(nullptr, router_->FindRouteBySource("source"));
 
-  std::unique_ptr<PresentationConnectionStateSubscription> subscription =
-      router_->AddPresentationConnectionStateChangedCallback("route",
-                                                             callback.Get());
+  // Route termination on Android results in the PresentationConnectionPtr
+  // directly being messaged, and therefore there is no
+  // PresentationConnectionStateChangedCallback that can be intercepted for
+  // test verification purposes.
   router_->OnRouteTerminated("route");
 
   EXPECT_EQ(nullptr, router_->FindRouteBySource("source"));

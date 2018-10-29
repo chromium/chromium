@@ -1,10 +1,11 @@
 asvitkine@chromium.org
 bcwhite@chromium.org
-gayane@chromium.org
 holte@chromium.org
 isherman@chromium.org
 jwd@chromium.org
 mpearson@chromium.org
 rkaplow@chromium.org
+
+per-file field_trial_memory_mac*=rsesek@chromium.org
 
 # COMPONENT: Internals>Metrics

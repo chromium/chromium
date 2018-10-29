@@ -21,6 +21,7 @@ source_set("preferences") {
     ":*",
     "//services/preferences/public/cpp:service_main",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//components/prefs",
     "//services/preferences/public/cpp",

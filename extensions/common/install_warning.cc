@@ -20,6 +20,10 @@ InstallWarning::InstallWarning(const std::string& message,
     : message(message), key(key), specific(specific) {
 }
 
+InstallWarning::InstallWarning(InstallWarning&& other) = default;
+
+InstallWarning& InstallWarning::operator=(InstallWarning&& other) = default;
+
 InstallWarning::~InstallWarning() {
 }
 

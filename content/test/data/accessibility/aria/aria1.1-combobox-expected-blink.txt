@@ -4,11 +4,13 @@ rootWebArea
 ++++++inlineTextBox name='State'
 ++comboBoxGrouping name='State' haspopup=listbox
 ++++textField activedescendantId=listBoxOption controlsIds=listBox
+++++++genericContainer
 ++listBox
 ++++listBoxOption name='Alabama' selected=false
 ++++listBoxOption name='Alaska' selected=true
 ++comboBoxGrouping name='State' haspopup=listbox
 ++++textField activedescendantId=listBoxOption controlsIds=listBox
+++++++genericContainer
 ++listBox
 ++++listBoxOption name='Alabama' selected=false
 ++++listBoxOption name='Alaska' selected=false

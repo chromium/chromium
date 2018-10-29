@@ -83,7 +83,8 @@ class EmbeddedWorkerTestHelper {
     void AddMessageToConsole(blink::WebConsoleMessage::Level level,
                              const std::string& message) override;
     void BindDevToolsAgent(
-        blink::mojom::DevToolsAgentAssociatedRequest request) override {}
+        blink::mojom::DevToolsAgentHostAssociatedPtrInfo,
+        blink::mojom::DevToolsAgentAssociatedRequest) override {}
 
     base::WeakPtr<EmbeddedWorkerTestHelper> helper_;
     mojo::Binding<mojom::EmbeddedWorkerInstanceClient> binding_;
@@ -98,6 +99,10 @@ class EmbeddedWorkerTestHelper {
   // memory.
   explicit EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory);
   virtual ~EmbeddedWorkerTestHelper();
+
+  // Simulates Mojo calls to the browser process.
+  void SimulateRequestTermination(int embedded_worker_id,
+                                  base::OnceCallback<void(bool)> callback);
 
   // Registers a Mojo endpoint object derived from
   // MockEmbeddedWorkerInstanceClient.

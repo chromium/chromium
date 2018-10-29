@@ -18,7 +18,6 @@ class Rect;
 }
 
 namespace ui {
-class KeyEvent;
 class LocatedEvent;
 }  // namespace ui
 
@@ -87,6 +86,8 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   ui::EventTarget* FindNextBestTarget(ui::EventTarget* previous_target,
                                       ui::Event* event) override;
 
+  Window* FindTargetForKeyEvent(Window* root_window);
+
  protected:
   aura::Window* window() { return window_; }
   const aura::Window* window() const { return window_; }
@@ -131,7 +132,6 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
 
   void UpdateMusIfNecessary();
 
-  Window* FindTargetForKeyEvent(Window* root_window, const ui::KeyEvent& event);
   Window* FindTargetForNonKeyEvent(Window* root_window, ui::Event* event);
   Window* FindTargetForLocatedEventRecursively(Window* root_window,
                                                ui::LocatedEvent* event);

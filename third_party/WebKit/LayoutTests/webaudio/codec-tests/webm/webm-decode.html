@@ -24,7 +24,7 @@
             let context = new AudioContext();
 
             let bufferLoader = new BufferLoader(
-                context, ['webm-decode-expected.wav', 'test-webm.webm'],
+                context, ['resources/webm-decode-expected.wav', 'test-webm.webm'],
                 function(bufferList) {
                   expectedAudio = bufferList[0];
                   decodedAudio = bufferList[1];
@@ -51,7 +51,7 @@
                             expectedAudio.getChannelData(c),
                             {absoluteThreshold: 4.0234e-5});
                   }
-                  let filename = 'webm-decode-actual.wav';
+                  let filename = 'resources/webm-decode-actual.wav';
                   if (downloadAudioBuffer(decodedAudio, filename))
                     should(true, 'Saved reference file').message(filename, '');
                   task.done();

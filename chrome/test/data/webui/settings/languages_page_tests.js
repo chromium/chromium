@@ -101,11 +101,13 @@ cr.define('languages_page_tests', function() {
       setup(function(done) {
         const addLanguagesButton =
             languagesCollapse.querySelector('#addLanguages');
+        const whenDialogOpen =
+            test_util.eventToPromise('cr-dialog-open', languagesPage);
         addLanguagesButton.click();
 
         // The page stamps the dialog, registers listeners, and populates the
         // iron-list asynchronously at microtask timing, so wait for a new task.
-        setTimeout(function() {
+        whenDialogOpen.then(() => {
           dialog = languagesPage.$$('settings-add-languages-dialog');
           assertTrue(!!dialog);
 
@@ -117,6 +119,7 @@ cr.define('languages_page_tests', function() {
 
           actionButton = assert(dialog.$$('.action-button'));
           cancelButton = assert(dialog.$$('.cancel-button'));
+          Polymer.dom.flush();
 
           // The fixed-height dialog's iron-list should stamp far fewer than
           // 50 items.

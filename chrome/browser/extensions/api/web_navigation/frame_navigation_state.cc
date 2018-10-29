@@ -58,8 +58,7 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
 
 bool FrameNavigationState::CanSendEvents(
     content::RenderFrameHost* frame_host) const {
-  FrameHostToStateMap::const_iterator it =
-      frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   if (it == frame_host_state_map_.end() || it->second.error_occurred) {
     return false;
   }
@@ -91,24 +90,13 @@ void FrameNavigationState::FrameHostDeleted(
   frame_hosts_.erase(frame_host);
 }
 
-void FrameNavigationState::UpdateFrame(content::RenderFrameHost* frame_host,
-                                       const GURL& url) {
-  FrameHostToStateMap::iterator it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end()) {
-    NOTREACHED();
-    return;
-  }
-  it->second.url = url;
-}
-
 bool FrameNavigationState::IsValidFrame(
     content::RenderFrameHost* frame_host) const {
   return frame_host_state_map_.find(frame_host) != frame_host_state_map_.end();
 }
 
 GURL FrameNavigationState::GetUrl(content::RenderFrameHost* frame_host) const {
-  FrameHostToStateMap::const_iterator it =
-      frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   if (it == frame_host_state_map_.end())
     return GURL();
 
@@ -117,7 +105,7 @@ GURL FrameNavigationState::GetUrl(content::RenderFrameHost* frame_host) const {
 
 void FrameNavigationState::SetErrorOccurredInFrame(
     content::RenderFrameHost* frame_host) {
-  FrameHostToStateMap::iterator it = frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   if (it == frame_host_state_map_.end()) {
     NOTREACHED();
     return;
@@ -127,15 +115,14 @@ void FrameNavigationState::SetErrorOccurredInFrame(
 
 bool FrameNavigationState::GetErrorOccurredInFrame(
     content::RenderFrameHost* frame_host) const {
-  FrameHostToStateMap::const_iterator it =
-      frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   DCHECK(it != frame_host_state_map_.end());
   return it == frame_host_state_map_.end() || it->second.error_occurred;
 }
 
 void FrameNavigationState::SetDocumentLoadCompleted(
     content::RenderFrameHost* frame_host) {
-  FrameHostToStateMap::iterator it = frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   if (it == frame_host_state_map_.end()) {
     NOTREACHED();
     return;
@@ -145,15 +132,14 @@ void FrameNavigationState::SetDocumentLoadCompleted(
 
 bool FrameNavigationState::GetDocumentLoadCompleted(
     content::RenderFrameHost* frame_host) const {
-  FrameHostToStateMap::const_iterator it =
-      frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   DCHECK(it != frame_host_state_map_.end());
   return it == frame_host_state_map_.end() || !it->second.is_loading;
 }
 
 void FrameNavigationState::SetParsingFinished(
     content::RenderFrameHost* frame_host) {
-  FrameHostToStateMap::iterator it = frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   if (it == frame_host_state_map_.end()) {
     NOTREACHED();
     return;
@@ -163,8 +149,7 @@ void FrameNavigationState::SetParsingFinished(
 
 bool FrameNavigationState::GetParsingFinished(
     content::RenderFrameHost* frame_host) const {
-  FrameHostToStateMap::const_iterator it =
-      frame_host_state_map_.find(frame_host);
+  auto it = frame_host_state_map_.find(frame_host);
   DCHECK(it != frame_host_state_map_.end());
   return it == frame_host_state_map_.end() || !it->second.is_parsing;
 }

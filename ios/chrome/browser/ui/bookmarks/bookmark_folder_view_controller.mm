@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -28,8 +27,8 @@
 
 namespace {
 
-// The height of every folder cell.
-const CGFloat kFolderCellHeight = 48.0;
+// The estimated height of every folder cell.
+const CGFloat kEstimatedFolderCellHeight = 48.0;
 
 // Height of section headers/footers.
 const CGFloat kSectionHeaderHeight = 8.0;
@@ -115,15 +114,8 @@ using bookmarks::BookmarkNode;
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
   DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleNoAppBar];
-  } else {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleWithAppBar];
-  }
+  self = [super initWithTableViewStyle:UITableViewStylePlain
+                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
   if (self) {
     _allowsCancel = allowsCancel;
     _allowsNewFolders = allowsNewFolders;
@@ -159,20 +151,6 @@ using bookmarks::BookmarkNode;
       kBookmarkFolderPickerViewContainerIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON);
 
-  if (!experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self.view.backgroundColor = [UIColor whiteColor];
-    UIBarButtonItem* doneItem = [[UIBarButtonItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_BOOKMARK_EDIT_MODE_EXIT_MOBILE)
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(done:)];
-    doneItem.accessibilityIdentifier =
-        kBookmarkFolderEditNavigationBarDoneButtonIdentifier;
-    self.navigationItem.rightBarButtonItem = doneItem;
-    [self setEdgesForExtendedLayout:UIRectEdgeNone];
-  }
-
   if (self.allowsCancel) {
     UIBarButtonItem* cancelItem =
         [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon closeIcon]
@@ -196,17 +174,12 @@ using bookmarks::BookmarkNode;
   // Configure the table view.
   self.tableView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    // Add a tableFooterView in order to disable separators at the bottom of the
-    // tableView.
-    self.tableView.tableFooterView = [[UIView alloc] init];
-  } else {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    // To support the pre UIRefresh we need to set the insets since
-    // UITableViewCell lines itself up with the tableView separator insets. The
-    // following line won't be needed for UIRefresh.
-    [self.tableView setSeparatorInset:UIEdgeInsetsMake(0, 51, 0, 0)];
-  }
+  // Add a tableFooterView in order to disable separators at the bottom of the
+  // tableView.
+  self.tableView.tableFooterView = [[UIView alloc] init];
+
+  self.tableView.estimatedRowHeight = kEstimatedFolderCellHeight;
+  self.tableView.rowHeight = UITableViewAutomaticDimension;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -232,11 +205,6 @@ using bookmarks::BookmarkNode;
 }
 
 #pragma mark - UITableViewDelegate
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return kFolderCellHeight;
-}
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
@@ -285,10 +253,9 @@ using bookmarks::BookmarkNode;
 
     case SectionIdentifierBookmarkFolders: {
       int folderIndex = indexPath.row;
-      // On UIRefresh if |shouldShowDefaultSection| is YES, the first cell on
-      // this Section should call |pushFolderAddViewController|.
-      if (experimental_flags::IsBookmarksUIRebootEnabled() &&
-          [self shouldShowDefaultSection]) {
+      // If |shouldShowDefaultSection| is YES, the first cell on this section
+      // should call |pushFolderAddViewController|.
+      if ([self shouldShowDefaultSection]) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
@@ -435,18 +402,10 @@ using bookmarks::BookmarkNode;
     BookmarkFolderItem* createFolderItem =
         [[BookmarkFolderItem alloc] initWithType:ItemTypeCreateNewFolder
                                            style:BookmarkFolderStyleNewFolder];
-    // On UIRefresh we add the "Add Folder" Item to the same section as the rest
-    // of the folder entries.
-    if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-      [self.tableViewModel addItem:createFolderItem
-           toSectionWithIdentifier:SectionIdentifierBookmarkFolders];
-    } else {
-      [self.tableViewModel
-          insertSectionWithIdentifier:SectionIdentifierAddFolder
-                              atIndex:0];
-      [self.tableViewModel addItem:createFolderItem
-           toSectionWithIdentifier:SectionIdentifierAddFolder];
-    }
+    // Add the "Add Folder" Item to the same section as the rest of the folder
+    // entries.
+    [self.tableViewModel addItem:createFolderItem
+         toSectionWithIdentifier:SectionIdentifierBookmarkFolders];
   }
 
   // Add Folders entries.

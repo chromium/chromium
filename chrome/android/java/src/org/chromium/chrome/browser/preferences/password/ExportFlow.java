@@ -23,7 +23,6 @@ import org.chromium.chrome.R;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
@@ -251,14 +250,26 @@ public class ExportFlow {
 
     /**
      * A helper method which processes the signal that serialized passwords have been stored in the
-     * temporary file. It produces a sharing URI for that file, logs some metrics and continues the
-     * flow.
+     * temporary file. It produces a sharing URI for that file, registers that file for deletion at
+     * the shutdown of the Java VM, logs some metrics and continues the flow.
+     * @param pathToPasswordsFile The filesystem path to the file containing the serialized
+     *                            passwords.
      */
-    private void shareSerializedPasswords() {
+    private void shareSerializedPasswords(String pathToPasswordsFile) {
         // Don't display any UI if the user cancelled the export in the meantime.
         if (mExportState == ExportState.INACTIVE) return;
 
-        // Record the time it took to read and serialise the passwords. This
+        File passwordsFile = new File(pathToPasswordsFile);
+        passwordsFile.deleteOnExit();
+
+        try {
+            mExportFileUri = ContentUriUtils.getContentUriFromFile(passwordsFile);
+        } catch (IllegalArgumentException e) {
+            showExportErrorAndAbort(R.string.save_password_preferences_export_tips, e.getMessage(),
+                    R.string.try_again, HistogramExportResult.WRITE_FAILED);
+            return;
+        }
+        // Record the time it took to read and serialize the passwords. This
         // excludes the time to write them into a file, to be consistent with
         // desktop (where writing is blocked on the user choosing a file
         // destination).
@@ -268,7 +279,17 @@ public class ExportFlow {
         tryExporting();
     }
 
-    /** Starts the password export flow.
+    /**
+     * Returns the path to the directory where serialized passwords are stored.
+     * @return A subdirectory of the cache, where serialized passwords are stored.
+     */
+    @VisibleForTesting
+    public static String getTargetDirectory() {
+        return ContextUtils.getApplicationContext().getCacheDir() + PASSWORDS_CACHE_DIR;
+    }
+
+    /**
+     * Starts the password export flow.
      * Current state of export flow: the user just tapped the menu item for export
      * The next steps are: passing reauthentication, confirming the export, waiting for exported
      * data (if needed) and choosing a consumer app for the data.
@@ -280,21 +301,17 @@ public class ExportFlow {
 
         // Start fetching the serialized passwords now to use the time the user spends
         // reauthenticating and reading the warning message. If the user cancels the export or
-        // fails the reauthentication, the serialised passwords will simply get ignored when
+        // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
         mExportPreparationStart = System.currentTimeMillis();
 
-        String tempFileName = createTempFileName();
-        // Empty string means an error was reported and the flow aborted.
-        if (tempFileName.isEmpty()) return;
-
         mEntriesCount = null;
         PasswordManagerHandlerProvider.getInstance().getPasswordManagerHandler().serializePasswords(
-                tempFileName,
-                (Integer entriesCount)
+                getTargetDirectory(),
+                (int entriesCount, String pathToPasswordsFile)
                         -> {
                     mEntriesCount = entriesCount;
-                    shareSerializedPasswords();
+                    shareSerializedPasswords(pathToPasswordsFile);
                 },
                 (String errorMessage) -> {
                     showExportErrorAndAbort(R.string.save_password_preferences_export_tips,
@@ -482,40 +499,6 @@ public class ExportFlow {
             }
         });
         exportErrorDialogFragment.show(mDelegate.getFragmentManager(), null);
-    }
-
-    /**
-     * This method returns a name of a temporary file in the cache directory. The name is unique and
-     * {@link File#deleteOnExit} is called on the file. If creating the file name fails, an error is
-     * shown and the export flow aborted. This method also derives a sharing URI from the file name.
-     * @return The name of the temporary file or an empty string on error.
-     */
-    private String createTempFileName() {
-        // First ensure that the PASSWORDS_CACHE_DIR cache directory exists.
-        File passwordsDir =
-                new File(ContextUtils.getApplicationContext().getCacheDir() + PASSWORDS_CACHE_DIR);
-        passwordsDir.mkdir();
-        // Now create or overwrite the temporary file for exported passwords there and return its
-        // content:// URI.
-        File tempFile;
-        try {
-            tempFile = File.createTempFile("pwd-export", ".csv", passwordsDir);
-        } catch (IOException e) {
-            showExportErrorAndAbort(R.string.save_password_preferences_export_tips, e.getMessage(),
-                    R.string.try_again, HistogramExportResult.WRITE_FAILED);
-            return "";
-        }
-        tempFile.deleteOnExit();
-
-        try {
-            mExportFileUri = ContentUriUtils.getContentUriFromFile(tempFile);
-        } catch (IllegalArgumentException e) {
-            showExportErrorAndAbort(R.string.save_password_preferences_export_tips, e.getMessage(),
-                    R.string.try_again, HistogramExportResult.WRITE_FAILED);
-            return "";
-        }
-
-        return tempFile.getPath();
     }
 
     /**

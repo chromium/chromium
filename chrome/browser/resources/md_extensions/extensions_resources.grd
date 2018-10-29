@@ -29,6 +29,12 @@
       <structure name="IDR_MD_EXTENSIONS_CODE_SECTION_JS"
                  file="code_section.js"
                  type="chrome_html" />
+      <structure name="IDR_MD_EXTENSIONS_ACTIVITY_LOG_HTML"
+                 file="activity_log.html"
+                 type="chrome_html" />
+      <structure name="IDR_MD_EXTENSIONS_ACTIVITY_LOG_JS"
+                 file="activity_log.js"
+                 type="chrome_html" />
       <structure name="IDR_MD_EXTENSIONS_DETAIL_VIEW_HTML"
                  file="detail_view.html"
                  type="chrome_html" />

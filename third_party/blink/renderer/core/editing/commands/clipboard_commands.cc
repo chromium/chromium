@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -43,7 +44,6 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -74,7 +74,7 @@ bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
   Settings* const settings = frame.GetSettings();
   const bool default_value =
       (settings && settings->GetJavaScriptCanAccessClipboard()) ||
-      Frame::HasTransientUserActivation(&frame);
+      LocalFrame::HasTransientUserActivation(&frame);
   if (!frame.GetContentSettingsClient())
     return default_value;
   return frame.GetContentSettingsClient()->AllowWriteToClipboard(default_value);

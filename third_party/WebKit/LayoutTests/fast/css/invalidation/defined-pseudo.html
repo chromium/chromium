@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+#sibling, #child, #child3 { background-color: green }
+custom-one:not(:defined) #child,
+custom-two:not(:defined) + #sibling,
+custom-three:not(:defined) #child3 {
+  background-color: red
+}
+</style>
+
+<custom-one>
+    <div></div>
+    <div id="child"></div>
+</custom-one>
+
+<custom-two>
+    <div></div>
+    <div></div>
+</custom-two>
+<div id="sibling"></div>
+
+<custom-three>
+    <div></div>
+    <div id="child3"></div>
+</custom-three>
+
+<script>
+const RED = "rgb(255, 0, 0)";
+const GREEN = "rgb(0, 128, 0)";
+
+test(() => {
+  // Initially :not(:defined).
+  assert_equals(getComputedStyle(child).backgroundColor, RED);
+  assert_equals(getComputedStyle(sibling).backgroundColor, RED);
+  assert_equals(getComputedStyle(child3).backgroundColor, RED);
+
+  document.body.offsetTop; // force recalc
+
+  customElements.define("custom-one", class extends HTMLElement {});
+  if (window.internals)
+    assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1);
+  assert_equals(getComputedStyle(child).backgroundColor, GREEN);
+
+  document.body.offsetTop; // force recalc
+
+  customElements.define("custom-two", class extends HTMLElement {});
+  if (window.internals)
+    assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1);
+  assert_equals(getComputedStyle(sibling).backgroundColor, GREEN);
+
+  document.body.offsetTop; // force recalc
+
+  document.registerElement("custom-three", { prototype: Object.create(HTMLElement.prototype) });
+  if (window.internals)
+    assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1);
+  assert_equals(getComputedStyle(child3).backgroundColor, GREEN);
+
+}, "Use invalidation sets for :defined pseudo class.")
+</script>

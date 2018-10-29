@@ -27,8 +27,6 @@ namespace ash {
 
 OverflowButton::OverflowButton(ShelfView* shelf_view, Shelf* shelf)
     : Button(nullptr),
-      upward_image_(gfx::CreateVectorIcon(kShelfOverflowIcon, kShelfIconColor)),
-      chevron_image_(nullptr),
       shelf_view_(shelf_view),
       shelf_(shelf),
       background_color_(kShelfDefaultBaseColor) {
@@ -42,90 +40,15 @@ OverflowButton::OverflowButton(ShelfView* shelf_view, Shelf* shelf)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_OVERFLOW_NAME));
 
-  if (chromeos::switches::ShouldUseShelfNewUi()) {
-    horizontal_dots_image_view_ = new views::ImageView();
-    horizontal_dots_image_view_->SetImage(gfx::CreateVectorIcon(
-        kShelfOverflowHorizontalDotsIcon, kShelfIconColor));
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    background_color_ = kShelfControlPermanentHighlightBackground;
-    AddChildView(horizontal_dots_image_view_);
-  } else {
-    // The new UI does not use a chevron icon.
-    // TODO(864701): Once the new UI has been default for a while, get rid
-    // of all the chevron image flipping logic.
-    UpdateChevronImage();
-  }
+  horizontal_dots_image_view_ = new views::ImageView();
+  horizontal_dots_image_view_->SetImage(
+      gfx::CreateVectorIcon(kShelfOverflowHorizontalDotsIcon, kShelfIconColor));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  background_color_ = kShelfControlPermanentHighlightBackground;
+  AddChildView(horizontal_dots_image_view_);
 }
 
 OverflowButton::~OverflowButton() = default;
-
-void OverflowButton::OnShelfAlignmentChanged() {
-  UpdateChevronImage();
-}
-
-void OverflowButton::OnOverflowBubbleShown() {
-  UpdateChevronImage();
-}
-
-void OverflowButton::OnOverflowBubbleHidden() {
-  UpdateChevronImage();
-}
-
-void OverflowButton::UpdateShelfItemBackground(SkColor color) {
-  // In the new UI, this button has a permanent rounded highlight, regardless
-  // of the shelf state.
-  if (chromeos::switches::ShouldUseShelfNewUi())
-    return;
-  background_color_ = color;
-  SchedulePaint();
-}
-
-OverflowButton::ChevronDirection OverflowButton::GetChevronDirection() const {
-  switch (shelf_->alignment()) {
-    case SHELF_ALIGNMENT_LEFT:
-      if (shelf_view_->IsShowingOverflowBubble())
-        return ChevronDirection::LEFT;
-      return ChevronDirection::RIGHT;
-    case SHELF_ALIGNMENT_RIGHT:
-      if (shelf_view_->IsShowingOverflowBubble())
-        return ChevronDirection::RIGHT;
-      return ChevronDirection::LEFT;
-    default:
-      if (shelf_view_->IsShowingOverflowBubble())
-        return ChevronDirection::DOWN;
-      return ChevronDirection::UP;
-  }
-}
-
-void OverflowButton::UpdateChevronImage() {
-  switch (GetChevronDirection()) {
-    case ChevronDirection::UP:
-      chevron_image_ = &upward_image_;
-      break;
-    case ChevronDirection::DOWN:
-      if (downward_image_.isNull()) {
-        downward_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-            upward_image_, SkBitmapOperations::ROTATION_180_CW);
-      }
-      chevron_image_ = &downward_image_;
-      break;
-    case ChevronDirection::LEFT:
-      if (leftward_image_.isNull()) {
-        leftward_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-            upward_image_, SkBitmapOperations::ROTATION_270_CW);
-      }
-      chevron_image_ = &leftward_image_;
-      break;
-    case ChevronDirection::RIGHT:
-      if (rightward_image_.isNull()) {
-        rightward_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-            upward_image_, SkBitmapOperations::ROTATION_90_CW);
-      }
-      chevron_image_ = &rightward_image_;
-      break;
-  }
-  SchedulePaint();
-}
 
 std::unique_ptr<views::InkDrop> OverflowButton::CreateInkDrop() {
   std::unique_ptr<views::InkDropImpl> ink_drop =
@@ -164,7 +87,6 @@ std::unique_ptr<views::InkDropMask> OverflowButton::CreateInkDropMask() const {
 void OverflowButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds = CalculateButtonBounds();
   PaintBackground(canvas, bounds);
-  PaintForeground(canvas, bounds);
 }
 
 void OverflowButton::PaintBackground(gfx::Canvas* canvas,
@@ -174,19 +96,6 @@ void OverflowButton::PaintBackground(gfx::Canvas* canvas,
   flags.setColor(background_color_);
   canvas->DrawRoundRect(bounds, ShelfConstants::overflow_button_corner_radius(),
                         flags);
-}
-
-void OverflowButton::PaintForeground(gfx::Canvas* canvas,
-                                     const gfx::Rect& bounds) {
-  // The image view is already a child view, no need to do any manual
-  // painting.
-  if (chromeos::switches::ShouldUseShelfNewUi())
-    return;
-  DCHECK(chevron_image_);
-  canvas->DrawImageInt(
-      *chevron_image_,
-      bounds.x() + ((bounds.width() - chevron_image_->width()) / 2),
-      bounds.y() + ((bounds.height() - chevron_image_->height()) / 2));
 }
 
 gfx::Rect OverflowButton::CalculateButtonBounds() const {

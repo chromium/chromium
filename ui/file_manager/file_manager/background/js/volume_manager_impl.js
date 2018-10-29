@@ -129,8 +129,8 @@ VolumeManagerImpl.prototype.initialize_ = function(callback) {
       this.onMountCompleted_.bind(this));
   console.debug('Requesting volume list.');
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeMetadataList) {
-    console.debug('Volume list fetched with: ' + volumeMetadataList.length +
-        ' items.');
+    console.debug(
+        'Volume list fetched with: ' + volumeMetadataList.length + ' items.');
     // We must subscribe to the mount completed event in the callback of
     // getVolumeMetadataList. crbug.com/330061.
     // But volumes reported by onMountCompleted events must be added after the
@@ -215,6 +215,7 @@ VolumeManagerImpl.prototype.onMountCompleted_ = function(event) {
         this.finishRequest_(requestKey, status);
         if (event.status === 'success')
           this.volumeInfoList.remove(event.volumeMetadata.volumeId);
+        console.debug('unmounted volume: ' + volumeId);
         callback();
         break;
     }
@@ -364,6 +365,15 @@ VolumeManagerImpl.prototype.getLocationInfo = function(entry) {
       rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
       isReadOnly = true;
       isRootEntry = entry.fullPath === '/other';
+    } else if (
+        entry.fullPath === '/.files-by-id' ||
+        entry.fullPath.indexOf('/.files-by-id/') === 0) {
+      rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
+
+      // /.files-by-id/<id> is read-only, but /.files-by-id/<id>/foo is
+      // read-write.
+      isReadOnly = entry.fullPath.split('/').length < 4;
+      isRootEntry = entry.fullPath === '/.files-by-id';
     } else {
       // Accessing Drive files outside of /drive/root and /drive/other is not
       // allowed, but can happen. Therefore returning null.
@@ -411,6 +421,12 @@ VolumeManagerImpl.prototype.whenVolumeInfoReady = function(volumeId) {
     this.volumeInfoList.addEventListener('splice', handler);
     handler();
   });
+};
+
+/** @override */
+VolumeManagerImpl.prototype.getDefaultDisplayRoot = function(callback) {
+  console.error('Unexpectedly called VolumeManagerImpl.getDefaultDisplayRoot.');
+  callback(null);
 };
 
 /**

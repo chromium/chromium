@@ -84,3 +84,389 @@ source_set("test_instance_tracker") {
   visibility = []
   visibility += [ "../*" ]
 }
+
+source_set("flat_hash_map") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "flat_hash_map.h",
+  ]
+  deps = [
+    ":container_memory",
+    ":hash_function_defaults",
+    ":raw_hash_map",
+    "../memory",
+  ]
+}
+
+source_set("flat_hash_set") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "flat_hash_set.h",
+  ]
+  deps = [
+    ":container_memory",
+    ":hash_function_defaults",
+    ":raw_hash_set",
+    "../base:core_headers",
+    "../memory",
+  ]
+}
+
+source_set("node_hash_map") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "node_hash_map.h",
+  ]
+  deps = [
+    ":container_memory",
+    ":hash_function_defaults",
+    ":node_hash_policy",
+    ":raw_hash_map",
+    "../memory",
+  ]
+}
+
+source_set("node_hash_set") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "node_hash_set.h",
+  ]
+  deps = [
+    ":container_memory",
+    ":hash_function_defaults",
+    ":node_hash_policy",
+    ":raw_hash_set",
+    "../memory",
+  ]
+}
+
+source_set("container_memory") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/container_memory.h",
+  ]
+  deps = [
+    "../memory",
+    "../utility",
+  ]
+}
+
+source_set("hash_function_defaults") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/hash_function_defaults.h",
+  ]
+  deps = [
+    "../base:config",
+    "../hash",
+    "../strings",
+  ]
+}
+
+source_set("hash_generator_testing") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "internal/hash_generator_testing.cc",
+  ]
+  public = [
+    "internal/hash_generator_testing.h",
+  ]
+  deps = [
+    ":hash_policy_testing",
+    "../meta:type_traits",
+    "../strings",
+  ]
+}
+
+source_set("hash_policy_testing") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/hash_policy_testing.h",
+  ]
+  deps = [
+    "../hash",
+    "../strings",
+  ]
+}
+
+source_set("hash_policy_traits") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/hash_policy_traits.h",
+  ]
+  deps = [
+    "../meta:type_traits",
+  ]
+}
+
+source_set("hashtable_debug") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/hashtable_debug.h",
+  ]
+  deps = [
+    ":hashtable_debug_hooks",
+  ]
+}
+
+source_set("hashtable_debug_hooks") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/hashtable_debug_hooks.h",
+  ]
+}
+
+source_set("node_hash_policy") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/node_hash_policy.h",
+  ]
+}
+
+source_set("raw_hash_map") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/raw_hash_map.h",
+  ]
+  deps = [
+    ":container_memory",
+    ":raw_hash_set",
+  ]
+}
+
+source_set("raw_hash_set") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "internal/raw_hash_set.cc",
+  ]
+  public = [
+    "internal/raw_hash_set.h",
+  ]
+  deps = [
+    ":compressed_tuple",
+    ":container_memory",
+    ":hash_policy_traits",
+    ":hashtable_debug_hooks",
+    ":layout",
+    "../base:bits",
+    "../base:config",
+    "../base:core_headers",
+    "../base:endian",
+    "../memory",
+    "../meta:type_traits",
+    "../types:optional",
+    "../utility",
+  ]
+}
+
+source_set("layout") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/layout.h",
+  ]
+  deps = [
+    "../base:core_headers",
+    "../meta:type_traits",
+    "../strings",
+    "../types:span",
+    "../utility",
+  ]
+}
+
+source_set("tracked") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/tracked.h",
+  ]
+}
+
+source_set("unordered_map_constructor_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_map_constructor_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_map_lookup_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_map_lookup_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_map_modifiers_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_map_modifiers_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_set_constructor_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_set_constructor_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_set_lookup_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_set_lookup_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_set_modifiers_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_set_modifiers_test.h",
+  ]
+  deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
+    "//testing/gtest",
+  ]
+}

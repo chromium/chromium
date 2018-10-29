@@ -56,6 +56,7 @@ class UpdateScreen : public BaseScreen,
   enum ExitReason {
     REASON_UPDATE_CANCELED = 0,
     REASON_UPDATE_INIT_FAILED,
+    REASON_UPDATE_OVER_CELLULAR_REJECTED,
     REASON_UPDATE_NON_CRITICAL,
     REASON_UPDATE_ENDED
   };
@@ -84,6 +85,7 @@ class UpdateScreen : public BaseScreen,
   enum class State {
     STATE_IDLE = 0,
     STATE_FIRST_PORTAL_CHECK,
+    STATE_REQUESTING_USER_PERMISSION,
     STATE_UPDATE,
     STATE_ERROR
   };
@@ -92,6 +94,12 @@ class UpdateScreen : public BaseScreen,
   void Show() override;
   void Hide() override;
   void OnUserAction(const std::string& action_id) override;
+
+  // Callback to UpdateEngineClient::SetUpdateOverCellularOneTimePermission
+  // called in response to user confirming that the OS update can proceed
+  // despite being over cellular charges.
+  // |success|: whether the update engine accepted the user permission.
+  void RetryUpdateWithUpdateOverCellularPermissionSet(bool success);
 
   // Updates downloading stats (remaining time and downloading
   // progress) on the AU screen.
@@ -179,6 +187,13 @@ class UpdateScreen : public BaseScreen,
   // True if there was no notification about captive portal state for
   // the default network.
   bool is_first_portal_notification_ = true;
+
+  // Information about a pending update. Set if a user permission is required to
+  // proceed with the update. The values have to be passed to the update engine
+  // in SetUpdateOverCellularOneTimePermission method in order to enable update
+  // over cellular network.
+  std::string pending_update_version_;
+  int64_t pending_update_size_ = 0;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 

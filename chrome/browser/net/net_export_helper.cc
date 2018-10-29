@@ -5,15 +5,9 @@
 #include "chrome/browser/net/net_export_helper.h"
 
 #include "base/values.h"
-#include "chrome/browser/net/spdyproxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/net/spdyproxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_network_delegate.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_store.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -44,17 +38,6 @@ std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile) {
   return value;
 }
 
-std::unique_ptr<base::Value> GetHistoricNetworkStats(Profile* profile) {
-  DataReductionProxyChromeSettings* data_reduction_proxy_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile);
-
-  return data_reduction_proxy_settings
-             ? data_reduction_proxy_settings->data_reduction_proxy_service()
-                   ->compression_stats()
-                   ->HistoricNetworkStatsInfoToValue()
-             : nullptr;
-}
-
 std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
   auto extension_list = std::make_unique<base::ListValue>();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -79,31 +62,6 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
   }
 #endif
   return extension_list;
-}
-
-std::unique_ptr<base::DictionaryValue> GetDataReductionProxyInfo(
-    Profile* profile) {
-  DataReductionProxyChromeSettings* data_reduction_proxy_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile);
-
-  if (!data_reduction_proxy_settings)
-    return nullptr;
-
-  data_reduction_proxy::DataReductionProxyEventStore* event_store =
-      data_reduction_proxy_settings->GetEventStore();
-
-  return event_store ? event_store->GetSummaryValue() : nullptr;
-}
-
-std::unique_ptr<base::Value> GetSessionNetworkStats(Profile* profile) {
-  DataReductionProxyChromeSettings* data_reduction_proxy_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile);
-
-  return data_reduction_proxy_settings
-             ? data_reduction_proxy_settings->data_reduction_proxy_service()
-                   ->compression_stats()
-                   ->SessionNetworkStatsInfoToValue()
-             : nullptr;
 }
 
 #if defined(OS_WIN)

@@ -11,6 +11,7 @@
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +41,8 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
     store_ = store.get();
     manager_ = std::make_unique<MachineLevelUserCloudPolicyManager>(
         std::move(store), std::unique_ptr<CloudExternalDataManager>(),
-        base::FilePath(), scoped_refptr<base::SequencedTaskRunner>());
+        base::FilePath(), scoped_refptr<base::SequencedTaskRunner>(),
+        network::TestNetworkConnectionTracker::CreateGetter());
   }
 
   SchemaRegistry schema_registry_;

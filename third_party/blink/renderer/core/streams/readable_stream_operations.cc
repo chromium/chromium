@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -262,6 +264,57 @@ void ReadableStreamOperations::Tee(ScriptState* script_state,
 
   *new_stream1 = std::move(result1);
   *new_stream2 = std::move(result2);
+}
+
+MessagePort* ReadableStreamOperations::ReadableStreamSerialize(
+    ScriptState* script_state,
+    ScriptValue stream,
+    ExceptionState& exception_state) {
+  DCHECK(IsReadableStreamForDCheck(script_state, stream));
+  v8::TryCatch block(script_state->GetIsolate());
+  v8::Local<v8::Value> args[] = {stream.V8Value()};
+  ScriptValue result(
+      script_state,
+      V8ScriptRunner::CallExtra(script_state, "ReadableStreamSerialize", args));
+  if (block.HasCaught()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return nullptr;
+  }
+  if (result.IsEmpty()) {
+    DCHECK(script_state->GetIsolate()->IsExecutionTerminating());
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Serialize failed because execution is terminating");
+    return nullptr;
+  }
+
+  return V8MessagePort::ToImpl(
+      result.V8Value()->ToObject(script_state->GetContext()).ToLocalChecked());
+}
+
+ScriptValue ReadableStreamOperations::ReadableStreamDeserialize(
+    ScriptState* script_state,
+    MessagePort* port,
+    ExceptionState& exception_state) {
+  DCHECK(port);
+  auto* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::Local<v8::Value> port_v8 = ToV8(port, context->Global(), isolate);
+  v8::TryCatch block(isolate);
+  v8::Local<v8::Value> args[] = {port_v8};
+  ScriptValue result(script_state,
+                     V8ScriptRunner::CallExtra(
+                         script_state, "ReadableStreamDeserialize", args));
+  if (block.HasCaught()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return ScriptValue();
+  }
+  if (result.IsEmpty()) {
+    DCHECK(script_state->GetIsolate()->IsExecutionTerminating());
+    return ScriptValue();
+  }
+  DCHECK(IsReadableStreamForDCheck(script_state, result));
+  return result;
 }
 
 }  // namespace blink

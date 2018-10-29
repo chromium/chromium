@@ -80,8 +80,10 @@ void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
 void SyncBackendRegistrar::AddRestoredNonBlockingType(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock lock(lock_);
-  DCHECK(non_blocking_types_.Has(type));
-  DCHECK(routing_info_.find(type) == routing_info_.end());
+  DCHECK(non_blocking_types_.Has(type)) << syncer::ModelTypeToString(type);
+  DCHECK(routing_info_.find(type) == routing_info_.end() ||
+         routing_info_[type] == GROUP_NON_BLOCKING)
+      << syncer::ModelTypeToString(type);
   routing_info_[type] = GROUP_NON_BLOCKING;
   last_configured_types_.Put(type);
 }
@@ -152,7 +154,7 @@ void SyncBackendRegistrar::ActivateDataType(ModelType type,
 
   base::AutoLock lock(lock_);
   // Ensure that the given data type is in the PASSIVE group.
-  ModelSafeRoutingInfo::iterator i = routing_info_.find(type);
+  auto i = routing_info_.find(type);
   DCHECK(i != routing_info_.end());
   DCHECK_EQ(i->second, GROUP_PASSIVE);
   routing_info_[type] = group;

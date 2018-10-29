@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/cells/account_signin_item.h"
 
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
@@ -101,17 +100,11 @@ const CGFloat kDetailTextFontSize = 14;
   _imageView.layer.masksToBounds = YES;
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-  if (experimental_flags::IsSettingsUIRebootEnabled()) {
-    _textLabel.font = [UIFont systemFontOfSize:kMainTextFontSize];
-    _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-    _detailTextLabel.font = [UIFont systemFontOfSize:kDetailTextFontSize];
-    _detailTextLabel.textColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
-  } else {
-    _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-    _textLabel.textColor = [[MDCPalette greyPalette] tint900];
-    _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-    _detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
-  }
+  _textLabel.font = [UIFont systemFontOfSize:kMainTextFontSize];
+  _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
+
+  _detailTextLabel.font = [UIFont systemFontOfSize:kDetailTextFontSize];
+  _detailTextLabel.textColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
 }
 
 - (void)setViewConstraints {

@@ -63,8 +63,9 @@ class LocalSiteCharacteristicsDataStore
   const char* GetDataStoreName() override;
   std::vector<url::Origin> GetAllInMemoryOrigins() override;
   void GetDatabaseSize(DatabaseSizeCallback on_have_data) override;
-  bool GetaDataForOrigin(
+  bool GetDataForOrigin(
       const url::Origin& origin,
+      bool* is_dirty,
       std::unique_ptr<SiteCharacteristicsProto>* data) override;
   LocalSiteCharacteristicsDataStore* GetDataStore() override;
 

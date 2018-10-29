@@ -21,6 +21,18 @@ H264Decoder::H264Accelerator::H264Accelerator() = default;
 
 H264Decoder::H264Accelerator::~H264Accelerator() = default;
 
+H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
+  return H264Decoder::H264Accelerator::Status::kNotSupported;
+}
+
+H264Decoder::H264Accelerator::Status
+H264Decoder::H264Accelerator::ParseSliceHeader(const H264NALU& slice_nalu,
+                                               H264SliceHeader* slice_header) {
+  return H264Decoder::H264Accelerator::Status::kNotSupported;
+}
+
 H264Decoder::H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
                          const VideoColorSpace& container_color_space)
     : state_(kNeedStreamMetadata),
@@ -922,7 +934,7 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
   // in DPB afterwards would at least be equal to max_num_reorder_frames.
   // If the outputted picture is not a reference picture, it doesn't have
   // to remain in the DPB and can be removed.
-  H264Picture::Vector::iterator output_candidate = not_outputted.begin();
+  auto output_candidate = not_outputted.begin();
   size_t num_remaining = not_outputted.size();
   while (num_remaining > max_num_reorder_frames_ ||
          // If the condition below is used, this is an invalid stream. We should
@@ -1204,18 +1216,19 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
     return H264Decoder::kDecodeError;  \
   } while (0)
 
-#define CHECK_ACCELERATOR_RESULT(func)           \
-  do {                                           \
-    H264Accelerator::Status result = (func);     \
-    switch (result) {                            \
-      case H264Accelerator::Status::kOk:         \
-        break;                                   \
-      case H264Accelerator::Status::kTryAgain:   \
-        DVLOG(1) << #func " needs to try again"; \
-        return H264Decoder::kTryAgain;           \
-      case H264Accelerator::Status::kFail:       \
-        SET_ERROR_AND_RETURN();                  \
-    }                                            \
+#define CHECK_ACCELERATOR_RESULT(func)             \
+  do {                                             \
+    H264Accelerator::Status result = (func);       \
+    switch (result) {                              \
+      case H264Accelerator::Status::kOk:           \
+        break;                                     \
+      case H264Accelerator::Status::kTryAgain:     \
+        DVLOG(1) << #func " needs to try again";   \
+        return H264Decoder::kTryAgain;             \
+      case H264Accelerator::Status::kFail:         \
+      case H264Accelerator::Status::kNotSupported: \
+        SET_ERROR_AND_RETURN();                    \
+    }                                              \
   } while (0)
 
 void H264Decoder::SetStream(int32_t id,
@@ -1228,6 +1241,9 @@ void H264Decoder::SetStream(int32_t id,
   DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
            << " size: " << size;
   stream_id_ = id;
+  current_stream_ = ptr;
+  current_stream_size_ = size;
+  current_stream_has_been_changed_ = true;
   if (decrypt_config) {
     parser_.SetEncryptedStream(ptr, size, decrypt_config->subsamples());
     current_decrypt_config_ = decrypt_config->Clone();
@@ -1241,6 +1257,30 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
   if (state_ == kError) {
     DVLOG(1) << "Decoder in error state";
     return kDecodeError;
+  }
+
+  if (current_stream_has_been_changed_) {
+    // Calling H264Accelerator::SetStream() here instead of when the stream is
+    // originally set in case the accelerator needs to return kTryAgain.
+    H264Accelerator::Status result = accelerator_->SetStream(
+        base::span<const uint8_t>(current_stream_, current_stream_size_),
+        current_decrypt_config_.get());
+    switch (result) {
+      case H264Accelerator::Status::kOk:
+      case H264Accelerator::Status::kNotSupported:
+        // kNotSupported means the accelerator can't handle this stream,
+        // so everything will be done through the parser.
+        break;
+      case H264Accelerator::Status::kTryAgain:
+        DVLOG(1) << "SetStream() needs to try again";
+        return H264Decoder::kTryAgain;
+      case H264Accelerator::Status::kFail:
+        SET_ERROR_AND_RETURN();
+    }
+
+    // Reset the flag so that this is only called again next time SetStream()
+    // is called.
+    current_stream_has_been_changed_ = false;
   }
 
   while (1) {
@@ -1283,10 +1323,28 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
 
         if (!curr_slice_hdr_) {
           curr_slice_hdr_.reset(new H264SliceHeader());
-          par_res =
-              parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
-          if (par_res != H264Parser::kOk)
-            SET_ERROR_AND_RETURN();
+          // If the accelerator handles the slice header, let it handle it.
+          // If not, use the parser.
+          H264Accelerator::Status result = accelerator_->ParseSliceHeader(
+              *curr_nalu_, curr_slice_hdr_.get());
+          switch (result) {
+            case H264Accelerator::Status::kOk:
+              break;
+            case H264Accelerator::Status::kTryAgain:
+              DVLOG(1) << "ParseSliceHeader() needs to try again";
+              // reset |curr_slice_hdr_| so ParseSliceHeader() is tried again.
+              curr_slice_hdr_.reset();
+              return H264Decoder::kTryAgain;
+            case H264Accelerator::Status::kNotSupported:
+              // Let the parser try to handle it.
+              par_res =
+                  parser_.ParseSliceHeader(*curr_nalu_, curr_slice_hdr_.get());
+              if (par_res == H264Parser::kOk)
+                break;
+              FALLTHROUGH;
+            case H264Accelerator::Status::kFail:
+              SET_ERROR_AND_RETURN();
+          }
 
           state_ = kTryPreprocessCurrentSlice;
         }

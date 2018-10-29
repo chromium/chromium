@@ -93,17 +93,21 @@ const char kEcryptfsMigrationStrategy[] = "ecryptfs_migration_strategy";
 // control settings.
 const char kVoiceInteractionActivityControlAccepted[] =
     "settings.voice_interaction.activity_control.accepted";
-// A preference that indicates the user has enabled voice interaction services.
-const char kVoiceInteractionEnabled[] = "settings.voice_interaction.enabled";
 // A preference that indicates the user has allowed voice interaction services
 // to access the "context" (text and graphic content that is currently on
 // screen).
 const char kVoiceInteractionContextEnabled[] =
     "settings.voice_interaction.context.enabled";
+// A preference that indicates the user has enabled voice interaction services.
+const char kVoiceInteractionEnabled[] = "settings.voice_interaction.enabled";
 // A preference that indicates the user has allowed voice interaction services
 // to use hotword listening.
 const char kVoiceInteractionHotwordEnabled[] =
     "settings.voice_interaction.hotword.enabled";
+// A preference that indicates whether microphone should be open when the voice
+// interaction launches.
+const char kVoiceInteractionLaunchWithMicOpen[] =
+    "settings.voice_interaction.launch_with_mic_open";
 // A preference that indicates the user has allowed voice interaction services
 // to send notification.
 const char kVoiceInteractionNotificationEnabled[] =
@@ -152,6 +156,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kVoiceInteractionEnabled, false);
   registry->RegisterBooleanPref(kVoiceInteractionHotwordEnabled, false);
   registry->RegisterBooleanPref(kVoiceInteractionNotificationEnabled, true);
+  registry->RegisterBooleanPref(kVoiceInteractionLaunchWithMicOpen, false);
 }
 
 }  // namespace prefs

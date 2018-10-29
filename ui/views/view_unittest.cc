@@ -14,11 +14,13 @@
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -3664,8 +3666,8 @@ TEST_F(ViewTest, GetViewByID) {
   View::Views views;
   v1.GetViewsInGroup(kGroup, &views);
   EXPECT_EQ(2U, views.size());
-  EXPECT_NE(views.cend(), std::find(views.cbegin(), views.cend(), &v3));
-  EXPECT_NE(views.cend(), std::find(views.cbegin(), views.cend(), &v4));
+  EXPECT_TRUE(base::ContainsValue(views, &v3));
+  EXPECT_TRUE(base::ContainsValue(views, &v4));
 }
 
 TEST_F(ViewTest, AddExistingChild) {
@@ -4491,8 +4493,8 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
   widget()->SetContentsView(v1);
 
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(1.25f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      1.25f, size, viz::LocalSurfaceId(), base::TimeTicks());
 
   v11->SetBoundsRect(gfx::Rect(1, 1, 10, 10));
   v1->SetBoundsRect(gfx::Rect(1, 1, 10, 10));
@@ -4506,8 +4508,8 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
   EXPECT_EQ("-0.20 -0.20", ToString(v11->layer()->subpixel_position_offset()));
 
   // DSF change should get propagated and update offsets.
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(1.5f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      1.5f, size, viz::LocalSurfaceId(), base::TimeTicks());
   EXPECT_EQ("0.33 0.33", ToString(v1->layer()->subpixel_position_offset()));
   EXPECT_EQ("0.33 0.33", ToString(v11->layer()->subpixel_position_offset()));
 
@@ -4520,8 +4522,8 @@ TEST_F(ViewLayerTest, SnapLayerToPixel) {
   EXPECT_EQ("0.33 0.33", ToString(v11->layer()->subpixel_position_offset()));
 
   // Setting integral DSF should reset the offset.
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(2.0f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      2.0f, size, viz::LocalSurfaceId(), base::TimeTicks());
   EXPECT_EQ("0.00 0.00", ToString(v11->layer()->subpixel_position_offset()));
 }
 
@@ -4590,8 +4592,8 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
   widget()->SetContentsView(v1);
 
   const gfx::Size& size = GetRootLayer()->GetCompositor()->size();
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(1.6f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      1.6f, size, viz::LocalSurfaceId(), base::TimeTicks());
 
   v3->SetBoundsRect(gfx::Rect(14, 13, 13, 5));
   v2->SetBoundsRect(gfx::Rect(7, 7, 50, 50));
@@ -4606,8 +4608,8 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
   EXPECT_EQ("-0.37 -0.00", ToString(v3->layer()->subpixel_position_offset()));
 
   // DSF change should get propagated and update offsets.
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(1.5f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      1.5f, size, viz::LocalSurfaceId(), base::TimeTicks());
 
   EXPECT_EQ("0.33 0.33", ToString(v1->layer()->subpixel_position_offset()));
   EXPECT_EQ("0.33 0.67", ToString(v3->layer()->subpixel_position_offset()));
@@ -4616,8 +4618,8 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
   PaintRecordingSizeTest(v3, gfx::Size(20, 7));  // Enclosing Rect = (20, 8)
   v1->SetPaintToLayer();
 
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(1.33f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      1.33f, size, viz::LocalSurfaceId(), base::TimeTicks());
 
   EXPECT_EQ("0.02 0.02", ToString(v1->layer()->subpixel_position_offset()));
   EXPECT_EQ("0.05 -0.45", ToString(v3->layer()->subpixel_position_offset()));
@@ -4633,8 +4635,8 @@ TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
   EXPECT_EQ("0.06 -0.44", ToString(v3->layer()->subpixel_position_offset()));
 
   // Setting integral DSF should reset the offset.
-  GetRootLayer()->GetCompositor()->SetScaleAndSize(2.0f, size,
-                                                   viz::LocalSurfaceId());
+  GetRootLayer()->GetCompositor()->SetScaleAndSize(
+      2.0f, size, viz::LocalSurfaceId(), base::TimeTicks());
   EXPECT_EQ("0.00 0.00", ToString(v3->layer()->subpixel_position_offset()));
 }
 
@@ -4814,6 +4816,7 @@ class TestNativeTheme : public ui::NativeTheme {
     return gfx::Rect();
   }
   bool UsesHighContrastColors() const override { return false; }
+  bool SystemDarkModeEnabled() const override { return false; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestNativeTheme);

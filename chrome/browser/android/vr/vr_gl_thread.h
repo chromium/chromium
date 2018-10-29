@@ -37,6 +37,7 @@ namespace vr {
 
 class VrInputConnection;
 class VrShell;
+struct KeyboardTestInput;
 
 class VrGLThread : public base::android::JavaHandlerThread,
                    public PlatformInputHandler,
@@ -78,7 +79,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void ForceExitVr() override;
   void ReportUiOperationResultForTesting(
       const UiTestOperationType& action_type,
-      const VrUiTestActivityResult& result) override;
+      const UiTestOperationResult& result) override;
 
   // PlatformInputHandler
   void ForwardEventToPlatformUi(std::unique_ptr<InputEvent> event) override;
@@ -147,11 +148,19 @@ class VrGLThread : public base::android::JavaHandlerThread,
                              int selection_end,
                              int composition_start,
                              int composition_end) override;
+  void OnSwapContents(int new_content_id) override;
+  void SetDialogLocation(float x, float y) override;
+  void SetDialogFloating(bool floating) override;
+  void ShowPlatformToast(const base::string16& text) override;
+  void CancelPlatformToast() override;
+  void OnContentBoundsChanged(int width, int height) override;
   void AddOrUpdateTab(int id,
                       bool incognito,
                       const base::string16& title) override;
   void RemoveTab(int id, bool incognito) override;
   void RemoveAllTabs() override;
+  void PerformKeyboardInputForTesting(
+      KeyboardTestInput keyboard_input) override;
 
  protected:
   void Init() override;

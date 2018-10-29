@@ -11,6 +11,6 @@ source_set("unzip") {
     "//base",
     "//components/services/unzip:lib",
     "//ios/web/public",
-    "//services/service_manager/embedder",
+    "//services/service_manager/public/cpp",
   ]
 }

@@ -60,9 +60,6 @@ enum LayoutConstant {
   // The vertical and horizontal padding inside the border.
   LOCATION_BAR_ELEMENT_PADDING,
 
-  // The horizontal padding between location bar decorations.
-  LOCATION_BAR_BETWEEN_ELEMENTS_PADDING,
-
   // The height to be occupied by the LocationBar.
   LOCATION_BAR_HEIGHT,
 

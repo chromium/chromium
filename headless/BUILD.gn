@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/jumbo.gni")
 import("//build/config/chrome_build.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -271,8 +272,6 @@ inspector_protocol_generate("protocol_sources") {
     "lib/browser/protocol/dp_browser.h",
     "lib/browser/protocol/dp_headless_experimental.cc",
     "lib/browser/protocol/dp_headless_experimental.h",
-    "lib/browser/protocol/dp_network.cc",
-    "lib/browser/protocol/dp_network.h",
     "lib/browser/protocol/dp_page.cc",
     "lib/browser/protocol/dp_page.h",
     "lib/browser/protocol/dp_target.cc",
@@ -282,7 +281,7 @@ inspector_protocol_generate("protocol_sources") {
   ]
 }
 
-component("headless") {
+jumbo_component("headless") {
   sources = [
     "app/headless_shell_switches.cc",
     "app/headless_shell_switches.h",
@@ -303,20 +302,18 @@ component("headless") {
     "lib/browser/headless_devtools_client_impl.cc",
     "lib/browser/headless_devtools_manager_delegate.cc",
     "lib/browser/headless_devtools_manager_delegate.h",
-    "lib/browser/headless_network_conditions.cc",
-    "lib/browser/headless_network_conditions.h",
     "lib/browser/headless_permission_manager.cc",
     "lib/browser/headless_permission_manager.h",
     "lib/browser/headless_platform_event_source.cc",
     "lib/browser/headless_platform_event_source.h",
     "lib/browser/headless_quota_permission_context.cc",
     "lib/browser/headless_quota_permission_context.h",
+    "lib/browser/headless_request_context_manager.cc",
+    "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_resource_dispatcher_host_delegate.cc",
     "lib/browser/headless_resource_dispatcher_host_delegate.h",
     "lib/browser/headless_shell_application_mac.h",
     "lib/browser/headless_shell_application_mac.mm",
-    "lib/browser/headless_url_request_context_getter.cc",
-    "lib/browser/headless_url_request_context_getter.h",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -326,8 +323,6 @@ component("headless") {
     "lib/browser/protocol/headless_devtools_session.h",
     "lib/browser/protocol/headless_handler.cc",
     "lib/browser/protocol/headless_handler.h",
-    "lib/browser/protocol/network_handler.cc",
-    "lib/browser/protocol/network_handler.h",
     "lib/browser/protocol/page_handler.cc",
     "lib/browser/protocol/page_handler.h",
     "lib/browser/protocol/protocol_string.cc",
@@ -569,6 +564,7 @@ group("headless_tests") {
 
 test("headless_unittests") {
   sources = [
+    "lib/browser/protocol/protocol_unittest.cc",
     "public/domains/types_unittest.cc",
     "public/util/error_reporter_unittest.cc",
   ]
@@ -853,12 +849,10 @@ if (is_win) {
 
 # Headless library with all included dependencies. Use this library unless you
 # have browser/child dependencies restrictions.
-static_library("headless_shell_lib") {
+jumbo_static_library("headless_shell_lib") {
   sources = [
     "app/headless_shell.cc",
     "app/headless_shell.h",
-    "lib/utility/headless_content_utility_client.cc",
-    "lib/utility/headless_content_utility_client.h",
     "public/headless_shell.h",
   ]
 
@@ -866,11 +860,14 @@ static_library("headless_shell_lib") {
     sources += [
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
+      "lib/utility/headless_content_utility_client.cc",
+      "lib/utility/headless_content_utility_client.h",
     ]
   }
 
   deps = [
     ":headless_renderer",
+    "//components/os_crypt",
     "//components/security_state/content",
     "//content/public/app:both",
     "//content/public/browser",

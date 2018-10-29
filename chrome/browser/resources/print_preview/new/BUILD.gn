@@ -308,7 +308,6 @@ js_library("destination_dialog") {
 js_library("destination_list") {
   deps = [
     ":destination_list_item",
-    "..:native_layer",
     "../data:destination",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:list_property_update_behavior",
@@ -318,9 +317,7 @@ js_library("destination_list") {
 js_library("destination_list_item") {
   deps = [
     ":highlight_utils",
-    "..:native_layer",
     "../data:destination",
-    "//ui/webui/resources/js:load_time_data",
   ]
 }
 

@@ -23,7 +23,7 @@ PASS lastClickTarget is button1
 Click on disappearing INPUT value:
 PASS lastClickTarget is input1
 Mousedown on a form control, and mouseup on an element outside:
-PASS lastClickTarget is document.body
+PASS lastClickTarget is null
 PASS successfullyParsed is true
 
 TEST COMPLETE

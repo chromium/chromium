@@ -26,10 +26,12 @@ namespace blink {
 
 std::unique_ptr<WebVideoFrameSubmitter> WebVideoFrameSubmitter::Create(
     WebContextProviderCallback context_provider_callback,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    bool use_sync_primitives) {
   return std::make_unique<VideoFrameSubmitter>(
       std::move(context_provider_callback),
-      std::make_unique<VideoFrameResourceProvider>(settings));
+      std::make_unique<VideoFrameResourceProvider>(settings,
+                                                   use_sync_primitives));
 }
 
 }  // namespace blink

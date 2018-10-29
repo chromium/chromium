@@ -9,9 +9,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxPanStrategyUnitTest() {}
+function ChromeVoxPanStrategyUnitTest() {}
 
-CvoxPanStrategyUnitTest.prototype = {
+ChromeVoxPanStrategyUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -36,7 +36,7 @@ function createArrayBuffer(content) {
   return result;
 }
 
- TEST_F('CvoxPanStrategyUnitTest', 'FixedPanning', function() {
+ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(false);
 
@@ -89,7 +89,8 @@ function createArrayBuffer(content) {
   assertEqualsJSON({firstRow: 0, lastRow: 1}, panner.viewPort);
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine',
+       function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(true);
 
@@ -142,7 +143,7 @@ TEST_F('CvoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
         panner.getCurrentBrailleViewportContents());
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(true);
 
@@ -172,7 +173,7 @@ TEST_F('CvoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
         panner.getCurrentBrailleViewportContents());
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'FixedSetContent', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(false);
 
@@ -188,7 +189,7 @@ TEST_F('CvoxPanStrategyUnitTest', 'FixedSetContent', function() {
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'WrappedSetContent', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(true);
 
@@ -245,7 +246,8 @@ TEST_F('CvoxPanStrategyUnitTest', 'WrappedSetContent', function() {
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'getCurrentTextViewportContents', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
+       function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(true);
 
@@ -269,7 +271,7 @@ TEST_F('CvoxPanStrategyUnitTest', 'getCurrentTextViewportContents', function() {
   assertEquals('789', panner.getCurrentTextViewportContents());
 });
 
-TEST_F('CvoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
+TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
   var panner = new cvox.PanStrategy();
   panner.setPanStrategy(true);
 

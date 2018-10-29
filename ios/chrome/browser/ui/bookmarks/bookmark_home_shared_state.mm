@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
 
 #include "base/logging.h"
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell.h"
+#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

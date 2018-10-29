@@ -104,16 +104,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
               int result);
 
   int SetSocketDiffServCodePointInternal(net::DiffServCodePoint dscp);
-  static std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
-      net::NetLog* net_log);
 
   std::unique_ptr<net::DatagramServerSocket> socket_;
   scoped_refptr<net::IOBuffer> recv_buffer_;
   net::IPEndPoint recv_address_;
 
   base::circular_deque<PendingPacket> send_queue_;
-  bool send_pending_;
-  net::DiffServCodePoint last_dscp_;
+  bool send_pending_ = false;
+  net::DiffServCodePoint last_dscp_ = net::DSCP_CS0;
 
   // Set of peer for which we have received STUN binding request or
   // response or relay allocation request or response.

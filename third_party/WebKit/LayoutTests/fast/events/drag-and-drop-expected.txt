@@ -9,7 +9,6 @@ PASS successfullyParsed is true
 TEST COMPLETE
 
 When effectAllowed == "uninitialized"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "move"
@@ -17,7 +16,6 @@ PASS event.dataTransfer.dropEffect is "link"
 PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "undefined"
-
 PASS event.dataTransfer.effectAllowed is "uninitialized"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.effectAllowed is "uninitialized"
@@ -30,7 +28,6 @@ PASS event.dataTransfer.effectAllowed is "uninitialized"
 PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "none"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
@@ -38,7 +35,6 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 
 When effectAllowed == "all"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "move"
@@ -46,7 +42,6 @@ PASS event.dataTransfer.dropEffect is "link"
 PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "copy"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "none"
@@ -54,7 +49,6 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "move"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "move"
@@ -62,7 +56,6 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "move"
 
 When effectAllowed == "link"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
@@ -70,7 +63,6 @@ PASS event.dataTransfer.dropEffect is "link"
 PASS event.dataTransfer.dropEffect is "link"
 
 When effectAllowed == "copyMove"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "move"
@@ -78,7 +70,6 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "move"
 
 When effectAllowed == "copyLink"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "copy"
 PASS event.dataTransfer.dropEffect is "none"
@@ -86,7 +77,6 @@ PASS event.dataTransfer.dropEffect is "link"
 PASS event.dataTransfer.dropEffect is "copy"
 
 When effectAllowed == "linkMove"
-
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "move"
@@ -94,7 +84,6 @@ PASS event.dataTransfer.dropEffect is "link"
 PASS event.dataTransfer.dropEffect is "move"
 
 When effectAllowed == "dummy"
-
 PASS event.dataTransfer.effectAllowed is "uninitialized"
 PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.effectAllowed is "uninitialized"
@@ -107,4 +96,3 @@ PASS event.dataTransfer.effectAllowed is "uninitialized"
 PASS event.dataTransfer.dropEffect is "copy"
 
 TEST COMPLETE
-

@@ -40,7 +40,7 @@ TEST(RawLoggingCompilationTest, PassingCheck) {
 }
 
 // Not all platforms support output from raw log, so we don't verify any
-// particular output for RAW check failures (expecting the empty std::string
+// particular output for RAW check failures (expecting the empty string
 // accomplishes this).  This test is primarily a compilation test, but we
 // are verifying process death when EXPECT_DEATH works for a platform.
 const char kExpectedDeathOutput[] = "";

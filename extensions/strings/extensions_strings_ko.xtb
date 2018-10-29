@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">비공개 키를 읽지 못했습니다.</translation>
 <translation id="6391538222494443604">입력 디렉토리가 있어야 합니다.</translation>
 <translation id="641087317769093025">확장 프로그램의 압축을 해제하지 못했습니다.</translation>
+<translation id="6413453408918378296">'<ph name="ICON" />' 아이콘이 충분히 표시되지 않습니다.</translation>
 <translation id="6542618148162044354">'<ph name="APP_NAME" />'이(가) 사용자의 기기 하나 이상에 액세스 권한을 요청하고 있습니다.</translation>
 <translation id="657064425229075395">백그라운드 스크립트('<ph name="BACKGROUND_SCRIPT" />')를 로드하지 못했습니다.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />의 제품 <ph name="PRODUCT_NAME" />(일련 번호 <ph name="SERIAL_NUMBER" />)</translation>

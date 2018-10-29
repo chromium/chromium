@@ -1080,7 +1080,7 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   TextControlElement::SetSuggestedValue(SanitizeValue(value));
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kControlValue));
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
   input_type_view_->UpdateView();
 }
 
@@ -1399,7 +1399,7 @@ static bool IsValidMIMEType(const String& type) {
   if (slash_position == kNotFound || !slash_position ||
       slash_position == type.length() - 1)
     return false;
-  for (size_t i = 0; i < type.length(); ++i) {
+  for (wtf_size_t i = 0; i < type.length(); ++i) {
     if (!IsRFC2616TokenCharacter(type[i]) && i != slash_position)
       return false;
   }

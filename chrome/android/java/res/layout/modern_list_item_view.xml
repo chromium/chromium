@@ -6,7 +6,7 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/icon_view"
         style="@style/ListItemStartIcon" />
 

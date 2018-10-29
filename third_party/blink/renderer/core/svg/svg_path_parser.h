@@ -33,7 +33,7 @@ namespace blink {
 
 class SVGPathConsumer;
 
-namespace SVGPathParser {
+namespace svg_path_parser {
 
 template <typename SourceType, typename ConsumerType>
 inline bool ParsePath(SourceType& source, ConsumerType& consumer) {
@@ -47,7 +47,7 @@ inline bool ParsePath(SourceType& source, ConsumerType& consumer) {
   return true;
 }
 
-}  // namespace SVGPathParser
+}  // namespace svg_path_parser
 
 class SVGPathNormalizer {
   STACK_ALLOCATED();

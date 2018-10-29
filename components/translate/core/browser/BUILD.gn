@@ -71,19 +71,12 @@ static_library("browser") {
     "//url",
   ]
 
-  if (!use_aura) {
+  if (is_ios || is_android) {
     sources += [
       "translate_infobar_delegate.cc",
       "translate_infobar_delegate.h",
     ]
     deps += [ "//components/infobars/core" ]
-  }
-
-  if (is_mac) {
-    sources += [
-      "options_menu_model.cc",
-      "options_menu_model.h",
-    ]
   }
 }
 

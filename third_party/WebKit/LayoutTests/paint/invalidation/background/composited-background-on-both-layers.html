@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<div id="target"
+     style="will-change: transform; overflow: scroll; background: red;
+            width: 200px; height: 200px; border: 20px dashed black">
+  <div style="height: 3000px"></div>
+</div>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  target.style.background = 'green';
+}
+onload = runRepaintAndPixelTest;
+</script>

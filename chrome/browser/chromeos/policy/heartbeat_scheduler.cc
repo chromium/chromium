@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/heartbeat_scheduler.h"
 
-#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -18,36 +18,39 @@
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace {
-const int kMinHeartbeatIntervalMs = 30 * 1000;  // 30 seconds
-const int kMaxHeartbeatIntervalMs = 24 * 60 * 60 * 1000;  // 24 hours
+
+constexpr base::TimeDelta kMinHeartbeatInterval =
+    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kMaxHeartbeatInterval = base::TimeDelta::FromDays(1);
 
 // Our sender ID we send up with all of our GCM messages.
-const char* kHeartbeatGCMAppID = "com.google.chromeos.monitoring";
+const char kHeartbeatGCMAppID[] = "com.google.chromeos.monitoring";
 
 // The default destination we send our GCM messages to.
-const char* kHeartbeatGCMDestinationID = "1013309121859";
-const char* kHeartbeatGCMSenderSuffix = "@google.com";
+const char kHeartbeatGCMDestinationID[] = "1013309121859";
+const char kHeartbeatGCMSenderSuffix[] = "@google.com";
 
 // Destination of upstream notification sign up message.
-const char* kUpstreamNotificationSignUpDestinationID =
+const char kUpstreamNotificationSignUpDestinationID[] =
     "https://gcm.googleapis.com/gcm/gcm.event_tracker";
 
 // A bit mask, listening events of upstream notification.
-const char* kUpstreamNotificationSignUpListeningEvents =
+const char kUpstreamNotificationSignUpListeningEvents[] =
     "7";  // START | DISCONNECTED | HEARTBEAT
 
-const char* kGcmMessageTypeKey = "type";
-const char* kHeartbeatTimestampKey = "timestamp";
-const char* kHeartbeatDomainNameKey = "domain_name";
-const char* kHeartbeatDeviceIDKey = "device_id";
-const char* kHeartbeatTypeValue = "hb";
-const char* kUpstreamNotificationNotifyKey = "notify";
-const char* kUpstreamNotificationRegIdKey = "registration_id";
+const char kGcmMessageTypeKey[] = "type";
+const char kHeartbeatTimestampKey[] = "timestamp";
+const char kHeartbeatDomainNameKey[] = "domain_name";
+const char kHeartbeatDeviceIDKey[] = "device_id";
+const char kHeartbeatTypeValue[] = "hb";
+const char kUpstreamNotificationNotifyKey[] = "notify";
+const char kUpstreamNotificationRegIdKey[] = "registration_id";
 
 // If we get an error registering with GCM, try again in two minutes.
-const int64_t kRegistrationRetryDelayMs = 2 * 60 * 1000;
+constexpr base::TimeDelta kRegistrationRetryDelay =
+    base::TimeDelta::FromMinutes(2);
 
-const char* kHeartbeatSchedulerScope =
+const char kHeartbeatSchedulerScope[] =
     "policy.heartbeat_scheduler.upstream_notification";
 
 // Returns the destination ID for GCM heartbeats.
@@ -65,8 +68,9 @@ std::string GetDestinationID() {
 
 namespace policy {
 
-const int64_t HeartbeatScheduler::kDefaultHeartbeatIntervalMs =
-    2 * 60 * 1000;  // 2 minutes
+// static
+const base::TimeDelta HeartbeatScheduler::kDefaultHeartbeatInterval =
+    base::TimeDelta::FromMinutes(2);
 
 // Helper class used to manage GCM registration (handles retrying after
 // errors, etc).
@@ -154,7 +158,7 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
           FROM_HERE,
           base::BindOnce(&HeartbeatRegistrationHelper::AttemptRegistration,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kRegistrationRetryDelayMs));
+          kRegistrationRetryDelay);
       break;
 
     case gcm::GCMClient::INVALID_PARAMETER:
@@ -184,8 +188,7 @@ HeartbeatScheduler::HeartbeatScheduler(
       enrollment_domain_(enrollment_domain),
       device_id_(device_id),
       heartbeat_enabled_(false),
-      heartbeat_interval_(
-          base::TimeDelta::FromMilliseconds(kDefaultHeartbeatIntervalMs)),
+      heartbeat_interval_(kDefaultHeartbeatInterval),
       cloud_policy_client_(cloud_policy_client),
       gcm_driver_(driver),
       weak_factory_(this) {
@@ -271,17 +274,13 @@ void HeartbeatScheduler::ShutdownGCM() {
 
 base::TimeDelta HeartbeatScheduler::EnsureValidHeartbeatInterval(
     const base::TimeDelta& interval) {
-  const base::TimeDelta min = base::TimeDelta::FromMilliseconds(
-      kMinHeartbeatIntervalMs);
-  const base::TimeDelta max = base::TimeDelta::FromMilliseconds(
-      kMaxHeartbeatIntervalMs);
-  if (interval < min) {
+  if (interval < kMinHeartbeatInterval) {
     DLOG(WARNING) << "Invalid heartbeat interval: " << interval;
-    return min;
+    return kMinHeartbeatInterval;
   }
-  if (interval > max) {
+  if (interval > kMaxHeartbeatInterval) {
     DLOG(WARNING) << "Invalid heartbeat interval: " << interval;
-    return max;
+    return kMaxHeartbeatInterval;
   }
   return interval;
 }

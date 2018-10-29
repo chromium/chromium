@@ -153,7 +153,6 @@ class ChromiumAndroidDriverTest(unittest.TestCase):
         self._driver = android.ChromiumAndroidDriver(
             self._port,
             worker_number=0,
-            pixel_tests=True,
             driver_details=android.ContentShellDriverDetails(),
             android_devices=self._port._devices)  # pylint: disable=protected-access
 
@@ -166,7 +165,7 @@ class ChromiumAndroidDriverTest(unittest.TestCase):
 
     # The cmd_line() method in the Android port is used for starting a shell, not the test runner.
     def test_cmd_line(self):
-        self.assertEquals(['adb', '-s', '123456789ABCDEF0', 'shell'], self._driver.cmd_line(False, []))
+        self.assertEquals(['adb', '-s', '123456789ABCDEF0', 'shell'], self._driver.cmd_line([]))
 
     # Test that the Chromium Android port can interpret Android's shell output.
     def test_read_prompt(self):
@@ -201,13 +200,13 @@ class ChromiumAndroidDriverTwoDriversTest(unittest.TestCase):
 
     def test_two_drivers(self):
         port = android.AndroidPort(MockSystemHost(executive=MockExecutive()), 'android')
-        driver0 = android.ChromiumAndroidDriver(port, worker_number=0, pixel_tests=True,
+        driver0 = android.ChromiumAndroidDriver(port, worker_number=0,
                                                 driver_details=android.ContentShellDriverDetails(), android_devices=port._devices)
-        driver1 = android.ChromiumAndroidDriver(port, worker_number=1, pixel_tests=True,
+        driver1 = android.ChromiumAndroidDriver(port, worker_number=1,
                                                 driver_details=android.ContentShellDriverDetails(), android_devices=port._devices)
 
-        self.assertEqual(['adb', '-s', '123456789ABCDEF0', 'shell'], driver0.cmd_line(True, []))
-        self.assertEqual(['adb', '-s', '123456789ABCDEF1', 'shell'], driver1.cmd_line(True, ['anything']))
+        self.assertEqual(['adb', '-s', '123456789ABCDEF0', 'shell'], driver0.cmd_line([]))
+        self.assertEqual(['adb', '-s', '123456789ABCDEF1', 'shell'], driver1.cmd_line(['anything']))
 
 
 class ChromiumAndroidTwoPortsTest(unittest.TestCase):
@@ -263,7 +262,6 @@ class ChromiumAndroidDriverTombstoneTest(unittest.TestCase):
         self._driver = android.ChromiumAndroidDriver(
             self._port,
             worker_number=0,
-            pixel_tests=True,
             driver_details=android.ContentShellDriverDetails(),
             android_devices=self._port._devices)  # pylint: disable=protected-access
 

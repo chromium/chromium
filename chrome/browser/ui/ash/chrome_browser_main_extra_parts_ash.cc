@@ -14,6 +14,7 @@
 #include "ash/public/interfaces/process_creation_time_recorder.mojom.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/night_light/night_light_client.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/ash/network/data_promo_notification.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session_controller_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/ash/tab_scrubber.h"
@@ -51,6 +53,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -158,8 +161,8 @@ void ChromeBrowserMainExtraPartsAsh::ServiceManagerConnectionStarted(
 
     views::MusClient::InitParams params;
     params.connector = connection->GetConnector();
-    params.io_task_runner = content::BrowserThread::GetTaskRunnerForThread(
-        content::BrowserThread::IO);
+    params.io_task_runner = base::CreateSingleThreadTaskRunnerWithTraits(
+        {content::BrowserThread::IO});
     // WMState has already been created, so don't have MusClient create it.
     params.create_wm_state = false;
     params.running_in_ws_process = features::IsSingleProcessMash();
@@ -185,9 +188,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (!features::IsMultiProcessMash()) {
     ash_shell_init_ = std::make_unique<AshShellInit>();
   } else {
-    // TODO(jamescook): Sort out whether to use ImmersiveContextAsh or
-    // ImmersiveContextMus in SingleProcessMash.
-    immersive_context_ = std::make_unique<ImmersiveContextMus>();
     immersive_handler_factory_ = std::make_unique<ImmersiveHandlerFactoryMus>();
 
     // Enterprise support in the browser can monitor user activity. Connect to
@@ -202,6 +202,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     user_activity_forwarder_ = std::make_unique<aura::UserActivityForwarder>(
         std::move(user_activity_monitor), user_activity_detector_.get());
   }
+
+  if (features::IsUsingWindowService())
+    immersive_context_ = std::make_unique<ImmersiveContextMus>();
+
+  screen_orientation_delegate_ =
+      std::make_unique<ScreenOrientationDelegateChromeos>();
 
   app_list_client_ = std::make_unique<AppListClientImpl>();
 

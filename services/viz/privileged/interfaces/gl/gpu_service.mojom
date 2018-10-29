@@ -12,6 +12,7 @@ import "components/arc/common/video_decode_accelerator.mojom";
 import "components/arc/common/video_encode_accelerator.mojom";
 [EnableIf=is_chromeos]
 import "components/arc/common/video_protected_buffer_allocator.mojom";
+import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/memory_stats.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
@@ -76,8 +77,11 @@ interface GpuService {
 
   GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
 
-  RequestCompleteGpuInfo() => (gpu.mojom.GpuInfo gpu_info);
-  GetGpuSupportedRuntimeVersion() => (gpu.mojom.GpuInfo gpu_info);
+  [EnableIf=is_win]
+  RequestCompleteGpuInfo() => (gpu.mojom.DxDiagNode dx_diagnostics);
+  [EnableIf=is_win]
+  GetGpuSupportedRuntimeVersion()
+      => (gpu.mojom.Dx12VulkanVersionInfo dx12_vulkan_version_info);
 
   // Requests that the GPU process query system availability of HDR output and
   // return it.

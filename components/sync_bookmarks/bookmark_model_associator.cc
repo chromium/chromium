@@ -149,10 +149,8 @@ const BookmarkNode* BookmarkNodeFinder::FindBookmarkNode(
   std::string adjusted_title;
   ConvertTitleToSyncInternalFormat(title, &adjusted_title);
   BookmarkNodeRange range = child_nodes_.equal_range(adjusted_title);
-  BookmarkNodeMap::iterator match_iter = range.second;
-  for (BookmarkNodeMap::iterator iter = range.first;
-       iter != range.second;
-       ++iter) {
+  auto match_iter = range.second;
+  for (auto iter = range.first; iter != range.second; ++iter) {
     // Then within the range match the node by the folder bit
     // and the url.
     const BookmarkNode* node = iter->second;
@@ -375,7 +373,7 @@ void BookmarkModelAssociator::Associate(const BookmarkNode* node,
 
 void BookmarkModelAssociator::Disassociate(int64_t sync_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  SyncIdToBookmarkNodeMap::iterator iter = id_map_inverse_.find(sync_id);
+  auto iter = id_map_inverse_.find(sync_id);
   if (iter == id_map_inverse_.end())
     return;
   id_map_.erase(iter->second->id());
@@ -660,8 +658,7 @@ syncer::SyncError BookmarkModelAssociator::BuildAssociations(
   BookmarkNodeFinder node_finder(parent_node);
 
   int index = 0;
-  for (std::vector<int64_t>::const_iterator it = sync_ids.begin();
-       it != sync_ids.end(); ++it) {
+  for (auto it = sync_ids.begin(); it != sync_ids.end(); ++it) {
     int64_t sync_child_id = *it;
     syncer::ReadNode sync_child_node(trans);
     if (sync_child_node.InitByIdLookup(sync_child_id) !=
@@ -800,7 +797,7 @@ void BookmarkModelAssociator::ApplyDeletesFromSyncJournal(
 
   // Check bookmark model from top to bottom.
   BookmarkStack dfs_stack;
-  for (BookmarkList::const_iterator it = context->bookmark_roots().begin();
+  for (auto it = context->bookmark_roots().begin();
        it != context->bookmark_roots().end(); ++it) {
     dfs_stack.push(*it);
   }
@@ -865,8 +862,7 @@ void BookmarkModelAssociator::ApplyDeletesFromSyncJournal(
   std::set<int64_t> journals_to_purge;
 
   // Remove empty folders from bottom to top.
-  for (FolderInfoList::reverse_iterator it = folders_matched.rbegin();
-      it != folders_matched.rend(); ++it) {
+  for (auto it = folders_matched.rbegin(); it != folders_matched.rend(); ++it) {
     if (it->folder->child_count() == 0) {
       bookmark_model_->Remove(it->folder);
       context->IncrementLocalItemsDeleted();

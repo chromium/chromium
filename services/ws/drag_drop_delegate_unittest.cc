@@ -26,15 +26,6 @@
 #include "ui/wm/core/default_screen_position_client.h"
 #include "url/gurl.h"
 
-namespace ui {
-
-// An equal-to operator to make EXPECT_EQ happy.
-bool operator==(const FileInfo& info1, const FileInfo& info2) {
-  return info1.path == info2.path && info1.display_name == info2.display_name;
-}
-
-}  // namespace ui
-
 namespace ws {
 
 class DragDropDelegateTest : public testing::Test {

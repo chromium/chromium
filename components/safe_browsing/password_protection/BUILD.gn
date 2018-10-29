@@ -50,6 +50,7 @@ source_set("password_protection_metrics_util") {
     "//base",
     "//components/safe_browsing:csd_proto",
     "//net:net",
+    "//ui/gfx/geometry:geometry",
   ]
 }
 

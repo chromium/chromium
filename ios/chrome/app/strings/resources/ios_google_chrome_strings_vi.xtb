@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3345341804167540816">Sử dụng Chrome ở mọi nơi</translation>
-<translation id="3678774398092457402">Bạn có muốn Chrome lưu mật khẩu cho trang web này không?</translation>
 <translation id="384394811301901750">Chrome không thể dùng máy ảnh bây giờ</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chrome hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">Bạn có thể tùy chỉnh mục <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> bất cứ lúc nào. Google có thể sử dụng nội dung trên các trang web bạn truy cập, hoạt động và các tương tác trên trình duyệt để cá nhân hóa Chrome và các dịch vụ của Google, chẳng hạn như Dịch, Tìm kiếm và quảng cáo.</translation>
 <translation id="5639704535586432836">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Google Chrome và bật máy ảnh.</translation>
 <translation id="5642200033778930880">Google Chrome không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
-<translation id="5703130498371792817">Bạn thích Chrome? <ph name="BEGIN_LINK" />Xếp hạng ứng dụng này<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Mẹo dành cho Chrome. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như Quay lại, Tiến lên và Tìm kiếm.</translation>
 <translation id="6036420186814142909">Google Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Ðiều khoản dịch vụ của Google Chrome</translation>
 <translation id="7165736900384873061">Bắt đầu dùng trình quét QR của Chrome</translation>
 <translation id="7172660552945675509">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chrome sang thanh dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome sử dụng Face ID để đảm bảo chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
 <translation id="7265369419224458312">Truy cập các tab bạn đã mở trên máy tính của mình, ngay tại đây. Bạn chỉ cần mở Chrome trên máy tính của mình, chuyển tới menu và chọn "Đăng nhập vào Chrome…”</translation>
 <translation id="728488472449859922">Bật trình quét QR của Google Chrome</translation>
 <translation id="7400722733683201933">Giới thiệu về Google Chrome</translation>

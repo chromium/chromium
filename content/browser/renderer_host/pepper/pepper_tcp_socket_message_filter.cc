@@ -6,21 +6,24 @@
 
 #include <cstring>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -28,10 +31,7 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
-#include "net/socket/client_socket_factory.h"
-#include "net/socket/client_socket_handle.h"
-#include "net/socket/ssl_client_socket.h"
-#include "net/socket/tcp_client_socket.h"
+#include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/error_conversion.h"
@@ -46,10 +46,10 @@
 #endif  // defined(OS_CHROMEOS)
 
 using ppapi::NetAddressPrivateImpl;
-using ppapi::host::NetErrorToPepperError;
-using ppapi::proxy::TCPSocketResourceConstants;
 using ppapi::TCPSocketState;
 using ppapi::TCPSocketVersion;
+using ppapi::host::NetErrorToPepperError;
+using ppapi::proxy::TCPSocketResourceConstants;
 
 namespace {
 
@@ -59,97 +59,113 @@ size_t g_num_tcp_filter_instances = 0;
 
 namespace content {
 
+network::mojom::NetworkContext*
+    PepperTCPSocketMessageFilter::network_context_for_testing = nullptr;
+
 PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
     ContentBrowserPepperHostFactory* factory,
     BrowserPpapiHostImpl* host,
     PP_Instance instance,
     TCPSocketVersion version)
     : version_(version),
+      host_(host),
+      factory_(factory),
+      instance_(instance),
       external_plugin_(host->external_plugin()),
       render_process_id_(0),
       render_frame_id_(0),
       binding_(this),
-      host_(host),
-      factory_(factory),
-      instance_(instance),
+      socket_observer_binding_(this),
       state_(TCPSocketState::INITIAL),
-      end_of_file_reached_(false),
       bind_input_addr_(NetAddressPrivateImpl::kInvalidNetAddress),
       socket_options_(SOCKET_OPTION_NODELAY),
       rcvbuf_size_(0),
       sndbuf_size_(0),
-      address_index_(0),
-      socket_(new net::TCPSocket(nullptr, nullptr, net::NetLogSource())),
-      ssl_context_helper_(host->ssl_context_helper()),
       pending_accept_(false),
+      pending_read_size_(0),
+      pending_read_pp_error_(PP_OK_COMPLETIONPENDING),
       pending_read_on_unthrottle_(false),
-      pending_read_net_result_(0),
+      pending_write_bytes_written_(0),
+      pending_write_pp_error_(PP_OK_COMPLETIONPENDING),
       is_potentially_secure_plugin_context_(
-          host->IsPotentiallySecurePluginContext(instance)) {
+          host->IsPotentiallySecurePluginContext(instance)),
+      weak_ptr_factory_(this) {
   DCHECK(host);
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   ++g_num_tcp_filter_instances;
   host_->AddInstanceObserver(instance_, this);
-  if (!host->GetRenderFrameIDsForInstance(
-          instance, &render_process_id_, &render_frame_id_)) {
+  is_throttled_ = host_->IsThrottled(instance_);
+  if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
+                                          &render_frame_id_)) {
     NOTREACHED();
   }
 }
 
-PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
-    BrowserPpapiHostImpl* host,
-    PP_Instance instance,
-    TCPSocketVersion version,
-    std::unique_ptr<net::TCPSocket> socket)
-    : version_(version),
-      external_plugin_(host->external_plugin()),
-      render_process_id_(0),
-      render_frame_id_(0),
-      binding_(this),
-      host_(host),
-      factory_(nullptr),
-      instance_(instance),
-      state_(TCPSocketState::CONNECTED),
-      end_of_file_reached_(false),
-      bind_input_addr_(NetAddressPrivateImpl::kInvalidNetAddress),
-      socket_options_(SOCKET_OPTION_NODELAY),
-      rcvbuf_size_(0),
-      sndbuf_size_(0),
-      address_index_(0),
-      socket_(std::move(socket)),
-      ssl_context_helper_(host->ssl_context_helper()),
-      pending_accept_(false),
-      pending_read_on_unthrottle_(false),
-      pending_read_net_result_(0),
-      is_potentially_secure_plugin_context_(
-          host->IsPotentiallySecurePluginContext(instance)) {
-  DCHECK(host);
-  DCHECK_NE(version, ppapi::TCP_SOCKET_VERSION_1_0);
+void PepperTCPSocketMessageFilter::SetConnectedSocket(
+    network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // This method grabs a reference to |this|, and releases a reference on the UI
+  // thread, so something should be holding on to a reference on the current
+  // thread to prevent the object from being deleted before this method returns.
+  DCHECK(HasOneRef());
 
-  ++g_num_tcp_filter_instances;
-  host_->AddInstanceObserver(instance_, this);
-  if (!host->GetRenderFrameIDsForInstance(
-          instance, &render_process_id_, &render_frame_id_)) {
-    NOTREACHED();
-  }
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(
+          &PepperTCPSocketMessageFilter::SetConnectedSocketOnUIThread, this,
+          std::move(connected_socket), std::move(socket_observer_request),
+          std::move(receive_stream), std::move(send_stream)));
 }
 
 PepperTCPSocketMessageFilter::~PepperTCPSocketMessageFilter() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (host_)
     host_->RemoveInstanceObserver(instance_, this);
-  if (socket_)
-    socket_->Close();
-  if (ssl_socket_)
-    ssl_socket_->Disconnect();
   --g_num_tcp_filter_instances;
+}
+
+void PepperTCPSocketMessageFilter::SetConnectedSocketOnUIThread(
+    network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(state_.state(), TCPSocketState::INITIAL);
+
+  state_ = TCPSocketState(TCPSocketState::CONNECTED);
+  connected_socket_.Bind(std::move(connected_socket));
+  socket_observer_binding_.Bind(std::move(socket_observer_request));
+  socket_observer_binding_.set_connection_error_handler(
+      base::BindOnce(&PepperTCPSocketMessageFilter::OnSocketObserverError,
+                     base::Unretained(this)));
+
+  SetStreams(std::move(receive_stream), std::move(send_stream));
+}
+
+// static
+void PepperTCPSocketMessageFilter::SetNetworkContextForTesting(
+    network::mojom::NetworkContext* network_context) {
+  network_context_for_testing = network_context;
 }
 
 // static
 size_t PepperTCPSocketMessageFilter::GetNumInstances() {
   return g_num_tcp_filter_instances;
+}
+
+void PepperTCPSocketMessageFilter::OnFilterDestroyed() {
+  ResourceMessageFilter::OnFilterDestroyed();
+  // Need to close all mojo pipes the socket on the UI thread. Calling Close()
+  // also ensures that future messages will be ignored, so the mojo pipes won't
+  // be re-created, so after Close() runs, |this| can be safely deleted on the
+  // IO thread.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(&PepperTCPSocketMessageFilter::Close, this));
 }
 
 scoped_refptr<base::TaskRunner>
@@ -160,14 +176,13 @@ PepperTCPSocketMessageFilter::OverrideTaskRunnerForMessage(
     case PpapiHostMsg_TCPSocket_Connect::ID:
     case PpapiHostMsg_TCPSocket_ConnectWithNetAddress::ID:
     case PpapiHostMsg_TCPSocket_Listen::ID:
-      return BrowserThread::GetTaskRunnerForThread(BrowserThread::UI);
     case PpapiHostMsg_TCPSocket_SSLHandshake::ID:
     case PpapiHostMsg_TCPSocket_Read::ID:
     case PpapiHostMsg_TCPSocket_Write::ID:
     case PpapiHostMsg_TCPSocket_Accept::ID:
     case PpapiHostMsg_TCPSocket_Close::ID:
     case PpapiHostMsg_TCPSocket_SetOption::ID:
-      return BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
   }
   return nullptr;
 }
@@ -199,13 +214,11 @@ int32_t PepperTCPSocketMessageFilter::OnResourceMessageReceived(
 }
 
 void PepperTCPSocketMessageFilter::OnThrottleStateChanged(bool is_throttled) {
-  if (pending_read_on_unthrottle_ && !is_throttled) {
-    DCHECK(read_buffer_);
-    OnReadCompleted(pending_read_reply_message_context_,
-                    pending_read_net_result_);
-    DCHECK(!read_buffer_);
-    pending_read_on_unthrottle_ = false;
-  }
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(
+          &PepperTCPSocketMessageFilter::ThrottleStateChangedOnUIThread, this,
+          is_throttled));
 }
 
 void PepperTCPSocketMessageFilter::OnHostDestroyed() {
@@ -214,18 +227,86 @@ void PepperTCPSocketMessageFilter::OnHostDestroyed() {
   host_ = nullptr;
 }
 
+void PepperTCPSocketMessageFilter::ThrottleStateChangedOnUIThread(
+    bool is_throttled) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  is_throttled_ = is_throttled;
+
+  if (pending_read_on_unthrottle_ && !is_throttled) {
+    pending_read_on_unthrottle_ = false;
+    TryRead();
+  }
+}
+
 void PepperTCPSocketMessageFilter::OnComplete(
     int result,
     const base::Optional<net::AddressList>& resolved_addresses) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   binding_.Close();
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnResolveCompleted, this,
-                     result, std::move(resolved_addresses)));
+  if (!host_resolve_context_.is_valid())
+    return;
 
-  Release();  // Balances AddRef in OnMsgConnect.
+  ppapi::host::ReplyMessageContext context = host_resolve_context_;
+  host_resolve_context_ = ppapi::host::ReplyMessageContext();
+
+  if (!state_.IsPending(TCPSocketState::CONNECT)) {
+    DCHECK(state_.state() == TCPSocketState::CLOSED);
+    SendConnectError(context, PP_ERROR_FAILED);
+    return;
+  }
+
+  if (result != net::OK) {
+    SendConnectError(context, NetErrorToPepperError(result));
+    state_.CompletePendingTransition(false);
+    return;
+  }
+
+  StartConnect(context, resolved_addresses.value());
+}
+
+void PepperTCPSocketMessageFilter::OnReadError(int net_error) {
+  // If this method is called more than once, or |net_error| isn't an allowed
+  // value, just ignore the message.
+  if (pending_read_pp_error_ != PP_OK_COMPLETIONPENDING || net_error > 0 ||
+      net_error == net::ERR_IO_PENDING) {
+    return;
+  }
+
+  pending_read_pp_error_ = NetErrorToPepperError(net_error);
+  // Complete pending read with the error message if there's a pending read, and
+  // the read data pipe has already been closed. If the pipe is still open, need
+  // to wait until all data has been read before can start failing reads.
+  if (pending_read_context_.is_valid() && !receive_stream_ &&
+      !pending_read_on_unthrottle_) {
+    TryRead();
+  }
+}
+
+void PepperTCPSocketMessageFilter::OnWriteError(int net_error) {
+  // If this method is called more than once, or |net_error| isn't an allowed
+  // value, just ignore the message.
+  if (pending_write_pp_error_ != PP_OK_COMPLETIONPENDING || net_error > 0 ||
+      net_error == net::ERR_IO_PENDING) {
+    return;
+  }
+
+  pending_write_pp_error_ = NetErrorToPepperError(net_error);
+  // Complete pending write with the error message if there's a pending write,
+  // and the write data pipe has already been closed.
+  if (pending_write_context_.is_valid() && !send_stream_)
+    TryWrite();
+}
+
+void PepperTCPSocketMessageFilter::OnSocketObserverError() {
+  // Note that this method may be called while a connection is still being made.
+  socket_observer_binding_.Close();
+
+  // Treat this as a read and write error. If read and write errors have already
+  // been received, these calls will do nothing.
+  OnReadError(PP_ERROR_FAILED);
+  OnWriteError(PP_ERROR_FAILED);
 }
 
 int32_t PepperTCPSocketMessageFilter::OnMsgBind(
@@ -245,12 +326,45 @@ int32_t PepperTCPSocketMessageFilter::OnMsgBind(
     return PP_ERROR_NOACCESS;
   }
 
+  if (state_.IsPending(TCPSocketState::BIND))
+    return PP_ERROR_INPROGRESS;
+
+  if (!state_.IsValidTransition(TCPSocketState::BIND))
+    return PP_ERROR_FAILED;
+
+  DCHECK(!bound_socket_);
+  DCHECK(!connected_socket_);
+  DCHECK(!server_socket_);
+
+  // Validate address.
+  net::IPAddressBytes address;
+  uint16_t port;
+  if (!NetAddressPrivateImpl::NetAddressToIPEndPoint(net_addr, &address,
+                                                     &port)) {
+    state_.DoTransition(TCPSocketState::BIND, false);
+    return PP_ERROR_ADDRESS_INVALID;
+  }
+
+  network::mojom::NetworkContext* network_context = GetNetworkContext();
+  if (!network_context)
+    return PP_ERROR_FAILED;
+
+  // The network service doesn't allow binding a socket without first
+  // specifying if it's going to be used as a read or write socket,
+  // so just hold onto the address for now, without actually binding anything.
   bind_input_addr_ = net_addr;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::DoBind, this,
-                     context->MakeReplyMessageContext(), net_addr));
+  state_.SetPendingTransition(TCPSocketState::BIND);
+  network_context->CreateTCPBoundSocket(
+      net::IPEndPoint(net::IPAddress(address), port),
+      pepper_socket_utils::PepperTCPNetworkAnnotationTag(),
+      mojo::MakeRequest(&bound_socket_),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PepperTCPSocketMessageFilter::OnBindCompleted,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         context->MakeReplyMessageContext()),
+          net::ERR_FAILED, base::nullopt /* local_addr */));
+
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -266,39 +380,34 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
     return PP_ERROR_NOACCESS;
   }
 
-  SocketPermissionRequest request(
-      SocketPermissionRequest::TCP_CONNECT, host, port);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             true /* private_api */,
-                                             &request,
-                                             render_process_id_,
-                                             render_frame_id_)) {
+  SocketPermissionRequest request(SocketPermissionRequest::TCP_CONNECT, host,
+                                  port);
+  if (!pepper_socket_utils::CanUseSocketAPIs(
+          external_plugin_, true /* private_api */, &request,
+          render_process_id_, render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }
 
-  RenderProcessHost* render_process_host =
-      RenderProcessHost::FromID(render_process_id_);
-  if (!render_process_host)
+  if (!state_.IsValidTransition(TCPSocketState::CONNECT)) {
+    NOTREACHED() << "This shouldn't be reached since the renderer only tries "
+                 << "to connect once.";
     return PP_ERROR_FAILED;
-  auto* storage_partition = render_process_host->GetStoragePartition();
-  // Grab a reference to this class to ensure that it's fully alive if a
-  // connection error occurs (i.e. ref count is higher than 0 and there's no
-  // task from ResourceMessageFilterDeleteTraits to delete this object on the IO
-  // thread pending). Balanced in OnComplete();
-  AddRef();
+  }
+
+  network::mojom::NetworkContext* network_context = GetNetworkContext();
+  if (!network_context)
+    return PP_ERROR_FAILED;
 
   network::mojom::ResolveHostClientPtr client_ptr;
   binding_.Bind(mojo::MakeRequest(&client_ptr));
   binding_.set_connection_error_handler(
       base::BindOnce(&PepperTCPSocketMessageFilter::OnComplete,
                      base::Unretained(this), net::ERR_FAILED, base::nullopt));
-  storage_partition->GetNetworkContext()->ResolveHost(
-      net::HostPortPair(host, port), nullptr, std::move(client_ptr));
+  network_context->ResolveHost(net::HostPortPair(host, port), nullptr,
+                               std::move(client_ptr));
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::HostResolvingStarted, this,
-                     context->MakeReplyMessageContext()));
+  state_.SetPendingTransition(TCPSocketState::CONNECT);
+  host_resolve_context_ = context->MakeReplyMessageContext();
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -310,18 +419,28 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnectWithNetAddress(
   content::SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
           content::SocketPermissionRequest::TCP_CONNECT, net_addr);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             IsPrivateAPI(),
-                                             &request,
-                                             render_process_id_,
+  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_, IsPrivateAPI(),
+                                             &request, render_process_id_,
                                              render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::DoConnectWithNetAddress,
-                     this, context->MakeReplyMessageContext(), net_addr));
+  if (!state_.IsValidTransition(TCPSocketState::CONNECT))
+    return PP_ERROR_FAILED;
+
+  state_.SetPendingTransition(TCPSocketState::CONNECT);
+
+  net::IPAddressBytes address;
+  uint16_t port;
+  if (!NetAddressPrivateImpl::NetAddressToIPEndPoint(net_addr, &address,
+                                                     &port)) {
+    state_.CompletePendingTransition(false);
+    return PP_ERROR_ADDRESS_INVALID;
+  }
+
+  StartConnect(
+      context->MakeReplyMessageContext(),
+      net::AddressList(net::IPEndPoint(net::IPAddress(address), port)));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -329,102 +448,100 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSSLHandshake(
     const ppapi::host::HostMessageContext* context,
     const std::string& server_name,
     uint16_t server_port,
-    const std::vector<std::vector<char> >& trusted_certs,
-    const std::vector<std::vector<char> >& untrusted_certs) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    const std::vector<std::vector<char>>& trusted_certs,
+    const std::vector<std::vector<char>>& untrusted_certs) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Allow to do SSL handshake only if currently the socket has been connected
   // and there isn't pending read or write.
   if (!state_.IsValidTransition(TCPSocketState::SSL_CONNECT) ||
-      read_buffer_.get() || write_buffer_base_.get() || write_buffer_.get()) {
+      pending_read_context_.is_valid() || pending_write_context_.is_valid()) {
     return PP_ERROR_FAILED;
+  }
+
+  // If there's a pending read or write error, fail the request with that.
+  if (pending_read_pp_error_ != PP_OK_COMPLETIONPENDING) {
+    if (pending_read_pp_error_ == PP_OK)
+      pending_read_pp_error_ = PP_ERROR_FAILED;
+    return pending_read_pp_error_;
+  }
+
+  if (pending_write_pp_error_ != PP_OK_COMPLETIONPENDING) {
+    if (pending_write_pp_error_ == PP_OK)
+      pending_write_pp_error_ = PP_ERROR_FAILED;
+    return pending_write_pp_error_;
   }
 
   // TODO(raymes,rsleevi): Use trusted/untrusted certificates when connecting.
-  net::IPEndPoint peer_address;
-  if (socket_->GetPeerAddress(&peer_address) != net::OK)
-    return PP_ERROR_FAILED;
 
-  std::unique_ptr<net::ClientSocketHandle> handle(
-      new net::ClientSocketHandle());
-  handle->SetSocket(base::WrapUnique<net::StreamSocket>(
-      new net::TCPClientSocket(std::move(socket_), peer_address)));
-  net::ClientSocketFactory* factory =
-      net::ClientSocketFactory::GetDefaultFactory();
-  net::HostPortPair host_port_pair(server_name, server_port);
-  net::SSLClientSocketContext ssl_context;
-  ssl_context.cert_verifier = ssl_context_helper_->GetCertVerifier();
-  ssl_context.transport_security_state =
-      ssl_context_helper_->GetTransportSecurityState();
-  ssl_context.cert_transparency_verifier =
-      ssl_context_helper_->GetCertTransparencyVerifier();
-  ssl_context.ct_policy_enforcer = ssl_context_helper_->GetCTPolicyEnforcer();
-  ssl_socket_ = factory->CreateSSLClientSocket(
-      std::move(handle), host_port_pair, ssl_context_helper_->ssl_config(),
-      ssl_context);
-  if (!ssl_socket_) {
-    LOG(WARNING) << "Failed to create an SSL client socket.";
-    state_.CompletePendingTransition(false);
-    return PP_ERROR_FAILED;
-  }
+  // Close all Mojo pipes except |connected_socket_|.
+  receive_stream_.reset();
+  read_watcher_.reset();
+  send_stream_.reset();
+  write_watcher_.reset();
+  socket_observer_binding_.Close();
+
+  network::mojom::SocketObserverPtr socket_observer;
+  socket_observer_binding_.Bind(mojo::MakeRequest(&socket_observer));
+  socket_observer_binding_.set_connection_error_handler(
+      base::BindOnce(&PepperTCPSocketMessageFilter::OnSocketObserverError,
+                     base::Unretained(this)));
 
   state_.SetPendingTransition(TCPSocketState::SSL_CONNECT);
 
-  const ppapi::host::ReplyMessageContext reply_context(
-      context->MakeReplyMessageContext());
-  int net_result = ssl_socket_->Connect(
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnSSLHandshakeCompleted,
-                     base::Unretained(this), reply_context));
-  if (net_result != net::ERR_IO_PENDING)
-    OnSSLHandshakeCompleted(reply_context, net_result);
+  network::mojom::TLSClientSocketOptionsPtr tls_client_socket_options =
+      network::mojom::TLSClientSocketOptions::New();
+  tls_client_socket_options->send_ssl_info = true;
+  net::HostPortPair host_port_pair(server_name, server_port);
+  connected_socket_->UpgradeToTLS(
+      host_port_pair, std::move(tls_client_socket_options),
+      pepper_socket_utils::PepperTCPNetworkAnnotationTag(),
+      mojo::MakeRequest(&tls_client_socket_), std::move(socket_observer),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PepperTCPSocketMessageFilter::OnSSLHandshakeCompleted,
+                         base::Unretained(this),
+                         context->MakeReplyMessageContext()),
+          net::ERR_FAILED, mojo::ScopedDataPipeConsumerHandle(),
+          mojo::ScopedDataPipeProducerHandle(), base::nullopt /* ssl_info */));
+
   return PP_OK_COMPLETIONPENDING;
 }
 
 int32_t PepperTCPSocketMessageFilter::OnMsgRead(
     const ppapi::host::HostMessageContext* context,
     int32_t bytes_to_read) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!state_.IsConnected() || end_of_file_reached_)
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // This only covers the case where the socket was explicitly closed from the
+  // caller, or the filter is being destroyed. Read errors and Mojo errors are
+  // handled in TryRead().
+  if (!state_.IsConnected())
     return PP_ERROR_FAILED;
-  if (read_buffer_.get())
+
+  if (pending_read_context_.is_valid())
     return PP_ERROR_INPROGRESS;
   if (bytes_to_read <= 0 ||
       bytes_to_read > TCPSocketResourceConstants::kMaxReadSize) {
     return PP_ERROR_BADARGUMENT;
   }
 
-  ppapi::host::ReplyMessageContext reply_context(
-      context->MakeReplyMessageContext());
-  read_buffer_ = base::MakeRefCounted<net::IOBuffer>(bytes_to_read);
-
-  int net_result = net::ERR_FAILED;
-  if (socket_) {
-    DCHECK_EQ(state_.state(), TCPSocketState::CONNECTED);
-    net_result = socket_->Read(
-        read_buffer_.get(), bytes_to_read,
-        base::BindOnce(&PepperTCPSocketMessageFilter::OnReadCompleted,
-                       base::Unretained(this), reply_context));
-  } else if (ssl_socket_) {
-    DCHECK_EQ(state_.state(), TCPSocketState::SSL_CONNECTED);
-    net_result = ssl_socket_->Read(
-        read_buffer_.get(), bytes_to_read,
-        base::BindOnce(&PepperTCPSocketMessageFilter::OnReadCompleted,
-                       base::Unretained(this), reply_context));
-  }
-  if (net_result != net::ERR_IO_PENDING)
-    OnReadCompleted(reply_context, net_result);
+  pending_read_context_ = context->MakeReplyMessageContext();
+  pending_read_size_ = static_cast<uint32_t>(bytes_to_read);
+  TryRead();
   return PP_OK_COMPLETIONPENDING;
 }
 
 int32_t PepperTCPSocketMessageFilter::OnMsgWrite(
     const ppapi::host::HostMessageContext* context,
     const std::string& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!state_.IsConnected())
     return PP_ERROR_FAILED;
-  if (write_buffer_base_.get() || write_buffer_.get())
+  if (pending_write_context_.is_valid())
     return PP_ERROR_INPROGRESS;
+
+  DCHECK(pending_write_data_.empty());
+  DCHECK_EQ(0u, pending_write_bytes_written_);
 
   size_t data_size = data.size();
   if (data_size == 0 ||
@@ -433,11 +550,9 @@ int32_t PepperTCPSocketMessageFilter::OnMsgWrite(
     return PP_ERROR_BADARGUMENT;
   }
 
-  write_buffer_base_ = base::MakeRefCounted<net::IOBuffer>(data_size);
-  memcpy(write_buffer_base_->data(), data.data(), data_size);
-  write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-      write_buffer_base_, data_size);
-  DoWrite(context->MakeReplyMessageContext());
+  pending_write_data_ = data;
+  pending_write_context_ = context->MakeReplyMessageContext();
+  TryWrite();
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -445,6 +560,12 @@ int32_t PepperTCPSocketMessageFilter::OnMsgListen(
     const ppapi::host::HostMessageContext* context,
     int32_t backlog) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (state_.IsPending(TCPSocketState::LISTEN))
+    return PP_ERROR_INPROGRESS;
+
+  if (!state_.IsValidTransition(TCPSocketState::LISTEN))
+    return PP_ERROR_FAILED;
 
   // This is only supported by PPB_TCPSocket v1.1 or above.
   if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
@@ -455,59 +576,64 @@ int32_t PepperTCPSocketMessageFilter::OnMsgListen(
   content::SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
           content::SocketPermissionRequest::TCP_LISTEN, bind_input_addr_);
-  if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
-                                             false /* private_api */,
-                                             &request,
-                                             render_process_id_,
-                                             render_frame_id_)) {
+  if (!pepper_socket_utils::CanUseSocketAPIs(
+          external_plugin_, false /* private_api */, &request,
+          render_process_id_, render_frame_id_)) {
     return PP_ERROR_NOACCESS;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::DoListen, this,
-                     context->MakeReplyMessageContext(), backlog));
+  DCHECK(bound_socket_);
+  DCHECK(!server_socket_);
+
+  state_.SetPendingTransition(TCPSocketState::LISTEN);
+
+  bound_socket_->Listen(
+      backlog, mojo::MakeRequest(&server_socket_),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PepperTCPSocketMessageFilter::OnListenCompleted,
+                         base::Unretained(this),
+                         context->MakeReplyMessageContext()),
+          net::ERR_FAILED));
   return PP_OK_COMPLETIONPENDING;
 }
 
 int32_t PepperTCPSocketMessageFilter::OnMsgAccept(
     const ppapi::host::HostMessageContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (pending_accept_)
     return PP_ERROR_INPROGRESS;
   if (state_.state() != TCPSocketState::LISTENING)
     return PP_ERROR_FAILED;
 
+  DCHECK(server_socket_);
+
   pending_accept_ = true;
-  ppapi::host::ReplyMessageContext reply_context(
-      context->MakeReplyMessageContext());
-  int net_result = socket_->Accept(
-      &accepted_socket_, &accepted_address_,
-      base::Bind(&PepperTCPSocketMessageFilter::OnAcceptCompleted,
-                 base::Unretained(this), reply_context));
-  if (net_result != net::ERR_IO_PENDING)
-    OnAcceptCompleted(reply_context, net_result);
+
+  network::mojom::SocketObserverPtr socket_observer;
+  network::mojom::SocketObserverRequest socket_observer_request =
+      mojo::MakeRequest(&socket_observer);
+  server_socket_->Accept(
+      std::move(socket_observer),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PepperTCPSocketMessageFilter::OnAcceptCompleted,
+                         base::Unretained(this),
+                         context->MakeReplyMessageContext(),
+                         std::move(socket_observer_request)),
+          net::ERR_FAILED, base::nullopt /* remote_addr */,
+          network::mojom::TCPConnectedSocketPtr(),
+          mojo::ScopedDataPipeConsumerHandle(),
+          mojo::ScopedDataPipeProducerHandle()));
   return PP_OK_COMPLETIONPENDING;
 }
 
 int32_t PepperTCPSocketMessageFilter::OnMsgClose(
     const ppapi::host::HostMessageContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (state_.state() == TCPSocketState::CLOSED)
     return PP_OK;
 
-  state_.DoTransition(TCPSocketState::CLOSE, true);
-#if defined(OS_CHROMEOS)
-  // Close the firewall hole, it is no longer needed.
-  firewall_hole_.reset();
-#endif  // defined(OS_CHROMEOS)
-  // Make sure we get no further callbacks from |socket_| or |ssl_socket_|.
-  if (socket_) {
-    socket_->Close();
-  } else if (ssl_socket_) {
-    ssl_socket_->Disconnect();
-  }
+  Close();
   return PP_OK;
 }
 
@@ -515,19 +641,37 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
     const ppapi::host::HostMessageContext* context,
     PP_TCPSocket_Option name,
     const ppapi::SocketOptionData& value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Options are only applied if |this| is currently being used as a client
+  // socket, or is going to be used as one - they are ignored for server
+  // sockets.
   switch (name) {
     case PP_TCPSOCKET_OPTION_NO_DELAY: {
       bool boolean_value = false;
       if (!value.GetBool(&boolean_value))
         return PP_ERROR_BADARGUMENT;
 
-      // If the socket is already connected, proxy the value to TCPSocket.
-      if (state_.state() == TCPSocketState::CONNECTED)
-        return socket_->SetNoDelay(boolean_value) ? PP_OK : PP_ERROR_FAILED;
+      // If |connected_socket_| is connecting or has connected, pass the setting
+      // along.
+      if (connected_socket_.is_bound()) {
+        connected_socket_->SetNoDelay(
+            boolean_value,
+            // Callback that converts a bool to a net error code which it then
+            // passes to the common completion callback routine.
+            base::BindOnce(
+                [](base::OnceCallback<void(int)> completion_callback,
+                   bool success) {
+                  std::move(completion_callback)
+                      .Run(success ? net::OK : net::ERR_FAILED);
+                },
+                CreateCompletionCallback<
+                    PpapiPluginMsg_TCPSocket_SetOptionReply>(context)));
+        return PP_OK_COMPLETIONPENDING;
+      }
 
-      // TCPSocket instance is not yet created. So remember the value here.
+      // TCPConnectedSocket instance is not yet created. So remember the value
+      // here.
       if (boolean_value) {
         socket_options_ |= SOCKET_OPTION_NODELAY;
       } else {
@@ -541,10 +685,14 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
           integer_value > TCPSocketResourceConstants::kMaxSendBufferSize)
         return PP_ERROR_BADARGUMENT;
 
-      // If the socket is already connected, proxy the value to TCPSocket.
-      if (state_.state() == TCPSocketState::CONNECTED) {
-        return NetErrorToPepperError(
-            socket_->SetSendBufferSize(integer_value));
+      // If |connected_socket_| is connecting or has connected, pass the setting
+      // along.
+      if (connected_socket_.is_bound()) {
+        connected_socket_->SetSendBufferSize(
+            integer_value,
+            CreateCompletionCallback<PpapiPluginMsg_TCPSocket_SetOptionReply>(
+                context));
+        return PP_OK_COMPLETIONPENDING;
       }
 
       // TCPSocket instance is not yet created. So remember the value here.
@@ -558,13 +706,18 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
           integer_value > TCPSocketResourceConstants::kMaxReceiveBufferSize)
         return PP_ERROR_BADARGUMENT;
 
-      // If the socket is already connected, proxy the value to TCPSocket.
-      if (state_.state() == TCPSocketState::CONNECTED) {
-        return NetErrorToPepperError(
-            socket_->SetReceiveBufferSize(integer_value));
+      // If |connected_socket_| is connecting or has connected, pass the setting
+      // along.
+      if (connected_socket_.is_bound()) {
+        connected_socket_->SetReceiveBufferSize(
+            integer_value,
+            CreateCompletionCallback<PpapiPluginMsg_TCPSocket_SetOptionReply>(
+                context));
+        return PP_OK_COMPLETIONPENDING;
       }
 
-      // TCPSocket instance is not yet created. So remember the value here.
+      // TCPConnectedSocket instance is not yet created. So remember the value
+      // here.
       socket_options_ |= SOCKET_OPTION_RCVBUF_SIZE;
       rcvbuf_size_ = integer_value;
       return PP_OK;
@@ -574,468 +727,497 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
       return PP_ERROR_BADARGUMENT;
     }
   }
+  return PP_OK;
 }
 
-void PepperTCPSocketMessageFilter::DoBind(
-    const ppapi::host::ReplyMessageContext& context,
-    const PP_NetAddress_Private& net_addr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (state_.IsPending(TCPSocketState::BIND)) {
-    SendBindError(context, PP_ERROR_INPROGRESS);
-    return;
-  }
-  if (!state_.IsValidTransition(TCPSocketState::BIND)) {
-    SendBindError(context, PP_ERROR_FAILED);
-    return;
-  }
-
-  int pp_result = PP_OK;
-  do {
-    net::IPAddressBytes address;
-    uint16_t port;
-    if (!NetAddressPrivateImpl::NetAddressToIPEndPoint(
-            net_addr, &address, &port)) {
-      pp_result = PP_ERROR_ADDRESS_INVALID;
-      break;
-    }
-    net::IPEndPoint bind_addr(net::IPAddress(address), port);
-
-    DCHECK(!socket_->IsValid());
-    pp_result = NetErrorToPepperError(socket_->Open(bind_addr.GetFamily()));
-    if (pp_result != PP_OK)
-      break;
-
-    pp_result = NetErrorToPepperError(socket_->SetDefaultOptionsForServer());
-    if (pp_result != PP_OK)
-      break;
-
-    pp_result = NetErrorToPepperError(socket_->Bind(bind_addr));
-    if (pp_result != PP_OK)
-      break;
-
-    net::IPEndPoint ip_end_point_local;
-    pp_result =
-        NetErrorToPepperError(socket_->GetLocalAddress(&ip_end_point_local));
-    if (pp_result != PP_OK)
-      break;
-
-    PP_NetAddress_Private local_addr =
-        NetAddressPrivateImpl::kInvalidNetAddress;
-    if (!NetAddressPrivateImpl::IPEndPointToNetAddress(
-            ip_end_point_local.address().bytes(), ip_end_point_local.port(),
-            &local_addr)) {
-      pp_result = PP_ERROR_ADDRESS_INVALID;
-      break;
-    }
-
-    SendBindReply(context, PP_OK, local_addr);
-    state_.DoTransition(TCPSocketState::BIND, true);
-    return;
-  } while (false);
-  if (socket_->IsValid())
-    socket_->Close();
-  SendBindError(context, pp_result);
-  state_.DoTransition(TCPSocketState::BIND, false);
-}
-
-void PepperTCPSocketMessageFilter::HostResolvingStarted(
-    const ppapi::host::ReplyMessageContext& context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!state_.IsValidTransition(TCPSocketState::CONNECT)) {
-    NOTREACHED() << "This shouldn't be reached since the renderer only tries "
-                 << "to connect once.";
-    SendConnectError(context, PP_ERROR_FAILED);
-    return;
-  }
-
-  state_.SetPendingTransition(TCPSocketState::CONNECT);
-  address_index_ = 0;
-  address_list_.clear();
-  host_resolve_context_ = context;
-}
-
-void PepperTCPSocketMessageFilter::DoConnectWithNetAddress(
-    const ppapi::host::ReplyMessageContext& context,
-    const PP_NetAddress_Private& net_addr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!state_.IsValidTransition(TCPSocketState::CONNECT)) {
-    SendConnectError(context, PP_ERROR_FAILED);
-    return;
-  }
-
-  state_.SetPendingTransition(TCPSocketState::CONNECT);
-
-  net::IPAddressBytes address;
-  uint16_t port;
-  if (!NetAddressPrivateImpl::NetAddressToIPEndPoint(
-          net_addr, &address, &port)) {
-    state_.CompletePendingTransition(false);
-    SendConnectError(context, PP_ERROR_ADDRESS_INVALID);
-    return;
-  }
-
-  // Copy the single IPEndPoint to address_list_.
-  address_index_ = 0;
-  address_list_.clear();
-  address_list_.push_back(net::IPEndPoint(net::IPAddress(address), port));
-  StartConnect(context);
-}
-
-void PepperTCPSocketMessageFilter::DoWrite(
-    const ppapi::host::ReplyMessageContext& context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(write_buffer_base_.get());
-  DCHECK(write_buffer_.get());
-  DCHECK_GT(write_buffer_->BytesRemaining(), 0);
+void PepperTCPSocketMessageFilter::TryRead() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(state_.IsConnected());
+  DCHECK(pending_read_context_.is_valid());
+  DCHECK_GT(pending_read_size_, 0u);
+  DCHECK(!pending_read_on_unthrottle_);
 
-  int net_result = net::ERR_FAILED;
-  if (socket_) {
-    DCHECK_EQ(state_.state(), TCPSocketState::CONNECTED);
-    net_result = socket_->Write(
-        write_buffer_.get(), write_buffer_->BytesRemaining(),
-        base::BindOnce(&PepperTCPSocketMessageFilter::OnWriteCompleted,
-                       base::Unretained(this), context),
-        static_cast<net::NetworkTrafficAnnotationTag>(
-            pepper_socket_utils::PepperTCPNetworkAnnotationTag()));
-  } else if (ssl_socket_) {
-    DCHECK_EQ(state_.state(), TCPSocketState::SSL_CONNECTED);
-    net_result = ssl_socket_->Write(
-        write_buffer_.get(), write_buffer_->BytesRemaining(),
-        base::BindOnce(&PepperTCPSocketMessageFilter::OnWriteCompleted,
-                       base::Unretained(this), context),
-        static_cast<net::NetworkTrafficAnnotationTag>(
-            pepper_socket_utils::PepperTCPNetworkAnnotationTag()));
+  if (is_throttled_) {
+    pending_read_on_unthrottle_ = true;
+    return;
   }
-  if (net_result != net::ERR_IO_PENDING)
-    OnWriteCompleted(context, net_result);
+
+  // This loop's body will generally run only once, unless there's a read error,
+  // in which case, it will start over, to re-apply the initial logic.
+  while (true) {
+    // As long as the read stream is still open, try to read data, even if a
+    // read error has been received from the SocketObserver, as there may still
+    // be data on the pipe.
+    if (!receive_stream_.is_valid()) {
+      // If no read error has been received yet, wait to receive one through
+      // the SocketObserver interface.
+      if (pending_read_pp_error_ == PP_OK_COMPLETIONPENDING) {
+        DCHECK(socket_observer_binding_.is_bound());
+        break;
+      }
+
+      // Otherwise, pass along the read error.
+      SendReadError(pending_read_pp_error_);
+      // If the socket was closed gracefully, only return OK for a single
+      // read.
+      if (pending_read_pp_error_ == PP_OK)
+        pending_read_pp_error_ = PP_ERROR_FAILED;
+      break;
+    }
+
+    DCHECK(read_watcher_);
+    const void* buffer = nullptr;
+    uint32_t num_bytes = 0;
+    int mojo_result = receive_stream_->BeginReadData(&buffer, &num_bytes,
+                                                     MOJO_READ_DATA_FLAG_NONE);
+    if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
+      read_watcher_->ArmOrNotify();
+      break;
+    }
+
+    // On a Mojo pipe error (which may indicate a graceful close, network error,
+    // or network service crash), close read pipe and restart the loop.
+    if (mojo_result != MOJO_RESULT_OK) {
+      read_watcher_.reset();
+      receive_stream_.reset();
+      continue;
+    }
+
+    // This is guaranteed by Mojo.
+    DCHECK_GT(num_bytes, 0u);
+
+    uint32_t bytes_to_copy = std::min(num_bytes, pending_read_size_);
+    SendReadReply(PP_OK, std::string(reinterpret_cast<const char*>(buffer),
+                                     bytes_to_copy));
+    receive_stream_->EndReadData(bytes_to_copy);
+    break;
+  }
 }
 
-void PepperTCPSocketMessageFilter::DoListen(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t backlog) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void PepperTCPSocketMessageFilter::TryWrite() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(state_.IsConnected());
+  DCHECK(pending_write_context_.is_valid());
+  DCHECK(!pending_write_data_.empty());
+  DCHECK_LT(pending_write_bytes_written_, pending_write_data_.size());
 
-  if (state_.IsPending(TCPSocketState::LISTEN)) {
-    SendListenReply(context, PP_ERROR_INPROGRESS);
-    return;
+  // The structure of this code largely mirrors TryRead() above, with a couple
+  // differences. The loop will repeat until all bytes are written, there's an
+  // error, or no more buffer space is available. Also, it's possible for a
+  // Mojo write to succeed, but a write to the underlying socket to fail. In
+  // that case, the failure might not be returned to the caller until it tries
+  // to write again. Since the socket APIs themselves don't guarantee that
+  // data has been successfully received by the remote server on success, this
+  // should not cause unexpected problems for consumers.
+  while (true) {
+    if (!send_stream_.is_valid()) {
+      if (pending_write_pp_error_ == PP_OK_COMPLETIONPENDING) {
+        DCHECK(socket_observer_binding_.is_bound());
+        break;
+      }
+      SendWriteReply(pending_write_pp_error_);
+      // Mirror handling of "OK" read errors, only sending "OK" for a single
+      // write, though getting "OK" from a write is probably nonsense, anyways.
+      if (pending_write_pp_error_ == PP_OK)
+        pending_write_pp_error_ = PP_ERROR_FAILED;
+      break;
+    }
+
+    DCHECK(write_watcher_);
+
+    uint32_t num_bytes =
+        pending_write_data_.size() - pending_write_bytes_written_;
+    DCHECK_GT(num_bytes, 0u);
+    int mojo_result = send_stream_->WriteData(
+        pending_write_data_.data() + pending_write_bytes_written_, &num_bytes,
+        MOJO_WRITE_DATA_FLAG_NONE);
+    if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
+      write_watcher_->ArmOrNotify();
+      break;
+    }
+
+    // On a Mojo pipe error (which may indicate a graceful close, network error,
+    // or network service crash), close write pipe and restart the loop.
+    if (mojo_result != MOJO_RESULT_OK) {
+      write_watcher_.reset();
+      send_stream_.reset();
+      continue;
+    }
+
+    // This is guaranteed by Mojo.
+    DCHECK_GT(num_bytes, 0u);
+
+    pending_write_bytes_written_ += num_bytes;
+    // If all bytes were written, nothing left to do.
+    if (pending_write_bytes_written_ == pending_write_data_.size()) {
+      SendWriteReply(pending_write_bytes_written_);
+      break;
+    }
   }
-  if (!state_.IsValidTransition(TCPSocketState::LISTEN)) {
-    SendListenReply(context, PP_ERROR_FAILED);
-    return;
-  }
-
-  int32_t pp_result = NetErrorToPepperError(socket_->Listen(backlog));
-#if defined(OS_CHROMEOS)
-  OpenFirewallHole(context, pp_result);
-#else
-  OnListenCompleted(context, pp_result);
-#endif
-}
-
-void PepperTCPSocketMessageFilter::OnResolveCompleted(
-    int net_result,
-    const base::Optional<net::AddressList>& resolved_addresses) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!host_resolve_context_.is_valid())
-    return;
-
-  ppapi::host::ReplyMessageContext context = host_resolve_context_;
-  host_resolve_context_ = ppapi::host::ReplyMessageContext();
-
-  if (!state_.IsPending(TCPSocketState::CONNECT)) {
-    DCHECK(state_.state() == TCPSocketState::CLOSED);
-    SendConnectError(context, PP_ERROR_FAILED);
-    return;
-  }
-
-  if (net_result != net::OK) {
-    SendConnectError(context, NetErrorToPepperError(net_result));
-    state_.CompletePendingTransition(false);
-    return;
-  }
-
-  address_list_ = resolved_addresses.value();
-  StartConnect(context);
 }
 
 void PepperTCPSocketMessageFilter::StartConnect(
-    const ppapi::host::ReplyMessageContext& context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    const ppapi::host::ReplyMessageContext& context,
+    const net::AddressList& address_list) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(state_.IsPending(TCPSocketState::CONNECT));
-  DCHECK_LT(address_index_, address_list_.size());
+  DCHECK(!address_list.empty());
 
-  if (!socket_->IsValid()) {
-    int net_result = socket_->Open(address_list_[address_index_].GetFamily());
-    if (net_result != net::OK) {
-      OnConnectCompleted(context, net_result);
+  network::mojom::SocketObserverPtr socket_observer;
+  socket_observer_binding_.Bind(mojo::MakeRequest(&socket_observer));
+
+  socket_observer_binding_.set_connection_error_handler(
+      base::BindOnce(&PepperTCPSocketMessageFilter::OnSocketObserverError,
+                     base::Unretained(this)));
+
+  network::mojom::TCPConnectedSocketOptionsPtr socket_options =
+      network::mojom::TCPConnectedSocketOptions::New();
+  socket_options->no_delay = !!(socket_options_ & SOCKET_OPTION_NODELAY);
+  if (socket_options_ & SOCKET_OPTION_RCVBUF_SIZE)
+    socket_options->receive_buffer_size = rcvbuf_size_;
+  if (socket_options_ & SOCKET_OPTION_SNDBUF_SIZE)
+    socket_options->send_buffer_size = sndbuf_size_;
+
+  network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PepperTCPSocketMessageFilter::OnConnectCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), context),
+          net::ERR_FAILED, base::nullopt, base::nullopt,
+          mojo::ScopedDataPipeConsumerHandle(),
+          mojo::ScopedDataPipeProducerHandle());
+  if (bound_socket_) {
+    bound_socket_->Connect(address_list, std::move(socket_options),
+                           mojo::MakeRequest(&connected_socket_),
+                           std::move(socket_observer), std::move(callback));
+  } else {
+    network::mojom::NetworkContext* network_context = GetNetworkContext();
+    if (!network_context) {
+      // This will delete |callback|, which will invoke OnConnectCompleted()
+      // with an error.
       return;
     }
+    network_context->CreateTCPConnectedSocket(
+        base::nullopt /* local_addr */, address_list, std::move(socket_options),
+        pepper_socket_utils::PepperTCPNetworkAnnotationTag(),
+        mojo::MakeRequest(&connected_socket_), std::move(socket_observer),
+        std::move(callback));
   }
-
-  socket_->SetDefaultOptionsForClient();
-
-  if (!(socket_options_ & SOCKET_OPTION_NODELAY)) {
-    if (!socket_->SetNoDelay(false)) {
-      OnConnectCompleted(context, net::ERR_FAILED);
-      return;
-    }
-  }
-  if (socket_options_ & SOCKET_OPTION_RCVBUF_SIZE) {
-    int net_result = socket_->SetReceiveBufferSize(rcvbuf_size_);
-    if (net_result != net::OK) {
-      OnConnectCompleted(context, net_result);
-      return;
-    }
-  }
-  if (socket_options_ & SOCKET_OPTION_SNDBUF_SIZE) {
-    int net_result = socket_->SetSendBufferSize(sndbuf_size_);
-    if (net_result != net::OK) {
-      OnConnectCompleted(context, net_result);
-      return;
-    }
-  }
-
-  int net_result = socket_->Connect(
-      address_list_[address_index_],
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnConnectCompleted,
-                     base::Unretained(this), context));
-  if (net_result != net::ERR_IO_PENDING)
-    OnConnectCompleted(context, net_result);
 }
 
 void PepperTCPSocketMessageFilter::OnConnectCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    int net_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    int net_result,
+    const base::Optional<net::IPEndPoint>& local_addr,
+    const base::Optional<net::IPEndPoint>& peer_addr,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!state_.IsPending(TCPSocketState::CONNECT)) {
-    DCHECK(state_.state() == TCPSocketState::CLOSED);
-    SendConnectError(context, PP_ERROR_FAILED);
+  int32_t pp_result = NetErrorToPepperError(net_result);
+
+  if (state_.state() == TCPSocketState::CLOSED) {
+    // If this is called as a result of Close() being invoked and closing the
+    // pipe, fail the request without doing anything.
+    DCHECK_EQ(net_result, net::ERR_FAILED);
+    SendConnectError(context, pp_result);
     return;
   }
 
-  int32_t pp_result = NetErrorToPepperError(net_result);
+  DCHECK(state_.IsPending(TCPSocketState::CONNECT));
+
   do {
     if (pp_result != PP_OK)
       break;
 
-    net::IPEndPoint ip_end_point_local;
-    net::IPEndPoint ip_end_point_remote;
-    pp_result =
-        NetErrorToPepperError(socket_->GetLocalAddress(&ip_end_point_local));
-    if (pp_result != PP_OK)
-      break;
-    pp_result =
-        NetErrorToPepperError(socket_->GetPeerAddress(&ip_end_point_remote));
-    if (pp_result != PP_OK)
-      break;
-
-    PP_NetAddress_Private local_addr =
+    PP_NetAddress_Private pp_local_addr =
         NetAddressPrivateImpl::kInvalidNetAddress;
-    PP_NetAddress_Private remote_addr =
+    PP_NetAddress_Private pp_remote_addr =
         NetAddressPrivateImpl::kInvalidNetAddress;
-    if (!NetAddressPrivateImpl::IPEndPointToNetAddress(
-            ip_end_point_local.address().bytes(), ip_end_point_local.port(),
-            &local_addr) ||
+    if (!local_addr || !peer_addr ||
         !NetAddressPrivateImpl::IPEndPointToNetAddress(
-            ip_end_point_remote.address().bytes(), ip_end_point_remote.port(),
-            &remote_addr)) {
+            local_addr->address().bytes(), local_addr->port(),
+            &pp_local_addr) ||
+        !NetAddressPrivateImpl::IPEndPointToNetAddress(
+            peer_addr->address().bytes(), peer_addr->port(), &pp_remote_addr)) {
       pp_result = PP_ERROR_ADDRESS_INVALID;
       break;
     }
 
-    SendConnectReply(context, PP_OK, local_addr, remote_addr);
+    SetStreams(std::move(receive_stream), std::move(send_stream));
+
+    bound_socket_.reset();
+
+    SendConnectReply(context, PP_OK, pp_local_addr, pp_remote_addr);
     state_.CompletePendingTransition(true);
     return;
   } while (false);
 
-  if (version_ == ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
-    DCHECK_EQ(1u, address_list_.size());
+  // Handle errors.
 
-    SendConnectError(context, pp_result);
-    state_.CompletePendingTransition(false);
-  } else {
-    // We have to recreate |socket_| because it doesn't allow a second connect
-    // attempt. We won't lose any state such as bound address or set options,
-    // because in the private or v1.0 API, connect must be the first operation.
-    socket_.reset(new net::TCPSocket(nullptr, nullptr, net::NetLogSource()));
+  // This can happen even when the network service is behaving correctly, as
+  // we may see the |socket_observer_binding_| closed before receiving an
+  // error.
+  pending_read_pp_error_ = PP_OK_COMPLETIONPENDING;
+  pending_write_pp_error_ = PP_OK_COMPLETIONPENDING;
 
-    if (address_index_ + 1 < address_list_.size()) {
-      DCHECK_EQ(version_, ppapi::TCP_SOCKET_VERSION_PRIVATE);
-      address_index_++;
-      StartConnect(context);
-    } else {
-      SendConnectError(context, pp_result);
-      // In order to maintain backward compatibility, allow further attempts to
-      // connect the socket.
-      state_ = TCPSocketState(TCPSocketState::INITIAL);
-    }
+  Close();
+  SendConnectError(context, pp_result);
+
+  if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
+    // In order to maintain backward compatibility, allow further attempts
+    // to connect the socket.
+    state_ = TCPSocketState(TCPSocketState::INITIAL);
   }
 }
 
 void PepperTCPSocketMessageFilter::OnSSLHandshakeCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    int net_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    int net_result,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream,
+    const base::Optional<net::SSLInfo>& ssl_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!state_.IsPending(TCPSocketState::SSL_CONNECT)) {
-    DCHECK(state_.state() == TCPSocketState::CLOSED);
-    SendSSLHandshakeReply(context, PP_ERROR_FAILED);
+  int pp_result = NetErrorToPepperError(net_result);
+  if (state_.state() == TCPSocketState::CLOSED) {
+    // If this is called as a result of Close() being invoked and closing the
+    // pipe, fail the request without doing anything.
+    DCHECK_EQ(net_result, net::ERR_FAILED);
+    SendSSLHandshakeReply(context, pp_result, base::nullopt /* ssl_info */);
     return;
   }
 
-  SendSSLHandshakeReply(context, NetErrorToPepperError(net_result));
-  state_.CompletePendingTransition(net_result == net::OK);
-}
+  DCHECK(state_.IsPending(TCPSocketState::SSL_CONNECT));
 
-void PepperTCPSocketMessageFilter::OnReadCompleted(
-    const ppapi::host::ReplyMessageContext& context,
-    int net_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(read_buffer_.get());
+  if (pp_result == PP_OK && !ssl_info)
+    pp_result = PP_ERROR_FAILED;
 
-  if (host_ && host_->IsThrottled(instance_)) {
-    pending_read_on_unthrottle_ = true;
-    pending_read_reply_message_context_ = context;
-    pending_read_net_result_ = net_result;
-    return;
-  }
+  state_.CompletePendingTransition(pp_result == PP_OK);
 
-  if (net_result > 0) {
-    SendReadReply(
-        context, PP_OK, std::string(read_buffer_->data(), net_result));
-  } else if (net_result == 0) {
-    end_of_file_reached_ = true;
-    SendReadReply(context, PP_OK, std::string());
+  if (pp_result != PP_OK) {
+    Close();
   } else {
-    SendReadError(context, NetErrorToPepperError(net_result));
+    SetStreams(std::move(receive_stream), std::move(send_stream));
   }
-  read_buffer_ = nullptr;
+
+  SendSSLHandshakeReply(context, pp_result, ssl_info);
 }
 
-void PepperTCPSocketMessageFilter::OnWriteCompleted(
+void PepperTCPSocketMessageFilter::OnBindCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    int net_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(write_buffer_base_.get());
-  DCHECK(write_buffer_.get());
+    int net_result,
+    const base::Optional<net::IPEndPoint>& local_addr) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Note: For partial writes of 0 bytes, don't continue writing to avoid a
-  // likely infinite loop.
-  if (net_result > 0) {
-    write_buffer_->DidConsume(net_result);
-    if (write_buffer_->BytesRemaining() > 0 && state_.IsConnected()) {
-      DoWrite(context);
-      return;
-    }
+  int pp_result = NetErrorToPepperError(net_result);
+  if (state_.state() == TCPSocketState::CLOSED) {
+    // If this is called as a result of Close() being invoked and closing the
+    // pipe, fail the request without doing anything.
+    DCHECK_EQ(net_result, net::ERR_FAILED);
+    SendBindError(context, pp_result);
+    return;
   }
 
-  if (net_result >= 0)
-    SendWriteReply(context, write_buffer_->BytesConsumed());
-  else
-    SendWriteReply(context, NetErrorToPepperError(net_result));
+  DCHECK(bound_socket_);
+  DCHECK(state_.IsPending(TCPSocketState::BIND));
 
-  write_buffer_ = nullptr;
-  write_buffer_base_ = nullptr;
+  PP_NetAddress_Private bound_address =
+      NetAddressPrivateImpl::kInvalidNetAddress;
+  if (pp_result == PP_OK &&
+      (!local_addr || !NetAddressPrivateImpl::IPEndPointToNetAddress(
+                          local_addr->address().bytes(), local_addr->port(),
+                          &bound_address))) {
+    pp_result = PP_ERROR_ADDRESS_INVALID;
+  }
+
+  if (pp_result != PP_OK) {
+    bound_socket_.reset();
+  } else {
+    bind_output_ip_endpoint_ = *local_addr;
+  }
+
+  SendBindReply(context, pp_result, bound_address);
+  state_.CompletePendingTransition(pp_result == PP_OK);
 }
 
 void PepperTCPSocketMessageFilter::OnListenCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  SendListenReply(context, pp_result);
-  state_.DoTransition(TCPSocketState::LISTEN, pp_result == PP_OK);
-}
+    int net_result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_CHROMEOS)
-void PepperTCPSocketMessageFilter::OpenFirewallHole(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_result) {
-  if (pp_result != PP_OK) {
+  int pp_result = NetErrorToPepperError(net_result);
+  if (state_.state() == TCPSocketState::CLOSED) {
+    // If this is called as a result of Close() being invoked and closing the
+    // pipe, fail the request without doing anything.
+    DCHECK_EQ(net_result, net::ERR_FAILED);
+    SendListenReply(context, pp_result);
     return;
   }
 
-  net::IPEndPoint local_addr;
-  // Has already been called successfully in DoBind().
-  socket_->GetLocalAddress(&local_addr);
-  pepper_socket_utils::FirewallHoleOpenCallback callback =
-      base::Bind(&PepperTCPSocketMessageFilter::OnFirewallHoleOpened, this,
-                 context, pp_result);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&pepper_socket_utils::OpenTCPFirewallHole, local_addr,
-                     callback));
-}
+  DCHECK(state_.IsPending(TCPSocketState::LISTEN));
 
-void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t result,
-    std::unique_ptr<chromeos::FirewallHole> hole) {
-  LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";
-  firewall_hole_.reset(hole.release());
-
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&PepperTCPSocketMessageFilter::OnListenCompleted, this,
-                     context, result));
-}
+#if defined(OS_CHROMEOS)
+  if (pp_result == PP_OK) {
+    OpenFirewallHole(context);
+    return;
+  }
 #endif  // defined(OS_CHROMEOS)
+
+  SendListenReply(context, pp_result);
+  state_.CompletePendingTransition(pp_result == PP_OK);
+  if (pp_result != PP_OK)
+    Close();
+}
 
 void PepperTCPSocketMessageFilter::OnAcceptCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    int net_result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    network::mojom::SocketObserverRequest socket_observer_request,
+    int net_result,
+    const base::Optional<net::IPEndPoint>& remote_addr,
+    network::mojom::TCPConnectedSocketPtr connected_socket,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(pending_accept_);
 
   pending_accept_ = false;
-
   if (net_result != net::OK) {
     SendAcceptError(context, NetErrorToPepperError(net_result));
     return;
   }
 
-  DCHECK(accepted_socket_.get());
-
-  net::IPEndPoint ip_end_point_local;
-  PP_NetAddress_Private local_addr = NetAddressPrivateImpl::kInvalidNetAddress;
-  PP_NetAddress_Private remote_addr = NetAddressPrivateImpl::kInvalidNetAddress;
-
-  int32_t pp_result = NetErrorToPepperError(
-      accepted_socket_->GetLocalAddress(&ip_end_point_local));
-  if (pp_result != PP_OK) {
-    SendAcceptError(context, pp_result);
+  if (!remote_addr || !connected_socket.is_bound()) {
+    SendAcceptError(context, NetErrorToPepperError(net_result));
     return;
   }
+
+  DCHECK(socket_observer_request.is_pending());
+
+  PP_NetAddress_Private pp_remote_addr =
+      NetAddressPrivateImpl::kInvalidNetAddress;
+
   if (!NetAddressPrivateImpl::IPEndPointToNetAddress(
-          ip_end_point_local.address().bytes(), ip_end_point_local.port(),
-          &local_addr) ||
-      !NetAddressPrivateImpl::IPEndPointToNetAddress(
-          accepted_address_.address().bytes(), accepted_address_.port(),
-          &remote_addr)) {
+          remote_addr->address().bytes(), remote_addr->port(),
+          &pp_remote_addr)) {
     SendAcceptError(context, PP_ERROR_ADDRESS_INVALID);
     return;
   }
 
+  PP_NetAddress_Private bound_address =
+      NetAddressPrivateImpl::kInvalidNetAddress;
+  bool success = NetAddressPrivateImpl::IPEndPointToNetAddress(
+      bind_output_ip_endpoint_.address().bytes(),
+      bind_output_ip_endpoint_.port(), &bound_address);
+  // This conversion should succeed, since it succeeded in OnBindComplete()
+  // already.
+  DCHECK(success);
+
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&PepperTCPSocketMessageFilter::OnAcceptCompletedOnIOThread,
+                     this, context, connected_socket.PassInterface(),
+                     std::move(socket_observer_request),
+                     std::move(receive_stream), std::move(send_stream),
+                     bound_address, pp_remote_addr));
+}
+
+void PepperTCPSocketMessageFilter::OnAcceptCompletedOnIOThread(
+    const ppapi::host::ReplyMessageContext& context,
+    network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream,
+    PP_NetAddress_Private pp_local_addr,
+    PP_NetAddress_Private pp_remote_addr) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   // |factory_| is guaranteed to be non-NULL here. Only those instances created
   // in CONNECTED state have a NULL |factory_|, while getting here requires
   // LISTENING state.
+  DCHECK(factory_);
+
   std::unique_ptr<ppapi::host::ResourceHost> host =
-      factory_->CreateAcceptedTCPSocket(instance_, version_,
-                                        std::move(accepted_socket_));
+      factory_->CreateAcceptedTCPSocket(
+          instance_, version_, std::move(connected_socket),
+          std::move(socket_observer_request), std::move(receive_stream),
+          std::move(send_stream));
   if (!host) {
     SendAcceptError(context, PP_ERROR_NOSPACE);
     return;
   }
+
   int pending_host_id =
       host_->GetPpapiHost()->AddPendingResourceHost(std::move(host));
-  if (pending_host_id)
-    SendAcceptReply(context, PP_OK, pending_host_id, local_addr, remote_addr);
-  else
+  if (pending_host_id) {
+    SendAcceptReply(context, PP_OK, pending_host_id, pp_local_addr,
+                    pp_remote_addr);
+  } else {
     SendAcceptError(context, PP_ERROR_NOSPACE);
+  }
 }
+
+void PepperTCPSocketMessageFilter::SetStreams(
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK(!read_watcher_);
+  DCHECK(!write_watcher_);
+
+  receive_stream_ = std::move(receive_stream);
+  read_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+  read_watcher_->Watch(
+      receive_stream_.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(
+          [](PepperTCPSocketMessageFilter* message_filter,
+             MojoResult /* result */,
+             const mojo::HandleSignalsState& /* state */) {
+            // TryRead will correctly handle both cases (data ready to be
+            // read, and the pipe was closed).
+            message_filter->TryRead();
+          },
+          base::Unretained(this)));
+
+  send_stream_ = std::move(send_stream);
+  write_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+  write_watcher_->Watch(
+      send_stream_.get(),
+      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(
+          [](PepperTCPSocketMessageFilter* message_filter,
+             MojoResult /* result */,
+             const mojo::HandleSignalsState& /* state */) {
+            // TryRead will correctly handle both cases (data ready to be
+            // read, and the pipe was closed).
+            message_filter->TryWrite();
+          },
+          base::Unretained(this)));
+}
+
+#if defined(OS_CHROMEOS)
+void PepperTCPSocketMessageFilter::OpenFirewallHole(
+    const ppapi::host::ReplyMessageContext& context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  pepper_socket_utils::FirewallHoleOpenCallback callback = base::BindRepeating(
+      &PepperTCPSocketMessageFilter::OnFirewallHoleOpened, this, context);
+  pepper_socket_utils::OpenTCPFirewallHole(bind_output_ip_endpoint_, callback);
+}
+
+void PepperTCPSocketMessageFilter::OnFirewallHoleOpened(
+    const ppapi::host::ReplyMessageContext& context,
+    std::unique_ptr<chromeos::FirewallHole> hole) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(state_.IsPending(TCPSocketState::LISTEN));
+  LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";
+  firewall_hole_.reset(hole.release());
+
+  SendListenReply(context, PP_OK);
+  state_.CompletePendingTransition(true);
+}
+#endif  // defined(OS_CHROMEOS)
 
 void PepperTCPSocketMessageFilter::SendBindReply(
     const ppapi::host::ReplyMessageContext& context,
@@ -1069,24 +1251,21 @@ void PepperTCPSocketMessageFilter::SendConnectReply(
 void PepperTCPSocketMessageFilter::SendConnectError(
     const ppapi::host::ReplyMessageContext& context,
     int32_t pp_error) {
-  SendConnectReply(context,
-                   pp_error,
-                   NetAddressPrivateImpl::kInvalidNetAddress,
+  SendConnectReply(context, pp_error, NetAddressPrivateImpl::kInvalidNetAddress,
                    NetAddressPrivateImpl::kInvalidNetAddress);
 }
 
 void PepperTCPSocketMessageFilter::SendSSLHandshakeReply(
     const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_result) {
+    int32_t pp_result,
+    const base::Optional<net::SSLInfo>& ssl_info) {
   ppapi::host::ReplyMessageContext reply_context(context);
   reply_context.params.set_result(pp_result);
   ppapi::PPB_X509Certificate_Fields certificate_fields;
   if (pp_result == PP_OK) {
-    // Our socket is guaranteed to be an SSL socket if we get here.
-    net::SSLInfo ssl_info;
-    ssl_socket_->GetSSLInfo(&ssl_info);
-    if (ssl_info.cert.get()) {
-      pepper_socket_utils::GetCertificateFields(*ssl_info.cert.get(),
+    DCHECK(ssl_info);
+    if (ssl_info->cert.get()) {
+      pepper_socket_utils::GetCertificateFields(*ssl_info->cert,
                                                 &certificate_fields);
     }
   }
@@ -1094,27 +1273,36 @@ void PepperTCPSocketMessageFilter::SendSSLHandshakeReply(
             PpapiPluginMsg_TCPSocket_SSLHandshakeReply(certificate_fields));
 }
 
-void PepperTCPSocketMessageFilter::SendReadReply(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_result,
-    const std::string& data) {
-  ppapi::host::ReplyMessageContext reply_context(context);
-  reply_context.params.set_result(pp_result);
-  SendReply(reply_context, PpapiPluginMsg_TCPSocket_ReadReply(data));
+void PepperTCPSocketMessageFilter::SendReadReply(int32_t pp_result,
+                                                 const std::string& data) {
+  DCHECK(pending_read_context_.is_valid());
+  DCHECK_GT(pending_read_size_, 0u);
+
+  pending_read_context_.params.set_result(pp_result);
+  SendReply(pending_read_context_, PpapiPluginMsg_TCPSocket_ReadReply(data));
+
+  pending_read_context_ = ppapi::host::ReplyMessageContext();
+  pending_read_size_ = 0;
 }
 
-void PepperTCPSocketMessageFilter::SendReadError(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_error) {
-  SendReadReply(context, pp_error, std::string());
+void PepperTCPSocketMessageFilter::SendReadError(int32_t pp_error) {
+  SendReadReply(pp_error, std::string());
 }
 
-void PepperTCPSocketMessageFilter::SendWriteReply(
-    const ppapi::host::ReplyMessageContext& context,
-    int32_t pp_result) {
-  ppapi::host::ReplyMessageContext reply_context(context);
-  reply_context.params.set_result(pp_result);
-  SendReply(reply_context, PpapiPluginMsg_TCPSocket_WriteReply());
+void PepperTCPSocketMessageFilter::SendWriteReply(int32_t pp_result) {
+  DCHECK(pending_write_context_.is_valid());
+  DCHECK(!pending_write_data_.empty());
+  DCHECK(pp_result <= 0 ||
+         static_cast<uint32_t>(pp_result) == pending_write_data_.size());
+  DCHECK(pp_result <= 0 ||
+         static_cast<uint32_t>(pp_result) == pending_write_bytes_written_);
+
+  pending_write_context_.params.set_result(pp_result);
+  SendReply(pending_write_context_, PpapiPluginMsg_TCPSocket_WriteReply());
+
+  pending_write_context_ = ppapi::host::ReplyMessageContext();
+  pending_write_data_.clear();
+  pending_write_bytes_written_ = 0;
 }
 
 void PepperTCPSocketMessageFilter::SendListenReply(
@@ -1133,19 +1321,77 @@ void PepperTCPSocketMessageFilter::SendAcceptReply(
     const PP_NetAddress_Private& remote_addr) {
   ppapi::host::ReplyMessageContext reply_context(context);
   reply_context.params.set_result(pp_result);
-  SendReply(reply_context,
-            PpapiPluginMsg_TCPSocket_AcceptReply(
-                pending_host_id, local_addr, remote_addr));
+  SendReply(reply_context, PpapiPluginMsg_TCPSocket_AcceptReply(
+                               pending_host_id, local_addr, remote_addr));
 }
 
 void PepperTCPSocketMessageFilter::SendAcceptError(
     const ppapi::host::ReplyMessageContext& context,
     int32_t pp_error) {
-  SendAcceptReply(context,
-                  pp_error,
-                  0,
+  SendAcceptReply(context, pp_error, 0,
                   NetAddressPrivateImpl::kInvalidNetAddress,
                   NetAddressPrivateImpl::kInvalidNetAddress);
+}
+
+void PepperTCPSocketMessageFilter::Close() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Need to do these first, as destroying Mojo pipes may invoke some of the
+  // callbacks with failure messages.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  state_.DoTransition(TCPSocketState::CLOSE, true);
+
+#if defined(OS_CHROMEOS)
+  // Close the firewall hole, it is no longer needed.
+  firewall_hole_.reset();
+#endif  // defined(OS_CHROMEOS)
+
+  // Make sure there are no further callbacks from Mojo, which could end up in a
+  // double free (Add ref on the UI thread, while a deletion is pending on the
+  // IO thread), and that they're closed on the correct thread.
+  bound_socket_.reset();
+  connected_socket_.reset();
+  tls_client_socket_.reset();
+  server_socket_.reset();
+  binding_.Close();
+  socket_observer_binding_.Close();
+
+  read_watcher_.reset();
+  receive_stream_.reset();
+  write_watcher_.reset();
+  send_stream_.reset();
+}
+
+network::mojom::NetworkContext*
+PepperTCPSocketMessageFilter::GetNetworkContext() const {
+  if (network_context_for_testing)
+    return network_context_for_testing;
+
+  RenderProcessHost* render_process_host =
+      RenderProcessHost::FromID(render_process_id_);
+  if (!render_process_host)
+    return nullptr;
+
+  return render_process_host->GetStoragePartition()->GetNetworkContext();
+}
+
+template <class ReturnMessage>
+base::OnceCallback<void(int result)>
+PepperTCPSocketMessageFilter::CreateCompletionCallback(
+    const ppapi::host::HostMessageContext* context) {
+  return mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&PepperTCPSocketMessageFilter::ReturnResult<ReturnMessage>,
+                     base::Unretained(this),
+                     context->MakeReplyMessageContext()),
+      net::ERR_FAILED);
+}
+
+template <class ReturnMessage>
+void PepperTCPSocketMessageFilter::ReturnResult(
+    ppapi::host::ReplyMessageContext context,
+    int net_result) {
+  context.params.set_result(NetErrorToPepperError(net_result));
+  SendReply(context, ReturnMessage());
 }
 
 }  // namespace content

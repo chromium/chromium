@@ -42,6 +42,12 @@
         "data": "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\notification_helper.exe"
       }
     },
+    "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_ELEVATOR_CLSID_SXS": {
+      "exists": "forbidden"
+    },
+    "HKEY_CURRENT_USER\\Software\\Classes\\AppID\\$CHROME_ELEVATOR_CLSID_SXS": {
+      "exists": "forbidden"
+    },
     "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_SHORT_NAME_SXS$USER_SPECIFIC_REGISTRY_SUFFIX": {
       "exists": "forbidden"
     }

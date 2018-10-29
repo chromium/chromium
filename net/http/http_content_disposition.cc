@@ -407,8 +407,11 @@ void HttpContentDisposition::Parse(const std::string& header,
             "filename")) {
       DecodeFilenameValue(iter.value(), referrer_charset, &filename,
                           &parse_result_flags_);
-      if (!filename.empty())
+      if (!filename.empty()) {
         parse_result_flags_ |= HAS_FILENAME;
+        if (filename[0] == '\'')
+          parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
+      }
     } else if (ext_filename.empty() &&
                base::LowerCaseEqualsASCII(
                    base::StringPiece(iter.name_begin(), iter.name_end()),
@@ -423,6 +426,9 @@ void HttpContentDisposition::Parse(const std::string& header,
     filename_ = ext_filename;
   else
     filename_ = filename;
+
+  if (!filename.empty() && filename[0] == '\'')
+    parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
 }
 
 }  // namespace net

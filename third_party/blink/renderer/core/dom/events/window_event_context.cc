@@ -41,10 +41,12 @@ WindowEventContext::WindowEventContext(
   // added because Mozilla doesn't propagate load events to the window object.
   if (event.type() == EventTypeNames::load)
     return;
-  if (!top_node_event_context.GetNode()->IsDocumentNode())
+  auto* document = DynamicTo<Document>(top_node_event_context.GetNode());
+  if (!document)
     return;
-  window_ = ToDocument(top_node_event_context.GetNode())->domWindow();
+  window_ = document->domWindow();
   target_ = top_node_event_context.Target();
+  related_target_ = top_node_event_context.RelatedTarget();
 }
 
 bool WindowEventContext::HandleLocalEvents(Event& event) {
@@ -53,6 +55,8 @@ bool WindowEventContext::HandleLocalEvents(Event& event) {
 
   event.SetTarget(Target());
   event.SetCurrentTarget(Window());
+  if (RelatedTarget())
+    event.SetRelatedTargetIfExists(RelatedTarget());
   window_->FireEventListeners(event);
   return true;
 }
@@ -60,6 +64,7 @@ bool WindowEventContext::HandleLocalEvents(Event& event) {
 void WindowEventContext::Trace(blink::Visitor* visitor) {
   visitor->Trace(window_);
   visitor->Trace(target_);
+  visitor->Trace(related_target_);
 }
 
 }  // namespace blink

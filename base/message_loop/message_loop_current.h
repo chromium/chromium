@@ -12,6 +12,7 @@
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/pending_task.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/task_observer.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -38,9 +39,9 @@ class MessageLoop;
 class BASE_EXPORT MessageLoopCurrent {
  public:
   // MessageLoopCurrent is effectively just a disguised pointer and is fine to
-  // copy around.
+  // copy/move around.
   MessageLoopCurrent(const MessageLoopCurrent& other) = default;
-  MessageLoopCurrent& operator=(const MessageLoopCurrent& other) = default;
+  MessageLoopCurrent(MessageLoopCurrent&& other) = default;
 
   // Returns a proxy object to interact with the MessageLoop running the
   // current thread. It must only be used on the thread it was obtained.
@@ -88,6 +89,9 @@ class BASE_EXPORT MessageLoopCurrent {
   // DestructionObserver is receiving a notification callback.
   void RemoveDestructionObserver(DestructionObserver* destruction_observer);
 
+  // Returns the name for the thread associated with this object.
+  std::string GetThreadName() const;
+
   // Forwards to MessageLoop::task_runner().
   // DEPRECATED(https://crbug.com/616447): Use ThreadTaskRunnerHandle::Get()
   // instead of MessageLoopCurrent::Get()->task_runner().
@@ -98,21 +102,9 @@ class BASE_EXPORT MessageLoopCurrent {
   // instance should replace its TaskRunner.
   void SetTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner);
 
-  // A TaskObserver is an object that receives task notifications from the
-  // MessageLoop.
-  //
-  // NOTE: A TaskObserver implementation should be extremely fast!
-  class BASE_EXPORT TaskObserver {
-   public:
-    // This method is called before processing a task.
-    virtual void WillProcessTask(const PendingTask& pending_task) = 0;
-
-    // This method is called after processing a task.
-    virtual void DidProcessTask(const PendingTask& pending_task) = 0;
-
-   protected:
-    virtual ~TaskObserver() = default;
-  };
+  // This alias is deprecated. Use base::TaskObserver instead.
+  // TODO(yutak): Replace all the use sites with base::TaskObserver.
+  using TaskObserver = base::TaskObserver;
 
   // Forwards to MessageLoop::(Add|Remove)TaskObserver.
   // DEPRECATED(https://crbug.com/825327): only owners of the MessageLoop
@@ -167,6 +159,9 @@ class BASE_EXPORT MessageLoopCurrent {
     const bool old_state_;
   };
 
+  // Returns true if this is the active MessageLoop for the current thread.
+  bool IsBoundToCurrentThread() const;
+
   // Returns true if the message loop is idle (ignoring delayed tasks). This is
   // the same condition which triggers DoWork() to return false: i.e.
   // out of tasks which can be processed at the current run-level -- there might
@@ -183,10 +178,6 @@ class BASE_EXPORT MessageLoopCurrent {
   // thread that invoked |BindToCurrentThreadInternal(current)|. This is only
   // meant to be invoked by the MessageLoop itself.
   static void UnbindFromCurrentThreadInternal(MessageLoop* current);
-
-  // Returns true if |message_loop| is bound to MessageLoopCurrent on the
-  // current thread. This is only meant to be invoked by the MessageLoop itself.
-  static bool IsBoundToCurrentThreadInternal(MessageLoop* message_loop);
 
  protected:
   explicit MessageLoopCurrent(MessageLoop* current) : current_(current) {}

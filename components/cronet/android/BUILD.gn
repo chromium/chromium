@@ -339,6 +339,7 @@ android_library("cronet_impl_platform_base_java") {
   deps = [
     ":cronet_api_java",
     ":cronet_impl_common_base_java",
+    "//net/android:net_thread_stats_uid_java",
     "//third_party/android_deps:android_support_annotations_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
@@ -507,6 +508,7 @@ android_java_prebuilt("package_impl_native_java") {
     ":package_api_java",
     ":package_impl_common_java",
     ":repackage_extracted_native_jars",
+    "//third_party/android_deps:android_support_v4_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
 }
@@ -898,6 +900,7 @@ if (!is_component_build) {
       "test/src/org/chromium/net/MockUrlRequestJobFactory.java",
       "test/src/org/chromium/net/NativeTestServer.java",
       "test/src/org/chromium/net/QuicTestServer.java",
+      "test/src/org/chromium/net/ReportingCollector.java",
       "test/src/org/chromium/net/TestFilesInstaller.java",
       "test/src/org/chromium/net/TestUploadDataStreamHandler.java",
     ]
@@ -1000,6 +1003,7 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/GetStatusTest.java",
       "test/javatests/src/org/chromium/net/MetricsTestUtil.java",
       "test/javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+      "test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
       "test/javatests/src/org/chromium/net/NQETest.java",
       "test/javatests/src/org/chromium/net/PkpTest.java",
       "test/javatests/src/org/chromium/net/QuicTest.java",
@@ -1028,7 +1032,9 @@ if (!is_component_build) {
     deps = [
       ":cronet_api_java",
       ":cronet_impl_all_java",
+      ":cronet_urlconnection_impl_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",
     ]
     deps += cronet_javatests_deps_to_package
@@ -1363,7 +1369,6 @@ if (!is_component_build) {
       "//components/cronet/android/java/src",
       "//net/android/java/src",
       "//url/android/java/src",
-      "//third_party/android_async_task/java/src",
     ]
     source_deps = [
       ":cronet_impl_native_base_java",

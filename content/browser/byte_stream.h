@@ -11,7 +11,9 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "net/base/io_buffer.h"
 
 namespace base {
@@ -66,7 +68,7 @@ namespace content {
 //      std::unique_ptr<ByteStreamWriter> writer;
 //      std::unique_ptr<ByteStreamReader> reader;
 //      CreateByteStream(
-//          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO),
+//          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
 //          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock, ...}),
 //          kStreamBufferSize /* e.g. 10240.  */,
 //          &writer,

@@ -160,7 +160,8 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
             mapping.size(), info->timestamp);
     ASSERT_TRUE(frame);
     frame->metadata()->MergeInternalValuesFrom(info->metadata);
-    frame->set_color_space(info->color_space);
+    if (info->color_space.has_value())
+      frame->set_color_space(info->color_space.value());
     frame->AddDestructionObserver(base::BindOnce(
         [](base::ReadOnlySharedMemoryMapping mapping) {}, std::move(mapping)));
     OnFrameCapturedMock(frame, update_rect, callbacks.get());
@@ -346,9 +347,10 @@ class FrameSinkVideoCapturerTest : public testing::Test {
               capturer_.pixel_format_);
     ASSERT_EQ(FrameSinkVideoCapturerImpl::kDefaultColorSpace,
               capturer_.color_space_);
-    capturer_.SetFormat(media::PIXEL_FORMAT_I420, media::COLOR_SPACE_HD_REC709);
+    capturer_.SetFormat(media::PIXEL_FORMAT_I420,
+                        gfx::ColorSpace::CreateREC709());
     ASSERT_EQ(media::PIXEL_FORMAT_I420, capturer_.pixel_format_);
-    ASSERT_EQ(media::COLOR_SPACE_HD_REC709, capturer_.color_space_);
+    ASSERT_EQ(gfx::ColorSpace::CreateREC709(), capturer_.color_space_);
 
     // Set min capture period as small as possible so that the
     // media::VideoCapturerOracle used by the capturer will want to capture

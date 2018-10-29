@@ -7,9 +7,7 @@ window.onerror: "Uncaught SyntaxError: Unexpected end of input" at window-onerro
 Stack Trace:
 SyntaxError: Unexpected end of input
     at window-onerror-04.html:14:9
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 PASS successfullyParsed is true

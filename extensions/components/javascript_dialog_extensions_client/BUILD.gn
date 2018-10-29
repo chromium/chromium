@@ -13,6 +13,8 @@ static_library("javascript_dialog_extensions_client") {
     "javascript_dialog_extension_client_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//components/app_modal",
     "//content/public/browser",

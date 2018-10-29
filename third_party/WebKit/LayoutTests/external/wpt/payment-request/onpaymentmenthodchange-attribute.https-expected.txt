@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Must have a onpaymentmethodchange IDL attribute assert_idl_attribute: property "onpaymentmethodchange" not found in prototype chain
-FAIL onpaymentmethodchange attribute is a generic handler for "paymentmethodchange" assert_true: event did not fire expected true got false
-FAIL onpaymentmethodchange attribute is a handler for PaymentMethodChangeEvent PaymentMethodChangeEvent is not defined
-FAIL onpaymentmethodchange attribute and listeners both work PaymentMethodChangeEvent is not defined
-Harness: the test ran to completion.
-

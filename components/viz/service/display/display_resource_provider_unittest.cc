@@ -819,58 +819,89 @@ TEST_P(DisplayResourceProviderTest, ScopedBatchReturnResourcesPreventsReturn) {
       GetReturnCallback(&returned_to_child), true);
 
   // Transfer some resources to the parent.
-  std::vector<ResourceId> resource_ids_to_transfer;
-  ResourceId ids[2];
-  for (size_t i = 0; i < base::size(ids); i++) {
+  constexpr size_t kTotalResources = 5;
+  constexpr size_t kLockedResources = 3;
+  constexpr size_t kUsedResources = 4;
+  ResourceId ids[kTotalResources];
+  for (size_t i = 0; i < kTotalResources; i++) {
     TransferableResource tran = CreateResource(RGBA_8888);
     ids[i] = child_resource_provider_->ImportResource(
         tran, SingleReleaseCallback::Create(base::BindOnce(
                   &MockReleaseCallback::Released, base::Unretained(&release))));
-    resource_ids_to_transfer.push_back(ids[i]);
   }
+  std::vector<ResourceId> resource_ids_to_transfer(ids, ids + kTotalResources);
 
   std::vector<TransferableResource> list;
   child_resource_provider_->PrepareSendToParent(resource_ids_to_transfer, &list,
                                                 child_context_provider_.get());
-  ASSERT_EQ(2u, list.size());
-  EXPECT_TRUE(child_resource_provider_->InUseByConsumer(ids[0]));
-  EXPECT_TRUE(child_resource_provider_->InUseByConsumer(ids[1]));
+  ASSERT_EQ(kTotalResources, list.size());
+  for (const auto& id : ids)
+    EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id));
 
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
   std::unordered_map<ResourceId, ResourceId> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
-
   std::vector<std::unique_ptr<DisplayResourceProvider::ScopedReadLockGL>>
       read_locks;
-  for (auto& resource_id : list) {
-    unsigned int mapped_resource_id = resource_map[resource_id.id];
+  for (size_t i = 0; i < kLockedResources; i++) {
+    unsigned int mapped_resource_id = resource_map[ids[i]];
     resource_provider_->WaitSyncToken(mapped_resource_id);
     read_locks.push_back(
         std::make_unique<DisplayResourceProvider::ScopedReadLockGL>(
             resource_provider_.get(), mapped_resource_id));
   }
 
-  resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
-  std::unique_ptr<DisplayResourceProvider::ScopedBatchReturnResources>
-      returner =
-          std::make_unique<DisplayResourceProvider::ScopedBatchReturnResources>(
-              resource_provider_.get());
-  EXPECT_EQ(0u, returned_to_child.size());
+  // Mark all locked resources, and one unlocked resource as used for first
+  // batch.
+  {
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get());
+    resource_provider_->DeclareUsedResourcesFromChild(
+        child_id, ResourceIdSet(ids, ids + kUsedResources));
+    EXPECT_EQ(0u, returned_to_child.size());
+  }
+  EXPECT_EQ(1u, returned_to_child.size());
+  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  returned_to_child.clear();
 
-  read_locks.clear();
-  EXPECT_EQ(0u, returned_to_child.size());
-
-  returner.reset();
-  EXPECT_EQ(2u, returned_to_child.size());
-  // All resources in a batch should share a sync token.
-  EXPECT_EQ(returned_to_child[0].sync_token, returned_to_child[1].sync_token);
+  // Return all locked resources.
+  {
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get());
+    resource_provider_->DeclareUsedResourcesFromChild(
+        child_id, ResourceIdSet(ids + kLockedResources, ids + kUsedResources));
+    // Can be called multiple times while batching is enabled.  This happens in
+    // practice when the same surface is visited using different paths during
+    // surface aggregation.
+    resource_provider_->DeclareUsedResourcesFromChild(
+        child_id, ResourceIdSet(ids + kLockedResources, ids + kUsedResources));
+    read_locks.clear();
+    EXPECT_EQ(0u, returned_to_child.size());
+  }
+  EXPECT_EQ(kLockedResources, returned_to_child.size());
+  // Returned resources that were locked share the same sync token.
+  for (const auto& resource : returned_to_child)
+    EXPECT_EQ(resource.sync_token, returned_to_child[0].sync_token);
 
   child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
-  EXPECT_CALL(release, Released(_, _)).Times(2);
-  child_resource_provider_->RemoveImportedResource(ids[0]);
-  child_resource_provider_->RemoveImportedResource(ids[1]);
+  returned_to_child.clear();
+
+  // Returns from destroying the child is also batched.
+  {
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get());
+    resource_provider_->DestroyChild(child_id);
+    EXPECT_EQ(0u, returned_to_child.size());
+  }
+  EXPECT_EQ(1u, returned_to_child.size());
+  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  returned_to_child.clear();
+
+  EXPECT_CALL(release, Released(_, _)).Times(kTotalResources);
+  for (const auto& id : ids)
+    child_resource_provider_->RemoveImportedResource(id);
 }
 
 TEST_P(DisplayResourceProviderTest, LostMailboxInParent) {

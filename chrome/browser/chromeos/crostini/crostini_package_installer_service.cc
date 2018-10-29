@@ -91,6 +91,18 @@ void CrostiniPackageInstallerService::NotificationClosed(
   NOTREACHED();
 }
 
+void CrostiniPackageInstallerService::GetLinuxPackageInfo(
+    const std::string& vm_name,
+    const std::string& container_name,
+    const std::string& package_path,
+    CrostiniManager::GetLinuxPackageInfoCallback callback) {
+  CrostiniManager::GetForProfile(profile_)->GetLinuxPackageInfo(
+      profile_, vm_name, container_name, package_path,
+      base::BindOnce(&CrostiniPackageInstallerService::OnGetLinuxPackageInfo,
+                     weak_ptr_factory_.GetWeakPtr(), vm_name, container_name,
+                     std::move(callback)));
+}
+
 void CrostiniPackageInstallerService::InstallLinuxPackage(
     const std::string& vm_name,
     const std::string& container_name,
@@ -122,14 +134,24 @@ void CrostiniPackageInstallerService::OnInstallLinuxPackageProgress(
   }
 }
 
+void CrostiniPackageInstallerService::OnGetLinuxPackageInfo(
+    const std::string& vm_name,
+    const std::string& container_name,
+    CrostiniManager::GetLinuxPackageInfoCallback callback,
+    const LinuxPackageInfo& linux_package_info) {
+  std::move(callback).Run(linux_package_info);
+  if (!linux_package_info.success)
+    return;
+}
+
 void CrostiniPackageInstallerService::OnInstallLinuxPackage(
     const std::string& vm_name,
     const std::string& container_name,
     CrostiniManager::InstallLinuxPackageCallback callback,
-    ConciergeClientResult result,
+    CrostiniResult result,
     const std::string& failure_reason) {
   std::move(callback).Run(result, failure_reason);
-  if (result != ConciergeClientResult::SUCCESS)
+  if (result != CrostiniResult::SUCCESS)
     return;
 
   std::unique_ptr<CrostiniPackageInstallerNotification>& notification =

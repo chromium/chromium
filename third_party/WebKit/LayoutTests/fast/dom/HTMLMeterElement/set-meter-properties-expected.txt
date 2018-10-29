@@ -2,7 +2,6 @@ Test setting valid and invalid properties of HTMLMeterElement.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test values before properties were set
 PASS m.min is 0
 PASS m.value is 0

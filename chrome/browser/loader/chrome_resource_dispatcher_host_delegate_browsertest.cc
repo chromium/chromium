@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_command_line.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
@@ -43,6 +44,7 @@
 #include "components/signin/core/browser/signin_buildflags.h"
 #include "components/signin/core/browser/signin_pref_names.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_data.h"
 #include "content/public/browser/navigation_handle.h"
@@ -224,8 +226,8 @@ class ChromeResourceDispatcherHostDelegateBrowserTest :
   int GetTimesStandardThrottlesAddedForURL(const GURL& url) {
     int count;
     base::RunLoop run_loop;
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &TestDispatcherHostDelegate::GetTimesStandardThrottlesAddedForURL,
             base::Unretained(dispatcher_host_delegate_.get()), url, &count),
@@ -288,8 +290,8 @@ class MirrorMockURLRequestJob : public net::URLRequestMockHTTPJob {
 
   void Start() override {
     // Report the observed request headers on the UI thread.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(report_on_ui_, request_->url().spec(),
                        request_->extra_request_headers().ToString()));
 
@@ -461,41 +463,39 @@ IN_PROC_BROWSER_TEST_F(ChromeResourceDispatcherHostDelegateMirrorBrowserTest,
       dispatcher_host_delegate =
           std::make_unique<HeaderTestDispatcherHostDelegate>(
               test_case.original_url);
-      content::BrowserThread::PostTask(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&SetDelegateOnIO, dispatcher_host_delegate.get()));
     }
 
     // Set up mockup interceptors.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&MirrorMockJobInterceptor::Register,
-                       test_case.original_url, root_http,
-                       report_request_headers));
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&MirrorMockJobInterceptor::Register,
-                       test_case.redirected_to_url, root_http,
-                       report_request_headers));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                             base::BindOnce(&MirrorMockJobInterceptor::Register,
+                                            test_case.original_url, root_http,
+                                            report_request_headers));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                             base::BindOnce(&MirrorMockJobInterceptor::Register,
+                                            test_case.redirected_to_url,
+                                            root_http, report_request_headers));
 
     // Navigate to first url.
     ui_test_utils::NavigateToURL(browser(), test_case.original_url);
 
     // Cleanup before verifying the observed headers.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&MirrorMockJobInterceptor::Unregister,
                        test_case.original_url));
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&MirrorMockJobInterceptor::Unregister,
                        test_case.redirected_to_url));
 
     // If delegate is changed, remove it.
     if (test_case.inject_header) {
       base::RunLoop run_loop;
-      content::BrowserThread::PostTaskAndReply(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraitsAndReply(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&SetDelegateOnIO, nullptr), run_loop.QuitClosure());
       run_loop.Run();
     }
@@ -503,12 +503,11 @@ IN_PROC_BROWSER_TEST_F(ChromeResourceDispatcherHostDelegateMirrorBrowserTest,
     // Ensure that the response headers have been reported to the UI thread
     // and unregistration has been processed on the IO thread.
     base::RunLoop run_loop;
-    content::BrowserThread::PostTaskAndReply(content::BrowserThread::IO,
-                                             FROM_HERE,
-                                             // Flush IO thread...
-                                             base::DoNothing(),
-                                             // ... and UI thread.
-                                             run_loop.QuitClosure());
+    base::PostTaskWithTraitsAndReply(FROM_HERE, {content::BrowserThread::IO},
+                                     // Flush IO thread...
+                                     base::DoNothing(),
+                                     // ... and UI thread.
+                                     run_loop.QuitClosure());
     run_loop.Run();
 
     // Check if header exists and X-Chrome-Connected is correctly provided.

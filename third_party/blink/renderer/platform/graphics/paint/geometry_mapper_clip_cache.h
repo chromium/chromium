@@ -52,6 +52,7 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
   void SetCachedClip(const ClipAndTransform&, const FloatClipRect&);
 
   static void ClearCache();
+  bool IsValid() const;
 
  private:
   struct ClipCacheEntry {

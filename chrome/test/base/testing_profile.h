@@ -18,7 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if defined(OS_CHROMEOS)
@@ -38,7 +40,6 @@ class ZoomLevelDelegate;
 }
 
 namespace net {
-class CookieStore;
 class URLRequestContextGetter;
 }
 
@@ -70,10 +71,9 @@ class TestingProfile : public Profile {
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();
 
-  typedef std::vector<std::pair<
-              BrowserContextKeyedServiceFactory*,
-              BrowserContextKeyedServiceFactory::TestingFactoryFunction> >
-      TestingFactories;
+  using TestingFactories =
+      std::vector<std::pair<BrowserContextKeyedServiceFactory*,
+                            BrowserContextKeyedServiceFactory::TestingFactory>>;
 
   // Helper class for building an instance of TestingProfile (allows injecting
   // mocks for various services prior to profile initialization).
@@ -95,7 +95,7 @@ class TestingProfile : public Profile {
     // are applied before the ProfileKeyedServices are created.
     void AddTestingFactory(
         BrowserContextKeyedServiceFactory* service_factory,
-        BrowserContextKeyedServiceFactory::TestingFactoryFunction callback);
+        BrowserContextKeyedServiceFactory::TestingFactory testing_factory);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Sets the ExtensionSpecialStoragePolicy to be returned by
@@ -184,7 +184,7 @@ class TestingProfile : public Profile {
                  base::Optional<bool> is_new_profile,
                  const std::string& supervised_user_id,
                  std::unique_ptr<policy::PolicyService> policy_service,
-                 const TestingFactories& factories,
+                 TestingFactories testing_factories,
                  const std::string& profile_name);
 
   ~TestingProfile() override;
@@ -309,10 +309,6 @@ class TestingProfile : public Profile {
       ExtensionSpecialStoragePolicy* extension_special_storage_policy);
 #endif
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
-  // TODO(ajwong): Remove this API in favor of directly retrieving the
-  // CookieStore from the StoragePartition after ExtensionURLRequestContext
-  // has been removed.
-  net::CookieStore* GetCookieStore();
 
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -320,7 +316,8 @@ class TestingProfile : public Profile {
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
 #endif  // !defined(OS_ANDROID)
   net::URLRequestContextGetter* GetRequestContext() override;
-  net::URLRequestContextGetter* GetRequestContextForExtensions() override;
+  base::OnceCallback<net::CookieStore*()> GetExtensionsCookieStoreGetter()
+      override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void set_last_session_exited_cleanly(bool value) {
@@ -340,10 +337,12 @@ class TestingProfile : public Profile {
       const base::FilePath& relative_partition_path) override;
 
 #if defined(OS_CHROMEOS)
-  void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override {}
+  void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override;
   void OnLogin() override {}
   void InitChromeOSPreferences() override {}
   chromeos::ScopedCrosSettingsTestHelper* ScopedCrosSettingsTestHelper();
+
+  base::Optional<std::string> requested_locale() { return requested_locale_; }
 #endif  // defined(OS_CHROMEOS)
 
   // Schedules a task on the history backend and runs a nested loop until the
@@ -398,9 +397,12 @@ class TestingProfile : public Profile {
   // maps to this profile.
   void CreateProfilePolicyConnector();
 
-  // Internally, this is a TestURLRequestContextGetter that creates a dummy
-  // request context. Currently, only the CookieMonster is hooked up.
-  scoped_refptr<net::URLRequestContextGetter> extensions_request_context_;
+  std::unique_ptr<net::CookieStore, content::BrowserThread::DeleteOnIOThread>
+      extensions_cookie_store_;
+
+  // Holds a dummy network context request to avoid triggering connection error
+  // handler.
+  network::mojom::NetworkContextRequest network_context_request_;
 
   bool force_incognito_;
   std::unique_ptr<Profile> incognito_profile_;
@@ -450,6 +452,8 @@ class TestingProfile : public Profile {
 #if defined(OS_CHROMEOS)
   std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
+
+  base::Optional<std::string> requested_locale_;
 #endif  // defined(OS_CHROMEOS)
 
   std::unique_ptr<policy::PolicyService> policy_service_;

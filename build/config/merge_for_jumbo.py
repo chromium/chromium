@@ -135,6 +135,7 @@ def main():
     write_jumbo_files(inputs, outputs, written_input_set, written_output_set)
 
   assert set(args.outputs) == written_output_set, "Did not fill all outputs"
+  assert set(all_inputs) == written_input_set, "Did not use all inputs"
   if args.verbose:
     print("Generated %s (%d files) based on %s" % (
       str(args.outputs), len(written_input_set), args.file_list))

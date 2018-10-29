@@ -6,6 +6,7 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_SUGGESTION_CONTAINER_VIEW_H_
 
 #include <map>
+#include <memory>
 
 #include "ash/app_list/views/suggestion_chip_view.h"
 #include "ash/assistant/model/assistant_cache_model_observer.h"
@@ -52,7 +53,8 @@ class SuggestionContainerView : public AssistantScrollView,
       override;
 
   // AssistantInteractionModelObserver:
-  void OnResponseChanged(const AssistantResponse& response) override;
+  void OnResponseChanged(
+      const std::shared_ptr<AssistantResponse>& response) override;
   void OnResponseCleared() override;
 
   // AssistantUiModelObserver:

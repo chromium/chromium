@@ -33,6 +33,12 @@ class PermissionMessageProvider {
   virtual PermissionMessages GetPermissionMessages(
       const PermissionIDSet& permissions) const = 0;
 
+  // Same as the above function, but instead of returning the full list of
+  // permission messages, returns just a list of permissions considered
+  // powerful.
+  virtual PermissionMessages GetPowerfulPermissionMessages(
+      const PermissionIDSet& permissions) const = 0;
+
   // Returns true if |requested_permissions| has a greater privilege level than
   // |granted_permissions|.
   // Whether certain permissions are considered varies by extension type.

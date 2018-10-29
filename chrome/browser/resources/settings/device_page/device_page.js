@@ -61,8 +61,9 @@ Polymer({
     hideStorageInfo_: {
       type: Boolean,
       value: function() {
-        return loadTimeData.valueExists('hideStorageInfo') &&
-            loadTimeData.getBoolean('hideStorageInfo');
+        // TODO(crbug.com/868747): Show an explanatory message instead.
+        return loadTimeData.valueExists('isDemoSession') &&
+            loadTimeData.getBoolean('isDemoSession');
       },
       readOnly: true,
     },

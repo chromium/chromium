@@ -58,9 +58,7 @@ class LayoutVideo final : public LayoutMedia {
   LayoutSize CalculateIntrinsicSize();
   void UpdateIntrinsicSize();
 
-  void ImageChanged(WrappedImagePtr,
-                    CanDeferInvalidation,
-                    const IntRect*) override;
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectVideo || LayoutMedia::IsOfType(type);

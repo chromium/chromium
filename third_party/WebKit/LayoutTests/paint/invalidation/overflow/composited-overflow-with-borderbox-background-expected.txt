@@ -27,7 +27,7 @@
         {
           "object": "LayoutBlockFlow DIV id='scroller'",
           "rect": [0, 0, 220, 220],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     },
@@ -45,9 +45,9 @@
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutBlockFlow DIV id='scroller'",
           "rect": [0, 0, 185, 300],
-          "reason": "background on scrolling contents layer"
+          "reason": "background"
         }
       ]
     },

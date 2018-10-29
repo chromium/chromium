@@ -21,6 +21,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_chrome_prompt_impl.h"
 #include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_system.h"
 
 namespace safe_browsing {
 
@@ -88,15 +89,19 @@ class ChromeCleanerRunner
   //
   // This function will pass command line flags to the Chrome Cleaner executable
   // as appropriate based on the flags in |reporter_invocation| and the
-  // |metrics_status| parameters The Cleaner process will communicate with
+  // |metrics_status| parameters. The Cleaner process will communicate with
   // Chrome via a Mojo IPC interface and any IPC requests or notifications are
   // passed to the caller via the |on_prompt_user| and |on_connection_closed|
   // callbacks. Finally, when the Chrome Cleaner process terminates, a
   // ProcessStatus is passed along to |on_process_done|.
   //
+  // This IPC interface needs the |extension_service| in order to
+  // disable extensions that the Cleaner process wants to disable.
+  //
   // The details of the mojo interface are documented in
   // "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h".
   static void RunChromeCleanerAndReplyWithExitCode(
+      extensions::ExtensionService* extension_service,
       const base::FilePath& cleaner_executable_path,
       const SwReporterInvocation& reporter_invocation,
       ChromeMetricsStatus metrics_status,
@@ -110,7 +115,8 @@ class ChromeCleanerRunner
 
   ~ChromeCleanerRunner();
 
-  ChromeCleanerRunner(const base::FilePath& cleaner_executable_path,
+  ChromeCleanerRunner(extensions::ExtensionService* extension_service,
+                      const base::FilePath& cleaner_executable_path,
                       const SwReporterInvocation& reporter_invocation,
                       ChromeMetricsStatus metrics_status,
                       ChromePromptImpl::OnPromptUser on_prompt_user,
@@ -139,6 +145,7 @@ class ChromeCleanerRunner
 
   std::unique_ptr<ChromePromptImpl, content::BrowserThread::DeleteOnIOThread>
       chrome_prompt_impl_;
+  extensions::ExtensionService* extension_service_;
 };
 
 // A delegate class used to override launching of the Cleaner proccess for

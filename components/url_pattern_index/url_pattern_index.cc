@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -36,49 +38,45 @@ using ElementTypeMap = base::flat_map<proto::ElementType, flat::ElementType>;
 
 // Maps proto::ActivationType to flat::ActivationType.
 const ActivationTypeMap& GetActivationTypeMap() {
-  CR_DEFINE_STATIC_LOCAL(
-      ActivationTypeMap, activation_type_map,
-      (
-          {
-              {proto::ACTIVATION_TYPE_UNSPECIFIED, flat::ActivationType_NONE},
-              {proto::ACTIVATION_TYPE_DOCUMENT, flat::ActivationType_DOCUMENT},
-              // ELEMHIDE is not supported.
-              {proto::ACTIVATION_TYPE_ELEMHIDE, flat::ActivationType_NONE},
-              // GENERICHIDE is not supported.
-              {proto::ACTIVATION_TYPE_GENERICHIDE, flat::ActivationType_NONE},
-              {proto::ACTIVATION_TYPE_GENERICBLOCK,
-               flat::ActivationType_GENERIC_BLOCK},
-          },
-          base::KEEP_FIRST_OF_DUPES));
-  return activation_type_map;
+  static base::NoDestructor<ActivationTypeMap> activation_type_map(
+      std::initializer_list<ActivationTypeMap::value_type>{
+          {proto::ACTIVATION_TYPE_UNSPECIFIED, flat::ActivationType_NONE},
+          {proto::ACTIVATION_TYPE_DOCUMENT, flat::ActivationType_DOCUMENT},
+          // ELEMHIDE is not supported.
+          {proto::ACTIVATION_TYPE_ELEMHIDE, flat::ActivationType_NONE},
+          // GENERICHIDE is not supported.
+          {proto::ACTIVATION_TYPE_GENERICHIDE, flat::ActivationType_NONE},
+          {proto::ACTIVATION_TYPE_GENERICBLOCK,
+           flat::ActivationType_GENERIC_BLOCK},
+      },
+      base::KEEP_FIRST_OF_DUPES);
+  return *activation_type_map;
 }
 
 // Maps proto::ElementType to flat::ElementType.
 const ElementTypeMap& GetElementTypeMap() {
-  CR_DEFINE_STATIC_LOCAL(
-      ElementTypeMap, element_type_map,
-      (
-          {
-              {proto::ELEMENT_TYPE_UNSPECIFIED, flat::ElementType_NONE},
-              {proto::ELEMENT_TYPE_OTHER, flat::ElementType_OTHER},
-              {proto::ELEMENT_TYPE_SCRIPT, flat::ElementType_SCRIPT},
-              {proto::ELEMENT_TYPE_IMAGE, flat::ElementType_IMAGE},
-              {proto::ELEMENT_TYPE_STYLESHEET, flat::ElementType_STYLESHEET},
-              {proto::ELEMENT_TYPE_OBJECT, flat::ElementType_OBJECT},
-              {proto::ELEMENT_TYPE_XMLHTTPREQUEST,
-               flat::ElementType_XMLHTTPREQUEST},
-              {proto::ELEMENT_TYPE_OBJECT_SUBREQUEST,
-               flat::ElementType_OBJECT_SUBREQUEST},
-              {proto::ELEMENT_TYPE_SUBDOCUMENT, flat::ElementType_SUBDOCUMENT},
-              {proto::ELEMENT_TYPE_PING, flat::ElementType_PING},
-              {proto::ELEMENT_TYPE_MEDIA, flat::ElementType_MEDIA},
-              {proto::ELEMENT_TYPE_FONT, flat::ElementType_FONT},
-              // Filtering popups is not supported.
-              {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
-              {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
-          },
-          base::KEEP_FIRST_OF_DUPES));
-  return element_type_map;
+  static base::NoDestructor<ElementTypeMap> element_type_map(
+      std::initializer_list<ElementTypeMap::value_type>{
+          {proto::ELEMENT_TYPE_UNSPECIFIED, flat::ElementType_NONE},
+          {proto::ELEMENT_TYPE_OTHER, flat::ElementType_OTHER},
+          {proto::ELEMENT_TYPE_SCRIPT, flat::ElementType_SCRIPT},
+          {proto::ELEMENT_TYPE_IMAGE, flat::ElementType_IMAGE},
+          {proto::ELEMENT_TYPE_STYLESHEET, flat::ElementType_STYLESHEET},
+          {proto::ELEMENT_TYPE_OBJECT, flat::ElementType_OBJECT},
+          {proto::ELEMENT_TYPE_XMLHTTPREQUEST,
+           flat::ElementType_XMLHTTPREQUEST},
+          {proto::ELEMENT_TYPE_OBJECT_SUBREQUEST,
+           flat::ElementType_OBJECT_SUBREQUEST},
+          {proto::ELEMENT_TYPE_SUBDOCUMENT, flat::ElementType_SUBDOCUMENT},
+          {proto::ELEMENT_TYPE_PING, flat::ElementType_PING},
+          {proto::ELEMENT_TYPE_MEDIA, flat::ElementType_MEDIA},
+          {proto::ELEMENT_TYPE_FONT, flat::ElementType_FONT},
+          // Filtering popups is not supported.
+          {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
+          {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
+      },
+      base::KEEP_FIRST_OF_DUPES);
+  return *element_type_map;
 }
 
 flat::ActivationType ProtoToFlatActivationType(proto::ActivationType type) {
@@ -172,25 +170,10 @@ class UrlRuleFlatBufferConverter {
         else
           domains_included.push_back(offset);
       }
-
-      // The comparator ensuring the domains order necessary for fast matching.
-      auto precedes = [&builder](FlatStringOffset lhs, FlatStringOffset rhs) {
-        return CompareDomains(ToStringPiece(flatbuffers::GetTemporaryPointer(
-                                  *builder, lhs)),
-                              ToStringPiece(flatbuffers::GetTemporaryPointer(
-                                  *builder, rhs))) < 0;
-      };
-
       // The domains are stored in sorted order to support fast matching.
-      if (!domains_included.empty()) {
-        // TODO(pkalinnikov): Don't sort if it is already sorted offline.
-        std::sort(domains_included.begin(), domains_included.end(), precedes);
-        domains_included_offset = builder->CreateVector(domains_included);
-      }
-      if (!domains_excluded.empty()) {
-        std::sort(domains_excluded.begin(), domains_excluded.end(), precedes);
-        domains_excluded_offset = builder->CreateVector(domains_excluded);
-      }
+      domains_included_offset = SerializeDomainList(std::move(domains_included), builder);
+      domains_excluded_offset =
+          SerializeDomainList(std::move(domains_excluded), builder);
     }
 
     // Non-ascii characters in patterns are unsupported.
@@ -208,6 +191,22 @@ class UrlRuleFlatBufferConverter {
   }
 
  private:
+  FlatDomainsOffset SerializeDomainList(
+      std::vector<FlatStringOffset> domains,
+      flatbuffers::FlatBufferBuilder* builder) const {
+    // The comparator ensuring the domains order necessary for fast matching.
+    auto precedes = [&builder](FlatStringOffset lhs, FlatStringOffset rhs) {
+      return CompareDomains(
+                 ToStringPiece(flatbuffers::GetTemporaryPointer(*builder, lhs)),
+                 ToStringPiece(
+                     flatbuffers::GetTemporaryPointer(*builder, rhs))) < 0;
+    };
+    if (domains.empty())
+      return FlatDomainsOffset();
+    std::sort(domains.begin(), domains.end(), precedes);
+    return builder->CreateVector(domains);
+  }
+
   static bool ConvertAnchorType(proto::AnchorType anchor_type,
                                 flat::AnchorType* result) {
     switch (anchor_type) {
@@ -502,7 +501,7 @@ size_t GetLongestMatchingSubdomain(const url::Origin& origin,
   }
   // Otherwise look for each subdomain of the |origin| using binary search.
 
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   base::StringPiece canonicalized_host(origin.host());
   if (canonicalized_host.empty())
     return 0;
@@ -559,7 +558,7 @@ bool DoesOriginMatchDomainList(const url::Origin& origin,
     return false;
 
   // Unique |origin| matches lists of exception domains only.
-  if (origin.unique())
+  if (origin.opaque())
     return is_generic;
 
   size_t longest_matching_included_domain_length = 1;

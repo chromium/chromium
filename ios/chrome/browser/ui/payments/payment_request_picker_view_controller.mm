@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/payments/payment_request_picker_row.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,24 +96,9 @@ NSString* const kPaymentRequestPickerSearchBarAccessibilityID =
 
   self.tableView.delegate = self;
 
-  const bool isFullScreen =
-      !IsIPadIdiom() || ([self navigationController].modalPresentationStyle !=
-                         UIModalPresentationFormSheet);
-
-  if (isFullScreen && [self navigationController].navigationBarHidden) {
-    // TODO(crbug.com/767428): When shown full screen, the UITableViewController
-    // uses the full screen even when the status bar is present, but insets the
-    // section headers by the size of the status bar. This will inset the
-    // content by the same amount, to ensure they line up properly. Also insets
-    // by one more pixel to hide the one pixel gap left in between the
-    // navigation bar and the UITableView.
-    const UIEdgeInsets statusBarInset =
-        UIEdgeInsetsMake(-1 - StatusBarHeight(), 0, 0, 0);
-    self.tableView.contentInset = statusBarInset;
-    self.tableView.scrollIndicatorInsets = statusBarInset;
-  }
-
-  self.tableView.rowHeight = MDCCellDefaultOneLineHeight;
+  [self updateTableInset];
+  self.tableView.estimatedRowHeight = MDCCellDefaultOneLineHeight;
+  self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.accessibilityIdentifier =
       kPaymentRequestPickerViewControllerAccessibilityID;
 
@@ -138,8 +123,19 @@ NSString* const kPaymentRequestPickerSearchBarAccessibilityID =
   [self addChildViewController:self.appBarViewController];
   ConfigureAppBarViewControllerWithCardStyle(self.appBarViewController);
   self.appBarViewController.headerView.trackingScrollView = self.tableView;
+  // Match the width of the parent view.
+  CGRect frame = self.appBarViewController.view.frame;
+  frame.origin.x = 0;
+  frame.size.width =
+      self.appBarViewController.parentViewController.view.bounds.size.width;
+  self.appBarViewController.view.frame = frame;
   [self.view addSubview:self.appBarViewController.view];
   [self.appBarViewController didMoveToParentViewController:self];
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self updateTableInset];
 }
 
 - (UIViewController*)childViewControllerForStatusBarHidden {
@@ -277,6 +273,31 @@ NSString* const kPaymentRequestPickerSearchBarAccessibilityID =
 }
 
 #pragma mark - Private
+
+- (void)updateTableInset {
+  const bool isFullScreen =
+      !IsIPadIdiom() || ([self navigationController].modalPresentationStyle !=
+                         UIModalPresentationFormSheet);
+
+  if (isFullScreen && [self navigationController].navigationBarHidden) {
+    // TODO(crbug.com/767428): When shown full screen, the UITableViewController
+    // uses the full screen even when the status bar is present, but insets the
+    // section headers by the size of the status bar. This will inset the
+    // content by the same amount, to ensure they line up properly. Also insets
+    // by one more pixel to hide the one pixel gap left in between the
+    // navigation bar and the UITableView.
+    CGFloat topInset = 0;
+    if (@available(iOS 11, *)) {
+      topInset = self.view.safeAreaInsets.top;
+    } else {
+      topInset = StatusBarHeight();
+    }
+    const UIEdgeInsets statusBarInset =
+        UIEdgeInsetsMake(-1 - topInset, 0, 0, 0);
+    self.tableView.contentInset = statusBarInset;
+    self.tableView.scrollIndicatorInsets = statusBarInset;
+  }
+}
 
 - (void)onBack {
   [self.delegate paymentRequestPickerViewControllerDidFinish:self];

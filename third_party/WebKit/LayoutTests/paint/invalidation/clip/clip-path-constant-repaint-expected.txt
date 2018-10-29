@@ -26,13 +26,7 @@
         {
           "name": "Mask Layer",
           "bounds": [800, 300],
-          "paintInvalidations": [
-            {
-              "object": "Mask Layer",
-              "rect": [0, 0, 800, 300],
-              "reason": "paint property change"
-            }
-          ]
+          "backfaceVisibility": "hidden"
         }
       ],
       "transform": 2

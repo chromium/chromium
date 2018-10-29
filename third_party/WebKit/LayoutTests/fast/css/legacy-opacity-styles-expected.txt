@@ -2,7 +2,6 @@ This test checks that the legacy -webkit-opacity style is mapped to the opacity 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById('test-opacity').style.getPropertyValue('opacity') is '0.2'
 PASS document.getElementById('test-opacity').style.getPropertyValue('-webkit-opacity') is '0.2'
 PASS document.getElementById('test-webkit-opacity').style.getPropertyValue('opacity') is '0.8'

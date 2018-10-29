@@ -8,7 +8,9 @@
     "service_manager:connector": {
       "provides": {
         "app": [
-          "media_session.mojom.AudioFocus"
+          "media_session.mojom.AudioFocusManager",
+	  "media_session.mojom.AudioFocusManagerDebug",
+	  "media_session.mojom.MediaController"
         ],
         "tests": [ "*" ]
       }

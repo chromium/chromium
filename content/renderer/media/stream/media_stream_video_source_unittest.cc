@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -58,15 +59,15 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
                                                 media::PIXEL_FORMAT_I420));
     formats.push_back(media::VideoCaptureFormat(gfx::Size(320, 240), 30,
                                                 media::PIXEL_FORMAT_I420));
-    webkit_source_.Initialize(blink::WebString::FromASCII("dummy_source_id"),
-                              blink::WebMediaStreamSource::kTypeVideo,
-                              blink::WebString::FromASCII("dummy_source_name"),
-                              false /* remote */);
-    webkit_source_.SetExtraData(mock_source_);
+    web_source_.Initialize(blink::WebString::FromASCII("dummy_source_id"),
+                           blink::WebMediaStreamSource::kTypeVideo,
+                           blink::WebString::FromASCII("dummy_source_name"),
+                           false /* remote */);
+    web_source_.SetExtraData(mock_source_);
   }
 
   void TearDown() override {
-    webkit_source_.Reset();
+    web_source_.Reset();
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -75,7 +76,7 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
  protected:
   MediaStreamVideoSource* source() { return mock_source_; }
 
-  // Create a track that's associated with |webkit_source_|.
+  // Create a track that's associated with |web_source_|.
   blink::WebMediaStreamTrack CreateTrack(const std::string& id) {
     bool enabled = true;
     return MediaStreamVideoTrack::CreateVideoTrack(
@@ -106,8 +107,7 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
       double frame_rate,
       bool detect_rotation = false) {
     blink::WebMediaStreamTrack track = CreateTrack(
-        "123",
-        VideoTrackAdapterSettings(width, height, 0.0, HUGE_VAL, frame_rate),
+        "123", VideoTrackAdapterSettings(gfx::Size(width, height), frame_rate),
         base::Optional<bool>(), false, 0.0);
 
     EXPECT_EQ(0, NumberOfSuccessConstraintsCallbacks());
@@ -131,7 +131,7 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
 
   MockMediaStreamVideoSource* mock_source() { return mock_source_; }
 
-  const blink::WebMediaStreamSource& webkit_source() { return webkit_source_; }
+  const blink::WebMediaStreamSource& web_source() { return web_source_; }
 
   void TestSourceCropFrame(int capture_width,
                            int capture_height,
@@ -199,12 +199,11 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
         CreateTrackAndStartSource(expected_width1, expected_height1,
                                   MediaStreamVideoSource::kDefaultFrameRate);
 
-    blink::WebMediaStreamTrack track2 =
-        CreateTrack("dummy",
-                    VideoTrackAdapterSettings(
-                        expected_width2, expected_height2, 0.0, HUGE_VAL,
-                        MediaStreamVideoSource::kDefaultFrameRate),
-                    base::Optional<bool>(), false, 0.0);
+    blink::WebMediaStreamTrack track2 = CreateTrack(
+        "dummy",
+        VideoTrackAdapterSettings(gfx::Size(expected_width2, expected_height2),
+                                  MediaStreamVideoSource::kDefaultFrameRate),
+        base::Optional<bool>(), false, 0.0);
 
     MockMediaStreamVideoSink sink1;
     sink1.ConnectToTrack(track1);
@@ -238,7 +237,7 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
   void OnConstraintsApplied(MediaStreamSource* source,
                             MediaStreamRequestResult result,
                             const blink::WebString& result_name) {
-    ASSERT_EQ(source, webkit_source().GetExtraData());
+    ASSERT_EQ(source, web_source().GetExtraData());
 
     if (result == MEDIA_DEVICE_OK) {
       ++number_of_successful_constraints_applied_;
@@ -250,7 +249,7 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
 
     if (!track_to_release_.IsNull()) {
       mock_source_ = nullptr;
-      webkit_source_.Reset();
+      web_source_.Reset();
       track_to_release_.Reset();
     }
   }
@@ -261,8 +260,8 @@ class MediaStreamVideoSourceTest : public ::testing::Test {
   int number_of_failed_constraints_applied_;
   content::MediaStreamRequestResult result_;
   blink::WebString result_name_;
-  blink::WebMediaStreamSource webkit_source_;
-  // |mock_source_| is owned by |webkit_source_|.
+  blink::WebMediaStreamSource web_source_;
+  // |mock_source_| is owned by |web_source_|.
   MockMediaStreamVideoSource* mock_source_;
 };
 
@@ -462,7 +461,7 @@ TEST_F(MediaStreamVideoSourceTest, ReconfigureTrack) {
   EXPECT_EQ(settings.aspect_ratio, 640.0 / 480.0);
 
   source()->ReconfigureTrack(
-      native_track, VideoTrackAdapterSettings(630, 470, 0, HUGE_VAL, 30.0));
+      native_track, VideoTrackAdapterSettings(gfx::Size(630, 470), 30.0));
   native_track->GetSettings(settings);
   EXPECT_EQ(settings.width, 630);
   EXPECT_EQ(settings.height, 470);
@@ -499,7 +498,7 @@ TEST_F(MediaStreamVideoSourceTest, ReconfigureStoppedTrack) {
             blink::WebMediaStreamSource::kReadyStateEnded);
 
   source()->ReconfigureTrack(
-      native_track, VideoTrackAdapterSettings(630, 470, 0, HUGE_VAL, 30.0));
+      native_track, VideoTrackAdapterSettings(gfx::Size(630, 470), 30.0));
   blink::WebMediaStreamTrack::Settings stopped_settings;
   native_track->GetSettings(stopped_settings);
   EXPECT_EQ(stopped_settings.width, -1);
@@ -695,6 +694,25 @@ TEST_F(MediaStreamVideoSourceTest, StopSuspendedTrack) {
       MediaStreamVideoTrack::GetVideoTrack(web_track2);
   mock_source()->UpdateHasConsumers(track2, true);
   EXPECT_FALSE(mock_source()->is_suspended());
+}
+
+TEST_F(MediaStreamVideoSourceTest, AddTrackAfterStoppingSource) {
+  blink::WebMediaStreamTrack web_track1 = CreateTrack("123");
+  mock_source()->StartMockedSource();
+  EXPECT_EQ(1, NumberOfSuccessConstraintsCallbacks());
+  EXPECT_EQ(0, NumberOfFailedConstraintsCallbacks());
+
+  MediaStreamVideoTrack* track1 =
+      MediaStreamVideoTrack::GetVideoTrack(web_track1);
+  EXPECT_CALL(*this, MockNotification());
+  // This is equivalent to track.stop() in JavaScript.
+  track1->StopAndNotify(base::BindOnce(
+      &MediaStreamVideoSourceTest::MockNotification, base::Unretained(this)));
+
+  blink::WebMediaStreamTrack track2 = CreateTrack("456");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, NumberOfSuccessConstraintsCallbacks());
+  EXPECT_EQ(1, NumberOfFailedConstraintsCallbacks());
 }
 
 }  // namespace content

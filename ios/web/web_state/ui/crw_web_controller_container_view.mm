@@ -114,7 +114,10 @@
 - (void)layoutSubviews {
   [super layoutSubviews];
 
+  // webViewContentView layout.  |-setNeedsLayout| is called in case any webview
+  // layout updates need to occur despite the bounds size staying constant.
   self.webViewContentView.frame = self.bounds;
+  [self.webViewContentView setNeedsLayout];
 
   // TODO(crbug.com/570114): Move adding of the following subviews to another
   // place.

@@ -11,19 +11,22 @@ class GURL;
 
 namespace web_app {
 
+// App ID matches Extension ID.
+using AppId = std::string;
+
 // Compute a deterministic name based on the URL. We use this pseudo name
 // as a key to store window location per application URLs in Browser and
 // as app id for BrowserWindow, shortcut and jump list.
 std::string GenerateApplicationNameFromURL(const GURL& url);
 
 // Compute a deterministic name based on an apps's id.
-std::string GenerateApplicationNameFromAppId(const std::string& app_id);
+std::string GenerateApplicationNameFromAppId(const AppId& app_id);
 
 // Extracts the application id from the app name.
-std::string GetAppIdFromApplicationName(const std::string& app_name);
+AppId GetAppIdFromApplicationName(const std::string& app_name);
 
-// Compute the Extension ID (such as "fedbieoalmbobgfjapopkghdmhgncnaa") or
-// Extension Key, from a web app's URL. Both are derived from a hash of the
+// Compute the App ID (such as "fedbieoalmbobgfjapopkghdmhgncnaa") or
+// App Key, from a web app's URL. Both are derived from a hash of the
 // URL, but are subsequently encoded differently, for historical reasons. The
 // ID is a Base-16 encoded (a=0, b=1, ..., p=15) subset of the hash, and is
 // used as a directory name, sometimes on case-insensitive file systems
@@ -32,10 +35,12 @@ std::string GetAppIdFromApplicationName(const std::string& app_name);
 // For PWAs (progressive web apps), the URL should be the Start URL, explicitly
 // listed in the manifest.
 //
-// For non-PWA web apps, also known as "bookmark apps", the URL is just the
+// For non-PWA web apps, also known as "shortcuts", the URL is just the
 // bookmark URL.
-std::string GenerateExtensionIdFromURL(const GURL& url);
-std::string GenerateExtensionKeyFromURL(const GURL& url);
+//
+// App ID and App Key match Extension ID and Extension Key for migration.
+AppId GenerateAppIdFromURL(const GURL& url);
+std::string GenerateAppKeyFromURL(const GURL& url);
 
 // Returns whether the given |app_url| is a valid bookmark app url.
 bool IsValidWebAppUrl(const GURL& app_url);

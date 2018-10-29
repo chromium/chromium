@@ -69,8 +69,7 @@ bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
     host_tokens.pop_back();
 
     // Now we're just left with the "other" host tokens.
-    for (std::vector<std::string>::iterator it = host_tokens.begin();
-         it != host_tokens.end(); ++it) {
+    for (auto it = host_tokens.begin(); it != host_tokens.end(); ++it) {
       if (!features->AddBooleanFeature(features::kUrlOtherHostToken + *it))
         return false;
     }

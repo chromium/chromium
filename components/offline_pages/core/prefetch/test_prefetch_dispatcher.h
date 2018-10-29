@@ -25,6 +25,10 @@ class TestPrefetchDispatcher : public PrefetchDispatcher {
   void AddCandidatePrefetchURLs(
       const std::string& name_space,
       const std::vector<PrefetchURL>& prefetch_urls) override;
+  void NewSuggestionsAvailable(
+      SuggestionsProvider* suggestions_provider) override;
+  void RemoveSuggestion(const GURL& url) override;
+
   void RemoveAllUnprocessedPrefetchURLs(const std::string& name_space) override;
   void RemovePrefetchURLsByClientId(const ClientId& client_id) override;
   void BeginBackgroundTask(

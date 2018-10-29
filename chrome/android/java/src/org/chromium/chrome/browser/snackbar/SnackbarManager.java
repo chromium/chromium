@@ -58,7 +58,7 @@ public class SnackbarManager implements OnClickListener, InfoBarContainer.InfoBa
         default void onDismissNoAction(Object actionData) { }
     }
 
-    private static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
+    public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
     private static final int ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS = 6000;
 
     // Used instead of the constant so tests can override the value.

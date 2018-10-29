@@ -176,7 +176,7 @@ void NativeViewHost::ViewHierarchyChanged(
     if (!native_wrapper_.get())
       native_wrapper_.reset(NativeViewHostWrapper::CreateWrapper(this));
     native_wrapper_->AddedToWidget();
-  } else if (!details.is_add) {
+  } else if (!details.is_add && native_wrapper_) {
     native_wrapper_->RemovedFromWidget();
   }
 }
@@ -229,7 +229,7 @@ void NativeViewHost::ClearFocus() {
 
   Widget::Widgets widgets;
   Widget::GetAllChildWidgets(native_view(), &widgets);
-  for (Widget::Widgets::iterator i = widgets.begin(); i != widgets.end(); ++i) {
+  for (auto i = widgets.begin(); i != widgets.end(); ++i) {
     focus_manager->ViewRemoved((*i)->GetRootView());
     if (!focus_manager->GetFocusedView())
       return;

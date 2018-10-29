@@ -1,4 +1,3 @@
-
 The test below should report no failures, and should say PASS at the end.
 
 PASS

@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/mocks.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +76,8 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
     context_group_ = scoped_refptr<ContextGroup>(new ContextGroup(
         gpu_preferences_, false, &mailbox_manager_, nullptr, nullptr, nullptr,
         feature_info_, false, &image_manager_, nullptr, nullptr,
-        GpuFeatureInfo(), &discardable_manager_));
+        GpuFeatureInfo(), &discardable_manager_, nullptr,
+        &shared_image_manager_));
     TestHelper::SetupContextGroupInitExpectations(
         gl_.get(), DisallowedFeatures(), "", "", CONTEXT_TYPE_OPENGLES2, false);
     context_group_->Initialize(decoder_.get(), CONTEXT_TYPE_OPENGLES2,
@@ -120,6 +122,7 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
   TraceOutputter outputter_;
   ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
+  SharedImageManager shared_image_manager_;
   GpuPreferences gpu_preferences_;
   scoped_refptr<FeatureInfo> feature_info_;
   MockDestructionObserver destruction_observer_;

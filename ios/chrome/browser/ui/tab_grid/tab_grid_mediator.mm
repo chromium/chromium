@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -250,6 +250,9 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   [self.appearanceCache removeObjectForKey:identifier];
   web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
   if (webState) {
+    // It is possible to observe an updated snapshot for a WebState before
+    // observing that the WebState has been added to the WebStateList. It is the
+    // consumer's responsibility to ignore any updates before inserts.
     [self.consumer replaceItemID:identifier withItem:CreateItem(webState)];
   }
 }

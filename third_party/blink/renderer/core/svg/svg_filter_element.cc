@@ -30,36 +30,36 @@
 namespace blink {
 
 inline SVGFilterElement::SVGFilterElement(Document& document)
-    : SVGElement(SVGNames::filterTag, document),
+    : SVGElement(svg_names::kFilterTag, document),
       SVGURIReference(this),
       // Spec: If the x/y attribute is not specified, the effect is as if a
       // value of "-10%" were specified.
       x_(SVGAnimatedLength::Create(this,
-                                   SVGNames::xAttr,
+                                   svg_names::kXAttr,
                                    SVGLengthMode::kWidth,
                                    SVGLength::Initial::kPercentMinus10)),
       y_(SVGAnimatedLength::Create(this,
-                                   SVGNames::yAttr,
+                                   svg_names::kYAttr,
                                    SVGLengthMode::kHeight,
                                    SVGLength::Initial::kPercentMinus10)),
       // Spec: If the width/height attribute is not specified, the effect is as
       // if a value of "120%" were specified.
       width_(SVGAnimatedLength::Create(this,
-                                       SVGNames::widthAttr,
+                                       svg_names::kWidthAttr,
                                        SVGLengthMode::kWidth,
                                        SVGLength::Initial::kPercent120)),
       height_(SVGAnimatedLength::Create(this,
-                                        SVGNames::heightAttr,
+                                        svg_names::kHeightAttr,
                                         SVGLengthMode::kHeight,
                                         SVGLength::Initial::kPercent120)),
       filter_units_(SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
           this,
-          SVGNames::filterUnitsAttr,
+          svg_names::kFilterUnitsAttr,
           SVGUnitTypes::kSvgUnitTypeObjectboundingbox)),
       primitive_units_(
           SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
               this,
-              SVGNames::primitiveUnitsAttr,
+              svg_names::kPrimitiveUnitsAttr,
               SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
@@ -85,14 +85,14 @@ void SVGFilterElement::Trace(blink::Visitor* visitor) {
 }
 
 void SVGFilterElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  bool is_xywh = attr_name == SVGNames::xAttr || attr_name == SVGNames::yAttr ||
-                 attr_name == SVGNames::widthAttr ||
-                 attr_name == SVGNames::heightAttr;
+  bool is_xywh =
+      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
   if (is_xywh)
     UpdateRelativeLengthsInformation();
 
-  if (is_xywh || attr_name == SVGNames::filterUnitsAttr ||
-      attr_name == SVGNames::primitiveUnitsAttr) {
+  if (is_xywh || attr_name == svg_names::kFilterUnitsAttr ||
+      attr_name == svg_names::kPrimitiveUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterChain();
     return;

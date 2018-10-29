@@ -43,7 +43,7 @@ HTMLFormattingElementList::~HTMLFormattingElementList() = default;
 
 Element* HTMLFormattingElementList::ClosestElementInScopeWithName(
     const AtomicString& target_name) {
-  for (unsigned i = 1; i <= entries_.size(); ++i) {
+  for (wtf_size_t i = 1; i <= entries_.size(); ++i) {
     const Entry& entry = entries_[entries_.size() - i];
     if (entry.IsMarker())
       return nullptr;
@@ -59,7 +59,7 @@ bool HTMLFormattingElementList::Contains(Element* element) {
 
 HTMLFormattingElementList::Entry* HTMLFormattingElementList::Find(
     Element* element) {
-  size_t index = entries_.ReverseFind(element);
+  wtf_size_t index = entries_.ReverseFind(element);
   if (index != kNotFound) {
     // This is somewhat of a hack, and is why this method can't be const.
     return &entries_[index];
@@ -69,7 +69,7 @@ HTMLFormattingElementList::Entry* HTMLFormattingElementList::Find(
 
 HTMLFormattingElementList::Bookmark HTMLFormattingElementList::BookmarkFor(
     Element* element) {
-  size_t index = entries_.ReverseFind(element);
+  wtf_size_t index = entries_.ReverseFind(element);
   DCHECK_NE(index, kNotFound);
   return Bookmark(&at(index));
 }
@@ -86,7 +86,7 @@ void HTMLFormattingElementList::SwapTo(Element* old_element,
   }
   size_t index = bookmark.Mark() - First();
   SECURITY_DCHECK(index < size());
-  entries_.insert(index + 1, new_item);
+  entries_.insert(static_cast<wtf_size_t>(index + 1), new_item);
   Remove(old_element);
 }
 
@@ -96,7 +96,7 @@ void HTMLFormattingElementList::Append(HTMLStackItem* item) {
 }
 
 void HTMLFormattingElementList::Remove(Element* element) {
-  size_t index = entries_.ReverseFind(element);
+  wtf_size_t index = entries_.ReverseFind(element);
   if (index != kNotFound)
     entries_.EraseAt(index);
 }
@@ -127,9 +127,9 @@ void HTMLFormattingElementList::TryToEnsureNoahsArkConditionQuickly(
   // quickly ensuring the condition.
   HeapVector<Member<HTMLStackItem>, 10> candidates;
 
-  size_t new_item_attribute_count = new_item->Attributes().size();
+  wtf_size_t new_item_attribute_count = new_item->Attributes().size();
 
-  for (size_t i = entries_.size(); i;) {
+  for (wtf_size_t i = entries_.size(); i;) {
     --i;
     Entry& entry = entries_[i];
     if (entry.IsMarker())
@@ -191,14 +191,14 @@ void HTMLFormattingElementList::EnsureNoahsArkCondition(
   // Inductively, we shouldn't spin this loop very many times. It's possible,
   // however, that we wil spin the loop more than once because of how the
   // formatting element list gets permuted.
-  for (size_t i = kNoahsArkCapacity - 1; i < candidates.size(); ++i)
+  for (wtf_size_t i = kNoahsArkCapacity - 1; i < candidates.size(); ++i)
     Remove(candidates[i]->GetElement());
 }
 
 #ifndef NDEBUG
 
 void HTMLFormattingElementList::Show() {
-  for (unsigned i = 1; i <= entries_.size(); ++i) {
+  for (wtf_size_t i = 1; i <= entries_.size(); ++i) {
     const Entry& entry = entries_[entries_.size() - i];
     if (entry.IsMarker())
       LOG(INFO) << "marker";

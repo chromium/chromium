@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace {
 
 struct MemoryLayout {
@@ -67,7 +67,7 @@ bool Equal(float a, float b) {
 
 // This represents a real source or destination vector which is aligned, can be
 // non-contiguous and can be used as a source or destination vector for
-// blink::VectorMath functions.
+// blink::vector_math functions.
 template <typename T>
 class TestVector {
   class Iterator {
@@ -515,5 +515,5 @@ TEST_F(VectorMathTest, Zvmul) {
 }
 
 }  // namespace
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink

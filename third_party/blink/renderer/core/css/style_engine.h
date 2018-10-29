@@ -86,17 +86,25 @@ class CORE_EXPORT StyleEngine final
 
  public:
   class IgnoringPendingStylesheet {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
    public:
     IgnoringPendingStylesheet(StyleEngine& engine)
         : scope_(&engine.ignore_pending_stylesheets_, true) {}
-
    private:
     base::AutoReset<bool> scope_;
   };
 
-  friend class IgnoringPendingStylesheet;
+  class DOMRemovalScope {
+    STACK_ALLOCATED();
+
+   public:
+    DOMRemovalScope(StyleEngine& engine)
+        : in_removal_(&engine.in_dom_removal_, true) {}
+
+   private:
+    base::AutoReset<bool> in_removal_;
+  };
 
   static StyleEngine* Create(Document& document) {
     return new StyleEngine(document);
@@ -125,7 +133,8 @@ class CORE_EXPORT StyleEngine final
   void AdoptedStyleSheetsWillChange(TreeScope&,
                                     StyleSheetList* old_sheets,
                                     StyleSheetList* new_sheets);
-  void AddedCustomElementDefaultStyle(CSSStyleSheet* default_style);
+  void AddedCustomElementDefaultStyles(
+      const HeapVector<Member<CSSStyleSheet>>& default_styles);
   void MediaQueriesChangedInScope(TreeScope&);
   void WatchedSelectorsChanged();
   void InitialStyleChanged();
@@ -282,7 +291,7 @@ class CORE_EXPORT StyleEngine final
                            Element&);
   void PseudoStateChangedForElement(CSSSelector::PseudoType, Element&);
   void PartChangedForElement(Element&);
-  void PartmapChangedForElement(Element&);
+  void ExportpartsChangedForElement(Element&);
 
   void ScheduleSiblingInvalidationsForElement(Element&,
                                               ContainerNode& scheduling_parent,
@@ -297,6 +306,7 @@ class CORE_EXPORT StyleEngine final
                                         const HeapHashSet<Member<RuleSet>>&,
                                         InvalidationScope =
                                             kInvalidateCurrentScope);
+  void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
@@ -309,8 +319,9 @@ class CORE_EXPORT StyleEngine final
 
   void ApplyRuleSetChanges(TreeScope&,
                            const ActiveStyleSheetVector& old_style_sheets,
-                           const ActiveStyleSheetVector& new_style_sheets,
-                           InvalidationScope = kInvalidateCurrentScope);
+                           const ActiveStyleSheetVector& new_style_sheets);
+  void ApplyUserRuleSetChanges(const ActiveStyleSheetVector& old_style_sheets,
+                               const ActiveStyleSheetVector& new_style_sheets);
 
   void CollectMatchingUserRules(ElementRuleCollector&) const;
 
@@ -404,6 +415,11 @@ class CORE_EXPORT StyleEngine final
   void ScheduleTypeRuleSetInvalidations(ContainerNode&,
                                         const HeapHashSet<Member<RuleSet>>&);
   void InvalidateSlottedElements(HTMLSlotElement&);
+  void InvalidateForRuleSetChanges(
+      TreeScope& tree_scope,
+      const HeapHashSet<Member<RuleSet>>& changed_rule_sets,
+      unsigned changed_rule_flags,
+      InvalidationScope invalidation_scope);
 
   void UpdateViewport();
   void UpdateActiveUserStyleSheets();
@@ -416,11 +432,7 @@ class CORE_EXPORT StyleEngine final
   const MediaQueryEvaluator& EnsureMediaQueryEvaluator();
   void UpdateStyleSheetList(TreeScope&);
 
-  void ClearFontCache();
-  void RefreshFontCache();
-  void MarkFontCacheDirty() { font_cache_dirty_ = true; }
-  bool IsFontCacheDirty() const { return font_cache_dirty_; }
-
+  void ClearFontCacheAndAddUserFonts();
   void ClearKeyframeRules() { keyframes_rule_map_.clear(); }
 
   void AddFontFaceRules(const RuleSet&);
@@ -463,6 +475,7 @@ class CORE_EXPORT StyleEngine final
   bool uses_rem_units_ = false;
   bool ignore_pending_stylesheets_ = false;
   bool in_layout_tree_rebuild_ = false;
+  bool in_dom_removal_ = false;
 
   Member<StyleResolver> resolver_;
   Member<ViewportStyleResolver> viewport_resolver_;
@@ -482,7 +495,6 @@ class CORE_EXPORT StyleEngine final
   HeapHashSet<Member<Element>> whitespace_reattach_set_;
 
   Member<CSSFontSelector> font_selector_;
-  bool font_cache_dirty_ = false;
 
   HeapHashMap<AtomicString, WeakMember<StyleSheetContents>>
       text_to_sheet_cache_;

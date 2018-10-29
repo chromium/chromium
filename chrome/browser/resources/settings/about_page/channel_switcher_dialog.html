@@ -2,9 +2,9 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-selector/iron-selector.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="about_page_browser_proxy.html">
 <link rel="import" href="../settings_shared_css.html">
 
@@ -21,8 +21,7 @@
         <!-- TODO(dbeam): this can be policy-controlled. Show this in the UI.
              https://www.chromium.org/administrators/policy-list-3#ChromeOsReleaseChannel
         -->
-        <paper-radio-group selectable="cr-radio-button"
-            on-paper-radio-group-changed="onChannelSelectionChanged_">
+        <cr-radio-group on-selected-changed="onChannelSelectionChanged_">
           <cr-radio-button name="[[browserChannelEnum_.STABLE]]">
             $i18n{aboutChannelDialogStable}
           </cr-radio-button>
@@ -32,7 +31,7 @@
           <cr-radio-button name="[[browserChannelEnum_.DEV]]">
             $i18n{aboutChannelDialogDev}
           </cr-radio-button>
-        </paper-radio-group>
+        </cr-radio-group>
         <iron-selector id="warningSelector">
           <div>
             <h2>$i18n{aboutDelayedWarningTitle}</h2>

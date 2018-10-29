@@ -6,6 +6,7 @@
 #define MEDIA_BASE_VIDEO_TYPES_H_
 
 #include <stdint.h>
+#include <iosfwd>
 #include <string>
 
 #include "build/build_config.h"
@@ -67,9 +68,12 @@ enum VideoPixelFormat {
   /* PIXEL_FORMAT_Y8 = 25, Deprecated */
   PIXEL_FORMAT_Y16 = 26,  // single 16bpp plane.
 
+  PIXEL_FORMAT_ABGR = 27, // 32bpp RGBA, 1 plane.
+  PIXEL_FORMAT_XBGR = 28, // 24bpp RGB, 1 plane.
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_Y16,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_XBGR,  // Must always be equal to largest entry logged.
 };
 
 // Color space or color range used for the pixels.
@@ -87,6 +91,10 @@ enum ColorSpace {
 
 // Returns the name of a Format as a string.
 MEDIA_EXPORT std::string VideoPixelFormatToString(VideoPixelFormat format);
+
+// Stream operator of Format for logging etc.
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      VideoPixelFormat format);
 
 // Returns human readable fourcc string.
 // If any of the four characters is non-printable, it outputs

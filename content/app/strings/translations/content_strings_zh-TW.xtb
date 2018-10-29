@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1018939186200882850">選單項目</translation>
-<translation id="1020833440720551630">將音軌設為靜音</translation>
 <translation id="10623998915015855">切換按鈕</translation>
 <translation id="1088086359088493902">秒</translation>
 <translation id="1171774979989969504">請輸入電子郵件地址。</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">參與名單</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1359897965706325498">橫幅</translation>
-<translation id="1548116112524424341">在子母畫面模式中播放影片</translation>
 <translation id="1589122976691792535">區域</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1637811476055996098">選擇檔案</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">樹狀目錄網格</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">在遠端裝置上播放</translation>
-<translation id="1838818994221231429">切換為包含螢幕凹口區域的全螢幕模式</translation>
 <translation id="190587075670221089">刪除</translation>
 <translation id="1907737156431278478">範例</translation>
 <translation id="1921819250265091946">日</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">輕觸兩下左側或右側可跳過 10 秒</translation>
 <translation id="5631759159893697722">摘要</translation>
-<translation id="5641012560118721995">暫停播放</translation>
 <translation id="5643186887447432888">按鈕</translation>
 <translation id="5677946354068040947">更多選項</translation>
 <translation id="576709008726043716">簡介</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">重設</translation>
 <translation id="5966707198760109579">週</translation>
 <translation id="5987525920412732405">微調按鈕</translation>
+<translation id="6011459053400940133">音量滑桿</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6023896073578205740">清單方塊</translation>
-<translation id="6101327004457443354">取消音軌靜音</translation>
 <translation id="6150588977291308318">參考書目</translation>
 <translation id="6164829606128959761">計量器</translation>
 <translation id="6166809985690652833">後記</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">小時</translation>
 <translation id="7681220483256441252">索引</translation>
 <translation id="7720026100085573005">剩餘時間</translation>
-<translation id="7740016676195725605">停止顯示字幕</translation>
 <translation id="7740050170769002709">HTML 內容</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="7789962463072032349">暫停</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">搜尋文字欄位</translation>
 <translation id="8057695513531652401">聲明</translation>
 <translation id="8105797009065549151">附註參考資料</translation>
-<translation id="8115662671911883373">開始顯示字幕</translation>
 <translation id="8117451130807776954">本週</translation>
-<translation id="819205353528511139">使用全螢幕模式播放電影</translation>
 <translation id="8199524924445686405"> 年 </translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="835897206747267392">無效的值。</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">控制遠端播放</translation>
 <translation id="862370744433916922">副標題</translation>
 <translation id="8750798805984357768">請選取其中一個選項。</translation>
-<translation id="8785498733064193001">開始播放</translation>
 <translation id="8808573423886751634">章節</translation>
 <translation id="8845239796550121995">正在投放到電視上</translation>
 <translation id="8851136666856101339">主要元素</translation>

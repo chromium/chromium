@@ -38,20 +38,22 @@ void LogKeyboardLockMethodCalled(KeyboardLockMethods method) {
 }  // namespace
 
 KeyboardLockServiceImpl::KeyboardLockServiceImpl(
-    RenderFrameHost* render_frame_host)
-    : render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
+    RenderFrameHost* render_frame_host,
+    blink::mojom::KeyboardLockServiceRequest request)
+    : FrameServiceBase(render_frame_host, std::move(request)),
+      render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
   DCHECK(render_frame_host_);
 }
-
-KeyboardLockServiceImpl::~KeyboardLockServiceImpl() = default;
 
 // static
 void KeyboardLockServiceImpl::CreateMojoService(
     RenderFrameHost* render_frame_host,
     blink::mojom::KeyboardLockServiceRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<KeyboardLockServiceImpl>(render_frame_host),
-      std::move(request));
+  DCHECK(render_frame_host);
+
+  // The object is bound to the lifetime of |render_frame_host| and the mojo
+  // connection. See FrameServiceBase for details.
+  new KeyboardLockServiceImpl(render_frame_host, std::move(request));
 }
 
 void KeyboardLockServiceImpl::RequestKeyboardLock(
@@ -130,5 +132,7 @@ void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
 
   std::move(callback).Run(std::move(response));
 }
+
+KeyboardLockServiceImpl::~KeyboardLockServiceImpl() = default;
 
 }  // namespace content

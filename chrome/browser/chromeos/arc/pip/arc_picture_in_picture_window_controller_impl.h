@@ -34,9 +34,8 @@ class ArcPictureInPictureWindowControllerImpl
 
   // PictureInPictureWindowController:
   gfx::Size Show() override;
-  void Close(bool should_pause_video) override;
+  void Close(bool should_pause_video, bool should_reset_pip_player) override;
   void OnWindowDestroyed() override;
-  void ClickCustomControl(const std::string& control_id) override;
   void SetPictureInPictureCustomControls(
       const std::vector<blink::PictureInPictureControlInfo>& info) override;
   void EmbedSurface(const viz::SurfaceId& surface_id,
@@ -46,8 +45,10 @@ class ArcPictureInPictureWindowControllerImpl
   bool IsPlayerActive() override;
   content::WebContents* GetInitiatorWebContents() override;
   bool TogglePlayPause() override;
+  void CustomControlPressed(const std::string& control_id) override;
   void UpdatePlaybackState(bool is_playing,
                            bool reached_end_of_stream) override;
+  void SetAlwaysHidePlayPauseButton(bool is_visible) override;
 
  private:
   arc::ArcPipBridge* const arc_pip_bridge_;

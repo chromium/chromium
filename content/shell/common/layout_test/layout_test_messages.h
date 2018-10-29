@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// no-include-guard-because-multiply-included
+#ifndef CONTENT_SHELL_COMMON_LAYOUT_TEST_LAYOUT_TEST_MESSAGES_H_
+#define CONTENT_SHELL_COMMON_LAYOUT_TEST_LAYOUT_TEST_MESSAGES_H_
+
 #include <string>
 #include <vector>
 
@@ -63,3 +65,5 @@ IPC_MESSAGE_CONTROL1(
 
 // Sent by secondary test window to notify the test has finished.
 IPC_MESSAGE_CONTROL0(LayoutTestHostMsg_TestFinishedInSecondaryRenderer)
+
+#endif  // CONTENT_SHELL_COMMON_LAYOUT_TEST_LAYOUT_TEST_MESSAGES_H_

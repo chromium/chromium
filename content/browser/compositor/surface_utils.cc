@@ -52,9 +52,11 @@ namespace surface_utils {
 
 void ConnectWithLocalFrameSinkManager(
     viz::HostFrameSinkManager* host_frame_sink_manager,
-    viz::FrameSinkManagerImpl* frame_sink_manager_impl) {
+    viz::FrameSinkManagerImpl* frame_sink_manager_impl,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
   host_frame_sink_manager->SetLocalManager(frame_sink_manager_impl);
-  frame_sink_manager_impl->SetLocalClient(host_frame_sink_manager);
+  frame_sink_manager_impl->SetLocalClient(host_frame_sink_manager,
+                                          ui_task_runner);
 }
 
 }  // namespace surface_utils

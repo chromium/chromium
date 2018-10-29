@@ -131,6 +131,9 @@ class APP_LIST_EXPORT AppListItemView
   void OnDraggedViewEnter();
   void OnDraggedViewExit();
 
+  // Enables background blur for folder icon if |enabled| is true.
+  void SetBackgroundBlurEnabled(bool enabled);
+
  private:
   class IconImageView;
 

@@ -86,7 +86,7 @@ class ChromiumCommit(object):
 
     def author(self):
         return self.host.executive.run_command([
-            'git', 'show', '--format="%aN <%aE>"', '--no-patch', self.sha
+            'git', 'show', '--format=%aN <%aE>', '--no-patch', self.sha
         ], cwd=self.absolute_chromium_dir).strip()
 
     def message(self):

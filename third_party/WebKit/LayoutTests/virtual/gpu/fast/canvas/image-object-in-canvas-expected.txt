@@ -4,4 +4,3 @@ Using drawImage.
 Using drawImage with source rectangle.
 Using ImagePattern.
 Using ImagePattern and rotation.
-

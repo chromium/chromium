@@ -29,16 +29,13 @@
     <dimen name="tab_strip_and_toolbar_height">96dp</dimen>
 
     <dimen name="location_bar_icon_width">40dp</dimen>
+    <dimen name="omnibox_suggestion_start_offset">@dimen/location_bar_icon_width</dimen>
 
     <!-- NTP dimensions -->
     <dimen name="ntp_search_box_transition_length">60dp</dimen>
 
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">28dp</dimen>
-
-    <!-- Web app dimensions -->
-    <dimen name="webapp_splash_offset">48dp</dimen>
-    <dimen name="webapp_splash_large_title_margin_bottom">8dp</dimen>
 
     <!-- Payments UI -->
     <dimen name="payments_ui_max_dialog_width">600dp</dimen>
@@ -48,4 +45,7 @@
 
     <!-- Preferences dimensions -->
     <dimen name="pref_spinner_padding_end">16dp</dimen>
+
+    <!-- Download manager dimensions -->
+    <dimen name="download_manager_ideal_image_width">240dp</dimen>
 </resources>

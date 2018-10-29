@@ -2,4 +2,4 @@
 ++[section]
 ++++[label]
 ++++++[text] name='Choose a pokemon '
-++++++[combo box] name='Choose a pokemon ' editable focusable selectable-text autocomplete:list haspopup:listbox
+++++++[combo box] name='Choose a pokemon' editable focusable selectable-text autocomplete:list haspopup:listbox

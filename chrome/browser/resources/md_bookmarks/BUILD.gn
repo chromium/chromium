@@ -26,7 +26,6 @@ js_type_check("closure_compile") {
     ":constants",
     ":debouncer",
     ":dialog_focus_manager",
-    ":dnd_chip",
     ":dnd_manager",
     ":edit_dialog",
     ":folder_node",
@@ -110,19 +109,10 @@ js_library("dialog_focus_manager") {
   ]
 }
 
-js_library("dnd_chip") {
-  deps = [
-    ":types",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:icon",
-  ]
-}
-
 js_library("dnd_manager") {
   deps = [
     ":api_listener",
     ":debouncer",
-    ":dnd_chip",
     ":folder_node",
     ":store",
     ":types",

@@ -14,6 +14,7 @@
 namespace views {
 
 class MenuItemView;
+class SubmenuView;
 
 // This class implements the Mac menu closure animation:
 //    1) For 100ms, the selected item is drawn as unselected
@@ -24,11 +25,19 @@ class MenuItemView;
 // will stop the timer or animation (if they are running), so the callback will
 // *not* be run - which is good, since the MenuController that would have
 // received it is being deleted.
+//
+// This class also supports animating a menu away without animating the
+// selection effect, which is achieved by passing nullptr for the item to
+// animate. In this case, the animation skips straight to step 3 above.
 class VIEWS_EXPORT MenuClosureAnimationMac : public gfx::AnimationDelegate {
  public:
-  // After this closure animation is done, |callback| is run to finally accept
-  // |item|.
-  MenuClosureAnimationMac(MenuItemView* item, base::OnceClosure callback);
+  // After this closure animation is done, |callback| is run to finish
+  // dismissing the menu. If |item| is given, this will animate the item being
+  // accepted before animating the menu closing; if |item| is nullptr, only the
+  // menu closure will be animated.
+  MenuClosureAnimationMac(MenuItemView* item,
+                          SubmenuView* menu,
+                          base::OnceClosure callback);
   ~MenuClosureAnimationMac() override;
 
   // Start the animation.
@@ -36,6 +45,9 @@ class VIEWS_EXPORT MenuClosureAnimationMac : public gfx::AnimationDelegate {
 
   // Returns the MenuItemView this animation targets.
   MenuItemView* item() { return item_; }
+
+  // Returns the SubmenuView this animation targets.
+  SubmenuView* menu() { return menu_; }
 
   // Causes animations to take no time for testing purposes. Note that this
   // still causes the completion callback to be run asynchronously, so test
@@ -51,7 +63,7 @@ class VIEWS_EXPORT MenuClosureAnimationMac : public gfx::AnimationDelegate {
     kFinish,
   };
 
-  static constexpr AnimationStep NextStepFor(AnimationStep step);
+  AnimationStep NextStepFor(AnimationStep step) const;
 
   void AdvanceAnimation();
 
@@ -64,6 +76,7 @@ class VIEWS_EXPORT MenuClosureAnimationMac : public gfx::AnimationDelegate {
   base::OneShotTimer timer_;
   std::unique_ptr<gfx::Animation> fade_animation_;
   MenuItemView* item_;
+  SubmenuView* menu_;
   AnimationStep step_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuClosureAnimationMac);

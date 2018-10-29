@@ -95,6 +95,10 @@ content::BrowserContext* AppListSyncableServiceFactory::GetBrowserContextToUse(
   if (profile->IsSystemProfile())
     return nullptr;
 
+  // No service for sign in profile.
+  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+    return nullptr;
+
   // Use profile as-is for guest session.
   if (profile->IsGuestSession())
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);

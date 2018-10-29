@@ -2,7 +2,6 @@ Test URL protocol setter.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS location.protocol = '' threw exception SyntaxError: Failed to set the 'protocol' property on 'Location': '' is an invalid protocol..
 PASS location.protocol = ':' threw exception SyntaxError: Failed to set the 'protocol' property on 'Location': ':' is an invalid protocol..
 PASS location.protocol = 'é' threw exception SyntaxError: Failed to set the 'protocol' property on 'Location': 'é' is an invalid protocol..

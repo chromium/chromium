@@ -23,6 +23,10 @@ class JavaScriptDialogAndroid : public JavaScriptDialog {
  public:
   ~JavaScriptDialogAndroid() override;
 
+  // Note on the two callbacks: |dialog_callback_on_button_clicked| is for the
+  // case where user responds to the dialog. |dialog_callback_on_cancelled| is
+  // for the case where user cancels the dialog without interacting with the
+  // dialog (e.g. clicks the navigate back button on Android).
   static base::WeakPtr<JavaScriptDialogAndroid> Create(
       content::WebContents* parent_web_contents,
       content::WebContents* alerting_web_contents,
@@ -30,7 +34,9 @@ class JavaScriptDialogAndroid : public JavaScriptDialog {
       content::JavaScriptDialogType dialog_type,
       const base::string16& message_text,
       const base::string16& default_prompt_text,
-      content::JavaScriptDialogManager::DialogClosedCallback dialog_callback);
+      content::JavaScriptDialogManager::DialogClosedCallback
+          callback_on_button_clicked,
+      base::OnceClosure callback_on_cancelled);
 
   // JavaScriptDialog:
   void CloseDialogWithoutCallback() override;
@@ -39,23 +45,28 @@ class JavaScriptDialogAndroid : public JavaScriptDialog {
   void Accept(JNIEnv* env,
               const base::android::JavaParamRef<jobject>&,
               const base::android::JavaParamRef<jstring>& prompt);
-  void Cancel(JNIEnv* env, const base::android::JavaParamRef<jobject>&);
+  void Cancel(JNIEnv* env,
+              const base::android::JavaParamRef<jobject>&,
+              jboolean button_clicked);
 
  private:
-  JavaScriptDialogAndroid(
-      content::WebContents* parent_web_contents,
-      content::WebContents* alerting_web_contents,
-      const base::string16& title,
-      content::JavaScriptDialogType dialog_type,
-      const base::string16& message_text,
-      const base::string16& default_prompt_text,
-      content::JavaScriptDialogManager::DialogClosedCallback dialog_callback);
+  JavaScriptDialogAndroid(content::WebContents* parent_web_contents,
+                          content::WebContents* alerting_web_contents,
+                          const base::string16& title,
+                          content::JavaScriptDialogType dialog_type,
+                          const base::string16& message_text,
+                          const base::string16& default_prompt_text,
+                          content::JavaScriptDialogManager::DialogClosedCallback
+                              callback_on_button_clicked,
+                          base::OnceClosure callback_on_cancelled);
 
   std::unique_ptr<JavaScriptDialogAndroid> dialog_;
   ScopedJavaGlobalRef<jobject> dialog_jobject_;
   JavaObjectWeakGlobalRef jwindow_weak_ref_;
 
-  content::JavaScriptDialogManager::DialogClosedCallback dialog_callback_;
+  content::JavaScriptDialogManager::DialogClosedCallback
+      callback_on_button_clicked_;
+  base::OnceClosure callback_on_cancelled_;
 
   base::WeakPtrFactory<JavaScriptDialogAndroid> weak_factory_;
 

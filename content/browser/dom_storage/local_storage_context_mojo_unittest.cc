@@ -196,6 +196,8 @@ class LocalStorageContextMojoTest : public testing::Test {
                    : base::nullopt;
   }
 
+  void CloseBinding() { db_binding_.Close(); }
+
   base::FilePath TempPath() { return temp_path_.GetPath(); }
 
  private:
@@ -452,6 +454,36 @@ TEST_F(LocalStorageContextMojoTest, MetaDataClearedOnDeleteAll) {
     EXPECT_NE(std::string::npos,
               Uint8VectorToStdString(it.first).find(origin2.Serialize()));
   }
+}
+
+TEST_F(LocalStorageContextMojoTest, MojoConnectionDisconnects) {
+  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+
+  {
+    blink::mojom::StorageAreaPtr area;
+    context()->OpenLocalStorage(origin1, MakeRequest(&area));
+    area->Put(key, value, base::nullopt, "source", base::DoNothing());
+    area.reset();
+  }
+  EXPECT_EQ(value, DoTestGet(key));
+
+  // Close the database connection.
+  CloseBinding();
+  base::RunLoop().RunUntilIdle();
+
+  // We can't access the data anymore.
+  EXPECT_EQ(base::nullopt, DoTestGet(key));
+
+  // Check that local storage still works without a database.
+  {
+    blink::mojom::StorageAreaPtr area;
+    context()->OpenLocalStorage(origin1, MakeRequest(&area));
+    area->Put(key, value, base::nullopt, "source", base::DoNothing());
+    area.reset();
+  }
+  EXPECT_EQ(value, DoTestGet(key));
 }
 
 TEST_F(LocalStorageContextMojoTest, DeleteStorage) {

@@ -17,6 +17,10 @@
 @property(nonatomic, weak) id<ContentSuggestionsCollectionSynchronizing>
     collectionSynchronizer;
 
+// |YES| if its view is visible.  When set to |NO| various UI updates are
+// ignored.
+@property(nonatomic, assign, getter=isShowing) BOOL showing;
+
 // Updates the iPhone fakebox's frame based on the current scroll view |offset|
 // and |width|. |width| is the width of the screen, including the space outside
 // the safe area. The |safeAreaInsets| is relative to the view used to calculate

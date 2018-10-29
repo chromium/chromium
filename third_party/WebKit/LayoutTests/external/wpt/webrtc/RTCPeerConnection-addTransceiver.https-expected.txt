@@ -20,28 +20,6 @@ FAIL addTransceiver() with rid longer than 16 characters should throw TypeError 
         }]
       })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument." ("InvalidStateError") expected object "TypeError" ("TypeError")
 FAIL addTransceiver() with valid rid value should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument.
-FAIL addTransceiver() with readonly ssrc set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          ssrc: 2
-        }]
-      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument." that is not a DOMException InvalidAccessError: property "code" is equal to 11, expected 15
-FAIL addTransceiver() with readonly rtx set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          rtx: {
-            ssrc: 2
-          }
-        }]
-      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument." that is not a DOMException InvalidAccessError: property "code" is equal to 11, expected 15
-FAIL addTransceiver() with readonly fec set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          fec: {
-            ssrc: 2
-          }
-        }]
-      })" threw object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument." that is not a DOMException InvalidAccessError: property "code" is equal to 11, expected 15
 FAIL addTransceiver() with valid sendEncodings should succeed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument.
 Harness: the test ran to completion.
 

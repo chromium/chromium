@@ -48,23 +48,12 @@ static bool IsAlmostZero(float value) {
 // static
 int ColorSpace::kInvalidId = -1;
 
-ColorSpace::ColorSpace() {}
-
 ColorSpace::ColorSpace(PrimaryID primaries,
                        TransferID transfer)
     : primaries_(primaries),
       transfer_(transfer),
       matrix_(MatrixID::RGB),
       range_(RangeID::FULL) {}
-
-ColorSpace::ColorSpace(PrimaryID primaries,
-                       TransferID transfer,
-                       MatrixID matrix,
-                       RangeID range)
-    : primaries_(primaries),
-      transfer_(transfer),
-      matrix_(matrix),
-      range_(range) {}
 
 ColorSpace::ColorSpace(PrimaryID primaries,
                        const SkColorSpaceTransferFn& fn,
@@ -120,9 +109,10 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
   }
 
   // Use custom primaries, if they are representable as a "to XYZD50" matrix.
-  if (const auto* to_XYZD50 = sk_color_space.toXYZD50()) {
+  SkMatrix44 to_XYZD50{SkMatrix44::kUninitialized_Constructor};
+  if (sk_color_space.toXYZD50(&to_XYZD50)) {
     primaries_ = PrimaryID::CUSTOM;
-    SetCustomPrimaries(*to_XYZD50);
+    SetCustomPrimaries(to_XYZD50);
     return;
   }
 
@@ -130,49 +120,9 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
   primaries_ = PrimaryID::INVALID;
 }
 
-ColorSpace::ColorSpace(const ColorSpace& other)
-    : primaries_(other.primaries_),
-      transfer_(other.transfer_),
-      matrix_(other.matrix_),
-      range_(other.range_),
-      icc_profile_id_(other.icc_profile_id_) {
-  if (transfer_ == TransferID::CUSTOM) {
-    memcpy(custom_transfer_params_, other.custom_transfer_params_,
-           sizeof(custom_transfer_params_));
-  }
-  if (primaries_ == PrimaryID::CUSTOM) {
-    memcpy(custom_primary_matrix_, other.custom_primary_matrix_,
-           sizeof(custom_primary_matrix_));
-  }
-}
-
-ColorSpace::ColorSpace(ColorSpace&& other) = default;
-
-ColorSpace& ColorSpace::operator=(const ColorSpace& other) = default;
-
-ColorSpace::~ColorSpace() = default;
-
 bool ColorSpace::IsValid() const {
   return primaries_ != PrimaryID::INVALID && transfer_ != TransferID::INVALID &&
          matrix_ != MatrixID::INVALID && range_ != RangeID::INVALID;
-}
-
-// static
-ColorSpace ColorSpace::CreateSRGB() {
-  return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1, MatrixID::RGB,
-                    RangeID::FULL);
-}
-
-// static
-ColorSpace ColorSpace::CreateDisplayP3D65() {
-  return ColorSpace(PrimaryID::SMPTEST432_1, TransferID::IEC61966_2_1,
-                    MatrixID::RGB, RangeID::FULL);
-}
-
-// static
-ColorSpace ColorSpace::CreateExtendedSRGB() {
-  return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR,
-                    MatrixID::RGB, RangeID::FULL);
 }
 
 // static
@@ -216,38 +166,6 @@ ColorSpace ColorSpace::CreateCustom(const SkMatrix44& to_XYZD50,
                     ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
   result.SetCustomPrimaries(to_XYZD50);
   return result;
-}
-
-// static
-ColorSpace ColorSpace::CreateSCRGBLinear() {
-  return ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR, MatrixID::RGB,
-                    RangeID::FULL);
-}
-
-// Static
-ColorSpace ColorSpace::CreateXYZD50() {
-  return ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR, MatrixID::RGB,
-                    RangeID::FULL);
-}
-
-// static
-ColorSpace ColorSpace::CreateJpeg() {
-  // TODO(ccameron): Determine which primaries and transfer function were
-  // intended here.
-  return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1,
-                    MatrixID::SMPTE170M, RangeID::FULL);
-}
-
-// static
-ColorSpace ColorSpace::CreateREC601() {
-  return ColorSpace(PrimaryID::SMPTE170M, TransferID::SMPTE170M,
-                    MatrixID::SMPTE170M, RangeID::LIMITED);
-}
-
-// static
-ColorSpace ColorSpace::CreateREC709() {
-  return ColorSpace(PrimaryID::BT709, TransferID::BT709, MatrixID::BT709,
-                    RangeID::LIMITED);
 }
 
 // static

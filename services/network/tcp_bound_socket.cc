@@ -37,6 +37,8 @@ TCPBoundSocket::~TCPBoundSocket() = default;
 
 int TCPBoundSocket::Bind(const net::IPEndPoint& local_addr,
                          net::IPEndPoint* local_addr_out) {
+  bind_address_ = local_addr;
+
   int result = socket_->Open(local_addr.GetFamily());
   if (result != net::OK)
     return result;
@@ -58,7 +60,7 @@ void TCPBoundSocket::Listen(uint32_t backlog,
                             ListenCallback callback) {
   DCHECK(socket_->IsValid());
 
-  if (connect_callback_) {
+  if (!socket_) {
     // Drop unexpected calls on the floor. Could destroy |this|, but as this is
     // currently only reachable from more trusted processes, doesn't seem too
     // useful.
@@ -66,7 +68,7 @@ void TCPBoundSocket::Listen(uint32_t backlog,
     return;
   }
 
-  int result = socket_->Listen(backlog);
+  int result = ListenInternal(backlog);
 
   // Succeed or fail, pass the result back to the caller.
   std::move(callback).Run(result);
@@ -87,13 +89,15 @@ void TCPBoundSocket::Listen(uint32_t backlog,
   // The above call will have destroyed |this|.
 }
 
-void TCPBoundSocket::Connect(const net::IPEndPoint& remote_addr,
-                             mojom::TCPConnectedSocketRequest request,
-                             mojom::SocketObserverPtr observer,
-                             ConnectCallback callback) {
+void TCPBoundSocket::Connect(
+    const net::AddressList& remote_addr_list,
+    mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+    mojom::TCPConnectedSocketRequest request,
+    mojom::SocketObserverPtr observer,
+    ConnectCallback callback) {
   DCHECK(socket_->IsValid());
 
-  if (connect_callback_) {
+  if (!socket_) {
     // Drop unexpected calls on the floor. Could destroy |this|, but as this is
     // currently only reachable from more trusted processes, doesn't seem too
     // useful.
@@ -101,55 +105,55 @@ void TCPBoundSocket::Connect(const net::IPEndPoint& remote_addr,
     return;
   }
 
+  DCHECK(!connect_callback_);
+  DCHECK(!connected_socket_request_);
+  DCHECK(!connecting_socket_);
+
   connected_socket_request_ = std::move(request);
-  socket_observer_ = std::move(observer);
   connect_callback_ = std::move(callback);
-  int result = socket_->Connect(
-      remote_addr, base::BindOnce(&TCPBoundSocket::OnConnectComplete,
-                                  base::Unretained(this)));
 
-  if (result == net::ERR_IO_PENDING)
-    return;
-
-  OnConnectComplete(result);
+  // Create a TCPConnectedSocket and have it do the work of connecting and
+  // configuring the socket. This saves a bit of code, and reduces the number of
+  // tests this class needs, since it can rely on TCPConnectedSocket's tests for
+  // a lot of cases.
+  connecting_socket_ = std::make_unique<TCPConnectedSocket>(
+      std::move(observer), socket_->net_log().net_log(),
+      socket_factory_->tls_socket_factory(),
+      nullptr /* client_socket_factory */, traffic_annotation_);
+  connecting_socket_->ConnectWithSocket(
+      net::TCPClientSocket::CreateFromBoundSocket(
+          std::move(socket_), remote_addr_list, bind_address_),
+      std::move(tcp_connected_socket_options),
+      base::BindOnce(&TCPBoundSocket::OnConnectComplete,
+                     base::Unretained(this)));
 }
 
-void TCPBoundSocket::OnConnectComplete(int result) {
+void TCPBoundSocket::OnConnectComplete(
+    int result,
+    const base::Optional<net::IPEndPoint>& local_addr,
+    const base::Optional<net::IPEndPoint>& peer_addr,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
+  DCHECK(connecting_socket_);
   DCHECK(connect_callback_);
 
-  net::IPEndPoint peer_addr;
-  net::IPEndPoint local_addr;
-  if (result == net::OK)
-    result = socket_->GetLocalAddress(&local_addr);
-  if (result == net::OK)
-    result = socket_->GetPeerAddress(&peer_addr);
-
+  std::move(connect_callback_)
+      .Run(result, local_addr, peer_addr, std::move(receive_stream),
+           std::move(send_stream));
   if (result != net::OK) {
-    std::move(connect_callback_)
-        .Run(result, base::nullopt /* local_addr */,
-             base::nullopt /* peer_addr */,
-             mojo::ScopedDataPipeConsumerHandle(),
-             mojo::ScopedDataPipeProducerHandle());
     socket_factory_->DestroyBoundSocket(binding_id_);
+    // The above call will have destroyed |this|.
     return;
   }
 
-  mojo::DataPipe send_pipe;
-  mojo::DataPipe receive_pipe;
-  std::unique_ptr<TCPConnectedSocket> connected_socket =
-      std::make_unique<TCPConnectedSocket>(
-          std::move(socket_observer_),
-          std::make_unique<net::TCPClientSocket>(std::move(socket_), peer_addr),
-          std::move(receive_pipe.producer_handle),
-          std::move(send_pipe.consumer_handle), traffic_annotation_);
-  std::move(connect_callback_)
-      .Run(result, local_addr, peer_addr,
-           std::move(receive_pipe.consumer_handle),
-           std::move(send_pipe.producer_handle));
   socket_factory_->OnBoundSocketConnected(binding_id_,
-                                          std::move(connected_socket),
+                                          std::move(connecting_socket_),
                                           std::move(connected_socket_request_));
   // The above call will have destroyed |this|.
+}
+
+int TCPBoundSocket::ListenInternal(int backlog) {
+  return socket_->Listen(backlog);
 }
 
 }  // namespace network

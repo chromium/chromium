@@ -1128,8 +1128,8 @@ class FileManagerFileTasksCrostiniTest
 
     // Setup the custom MIME type mapping.
     vm_tools::apps::MimeTypes mime_types_list;
-    mime_types_list.set_vm_name(kCrostiniDefaultVmName);
-    mime_types_list.set_container_name(kCrostiniDefaultContainerName);
+    mime_types_list.set_vm_name(crostini::kCrostiniDefaultVmName);
+    mime_types_list.set_container_name(crostini::kCrostiniDefaultContainerName);
     (*mime_types_list.mutable_mime_type_mappings())["foo"] = "foo/x-bar";
 
     crostini::CrostiniMimeTypesServiceFactory::GetForProfile(&test_profile_)

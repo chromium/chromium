@@ -188,7 +188,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // Returns which layers backgrounds should be painted into for overflow
   // scrolling boxes.
-  BackgroundPaintLocation GetBackgroundPaintLocation(uint32_t* reasons) const;
+  // TODO(yigu): PaintLayerScrollableArea::ComputeNeedsCompositedScrolling
+  // calls this method to obtain main thread scrolling reasons due to
+  // background paint location. Once the cases get handled on compositor the
+  // parameter "reasons" could be removed.
+  BackgroundPaintLocation GetBackgroundPaintLocation(
+      uint32_t* main_thread_scrolling_reasons = nullptr) const;
 
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
@@ -425,15 +430,30 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return false;
   }
 
-  // http://www.w3.org/TR/css3-background/#body-background
-  // <html> root element with no background steals background from its first
-  // <body> child. The used background for such body element should be the
-  // initial value. (i.e. transparent)
-  bool BackgroundStolenForBeingBody(
-      const ComputedStyle* root_element_style = nullptr) const;
+  // This object's background is transferred to its LayoutView if:
+  // 1. it's the document element, or
+  // 2. it's the first <body> if the document element is <html> and doesn't have
+  //    a background. http://www.w3.org/TR/css3-background/#body-background
+  // If it's the case, the used background should be the initial value (i.e.
+  // transparent). The first condition is actually an implementation detail
+  // because we paint the view background in ViewPainter instead of the painter
+  // of the layout object of the document element.
+  bool BackgroundTransfersToView(
+      const ComputedStyle* document_element_style = nullptr) const;
 
   void AbsoluteQuads(Vector<FloatQuad>& quads,
                      MapCoordinatesFlags mode = 0) const override;
+
+  virtual LayoutUnit OverrideContainingBlockContentWidth() const {
+    NOTREACHED();
+    return LayoutUnit(-1);
+  }
+  virtual LayoutUnit OverrideContainingBlockContentHeight() const {
+    NOTREACHED();
+    return LayoutUnit(-1);
+  }
+  virtual bool HasOverrideContainingBlockContentWidth() const { return false; }
+  virtual bool HasOverrideContainingBlockContentHeight() const { return false; }
 
  protected:
   // Compute absolute quads for |this|, but not any continuations. May only be

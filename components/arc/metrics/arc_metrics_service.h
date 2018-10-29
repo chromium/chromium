@@ -17,7 +17,7 @@
 #include "components/arc/common/process.mojom.h"
 #include "components/arc/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/aura/client/focus_change_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -33,7 +33,7 @@ class ArcBridgeService;
 
 // Collects information from other ArcServices and send UMA metrics.
 class ArcMetricsService : public KeyedService,
-                          public aura::client::FocusChangeObserver,
+                          public wm::ActivationChangeObserver,
                           public mojom::MetricsHost {
  public:
   // These values are persisted to logs, and should therefore never be
@@ -55,10 +55,10 @@ class ArcMetricsService : public KeyedService,
   class ArcWindowDelegate {
    public:
     virtual ~ArcWindowDelegate() = default;
-    // Returns whether |window| is an active ARC window.
-    virtual bool IsActiveArcAppWindow(const aura::Window* window) const = 0;
-    virtual void RegisterFocusChangeObserver() = 0;
-    virtual void UnregisterFocusChangeObserver() = 0;
+    // Returns whether |window| is an ARC window.
+    virtual bool IsArcAppWindow(const aura::Window* window) const = 0;
+    virtual void RegisterActivationChangeObserver() = 0;
+    virtual void UnregisterActivationChangeObserver() = 0;
   };
 
   // Sets the fake ArcWindowDelegate for testing.
@@ -89,10 +89,11 @@ class ArcMetricsService : public KeyedService,
   // container or as UNKNOWN if the value has not been recieved yet.
   void RecordNativeBridgeUMA();
 
-  // aura::client::FocusChangeObserver overrides.
+  // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
-  void OnWindowFocused(aura::Window* gained_focus,
-                       aura::Window* lost_focus) override;
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   NativeBridgeType native_bridge_type_for_testing() const {
     return native_bridge_type_;

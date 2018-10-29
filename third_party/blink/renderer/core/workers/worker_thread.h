@@ -36,7 +36,6 @@
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_thread_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/core/workers/worker_inspector_proxy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/access_control_status.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
@@ -78,7 +78,7 @@ struct GlobalScopeCreationParams;
 //    If the running task is for debugger, it's guaranteed to finish without
 //    any interruptions.
 //  - Queued tasks never run.
-class CORE_EXPORT WorkerThread : public WebThread::TaskObserver {
+class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
  public:
   // Represents how this thread is terminated. Used for UMA. Append only.
   enum class ExitCode {
@@ -139,9 +139,9 @@ class CORE_EXPORT WorkerThread : public WebThread::TaskObserver {
   // WARNING: This is not safe if a nested worker is running.
   static void TerminateAllWorkersForTesting();
 
-  // WebThread::TaskObserver.
-  void WillProcessTask() override;
-  void DidProcessTask() override;
+  // Thread::TaskObserver.
+  void WillProcessTask(const base::PendingTask&) override;
+  void DidProcessTask(const base::PendingTask&) override;
 
   virtual WorkerBackingThread& GetWorkerBackingThread() = 0;
   virtual void ClearWorkerBackingThread() = 0;
@@ -226,9 +226,6 @@ class CORE_EXPORT WorkerThread : public WebThread::TaskObserver {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType type) {
     return worker_scheduler_->GetTaskRunner(type);
   }
-
-  // TODO(japhet): Hack to support an experimental worker scheduling API.
-  scoped_refptr<base::SingleThreadTaskRunner> GetControlTaskRunner();
 
   void ChildThreadStartedOnWorkerThread(WorkerThread*);
   void ChildThreadTerminatedOnWorkerThread(WorkerThread*);

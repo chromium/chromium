@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -119,18 +120,12 @@ int GetWindowId(base::DictionaryValue* window) {
 
 }  // namespace
 
-#if defined(OS_WIN)
-// Crashes under Dr. Memory, see https://crbug.com/605880.
-#define MAYBE_GetWindow DISABLED_GetWindow
-#else
-#define MAYBE_GetWindow GetWindow
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_GetWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   int window_id = ExtensionTabUtil::GetWindowId(browser());
 
   // Invalid window ID error.
   scoped_refptr<WindowsGetFunction> function = new WindowsGetFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
@@ -244,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   // Get the current window using new_browser.
   scoped_refptr<WindowsGetCurrentFunction> function =
       new WindowsGetCurrentFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::DictionaryValue> result(
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
@@ -297,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
 
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::ListValue> result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
@@ -368,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
       DevToolsWindowTesting::Get(devtools)->browser()));
 
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::ListValue> result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
@@ -424,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateNoPermissions) {
   // tab data in the function result.
   scoped_refptr<TabsUpdateFunction> update_tab_function(
       new TabsUpdateFunction());
-  scoped_refptr<Extension> empty_extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> empty_extension(
+      ExtensionBuilder("Test").Build());
   update_tab_function->set_extension(empty_extension.get());
   // Without a callback the function will not generate a result.
   update_tab_function->set_has_callback(true);
@@ -444,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
   scoped_refptr<TabsUpdateFunction> update_tab_function(
       new TabsUpdateFunction());
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   update_tab_function->set_extension(extension.get());
   update_tab_function->set_include_incognito_information(true);
 
@@ -476,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
   scoped_refptr<WindowsCreateFunction> function(new WindowsCreateFunction());
   function->SetRenderFrameHost(
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::DictionaryValue> result(
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
@@ -514,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                                       IncognitoModePrefs::FORCED);
   // Run without an explicit "incognito" param.
   scoped_refptr<WindowsCreateFunction> function = new WindowsCreateFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::DictionaryValue> result(
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
@@ -552,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
   // Run with an explicit "incognito" param.
   scoped_refptr<WindowsCreateFunction> function = new WindowsCreateFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
@@ -581,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                                       IncognitoModePrefs::DISABLED);
   // Run in normal window.
   scoped_refptr<WindowsCreateFunction> function = new WindowsCreateFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(function.get(), kArgs, browser()),
@@ -704,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
   static const char kArgsMinimizedWithFocus[] =
       "[%u, {\"state\": \"minimized\", \"focused\": true}]";
   scoped_refptr<WindowsUpdateFunction> function = new WindowsUpdateFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
@@ -748,7 +744,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateDevToolsWindow) {
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
 
   scoped_refptr<WindowsGetFunction> get_function = new WindowsGetFunction();
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build().get());
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder("Test").Build().get());
   get_function->set_extension(extension.get());
   std::unique_ptr<base::DictionaryValue> result(
       utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
@@ -832,7 +829,7 @@ class ExtensionWindowLastFocusedTest : public ExtensionTabsTest {
     bool waiting_;
   };
 
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 void ExtensionWindowLastFocusedTest::SetUpOnMainThread() {
@@ -1041,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 #endif
 
   scoped_refptr<WindowsCreateFunction> function(new WindowsCreateFunction());
-  scoped_refptr<Extension> extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
 
   std::unique_ptr<base::DictionaryValue> result(
@@ -1152,7 +1149,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
 
   scoped_refptr<TabsDuplicateFunction> duplicate_tab_function(
       new TabsDuplicateFunction());
-  scoped_refptr<Extension> empty_extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> empty_extension(
+      ExtensionBuilder("Test").Build());
   duplicate_tab_function->set_extension(empty_extension.get());
   duplicate_tab_function->set_has_callback(true);
 
@@ -1666,7 +1664,7 @@ class ExtensionTabsZoomTest : public ExtensionTabsTest {
   content::WebContents* OpenUrlAndWaitForLoad(const GURL& url);
 
  private:
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 void ExtensionTabsZoomTest::SetUpOnMainThread() {
@@ -2060,7 +2058,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 // Regression test for crbug.com/660498.
 // TODO(crbug.com/882213) Disabled due to timeouts on Linux builders.
 #if defined(OS_LINUX)
-#define MAYBE_TemporaryAddressSpoof DISABLE_TemporaryAddressSpoof
+#define MAYBE_TemporaryAddressSpoof DISABLED_TemporaryAddressSpoof
 #else
 #define MAYBE_TemporaryAddressSpoof TemporaryAddressSpoof
 #endif
@@ -2080,6 +2078,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_TemporaryAddressSpoof) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+
+  bool load_success =
+      pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents);
+  EXPECT_TRUE(load_success);
+
+  // The actual PDF page coordinates that this click goes to is (346, 333),
+  // after several space transformations, not (400, 400). This clicks on a link
+  // to "http://www.facebook.com:83".
+  content::SimulateMouseClickAt(second_web_contents, 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(400, 400));
+
   EXPECT_TRUE(navigation_manager.WaitForRequestStart());
 
   browser()->tab_strip_model()->ActivateTabAt(0, true);

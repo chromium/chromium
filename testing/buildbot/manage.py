@@ -93,10 +93,9 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
   # iOS tests are listed in //ios/build/bots.
   'cronet_test',
   'cronet_unittests_ios',
-  'ios_chrome_adaptive_toolbar_egtests',
   'ios_chrome_bookmarks_egtests',
   'ios_chrome_integration_egtests',
-  'ios_chrome_payments_egtests',
+  'ios_chrome_manual_fill_egtests',
   'ios_chrome_reading_list_egtests',
   'ios_chrome_settings_egtests',
   'ios_chrome_smoke_egtests',
@@ -174,6 +173,9 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
 
   # These are only for developer convenience and not on any bots.
   'telemetry_gpu_integration_test_scripts_only',
+
+  # These are defined by an android internal gn_isolate_map.pyl file.
+  'chrome_apk',
 }
 
 

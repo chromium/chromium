@@ -183,8 +183,9 @@ net::URLRequestJob* CreateCertStatusErrorJob(
 class MockHttpProtocolHandler
     : public net::URLRequestJobFactory::ProtocolHandler {
  public:
-  typedef base::Callback<
-      net::URLRequestJob*(net::URLRequest*, net::NetworkDelegate*)> JobCallback;
+  using JobCallback =
+      base::RepeatingCallback<net::URLRequestJob*(net::URLRequest*,
+                                                  net::NetworkDelegate*)>;
 
   explicit MockHttpProtocolHandler(ResourceContext* resource_context)
       : resource_context_(resource_context) {}
@@ -201,8 +202,8 @@ class MockHttpProtocolHandler
     }
     return create_job_callback_.Run(request, network_delegate);
   }
-  void SetCreateJobCallback(const JobCallback& callback) {
-    create_job_callback_ = callback;
+  void SetCreateJobCallback(JobCallback callback) {
+    create_job_callback_ = std::move(callback);
   }
 
  private:

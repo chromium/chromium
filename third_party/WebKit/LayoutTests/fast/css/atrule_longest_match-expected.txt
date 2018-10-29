@@ -3,5 +3,3 @@ Below should be a line saying: PASSED
 PASSED
 
 See Bug 19965.
-
-

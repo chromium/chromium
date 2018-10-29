@@ -93,6 +93,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   bool has_strong_validators_;
   GURL origin_;
   bool is_partial_request_;
+  bool completed_;
 
   // The abort reason if this class decides to block the download.
   DownloadInterruptReason abort_reason_;

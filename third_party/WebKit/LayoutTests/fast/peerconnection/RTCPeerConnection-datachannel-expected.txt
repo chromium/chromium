@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 1: maxRetransmitTime is deprecated and will be removed in M70, around October 2018. Please use maxPacketLifeTime instead. See https://www.chromestatus.com/features/5198350873788416 for more details.
+CONSOLE WARNING: maxRetransmitTime is deprecated and will be removed in M70, around October 2018. Please use maxPacketLifeTime instead. See https://www.chromestatus.com/features/5198350873788416 for more details.
 Tests RTCDataChannel.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

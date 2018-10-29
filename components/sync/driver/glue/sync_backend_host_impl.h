@@ -63,8 +63,7 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
   void InvalidateCredentials() override;
   void StartConfiguration() override;
   void StartSyncingWithServer() override;
-  void SetEncryptionPassphrase(const std::string& passphrase,
-                               bool is_explicit) override;
+  void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
   void StopSyncingForShutdown() override;
   void Shutdown(ShutdownReason reason) override;

@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "components/reading_list/core/reading_list_entry.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_accessibility_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
@@ -39,25 +38,8 @@ TEST_F(ReadingListListItemFactoryTest, SetA11yDelegate) {
   id<ReadingListListItemAccessibilityDelegate> mockDelegate =
       OCMProtocolMock(@protocol(ReadingListListItemAccessibilityDelegate));
   ReadingListListItemFactory* factory =
-      [ReadingListListItemFactory tableViewItemFactory];
+      [[ReadingListListItemFactory alloc] init];
   factory.accessibilityDelegate = mockDelegate;
   id<ReadingListListItem> item = [factory cellItemForReadingListEntry:&entry_];
   EXPECT_EQ(item.customActionFactory.accessibilityDelegate, mockDelegate);
-}
-
-// Tests that |+tableViewItemFactory| returns ReadingListTableViewItems.
-TEST_F(ReadingListListItemFactoryTest, TableViewItem) {
-  ReadingListListItemFactory* factory =
-      [ReadingListListItemFactory tableViewItemFactory];
-  id<ReadingListListItem> item = [factory cellItemForReadingListEntry:&entry_];
-  EXPECT_TRUE([item isKindOfClass:[ReadingListTableViewItem class]]);
-}
-
-// Tests that |+collectionViewItemFactory| returns
-// ReadingListCollectionViewItems.
-TEST_F(ReadingListListItemFactoryTest, CollectionViewItem) {
-  ReadingListListItemFactory* factory =
-      [ReadingListListItemFactory collectionViewItemFactory];
-  id<ReadingListListItem> item = [factory cellItemForReadingListEntry:&entry_];
-  EXPECT_TRUE([item isKindOfClass:[ReadingListCollectionViewItem class]]);
 }

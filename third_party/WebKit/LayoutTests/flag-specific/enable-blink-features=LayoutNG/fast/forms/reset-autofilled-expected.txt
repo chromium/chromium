@@ -5,4 +5,3 @@ PASS successfullyParsed is true
 TEST COMPLETE
 PASS countAutofilledElements() is 3
 PASS countAutofilledElements() is 0
-

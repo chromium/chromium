@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;

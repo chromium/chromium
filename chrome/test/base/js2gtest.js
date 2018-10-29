@@ -451,7 +451,8 @@ class ${testFixture} : public ${typedefCppFixture} {
       if (hasSwitches) {
       // Override SetUpCommandLine and add each switch.
       output(`
-  void SetUpCommandLine(base::CommandLine* command_line) override {`);
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ${typedefCppFixture}::SetUpCommandLine(command_line);`);
       for (var i = 0; i < switches.length; i++) {
         output(`
     command_line->AppendSwitchASCII(

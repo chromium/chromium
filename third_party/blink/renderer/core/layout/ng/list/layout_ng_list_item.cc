@@ -178,7 +178,7 @@ LayoutNGListItem::MarkerType LayoutNGListItem::MarkerText(
     case EListStyleType::kCircle:
     case EListStyleType::kSquare:
       // value is ignored for these types
-      text->Append(ListMarkerText::GetText(Style()->ListStyleType(), 0));
+      text->Append(list_marker_text::GetText(Style()->ListStyleType(), 0));
       if (format == kWithSuffix)
         text->Append(' ');
       return kSymbolValue;
@@ -235,9 +235,9 @@ LayoutNGListItem::MarkerType LayoutNGListItem::MarkerText(
     case EListStyleType::kUpperRoman:
     case EListStyleType::kUrdu: {
       int value = Value();
-      text->Append(ListMarkerText::GetText(Style()->ListStyleType(), value));
+      text->Append(list_marker_text::GetText(Style()->ListStyleType(), value));
       if (format == kWithSuffix) {
-        text->Append(ListMarkerText::Suffix(Style()->ListStyleType(), value));
+        text->Append(list_marker_text::Suffix(Style()->ListStyleType(), value));
         text->Append(' ');
       }
       return kOrdinalValue;
@@ -245,6 +245,12 @@ LayoutNGListItem::MarkerType LayoutNGListItem::MarkerText(
   }
   NOTREACHED();
   return kStatic;
+}
+
+String LayoutNGListItem::MarkerTextWithSuffix() const {
+  StringBuilder text;
+  MarkerText(&text, kWithSuffix);
+  return text.ToString();
 }
 
 String LayoutNGListItem::MarkerTextWithoutSuffix() const {

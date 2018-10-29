@@ -6,6 +6,8 @@
 
 goog.provide('__crWeb.fill');
 
+goog.require('__crWeb.form');
+
 /**
  * @typedef {{
  *   name: string,
@@ -213,8 +215,7 @@ function setInputElementAngularValue_(value, input) {
  */
 __gCrWeb.fill.setInputElementValue = function(
     value, input, callback = undefined) {
-  if (!input)
-    return;
+  if (!input) return;
 
   var activeElement = document.activeElement;
   if (input != activeElement) {
@@ -225,8 +226,7 @@ __gCrWeb.fill.setInputElementValue = function(
   }
 
   setInputElementValue_(value, input);
-  if (callback)
-    callback();
+  if (callback) callback();
 
   if (input != activeElement) {
     __gCrWeb.fill.createAndDispatchHTMLEvent(input, value, 'blur', true, false);
@@ -255,8 +255,7 @@ function setInputElementValue_(value, input) {
   }
 
   // Return early if the value hasn't changed.
-  if (input[propertyName] == value)
-    return;
+  if (input[propertyName] == value) return;
 
   // When the user inputs a value in an HTMLInput field, the property setter is
   // not called. The different frameworks often call it explicitly when
@@ -1975,5 +1974,23 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   }
   field['value'] = value;
 };
+
+/**
+ * Returns a serialized version of |form| to send to the host on form
+ * submission.
+ * The result string is similar to the result of calling |extractForms| filtered
+ * on |form| (that is why a list is returned).
+ *
+ * @param {FormElement} form The form to serialize.
+ * @return {string} a JSON encoded version of |form|
+ */
+__gCrWeb.fill.autofillSubmissionData = function(form) {
+  var formData = new __gCrWeb['common'].JSONSafeObject;
+  var extractMask =
+      __gCrWeb.fill.EXTRACT_MASK_VALUE | __gCrWeb.fill.EXTRACT_MASK_OPTIONS;
+  __gCrWeb['fill'].webFormElementToFormData(
+      window, form, null, extractMask, formData, null);
+  return __gCrWeb.stringify([formData]);
+}
 
 }());  // End of anonymous object

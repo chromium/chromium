@@ -80,8 +80,11 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
   # directly takes 3s.
   args = [path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only',
           elf_path]
-  output = subprocess.check_output(args)
-  for line in output.splitlines():
+  proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  # llvm-nm may write to stderr. Discard to denoise.
+  stdout, _ = proc.communicate()
+  assert proc.returncode == 0
+  for line in stdout.splitlines():
     space_idx = line.find(' ')
     address_str = line[:space_idx]
     section = line[space_idx + 1]
@@ -159,8 +162,14 @@ def RunNmOnIntermediates(target, tool_prefix, output_directory):
     args.append(target)
   else:
     args.extend(target)
-  output = subprocess.check_output(args, cwd=output_directory)
-  lines = output.splitlines()
+  proc = subprocess.Popen(args, cwd=output_directory, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+  # llvm-nm can print 'no symbols' to stderr. Capture and count the number of
+  # lines, to be returned to the caller.
+  stdout, stderr = proc.communicate()
+  assert proc.returncode == 0
+  num_no_symbols = len(stderr.splitlines())
+  lines = stdout.splitlines()
   # Empty .a file has no output.
   if not lines:
     return concurrent.EMPTY_ENCODED_DICT, concurrent.EMPTY_ENCODED_DICT
@@ -191,4 +200,5 @@ def RunNmOnIntermediates(target, tool_prefix, output_directory):
   # TODO(agrieve): We could use path indices as keys rather than paths to cut
   #     down on marshalling overhead.
   return (concurrent.EncodeDictOfLists(symbol_names_by_path),
-          concurrent.EncodeDictOfLists(string_addresses_by_path))
+          concurrent.EncodeDictOfLists(string_addresses_by_path),
+          num_no_symbols)

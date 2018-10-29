@@ -117,7 +117,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kWebRequest, "webRequest"},
     {APIPermission::kWebRequestBlocking, "webRequestBlocking"},
     {APIPermission::kDeclarativeNetRequest,
-     declarative_net_request::kAPIPermission},
+     declarative_net_request::kAPIPermission,
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kWebView, "webview",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kWindowShape, "app.window.shape"},
@@ -130,13 +131,16 @@ base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos() {
   return base::make_span(permissions_to_register);
 }
 
-std::vector<Alias> GetPermissionAliases() {
+base::span<const Alias> GetPermissionAliases() {
   // In alias constructor, first value is the alias name; second value is the
   // real name. See also alias.h.
-  return {Alias("alwaysOnTopWindows", "app.window.alwaysOnTop"),
-          Alias("fullscreen", "app.window.fullscreen"),
-          Alias("overrideEscFullscreen", "app.window.fullscreen.overrideEsc"),
-          Alias("unlimited_storage", "unlimitedStorage")};
+  static constexpr Alias aliases[] = {
+      Alias("alwaysOnTopWindows", "app.window.alwaysOnTop"),
+      Alias("fullscreen", "app.window.fullscreen"),
+      Alias("overrideEscFullscreen", "app.window.fullscreen.overrideEsc"),
+      Alias("unlimited_storage", "unlimitedStorage")};
+
+  return base::make_span(aliases);
 }
 
 }  // namespace api_permissions

@@ -50,15 +50,15 @@ class PushProvider : public blink::WebPushProvider,
 
   // blink::WebPushProvider implementation.
   void Subscribe(
-      blink::WebServiceWorkerRegistration* service_worker_registration,
+      int64_t service_worker_registration_id,
       const blink::WebPushSubscriptionOptions& options,
       bool user_gesture,
       std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) override;
   void Unsubscribe(
-      blink::WebServiceWorkerRegistration* service_worker_registration,
+      int64_t service_worker_registration_id,
       std::unique_ptr<blink::WebPushUnsubscribeCallbacks> callbacks) override;
   void GetSubscription(
-      blink::WebServiceWorkerRegistration* service_worker_registration,
+      int64_t service_worker_registration_id,
       std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) override;
 
  private:

@@ -50,7 +50,7 @@ using ShadowV0CascadeOrder = unsigned;
 const ShadowV0CascadeOrder kIgnoreCascadeOrder = 0;
 
 class MatchedRule {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   MatchedRule(const RuleData* rule_data,
@@ -76,14 +76,13 @@ class MatchedRule {
     return GetRuleData()->Specificity() + specificity_;
   }
   const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
-  void Trace(blink::Visitor* visitor) { visitor->Trace(parent_style_sheet_); }
+  void Trace(blink::Visitor* visitor) {
+    visitor->Trace(parent_style_sheet_);
+    visitor->Trace(rule_data_);
+  }
 
  private:
-  // TODO(Oilpan): RuleData is in the oilpan heap and this pointer
-  // really should be traced. However, RuleData objects are
-  // allocated inside larger TerminatedArray objects and we cannot
-  // trace a raw rule data pointer at this point.
-  const RuleData* rule_data_;
+  Member<const RuleData> rule_data_;
   unsigned specificity_;
   uint64_t position_;
   Member<const CSSStyleSheet> parent_style_sheet_;
@@ -164,7 +163,7 @@ class ElementRuleCollector {
                                    const MatchRequest&,
                                    PartNames* = nullptr);
 
-  void DidMatchRule(const RuleData&,
+  void DidMatchRule(const RuleData*,
                     const SelectorChecker::MatchResult&,
                     ShadowV0CascadeOrder,
                     const MatchRequest&);

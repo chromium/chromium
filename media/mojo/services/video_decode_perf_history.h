@@ -49,8 +49,7 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
       public VideoDecodeStatsDBProvider,
       public base::SupportsUserData::Data {
  public:
-  explicit VideoDecodePerfHistory(
-      std::unique_ptr<VideoDecodeStatsDBFactory> db_factory);
+  explicit VideoDecodePerfHistory(std::unique_ptr<VideoDecodeStatsDB> db);
   ~VideoDecodePerfHistory() override;
 
   // Bind the mojo request to this instance. Single instance will be used to
@@ -103,7 +102,7 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // this value.
   static constexpr double kMinPowerEfficientDecodedFramePercent = .50;
 
-  // Create and initialize the database. Will return early if initialization is
+  // Initialize the database. Will return early if initialization is
   // already PENDING.
   void InitDatabase();
 
@@ -162,16 +161,15 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // |clear_done_cb|.
   void OnClearedHistory(base::OnceClosure clear_done_cb);
 
-  // Factory for creating |db_|.
-  std::unique_ptr<VideoDecodeStatsDBFactory> db_factory_;
+  // Underlying database for managing/coalescing decode stats. Const to enforce
+  // assignment during construction and never cleared. We hand out references to
+  // the db via GetVideoDecodeStatsDB(), so clearing or reassigning breaks those
+  // dependencies.
+  const std::unique_ptr<VideoDecodeStatsDB> db_;
 
   // Tracks whether we've received OnDatabaseIniti() callback. All database
   // operations should be deferred until initialization is complete.
   InitStatus db_init_status_;
-
-  // Database helper for managing/coalescing decode stats.
-  // TODO(chcunningham): tear down |db_| if idle for extended period.
-  std::unique_ptr<VideoDecodeStatsDB> db_;
 
   // Vector of bound public API calls, to be run once DB initialization
   // completes.

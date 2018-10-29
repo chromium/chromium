@@ -9,12 +9,15 @@
 
 #include "base/macros.h"
 #include "chrome/browser/download/offline_item_model.h"
+#include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
 class Profile;
 
 using ContentId = offline_items_collection::ContentId;
 using OfflineContentProvider = offline_items_collection::OfflineContentProvider;
+using OfflineContentAggregator =
+    offline_items_collection::OfflineContentAggregator;
 using OfflineItem = offline_items_collection::OfflineItem;
 
 // Class for notifying UI when an OfflineItem should be displayed.
@@ -31,9 +34,10 @@ class DownloadShelfController : public OfflineContentProvider::Observer {
   void OnItemUpdated(const OfflineItem& item) override;
 
   // Called when a new OfflineItem is to be displayed on UI.
-  void OnNewOfflineItemReady(const OfflineItemModel& item);
+  void OnNewOfflineItemReady(DownloadUIModel::DownloadUIModelPtr model);
 
   Profile* profile_;
+  OfflineContentAggregator* aggregator_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadShelfController);
 };

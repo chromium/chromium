@@ -18,9 +18,11 @@ namespace background_fetch {
 MarkRegistrationForDeletionTask::MarkRegistrationForDeletionTask(
     DatabaseTaskHost* host,
     const BackgroundFetchRegistrationId& registration_id,
-    HandleBackgroundFetchErrorCallback callback)
+    bool check_for_failure,
+    MarkRegistrationForDeletionCallback callback)
     : DatabaseTask(host),
       registration_id_(registration_id),
+      check_for_failure_(check_for_failure),
       callback_(std::move(callback)),
       weak_factory_(this) {}
 
@@ -63,19 +65,14 @@ void MarkRegistrationForDeletionTask::DidGetActiveUniqueId(
 
   proto::BackgroundFetchMetadata metadata_proto;
   if (metadata_proto.ParseFromString(data[1])) {
-    // Mark registration as no longer active. Also deletes pending request
-    // keys, since those are globally sorted and requests within deactivated
-    // registrations are no longer eligible to be started. Pending request
-    // keys are not required by GetRegistration.
-    service_worker_context()->ClearRegistrationUserDataByKeyPrefixes(
+    // Mark registration as no longer active.
+    service_worker_context()->ClearRegistrationUserData(
         registration_id_.service_worker_registration_id(),
-        {ActiveRegistrationUniqueIdKey(registration_id_.developer_id()),
-         PendingRequestKeyPrefix(registration_id_.unique_id())},
+        {ActiveRegistrationUniqueIdKey(registration_id_.developer_id())},
         base::BindOnce(&MarkRegistrationForDeletionTask::DidDeactivate,
                        weak_factory_.GetWeakPtr()));
   } else {
     // Service worker database has been corrupted. Abandon fetches.
-    AbandonFetches(registration_id_.service_worker_registration_id());
     SetStorageErrorAndFinish(
         BackgroundFetchStorageError::kServiceWorkerStorageError);
     return;
@@ -98,13 +95,73 @@ void MarkRegistrationForDeletionTask::DidDeactivate(
   // |unique_id| as there may still be JavaScript references to it.
   ref_counted_unique_ids().emplace(registration_id_.unique_id());
 
+  if (check_for_failure_) {
+    // Check if there is an error in the responses to report.
+    service_worker_context()->GetRegistrationUserDataByKeyPrefix(
+        registration_id_.service_worker_registration_id(),
+        {CompletedRequestKeyPrefix(registration_id_.unique_id())},
+        base::BindOnce(
+            &MarkRegistrationForDeletionTask::DidGetCompletedRequests,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    FinishWithError(blink::mojom::BackgroundFetchError::NONE);
+  }
+}
+
+void MarkRegistrationForDeletionTask::DidGetCompletedRequests(
+    const std::vector<std::string>& data,
+    blink::ServiceWorkerStatusCode status) {
+  switch (ToDatabaseStatus(status)) {
+    case DatabaseStatus::kOk:
+    case DatabaseStatus::kNotFound:
+      break;
+    case DatabaseStatus::kFailed:
+      SetStorageErrorAndFinish(
+          BackgroundFetchStorageError::kServiceWorkerStorageError);
+      return;
+  }
+
+  for (const std::string& serialized_completed_request : data) {
+    proto::BackgroundFetchCompletedRequest completed_request;
+    if (!completed_request.ParseFromString(serialized_completed_request)) {
+      SetStorageErrorAndFinish(
+          BackgroundFetchStorageError::kServiceWorkerStorageError);
+      return;
+    }
+
+    // TODO(rayankans): Delete this after M71 is out of use.
+    // |succeeded| was deprecated in favor of |failure_reason|.
+    // This can happen if a browser was updated while a fetch was ongoing.
+    if (completed_request.has_succeeded()) {
+      if (!completed_request.succeeded()) {
+        // The fetch failed, expose the error as FETCH_ERROR.
+        failure_reason_ =
+            blink::mojom::BackgroundFetchFailureReason::FETCH_ERROR;
+      }
+    }
+
+    if (completed_request.failure_reason() !=
+        proto::BackgroundFetchRegistration::NONE) {
+      bool did_convert = MojoFailureReasonFromRegistrationProto(
+          completed_request.failure_reason(), &failure_reason_);
+      if (!did_convert) {
+        SetStorageErrorAndFinish(
+            BackgroundFetchStorageError::kServiceWorkerStorageError);
+        return;
+      }
+      break;
+    }
+  }
+
   FinishWithError(blink::mojom::BackgroundFetchError::NONE);
 }
 
 void MarkRegistrationForDeletionTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
   ReportStorageError();
-  std::move(callback_).Run(error);
+  if (HasStorageError())
+    AbandonFetches(registration_id_.service_worker_registration_id());
+  std::move(callback_).Run(error, failure_reason_);
   Finished();  // Destroys |this|.
 }
 

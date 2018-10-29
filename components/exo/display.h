@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory_handle.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/exo/seat.h"
 
 #if defined(USE_OZONE)
@@ -58,11 +58,10 @@ class Display {
   // Creates a new surface.
   std::unique_ptr<Surface> CreateSurface();
 
-  // Creates a shared memory segment from |handle| of |size| with the
-  // given |id|. This function takes ownership of |handle|.
+  // Creates a shared memory segment from |shared_memory_region|. This function
+  // takes ownership of the region.
   std::unique_ptr<SharedMemory> CreateSharedMemory(
-      const base::SharedMemoryHandle& handle,
-      size_t size);
+      base::UnsafeSharedMemoryRegion shared_memory_region);
 
 #if defined(USE_OZONE)
   // Creates a buffer for a Linux DMA-buf file descriptor.

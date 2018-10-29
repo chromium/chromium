@@ -4,7 +4,6 @@ Test error handling of Selection.addRange().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Running: testNull
 PASS selection.addRange(null) threw exception TypeError: Failed to execute 'addRange' on 'Selection': parameter 1 is not of type 'Range'..
 PASS selection.rangeCount is 1

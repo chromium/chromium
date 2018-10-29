@@ -54,8 +54,7 @@ void FilterAndResizeImagesForMaximalSize(
   uint32_t min_image_size = std::numeric_limits<uint32_t>::max();
   // Filter the images by |max_image_size|, and also identify the smallest image
   // in case all the images are bigger than |max_image_size|.
-  for (std::vector<SkBitmap>::const_iterator it = unfiltered.begin();
-       it != unfiltered.end(); ++it) {
+  for (auto it = unfiltered.begin(); it != unfiltered.end(); ++it) {
     const SkBitmap& image = *it;
     uint32_t current_size = std::max(it->width(), it->height());
     if (current_size < min_image_size) {

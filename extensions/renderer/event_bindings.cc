@@ -83,7 +83,7 @@ EventBindings::EventBindings(ScriptContext* context,
   // It's safe to use base::Unretained here because |context| will always
   // outlive us.
   context->AddInvalidationObserver(
-      base::Bind(&EventBindings::OnInvalidated, base::Unretained(this)));
+      base::BindOnce(&EventBindings::OnInvalidated, base::Unretained(this)));
 }
 
 EventBindings::~EventBindings() {}

@@ -12,12 +12,6 @@ namespace switches {
 const char kDisableDirectWriteForUI[] = "disable-directwrite-for-ui";
 #endif
 
-#if defined(OS_MACOSX)
-// Enables the HarfBuzz port of RenderText on Mac (it's already used only for
-// text editing; this enables it for everything else).
-const char kEnableHarfBuzzRenderText[] = "enable-harfbuzz-rendertext";
-#endif
-
 // Force disables font subpixel positioning. This affects the character glyph
 // sharpness, kerning, hinting and layout.
 const char kDisableFontSubpixelPositioning[] =
@@ -36,5 +30,11 @@ namespace features {
 // the normal Bidi algorithm.)
 const base::Feature kLeftToRightUrls{"LeftToRightUrls",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the use of cc::PaintRecords as a backing store for
+// ImageSkiaReps. This may reduce load on the UI thread by moving rasterization
+// of drawables away from this thread.
+const base::Feature kUsePaintRecordForImageSkia{
+    "UsePaintRecordForImageSkia", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service worker for a push message test</title>
+<script>
+function installSW() {
+  navigator.serviceWorker.register('push-message-service-worker.js');
+}
+
+window.__messagePromise = new Promise(fulfill =>
+    navigator.serviceWorker.onmessage = e => fulfill(e.data));
+
+</script>
+</head>
+<body onload="installSW()"></body>
+</html>

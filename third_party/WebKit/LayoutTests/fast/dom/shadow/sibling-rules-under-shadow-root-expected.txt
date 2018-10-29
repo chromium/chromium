@@ -3,7 +3,6 @@ crbug.com/337573: Test direct/indirect adjucent and positinal rules under shadow
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS colorOf(getNodeInComposedTree("host/child2")) is "rgb(0, 128, 0)"
 PASS colorOf(getNodeInComposedTree("host/child2")) is "rgb(0, 128, 0)"
 PASS colorOf(getNodeInComposedTree("host/child3")) is "rgb(0, 128, 0)"

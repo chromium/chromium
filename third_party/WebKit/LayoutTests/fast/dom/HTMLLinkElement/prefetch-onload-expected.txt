@@ -3,4 +3,3 @@ This tests that onload events can be attached to link elements with rel=prefetch
 If it works you should see a message below saying the test has passed.
 
 TEST PASSED.
-

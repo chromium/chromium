@@ -60,21 +60,23 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
   }
 }
 
-void ViewStack::Pop() {
+void ViewStack::Pop(bool animate) {
   DCHECK_LT(1u, size());  // There must be at least one view left after popping.
-
-  gfx::Rect destination = bounds();
-  destination.set_origin(gfx::Point(width(), 0));
 
   // Set the second-to-last view as visible, since it is about to be revealed
   // when the last view animates out.
   stack_[size() - 2]->SetVisible(true);
 
-  slide_out_animator_->AnimateViewTo(
-      stack_.back().get(), destination);
+  if (animate) {
+    gfx::Rect destination = bounds();
+    destination.set_origin(gfx::Point(width(), 0));
+    slide_out_animator_->AnimateViewTo(stack_.back().get(), destination);
+  } else {
+    stack_.pop_back();
+  }
 }
 
-void ViewStack::PopMany(int n) {
+void ViewStack::PopMany(int n, bool animate) {
   DCHECK_LT(static_cast<size_t>(n), size());  // The stack can never be empty.
 
   size_t pre_size = stack_.size();
@@ -83,7 +85,7 @@ void ViewStack::PopMany(int n) {
   stack_.erase(stack_.end() - n, stack_.end() - 1);
   DCHECK_EQ(pre_size - n + 1, stack_.size());
 
-  Pop();
+  Pop(animate);
 }
 
 size_t ViewStack::size() const {

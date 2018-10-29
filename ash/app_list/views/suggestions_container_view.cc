@@ -48,7 +48,7 @@ int SuggestionsContainerView::DoUpdate() {
   std::vector<SearchResult*> display_results =
       SearchModel::FilterSearchResultsByDisplayType(
           results(), ash::SearchResultDisplayType::kRecommendation,
-          kNumStartPageTiles);
+          /*excludes=*/{}, kNumStartPageTiles);
   if (display_results.size() != search_result_tile_views_.size()) {
     // We should recreate the grid layout in this case.
     for (size_t i = 0; i < search_result_tile_views_.size(); ++i)

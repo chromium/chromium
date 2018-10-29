@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
@@ -106,13 +107,13 @@ void MP4StreamParser::Init(
     const EndMediaSegmentCB& end_of_segment_cb,
     MediaLog* media_log) {
   DCHECK_EQ(state_, kWaitingForInit);
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!config_cb.is_null());
-  DCHECK(!new_buffers_cb.is_null());
-  DCHECK(!encrypted_media_init_data_cb.is_null());
-  DCHECK(!new_segment_cb.is_null());
-  DCHECK(!end_of_segment_cb.is_null());
+  DCHECK(!init_cb_);
+  DCHECK(init_cb);
+  DCHECK(config_cb);
+  DCHECK(new_buffers_cb);
+  DCHECK(encrypted_media_init_data_cb);
+  DCHECK(new_segment_cb);
+  DCHECK(end_of_segment_cb);
 
   ChangeState(kParsingBoxes);
   init_cb_ = std::move(init_cb);
@@ -637,7 +638,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 
   DVLOG(1) << "liveness: " << params.liveness;
 
-  if (!init_cb_.is_null()) {
+  if (init_cb_) {
     params.detected_audio_track_count = detected_audio_track_count;
     params.detected_video_track_count = detected_video_track_count;
     params.detected_text_track_count = detected_text_track_count;
@@ -809,15 +810,15 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
         runs_->video_description().video_codec == kCodecHEVC ||
         runs_->video_description().video_codec == kCodecDolbyVision) {
       DCHECK(runs_->video_description().frame_bitstream_converter);
-      if (!runs_->video_description().frame_bitstream_converter->ConvertFrame(
-              &frame_buf, is_keyframe, &subsamples)) {
+      BitstreamConverter::AnalysisResult analysis;
+      if (!runs_->video_description()
+               .frame_bitstream_converter->ConvertAndAnalyzeFrame(
+                   &frame_buf, is_keyframe, &subsamples, &analysis)) {
         MEDIA_LOG(ERROR, media_log_)
             << "Failed to prepare video sample for decode";
         return ParseResult::kError;
       }
-      BitstreamConverter::AnalysisResult analysis =
-          runs_->video_description().frame_bitstream_converter->Analyze(
-              &frame_buf, &subsamples);
+
       // If conformance analysis was not actually performed, assume the frame is
       // conformant.  If it was performed and found to be non-conformant, log
       // it.
@@ -849,7 +850,11 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
         // they mismatch. If other out-of-order codecs in mp4 (e.g. HEVC, DV)
         // implement keyframe analysis in their frame_bitstream_converter, we'll
         // similarly trust that analysis instead of the mp4.
-        is_keyframe = analysis.is_keyframe.value();
+        // We'll only use the analysis to override the MP4 keyframeness if
+        // |media::kMseBufferByPts| is enabled.
+        if (base::FeatureList::IsEnabled(kMseBufferByPts)) {
+          is_keyframe = analysis.is_keyframe.value();
+        }
       }
     }
   }

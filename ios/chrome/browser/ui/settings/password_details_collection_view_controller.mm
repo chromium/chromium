@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/ui/settings/reauthentication_module.h"
 #import "ios/chrome/browser/ui/settings/save_passwords_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_utils.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
@@ -121,7 +121,7 @@ reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule {
     _passwordForm = passwordForm;
     if (!_passwordForm.blacklisted_by_user) {
       _username = base::SysUTF16ToNSString(_passwordForm.username_value);
-      if (_passwordForm.federation_origin.unique()) {
+      if (_passwordForm.federation_origin.opaque()) {
         _password = base::SysUTF16ToNSString(_passwordForm.password_value);
       } else {
         _federation =
@@ -198,7 +198,7 @@ reauthenticationModule:(id<ReauthenticationProtocol>)reauthenticationModule {
     [model addItem:[self usernameCopyButtonItem]
         toSectionWithIdentifier:SectionIdentifierUsername];
 
-    if (_passwordForm.federation_origin.unique()) {
+    if (_passwordForm.federation_origin.opaque()) {
       [model addSectionWithIdentifier:SectionIdentifierPassword];
       SettingsTextItem* passwordHeader =
           [[SettingsTextItem alloc] initWithType:ItemTypeHeader];

@@ -17,7 +17,7 @@ namespace {
 
 void AddPatternsAndRemovePaths(const URLPatternSet& set, URLPatternSet* out) {
   DCHECK(out);
-  for (URLPatternSet::const_iterator i = set.begin(); i != set.end(); ++i) {
+  for (auto i = set.begin(); i != set.end(); ++i) {
     URLPattern p = *i;
     p.SetPath("/*");
     out->AddPattern(p);

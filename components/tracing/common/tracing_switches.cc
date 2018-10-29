@@ -6,6 +6,10 @@
 
 namespace switches {
 
+// Enables background and upload trace to trace-upload-url. Trigger rules are
+// pass as an argument.
+const char kEnableBackgroundTracing[] = "enable-background-tracing";
+
 // Causes TRACE_EVENT flags to be recorded from startup.
 // This flag will be ignored if --trace-startup or --trace-shutdown is provided.
 const char kTraceConfigFile[]               = "trace-config-file";

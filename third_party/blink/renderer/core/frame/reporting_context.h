@@ -29,6 +29,9 @@ class CORE_EXPORT ReportingContext final
   // Returns the ReportingContext for an ExecutionContext. If one does not
   // already exist for the given context, one is created.
   static ReportingContext* From(ExecutionContext*);
+  static ReportingContext* From(const ExecutionContext* context) {
+    return ReportingContext::From(const_cast<ExecutionContext*>(context));
+  }
 
   // Queues a report in all registered observers.
   void QueueReport(Report*);

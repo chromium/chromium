@@ -327,6 +327,7 @@ struct zcr_remote_shell_v1_interface {
 #define ZCR_REMOTE_SHELL_V1_WORKSPACE 2
 #define ZCR_REMOTE_SHELL_V1_CONFIGURE 3
 #define ZCR_REMOTE_SHELL_V1_DEFAULT_DEVICE_SCALE_FACTOR 4
+#define ZCR_REMOTE_SHELL_V1_DISPLAY_INFO 5
 
 /**
  * @ingroup iface_zcr_remote_shell_v1
@@ -348,6 +349,10 @@ struct zcr_remote_shell_v1_interface {
  * @ingroup iface_zcr_remote_shell_v1
  */
 #define ZCR_REMOTE_SHELL_V1_DEFAULT_DEVICE_SCALE_FACTOR_SINCE_VERSION 8
+/**
+ * @ingroup iface_zcr_remote_shell_v1
+ */
+#define ZCR_REMOTE_SHELL_V1_DISPLAY_INFO_SINCE_VERSION 19
 
 /**
  * @ingroup iface_zcr_remote_shell_v1
@@ -395,9 +400,9 @@ zcr_remote_shell_v1_send_configuration_changed(struct wl_resource *resource_, in
  * @param is_internal 1 if screen is built-in
  */
 static inline void
-zcr_remote_shell_v1_send_workspace(struct wl_resource *resource_, uint32_t id_hi, uint32_t id_lo, int32_t x, int32_t y, int32_t width, int32_t height, int32_t inset_left, int32_t inset_top, int32_t inset_right, int32_t inset_bottom, int32_t transform, wl_fixed_t scale_factor, uint32_t is_internal)
+zcr_remote_shell_v1_send_workspace(struct wl_resource *resource_, uint32_t display_id_hi, uint32_t display_id_lo, int32_t x, int32_t y, int32_t width, int32_t height, int32_t inset_left, int32_t inset_top, int32_t inset_right, int32_t inset_bottom, int32_t transform, wl_fixed_t scale_factor, uint32_t is_internal)
 {
-	wl_resource_post_event(resource_, ZCR_REMOTE_SHELL_V1_WORKSPACE, id_hi, id_lo, x, y, width, height, inset_left, inset_top, inset_right, inset_bottom, transform, scale_factor, is_internal);
+	wl_resource_post_event(resource_, ZCR_REMOTE_SHELL_V1_WORKSPACE, display_id_hi, display_id_lo, x, y, width, height, inset_left, inset_top, inset_right, inset_bottom, transform, scale_factor, is_internal);
 }
 
 /**
@@ -421,6 +426,17 @@ static inline void
 zcr_remote_shell_v1_send_default_device_scale_factor(struct wl_resource *resource_, int32_t scale)
 {
 	wl_resource_post_event(resource_, ZCR_REMOTE_SHELL_V1_DEFAULT_DEVICE_SCALE_FACTOR, scale);
+}
+
+/**
+ * @ingroup iface_zcr_remote_shell_v1
+ * Sends an display_info event to the client owning the resource.
+ * @param resource_ The client's resource
+ */
+static inline void
+zcr_remote_shell_v1_send_display_info(struct wl_resource *resource_, uint32_t display_id_hi, uint32_t display_id_lo, int32_t width, int32_t height, struct wl_array *identification_data)
+{
+	wl_resource_post_event(resource_, ZCR_REMOTE_SHELL_V1_DISPLAY_INFO, display_id_hi, display_id_lo, width, height, identification_data);
 }
 
 #ifndef ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_ENUM

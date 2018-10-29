@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 #include "content/browser/renderer_host/pepper/pepper_security_helper.h"
 #include "content/common/view_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -203,26 +204,21 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     if (!CanOpenFileSystemURLWithPepperFlags(
             open_flags, render_process_id_, file_system_url_))
       return PP_ERROR_NOACCESS;
-    BrowserThread::PostTaskAndReplyWithResult(
-        BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&GetUIThreadStuffForInternalFileSystems, render_process_id_),
         base::Bind(&PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
-                   AsWeakPtr(),
-                   context->MakeReplyMessageContext(),
+                   AsWeakPtr(), context->MakeReplyMessageContext(),
                    platform_file_flags));
   } else {
     base::FilePath path = file_ref_host->GetExternalFilePath();
     if (!CanOpenWithPepperFlags(open_flags, render_process_id_, path))
       return PP_ERROR_NOACCESS;
-    BrowserThread::PostTaskAndReplyWithResult(
-        BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&GetResolvedRenderProcessId, render_process_id_),
-        base::Bind(&PepperFileIOHost::GotResolvedRenderProcessId,
-                   AsWeakPtr(),
-                   context->MakeReplyMessageContext(),
-                   path,
+        base::Bind(&PepperFileIOHost::GotResolvedRenderProcessId, AsWeakPtr(),
+                   context->MakeReplyMessageContext(), path,
                    platform_file_flags));
   }
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
@@ -254,9 +250,9 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
 
   file_system_host_->GetFileSystemOperationRunner()->OpenFile(
       file_system_url_, platform_file_flags,
-      base::Bind(&DidOpenFile, AsWeakPtr(), task_runner_,
-                 base::Bind(&PepperFileIOHost::DidOpenInternalFile, AsWeakPtr(),
-                            reply_context)));
+      base::BindOnce(&DidOpenFile, AsWeakPtr(), task_runner_,
+                     base::Bind(&PepperFileIOHost::DidOpenInternalFile,
+                                AsWeakPtr(), reply_context)));
 }
 
 void PepperFileIOHost::DidOpenInternalFile(
@@ -399,15 +395,12 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 
   GURL document_url =
       browser_ppapi_host_->GetDocumentURLForInstance(pp_instance());
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::UI,
-      FROM_HERE,
-      base::Bind(&GetPluginAllowedToCallRequestOSFileHandle,
-                 render_process_id_,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::UI},
+      base::Bind(&GetPluginAllowedToCallRequestOSFileHandle, render_process_id_,
                  document_url),
       base::Bind(&PepperFileIOHost::GotPluginAllowedToCallRequestOSFileHandle,
-                 AsWeakPtr(),
-                 context->MakeReplyMessageContext()));
+                 AsWeakPtr(), context->MakeReplyMessageContext()));
   return PP_OK_COMPLETIONPENDING;
 }
 

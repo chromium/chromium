@@ -17,11 +17,11 @@ function openAudioPlayer(volumeName, volumeType) {
     var appWindow = args[0];
     return Promise.all([
       remoteCallAudioPlayer.waitForElement(
-          appWindow, 'audio-player /deep/ track-list'),
+          appWindow, [['audio-player', 'track-list']]),
       remoteCallAudioPlayer.waitForElement(
-          appWindow, 'audio-player /deep/ control-panel'),
+          appWindow, [['audio-player', 'control-panel']]),
       remoteCallAudioPlayer.waitForElement(
-          appWindow, 'audio-player /deep/ audio'),
+          appWindow, [['audio-player', 'audio']]),
     ]);
   });
 }

@@ -55,6 +55,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
   content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
                                           SkColor initial_color) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,

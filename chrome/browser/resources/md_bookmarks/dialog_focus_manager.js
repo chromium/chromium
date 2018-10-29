@@ -7,22 +7,21 @@ cr.define('bookmarks', function() {
    * Manages focus restoration for modal dialogs. After the final dialog in a
    * stack is closed, restores focus to the element which was focused when the
    * first dialog was opened.
-   * @constructor
    */
-  function DialogFocusManager() {
-    /** @private {HTMLElement} */
-    this.previousFocusElement_ = null;
+  class DialogFocusManager {
+    constructor() {
+      /** @private {HTMLElement} */
+      this.previousFocusElement_ = null;
 
-    /** @private {Set<HTMLDialogElement>} */
-    this.dialogs_ = new Set();
-  }
+      /** @private {Set<HTMLDialogElement>} */
+      this.dialogs_ = new Set();
+    }
 
-  DialogFocusManager.prototype = {
     /**
      * @param {HTMLDialogElement} dialog
      * @param {function()=} showFn
      */
-    showDialog: function(dialog, showFn) {
+    showDialog(dialog, showFn) {
       if (!showFn) {
         showFn = function() {
           dialog.showModal();
@@ -42,46 +41,46 @@ cr.define('bookmarks', function() {
       }
 
       showFn();
-    },
+    }
 
     /**
      * @return {boolean} True if the document currently has an open dialog.
      */
-    hasOpenDialog: function() {
+    hasOpenDialog() {
       return this.dialogs_.size > 0;
-    },
+    }
 
     /**
      * Clears the stored focus element, so that focus does not restore when all
      * dialogs are closed.
      */
-    clearFocus: function() {
+    clearFocus() {
       this.previousFocusElement_ = null;
-    },
+    }
 
     /** @private */
-    updatePreviousFocus_: function() {
+    updatePreviousFocus_() {
       this.previousFocusElement_ = this.getFocusedElement_();
-    },
+    }
 
     /**
      * @return {HTMLElement}
      * @private
      */
-    getFocusedElement_: function() {
+    getFocusedElement_() {
       let focus = document.activeElement;
       while (focus.root && focus.root.activeElement)
         focus = focus.root.activeElement;
 
       return focus;
-    },
+    }
 
     /**
      * @param {HTMLDialogElement} dialog
      * @return {function(Event)}
      * @private
      */
-    getCloseListener_: function(dialog) {
+    getCloseListener_(dialog) {
       const closeListener = (e) => {
         // If the dialog is open, then it got reshown immediately and we
         // shouldn't clear it until it is closed again.
@@ -97,8 +96,8 @@ cr.define('bookmarks', function() {
       };
 
       return closeListener;
-    },
-  };
+    }
+  }
 
   cr.addSingletonGetter(DialogFocusManager);
 

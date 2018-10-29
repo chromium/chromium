@@ -20,7 +20,7 @@
         {
           "object": "LayoutImage IMG",
           "rect": [50, 50, 259, 194],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

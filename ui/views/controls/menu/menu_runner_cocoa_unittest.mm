@@ -106,6 +106,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
         gfx::Rect(kWindowOffset, kWindowOffset, kWindowWidth, kWindowHeight));
     parent_->Show();
 
+    native_view_subview_count_ =
+        [[parent_->GetNativeView().GetNativeNSView() subviews] count];
+
     base::Closure on_close = base::Bind(&MenuRunnerCocoaTest::MenuCloseCallback,
                                         base::Unretained(this));
     if (GetParam() == MenuType::NATIVE)
@@ -116,6 +119,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   }
 
   void TearDown() override {
+    EXPECT_EQ(native_view_subview_count_,
+              [[parent_->GetNativeView().GetNativeNSView() subviews] count]);
+
     if (runner_) {
       runner_->Release();
       runner_ = NULL;
@@ -151,10 +157,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   void RunMenuAt(const gfx::Rect& anchor) {
     last_anchor_frame_ = NSZeroRect;
 
-    // Should be one child (the compositor layer) before showing, and it should
-    // go up by one (the anchor view) while the menu is shown.
-    EXPECT_EQ(1u, [[parent_->GetNativeView() subviews] count]);
-
     base::OnceClosure callback =
         base::BindOnce(&MenuRunnerCocoaTest::ComboboxRunMenuAtCallback,
                        base::Unretained(this));
@@ -168,9 +170,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
     runner_->RunMenuAt(parent_, nullptr, anchor, MENU_ANCHOR_TOPLEFT,
                        MenuRunner::COMBOBOX);
     MaybeRunAsync();
-
-    // Ensure the anchor view is removed.
-    EXPECT_EQ(1u, [[parent_->GetNativeView() subviews] count]);
   }
 
   void MenuCancelCallback() {
@@ -244,6 +243,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   internal::MenuRunnerImplInterface* runner_ = nullptr;
   views::Widget* parent_ = nullptr;
   NSRect last_anchor_frame_ = NSZeroRect;
+  NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;
 
  private:
@@ -253,13 +253,13 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   }
 
   void ComboboxRunMenuAtCallback() {
-    NSArray* subviews = [parent_->GetNativeView() subviews];
+    NSArray* subviews = [parent_->GetNativeView().GetNativeNSView() subviews];
     // An anchor view should only be added for Native menus.
     if (GetParam() == MenuType::NATIVE) {
-      ASSERT_EQ(2u, [subviews count]);
-      last_anchor_frame_ = [[subviews objectAtIndex:1] frame];
+      ASSERT_EQ(native_view_subview_count_ + 1, [subviews count]);
+      last_anchor_frame_ = [subviews[native_view_subview_count_] frame];
     } else {
-      EXPECT_EQ(1u, [subviews count]);
+      EXPECT_EQ(native_view_subview_count_, [subviews count]);
     }
     runner_->Cancel();
   }

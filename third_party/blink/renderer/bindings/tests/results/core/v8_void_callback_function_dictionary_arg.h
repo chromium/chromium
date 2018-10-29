@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef V8VoidCallbackFunctionDictionaryArg_h
-#define V8VoidCallbackFunctionDictionaryArg_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_VOID_CALLBACK_FUNCTION_DICTIONARY_ARG_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_VOID_CALLBACK_FUNCTION_DICTIONARY_ARG_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -79,4 +78,4 @@ Persistent<V8VoidCallbackFunctionDictionaryArg> WrapPersistent(V8VoidCallbackFun
 
 }  // namespace blink
 
-#endif  // V8VoidCallbackFunctionDictionaryArg_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_VOID_CALLBACK_FUNCTION_DICTIONARY_ARG_H_

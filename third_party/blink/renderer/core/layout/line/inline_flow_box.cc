@@ -918,6 +918,28 @@ void InlineFlowBox::PlaceBoxesInBlockDirection(
   }
 }
 
+void InlineFlowBox::OverrideVisualOverflowFromLogicalRect(
+    const LayoutRect& logical_visual_overflow,
+    LayoutUnit line_top,
+    LayoutUnit line_bottom) {
+  // If we are setting an overflow, then we can't pretend not to have an
+  // overflow.
+  ClearKnownToHaveNoOverflow();
+  SetVisualOverflowFromLogicalRect(logical_visual_overflow, line_top,
+                                   line_bottom);
+}
+
+void InlineFlowBox::OverrideLayoutOverflowFromLogicalRect(
+    const LayoutRect& logical_layout_overflow,
+    LayoutUnit line_top,
+    LayoutUnit line_bottom) {
+  // If we are setting an overflow, then we can't pretend not to have an
+  // overflow.
+  ClearKnownToHaveNoOverflow();
+  SetLayoutOverflowFromLogicalRect(logical_layout_overflow, line_top,
+                                   line_bottom);
+}
+
 LayoutUnit InlineFlowBox::FarthestPositionForUnderline(
     LineLayoutItem decorating_box,
     FontVerticalPositionType position_type,
@@ -1233,8 +1255,10 @@ void InlineFlowBox::ComputeOverflow(
     }
   }
 
-  SetOverflowFromLogicalRects(logical_layout_overflow, logical_visual_overflow,
-                              line_top, line_bottom);
+  SetLayoutOverflowFromLogicalRect(logical_layout_overflow, line_top,
+                                   line_bottom);
+  SetVisualOverflowFromLogicalRect(logical_visual_overflow, line_top,
+                                   line_bottom);
 }
 
 void InlineFlowBox::SetLayoutOverflow(const LayoutRect& rect,
@@ -1261,9 +1285,20 @@ void InlineFlowBox::SetVisualOverflow(const LayoutRect& rect,
   overflow_->SetVisualOverflow(rect);
 }
 
-void InlineFlowBox::SetOverflowFromLogicalRects(
-    const LayoutRect& logical_layout_overflow,
+void InlineFlowBox::SetVisualOverflowFromLogicalRect(
     const LayoutRect& logical_visual_overflow,
+    LayoutUnit line_top,
+    LayoutUnit line_bottom) {
+  DCHECK(!KnownToHaveNoOverflow());
+  LayoutRect frame_box = FrameRectIncludingLineHeight(line_top, line_bottom);
+  LayoutRect visual_overflow(IsHorizontal()
+                                 ? logical_visual_overflow
+                                 : logical_visual_overflow.TransposedRect());
+  SetVisualOverflow(visual_overflow, frame_box);
+}
+
+void InlineFlowBox::SetLayoutOverflowFromLogicalRect(
+    const LayoutRect& logical_layout_overflow,
     LayoutUnit line_top,
     LayoutUnit line_bottom) {
   DCHECK(!KnownToHaveNoOverflow());
@@ -1273,11 +1308,6 @@ void InlineFlowBox::SetOverflowFromLogicalRects(
                                  ? logical_layout_overflow
                                  : logical_layout_overflow.TransposedRect());
   SetLayoutOverflow(layout_overflow, frame_box);
-
-  LayoutRect visual_overflow(IsHorizontal()
-                                 ? logical_visual_overflow
-                                 : logical_visual_overflow.TransposedRect());
-  SetVisualOverflow(visual_overflow, frame_box);
 }
 
 bool InlineFlowBox::NodeAtPoint(HitTestResult& result,

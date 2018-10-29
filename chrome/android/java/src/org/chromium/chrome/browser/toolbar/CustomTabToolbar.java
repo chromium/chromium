@@ -23,6 +23,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.text.BidiFormatter;
 import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -60,7 +61,6 @@ import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.widget.ScrimView;
 import org.chromium.chrome.browser.widget.TintedDrawable;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.GURLUtils;
@@ -77,8 +77,8 @@ import java.util.regex.Pattern;
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
  */
-public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
-        View.OnLongClickListener {
+public class CustomTabToolbar
+        extends ToolbarLayout implements LocationBar, View.OnLongClickListener {
     private static final Object ORIGIN_SPAN = new Object();
 
     /**
@@ -127,9 +127,11 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
     private View mLocationBarFrameLayout;
     private View mTitleUrlContainer;
     private TextView mUrlBar;
+    private View mLiteStatusView;
+    private View mLiteStatusSeparatorView;
     private UrlBarCoordinator mUrlCoordinator;
     private TextView mTitleBar;
-    private TintedImageButton mSecurityButton;
+    private AppCompatImageButton mSecurityButton;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
 
@@ -166,6 +168,8 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
         mUrlBar = (TextView) findViewById(R.id.url_bar);
         mUrlBar.setHint("");
         mUrlBar.setEnabled(false);
+        mLiteStatusView = findViewById(R.id.url_bar_lite_status);
+        mLiteStatusSeparatorView = findViewById(R.id.url_bar_lite_status_separator);
         mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar);
         mUrlCoordinator.setDelegate(this);
         mUrlCoordinator.setAllowFocus(false);
@@ -441,6 +445,13 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
             originEnd = displayText.length();
         }
 
+        // The Lite Status view visibility should be updated on every new URL and only be displayed
+        // along with the URL bar.
+        final boolean liteStatusIsVisible =
+                getToolbarDataProvider().isPreview() && mUrlBar.getVisibility() == View.VISIBLE;
+        mLiteStatusView.setVisibility(liteStatusIsVisible ? View.VISIBLE : View.GONE);
+        mLiteStatusSeparatorView.setVisibility(liteStatusIsVisible ? View.VISIBLE : View.GONE);
+
         mUrlCoordinator.setUrlBarData(
                 UrlBarData.create(url, displayText, originStart, originEnd, url),
                 UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
@@ -492,7 +503,8 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
 
     private void updateButtonsTint() {
         if (getMenuButton() != null) {
-            getMenuButton().setTint(mUseDarkColors ? mDarkModeTint : mLightModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    getMenuButton(), mUseDarkColors ? mDarkModeTint : mLightModeTint);
         }
         updateButtonTint(mCloseButton);
         int numCustomActionButtons = mCustomActionButtons.getChildCount();
@@ -538,7 +550,8 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
         } else {
             // ImageView#setImageResource is no-op if given resource is the current one.
             mSecurityButton.setImageResource(securityIconResource);
-            mSecurityButton.setTint(getToolbarDataProvider().getSecurityIconColorStateList());
+            ApiCompatibilityUtils.setImageTintList(
+                    mSecurityButton, getToolbarDataProvider().getSecurityIconColorStateList());
             mAnimDelegate.showSecurityButton();
         }
 
@@ -601,6 +614,11 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
     @Override
     public View getContainerView() {
         return this;
+    }
+
+    @Override
+    public View getSecurityIconView() {
+        return mSecurityButton;
     }
 
     @Override
@@ -731,9 +749,6 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
     // Toolbar and LocationBar calls that are not relevant here.
 
     @Override
-    public void onTextChangedForAutocomplete() {}
-
-    @Override
     public void backKeyPressed() {
         assert false : "The URL bar should never take focus in CCTs.";
     }
@@ -759,9 +774,6 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
 
     @Override
     public void revertChanges() {}
-
-    @Override
-    public void hideSuggestions() {}
 
     @Override
     public void updateMicButtonState() {}
@@ -805,11 +817,6 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
         }
     }
 
-    @Override
-    public boolean mustQueryUrlBarLocationForSuggestions() {
-        return false;
-    }
-
     // Temporary fix to override ToolbarLayout's highlight-related methods
     @Override
     public void setMenuButtonHighlight(boolean highlight) {}
@@ -818,16 +825,13 @@ public class CustomTabToolbar extends ToolbarLayout implements LocationBar,
     protected void setMenuButtonHighlightDrawable(boolean highlighting) {}
 
     @Override
-    public boolean isSuggestionsListShown() {
-        // Custom tabs do not support suggestions.
-        return false;
-    }
-
-    @Override
     public int getUrlContainerMarginEnd() {
         return 0;
     }
 
     @Override
     public void setScrim(ScrimView scrim) {}
+
+    @Override
+    public void setUnfocusedWidth(float unfocusedWidth) {}
 }

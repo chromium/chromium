@@ -30,10 +30,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/user_manager_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -42,14 +41,9 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#endif
 
 namespace {
 
@@ -121,6 +115,10 @@ class ProfileChooserViewExtensionsTest
 
   // SupportsTestUi:
   void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
     constexpr char kSignedIn[] = "SignedIn";
     constexpr char kMultiProfile[] = "MultiProfile";
     constexpr char kGuest[] = "Guest";
@@ -169,16 +167,7 @@ class ProfileChooserViewExtensionsTest
  protected:
   void OpenProfileChooserView(Browser* browser) {
     ProfileChooserView::close_on_deactivate_for_testing_ = false;
-#if defined(OS_MACOSX) && BUILDFLAG(MAC_VIEWS_BROWSER)
-    if (views_mode_controller::IsViewsBrowserCocoa())
-      OpenProfileChooserCocoa(browser);
-    else
-      OpenProfileChooserViews(browser);
-#elif defined(OS_MACOSX)
-    OpenProfileChooserCocoa(browser);
-#else
     OpenProfileChooserViews(browser);
-#endif
 
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(ProfileChooserView::IsShowing());
@@ -189,33 +178,15 @@ class ProfileChooserViewExtensionsTest
         content::Source<Browser>(browser)));
   }
 
-#if defined(OS_MACOSX)
-  void OpenProfileChooserCocoa(Browser* browser) {
-    // Show the avatar bubble via API on macOS until |mac_views_browser| is
-    // enabled.
-    browser->window()->ShowAvatarBubbleFromAvatarButton(
-        BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
-        signin::ManageAccountsParams(),
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, true);
-  }
-#endif
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   void OpenProfileChooserViews(Browser* browser) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    views::View* button;
-    if (ui::MaterialDesignController::IsRefreshUi())
-      button = browser_view->toolbar()->avatar_button();
-    else
-      button = browser_view->frame()->GetNewAvatarMenuButton();
-    if (!button)
-      NOTREACHED() << "Avatar button not found.";
+    views::View* button = browser_view->toolbar()->avatar_button();
+    DCHECK(button);
 
     ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
     button->OnMousePressed(e);
   }
-#endif
 
   AvatarMenu* GetProfileChooserViewAvatarMenu() {
     return ProfileChooserView::profile_bubble_->avatar_menu_.get();
@@ -507,15 +478,10 @@ IN_PROC_BROWSER_TEST_F(ProfileChooserViewExtensionsTest,
   ShowAndVerifyUi();
 }
 
-// Crashes on Win only.  http://crbug.com/820390
-#if defined(OS_WIN)
-#define MAYBE_InvokeUi_SupervisedUser DISABLED_InvokeUi_SupervisedUser
-#else
-#define MAYBE_InvokeUi_SupervisedUser InvokeUi_SupervisedUser
-#endif
+// Crashes because account consistency changes:  http://crbug.com/820390
 // Shows the |ProfileChooserView| when a supervised user is the active profile.
 IN_PROC_BROWSER_TEST_F(ProfileChooserViewExtensionsTest,
-                       MAYBE_InvokeUi_SupervisedUser) {
+                       DISABLED_InvokeUi_SupervisedUser) {
   ScopedAccountConsistencyDiceFixAuthErrors scoped_account_consistency;
   ShowAndVerifyUi();
 }

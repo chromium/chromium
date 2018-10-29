@@ -89,9 +89,6 @@ bool FileProviderImpl::GetResource(uint16_t resource_id, std::string* out) {
     case assistant_client::resource_ids::kNetworkCannotReachServerError:
       chrome_resource_id = IDR_ASSISTANT_NO_INTERNET_ERROR;
       break;
-    case assistant_client::resource_ids::kDefaultHotwordResourceId:
-      chrome_resource_id = IDR_ASSISTANT_HOTWORD_MODEL;
-      break;
     default:
       break;
   }

@@ -67,6 +67,14 @@ std::string FidoBleDevice::GetId() const {
   return GetId(connection_->address());
 }
 
+base::string16 FidoBleDevice::GetDisplayName() const {
+  auto* device = connection_->GetBleDevice();
+  if (!device)
+    return base::string16();
+
+  return device->GetNameForDisplay();
+}
+
 FidoTransportProtocol FidoBleDevice::DeviceTransport() const {
   return FidoTransportProtocol::kBluetoothLowEnergy;
 }

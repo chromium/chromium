@@ -15,12 +15,6 @@ Tests event listeners output in the Elements sidebar panel.
     once: false
     handler: function() { console.log("click - document - handleEvent"); }
 == Raw
-[expanded] documentRemoveevent-listener-sidebar.js:34
-    useCapture: true
-    passive: false
-    once: false
-    handler: function ObjectHandler() { document.addEventListener("click", this, true); }
-== Raw
 [expanded] documentRemoveevent-listener-sidebar.js:28
     useCapture: true
     passive: false

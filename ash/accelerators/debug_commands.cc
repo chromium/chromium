@@ -5,6 +5,7 @@
 #include "ash/accelerators/debug_commands.h"
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/components/quick_launch/public/mojom/constants.mojom.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -20,7 +21,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "services/service_manager/public/cpp/connector.h"
 #include "services/ws/window_service.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/compositor/debug_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
@@ -79,6 +83,9 @@ void PrintWindowHierarchy(ws::WindowService* window_service,
     *out << " subpixel offset=" + subpixel_position_offset.ToString();
   if (window_service && ws::WindowService::HasRemoteClient(window))
     *out << " remote_id=" << window_service->GetIdForDebugging(window);
+  std::string* tree_id = window->GetProperty(ui::kChildAXTreeID);
+  if (tree_id)
+    *out << " ax_tree_id=" << *tree_id;
   *out << '\n';
 
   for (aura::Window* child : window->children()) {
@@ -101,6 +108,10 @@ void HandlePrintWindowHierarchy() {
     // Error so logs can be collected from end-users.
     LOG(ERROR) << out.str();
   }
+}
+
+void HandleShowQuickLaunch() {
+  Shell::Get()->connector()->StartService(quick_launch::mojom::kServiceName);
 }
 
 gfx::ImageSkia CreateWallpaperImage(SkColor fill, SkColor rect) {
@@ -208,6 +219,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_PRINT_WINDOW_HIERARCHY:
       HandlePrintWindowHierarchy();
+      break;
+    case DEBUG_SHOW_QUICK_LAUNCH:
+      HandleShowQuickLaunch();
       break;
     case DEBUG_SHOW_TOAST:
       Shell::Get()->toast_manager()->Show(

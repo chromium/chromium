@@ -15,6 +15,8 @@
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using device::mojom::BluetoothSystem;
+
 namespace ash {
 
 BluetoothFeaturePodController::BluetoothFeaturePodController(
@@ -55,7 +57,7 @@ SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
 
 void BluetoothFeaturePodController::UpdateButton() {
   bool is_available =
-      Shell::Get()->tray_bluetooth_helper()->GetBluetoothAvailable();
+      Shell::Get()->tray_bluetooth_helper()->IsBluetoothStateAvailable();
   button_->SetVisible(is_available);
   if (!is_available)
     return;
@@ -73,7 +75,8 @@ void BluetoothFeaturePodController::UpdateButton() {
                        !session_controller->IsScreenLocked()));
 
   bool is_enabled =
-      Shell::Get()->tray_bluetooth_helper()->GetBluetoothEnabled();
+      Shell::Get()->tray_bluetooth_helper()->GetBluetoothState() ==
+      BluetoothSystem::State::kPoweredOn;
   button_->SetToggled(is_enabled);
 
   if (!is_enabled) {

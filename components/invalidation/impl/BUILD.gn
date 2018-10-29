@@ -6,6 +6,17 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+static_library("feature_list") {
+  sources = [
+    "invalidation_switches.cc",
+    "invalidation_switches.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 static_library("impl") {
   sources = [
     "deprecated_invalidator_registrar.cc",
@@ -19,12 +30,12 @@ static_library("impl") {
     "invalidation_service_util.h",
     "invalidation_state_tracker.cc",
     "invalidation_state_tracker.h",
-    "invalidation_switches.cc",
-    "invalidation_switches.h",
     "invalidator.cc",
     "invalidator.h",
     "invalidator_registrar.cc",
     "invalidator_registrar.h",
+    "invalidator_registrar_with_memory.cc",
+    "invalidator_registrar_with_memory.h",
     "invalidator_storage.cc",
     "invalidator_storage.h",
     "mock_ack_handler.cc",
@@ -44,6 +55,7 @@ static_library("impl") {
   ]
 
   public_deps = [
+    ":feature_list",
     "//components/invalidation/public",
   ]
   deps = [
@@ -67,14 +79,14 @@ static_library("impl") {
 
   if (!is_android) {
     sources += [
+      "fcm_invalidation_listener.cc",
+      "fcm_invalidation_listener.h",
       "fcm_invalidation_service.cc",
       "fcm_invalidation_service.h",
       "fcm_invalidator.cc",
       "fcm_invalidator.h",
       "fcm_network_handler.cc",
       "fcm_network_handler.h",
-      "fcm_sync_invalidation_listener.cc",
-      "fcm_sync_invalidation_listener.h",
       "fcm_sync_network_channel.cc",
       "fcm_sync_network_channel.h",
       "gcm_invalidation_bridge.cc",
@@ -163,10 +175,10 @@ source_set("unit_tests") {
     sources += [
       "deprecated_invalidator_registrar_unittest.cc",
       "fake_invalidator_unittest.cc",
+      "fcm_invalidation_listener_unittest.cc",
       "fcm_invalidation_service_unittest.cc",
       "fcm_invalidator_unittest.cc",
       "fcm_network_handler_unittests.cc",
-      "fcm_sync_invalidation_listener_unittest.cc",
       "gcm_invalidation_bridge_unittest.cc",
       "gcm_network_channel_unittest.cc",
       "invalidation_notifier_unittest.cc",

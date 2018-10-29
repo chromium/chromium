@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -200,10 +201,8 @@ void PluginList::GetPluginPathsToLoad(
 
   for (size_t i = 0; i < extra_plugin_paths.size(); ++i) {
     const base::FilePath& path = extra_plugin_paths[i];
-    if (std::find(plugin_paths->begin(), plugin_paths->end(), path) !=
-        plugin_paths->end()) {
+    if (base::ContainsValue(*plugin_paths, path))
       continue;
-    }
     plugin_paths->push_back(path);
   }
 }

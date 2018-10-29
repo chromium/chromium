@@ -38,6 +38,8 @@ struct zxdg_surface_v6;
 struct zxdg_toplevel_v6;
 struct zxdg_popup_v6;
 struct zxdg_positioner_v6;
+struct zwp_text_input_manager_v1;
+struct zwp_text_input_v1;
 
 namespace wl {
 
@@ -222,6 +224,18 @@ template <>
 struct ObjectTraits<zxdg_positioner_v6> {
   static const wl_interface* interface;
   static void (*deleter)(zxdg_positioner_v6*);
+};
+
+template <>
+struct ObjectTraits<zwp_text_input_manager_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_text_input_manager_v1*);
+};
+
+template <>
+struct ObjectTraits<zwp_text_input_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zwp_text_input_v1*);
 };
 
 struct Deleter {

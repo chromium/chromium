@@ -26,6 +26,11 @@
 // CollectionViewFooterCell.
 @interface CollectionViewFooterItem : CollectionViewItem
 
+// TODO(crbug.com/891299) remove when all collection and table views are fixed
+// for dynamic types.
+// Set to YES to use dynamic font types.
+@property(nonatomic, assign) BOOL useScaledFont;
+
 // The main text string.
 @property(nonatomic, copy) NSString* text;
 

@@ -127,28 +127,9 @@ bool CastMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kCastMediaRouteProvider);
 }
 
-bool PresentationReceiverWindowEnabled() {
-#if defined(OS_MACOSX) && !BUILDFLAG(MAC_VIEWS_BROWSER)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool ShouldUseViewsDialog() {
-#if defined(OS_MACOSX)
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  // Cocoa browser is disabled if kExperimentalUi is enabled.
-  return (base::FeatureList::IsEnabled(features::kViewsCastDialog) &&
-          !features::IsViewsBrowserCocoa()) ||
-         base::FeatureList::IsEnabled(features::kExperimentalUi);
-#else   // !BUILDFLAG(MAC_VIEWS_BROWSER)
-  return false;
-#endif  // BUILDFLAG(MAC_VIEWS_BROWSER)
-#else   // !defined(OS_MACOSX)
   return base::FeatureList::IsEnabled(features::kViewsCastDialog) ||
          base::FeatureList::IsEnabled(features::kExperimentalUi);
-#endif  // defined(OS_MACOSX)
 }
 
 bool ShouldUseMirroringService() {

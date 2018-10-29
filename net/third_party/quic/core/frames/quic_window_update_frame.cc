@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_window_update_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 
 namespace quic {
 
-QuicWindowUpdateFrame::QuicWindowUpdateFrame() {}
+QuicWindowUpdateFrame::QuicWindowUpdateFrame()
+    : control_frame_id(kInvalidControlFrameId) {}
 
 QuicWindowUpdateFrame::QuicWindowUpdateFrame(
     QuicControlFrameId control_frame_id,
     QuicStreamId stream_id,
     QuicStreamOffset byte_offset)
-    : QuicControlFrame(control_frame_id),
+    : control_frame_id(control_frame_id),
       stream_id(stream_id),
       byte_offset(byte_offset) {}
 

@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_FAKE_IMAGE_LOADER_CLIENT_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 #include "base/macros.h"
@@ -26,6 +27,17 @@ class CHROMEOS_EXPORT FakeImageLoaderClient : public ImageLoaderClient {
   // Sets intended mount path for a component.
   void SetMountPathForComponent(const std::string& component_name,
                                 const base::FilePath& mount_path);
+
+  // Returns whether the component with the specified name was loaded.
+  bool IsLoaded(const std::string& name) const;
+
+  // Returns the file path from which the specified component was loaded.
+  // For component loaded using LoadComponent this will be the component path
+  // registered for the component in RegisterComponent.
+  // For component loaded using LoadComponentAtPath, it will be the path passed
+  // into the load method.
+  // Returns empty file path if the component is not loaded at the time.
+  base::FilePath GetComponentInstallPath(const std::string& name) const;
 
   // DBusClient override.
   void Init(dbus::Bus* dbus) override {}
@@ -50,13 +62,19 @@ class CHROMEOS_EXPORT FakeImageLoaderClient : public ImageLoaderClient {
                         DBusMethodCallback<bool> callback) override;
 
  private:
-  // Maps registered component name to its registered varsion.
+  // Maps registered component name to its registered version.
   std::map<std::string, std::string> registered_components_;
 
   // Maps component names to paths to which they should be mounted.
   // Registered using SetMountPathForComponent() before LoadComponent*() is
   // called, and removed by a later call to UnmountComponent().
   std::map<std::string, base::FilePath> mount_paths_;
+
+  // Set of loaded components.
+  std::set<std::string> loaded_components_;
+
+  // Maps a loaded component to the path from which it was loaded.
+  std::map<std::string, base::FilePath> component_install_paths_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeImageLoaderClient);
 };

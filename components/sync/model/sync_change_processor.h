@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error.h"
 
@@ -18,11 +19,7 @@ class Location;
 
 namespace syncer {
 
-class SyncChange;
-
 class LocalChangeObserver;
-
-using SyncChangeList = std::vector<SyncChange>;
 
 // An interface for services that handle receiving SyncChanges.
 class SyncChangeProcessor {

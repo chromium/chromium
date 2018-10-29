@@ -29,6 +29,7 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                      const policy::BrowserPolicyConnector*());
   MOCK_CONST_METHOD0(GetPasswordProtectionWarningTriggerPref,
                      PasswordProtectionTrigger());
+  MOCK_CONST_METHOD0(GetCurrentContentAreaSize, gfx::Size());
   MOCK_CONST_METHOD2(IsURLWhitelistedForPasswordEntry,
                      bool(const GURL&, RequestOutcome*));
 

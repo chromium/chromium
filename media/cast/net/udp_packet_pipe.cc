@@ -66,7 +66,7 @@ UdpPacketPipeWriter::UdpPacketPipeWriter(
 UdpPacketPipeWriter::~UdpPacketPipeWriter() {}
 
 void UdpPacketPipeWriter::Write(PacketRef packet, base::OnceClosure done_cb) {
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
   current_packet_size_ = packet->data.size();
   data_pipe_writer_.Write(
       reinterpret_cast<uint8_t*>(&current_packet_size_), sizeof(uint16_t),
@@ -94,7 +94,7 @@ void UdpPacketPipeWriter::WritePacketPayload(PacketRef packet,
 void UdpPacketPipeWriter::OnPacketWritten(PacketRef packet,
                                           base::OnceClosure done_cb,
                                           bool success) {
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
   if (!success) {
     VLOG(1) << "Failed to write the packet.";
     // The data pipe should have been closed.

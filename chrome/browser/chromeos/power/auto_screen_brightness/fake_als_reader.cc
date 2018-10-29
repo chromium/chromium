@@ -22,13 +22,12 @@ void FakeAlsReader::ReportReaderInitialized() {
     observer.OnAlsReaderInitialized(status_);
 }
 
-AlsReader::AlsInitStatus FakeAlsReader::GetInitStatus() const {
-  return status_;
-}
-
 void FakeAlsReader::AddObserver(Observer* const observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
+  if (status_ != AlsInitStatus::kInProgress) {
+    observer->OnAlsReaderInitialized(status_);
+  }
 }
 
 void FakeAlsReader::RemoveObserver(Observer* const observer) {

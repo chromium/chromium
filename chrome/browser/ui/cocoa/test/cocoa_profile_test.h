@@ -9,6 +9,7 @@
 
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "ui/views/test/scoped_views_test_helper.h"
 
 namespace content {
 class TestBrowserThreadBundle;
@@ -27,10 +28,9 @@ class TestingProfile;
 // would never be deleted and would report as a leak under Valgrind. Note that
 // these are fake threads and they all share the same MessageLoop.
 //
-// TODO(jrg): move up a level (chrome/browser/ui/cocoa -->
-// chrome/browser), and use in non-Mac unit tests such as
-// back_forward_menu_model_unittest.cc,
-// navigation_controller_unittest.cc, ..
+// TODO(rsesek): There is very little "Cocoa" about this class anymore. It
+// should likely be removed in favor of
+// chrome/browser/ui/views/frame/test_with_browser_view.h.
 class CocoaProfileTest : public CocoaTest {
  public:
   CocoaProfileTest();
@@ -57,22 +57,14 @@ class CocoaProfileTest : public CocoaTest {
   // test window.
   virtual Browser* CreateBrowser();
 
-  // Define the TestingFactories to be used when SetUp() builds a Profile. To be
-  // called in the subclass' constructor.
-  void AddTestingFactories(
-      const TestingProfile::TestingFactories& testing_factories);
-
-  const TestingProfile::TestingFactories& testing_factories() {
-    return testing_factories_;
-  }
-
  private:
+  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
+
+  views::ScopedViewsTestHelper views_helper_;
+
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;  // Weak; owned by profile_manager_.
-  TestingProfile::TestingFactories testing_factories_;
   std::unique_ptr<Browser> browser_;
-
-  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_TEST_COCOA_PROFILE_TEST_H_

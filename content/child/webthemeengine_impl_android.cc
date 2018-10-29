@@ -168,8 +168,8 @@ static void GetNativeThemeExtraParams(
 
 blink::WebSize WebThemeEngineImpl::GetSize(WebThemeEngine::Part part) {
   switch (part) {
-    case ui::NativeTheme::kScrollbarHorizontalThumb:
-    case ui::NativeTheme::kScrollbarVerticalThumb: {
+    case WebThemeEngine::kPartScrollbarHorizontalThumb:
+    case WebThemeEngine::kPartScrollbarVerticalThumb: {
       // Minimum length for scrollbar thumb is the scrollbar thickness.
       ScrollbarStyle style;
       GetOverlayScrollbarStyle(&style);

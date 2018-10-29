@@ -137,7 +137,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetTooltipText(const base::string16& tooltip_text) override;
   void DisplayTooltipText(const base::string16& tooltip_text) override;
   uint32_t GetCaptureSequenceNumber() const override;
-  bool DoBrowserControlsShrinkBlinkSize() const override;
+  bool DoBrowserControlsShrinkRendererSize() const override;
   float GetTopControlsHeight() const override;
   bool IsSurfaceAvailableForCopy() const override;
   void CopyFromSurface(
@@ -164,7 +164,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       BrowserAccessibilityDelegate* delegate, bool for_root_frame) override;
   gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
-  void SetMainFrameAXTreeID(ui::AXTreeIDRegistry::AXTreeID id) override;
+  void SetMainFrameAXTreeID(ui::AXTreeID id) override;
   bool LockMouse() override;
   void UnlockMouse() override;
   bool LockKeyboard(base::Optional<base::flat_set<ui::DomCode>> codes) override;
@@ -186,6 +186,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnDidNavigateMainFrameToNewPage() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
   bool TransformPointToLocalCoordSpaceLegacy(
       const gfx::PointF& point,
       const viz::SurfaceId& original_surface,
@@ -206,8 +207,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnSynchronizedDisplayPropertiesChanged() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-
-  bool IsLocalSurfaceIdAllocationSuppressed() const override;
 
   void DidNavigate() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
@@ -330,6 +329,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Rect ConvertRectToScreen(const gfx::Rect& rect) const override;
   void ForwardKeyboardEventWithLatencyInfo(const NativeWebKeyboardEvent& event,
                                            const ui::LatencyInfo& latency,
+                                           ui::KeyEvent* original_key_event,
                                            bool* update_event) override;
   RenderFrameHostImpl* GetFocusedFrame() const;
   bool NeedsMouseCapture() override;
@@ -467,7 +467,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   bool SynchronizeVisualProperties(const cc::DeadlinePolicy& deadline_policy,
                                    const base::Optional<viz::LocalSurfaceId>&
-                                       child_allocated_local_surface_id);
+                                       child_allocated_local_surface_id,
+                                   const base::Optional<base::TimeTicks>&
+                                       child_local_surface_id_allocation_time);
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
@@ -531,7 +533,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Dismisses a Web Popup on a mouse or touch press outside the popup and its
   // parent.
-  void ApplyEventFilterForPopupExit(ui::LocatedEvent* event);
+  void ApplyEventObserverForPopupExit(const ui::LocatedEvent& event);
 
   // Converts |rect| from screen coordinate to window coordinate.
   gfx::Rect ConvertRectFromScreen(const gfx::Rect& rect) const;
@@ -555,6 +557,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Called when the window title is changed.
   void WindowTitleChanged();
 
+  void WasEvicted();
+
   const bool is_mus_browser_plugin_guest_;
 
   // NOTE: this is null if |is_mus_browser_plugin_guest_| is true.
@@ -568,9 +572,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Tracks the ancestors of the RWHVA window for window location changes.
   std::unique_ptr<WindowAncestorObserver> ancestor_window_observer_;
-
-  float top_controls_shown_ratio_ = 0.f;
-  bool top_controls_gesture_scroll_in_progress_ = false;
 
   // Are we in the process of closing?  Tracked so fullscreen views can avoid
   // sending a second shutdown request to the host when they lose the focus
@@ -586,9 +587,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Our child popup host. NULL if we do not have a child popup.
   RenderWidgetHostViewAura* popup_child_host_view_;
 
-  class EventFilterForPopupExit;
-  friend class EventFilterForPopupExit;
-  std::unique_ptr<ui::EventHandler> event_filter_for_popup_exit_;
+  class EventObserverForPopupExit;
+  std::unique_ptr<EventObserverForPopupExit> event_observer_for_popup_exit_;
 
   // True when content is being loaded. Used to show an hourglass cursor.
   bool is_loading_;

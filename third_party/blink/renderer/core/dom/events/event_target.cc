@@ -37,10 +37,8 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/add_event_listener_options_or_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/event_listener_options_or_boolean.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_abstract_event_handler.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_impl.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
@@ -124,12 +122,13 @@ base::TimeDelta BlockedEventsWarningThreshold(ExecutionContext* context,
                                        PerformanceMonitor::kBlockedEvent);
 }
 
-void ReportBlockedEvent(ExecutionContext* context,
+void ReportBlockedEvent(EventTarget& target,
                         const Event& event,
                         RegisteredEventListener* registered_listener,
                         base::TimeDelta delayed) {
-  if (registered_listener->Callback()->GetType() !=
-      EventListener::kJSEventListenerType)
+  JSBasedEventListener* listener =
+      JSBasedEventListener::Cast(registered_listener->Callback());
+  if (!listener)
     return;
 
   String message_text = String::Format(
@@ -138,10 +137,9 @@ void ReportBlockedEvent(ExecutionContext* context,
       "Consider marking event handler as 'passive' to make the page more "
       "responsive.",
       event.type().GetString().Utf8().data(), delayed.InMilliseconds());
-
   PerformanceMonitor::ReportGenericViolation(
-      context, PerformanceMonitor::kBlockedEvent, message_text, delayed,
-      GetFunctionLocation(context, registered_listener->Callback()));
+      target.GetExecutionContext(), PerformanceMonitor::kBlockedEvent,
+      message_text, delayed, listener->GetSourceLocation(target));
   registered_listener->SetBlockedEventWarningEmitted();
 }
 
@@ -200,7 +198,7 @@ ServiceWorker* EventTarget::ToServiceWorker() {
 // because it will increase the size of EventTarget and all of its
 // subclasses with code that are mostly unnecessary for them,
 // resulting in a performance decrease.
-// We also don't use ImplementedAs=EventTargetImpl in EventTarget.idl
+// We also don't use ImplementedAs=EventTargetImpl in event_target.idl
 // because it will result in some complications with classes that are
 // currently derived from EventTarget.
 // Spec: https://dom.spec.whatwg.org/#dom-eventtarget-eventtarget
@@ -290,13 +288,12 @@ void EventTarget::SetDefaultAddEventListenerOptions(
   if (RuntimeEnabledFeatures::SmoothScrollJSInterventionEnabled() &&
       event_type == EventTypeNames::mousewheel && ToLocalDOMWindow() &&
       event_listener && !options.hasPassive()) {
-    v8::Local<v8::Object> callback_object;
-    if (V8AbstractEventHandler* v8_listener =
-            V8AbstractEventHandler::Cast(event_listener))
-      callback_object = v8_listener->GetExistingListenerObject();
-    if (V8EventListenerImpl* v8_listener =
-            V8EventListenerImpl::Cast(event_listener))
-      callback_object = v8_listener->GetListenerObject();
+    JSBasedEventListener* v8_listener =
+        JSBasedEventListener::Cast(event_listener);
+    if (!v8_listener)
+      return;
+    v8::Local<v8::Value> callback_object =
+        v8_listener->GetListenerObject(*this);
     if (!callback_object.IsEmpty() && callback_object->IsFunction() &&
         strcmp(
             "ssc_wheel",
@@ -422,13 +419,13 @@ void EventTarget::AddedEventListener(
         UseCounter::Count(*document, WebFeature::kAuxclickAddListenerCount);
       else if (event_type == EventTypeNames::appinstalled)
         UseCounter::Count(*document, WebFeature::kAppInstalledEventAddListener);
-      else if (EventUtil::IsPointerEventType(event_type))
+      else if (event_util::IsPointerEventType(event_type))
         UseCounter::Count(*document, WebFeature::kPointerEventAddListenerCount);
       else if (event_type == EventTypeNames::slotchange)
         UseCounter::Count(*document, WebFeature::kSlotChangeEventAddListener);
     }
   }
-  if (EventUtil::IsDOMMutationEventType(event_type)) {
+  if (event_util::IsDOMMutationEventType(event_type)) {
     if (ExecutionContext* context = GetExecutionContext()) {
       String message_text = String::Format(
           "Added synchronous DOM mutation listener to a '%s' event. "
@@ -524,7 +521,7 @@ RegisteredEventListener* EventTarget::GetAttributeRegisteredEventListener(
 
   for (auto& event_listener : *listener_vector) {
     EventListener* listener = event_listener.Callback();
-    if (listener->IsAttribute() &&
+    if (listener->IsEventHandler() &&
         listener->BelongsToTheCurrentWorld(GetExecutionContext()))
       return &event_listener;
   }
@@ -850,7 +847,7 @@ bool EventTarget::FireEventListeners(Event& event,
         entry[i - 1].Callback() == listener && !entry[i - 1].Passive() &&
         !entry[i - 1].BlockedEventWarningEmitted() &&
         !event.defaultPrevented()) {
-      ReportBlockedEvent(context, event, &entry[i - 1],
+      ReportBlockedEvent(*this, event, &entry[i - 1],
                          now - event.PlatformTimeStamp());
     }
 

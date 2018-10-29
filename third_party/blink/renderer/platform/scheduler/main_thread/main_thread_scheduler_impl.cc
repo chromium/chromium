@@ -19,7 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -28,17 +28,16 @@
 #include "third_party/blink/public/platform/web_mouse_wheel_event.h"
 #include "third_party/blink/public/platform/web_touch_event.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/blink_resource_coordinator_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/child/features.h"
-#include "third_party/blink/renderer/platform/scheduler/child/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
-#include "third_party/blink/renderer/platform/scheduler/renderer/webthread_impl_for_renderer_scheduler.h"
 
 namespace blink {
 namespace scheduler {
@@ -216,7 +215,10 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
                               base::Unretained(this)),
           helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
               TaskType::kMainThreadTaskQueueControl)),
-      queueing_time_estimator_(this, kQueueingTimeWindowDuration, 20),
+      queueing_time_estimator_(this,
+                               kQueueingTimeWindowDuration,
+                               20,
+                               kLaunchingProcessIsBackgrounded),
       main_thread_only_(this,
                         compositor_task_queue_,
                         helper_.GetClock(),
@@ -657,8 +659,8 @@ void MainThreadSchedulerImpl::Shutdown() {
   was_shutdown_ = true;
 }
 
-std::unique_ptr<blink::WebThread> MainThreadSchedulerImpl::CreateMainThread() {
-  return std::make_unique<WebThreadImplForRendererScheduler>(this);
+std::unique_ptr<Thread> MainThreadSchedulerImpl::CreateMainThread() {
+  return std::make_unique<MainThread>(this);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -694,7 +696,7 @@ MainThreadSchedulerImpl::CleanupTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::VirtualTimeControlTaskRunner() {
-  return virtual_time_control_task_queue_;
+  return virtual_time_control_task_queue_->task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -933,7 +935,7 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
     // hidden.
     base::TimeDelta end_idle_when_hidden_delay =
         base::TimeDelta::FromMilliseconds(kEndIdleWhenHiddenDelayMillis);
-    control_task_queue_->PostDelayedTask(
+    control_task_queue_->task_runner()->PostDelayedTask(
         FROM_HERE, end_renderer_hidden_idle_period_closure_.GetCallback(),
         end_idle_when_hidden_delay);
     main_thread_only().renderer_hidden = true;
@@ -996,7 +998,7 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   internal::ProcessState::Get()->is_process_backgrounded = backgrounded;
 
   main_thread_only().background_status_changed_at = tick_clock()->NowTicks();
-  queueing_time_estimator_.OnRendererStateChanged(
+  queueing_time_estimator_.OnRecordingStateChanged(
       backgrounded, main_thread_only().background_status_changed_at);
 
   UpdatePolicy();
@@ -1365,7 +1367,8 @@ void MainThreadSchedulerImpl::EnsureUrgentPolicyUpdatePostedOnMainThread(
   any_thread_lock_.AssertAcquired();
   if (!policy_may_need_update_.IsSet()) {
     policy_may_need_update_.SetWhileLocked(true);
-    control_task_queue_->PostTask(from_here, update_policy_closure_);
+    control_task_queue_->task_runner()->PostTask(from_here,
+                                                 update_policy_closure_);
   }
 }
 
@@ -2256,7 +2259,7 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
   // called) at any moment, including in the middle of allocating an object,
   // when state is not consistent. Posting a task to dispatch notifications
   // minimizes the amount of code that runs and sees an inconsistent state .
-  control_task_queue_->PostTask(
+  control_task_queue_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected,
@@ -2349,14 +2352,16 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 
   UMA_HISTOGRAM_COUNTS_100("RendererScheduler.WebViewsPerScheduler",
-                           main_thread_only().page_schedulers.size());
+                           base::saturated_cast<base::HistogramBase::Sample>(
+                               main_thread_only().page_schedulers.size()));
 
   size_t frame_count = 0;
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
     frame_count += page_scheduler->FrameCount();
   }
-  UMA_HISTOGRAM_COUNTS_100("RendererScheduler.WebFramesPerScheduler",
-                           frame_count);
+  UMA_HISTOGRAM_COUNTS_100(
+      "RendererScheduler.WebFramesPerScheduler",
+      base::saturated_cast<base::HistogramBase::Sample>(frame_count));
 }
 
 void MainThreadSchedulerImpl::SetTopLevelBlameContext(
@@ -2396,13 +2401,13 @@ MainThreadSchedulerImpl::CreateWebScopedVirtualTimePauser(
                                     WebString(WTF::String(name)));
 }
 
-void MainThreadSchedulerImpl::RunIdleTask(WebThread::IdleTask task,
+void MainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,
                                           base::TimeTicks deadline) {
   std::move(task).Run(deadline);
 }
 
 void MainThreadSchedulerImpl::PostIdleTask(const base::Location& location,
-                                           WebThread::IdleTask task) {
+                                           Thread::IdleTask task) {
   IdleTaskRunner()->PostIdleTask(
       location,
       base::BindOnce(&MainThreadSchedulerImpl::RunIdleTask, std::move(task)));
@@ -2410,7 +2415,7 @@ void MainThreadSchedulerImpl::PostIdleTask(const base::Location& location,
 
 void MainThreadSchedulerImpl::PostNonNestableIdleTask(
     const base::Location& location,
-    WebThread::IdleTask task) {
+    Thread::IdleTask task) {
   IdleTaskRunner()->PostNonNestableIdleTask(
       location,
       base::BindOnce(&MainThreadSchedulerImpl::RunIdleTask, std::move(task)));
@@ -2482,7 +2487,7 @@ void MainThreadSchedulerImpl::BroadcastIntervention(
 
 void MainThreadSchedulerImpl::OnTaskStarted(
     MainThreadTaskQueue* queue,
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   main_thread_only().running_queues.push(queue);
   queueing_time_estimator_.OnExecutionStarted(task_timing.start_time(), queue);
@@ -2491,7 +2496,7 @@ void MainThreadSchedulerImpl::OnTaskStarted(
 
   main_thread_only().current_task_start_time = task_timing.start_time();
   main_thread_only().task_description_for_tracing = TaskDescriptionForTracing{
-      static_cast<TaskType>(task.task_type()),
+      static_cast<TaskType>(task.task_type),
       queue
           ? base::Optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
           : base::nullopt};
@@ -2504,7 +2509,7 @@ void MainThreadSchedulerImpl::OnTaskStarted(
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
     MainThreadTaskQueue* queue,
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   DCHECK_LE(task_timing.start_time(), task_timing.end_time());
   DCHECK(!main_thread_only().running_queues.empty());
@@ -2533,7 +2538,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
 void MainThreadSchedulerImpl::RecordTaskUkm(
     MainThreadTaskQueue* queue,
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
   if (!ShouldRecordTaskUkm(task_timing.has_thread_time()))
     return;
@@ -2559,7 +2564,7 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
 
 UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
     MainThreadTaskQueue* queue,
-    const TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing,
     FrameSchedulerImpl* frame_scheduler,
     bool precise_attribution) {
@@ -2585,7 +2590,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetRendererAudible(main_thread_only().is_audio_playing);
   builder.SetUseCase(
       static_cast<int>(main_thread_only().current_use_case.get()));
-  builder.SetTaskType(task.task_type());
+  builder.SetTaskType(task.task_type);
   builder.SetQueueType(static_cast<int>(
       queue ? queue->queue_type() : MainThreadTaskQueue::QueueType::kDetached));
   builder.SetFrameStatus(static_cast<int>(
@@ -2600,7 +2605,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
 
     // Trade off for privacy: Round to seconds for times below 10 minutes and
     // minutes afterwards.
-    int seconds_since_backgrounded = 0;
+    int64_t seconds_since_backgrounded = 0;
     if (time_since_backgrounded < base::TimeDelta::FromMinutes(10)) {
       seconds_since_backgrounded = time_since_backgrounded.InSeconds();
     } else {
@@ -2720,10 +2725,8 @@ void MainThreadSchedulerImpl::OnQueueingTimeForWindowEstimated(
                  "estimated_queueing_time_for_window",
                  queueing_time.InMillisecondsF());
 
-  if (::resource_coordinator::IsResourceCoordinatorEnabled()) {
-    RendererResourceCoordinator::Get().SetExpectedTaskQueueingDuration(
-        queueing_time);
-  }
+  RendererResourceCoordinator::Get().SetExpectedTaskQueueingDuration(
+      queueing_time);
 }
 
 void MainThreadSchedulerImpl::OnReportFineGrainedExpectedQueueingTime(

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/blink/prediction/input_predictor_unittest.cc"
+#include "ui/events/blink/prediction/input_predictor_unittest_helpers.h"
 #include "ui/events/blink/prediction/kalman_predictor.h"
 
 namespace ui {
@@ -13,7 +13,6 @@ namespace test {
 namespace {
 
 constexpr uint32_t kExpectedStableIterNum = 4;
-constexpr double kEpsilon = 0.001;
 
 struct DataSet {
   double initial_observation;
@@ -26,6 +25,7 @@ struct DataSet {
 void ValidateSingleKalmanFilter(const DataSet& data) {
   std::unique_ptr<KalmanFilter> kalman_filter =
       std::make_unique<KalmanFilter>();
+  constexpr double kEpsilon = 0.001;
   constexpr double kDtMillisecond = 8;
   kalman_filter->Update(data.initial_observation, kDtMillisecond);
   for (size_t i = 0; i < data.observation.size(); i++) {

@@ -44,6 +44,7 @@ class Server(object):
 
     self._process = subprocess.Popen(chromedriver_args)
     self._url = 'http://127.0.0.1:%d' % port
+    self._port = port
     if self._process is None:
       raise RuntimeError('ChromeDriver server cannot be started')
 
@@ -66,6 +67,9 @@ class Server(object):
 
   def GetUrl(self):
     return self._url
+
+  def GetPort(self):
+    return self._port
 
   def IsRunning(self):
     """Returns whether the server is up and running."""

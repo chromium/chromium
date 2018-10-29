@@ -28,6 +28,7 @@
 #include "base/auto_reset.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/web_data_consumer_handle.h"
 #include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
@@ -340,9 +341,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
   }
   String CacheIdentifier() const { return cache_identifier_; }
 
-  void SetSourceOrigin(scoped_refptr<const SecurityOrigin> source_origin) {
-    source_origin_ = source_origin;
-  }
+  // https://fetch.spec.whatwg.org/#concept-request-origin
+  const scoped_refptr<const SecurityOrigin>& GetOrigin() const;
 
   virtual void DidSendData(unsigned long long /* bytesSent */,
                            unsigned long long /* totalBytesToBeSent */) {}
@@ -362,9 +362,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
   }
 
   // Returns |kOk| when |this| can be resused for the given arguments.
-  virtual MatchStatus CanReuse(
-      const FetchParameters& params,
-      scoped_refptr<const SecurityOrigin> new_source_origin) const;
+  virtual MatchStatus CanReuse(const FetchParameters& params) const;
 
   // TODO(yhirano): Remove this once out-of-blink CORS is fully enabled.
   void SetResponseType(network::mojom::FetchResponseType response_type) {
@@ -407,6 +405,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
   static const char* ResourceTypeToString(
       ResourceType,
       const AtomicString& fetch_initiator_name);
+
+  static blink::mojom::CodeCacheType ResourceTypeToCodeCacheType(ResourceType);
 
   class ProhibitAddRemoveClientInScope : public base::AutoReset<bool> {
    public:
@@ -455,7 +455,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
   }
 
   struct RedirectPair {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     explicit RedirectPair(const ResourceRequest& request,
@@ -476,6 +476,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
     return clients_;
   }
 
+  void SetCachePolicyBypassingCache();
   void SetPreviewsState(WebURLRequest::PreviewsState);
   void ClearRangeRequestHeader();
 
@@ -518,21 +519,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollectedFinalized<Resource>,
 
   ResourceType type_;
   ResourceStatus status_;
-
-  // A SecurityOrigin representing the origin from which the loading of the
-  // Resource was initiated. This is calculated and set on Resource creation.
-  //
-  // Unlike |security_origin| on |options_|, which:
-  // - holds a SecurityOrigin to override the FetchContext's SecurityOrigin
-  //   (in case of e.g. that the script initiated the loading is in an isolated
-  //   world)
-  //
-  // Used for isolating resources for different origins in the MemoryCache.
-  //
-  // Note: A Resource returned from the memory cache has an origin for the first
-  // initiator that fetched the Resource. It may be different from the origin
-  // that you need for any runtime security check in Blink.
-  scoped_refptr<const SecurityOrigin> source_origin_;
 
   Member<CachedMetadataHandler> cache_handler_;
 

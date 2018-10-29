@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/memory_mapped_file.h"
-#include "ui/base/resource/data_pack.h"
 #include "ui/base/ui_base_export.h"
 
 namespace ui {
@@ -17,10 +16,6 @@ namespace ui {
 // Loads "resources.apk" from the .apk. Falls back to loading from disk, which
 // is necessary for tests. Returns true if it succeeds, false otherwise.
 UI_BASE_EXPORT void LoadMainAndroidPackFile(
-    const char* path_within_apk,
-    const base::FilePath& disk_file_path);
-
-UI_BASE_EXPORT std::unique_ptr<DataPack> GetDataPackFromPackFile(
     const char* path_within_apk,
     const base::FilePath& disk_file_path);
 

@@ -1,4 +1,4 @@
 rootWebArea
 ++genericContainer
 ++++labelText
-++++++checkBox name=' Checkbox Title' checkedState=false
+++++++checkBox name='Checkbox Title' checkedState=false

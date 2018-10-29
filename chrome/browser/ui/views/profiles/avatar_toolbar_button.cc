@@ -16,15 +16,18 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/gaia_cookie_manager_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/core/browser/signin_manager.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/models/menu_model.h"
@@ -55,9 +58,14 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
 #if !defined(OS_CHROMEOS)
       error_controller_(this, profile_),
 #endif  // !defined(OS_CHROMEOS)
+      browser_list_observer_(this),
       profile_observer_(this),
       cookie_manager_service_observer_(this),
       account_tracker_service_observer_(this) {
+
+  if (IsIncognitoCounterActive())
+    browser_list_observer_.Add(BrowserList::GetInstance());
+
   profile_observer_.Add(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 
@@ -68,11 +76,7 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
         AccountTrackerServiceFactory::GetForProfile(profile_));
   }
 
-  // In non-touch mode we use a larger-than-normal icon size for avatars as 16dp
-  // is hard to read for user avatars. This constant is correspondingly smaller
-  // than GetLayoutInsets(TOOLBAR_BUTTON).
-  if (!ui::MaterialDesignController::IsTouchOptimizedUiEnabled())
-    SetLayoutInsets(GetLayoutInsets(TOOLBAR_BUTTON) - gfx::Insets(2));
+  SetInsets();
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
   // without drag-drop actions (specifically the adjacent browser menu).
@@ -80,7 +84,6 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
   set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON);
 
   set_tag(IDC_SHOW_AVATAR_MENU);
-  set_id(VIEW_ID_AVATAR_BUTTON);
 
   // The avatar should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.
@@ -91,21 +94,25 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
 #if defined(OS_CHROMEOS)
   // On CrOS the avatar toolbar button should only show as badging for Incognito
   // and Guest sessions. It should not be instantiated for regular profiles and
-  // it should not be enabled as there's no profile switcher to trigger / show.
+  // it should not be enabled as there's no profile switcher to trigger / show,
+  // unless incognito window counter is available.
   DCHECK(IsIncognito() || profile_->IsGuestSession());
-  SetEnabled(false);
+  SetEnabled(IsIncognitoCounterActive());
 #else
-  // The profile switcher is only available outside incognito.
-  SetEnabled(!IsIncognito());
+  // The profile switcher is only available outside incognito or if incognito
+  // window counter is enabled.
+  SetEnabled(!IsIncognito() || IsIncognitoCounterActive());
 #endif  // !defined(OS_CHROMEOS)
 
   // Set initial text and tooltip. UpdateIcon() needs to be called from the
   // outside as GetThemeProvider() is not available until the button is added to
   // ToolbarView's hierarchy.
   UpdateText();
+
+  md_observer_.Add(ui::MaterialDesignController::GetInstance());
 }
 
-AvatarToolbarButton::~AvatarToolbarButton() = default;
+AvatarToolbarButton::~AvatarToolbarButton() {}
 
 void AvatarToolbarButton::UpdateIcon() {
   SetImage(views::Button::STATE_NORMAL, GetAvatarIcon());
@@ -114,18 +121,26 @@ void AvatarToolbarButton::UpdateIcon() {
 void AvatarToolbarButton::UpdateText() {
   base::Optional<SkColor> color;
   base::string16 text;
-  switch (GetSyncState()) {
-    case SyncState::kError:
-      color = gfx::kGoogleRed600;
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
-      break;
-    case SyncState::kPaused:
-      color = gfx::kGoogleBlue600;
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
-      break;
-    case SyncState::kNormal:
-      break;
+
+  const SyncState sync_state = GetSyncState();
+
+  if (IsIncognitoCounterActive()) {
+    const int incognito_window_count =
+        BrowserList::GetIncognitoSessionsActiveForProfile(profile_);
+    if (incognito_window_count > 1) {
+      text = base::IntToString16(incognito_window_count);
+      // TODO(http://crbug.com/896235): Update to select from theme colors and
+      // use GetColorWithMinimumContrast to guarantee readability.
+      color = gfx::kGoogleGrey900;
+    }
+  } else if (sync_state == SyncState::kError) {
+    color = gfx::kGoogleRed600;
+    text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
+  } else if (sync_state == SyncState::kPaused) {
+    color = gfx::kGoogleBlue600;
+    text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
   }
+
   SetHighlightColor(color);
   SetText(text);
 
@@ -144,6 +159,16 @@ void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
 }
 
 void AvatarToolbarButton::OnAvatarErrorChanged() {
+  UpdateIcon();
+  UpdateText();
+}
+
+void AvatarToolbarButton::OnBrowserAdded(Browser* browser) {
+  UpdateIcon();
+  UpdateText();
+}
+
+void AvatarToolbarButton::OnBrowserRemoved(Browser* browser) {
   UpdateIcon();
   UpdateText();
 }
@@ -194,8 +219,18 @@ void AvatarToolbarButton::OnAccountRemoved(const AccountInfo& info) {
   UpdateIcon();
 }
 
+void AvatarToolbarButton::OnTouchUiChanged() {
+  SetInsets();
+  PreferredSizeChanged();
+}
+
 bool AvatarToolbarButton::IsIncognito() const {
   return profile_->IsOffTheRecord() && !profile_->IsGuestSession();
+}
+
+bool AvatarToolbarButton::IsIncognitoCounterActive() const {
+  return IsIncognito() &&
+         base::FeatureList::IsEnabled(features::kEnableIncognitoWindowCounter);
 }
 
 bool AvatarToolbarButton::ShouldShowGenericIcon() const {
@@ -217,7 +252,7 @@ bool AvatarToolbarButton::ShouldShowGenericIcon() const {
          g_browser_process->profile_manager()
                  ->GetProfileAttributesStorage()
                  .GetNumberOfProfiles() == 1 &&
-         !SigninManagerFactory::GetForProfile(profile_)->IsAuthenticated();
+         !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount();
 }
 
 base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
@@ -248,11 +283,17 @@ base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
 }
 
 gfx::ImageSkia AvatarToolbarButton::GetAvatarIcon() const {
-  const int icon_size =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled() ? 24 : 20;
+  const int icon_size = ui::MaterialDesignController::touch_ui() ? 24 : 20;
 
-  const SkColor icon_color =
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  SkColor icon_color;
+  if (IsIncognitoCounterActive() &&
+      BrowserList::GetIncognitoSessionsActiveForProfile(profile_) > 1) {
+    // TODO(http://crbug.com/896235): Update to select from theme colors.
+    icon_color = gfx::kGoogleGrey900;
+  } else {
+    icon_color = GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  }
 
   if (IsIncognito())
     return gfx::CreateVectorIcon(kIncognitoIcon, icon_size, icon_color);
@@ -294,9 +335,13 @@ gfx::Image AvatarToolbarButton::GetIconImageFromProfile() const {
   }
 
 #if !defined(OS_CHROMEOS)
-  // If the user isn't signed in and the profile icon wasn't changed explicitly,
-  // try to use the first account icon of the sync promo.
-  if (!SigninManagerFactory::GetForProfile(profile_)->IsAuthenticated() &&
+  // Try to show the first account icon of the sync promo when the following
+  // conditions are satisfied:
+  //  - the user is migrated to Dice
+  //  - the user isn't signed in
+  //  - the profile icon wasn't explicitly changed
+  if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
+      !IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount() &&
       entry->IsUsingDefaultAvatar()) {
     std::vector<AccountInfo> promo_accounts =
         signin_ui_util::GetAccountsForDicePromos(profile_);
@@ -312,19 +357,28 @@ gfx::Image AvatarToolbarButton::GetIconImageFromProfile() const {
 
 AvatarToolbarButton::SyncState AvatarToolbarButton::GetSyncState() const {
 #if !defined(OS_CHROMEOS)
-  SigninManager* signin_manager = SigninManagerFactory::GetForProfile(profile_);
-  if (signin_manager && signin_manager->IsAuthenticated() &&
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (identity_manager && identity_manager->HasPrimaryAccount() &&
       profile_->IsSyncAllowed() && error_controller_.HasAvatarError()) {
     // When DICE is enabled and the error is an auth error, the sync-paused
     // icon is shown.
     int unused;
     const bool should_show_sync_paused_ui =
         AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
-        sync_ui_util::GetMessagesForAvatarSyncError(profile_, *signin_manager,
-                                                    &unused, &unused) ==
-            sync_ui_util::AUTH_ERROR;
+        // TODO(http://crbug.com/890796): Migrate to passing an IdentityManager
+        sync_ui_util::GetMessagesForAvatarSyncError(
+            profile_, *SigninManagerFactory::GetForProfile(profile_), &unused,
+            &unused) == sync_ui_util::AUTH_ERROR;
     return should_show_sync_paused_ui ? SyncState::kPaused : SyncState::kError;
   }
 #endif  // !defined(OS_CHROMEOS)
   return SyncState::kNormal;
+}
+
+void AvatarToolbarButton::SetInsets() {
+  // In non-touch mode we use a larger-than-normal icon size for avatars as 16dp
+  // is hard to read for user avatars, so we need to set corresponding insets.
+  SetLayoutInsetDelta(
+      gfx::Insets(ui::MaterialDesignController::touch_ui() ? 0 : -2));
 }

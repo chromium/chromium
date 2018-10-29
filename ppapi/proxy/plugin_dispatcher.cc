@@ -41,8 +41,8 @@ namespace proxy {
 
 namespace {
 
-typedef std::map<PP_Instance, PluginDispatcher*> InstanceToDispatcherMap;
-InstanceToDispatcherMap* g_instance_to_dispatcher = NULL;
+typedef std::map<PP_Instance, PluginDispatcher*> InstanceToPluginDispatcherMap;
+InstanceToPluginDispatcherMap* g_instance_to_plugin_dispatcher = NULL;
 
 typedef std::set<PluginDispatcher*> DispatcherSet;
 DispatcherSet* g_live_dispatchers = NULL;
@@ -152,11 +152,11 @@ PluginDispatcher::~PluginDispatcher() {
 
 // static
 PluginDispatcher* PluginDispatcher::GetForInstance(PP_Instance instance) {
-  if (!g_instance_to_dispatcher)
+  if (!g_instance_to_plugin_dispatcher)
     return NULL;
-  InstanceToDispatcherMap::iterator found = g_instance_to_dispatcher->find(
-      instance);
-  if (found == g_instance_to_dispatcher->end())
+  InstanceToPluginDispatcherMap::iterator found =
+      g_instance_to_plugin_dispatcher->find(instance);
+  if (found == g_instance_to_plugin_dispatcher->end())
     return NULL;
   return found->second;
 }
@@ -178,13 +178,13 @@ void PluginDispatcher::LogWithSource(PP_Instance instance,
                                      PP_LogLevel level,
                                      const std::string& source,
                                      const std::string& value) {
-  if (!g_live_dispatchers || !g_instance_to_dispatcher)
+  if (!g_live_dispatchers || !g_instance_to_plugin_dispatcher)
     return;
 
   if (instance) {
-    InstanceToDispatcherMap::iterator found =
-        g_instance_to_dispatcher->find(instance);
-    if (found != g_instance_to_dispatcher->end()) {
+    InstanceToPluginDispatcherMap::iterator found =
+        g_instance_to_plugin_dispatcher->find(instance);
+    if (found != g_instance_to_plugin_dispatcher->end()) {
       // Send just to this specific dispatcher.
       found->second->Send(new PpapiHostMsg_LogWithSource(
           instance, static_cast<int>(level), source, value));
@@ -283,21 +283,21 @@ void PluginDispatcher::OnChannelError() {
 }
 
 void PluginDispatcher::DidCreateInstance(PP_Instance instance) {
-  if (!g_instance_to_dispatcher)
-    g_instance_to_dispatcher = new InstanceToDispatcherMap;
-  (*g_instance_to_dispatcher)[instance] = this;
+  if (!g_instance_to_plugin_dispatcher)
+    g_instance_to_plugin_dispatcher = new InstanceToPluginDispatcherMap;
+  (*g_instance_to_plugin_dispatcher)[instance] = this;
   instance_map_[instance] = std::make_unique<InstanceData>();
 }
 
 void PluginDispatcher::DidDestroyInstance(PP_Instance instance) {
   instance_map_.erase(instance);
 
-  if (g_instance_to_dispatcher) {
-    InstanceToDispatcherMap::iterator found = g_instance_to_dispatcher->find(
-        instance);
-    if (found != g_instance_to_dispatcher->end()) {
+  if (g_instance_to_plugin_dispatcher) {
+    InstanceToPluginDispatcherMap::iterator found =
+        g_instance_to_plugin_dispatcher->find(instance);
+    if (found != g_instance_to_plugin_dispatcher->end()) {
       DCHECK(found->second == this);
-      g_instance_to_dispatcher->erase(found);
+      g_instance_to_plugin_dispatcher->erase(found);
     } else {
       NOTREACHED();
     }
@@ -322,13 +322,13 @@ thunk::ResourceCreationAPI* PluginDispatcher::GetResourceCreationAPI() {
 }
 
 void PluginDispatcher::ForceFreeAllInstances() {
-  if (!g_instance_to_dispatcher)
+  if (!g_instance_to_plugin_dispatcher)
     return;
 
   // Iterating will remove each item from the map, so we need to make a copy
   // to avoid things changing out from under is.
-  InstanceToDispatcherMap temp_map = *g_instance_to_dispatcher;
-  for (InstanceToDispatcherMap::iterator i = temp_map.begin();
+  InstanceToPluginDispatcherMap temp_map = *g_instance_to_plugin_dispatcher;
+  for (InstanceToPluginDispatcherMap::iterator i = temp_map.begin();
        i != temp_map.end(); ++i) {
     if (i->second == this) {
       // Synthesize an "instance destroyed" message, this will notify the

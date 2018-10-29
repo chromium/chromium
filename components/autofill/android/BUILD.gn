@@ -80,6 +80,7 @@ android_library("autofill_java") {
   java_files = [
     "java/src/org/chromium/components/autofill/AutofillDelegate.java",
     "java/src/org/chromium/components/autofill/AutofillDropdownAdapter.java",
+    "java/src/org/chromium/components/autofill/AutofillDropdownFooter.java",
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
   ]

@@ -66,10 +66,9 @@ class TracingController {
   // Once all child processes have acked to the GetCategories request,
   // GetCategoriesDoneCallback is called back with a set of category
   // groups.
-  typedef base::Callback<void(const std::set<std::string>&)>
+  typedef base::OnceCallback<void(const std::set<std::string>&)>
       GetCategoriesDoneCallback;
-  virtual bool GetCategories(
-      const GetCategoriesDoneCallback& callback) = 0;
+  virtual bool GetCategories(GetCategoriesDoneCallback callback) = 0;
 
   // Start tracing (recording traces) on all processes.
   //
@@ -89,10 +88,9 @@ class TracingController {
   //           "-excluded_category1,-excluded_category2"
   //
   // |trace_config| controls what kind of tracing is enabled.
-  typedef base::Callback<void()> StartTracingDoneCallback;
-  virtual bool StartTracing(
-      const base::trace_event::TraceConfig& trace_config,
-      const StartTracingDoneCallback& callback) = 0;
+  typedef base::OnceCallback<void()> StartTracingDoneCallback;
+  virtual bool StartTracing(const base::trace_event::TraceConfig& trace_config,
+                            StartTracingDoneCallback callback) = 0;
 
   // Stop tracing (recording traces) on all processes.
   //
@@ -119,9 +117,8 @@ class TracingController {
   // Get the maximum across processes of trace buffer percent full state.
   // When the TraceBufferUsage value is determined, the callback is
   // called.
-  typedef base::Callback<void(float, size_t)> GetTraceBufferUsageCallback;
-  virtual bool GetTraceBufferUsage(
-      const GetTraceBufferUsageCallback& callback) = 0;
+  typedef base::OnceCallback<void(float, size_t)> GetTraceBufferUsageCallback;
+  virtual bool GetTraceBufferUsage(GetTraceBufferUsageCallback callback) = 0;
 
   // Check if the tracing system is tracing
   virtual bool IsTracing() const = 0;

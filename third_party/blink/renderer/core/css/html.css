@@ -65,10 +65,10 @@ body:-webkit-full-page-media {
 
 p {
     display: block;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1__qem;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 1__qem;
+    margin-block-end: 1__qem;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
 }
 
 div {
@@ -94,10 +94,10 @@ address {
 
 blockquote {
     display: block;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 40px;
-    -webkit-margin-end: 40px;
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
+    margin-inline-start: 40px;
+    margin-inline-end: 40px;
 }
 
 figcaption {
@@ -106,10 +106,10 @@ figcaption {
 
 figure {
     display: block;
-    -webkit-margin-before: 1em;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 40px;
-    -webkit-margin-end: 40px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 40px;
+    margin-inline-end: 40px;
 }
 
 q {
@@ -134,10 +134,10 @@ hr {
     display: block;
     overflow: hidden;
     unicode-bidi: isolate;
-    -webkit-margin-before: 0.5em;
-    -webkit-margin-after: 0.5em;
-    -webkit-margin-start: auto;
-    -webkit-margin-end: auto;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
     border-style: inset;
     border-width: 1px
 }
@@ -155,89 +155,89 @@ video {
 h1 {
     display: block;
     font-size: 2em;
-    -webkit-margin-before: 0.67__qem;
-    -webkit-margin-after: 0.67em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 0.67__qem;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
 :-webkit-any(article,aside,nav,section) h1 {
     font-size: 1.5em;
-    -webkit-margin-before: 0.83__qem;
-    -webkit-margin-after: 0.83em;
+    margin-block-start: 0.83__qem;
+    margin-block-end: 0.83em;
 }
 
 :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
     font-size: 1.17em;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
 }
 
 :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
     font-size: 1.00em;
-    -webkit-margin-before: 1.33__qem;
-    -webkit-margin-after: 1.33em;
+    margin-block-start: 1.33__qem;
+    margin-block-end: 1.33em;
 }
 
 :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
     font-size: .83em;
-    -webkit-margin-before: 1.67__qem;
-    -webkit-margin-after: 1.67em;
+    margin-block-start: 1.67__qem;
+    margin-block-end: 1.67em;
 }
 
 :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
     font-size: .67em;
-    -webkit-margin-before: 2.33__qem;
-    -webkit-margin-after: 2.33em;
+    margin-block-start: 2.33__qem;
+    margin-block-end: 2.33em;
 }
 
 h2 {
     display: block;
     font-size: 1.5em;
-    -webkit-margin-before: 0.83__qem;
-    -webkit-margin-after: 0.83em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 0.83__qem;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
 h3 {
     display: block;
     font-size: 1.17em;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
 h4 {
     display: block;
-    -webkit-margin-before: 1.33__qem;
-    -webkit-margin-after: 1.33em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 1.33__qem;
+    margin-block-end: 1.33em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
 h5 {
     display: block;
     font-size: .83em;
-    -webkit-margin-before: 1.67__qem;
-    -webkit-margin-after: 1.67em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 1.67__qem;
+    margin-block-end: 1.67em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
 h6 {
     display: block;
     font-size: .67em;
-    -webkit-margin-before: 2.33__qem;
-    -webkit-margin-after: 2.33em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 2.33__qem;
+    margin-block-end: 2.33em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold
 }
 
@@ -307,21 +307,21 @@ caption {
 ul, menu, dir {
     display: block;
     list-style-type: disc;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-    -webkit-padding-start: 40px
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-inline-start: 40px
 }
 
 ol {
     display: block;
     list-style-type: decimal;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-    -webkit-padding-start: 40px
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-inline-start: 40px
 }
 
 li {
@@ -339,15 +339,15 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 dd {
     display: block;
-    -webkit-margin-start: 40px
+    margin-inline-start: 40px
 }
 
 dl {
     display: block;
-    -webkit-margin-before: 1__qem;
-    -webkit-margin-after: 1em;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
+    margin-block-start: 1__qem;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
 }
 
 dt {
@@ -355,8 +355,8 @@ dt {
 }
 
 ol ul, ul ol, ul ul, ol ol {
-    -webkit-margin-before: 0;
-    -webkit-margin-after: 0
+    margin-block-start: 0;
+    margin-block-end: 0
 }
 
 /* form elements */
@@ -376,19 +376,19 @@ label {
 
 legend {
     display: block;
-    -webkit-padding-start: 2px;
-    -webkit-padding-end: 2px;
+    padding-inline-start: 2px;
+    padding-inline-end: 2px;
     border: none
 }
 
 fieldset {
     display: block;
-    -webkit-margin-start: 2px;
-    -webkit-margin-end: 2px;
-    -webkit-padding-before: 0.35em;
-    -webkit-padding-start: 0.75em;
-    -webkit-padding-end: 0.75em;
-    -webkit-padding-after: 0.625em;
+    margin-inline-start: 2px;
+    margin-inline-end: 2px;
+    padding-block-start: 0.35em;
+    padding-inline-start: 0.75em;
+    padding-inline-end: 0.75em;
+    padding-block-end: 0.625em;
     border: 2px groove ThreeDFace;
     min-inline-size: min-content;
 }
@@ -448,7 +448,7 @@ input::-webkit-clear-button {
     cursor: default;
     flex: none;
     -webkit-user-modify: read-only !important;
-    -webkit-margin-start: 2px;
+    margin-inline-start: 2px;
     opacity: 0;
     pointer-events: none;
 }
@@ -464,7 +464,7 @@ input[type="search" i]::-webkit-search-cancel-button {
     cursor: default;
     flex: none;
     -webkit-user-modify: read-only !important;
-    -webkit-margin-start: 1px;
+    margin-inline-start: 1px;
     opacity: 0;
     pointer-events: none;
     user-select: none !important;
@@ -706,8 +706,8 @@ input[type="color" i][list] {
 }
 
 input[type="color" i][list]::-webkit-color-swatch-wrapper {
-    -webkit-padding-start: 8px;
-    -webkit-padding-end: 24px;
+    padding-inline-start: 8px;
+    padding-inline-end: 24px;
 }
 
 input[type="color" i][list]::-webkit-color-swatch {
@@ -826,8 +826,8 @@ select:-internal-list-box option:checked:disabled {
 
 select:-internal-list-box hr {
     border-style: none;
-    -webkit-margin-before: 0.5em;
-    -webkit-margin-after: 0;
+    margin-block-start: 0.5em;
+    margin-block-end: 0;
 }
 
 output {
@@ -1081,7 +1081,7 @@ summary::-webkit-details-marker {
     display: inline-block;
     width: 0.66em;
     height: 0.66em;
-    -webkit-margin-end: 0.4em;
+    margin-inline-end: 0.4em;
 }
 
 template {

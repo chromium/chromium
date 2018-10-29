@@ -83,7 +83,9 @@ struct FocusCandidate {
   bool is_offscreen_after_scrolling;
 };
 
-CORE_EXPORT bool IsRectOffscreen(const Node*, WebFocusType = kWebFocusTypeNone);
+CORE_EXPORT bool HasRemoteFrame(const Node*);
+CORE_EXPORT bool IsOffscreen(const Node*);
+CORE_EXPORT bool IsOffscreenAfterFrameScroll(const Node*, WebFocusType);
 bool ScrollInDirection(LocalFrame*, WebFocusType);
 bool ScrollInDirection(Node* container, WebFocusType);
 bool IsNavigableContainer(const Node*, WebFocusType);

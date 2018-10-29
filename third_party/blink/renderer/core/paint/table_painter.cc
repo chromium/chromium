@@ -52,37 +52,21 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
     ObjectPainter(layout_table_).PaintOutline(paint_info, paint_offset);
 }
 
-void TablePainter::RecordHitTestData(const PaintInfo& paint_info,
-                                     const LayoutPoint& paint_offset) {
-  // Hit test display items are only needed for compositing. This flag is used
-  // for for printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
-    return;
-
-  auto touch_action = layout_table_.EffectiveWhitelistedTouchAction();
-  if (touch_action == TouchAction::kTouchActionAuto)
-    return;
-
-  auto rect = layout_table_.BorderBoxRect();
-  rect.MoveBy(paint_offset);
-  HitTestData::RecordTouchActionRect(paint_info.context, layout_table_,
-                                     TouchActionRect(rect, touch_action));
-}
-
 void TablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const LayoutPoint& paint_offset) {
-  if (RuntimeEnabledFeatures::PaintTouchActionRectsEnabled())
-    RecordHitTestData(paint_info, paint_offset);
-
-  if (!layout_table_.HasBoxDecorationBackground() ||
-      layout_table_.StyleRef().Visibility() != EVisibility::kVisible)
-    return;
-
   LayoutRect rect(paint_offset, layout_table_.Size());
   layout_table_.SubtractCaptionRect(rect);
-  BoxPainter(layout_table_)
-      .PaintBoxDecorationBackgroundWithRect(paint_info, rect);
+
+  if (layout_table_.HasBoxDecorationBackground() &&
+      layout_table_.StyleRef().Visibility() == EVisibility::kVisible) {
+    BoxPainter(layout_table_)
+        .PaintBoxDecorationBackgroundWithRect(paint_info, rect);
+  }
+
+  if (RuntimeEnabledFeatures::PaintTouchActionRectsEnabled()) {
+    BoxPainter(layout_table_).RecordHitTestData(paint_info, paint_offset, rect);
+  }
 }
 
 void TablePainter::PaintMask(const PaintInfo& paint_info,

@@ -35,6 +35,8 @@
 #include <set>
 
 #include "base/single_thread_task_runner.h"
+
+#include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/devtools_agent.mojom-blink.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
@@ -42,7 +44,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -61,6 +62,7 @@ class TextFinder;
 class WebAssociatedURLLoader;
 struct WebAssociatedURLLoaderOptions;
 class WebAutofillClient;
+class WebContentSettingsClient;
 class WebDevToolsAgentImpl;
 class WebLocalFrameClient;
 class WebFrameWidgetBase;
@@ -120,7 +122,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebString Prompt(const WebString& message,
                    const WebString& default_value) override;
 
-  void CollectGarbage() override;
+  void CollectGarbageForTesting();
   v8::Local<v8::Value> ExecuteScriptAndReturnValue(
       const WebScriptSource&) override;
   void RequestExecuteScriptAndReturnValue(const WebScriptSource&,
@@ -154,8 +156,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void CheckCompleted() override;
   void LoadHTMLString(const WebData& html,
                       const WebURL& base_url,
-                      const WebURL& unreachable_url,
-                      bool replace) override;
+                      const WebURL& unreachable_url) override;
   void StopLoading() override;
   WebDocumentLoader* GetProvisionalDocumentLoader() const override;
   WebDocumentLoader* GetDocumentLoader() const override;
@@ -164,6 +165,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetReferrerForRequest(WebURLRequest&, const WebURL& referrer) override;
   WebAssociatedURLLoader* CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
+  void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_request) override;
   void SetMarkedText(const WebString&,
                      unsigned location,
                      unsigned length) override;
@@ -275,24 +279,11 @@ class CORE_EXPORT WebLocalFrameImpl final
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
   void LoadJavaScriptURL(const WebURL&) override;
   void CommitDataNavigation(
-      const WebData&,
-      const WebString& mime_type,
-      const WebString& text_encoding,
-      const WebURL& base_url,
-      const WebURL& unreachable_url,
-      bool replace,
-      WebFrameLoadType,
-      const WebHistoryItem&,
-      bool is_client_redirect,
-      std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<WebDocumentLoader::ExtraData> navigation_data) override;
-  void CommitDataNavigationWithRequest(
       const WebURLRequest&,
       const WebData&,
       const WebString& mime_type,
       const WebString& text_encoding,
       const WebURL& unreachable_url,
-      bool replace,
       WebFrameLoadType,
       const WebHistoryItem&,
       bool is_client_redirect,
@@ -300,6 +291,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       std::unique_ptr<WebDocumentLoader::ExtraData> navigation_data) override;
   FallbackContentResult MaybeRenderFallbackContent(
       const WebURLError&) const override;
+  void RenderFallbackContent() const override;
   void ReportContentSecurityPolicyViolation(
       const blink::WebContentSecurityPolicyViolation&) override;
   bool IsLoading() const override;
@@ -309,22 +301,24 @@ class CORE_EXPORT WebLocalFrameImpl final
   void BlinkFeatureUsageReport(const std::set<int>& features) override;
   void MixedContentFound(const WebURL& main_resource_url,
                          const WebURL& mixed_content_url,
-                         WebURLRequest::RequestContext,
+                         mojom::RequestContextType,
                          bool was_allowed,
                          bool had_redirect,
                          const WebSourceLocation&) override;
   void ClientDroppedNavigation() override;
+  void MarkAsLoading() override;
   void SendOrientationChangeEvent() override;
   WebSandboxFlags EffectiveSandboxFlags() const override;
   void DidCallAddSearchProvider() override;
   void DidCallIsSearchProviderInstalled() override;
   void ReplaceSelection(const WebString&) override;
-  bool Find(int identifier,
-            const WebString& search_text,
-            const WebFindOptions&,
-            bool wrap_within_frame,
-            bool* active_now = nullptr) override;
-  void StopFindingForTesting(mojom::StopFindAction) override;
+  bool FindForTesting(int identifier,
+                      const WebString& search_text,
+                      bool match_case,
+                      bool forward,
+                      bool force,
+                      bool find_next,
+                      bool wrap_within_frame) override;
   void SetTickmarks(const WebVector<WebRect>&) override;
   WebNode ContextMenuNode() const override;
   WebFrameWidget* FrameWidget() const override;
@@ -386,9 +380,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   }
 
   void SetDevToolsAgentImpl(WebDevToolsAgentImpl*);
-  WebDevToolsAgentImpl* DevToolsAgentImpl() const {
-    return dev_tools_agent_.Get();
-  }
+  WebDevToolsAgentImpl* DevToolsAgentImpl();
 
   // When a Find operation ends, we want to set the selection to what was active
   // and set focus to the first focusable node we find (starting with the first
@@ -403,16 +395,11 @@ class CORE_EXPORT WebLocalFrameImpl final
                WebHistoryCommitType);
   void DidFinish();
 
-  // Sets whether the WebLocalFrameImpl allows its document to be scrolled.
-  // If the parameter is true, allow the document to be scrolled.
-  // Otherwise, disallow scrolling.
-  void SetCanHaveScrollbars(bool) override;
-
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 
   WebFrameWidgetBase* FrameWidgetImpl() { return frame_widget_; }
 
-  ContentSettingsClient& GetContentSettingsClient() {
+  WebContentSettingsClient* GetContentSettingsClient() {
     return content_settings_client_;
   }
 
@@ -436,9 +423,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Returns the text finder object if it already exists.
   // Otherwise creates it and then returns.
   TextFinder& EnsureTextFinder();
-
-  // Returns a hit-tested VisiblePosition for the given point
-  VisiblePosition VisiblePositionForViewportPoint(const WebPoint&);
 
   void SetFrameWidget(WebFrameWidgetBase*);
 
@@ -484,8 +468,6 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   Node* ContextMenuNodeInner() const;
 
-  void BindDevToolsAgentRequest(mojom::blink::DevToolsAgentAssociatedRequest);
-
   WebLocalFrameClient* client_;
 
   // TODO(dcheng): Inline this field directly rather than going through Member.
@@ -503,7 +485,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   Member<WebDevToolsAgentImpl> dev_tools_agent_;
 
   WebAutofillClient* autofill_client_;
-  ContentSettingsClient content_settings_client_;
+  WebContentSettingsClient* content_settings_client_ = nullptr;
   std::unique_ptr<SharedWorkerRepositoryClientImpl>
       shared_worker_repository_client_;
 

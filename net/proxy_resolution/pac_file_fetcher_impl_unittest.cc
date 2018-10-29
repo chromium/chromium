@@ -552,6 +552,18 @@ TEST_F(PacFileFetcherImplTest, Encodings) {
     EXPECT_THAT(callback.WaitForResult(), IsOk());
     EXPECT_EQ(ASCIIToUTF16("This was encoded as UTF-16BE.\n"), text);
   }
+
+  // Test a response that lacks a charset, however starts with a UTF8 BOM.
+  {
+    GURL url(test_server_.GetURL("/utf8_bom"));
+    base::string16 text;
+    TestCompletionCallback callback;
+    int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                    TRAFFIC_ANNOTATION_FOR_TESTS);
+    EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsOk());
+    EXPECT_EQ(ASCIIToUTF16("/* UTF8 */\n"), text);
+  }
 }
 
 TEST_F(PacFileFetcherImplTest, DataURLs) {

@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS Test that encodingInfo rejects if it doesn't get a configuration
+PASS Test that encodingInfo rejects if the MediaConfiguration isn't valid
+PASS Test that encodingInfo rejects if the MediaConfiguration does not have a type
+PASS Test that encodingInfo rejects if the configuration doesn't have an audio or video field
+PASS Test that encodingInfo rejects if the video configuration has a negative framerate
+PASS Test that encodingInfo rejects if the video configuration has a framerate set to 0
+PASS Test that encodingInfo rejects if the video configuration has a framerate set to Infinity
+PASS Test that encodingInfo rejects if the video configuration contentType doesn't parse
+PASS Test that encodingInfo rejects if the video configuration contentType isn't of type video
+PASS Test that encodingInfo rejects if the video configuration contentType has more than one parameter
+PASS Test that encodingInfo rejects if the video configuration contentType has one parameter that isn't codecs
+PASS Test that encodingInfo() accepts framerate in the form of x/y
+PASS Test that encodingInfo() rejects framerate in the form of x/0
+PASS Test that encodingInfo() rejects framerate in the form of 0/y
+PASS Test that encodingInfo() rejects framerate in the form of -x/y
+PASS Test that encodingInfo() rejects framerate in the form of x/-y
+PASS Test that encodingInfo() rejects framerate in the form of x/
+PASS Test that encodingInfo() accepts framerate with 'e'
+PASS Test that encodingInfo() accepts framerate as fraction with decimals
+PASS Test that encodingInfo() rejects framerate with trailing unallowed characters
+PASS Test that encodingInfo rejects if the audio configuration contenType doesn't parse
+PASS Test that encodingInfo rejects if the audio configuration contentType isn't of type audio
+PASS Test that encodingInfo rejects if the audio configuration contentType has more than one parameters
+PASS Test that encodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs
+PASS Test that encodingInfo returns a valid MediaCapabilitiesInfo objects
+FAIL Test that encodingInfo rejects if the MediaConfiguration does not have a valid type assert_unreached: Promise.all should not reject for valid types Reached unreachable code
+Harness: the test ran to completion.
+

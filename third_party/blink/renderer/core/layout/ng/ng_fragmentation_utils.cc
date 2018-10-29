@@ -26,24 +26,6 @@ LayoutUnit PreviouslyUsedBlockSpace(const NGConstraintSpace& constraint_space,
   return break_token->UsedBlockSize() - logical_fragment.BlockSize();
 }
 
-// Return true if the specified fragment is the first generated fragment of
-// some node.
-bool IsFirstFragment(const NGConstraintSpace& constraint_space,
-                     const NGPhysicalFragment& fragment) {
-  // TODO(mstensho): Figure out how to behave for non-box fragments here. How
-  // can we tell whether it's the first one? Looking for previously used block
-  // space certainly isn't the answer.
-  if (!fragment.IsBox())
-    return true;
-  return PreviouslyUsedBlockSpace(constraint_space, fragment) <= LayoutUnit();
-}
-
-// Return true if the specified fragment is the final fragment of some node.
-bool IsLastFragment(const NGPhysicalFragment& fragment) {
-  const auto* break_token = fragment.BreakToken();
-  return !break_token || break_token->IsFinished();
-}
-
 // At a class A break point [1], the break value with the highest precedence
 // wins. If the two values have the same precedence (e.g. "left" and "right"),
 // the value specified on a latter object wins.

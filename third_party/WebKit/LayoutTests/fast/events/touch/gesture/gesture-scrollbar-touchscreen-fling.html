@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/compositor-controls.js"></script>
 <script src="../../../../resources/gesture-util.js"></script>
 
 <!-- This tests that the scrollbar thumb is deselected on a fling start -->
@@ -44,6 +45,7 @@
 </div>
 
 <script type="text/javascript">
+setAnimationRequiresRaster();
 internals.settings.setMockScrollbarsEnabled(true);
 
 promise_test (async () => {

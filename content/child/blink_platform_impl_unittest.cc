@@ -117,7 +117,7 @@ TEST(BlinkPlatformTest, CastWebSecurityOrigin) {
     EXPECT_TRUE(web_origin.IsUnique());
 
     url::Origin url_origin = web_origin;
-    EXPECT_TRUE(url_origin.unique());
+    EXPECT_TRUE(url_origin.opaque());
 
     web_origin = url::Origin::Create(GURL(""));
     EXPECT_TRUE(web_origin.IsUnique());

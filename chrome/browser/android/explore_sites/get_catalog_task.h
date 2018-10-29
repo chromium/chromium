@@ -46,7 +46,8 @@ class GetCatalogTask : public Task {
   // Task implementation:
   void Run() override;
 
-  void FinishedExecuting(std::unique_ptr<CategoryList> categories);
+  void FinishedExecuting(
+      std::pair<GetCatalogStatus, std::unique_ptr<CategoryList>> result);
 
   ExploreSitesStore* store_;  // outlives this class.
 

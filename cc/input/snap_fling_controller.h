@@ -24,8 +24,8 @@ class SnapFlingCurve;
 class SnapFlingClient {
  public:
   virtual bool GetSnapFlingInfo(const gfx::Vector2dF& natural_displacement,
-                                gfx::Vector2dF* out_initial_offset,
-                                gfx::Vector2dF* out_target_offset) const = 0;
+                                gfx::Vector2dF* out_initial_position,
+                                gfx::Vector2dF* out_target_position) const = 0;
   virtual gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) = 0;
   virtual void ScrollEndForSnapFling() = 0;
   virtual void RequestAnimationForSnapFling() = 0;

@@ -20,6 +20,8 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    placeholder: String,
+
     /** @type {!Array<string>} */
     items: Array,
 

@@ -96,6 +96,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // in demo mode. Returns true for all apps in non-demo mode.
   static bool ShouldDisplayInAppLauncher(const std::string& app_id);
 
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   // Ensures that the load of offline demo session resources is requested.
   // |load_callback| will be run once the offline resource load finishes.
   void EnsureOfflineResourcesLoaded(base::OnceClosure load_callback);

@@ -34,6 +34,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_scoped_task_environment.h"
 #include "net/third_party/quic/core/crypto/null_encrypter.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/tls_client_handshaker.h"
 #include "net/third_party/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quic/test_tools/mock_clock.h"
@@ -74,10 +75,6 @@ static const int kLen333 = kLen3 + kLen3 + kLen3;
 namespace net {
 namespace test {
 
-namespace {
-const quic::QuicStreamId kClientDataStreamId1 = quic::kHeadersStreamId + 2;
-}  // namespace
-
 class QuicProxyClientSocketTest
     : public ::testing::TestWithParam<
           std::tuple<quic::QuicTransportVersion, bool>>,
@@ -112,6 +109,8 @@ class QuicProxyClientSocketTest
 
   QuicProxyClientSocketTest()
       : version_(std::get<0>(GetParam())),
+        client_data_stream_id1_(quic::QuicUtils::GetHeadersStreamId(version_) +
+                                2),
         client_headers_include_h2_stream_dependency_(std::get<1>(GetParam())),
         crypto_config_(quic::test::crypto_test_utils::ProofVerifierForTesting(),
                        quic::TlsClientHandshaker::CreateSslCtx()),
@@ -273,7 +272,7 @@ class QuicProxyClientSocketTest
       quic::QuicPacketNumber smallest_received,
       quic::QuicPacketNumber least_unacked) {
     return client_maker_.MakeAckAndRstPacket(
-        packet_number, !kIncludeVersion, kClientDataStreamId1, error_code,
+        packet_number, !kIncludeVersion, client_data_stream_id1_, error_code,
         largest_received, smallest_received, least_unacked, kSendFeedback);
   }
 
@@ -285,7 +284,7 @@ class QuicProxyClientSocketTest
       quic::QuicPacketNumber least_unacked,
       size_t bytes_written) {
     return client_maker_.MakeAckAndRstPacket(
-        packet_number, !kIncludeVersion, kClientDataStreamId1, error_code,
+        packet_number, !kIncludeVersion, client_data_stream_id1_, error_code,
         largest_received, smallest_received, least_unacked, kSendFeedback,
         bytes_written);
   }
@@ -295,7 +294,7 @@ class QuicProxyClientSocketTest
       quic::QuicRstStreamErrorCode error_code,
       size_t bytes_written) {
     return client_maker_.MakeRstPacket(packet_number, !kIncludeVersion,
-                                       kClientDataStreamId1, error_code,
+                                       client_data_stream_id1_, error_code,
                                        bytes_written);
   }
 
@@ -304,7 +303,7 @@ class QuicProxyClientSocketTest
     spdy::SpdyHeaderBlock block;
     PopulateConnectRequestIR(&block);
     return client_maker_.MakeRequestHeadersPacket(
-        packet_number, kClientDataStreamId1, kIncludeVersion, !kFin,
+        packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(LOWEST), std::move(block), 0,
         nullptr, &header_stream_offset_);
   }
@@ -315,7 +314,7 @@ class QuicProxyClientSocketTest
     PopulateConnectRequestIR(&block);
     block["proxy-authorization"] = "Basic Zm9vOmJhcg==";
     return client_maker_.MakeRequestHeadersPacket(
-        packet_number, kClientDataStreamId1, kIncludeVersion, !kFin,
+        packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(LOWEST), std::move(block), 0,
         nullptr, &header_stream_offset_);
   }
@@ -325,7 +324,7 @@ class QuicProxyClientSocketTest
       quic::QuicStreamOffset offset,
       const char* data,
       int length) {
-    return client_maker_.MakeDataPacket(packet_number, kClientDataStreamId1,
+    return client_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, !kFin, offset,
                                         quic::QuicStringPiece(data, length));
   }
@@ -339,8 +338,8 @@ class QuicProxyClientSocketTest
       const char* data,
       int length) {
     return client_maker_.MakeAckAndDataPacket(
-        packet_number, !kIncludeVersion, kClientDataStreamId1, largest_received,
-        smallest_received, least_unacked, !kFin, offset,
+        packet_number, !kIncludeVersion, client_data_stream_id1_,
+        largest_received, smallest_received, least_unacked, !kFin, offset,
         quic::QuicStringPiece(data, length));
   }
 
@@ -361,7 +360,7 @@ class QuicProxyClientSocketTest
       quic::QuicRstStreamErrorCode error_code,
       size_t bytes_written) {
     return server_maker_.MakeRstPacket(packet_number, !kIncludeVersion,
-                                       kClientDataStreamId1, error_code,
+                                       client_data_stream_id1_, error_code,
                                        bytes_written);
   }
 
@@ -370,7 +369,7 @@ class QuicProxyClientSocketTest
       quic::QuicStreamOffset offset,
       const char* data,
       int length) {
-    return server_maker_.MakeDataPacket(packet_number, kClientDataStreamId1,
+    return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, !kFin, offset,
                                         quic::QuicStringPiece(data, length));
   }
@@ -380,7 +379,7 @@ class QuicProxyClientSocketTest
       quic::QuicStreamOffset offset,
       const char* data,
       int length) {
-    return server_maker_.MakeDataPacket(packet_number, kClientDataStreamId1,
+    return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, kFin, offset,
                                         quic::QuicStringPiece(data, length));
   }
@@ -392,7 +391,7 @@ class QuicProxyClientSocketTest
     block[":status"] = "200";
 
     return server_maker_.MakeResponseHeadersPacket(
-        packet_number, kClientDataStreamId1, !kIncludeVersion, fin,
+        packet_number, client_data_stream_id1_, !kIncludeVersion, fin,
         std::move(block), nullptr, &response_offset_);
   }
 
@@ -403,7 +402,7 @@ class QuicProxyClientSocketTest
     block[":status"] = "407";
     block["proxy-authenticate"] = "Basic realm=\"MyRealm1\"";
     return server_maker_.MakeResponseHeadersPacket(
-        packet_number, kClientDataStreamId1, !kIncludeVersion, fin,
+        packet_number, client_data_stream_id1_, !kIncludeVersion, fin,
         std::move(block), nullptr, &response_offset_);
   }
 
@@ -416,7 +415,7 @@ class QuicProxyClientSocketTest
     block["location"] = kRedirectUrl;
     block["set-cookie"] = "foo=bar";
     return server_maker_.MakeResponseHeadersPacket(
-        packet_number, kClientDataStreamId1, !kIncludeVersion, fin,
+        packet_number, client_data_stream_id1_, !kIncludeVersion, fin,
         std::move(block), nullptr, &response_offset_);
   }
 
@@ -427,7 +426,7 @@ class QuicProxyClientSocketTest
     block[":status"] = "500";
 
     return server_maker_.MakeResponseHeadersPacket(
-        packet_number, kClientDataStreamId1, !kIncludeVersion, fin,
+        packet_number, client_data_stream_id1_, !kIncludeVersion, fin,
         std::move(block), nullptr, &response_offset_);
   }
 
@@ -507,6 +506,7 @@ class QuicProxyClientSocketTest
   }
 
   const quic::QuicTransportVersion version_;
+  const quic::QuicStreamId client_data_stream_id1_;
   const bool client_headers_include_h2_stream_dependency_;
 
   // order of destruction of these members matter

@@ -24,6 +24,8 @@ class LevelDBDatabaseImpl : public mojom::LevelDBDatabase,
   LevelDBDatabaseImpl(std::unique_ptr<leveldb::Env> environment,
                       std::unique_ptr<leveldb::DB> db,
                       std::unique_ptr<leveldb::Cache> cache,
+                      const leveldb_env::Options& options,
+                      const std::string& name,
                       base::Optional<base::trace_event::MemoryAllocatorDumpGuid>
                           memory_dump_id);
   ~LevelDBDatabaseImpl() override;
@@ -36,6 +38,7 @@ class LevelDBDatabaseImpl : public mojom::LevelDBDatabase,
               DeleteCallback callback) override;
   void DeletePrefixed(const std::vector<uint8_t>& key_prefix,
                       DeletePrefixedCallback callback) override;
+  void RewriteDB(RewriteDBCallback callback) override;
   void Write(std::vector<mojom::BatchedOperationPtr> operations,
              WriteCallback callback) override;
   void Get(const std::vector<uint8_t>& key, GetCallback callback) override;
@@ -70,6 +73,11 @@ class LevelDBDatabaseImpl : public mojom::LevelDBDatabase,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
+  // Set a closure that will close the mojo connection to this object.
+  // The closure will be called if this database becomes unusable e.g.
+  // due to a failed rewrite attempt.
+  void SetCloseBindingClosure(base::OnceClosure close_binding);
+
  private:
   // Returns the state of |it| to a caller. Note: This assumes that all the
   // iterator movement methods have the same callback signature. We don't
@@ -88,6 +96,8 @@ class LevelDBDatabaseImpl : public mojom::LevelDBDatabase,
   std::unique_ptr<leveldb::Env> environment_;
   std::unique_ptr<leveldb::Cache> cache_;
   std::unique_ptr<leveldb::DB> db_;
+  leveldb_env::Options options_;
+  std::string name_;
   base::Optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id_;
 
   std::map<base::UnguessableToken, const Snapshot*> snapshot_map_;
@@ -98,6 +108,8 @@ class LevelDBDatabaseImpl : public mojom::LevelDBDatabase,
   // system, but this maybe should be fixed...
 
   std::map<base::UnguessableToken, Iterator*> iterator_map_;
+
+  base::OnceClosure close_binding_;
 
   DISALLOW_COPY_AND_ASSIGN(LevelDBDatabaseImpl);
 };

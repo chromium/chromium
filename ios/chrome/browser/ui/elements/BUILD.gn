@@ -25,6 +25,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_overlay_coordinator_unittest.mm",
+    "chrome_activity_overlay_coordinator_unittest.mm",
     "selector_coordinator_unittest.mm",
     "selector_picker_view_controller_unittest.mm",
   ]
@@ -45,6 +46,10 @@ source_set("elements_internal") {
     "activity_overlay_coordinator.mm",
     "activity_overlay_view_controller.h",
     "activity_overlay_view_controller.mm",
+    "chrome_activity_overlay_coordinator.h",
+    "chrome_activity_overlay_coordinator.mm",
+    "chrome_activity_overlay_view_controller.h",
+    "chrome_activity_overlay_view_controller.mm",
   ]
   deps = [
     "//base",

@@ -4,20 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/immersive_handler_factory_mus.h"
 
-#include "ash/public/cpp/immersive/immersive_focus_watcher.h"
 #include "ash/public/cpp/immersive/immersive_gesture_handler.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/views/frame/immersive_focus_watcher_mus.h"
 
 ImmersiveHandlerFactoryMus::ImmersiveHandlerFactoryMus() {}
 
 ImmersiveHandlerFactoryMus::~ImmersiveHandlerFactoryMus() {}
-
-std::unique_ptr<ash::ImmersiveFocusWatcher>
-ImmersiveHandlerFactoryMus::CreateFocusWatcher(
-    ash::ImmersiveFullscreenController* controller) {
-  return std::make_unique<ImmersiveFocusWatcherMus>(controller);
-}
 
 std::unique_ptr<ash::ImmersiveGestureHandler>
 ImmersiveHandlerFactoryMus::CreateGestureHandler(

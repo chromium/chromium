@@ -20,7 +20,6 @@
 @implementation TabGridAdaptor
 // TabSwitcher properties.
 @synthesize delegate = _delegate;
-@synthesize animationDelegate = _animationDelegate;
 // Public properties
 @synthesize tabGridViewController = _tabGridViewController;
 @synthesize adaptedDispatcher = _adaptedDispatcher;
@@ -35,13 +34,6 @@
       self.adaptedDispatcher);
 }
 
-- (void)setAnimationDelegate:
-    (id<TabSwitcherAnimationDelegate>)animationDelegate {
-  NOTREACHED()
-      << "The tab grid shouldn't need a tab switcher animation delegate.";
-  _animationDelegate = nil;
-}
-
 - (void)restoreInternalStateWithMainTabModel:(TabModel*)mainModel
                                  otrTabModel:(TabModel*)otrModel
                               activeTabModel:(TabModel*)activeModel {
@@ -52,14 +44,6 @@
   } else {
     self.tabGridPager.activePage = TabGridPageRegularTabs;
   }
-}
-
-- (void)prepareForDisplayAtSize:(CGSize)size {
-  NOTREACHED();
-}
-
-- (void)showWithSelectedTabAnimation {
-  NOTREACHED();
 }
 
 - (UIViewController*)viewController {
@@ -98,10 +82,6 @@
   self.incognitoMediator.tabModel = otrModel;
   self.loader.incognitoWebStateList = otrModel.webStateList;
   self.loader.incognitoBrowserState = otrModel.browserState;
-}
-
-- (void)setTransitionContext:(TabSwitcherTransitionContext*)transitionContext {
-  // No-op. Tab grid will not use this iPad TabSwitcher-specific mechanism.
 }
 
 @end

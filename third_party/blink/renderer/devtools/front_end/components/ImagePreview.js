@@ -43,18 +43,15 @@ Components.ImagePreview = class {
       const container = createElement('table');
       UI.appendStyle(container, 'components/imagePreview.css');
       container.className = 'image-preview-container';
-      const naturalWidth = precomputedFeatures ? precomputedFeatures.naturalWidth : imageElement.naturalWidth;
-      const naturalHeight = precomputedFeatures ? precomputedFeatures.naturalHeight : imageElement.naturalHeight;
-      const offsetWidth = precomputedFeatures ? precomputedFeatures.offsetWidth : naturalWidth;
-      const offsetHeight = precomputedFeatures ? precomputedFeatures.offsetHeight : naturalHeight;
+      const intrinsicWidth = imageElement.naturalWidth;
+      const intrinsicHeight = imageElement.naturalHeight;
+      const renderedWidth = precomputedFeatures ? precomputedFeatures.renderedWidth : intrinsicWidth;
+      const renderedHeight = precomputedFeatures ? precomputedFeatures.renderedHeight : intrinsicHeight;
       let description;
       if (showDimensions) {
-        if (offsetHeight === naturalHeight && offsetWidth === naturalWidth) {
-          description = Common.UIString('%d \xd7 %d pixels', offsetWidth, offsetHeight);
-        } else {
-          description = Common.UIString(
-              '%d \xd7 %d pixels (Natural: %d \xd7 %d pixels)', offsetWidth, offsetHeight, naturalWidth, naturalHeight);
-        }
+        description = ls`${renderedWidth} \xd7 ${renderedHeight} pixels`;
+        if (renderedHeight !== intrinsicHeight || renderedWidth !== intrinsicWidth)
+          description += ls` (intrinsic: ${intrinsicWidth} \xd7 ${intrinsicHeight} pixels)`;
       }
 
       container.createChild('tr').createChild('td', 'image-container').appendChild(imageElement);
@@ -65,6 +62,33 @@ Components.ImagePreview = class {
             String.sprintf('currentSrc: %s', imageURL.trimMiddle(100));
       }
       fulfill(container);
+    }
+  }
+
+  /**
+   * @param {!SDK.DOMNode} node
+   * @return {!Promise<!Object|undefined>}
+   */
+  static async loadDimensionsForNode(node) {
+    if (!node.nodeName() || node.nodeName().toLowerCase() !== 'img')
+      return;
+
+    const object = await node.resolveToObject('');
+
+    if (!object)
+      return;
+
+    const featuresObject = object.callFunctionJSON(features, undefined);
+    object.release();
+    return featuresObject;
+
+    /**
+     * @return {!{renderedWidth: number, renderedHeight: number, currentSrc: (string|undefined)}}
+     * @suppressReceiverCheck
+     * @this {!Element}
+     */
+    function features() {
+      return {renderedWidth: this.width, renderedHeight: this.height, currentSrc: this.currentSrc};
     }
   }
 };

@@ -641,44 +641,34 @@ class HeadlessWebContentsBeginFrameControlBasicTest
   }
 
   void OnNeedsBeginFrame() override {
-    // Try to capture a screenshot in first frame. This should fail because the
-    // surface doesn't exist yet.
     BeginFrame(true);
   }
 
   void OnFrameFinished(std::unique_ptr<headless_experimental::BeginFrameResult>
                            result) override {
     if (num_begin_frames_ == 1) {
-      // First BeginFrame should have caused damage.
+      // First BeginFrame should have caused damage and have a screenshot.
       EXPECT_TRUE(result->GetHasDamage());
-      // But the screenshot should have failed (see above).
-      EXPECT_FALSE(result->HasScreenshotData());
-    } else if (num_begin_frames_ == 2) {
-      // Expect a valid screenshot in second BeginFrame.
-      EXPECT_TRUE(result->GetHasDamage());
-      EXPECT_TRUE(result->HasScreenshotData());
-      if (result->HasScreenshotData()) {
-        std::string base64 = result->GetScreenshotData();
-        EXPECT_LT(0u, base64.length());
-        SkBitmap result_bitmap;
-        EXPECT_TRUE(DecodePNG(base64, &result_bitmap));
-
-        EXPECT_EQ(200, result_bitmap.width());
-        EXPECT_EQ(200, result_bitmap.height());
-        SkColor expected_color = SkColorSetRGB(0x00, 0x00, 0xff);
-        SkColor actual_color = result_bitmap.getColor(100, 100);
-        EXPECT_EQ(expected_color, actual_color);
-      }
+      ASSERT_TRUE(result->HasScreenshotData());
+      std::string base64 = result->GetScreenshotData();
+      EXPECT_LT(0u, base64.length());
+      SkBitmap result_bitmap;
+      EXPECT_TRUE(DecodePNG(base64, &result_bitmap));
+      EXPECT_EQ(200, result_bitmap.width());
+      EXPECT_EQ(200, result_bitmap.height());
+      SkColor expected_color = SkColorSetRGB(0x00, 0x00, 0xff);
+      SkColor actual_color = result_bitmap.getColor(100, 100);
+      EXPECT_EQ(expected_color, actual_color);
     } else {
-      DCHECK_EQ(3, num_begin_frames_);
-      // Can't guarantee that the last BeginFrame didn't have damage, but it
+      DCHECK_EQ(2, num_begin_frames_);
+      // Can't guarantee that the second BeginFrame didn't have damage, but it
       // should not have a screenshot.
       EXPECT_FALSE(result->HasScreenshotData());
     }
 
-    if (num_begin_frames_ < 3) {
-      // Capture a screenshot in second but not third BeginFrame.
-      BeginFrame(num_begin_frames_ == 1);
+    if (num_begin_frames_ < 2) {
+      // Don't capture a screenshot in the second BeginFrame.
+      BeginFrame(false);
     } else {
       // Post completion to avoid deleting the WebContents on the same callstack
       // as frame finished callback.

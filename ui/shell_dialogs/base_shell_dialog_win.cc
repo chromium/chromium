@@ -6,10 +6,35 @@
 
 #include <algorithm>
 
-#include "base/threading/thread.h"
+#include "base/task/post_task.h"
 #include "base/win/scoped_com_initializer.h"
 
 namespace ui {
+
+namespace {
+
+// Creates a SingleThreadTaskRunner to run a shell dialog on. Each dialog
+// requires its own dedicated single-threaded sequence otherwise in some
+// situations where a singleton owns a single instance of this object we can
+// have a situation where a modal dialog in one window blocks the appearance
+// of a modal dialog in another.
+scoped_refptr<base::SingleThreadTaskRunner> CreateDialogTaskRunner() {
+  return CreateCOMSTATaskRunnerWithTraits(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+}
+
+// Enables the window |owner|. Can only be run from the UI thread.
+void SetOwnerEnabled(HWND owner, bool enabled) {
+  if (IsWindow(owner))
+    EnableWindow(owner, enabled);
+}
+
+}  // namespace
+
+BaseShellDialogImpl::RunState::RunState() = default;
+BaseShellDialogImpl::RunState::~RunState() = default;
 
 // static
 BaseShellDialogImpl::Owners BaseShellDialogImpl::owners_;
@@ -25,15 +50,21 @@ BaseShellDialogImpl::~BaseShellDialogImpl() {
     DCHECK(owners_.empty());
 }
 
-BaseShellDialogImpl::RunState BaseShellDialogImpl::BeginRun(HWND owner) {
+// static
+void BaseShellDialogImpl::DisableOwner(HWND owner) {
+  SetOwnerEnabled(owner, false);
+}
+
+std::unique_ptr<BaseShellDialogImpl::RunState> BaseShellDialogImpl::BeginRun(
+    HWND owner) {
   // Cannot run a modal shell dialog if one is already running for this owner.
   DCHECK(!IsRunningDialogForOwner(owner));
   // The owner must be a top level window, otherwise we could end up with two
   // entries in our map for the same top level window.
   DCHECK(!owner || owner == GetAncestor(owner, GA_ROOT));
-  RunState run_state;
-  run_state.dialog_thread = CreateDialogThread();
-  run_state.owner = owner;
+  auto run_state = std::make_unique<RunState>();
+  run_state->dialog_task_runner = CreateDialogTaskRunner();
+  run_state->owner = owner;
   if (owner) {
     owners_.insert(owner);
     DisableOwner(owner);
@@ -41,39 +72,17 @@ BaseShellDialogImpl::RunState BaseShellDialogImpl::BeginRun(HWND owner) {
   return run_state;
 }
 
-void BaseShellDialogImpl::EndRun(RunState run_state) {
-  if (run_state.owner) {
-    DCHECK(IsRunningDialogForOwner(run_state.owner));
-    EnableOwner(run_state.owner);
-    DCHECK(owners_.find(run_state.owner) != owners_.end());
-    owners_.erase(run_state.owner);
+void BaseShellDialogImpl::EndRun(std::unique_ptr<RunState> run_state) {
+  if (run_state->owner) {
+    DCHECK(IsRunningDialogForOwner(run_state->owner));
+    SetOwnerEnabled(run_state->owner, true);
+    DCHECK(owners_.find(run_state->owner) != owners_.end());
+    owners_.erase(run_state->owner);
   }
-  DCHECK(run_state.dialog_thread);
-  delete run_state.dialog_thread;
 }
 
 bool BaseShellDialogImpl::IsRunningDialogForOwner(HWND owner) const {
   return (owner && owners_.find(owner) != owners_.end());
-}
-
-void BaseShellDialogImpl::DisableOwner(HWND owner) {
-  if (IsWindow(owner))
-    EnableWindow(owner, FALSE);
-}
-
-// static
-base::Thread* BaseShellDialogImpl::CreateDialogThread() {
-  base::Thread* thread = new base::Thread("Chrome_ShellDialogThread");
-  // Many shell dialogs require a COM Single-Threaded Apartment (STA) to run.
-  thread->init_com_with_mta(false);
-  bool started = thread->Start();
-  DCHECK(started);
-  return thread;
-}
-
-void BaseShellDialogImpl::EnableOwner(HWND owner) {
-  if (IsWindow(owner))
-    EnableWindow(owner, TRUE);
 }
 
 }  // namespace ui

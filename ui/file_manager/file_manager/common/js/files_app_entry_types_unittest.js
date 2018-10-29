@@ -4,9 +4,35 @@
 
 'use strict';
 
+function notreached(error) {
+  assertTrue(false, 'NOTREACHED(): ' + (error.stack || error));
+}
+
+/**
+ * Creates a new volume with a single, mock VolumeEntry.
+ * @param {?VolumeManagerCommon.VolumeType} volumeType
+ * @param {DirectoryEntry=} displayRoot
+ * @param {Object=} additionalProperties
+ * @return {!VolumeEntry}
+ */
+function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
+  const kLabel = 'Fake Filesystem';
+  if (displayRoot === undefined)
+    displayRoot = createFakeDisplayRoot();
+  let fakeVolumeInfo = {
+    displayRoot: displayRoot,
+    label: kLabel,
+    volumeType: volumeType
+  };
+  Object.assign(fakeVolumeInfo, additionalProperties || {});
+  // Create the VolumeEntry via casting (duck typing).
+  return new VolumeEntry(/** @type{!VolumeInfo} */ (fakeVolumeInfo));
+}
+
 /**  Test constructor and default public attributes. */
 function testEntryList(testReportCallback) {
-  const entryList = new EntryList('My files', 'my_files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   assertEquals('My files', entryList.label);
   assertEquals('entry-list://my_files', entryList.toURL());
   assertEquals('my_files', entryList.rootType);
@@ -15,7 +41,8 @@ function testEntryList(testReportCallback) {
   assertTrue(entryList.isDirectory);
   assertFalse(entryList.isFile);
 
-  entryList.addEntry(new EntryList('Child Entry', 'child_entry'));
+  entryList.addEntry(
+      new EntryList('Child Entry', VolumeManagerCommon.RootType.MY_FILES));
   assertEquals(1, entryList.children.length);
 
   const reader = entryList.createReader();
@@ -28,11 +55,11 @@ function testEntryList(testReportCallback) {
     callCounter++;
     if (readerResult.length > 0) {
       resultCouter++;
-      reader.readEntries(accumulateResults);
+      reader.readEntries(accumulateResults, () => {});
     }
   };
 
-  reader.readEntries(accumulateResults);
+  reader.readEntries(accumulateResults, () => {});
   // readEntries runs asynchronously, so let's wait it to be called.
   reportPromise(
       waitUntil(() => {
@@ -48,29 +75,25 @@ function testEntryList(testReportCallback) {
 
 /** Tests method EntryList.getParent. */
 function testEntryListGetParent(testReportCallback) {
-  const entryList = new EntryList('My files', 'my_files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   let callbackTriggered = false;
   entryList.getParent(parentEntry => {
     // EntryList should return itself since it's a root and that's what the web
     // spec says.
     callbackTriggered = true;
     assertEquals(parentEntry, entryList);
-  });
+  }, notreached /* error */);
   reportPromise(waitUntil(() => callbackTriggered), testReportCallback);
 }
 
 /** Tests method EntryList.addEntry. */
 function testEntryListAddEntry() {
-  const entryList = new EntryList('My files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   assertEquals(0, entryList.children.length);
 
-  const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-  };
-  const childEntry = new VolumeEntry(fakeVolumeInfo);
+  const childEntry = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
   entryList.addEntry(childEntry);
   assertEquals(1, entryList.children.length);
   assertEquals(childEntry, entryList.children[0]);
@@ -78,14 +101,10 @@ function testEntryListAddEntry() {
 
 /** Tests methods to remove entries. */
 function testEntryListRemoveEntry() {
-  const entryList = new EntryList('My files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
-  const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-  };
-  const childEntry = new VolumeEntry(fakeVolumeInfo);
+  const childEntry = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
   entryList.addEntry(childEntry);
   assertTrue(entryList.removeEntry(childEntry));
   assertEquals(0, entryList.children.length);
@@ -95,39 +114,27 @@ function testEntryListRemoveEntry() {
  * Tests methods findIndexByVolumeInfo, removeByVolumeType, removeByRootType.
  */
 function testEntryFindIndex() {
-  const entryList = new EntryList('My files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
-  const fakeRootEntry = createFakeDisplayRoot();
-  const downloadsVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-  };
-  const downloads = new VolumeEntry(downloadsVolumeInfo);
+  const downloads = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
 
-  const crostiniRootEntry = createFakeDisplayRoot();
-  const crostiniVolumeInfo = {
-    displayRoot: crostiniRootEntry,
-    label: 'Fake Filesystem',
-    volumeType: VolumeManagerCommon.VolumeType.CROSTINI,
-  };
-  const crostini = new VolumeEntry(crostiniVolumeInfo);
-
-  const fakeEntry = {
+  const fakeEntry = /** @type{!Entry} */ ({
     isDirectory: true,
     rootType: VolumeManagerCommon.RootType.CROSTINI,
     name: 'Linux files',
     toURL: function() {
       return 'fake-entry://linux-files';
     }
-  };
+  });
 
   entryList.addEntry(downloads);
   entryList.addEntry(crostini);
 
   // Test findIndexByVolumeInfo.
-  assertEquals(0, entryList.findIndexByVolumeInfo(downloadsVolumeInfo));
-  assertEquals(1, entryList.findIndexByVolumeInfo(crostiniVolumeInfo));
+  assertEquals(0, entryList.findIndexByVolumeInfo(downloads.volumeInfo));
+  assertEquals(1, entryList.findIndexByVolumeInfo(crostini.volumeInfo));
 
   // Test removeByVolumeType.
   assertTrue(
@@ -145,12 +152,13 @@ function testEntryFindIndex() {
 
 /** Tests method EntryList.getMetadata. */
 function testEntryListGetMetadata(testReportCallback) {
-  const entryList = new EntryList('My files');
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
   let modificationTime = null;
   entryList.getMetadata(metadata => {
     modificationTime = metadata.modificationTime;
-  });
+  }, notreached /* error */);
 
   // getMetadata runs asynchronously, so let's wait it to be called.
   reportPromise(
@@ -176,10 +184,10 @@ function testStaticReader(testReportCallback) {
     // merge on testResults.
     readerResult.map(f => testResults.push(f));
     if (readerResult.length > 0)
-      reader.readEntries(accumulateResults);
+      reader.readEntries(accumulateResults, () => {});
   };
 
-  reader.readEntries(accumulateResults);
+  reader.readEntries(accumulateResults, () => {});
   // readEntries runs asynchronously, so let's wait it to be called.
   reportPromise(
       waitUntil(() => {
@@ -226,13 +234,9 @@ function createFakeDisplayRoot() {
  */
 function testVolumeEntry() {
   const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-  };
+  const volumeEntry =
+      fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
 
-  const volumeEntry = new VolumeEntry(fakeVolumeInfo);
   assertEquals(fakeRootEntry, volumeEntry.rootEntry);
   assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, volumeEntry.iconName);
   assertEquals('fake-filesystem://', volumeEntry.filesystem);
@@ -251,19 +255,17 @@ function testVolumeEntry() {
 function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
   let callbackTriggered = false;
   const fakeRootEntry = createFakeDisplayRoot();
-  // A VolumeInfo without displayRoot.
-  const fakeVolumeInfo = {
-    displayRoot: null,
-    label: 'Fake Filesystem',
+
+  // Create an entry using a VolumeInfo without displayRoot.
+  const volumeEntry = fakeVolumeEntry(null, null, {
     resolveDisplayRoot: function(successCallback, errorCallback) {
       setTimeout(() => {
         successCallback(fakeRootEntry);
         callbackTriggered = true;
       }, 0);
-    },
-  };
+    }
+  });
 
-  const volumeEntry = new VolumeEntry(fakeVolumeInfo);
   // rootEntry starts as null.
   assertEquals(null, volumeEntry.rootEntry);
   reportPromise(
@@ -275,36 +277,24 @@ function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
 }
 /** Tests VolumeEntry.getParent */
 function testVolumeEntryGetParent(testReportCallback) {
-  const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-  };
-
-  const volumeEntry = new VolumeEntry(fakeVolumeInfo);
+  const volumeEntry = fakeVolumeEntry(null);
   let callbackTriggered = false;
   volumeEntry.getParent(parentEntry => {
     callbackTriggered = true;
     // VolumeEntry should return itself since it's a root and that's what the
     // web spec says.
     assertEquals(parentEntry, volumeEntry);
-  });
+  }, notreached /* error */);
   reportPromise(waitUntil(() => callbackTriggered), testReportCallback);
 }
 
 /**  Tests VolumeEntry.getMetadata */
 function testVolumeEntryGetMetadata(testReportCallback) {
-  const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-  };
-  const volumeEntry = new VolumeEntry(fakeVolumeInfo);
-
+  const volumeEntry = fakeVolumeEntry(null);
   let modificationTime = null;
   volumeEntry.getMetadata(metadata => {
     modificationTime = metadata.modificationTime;
-  });
+  }, notreached /* error */);
 
   // getMetadata runs asynchronously, so let's wait it to be called.
   reportPromise(
@@ -324,13 +314,9 @@ function testVolumeEntryGetMetadata(testReportCallback) {
  * Test EntryList.addEntry sets prefix on VolumeEntry.
  */
 function testEntryListAddEntrySetsPrefix() {
-  const fakeRootEntry = createFakeDisplayRoot();
-  const fakeVolumeInfo = {
-    displayRoot: fakeRootEntry,
-    label: 'Fake Filesystem',
-  };
-  const volumeEntry = new VolumeEntry(fakeVolumeInfo);
-  const entryList = new EntryList('My files', 'my_files');
+  const volumeEntry = fakeVolumeEntry(null);
+  const entryList =
+      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
   entryList.addEntry(volumeEntry);
   assertEquals(1, entryList.children.length);
@@ -342,10 +328,9 @@ function testEntryListAddEntrySetsPrefix() {
  * Test FakeEntry, which is only static data.
  */
 function testFakeEntry(testReportCallback) {
-  let fakeEntry =
-      new FakeEntry('label', VolumeManagerCommon.RootType.CROSTINI, true, null);
+  let fakeEntry = new FakeEntry('label', VolumeManagerCommon.RootType.CROSTINI);
 
-  assertEquals(null, fakeEntry.sourceRestriction);
+  assertEquals(undefined, fakeEntry.sourceRestriction);
   assertEquals('FakeEntry', fakeEntry.type_name);
   assertEquals('label', fakeEntry.label);
   assertEquals('label', fakeEntry.name);
@@ -356,26 +341,26 @@ function testFakeEntry(testReportCallback) {
   assertTrue(fakeEntry.isDirectory);
   assertFalse(fakeEntry.isFile);
 
-  // Check the isDirectory and sourceRestriction constructor args.
+  // Check sourceRestriction constructor args.
+  const kSourceRestriction =
+      /** @type{chrome.fileManagerPrivate.SourceRestriction} */ ('fake');
   fakeEntry = new FakeEntry(
-      'label', VolumeManagerCommon.RootType.CROSTINI, false,
-      AllowedPaths.NATIVE_PATH);
-  assertEquals(AllowedPaths.NATIVE_PATH, fakeEntry.sourceRestriction);
-  assertFalse(fakeEntry.isDirectory);
-  assertTrue(fakeEntry.isFile);
+      'label', VolumeManagerCommon.RootType.CROSTINI, kSourceRestriction);
+  assertEquals(kSourceRestriction, fakeEntry.sourceRestriction);
 
   let callCounter = 0;
 
   fakeEntry.getMetadata((metadata) => {
-    // Returns empty metadata {}.
+    // Returns empty (but non-null) metadata {}.
+    assert(metadata);
     assertEquals(0, Object.keys(metadata).length);
     callCounter++;
-  });
+  }, notreached /* error */);
   fakeEntry.getParent((parentEntry) => {
     // Should return itself.
     assertEquals(fakeEntry, parentEntry);
     callCounter++;
-  });
+  }, notreached /* error */);
 
   reportPromise(
       waitUntil(() => {

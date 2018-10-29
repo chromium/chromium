@@ -156,9 +156,8 @@ template <typename Container>
 void ExpectEquivalentMaps(const Container& left, const Container& right) {
   ASSERT_EQ(left.size(), right.size());
 
-  typedef typename Container::const_iterator const_iterator;
-  const_iterator left_itr = left.begin();
-  const_iterator right_itr = right.begin();
+  auto left_itr = left.begin();
+  auto right_itr = right.begin();
   while (left_itr != left.end()) {
     EXPECT_EQ(left_itr->first, right_itr->first);
     ExpectEquivalent(left_itr->second, right_itr->second);
@@ -171,9 +170,8 @@ template <typename Container>
 void ExpectEquivalentSets(const Container& left, const Container& right) {
   ASSERT_EQ(left.size(), right.size());
 
-  typedef typename Container::const_iterator const_iterator;
-  const_iterator left_itr = left.begin();
-  const_iterator right_itr = right.begin();
+  auto left_itr = left.begin();
+  auto right_itr = right.begin();
   while (left_itr != left.end()) {
     ExpectEquivalent(*left_itr, *right_itr);
     ++left_itr;

@@ -5,6 +5,7 @@
 #api-keys-notice-container {
   display: flex;
   justify-content: center;
+  min-height: 0;
   position: fixed;
   top: 10px;
   width: 100%;

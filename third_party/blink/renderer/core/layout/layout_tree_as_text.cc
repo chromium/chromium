@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/hex_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -318,7 +318,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 
       if (element.HasClass()) {
         ts << " class=\"";
-        for (size_t i = 0; i < element.ClassNames().size(); ++i) {
+        for (wtf_size_t i = 0; i < element.ClassNames().size(); ++i) {
           if (i > 0)
             ts << " ";
           ts << element.ClassNames()[i];
@@ -457,8 +457,19 @@ static void WriteTextFragment(WTF::TextStream& ts,
     return;
   const NGPhysicalTextFragment& physical_text_fragment =
       ToNGPhysicalTextFragment(physical_fragment);
-  NGTextFragment fragment(physical_fragment.Style().GetWritingMode(),
-                          physical_text_fragment);
+  const ComputedStyle& style = physical_fragment.Style();
+  NGTextFragment fragment(style.GetWritingMode(), physical_text_fragment);
+  if (UNLIKELY(style.IsFlippedBlocksWritingMode())) {
+    if (physical_fragment.GetLayoutObject()) {
+      LayoutRect rect(offset_to_container_box.ToLayoutPoint(),
+                      physical_fragment.Size().ToLayoutSize());
+      const LayoutBlock* containing_block =
+          physical_fragment.GetLayoutObject()->ContainingBlock();
+      containing_block->FlipForWritingMode(rect);
+      offset_to_container_box.left = rect.X();
+    }
+  }
+
   // See WriteTextRun() for why we convert to int.
   int x = offset_to_container_box.left.ToInt();
   int y = offset_to_container_box.top.ToInt();
@@ -549,7 +560,7 @@ void Write(WTF::TextStream& ts,
   if (o.IsText() && !o.IsBR()) {
     const LayoutText& text = ToLayoutText(o);
     if (const NGPhysicalBoxFragment* box_fragment =
-            text.EnclosingBlockFlowFragment()) {
+            text.ContainingBlockFlowFragment()) {
       for (const auto& child :
            NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, &text)) {
         WriteIndent(ts, indent + 1);
@@ -830,11 +841,10 @@ static String NodePosition(Node* node) {
 }
 
 static void WriteSelection(WTF::TextStream& ts, const LayoutObject* o) {
-  Node* n = o->GetNode();
-  if (!n || !n->IsDocumentNode())
+  Document* doc = DynamicTo<Document>(o->GetNode());
+  if (!doc)
     return;
 
-  Document* doc = ToDocument(n);
   LocalFrame* frame = doc->GetFrame();
   if (!frame)
     return;

@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/autoplay.mojom-blink.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/public/web/web_user_media_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_visibility_observer.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_uma_helper.h"
@@ -54,6 +54,7 @@ bool IsDocumentWhitelisted(const Document& document) {
   if (whitelist_scope.IsNull() || whitelist_scope.IsEmpty())
     return false;
 
+  DCHECK_EQ(KURL(whitelist_scope).GetString(), whitelist_scope);
   return document.Url().GetString().StartsWith(whitelist_scope);
 }
 
@@ -109,6 +110,9 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
   if (!document.GetFrame())
     return false;
 
+  bool feature_policy_enabled =
+      document.IsFeatureEnabled(mojom::FeaturePolicyFeature::kAutoplay);
+
   for (Frame* frame = document.GetFrame(); frame;
        frame = frame->Tree().Parent()) {
     if (frame->HasBeenActivated() ||
@@ -122,9 +126,8 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
       return true;
     }
 
-    if (!frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kAutoplay)) {
+    if (!feature_policy_enabled)
       return false;
-    }
   }
 
   return false;
@@ -169,7 +172,7 @@ bool AutoplayPolicy::DocumentIsCapturingUserMedia(const Document& document) {
   WebFrame* web_frame = WebFrame::FromFrame(document.GetFrame());
   if (!web_frame)
     return false;
-  
+
   WebLocalFrame* frame = web_frame->ToWebLocalFrame();
   if (!frame || !frame->Client())
     return false;
@@ -298,7 +301,8 @@ bool AutoplayPolicy::RequestAutoplayByAttribute() {
 }
 
 base::Optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
-  if (!Frame::HasTransientUserActivation(element_->GetDocument().GetFrame())) {
+  if (!LocalFrame::HasTransientUserActivation(
+          element_->GetDocument().GetFrame())) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback()) {
       autoplay_uma_helper_->RecordCrossOriginAutoplayResult(
@@ -349,8 +353,8 @@ bool AutoplayPolicy::IsLockedPendingUserGesture() const {
 }
 
 void AutoplayPolicy::TryUnlockingUserGesture() {
-  if (IsLockedPendingUserGesture() &&
-      Frame::HasTransientUserActivation(element_->GetDocument().GetFrame())) {
+  if (IsLockedPendingUserGesture() && LocalFrame::HasTransientUserActivation(
+                                          element_->GetDocument().GetFrame())) {
     UnlockUserGesture();
   }
 }
@@ -437,15 +441,19 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
     return;
 
   autoplay_initiated_ = true;
-  for (Frame* frame = element_->GetDocument().GetFrame(); frame;
+
+  const Document& document = element_->GetDocument();
+  bool feature_policy_enabled =
+      document.IsFeatureEnabled(mojom::FeaturePolicyFeature::kAutoplay);
+
+  for (Frame* frame = document.GetFrame(); frame;
        frame = frame->Tree().Parent()) {
     if (frame->HasBeenActivated() ||
         frame->HasReceivedUserGestureBeforeNavigation()) {
       autoplay_initiated_ = false;
       break;
     }
-
-    if (!frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kAutoplay))
+    if (!feature_policy_enabled)
       break;
   }
 }
@@ -462,7 +470,9 @@ bool AutoplayPolicy::IsAutoplayAllowedPerSettings() const {
   LocalFrame* frame = element_->GetDocument().GetFrame();
   if (!frame)
     return false;
-  return frame->GetContentSettingsClient()->AllowAutoplay(true);
+  if (auto* settings_client = frame->GetContentSettingsClient())
+    return settings_client->AllowAutoplay(true /* default_value */);
+  return true;
 }
 
 bool AutoplayPolicy::ShouldAutoplay() {

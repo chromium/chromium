@@ -102,7 +102,6 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_server_config.h"
-#include "net/ssl/token_binding.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -776,11 +775,6 @@ class MockCertificateReportSender
   GURL latest_report_uri_;
   std::string latest_report_;
   std::string latest_content_type_;
-};
-
-class TestExperimentalFeaturesNetworkDelegate : public TestNetworkDelegate {
- public:
-  bool OnAreExperimentalCookieFeaturesEnabled() const override { return true; }
 };
 
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
@@ -3257,7 +3251,7 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(https_server.Start());
 
-  TestExperimentalFeaturesNetworkDelegate network_delegate;
+  TestNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
   context.Init();
@@ -3284,46 +3278,6 @@ TEST_F(URLRequestTest, StrictSecureCookiesOnNonsecureOrigin) {
     d.RunUntilComplete();
 
     EXPECT_EQ(d.data_received().find("nonsecure-origin=1"), std::string::npos);
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
-    EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-  }
-}
-
-// Tests that secure cookies can be set on secure origins even if strict secure
-// cookies are enabled.
-TEST_F(URLRequestTest, StrictSecureCookiesOnSecureOrigin) {
-  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
-  ASSERT_TRUE(https_server.Start());
-
-  TestExperimentalFeaturesNetworkDelegate network_delegate;
-  TestURLRequestContext context(true);
-  context.set_network_delegate(&network_delegate);
-  context.Init();
-
-  // Try to set a Secure cookie, with experimental features enabled.
-  {
-    TestDelegate d;
-    std::unique_ptr<URLRequest> req(context.CreateRequest(
-        https_server.GetURL("/set-cookie?secure-origin=1;Secure"),
-        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->Start();
-    d.RunUntilComplete();
-    EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
-    EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-  }
-
-  // Verify that the cookie is not set.
-  {
-    TestDelegate d;
-    std::unique_ptr<URLRequest> req(context.CreateRequest(
-        https_server.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->Start();
-    d.RunUntilComplete();
-
-    EXPECT_NE(d.data_received().find("secure-origin=1"), std::string::npos);
     EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
@@ -4151,9 +4105,8 @@ std::unique_ptr<test_server::HttpResponse> HandleRedirectConnect(
 
 class TestSSLConfigService : public SSLConfigService {
  public:
-  explicit TestSSLConfigService(bool token_binding_enabled)
-      : token_binding_enabled_(token_binding_enabled),
-        min_version_(kDefaultSSLVersionMin),
+  TestSSLConfigService()
+      : min_version_(kDefaultSSLVersionMin),
         max_version_(kDefaultSSLVersionMax) {}
   ~TestSSLConfigService() override = default;
 
@@ -4165,9 +4118,6 @@ class TestSSLConfigService : public SSLConfigService {
     *config = SSLConfig();
     config->version_min = min_version_;
     config->version_max = max_version_;
-    if (token_binding_enabled_) {
-      config->token_binding_params.push_back(TB_PARAM_ECDSAP256);
-    }
   }
 
   bool CanShareConnectionWithClientCerts(
@@ -4176,212 +4126,11 @@ class TestSSLConfigService : public SSLConfigService {
   }
 
  private:
-  const bool token_binding_enabled_;
   uint16_t min_version_;
   uint16_t max_version_;
 };
 
 }  // namespace
-
-// TODO(svaldez): Update tests to use EmbeddedTestServer.
-#if !defined(OS_IOS)
-class TokenBindingURLRequestTest : public URLRequestTestHTTP {
- public:
-  TokenBindingURLRequestTest() = default;
-
-  void SetUp() override {
-    ssl_config_service_ = std::make_unique<TestSSLConfigService>(
-        true /* token_binding_enabled */);
-    default_context().set_ssl_config_service(ssl_config_service_.get());
-    channel_id_service_ =
-        std::make_unique<ChannelIDService>(new DefaultChannelIDStore(NULL));
-    default_context().set_channel_id_service(channel_id_service_.get());
-    URLRequestTestHTTP::SetUp();
-  }
-
- protected:
-  std::unique_ptr<TestSSLConfigService> ssl_config_service_;
-  std::unique_ptr<ChannelIDService> channel_id_service_;
-};
-
-TEST_F(TokenBindingURLRequestTest, TokenBindingTest) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  SpawnedTestServer https_test_server(SpawnedTestServer::TYPE_HTTPS,
-                                      ssl_options,
-                                      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  TestDelegate d;
-  {
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        https_test_server.GetURL("tokbind-ekm"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_EQ(OK, d.request_status());
-
-    HttpRequestHeaders headers;
-    std::string token_binding_header, token_binding_message;
-    EXPECT_TRUE(r->GetFullRequestHeaders(&headers));
-    EXPECT_TRUE(headers.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                  &token_binding_header));
-    EXPECT_TRUE(base::Base64UrlDecode(
-        token_binding_header, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-        &token_binding_message));
-    std::vector<TokenBinding> token_bindings;
-    ASSERT_TRUE(
-        ParseTokenBindingMessage(token_binding_message, &token_bindings));
-    ASSERT_EQ(1ull, token_bindings.size());
-
-    EXPECT_GT(d.bytes_received(), 0);
-    std::string ekm = d.data_received();
-
-    EXPECT_EQ(TokenBindingType::PROVIDED, token_bindings[0].type);
-    EXPECT_TRUE(VerifyTokenBindingSignature(token_bindings[0].ec_point,
-                                            token_bindings[0].signature,
-                                            TokenBindingType::PROVIDED, ekm));
-  }
-}
-
-TEST_F(TokenBindingURLRequestTest, ForwardTokenBinding) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  SpawnedTestServer https_test_server(SpawnedTestServer::TYPE_HTTPS,
-                                      ssl_options,
-                                      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  TestDelegate d;
-  {
-    GURL redirect_url =
-        https_test_server.GetURL("forward-tokbind?/tokbind-ekm");
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_EQ(OK, d.request_status());
-
-    HttpRequestHeaders headers;
-    std::string token_binding_header, token_binding_message;
-    EXPECT_TRUE(r->GetFullRequestHeaders(&headers));
-    EXPECT_TRUE(headers.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                  &token_binding_header));
-    EXPECT_TRUE(base::Base64UrlDecode(
-        token_binding_header, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-        &token_binding_message));
-    std::vector<TokenBinding> token_bindings;
-    ASSERT_TRUE(
-        ParseTokenBindingMessage(token_binding_message, &token_bindings));
-    ASSERT_EQ(2ull, token_bindings.size());
-
-    EXPECT_GT(d.bytes_received(), 0);
-    std::string ekm = d.data_received();
-
-    EXPECT_EQ(TokenBindingType::PROVIDED, token_bindings[0].type);
-    EXPECT_TRUE(VerifyTokenBindingSignature(token_bindings[0].ec_point,
-                                            token_bindings[0].signature,
-                                            TokenBindingType::PROVIDED, ekm));
-    EXPECT_EQ(TokenBindingType::REFERRED, token_bindings[1].type);
-    EXPECT_TRUE(VerifyTokenBindingSignature(token_bindings[1].ec_point,
-                                            token_bindings[1].signature,
-                                            TokenBindingType::REFERRED, ekm));
-  }
-}
-
-// TODO(nharper): Remove this #ifdef and replace SpawnedTestServer with
-// EmbeddedTestServer once crbug.com/599187 is resolved.
-#if !defined(OS_ANDROID)
-TEST_F(TokenBindingURLRequestTest, DontForwardHeaderFromHttp) {
-  SpawnedTestServer http_server(SpawnedTestServer::TYPE_HTTP, base::FilePath());
-  ASSERT_TRUE(http_server.Start());
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  SpawnedTestServer https_test_server(SpawnedTestServer::TYPE_HTTPS,
-                                      ssl_options,
-                                      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  TestDelegate d;
-  {
-    GURL redirect_url = http_server.GetURL(
-        "forward-tokbind?" + https_test_server.GetURL("tokbind-ekm").spec());
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_EQ(OK, d.request_status());
-
-    HttpRequestHeaders headers;
-    std::string token_binding_header, token_binding_message;
-    EXPECT_TRUE(r->GetFullRequestHeaders(&headers));
-    EXPECT_TRUE(headers.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                  &token_binding_header));
-    EXPECT_TRUE(base::Base64UrlDecode(
-        token_binding_header, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-        &token_binding_message));
-    std::vector<TokenBinding> token_bindings;
-    ASSERT_TRUE(
-        ParseTokenBindingMessage(token_binding_message, &token_bindings));
-    ASSERT_EQ(1ull, token_bindings.size());
-
-    EXPECT_GT(d.bytes_received(), 0);
-    std::string ekm = d.data_received();
-
-    EXPECT_EQ(TokenBindingType::PROVIDED, token_bindings[0].type);
-    EXPECT_TRUE(VerifyTokenBindingSignature(token_bindings[0].ec_point,
-                                            token_bindings[0].signature,
-                                            TokenBindingType::PROVIDED, ekm));
-  }
-}
-
-// Test that if a server supporting Token Binding redirects (with
-// Include-Referred-Token-Binding-ID) to an https url on a server that does not
-// support Token Binding, then we do not send a Sec-Token-Binding when following
-// the redirect.
-TEST_F(TokenBindingURLRequestTest, ForwardWithoutTokenBinding) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  SpawnedTestServer https_test_server(SpawnedTestServer::TYPE_HTTPS,
-                                      ssl_options,
-                                      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  SpawnedTestServer token_binding_test_server(SpawnedTestServer::TYPE_HTTPS,
-                                              ssl_options,
-                                              base::FilePath(kTestFilePath));
-  ASSERT_TRUE(token_binding_test_server.Start());
-
-  TestDelegate d;
-  {
-    GURL redirect_url = token_binding_test_server.GetURL(
-        "forward-tokbind?" + https_test_server.GetURL("tokbind-ekm").spec());
-    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-        redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->Start();
-    EXPECT_TRUE(r->is_pending());
-
-    d.RunUntilComplete();
-
-    EXPECT_EQ(OK, d.request_status());
-
-    HttpRequestHeaders headers;
-    std::string token_binding_header, token_binding_message;
-    EXPECT_TRUE(r->GetFullRequestHeaders(&headers));
-    EXPECT_FALSE(headers.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                   &token_binding_header));
-  }
-}
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_IOS)
 
 // In this unit test, we're using the HTTPTestServer as a proxy server and
 // issuing a CONNECT request with the magic host name "www.redirect.com".
@@ -6842,48 +6591,13 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
 
 namespace {
 const char kExpectCTStaticHostname[] = "expect-ct.preloaded.test";
-const char kHPKPReportUri[] = "https://hpkp-report.test";
+const char kPKPReportUri[] = "http://report-uri.preloaded.test/pkp";
+const char kPKPHost[] = "with-report-uri-pkp.preloaded.test";
 }  // namespace
 
-// Tests that enabling HPKP on a domain does not affect the HSTS
-// validity/expiration.
-TEST_F(URLRequestTestHTTP, ProcessPKP) {
-  GURL report_uri(kHPKPReportUri);
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hpkp-headers.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->Start();
-  d.RunUntilComplete();
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
-  TransportSecurityState::STSState sts_state;
-  TransportSecurityState::PKPState pkp_state;
-  EXPECT_FALSE(
-      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
-  EXPECT_TRUE(
-      security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
-  EXPECT_EQ(TransportSecurityState::STSState::MODE_DEFAULT,
-            sts_state.upgrade_mode);
-  EXPECT_FALSE(sts_state.include_subdomains);
-  EXPECT_FALSE(pkp_state.include_subdomains);
-  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
-  EXPECT_EQ(report_uri, pkp_state.report_uri);
-  EXPECT_NE(sts_state.expiry, pkp_state.expiry);
-}
-
-// Tests that reports get sent on HPKP violations when a report-uri is set.
+// Tests that reports get sent on PKP violations when a report-uri is set.
 TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
-  GURL report_uri(kHPKPReportUri);
+  GURL report_uri(kPKPReportUri);
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
@@ -6891,26 +6605,12 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  std::string test_server_hostname = kPKPHost;
 
   // Set up a pin for |test_server_hostname|.
   TransportSecurityState security_state;
-  const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
-  HashValueVector hashes;
-  HashValue hash1;
-  HashValue hash2;
-  // The values here don't matter, as long as they are different from
-  // the mocked CertVerifyResult below.
-  ASSERT_TRUE(
-      hash1.FromString("sha256/1111111111111111111111111111111111111111111="));
-  ASSERT_TRUE(
-      hash2.FromString("sha256/2222222222222222222222222222222222222222222="));
-  hashes.push_back(hash1);
-  hashes.push_back(hash2);
-  security_state.AddHPKP(test_server_hostname, expiry,
-                         false, /* include subdomains */
-                         hashes, report_uri);
+  security_state.EnableStaticPinsForTesting();
+  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
 
   MockCertificateReportSender mock_report_sender;
   security_state.SetReportSender(&mock_report_sender);
@@ -6940,72 +6640,7 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   // Now send a request to trigger the violation.
   TestDelegate d;
   std::unique_ptr<URLRequest> violating_request(context.CreateRequest(
-      https_test_server.GetURL("/simple.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  violating_request->Start();
-  d.RunUntilComplete();
-
-  // Check that a report was sent.
-  EXPECT_EQ(report_uri, mock_report_sender.latest_report_uri());
-  ASSERT_FALSE(mock_report_sender.latest_report().empty());
-  EXPECT_EQ("application/json; charset=utf-8",
-            mock_report_sender.latest_content_type());
-  std::unique_ptr<base::Value> value(
-      base::JSONReader::Read(mock_report_sender.latest_report()));
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_dict());
-  base::DictionaryValue* report_dict;
-  ASSERT_TRUE(value->GetAsDictionary(&report_dict));
-  std::string report_hostname;
-  EXPECT_TRUE(report_dict->GetString("hostname", &report_hostname));
-  EXPECT_EQ(test_server_hostname, report_hostname);
-}
-
-// Tests that reports get sent on requests with
-// Public-Key-Pins-Report-Only headers.
-TEST_F(URLRequestTestHTTP, ProcessPKPReportOnly) {
-  GURL report_uri(kHPKPReportUri);
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
-
-  TransportSecurityState security_state;
-  MockCertificateReportSender mock_report_sender;
-  security_state.SetReportSender(&mock_report_sender);
-
-  // Set up a MockCertVerifier to violate the pin in the Report-Only
-  // header.
-  scoped_refptr<X509Certificate> cert = https_test_server.GetCertificate();
-  ASSERT_TRUE(cert);
-
-  MockCertVerifier cert_verifier;
-  CertVerifyResult verify_result;
-  verify_result.verified_cert = cert;
-  verify_result.is_issued_by_known_root = true;
-  HashValue hash;
-  // This value doesn't matter, as long as it is different from the pins
-  // for the request to hpkp-headers-report-only.html.
-  ASSERT_TRUE(
-      hash.FromString("sha256/1111111111111111111111111111111111111111111="));
-  verify_result.public_key_hashes.push_back(hash);
-  cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
-
-  TestNetworkDelegate network_delegate;
-  TestURLRequestContext context(true);
-  context.set_transport_security_state(&security_state);
-  context.set_network_delegate(&network_delegate);
-  context.set_cert_verifier(&cert_verifier);
-  context.Init();
-
-  // Now send a request to trigger the violation.
-  TestDelegate d;
-  std::unique_ptr<URLRequest> violating_request(context.CreateRequest(
-      https_test_server.GetURL("/hpkp-headers-report-only.html"),
+      https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   violating_request->Start();
   d.RunUntilComplete();
@@ -7026,10 +6661,9 @@ TEST_F(URLRequestTestHTTP, ProcessPKPReportOnly) {
   EXPECT_EQ(test_server_hostname, report_hostname);
 }
 
-// Tests that reports do not get sent on requests with
-// Public-Key-Pins-Report-Only headers that don't have pin violations.
-TEST_F(URLRequestTestHTTP, ProcessPKPReportOnlyWithNoViolation) {
-  GURL report_uri(kHPKPReportUri);
+// Tests that reports do not get sent on requests to static pkp hosts that
+// don't have pin violations.
+TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
@@ -7037,56 +6671,53 @@ TEST_F(URLRequestTestHTTP, ProcessPKPReportOnlyWithNoViolation) {
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  std::string test_server_hostname = kPKPHost;
 
   TransportSecurityState security_state;
+  security_state.EnableStaticPinsForTesting();
+  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
   MockCertificateReportSender mock_report_sender;
   security_state.SetReportSender(&mock_report_sender);
 
-  TestNetworkDelegate network_delegate;
+  scoped_refptr<X509Certificate> cert = https_test_server.GetCertificate();
+  ASSERT_TRUE(cert);
   MockCertVerifier mock_cert_verifier;
+  CertVerifyResult verify_result;
+  verify_result.verified_cert = cert;
+  verify_result.is_issued_by_known_root = true;
+  HashValue hash;
+  // The expected value of GoodPin1 used by |test_default::kHSTSSource|.
+  ASSERT_TRUE(
+      hash.FromString("sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
+  verify_result.public_key_hashes.push_back(hash);
+  mock_cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
+
+  TestNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_transport_security_state(&security_state);
   context.set_network_delegate(&network_delegate);
   context.set_cert_verifier(&mock_cert_verifier);
-  mock_cert_verifier.set_default_result(OK);
   context.Init();
 
   // Now send a request that does not trigger the violation.
   TestDelegate d;
   std::unique_ptr<URLRequest> request(context.CreateRequest(
-      https_test_server.GetURL("/hpkp-headers-report-only.html"),
+      https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
-  // Check that a report was not sent.
+  // Check that the request succeeded, a report was not sent and the pkp was
+  // not bypassed.
+  EXPECT_EQ(OK, d.request_status());
   EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
-}
-
-TEST_F(URLRequestTestHTTP, PKPNotProcessedOnIP) {
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-  // Make sure this test fails if the test server is changed to not
-  // listen on an IP by default.
-  ASSERT_TRUE(https_test_server.GetURL("/").HostIsIPAddress());
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hpkp-headers.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->Start();
-  d.RunUntilComplete();
-
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
+  TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_FALSE(
-      security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
+  EXPECT_TRUE(security_state.GetStaticDomainState(test_server_hostname,
+                                                  &sts_state, &pkp_state));
+  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
+  EXPECT_FALSE(request->ssl_info().pkp_bypassed);
 }
 
 TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
@@ -7110,23 +6741,15 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
       hash.FromString("sha256/1111111111111111111111111111111111111111111="));
   verify_result.public_key_hashes.push_back(hash);
   cert_verifier.AddResultForCert(cert.get(), verify_result, OK);
-  cert_verifier.set_default_result(OK);
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  std::string test_server_hostname = kPKPHost;
 
-  // Set up HPKP
-  base::Time current_time = base::Time::Now();
-  const base::Time expiry = current_time + base::TimeDelta::FromSeconds(10000);
-  HashValue pin;
-  ASSERT_TRUE(
-      pin.FromString("sha256/2222222222222222222222222222222222222222222="));
-  HashValueVector hashes;
-  hashes.push_back(pin);
-  GURL report_uri(kHPKPReportUri);
+  // Set up PKP
   TransportSecurityState security_state;
-  security_state.AddHPKP(test_server_hostname, expiry,
-                         false, /* include subdomains */
-                         hashes, report_uri);
+  security_state.EnableStaticPinsForTesting();
+  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
+  MockCertificateReportSender mock_report_sender;
+  security_state.SetReportSender(&mock_report_sender);
 
   TestNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
@@ -7137,14 +6760,21 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(context.CreateRequest(
-      https_test_server.GetURL("/hpkp-headers.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+      https_test_server.GetURL(test_server_hostname, "/simple.html"),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
+  // Check that the request succeeded, a report was not sent and the PKP was
+  // bypassed.
+  EXPECT_EQ(OK, d.request_status());
+  EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
+  EXPECT_EQ(std::string(), mock_report_sender.latest_report());
+  TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(
-      security_state.GetDynamicPKPState(test_server_hostname, &pkp_state));
+  EXPECT_TRUE(security_state.GetStaticDomainState(test_server_hostname,
+                                                  &sts_state, &pkp_state));
+  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
   EXPECT_TRUE(request->ssl_info().pkp_bypassed);
 }
 
@@ -7175,88 +6805,6 @@ TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
             sts_state.upgrade_mode);
   EXPECT_FALSE(sts_state.include_subdomains);
   EXPECT_FALSE(sts_state.include_subdomains);
-}
-
-TEST_F(URLRequestTestHTTP, ProcessSTSAndPKP) {
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-and-hpkp-headers.html"), DEFAULT_PRIORITY,
-      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->Start();
-  d.RunUntilComplete();
-
-  // We should have set parameters from the first header, not the second.
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
-  TransportSecurityState::STSState sts_state;
-  TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(
-      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
-  EXPECT_TRUE(
-      security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
-  EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
-            sts_state.upgrade_mode);
-#if defined(OS_ANDROID)
-  // Android's CertVerifyProc does not (yet) handle pins.
-#else
-  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
-#endif
-  EXPECT_NE(sts_state.expiry, pkp_state.expiry);
-
-  // Even though there is an HSTS header asserting includeSubdomains, it is
-  // the *second* such header, and we MUST process only the first.
-  EXPECT_FALSE(sts_state.include_subdomains);
-  // includeSubdomains does not occur in the test HPKP header.
-  EXPECT_FALSE(pkp_state.include_subdomains);
-}
-
-// Tests that when multiple HPKP headers are present, asserting different
-// policies, that only the first such policy is processed.
-TEST_F(URLRequestTestHTTP, ProcessSTSAndPKP2) {
-  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_test_server.ServeFilesFromSourceDirectory(
-      base::FilePath(kTestFilePath));
-  ASSERT_TRUE(https_test_server.Start());
-
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-and-hpkp-headers2.html"),
-      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->Start();
-  d.RunUntilComplete();
-
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
-  TransportSecurityState::STSState sts_state;
-  TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(
-      security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
-  EXPECT_TRUE(
-      security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
-  EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
-            sts_state.upgrade_mode);
-#if defined(OS_ANDROID)
-  // Android's CertVerifyProc does not (yet) handle pins.
-#else
-  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
-#endif
-  EXPECT_NE(sts_state.expiry, pkp_state.expiry);
-
-  EXPECT_TRUE(sts_state.include_subdomains);
-  EXPECT_FALSE(pkp_state.include_subdomains);
 }
 
 // An ExpectCTReporter that records the number of times OnExpectCTFailed() was
@@ -10828,8 +10376,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
 class HTTPSFallbackTest : public TestWithScopedTaskEnvironment {
  public:
   HTTPSFallbackTest() : context_(true) {
-    ssl_config_service_ = std::make_unique<TestSSLConfigService>(
-        false /* token binding enabled */);
+    ssl_config_service_ = std::make_unique<TestSSLConfigService>();
     context_.set_ssl_config_service(ssl_config_service_.get());
   }
   ~HTTPSFallbackTest() override = default;

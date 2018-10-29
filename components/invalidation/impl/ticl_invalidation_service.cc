@@ -356,6 +356,7 @@ void TiclInvalidationService::StartInvalidator(
     case PUSH_CLIENT_CHANNEL: {
       notifier::NotifierOptions options =
           ParseNotifierOptions(*base::CommandLine::ForCurrentProcess());
+      options.network_connection_tracker = network_connection_tracker_;
       options.request_context_getter = request_context_;
       options.auth_mechanism = "X-OAUTH2";
       network_channel_options_.SetString("Options.HostPort",

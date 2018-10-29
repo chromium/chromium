@@ -29,7 +29,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   // TrayBackgroundView:
   base::string16 GetAccessibleNameForTray() override;
   const char* GetClassName() const override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override {}
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
   bool PerformAction(const ui::Event& event) override;
 

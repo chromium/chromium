@@ -16,9 +16,9 @@
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
 #include "chromeos/dbus/attestation_constants.h"
 #include "chromeos/dbus/auth_policy_client.h"
+#include "chromeos/settings/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -100,7 +100,6 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
-  void OnRobotAuthCodesFetched(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
 
   // CloudPolicyStore::Observer:
@@ -210,6 +209,10 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
 
   // Handles the policy validation result for the offline demo mode.
   void OnOfflinePolicyValidated(DeviceCloudPolicyValidator* validator);
+
+  // Handles the fetching auth codes for robot accounts during enrollment.
+  void OnRobotAuthCodesFetched(DeviceManagementStatus status,
+                               const std::string& auth_code);
 
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

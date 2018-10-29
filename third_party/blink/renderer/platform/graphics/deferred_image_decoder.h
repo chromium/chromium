@@ -73,6 +73,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   IntSize Size() const;
   IntSize FrameSizeAtIndex(size_t index) const;
   size_t FrameCount();
+  bool ImageIsHighBitDepth() const { return image_is_high_bit_depth_; }
   int RepetitionCount() const;
   void ClearCacheExceptFrame(size_t index);
   bool FrameHasAlphaAtIndex(size_t index) const;
@@ -106,6 +107,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool all_data_received_;
   bool can_yuv_decode_;
   bool has_hot_spot_;
+  bool image_is_high_bit_depth_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
   IntPoint hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;

@@ -15,8 +15,7 @@ var availableTests = [
 
       if (numCalls == 1) {
         numSavedPasswords = savedPasswordsList.length;
-        chrome.passwordsPrivate.removeSavedPassword(
-            savedPasswordsList[0].index);
+        chrome.passwordsPrivate.removeSavedPassword(savedPasswordsList[0].id);
       } else if (numCalls == 2) {
         chrome.test.assertEq(
             savedPasswordsList.length, numSavedPasswords - 1);
@@ -42,7 +41,7 @@ var availableTests = [
       if (numCalls == 1) {
         numPasswordExceptions = passwordExceptionsList.length;
         chrome.passwordsPrivate.removePasswordException(
-            passwordExceptionsList[0].index);
+            passwordExceptionsList[0].id);
       } else if (numCalls == 2) {
         chrome.test.assertEq(
             passwordExceptionsList.length, numPasswordExceptions - 1);
@@ -76,15 +75,18 @@ var availableTests = [
       chrome.test.assertTrue(!!list);
       chrome.test.assertTrue(list.length > 0);
 
+      var idSet = new Set();
       for (var i = 0; i < list.length; ++i) {
         var entry = list[i];
         chrome.test.assertTrue(!!entry.loginPair);
         chrome.test.assertTrue(!!entry.loginPair.urls.origin);
         chrome.test.assertTrue(!!entry.loginPair.urls.shown);
         chrome.test.assertTrue(!!entry.loginPair.urls.link);
-        chrome.test.assertEq(entry.index, i);
+        idSet.add(entry.id);
       }
 
+      // Ensure that all entry ids are unique.
+      chrome.test.assertEq(list.length, idSet.size);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };
@@ -97,14 +99,17 @@ var availableTests = [
       chrome.test.assertTrue(!!list);
       chrome.test.assertTrue(list.length > 0);
 
+      var idSet = new Set();
       for (var i = 0; i < list.length; ++i) {
         var exception = list[i];
         chrome.test.assertTrue(!!exception.urls.origin);
         chrome.test.assertTrue(!!exception.urls.shown);
         chrome.test.assertTrue(!!exception.urls.link);
-        chrome.test.assertEq(exception.index, i);
+        idSet.add(exception.id);
       }
 
+      // Ensure that all exception ids are unique.
+      chrome.test.assertEq(list.length, idSet.size);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };

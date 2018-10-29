@@ -134,7 +134,7 @@ void ContentBrowserTest::PreRunTestOnMainThread() {
 #endif
 
   // Pump startup related events.
-  DCHECK(base::MessageLoopForUI::IsCurrent());
+  DCHECK(base::MessageLoopCurrentForUI::IsSet());
   base::RunLoop().RunUntilIdle();
 
 #if defined(OS_MACOSX)

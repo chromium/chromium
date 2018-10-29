@@ -573,6 +573,21 @@ void Shell::ActivateContents(WebContents* contents) {
   contents->GetRenderViewHost()->GetWidget()->Focus();
 }
 
+std::unique_ptr<WebContents> Shell::SwapWebContents(
+    WebContents* old_contents,
+    std::unique_ptr<WebContents> new_contents,
+    bool did_start_load,
+    bool did_finish_load) {
+  DCHECK_EQ(old_contents, web_contents_.get());
+  new_contents->SetDelegate(this);
+  web_contents_->SetDelegate(nullptr);
+  std::swap(web_contents_, new_contents);
+  PlatformSetContents();
+  PlatformSetAddressBarURL(web_contents_->GetLastCommittedURL());
+  LoadingStateChanged(web_contents_.get(), true);
+  return new_contents;
+}
+
 bool Shell::ShouldAllowRunningInsecureContent(
     content::WebContents* web_contents,
     bool allowed_per_prefs,
@@ -591,9 +606,9 @@ bool Shell::ShouldAllowRunningInsecureContent(
 
 gfx::Size Shell::EnterPictureInPicture(const viz::SurfaceId& surface_id,
                                        const gfx::Size& natural_size) {
-  // During tests, returning a fake window size to pretent the window was
-  // created and allow tests to run accordingly.
-  return switches::IsRunWebTestsSwitchPresent() ? gfx::Size(42, 42)
+  // During tests, returning a fake window size (same aspect ratio) to pretend
+  // the window was created and allow tests to run accordingly.
+  return switches::IsRunWebTestsSwitchPresent() ? natural_size
                                                 : gfx::Size(0, 0);
 }
 

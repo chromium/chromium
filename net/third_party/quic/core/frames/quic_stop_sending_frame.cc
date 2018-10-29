@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_stop_sending_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 
 namespace quic {
 
 QuicStopSendingFrame::QuicStopSendingFrame()
-    : stream_id(0), application_error_code(0) {}
+    : control_frame_id(kInvalidControlFrameId),
+      stream_id(0),
+      application_error_code(0) {}
 
 QuicStopSendingFrame::QuicStopSendingFrame(
     QuicControlFrameId control_frame_id,
     QuicStreamId stream_id,
     QuicApplicationErrorCode application_error_code)
-    : QuicControlFrame(control_frame_id),
+    : control_frame_id(control_frame_id),
       stream_id(stream_id),
       application_error_code(application_error_code) {}
 

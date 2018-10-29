@@ -14,6 +14,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/ntp/android_content_suggestions_notifier.h"
 #include "chrome/browser/android/ntp/content_suggestions_notifier_service.h"
+#include "components/feed/feed_feature_list.h"
 #endif
 
 using ntp_snippets::kNotificationsFeature;
@@ -59,7 +60,8 @@ ContentSuggestionsNotifierServiceFactory::
 KeyedService* ContentSuggestionsNotifierServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(kNotificationsFeature)) {
+  if (base::FeatureList::IsEnabled(kNotificationsFeature) &&
+      !base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions)) {
     Profile* profile = Profile::FromBrowserContext(context);
     ntp_snippets::ContentSuggestionsService* suggestions =
         ContentSuggestionsServiceFactory::GetForProfile(profile);

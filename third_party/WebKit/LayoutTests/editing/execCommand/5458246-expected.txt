@@ -2,4 +2,3 @@ This tests for a hang when creating a list out of several paragraphs, one of whi
 
 foo
 bar
-

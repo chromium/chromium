@@ -24,11 +24,11 @@
 # needs to be; valid values are:
 #
 #  "windowed_test_launcher"
-#  : the test is a gtest-based test that uses the "brave-new-test-launcher"
+#  : the test is a gtest-based test that uses the parallelizing TestLauncher
 #    from //base/test:test_support and needs to run under Xvfb if run on
 #    some platforms (eg. Linux Desktop and Ozone CrOS).
 #  "console_test_launcher"
-#  : the test is a gtest-based test that uses the "brave-new-test-launcher"
+#  : the test is a gtest-based test that uses the parallelizing TestLauncher
 #    from //base/test:test_support but does not need Xvfb.
 #  "additional_compile_target"
 #  : this isn't actually a test, but we still need a mapping from the
@@ -279,6 +279,13 @@
     "label": "//chrome:chrome",
     "type": "additional_compile_target",
   },
+  "chrome_all_tast_tests": {
+    "label": "//chromeos:chrome_all_tast_tests",
+    "type": "raw",
+    "args": [
+        "--vm-logs-dir=${ISOLATED_OUTDIR}",
+    ]
+  },
   "chrome_app_unittests": {
     "label": "//chrome/test:chrome_app_unittests",
     "type": "console_test_launcher",
@@ -298,6 +305,13 @@
   "chrome_junit_tests": {
     "label": "//chrome/android:chrome_junit_tests",
     "type": "junit_test",
+  },
+  "chrome_login_tast_tests": {
+    "label": "//chromeos:chrome_login_tast_tests",
+    "type": "raw",
+    "args": [
+        "--vm-logs-dir=${ISOLATED_OUTDIR}",
+    ]
   },
   "chrome_official_builder": {
     "label": "//:chrome_official_builder",
@@ -354,10 +368,6 @@
   "chromeos_components_unittests": {
     "label": "//chromeos/components:chromeos_components_unittests",
     "type": "console_test_launcher",
-  },
-  "chromevox_tests": {
-    "label": "//chrome/browser/resources/chromeos/chromevox:chromevox_tests",
-    "type": "windowed_test_launcher",
   },
   "chromium_builder_asan": {
     "label": "//:chromium_builder_asan",
@@ -568,12 +578,20 @@
     "label": "//extensions:extensions_unittests",
     "type": "windowed_test_launcher",
   },
+  "fidlgen_js_unittests": {
+    "label": "//build/fuchsia/fidlgen_js:fidlgen_js_unittests",
+    "type": "console_test_launcher",
+  },
   "filesystem_service_unittests": {
     "label": "//components/services/filesystem:filesystem_service_unittests",
     "type": "console_test_launcher",
   },
   "gcm_unit_tests": {
     "label": "//google_apis/gcm:gcm_unit_tests",
+    "type": "console_test_launcher",
+  },
+  "gcp_unittests": {
+    "label": "//chrome/credential_provider/test:gcp_unittests",
     "type": "console_test_launcher",
   },
   "gfx_unittests": {
@@ -640,6 +658,10 @@
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
   },
+  "http_service_tests": {
+    "label": "//webrunner/net_http:http_service_tests",
+    "type": "console_test_launcher",
+  },
   "installer_util_unittests": {
     "label": "//chrome/installer/util:installer_util_unittests",
     "type": "console_test_launcher",
@@ -655,11 +677,6 @@
       "--snapshot-output-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "ios_chrome_adaptive_toolbar_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_adaptive_toolbar_egtests",
-    "type": "raw",
-    "args": [],
-  },
   "ios_chrome_bookmarks_egtests": {
     "label": "//ios/chrome/test/earl_grey:ios_chrome_bookmarks_egtests",
     "type": "raw",
@@ -670,11 +687,11 @@
     "type": "raw",
     "args": [],
   },
-  "ios_chrome_payments_egtests": {
-    "label": "//ios/chrome/test/earl_grey:ios_chrome_payments_egtests",
+  "ios_chrome_manual_fill_egtests": {
+    "label": "//ios/chrome/test/earl_grey:ios_chrome_manual_fill_egtests",
     "type": "raw",
     "args": [
-      "--enable-features=WebPayments",
+      "--enable-features=AutofillManualFallback",
     ],
   },
   "ios_chrome_reading_list_egtests": {
@@ -1005,10 +1022,6 @@
   "sbox_validation_tests": {
     "label": "//sandbox/win:sbox_validation_tests",
     "type": "console_test_launcher",
-  },
-  "select_to_speak_extension_tests": {
-    "label": "//chrome/browser/resources/chromeos/select_to_speak:select_to_speak_extension_tests",
-    "type": "windowed_test_launcher",
   },
   "service_manager_unittests": {
     "label": "//services/service_manager/tests:service_manager_unittests",
@@ -1350,6 +1363,24 @@
       "--exit-after-n-crashes-or-timeouts", "100",
       "--debug-rwt-logging",
       "--results-directory", "${ISOLATED_OUTDIR}/layout-test-results",
+    ],
+  },
+  "webview_cts_tests": {
+    "label": "//android_webview/test:webview_cts_tests",
+    "type": "script",
+    "script": "//third_party/catapult/devil/devil/android/tools/system_app.py",
+    "args": [
+      "remove",
+      "--package",
+      "com.android.webview",
+      "com.google.android.webview",
+      "com.android.chrome",
+      "-v",
+      "--",
+      "../../android_webview/tools/run_cts.py",
+      "--skip-expected-failures",
+      "--additional-apk",
+      "apks/SystemWebView.apk"
     ],
   },
   "webkit_python_tests": {

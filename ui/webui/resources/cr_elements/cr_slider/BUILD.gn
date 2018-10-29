@@ -12,6 +12,8 @@ js_type_check("closure_compile") {
 
 js_library("cr_slider") {
   deps = [
-    "//third_party/polymer/v1_0/components-chromium/paper-slider:paper-slider-extracted",
+    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:event_tracker",
   ]
 }

@@ -59,8 +59,8 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   bool IsShutdown();
 
   // Returns a reference to a renderer process suitable for starting the service
-  // worker described by |emdedded_worker_id|, |pattern|, and |script_url|. The
-  // process will be kept alive until ReleaseWorkerProcess() is called.
+  // worker described by |emdedded_worker_id|, and |script_url|. The process
+  // will be kept alive until ReleaseWorkerProcess() is called.
   //
   // An existing process is used when possible. If |can_use_existing_process| is
   // false, or a suitable existing process is not found, a new process may be
@@ -72,7 +72,6 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // Called on the UI thread.
   blink::ServiceWorkerStatusCode AllocateWorkerProcess(
       int embedded_worker_id,
-      const GURL& pattern,
       const GURL& script_url,
       bool can_use_existing_process,
       AllocatedProcessInfo* out_info);

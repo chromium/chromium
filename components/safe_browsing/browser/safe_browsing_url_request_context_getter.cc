@@ -7,6 +7,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "components/safe_browsing/common/safebrowsing_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "net/cookies/cookie_store.h"
@@ -29,7 +30,7 @@ SafeBrowsingURLRequestContextGetter::SafeBrowsingURLRequestContextGetter(
       user_data_dir_(user_data_dir),
       system_context_getter_(system_context_getter),
       network_task_runner_(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)) {
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})) {
   DCHECK(!user_data_dir.empty());
   DCHECK(system_context_getter_);
 }

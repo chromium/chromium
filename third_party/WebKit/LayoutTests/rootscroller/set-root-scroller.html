@@ -72,11 +72,11 @@
 
   }
 
-  test(async function() {
+  test(function() {
       assert_false(typeof document.rootScroller === 'undefined');
   }, 'setRootScroller API enabled');
 
-  test(async function() {
+  test(function() {
       // Setting the container object should succeed.
       assert_equals(document.rootScroller, null);
       document.rootScroller = container;
@@ -85,17 +85,17 @@
       assert_equals(document.rootScroller, null);
   }, 'Setter and getter on a valid element works');
 
-  test(async function() {
+  promise_test(async function() {
       // Trying to set the <span> should succeed even though it's not a valid
       // scroller.
-      setRootScrollerAndCheckEffective(spanner, document);
+      await setRootScrollerAndCheckEffective(spanner, document);
       assert_equals(document.rootScroller, spanner);
   }, 'Can set a non-scrolling element as the rootScroller');
 
-  test(async function() {
+  promise_test(async function() {
       // Scroll the container <div> past the end. The scrolls should not chain
       // past the rootScroller to the parentScroller element.
-      setRootScrollerAndCheckEffective(container, container);
+      await setRootScrollerAndCheckEffective(container, container);
       if (typeof eventSender !== 'undefined') {
           eventSender.gestureScrollBegin(500, 500);
           eventSender.gestureScrollUpdate(-300, -300);
@@ -129,8 +129,8 @@
       }
   }, "Scrolls don't chain past root scroller element");
 
-  test(async function() {
-      setRootScrollerAndCheckEffective(container, container);
+  promise_test(async function() {
+      await setRootScrollerAndCheckEffective(container, container);
       container.scrollTop = 999;
       container.scrollLeft = 998;
 
@@ -146,11 +146,11 @@
 
   }, "document.scrollingElement and window scroll API reflect rootScroller offsets");
 
-  test(async function() {
+  promise_test(async function() {
       // Making the current rootScroller an invalid scroller (by making it not
       // fill the viewport) should fallback to the default element, the
       // documentElement, but the rootScroller property should remain the same.
-      setRootScrollerAndCheckEffective(container, container);
+      await setRootScrollerAndCheckEffective(container, container);
       container.style.width = "95%";
 
       // We need a compositing update since root scroller selection happens as

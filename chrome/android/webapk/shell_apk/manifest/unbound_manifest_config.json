@@ -1,0 +1,21 @@
+{
+  "scope_url": "https://pwa.rocks/",
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "pwa.rocks",
+    "scope_url_path_type": "android:pathPrefix",
+    "scope_url_path": "/"
+  },
+  "start_url": "https://pwa.rocks/",
+  "logged_intent_url_param": "originalUrl",
+  "display_mode": "standalone",
+  "orientation": "portrait",
+  "theme_color": "2147483648L",
+  "background_color": "2147483648L",
+  "icon_urls_and_icon_murmur2_hashes": "http://www.pwa.rocks/icon1.png 0 http://www.pwa.rocks/icon2.png 0",
+  "web_manifest_url": "https://pwa.rocks/pwa.webmanifest",
+  "distributor": "other",
+  "version_code": "1",
+  "version_name": "1.0",
+  "bound_webapk": false
+}

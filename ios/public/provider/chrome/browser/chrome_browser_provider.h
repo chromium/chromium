@@ -34,7 +34,6 @@ namespace web {
 class WebState;
 }
 
-@protocol AppRatingPrompt;
 @protocol LogoVendor;
 @protocol TextFieldStyling;
 @class Tab;
@@ -112,9 +111,6 @@ class ChromeBrowserProvider {
   // Creates and returns a new styled text field with the given |frame|.
   virtual UITextField<TextFieldStyling>* CreateStyledTextField(
       CGRect frame) const NS_RETURNS_RETAINED;
-  // Creates and returns an app ratings prompt object.  Can return nil if app
-  // ratings prompts are not supported by the provider.
-  virtual id<AppRatingPrompt> CreateAppRatingPrompt() const NS_RETURNS_RETAINED;
 
   // Initializes the cast service.  Should be called soon after the given
   // |main_tab_model| is created.

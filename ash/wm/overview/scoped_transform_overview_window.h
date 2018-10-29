@@ -164,6 +164,10 @@ class ASH_EXPORT ScopedTransformOverviewWindow
   // change. Must be called before PositionWindows in WindowGrid.
   void UpdateWindowDimensionsType();
 
+  // Updates the mask which gives rounded corners on the windows. Shows the mask
+  // if |show| is true, otherwise removes it.
+  void UpdateMask(bool show);
+
   // Stop listening to any animations to finish.
   void CancelAnimationsListener();
 
@@ -185,10 +189,6 @@ class ASH_EXPORT ScopedTransformOverviewWindow
   void CloseWidget();
 
   void CreateMirrorWindowForMinimizedState();
-
-  // Creates and applys a mask which adds rounded edges to windows in overview
-  // mode.
-  void CreateAndApplyMaskAndShadow();
 
   // Makes Close() execute synchronously when used in tests.
   static void SetImmediateCloseForTests();

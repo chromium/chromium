@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "services/service_manager/embedder/embedded_service_info.h"
+#include "services/service_manager/public/cpp/embedded_service_info.h"
 
 namespace service_manager {
 class Connector;

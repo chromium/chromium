@@ -1,0 +1,35 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+
+<dom-module id="setup-succeeded-page">
+  <template>
+    <style include="multidevice-setup-shared">
+      #page-icon-container {
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
+      }
+
+      #page-icon {
+        background-image: -webkit-image-set(
+                              url(setup_succeeded_icon_1x.png) 1x,
+                              url(setup_succeeded_icon_2x.png) 2x);
+        height: 156px;
+        margin-top: 64px;
+        width: 416px;
+      }
+    </style>
+    <ui-page header-text="[[headerText]]" icon-name="google-g">
+      <span slot="message" inner-h-t-m-l="[[messageHtml]]"></span>
+      <div id="page-icon-container" slot="additional-content">
+        <div id="page-icon"></div>
+      </div>
+    </ui-page>
+  </template>
+  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.js">
+  </script>
+</dom-module>

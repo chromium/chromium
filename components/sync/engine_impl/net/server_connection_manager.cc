@@ -48,7 +48,6 @@ const char* HttpResponse::GetServerConnectionCodeString(
     ENUM_CASE(SYNC_SERVER_ERROR);
     ENUM_CASE(SYNC_AUTH_ERROR);
     ENUM_CASE(SERVER_CONNECTION_OK);
-    ENUM_CASE(RETRY);
   }
   NOTREACHED();
   return "";

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -91,11 +92,11 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
     ExtensionServiceTestBase::InitializeEmptyExtensionService();
-    EventRouterFactory::GetInstance()->SetTestingFactory(profile(),
-                                                         &BuildEventRouter);
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildEventRouter));
 
     LanguageSettingsPrivateDelegateFactory::GetInstance()->SetTestingFactory(
-        profile(), &BuildLanguageSettingsPrivateDelegate);
+        profile(), base::BindRepeating(&BuildLanguageSettingsPrivateDelegate));
   }
 
   void TearDown() override { ExtensionServiceTestBase::TearDown(); }

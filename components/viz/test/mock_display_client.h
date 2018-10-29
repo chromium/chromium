@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_MOCK_DISPLAY_CLIENT_H_
 
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/context_result.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/viz/privileged/interfaces/compositing/frame_sink_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +32,8 @@ class MockDisplayClient : public mojom::DisplayClient {
 #endif
 #if defined(OS_ANDROID)
   MOCK_METHOD1(DidCompleteSwapWithSize, void(const gfx::Size&));
+  MOCK_METHOD1(OnFatalOrSurfaceContextCreationFailure,
+               void(gpu::ContextResult));
 #endif
 
  private:

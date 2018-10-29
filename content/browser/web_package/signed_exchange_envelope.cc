@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
-#include "components/cbor/cbor_reader.h"
+#include "components/cbor/reader.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "net/http/http_response_headers.h"
@@ -69,7 +69,7 @@ bool IsMethodCacheable(base::StringPiece method) {
   return method == "GET" || method == "HEAD" || method == "POST";
 }
 
-bool ParseRequestMap(const cbor::CBORValue& value,
+bool ParseRequestMap(const cbor::Value& value,
                      SignedExchangeEnvelope* out,
                      SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "ParseRequestMap");
@@ -82,10 +82,10 @@ bool ParseRequestMap(const cbor::CBORValue& value,
     return false;
   }
 
-  const cbor::CBORValue::MapValue& request_map = value.GetMap();
+  const cbor::Value::MapValue& request_map = value.GetMap();
 
-  auto method_iter = request_map.find(
-      cbor::CBORValue(kMethodKey, cbor::CBORValue::Type::BYTE_STRING));
+  auto method_iter =
+      request_map.find(cbor::Value(kMethodKey, cbor::Value::Type::BYTE_STRING));
   if (method_iter == request_map.end() ||
       !method_iter->second.is_bytestring()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -150,7 +150,7 @@ bool ParseRequestMap(const cbor::CBORValue& value,
   return true;
 }
 
-bool ParseResponseMap(const cbor::CBORValue& value,
+bool ParseResponseMap(const cbor::Value& value,
                       SignedExchangeEnvelope* out,
                       SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "ParseResponseMap");
@@ -163,9 +163,9 @@ bool ParseResponseMap(const cbor::CBORValue& value,
     return false;
   }
 
-  const cbor::CBORValue::MapValue& response_map = value.GetMap();
+  const cbor::Value::MapValue& response_map = value.GetMap();
   auto status_iter = response_map.find(
-      cbor::CBORValue(kStatusKey, cbor::CBORValue::Type::BYTE_STRING));
+      cbor::Value(kStatusKey, cbor::Value::Type::BYTE_STRING));
   if (status_iter == response_map.end() ||
       !status_iter->second.is_bytestring()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -282,26 +282,25 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
 
   const GURL& request_url = fallback_url;
 
-  cbor::CBORReader::DecoderError error;
-  base::Optional<cbor::CBORValue> value =
-      cbor::CBORReader::Read(cbor_header, &error);
+  cbor::Reader::DecoderError error;
+  base::Optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
-        base::StringPrintf("Failed to decode CBORValue. CBOR error: %s",
-                           cbor::CBORReader::ErrorCodeToString(error)));
+        base::StringPrintf("Failed to decode Value. CBOR error: %s",
+                           cbor::Reader::ErrorCodeToString(error)));
     return base::nullopt;
   }
   if (!value->is_array()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf(
-            "Expected top-level CBORValue to be an array. Actual type : %d",
+            "Expected top-level Value to be an array. Actual type : %d",
             static_cast<int>(value->type())));
     return base::nullopt;
   }
 
-  const cbor::CBORValue::ArrayValue& top_level_array = value->GetArray();
+  const cbor::Value::ArrayValue& top_level_array = value->GetArray();
   constexpr size_t kTopLevelArraySize = 2;
   if (top_level_array.size() != kTopLevelArraySize) {
     signed_exchange_utils::ReportErrorAndTraceEvent(

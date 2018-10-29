@@ -5,10 +5,14 @@
 source_set("recent_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "closed_tabs_observer_bridge.h",
+    "closed_tabs_observer_bridge.mm",
     "recent_tabs_coordinator.h",
     "recent_tabs_coordinator.mm",
     "recent_tabs_mediator.h",
     "recent_tabs_mediator.mm",
+    "synced_sessions_bridge.h",
+    "synced_sessions_bridge.mm",
   ]
   deps = [
     ":recent_tabs_ui",
@@ -16,31 +20,43 @@ source_set("recent_tabs") {
     "//base",
     "//components/browser_sync",
     "//components/sessions",
+    "//components/signin/core/browser",
     "//components/sync",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/ntp",
-    "//ios/chrome/browser/ui/ntp/recent_tabs",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/util",
+    "//services/identity/public/cpp",
     "//ui/base",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser/ui/ntp/recent_tabs" ]
+  public_deps = [
+    "//components/sync_sessions",
+  ]
 }
 
 source_set("recent_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "recent_tabs_constants.h",
+    "recent_tabs_constants.mm",
+    "recent_tabs_consumer.h",
     "recent_tabs_image_data_source.h",
+    "recent_tabs_presentation_delegate.h",
     "recent_tabs_table_view_controller.h",
     "recent_tabs_table_view_controller.mm",
+    "recent_tabs_table_view_controller_delegate.h",
     "recent_tabs_transitioning_delegate.h",
     "recent_tabs_transitioning_delegate.mm",
+    "sessions_sync_user_state.h",
+    "synced_sessions.h",
+    "synced_sessions.mm",
   ]
   deps = [
     "//base",
@@ -48,6 +64,7 @@ source_set("recent_tabs_ui") {
     "//components/sessions",
     "//components/strings",
     "//components/sync",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/metrics:metrics_internal",
@@ -58,7 +75,6 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/authentication:authentication_ui",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/context_menu",
-    "//ios/chrome/browser/ui/ntp/recent_tabs",
     "//ios/chrome/browser/ui/settings/sync_utils",
     "//ios/chrome/browser/ui/signin_interaction/public",
     "//ios/chrome/browser/ui/table_view",
@@ -67,4 +83,58 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/common/favicon",
     "//ui/base",
   ]
+  public_deps = [
+    "//components/sync_sessions",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "recent_tabs_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":recent_tabs",
+    ":recent_tabs_ui",
+    "//base",
+    "//components/browser_sync",
+    "//components/browser_sync:test_support",
+    "//components/signin/core/browser",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "recent_tabs_egtest.mm",
+  ]
+  deps = [
+    ":recent_tabs_ui",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/authentication:eg_test_support",
+    "//ios/chrome/browser/ui/history:history_ui",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/third_party/earl_grey:earl_grey+link",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+  ]
+  libs = [ "XCTest.framework" ]
 }

@@ -37,7 +37,9 @@ function EntryLocationImpl(volumeInfo, rootType, isRootEntry, isReadOnly) {
       this.rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
       this.rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
       this.rootType === VolumeManagerCommon.RootType.TEAM_DRIVES_GRAND_ROOT ||
-      this.rootType === VolumeManagerCommon.RootType.TEAM_DRIVE;
+      this.rootType === VolumeManagerCommon.RootType.TEAM_DRIVE ||
+      this.rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
+      this.rootType === VolumeManagerCommon.RootType.COMPUTER;
 
   /** @override */
   this.isReadOnly = isReadOnly;

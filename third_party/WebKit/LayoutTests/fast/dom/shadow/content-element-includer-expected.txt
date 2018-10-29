@@ -1,6 +1,7 @@
 CONSOLE WARNING: line 32: Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
 This tests the correctness of includers of forwarded children.
 Note that this test needs internals object thus cannot run outside DRT.
+
 PASS includerFor(childOfElementWithoutShadow) is null
 PASS includerFor(childOfElementWithShadow) is null
 PASS includerFor(childOfElementWithShadowContent) is shadowContentOfElementWithShadowContent

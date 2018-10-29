@@ -31,6 +31,8 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/root_window_finder.h"
@@ -51,6 +53,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/keyboard/keyboard_controller.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -351,6 +354,7 @@ ShelfView::ShelfView(ShelfModel* model, Shelf* shelf, ShelfWidget* shelf_widget)
   DCHECK(shelf_);
   DCHECK(shelf_widget_);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  Shell::Get()->system_tray_model()->virtual_keyboard()->AddObserver(this);
   bounds_animator_->AddObserver(this);
   set_context_menu_controller(this);
 }
@@ -359,6 +363,7 @@ ShelfView::~ShelfView() {
   // Shell destroys the TabletModeController before destroying all root windows.
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  Shell::Get()->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
   bounds_animator_->RemoveObserver(this);
   model_->RemoveObserver(this);
 }
@@ -368,15 +373,13 @@ void ShelfView::Init() {
 
   // Add the background view behind the app list and back buttons first, so
   // that other views will appear above it.
-  if (chromeos::switches::ShouldUseShelfNewUi()) {
-    back_and_app_list_background_ = new views::View();
-    back_and_app_list_background_->SetBackground(
-        CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
-            kShelfControlPermanentHighlightBackground,
-            ShelfConstants::control_border_radius())));
-    ConfigureChildView(back_and_app_list_background_);
-    AddChildView(back_and_app_list_background_);
-  }
+  back_and_app_list_background_ = new views::View();
+  back_and_app_list_background_->SetBackground(
+      CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
+          kShelfControlPermanentHighlightBackground,
+          ShelfConstants::control_border_radius())));
+  ConfigureChildView(back_and_app_list_background_);
+  AddChildView(back_and_app_list_background_);
 
   const ShelfItems& items(model_->items());
   for (ShelfItems::const_iterator i = items.begin(); i != items.end(); ++i) {
@@ -401,7 +404,6 @@ void ShelfView::Init() {
 }
 
 void ShelfView::OnShelfAlignmentChanged() {
-  overflow_button_->OnShelfAlignmentChanged();
   LayoutToIdealBounds();
   for (int i = 0; i < view_model_->view_size(); ++i) {
     if (i >= first_visible_index_ && i <= last_visible_index_)
@@ -445,19 +447,13 @@ bool ShelfView::IsShowingMenu() const {
          shelf_menu_model_adapter_->IsShowingMenu();
 }
 
-bool ShelfView::IsShowingMenuForView(views::View* view) const {
+bool ShelfView::IsShowingMenuForView(const views::View* view) const {
   return IsShowingMenu() &&
          shelf_menu_model_adapter_->IsShowingMenuForView(*view);
 }
 
 bool ShelfView::IsShowingOverflowBubble() const {
   return overflow_bubble_.get() && overflow_bubble_->IsShowing();
-}
-
-bool ShelfView::ShouldShowAppListButtonHighlight() const {
-  // In tablet mode, the app list is always shown as the home-cher, so we do
-  // not want to show a permanent highlight.
-  return !IsTabletModeEnabled();
 }
 
 AppListButton* ShelfView::GetAppListButton() const {
@@ -505,8 +501,8 @@ bool ShelfView::ShouldShowTooltipForView(const views::View* view) const {
   // Don't show a tooltip for a view that's currently being dragged.
   if (view == drag_view_)
     return false;
-  const ShelfItem* item = ShelfItemForView(view);
-  return item != nullptr;
+
+  return ShelfItemForView(view) && !IsShowingMenuForView(view);
 }
 
 base::string16 ShelfView::GetTitleForView(const views::View* view) const {
@@ -537,12 +533,12 @@ void ShelfView::ButtonPressed(views::Button* sender,
     return;
 
   // Ensure the keyboard is hidden and stays hidden (as long as it isn't locked)
-  if (keyboard::KeyboardController::Get()->enabled())
+  if (keyboard::KeyboardController::Get()->IsEnabled())
     keyboard::KeyboardController::Get()->HideKeyboardExplicitlyBySystem();
 
   // Close the overflow bubble if an item on either shelf is clicked. Press
   // events elsewhere will close the overflow shelf via OverflowBubble's
-  // PointerWatcher functionality.
+  // EventHandler functionality.
   ShelfView* shelf_view = main_shelf_ ? main_shelf_ : this;
   if (shelf_view->IsShowingOverflowBubble())
     shelf_view->ToggleOverflowBubble();
@@ -597,9 +593,9 @@ void ShelfView::ButtonPressed(views::Button* sender,
   // Notify the item of its selection; handle the result in AfterItemSelected.
   model_->GetShelfItemDelegate(item.id)->ItemSelected(
       ui::Event::Clone(event), GetDisplayIdForView(this), LAUNCH_FROM_UNKNOWN,
-      base::Bind(&ShelfView::AfterItemSelected, weak_factory_.GetWeakPtr(),
-                 item, sender, base::Passed(ui::Event::Clone(event)),
-                 ink_drop));
+      base::BindOnce(&ShelfView::AfterItemSelected, weak_factory_.GetWeakPtr(),
+                     item, sender, base::Passed(ui::Event::Clone(event)),
+                     ink_drop));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -652,6 +648,10 @@ void ShelfView::OnTabletModeEnded() {
   // consistent with device state.
   if (shelf_menu_model_adapter_)
     shelf_menu_model_adapter_->Cancel();
+}
+
+void ShelfView::OnVirtualKeyboardVisibilityChanged() {
+  LayoutToIdealBounds();
 }
 
 void ShelfView::CreateDragIconProxyByLocationWithNoAnimation(
@@ -916,8 +916,6 @@ bool ShelfView::IsItemPinned(const ShelfItem& item) const {
 }
 
 int ShelfView::GetSeparatorIndex() const {
-  if (!chromeos::switches::ShouldUseShelfNewUi())
-    return -1;
   for (int i = 0; i < model_->item_count() - 1; ++i) {
     if (IsItemPinned(model_->items()[i]) &&
         model_->items()[i + 1].type == TYPE_APP) {
@@ -927,7 +925,7 @@ int ShelfView::GetSeparatorIndex() const {
   return -1;
 }
 
-int ShelfView::GetDimensionOfCenteredShelfItemsInNewUi() const {
+int ShelfView::GetDimensionOfCenteredShelfItems() const {
   int size = 0;
   int added_items = 0;
   for (ShelfItem item : model_->items()) {
@@ -943,7 +941,6 @@ int ShelfView::GetDimensionOfCenteredShelfItemsInNewUi() const {
 
 void ShelfView::UpdateShelfItemBackground(SkColor color) {
   shelf_item_background_color_ = color;
-  overflow_button_->UpdateShelfItemBackground(color);
   SchedulePaint();
 }
 
@@ -967,25 +964,24 @@ void ShelfView::UpdateAllButtonsVisibilityInOverflowMode() {
 }
 
 void ShelfView::LayoutAppListAndBackButtonHighlight() const {
-  // Don't show anything if this is the overflow menu or if this is not the
-  // new UI.
-  if (is_overflow_mode() || !chromeos::switches::ShouldUseShelfNewUi()) {
+  // Don't show anything if this is the overflow menu.
+  if (is_overflow_mode()) {
     back_and_app_list_background_->SetVisible(false);
     return;
   }
   const int button_spacing = ShelfConstants::button_spacing();
   // "Secondary" as in "orthogonal to the shelf primary axis".
   const int control_secondary_padding =
-      (ShelfConstants::shelf_size() - kShelfControlSizeNewUi) / 2;
+      (ShelfConstants::shelf_size() - kShelfControlSize) / 2;
   const int back_and_app_list_background_size =
-      kShelfControlSizeNewUi +
-      (IsTabletModeEnabled() ? kShelfControlSizeNewUi + button_spacing : 0);
+      kShelfControlSize +
+      (IsTabletModeEnabled() ? kShelfControlSize + button_spacing : 0);
   back_and_app_list_background_->SetBounds(
       shelf_->PrimaryAxisValue(button_spacing, control_secondary_padding),
       shelf_->PrimaryAxisValue(control_secondary_padding, button_spacing),
       shelf_->PrimaryAxisValue(back_and_app_list_background_size,
-                               kShelfControlSizeNewUi),
-      shelf_->PrimaryAxisValue(kShelfControlSizeNewUi,
+                               kShelfControlSize),
+      shelf_->PrimaryAxisValue(kShelfControlSize,
                                back_and_app_list_background_size));
 }
 
@@ -997,10 +993,13 @@ void ShelfView::CalculateIdealBounds(gfx::Rect* overflow_bounds) const {
 
   const int available_size = shelf_->PrimaryAxisValue(width(), height());
   const int separator_index = GetSeparatorIndex();
+  const bool virtual_keyboard_visible =
+      Shell::Get()->system_tray_model()->virtual_keyboard()->visible();
   // Don't show the separator if it isn't needed, or would appear after all
   // visible items.
   separator_->SetVisible(separator_index != -1 &&
-                         separator_index < last_visible_index_);
+                         separator_index < last_visible_index_ &&
+                         !virtual_keyboard_visible);
   int app_list_button_position;
 
   int x = 0;
@@ -1015,12 +1014,11 @@ void ShelfView::CalculateIdealBounds(gfx::Rect* overflow_bounds) const {
       view_model_->set_ideal_bounds(i, gfx::Rect(x, y, 0, 0));
       continue;
     }
-    if (i == kAppListButtonIndex + 1 &&
-        chromeos::switches::ShouldUseShelfNewUi()) {
+    if (i == kAppListButtonIndex + 1) {
       // Start centering after we've laid out the app list button.
       // Center the shelf items on the whole shelf, including the status
       // area widget.
-      int centered_shelf_items_size = GetDimensionOfCenteredShelfItemsInNewUi();
+      int centered_shelf_items_size = GetDimensionOfCenteredShelfItems();
       StatusAreaWidget* status_widget = shelf_widget_->status_area_widget();
       int status_widget_size =
           status_widget ? shelf_->PrimaryAxisValue(
@@ -1053,17 +1051,15 @@ void ShelfView::CalculateIdealBounds(gfx::Rect* overflow_bounds) const {
 
     // In the new UI, padding between the back & app list buttons is smaller
     // than between all other shelf items.
-    if (i == kBackButtonIndex && chromeos::switches::ShouldUseShelfNewUi())
+    if (i == kBackButtonIndex)
       x -= button_spacing;
 
     if (i == kAppListButtonIndex) {
       app_list_button_position = shelf_->PrimaryAxisValue(x, y);
-      if (chromeos::switches::ShouldUseShelfNewUi()) {
-        // In the new UI, a larger minimum padding after the app list button
-        // is required: increment with the necessary extra amount.
-        x += shelf_->PrimaryAxisValue(kAppListButtonMargin - button_spacing, 0);
-        y += shelf_->PrimaryAxisValue(0, kAppListButtonMargin - button_spacing);
-      }
+      // A larger minimum padding after the app list button is required:
+      // increment with the necessary extra amount.
+      x += shelf_->PrimaryAxisValue(kAppListButtonMargin - button_spacing, 0);
+      y += shelf_->PrimaryAxisValue(0, kAppListButtonMargin - button_spacing);
     }
 
     if (i == separator_index) {
@@ -1107,7 +1103,13 @@ void ShelfView::CalculateIdealBounds(gfx::Rect* overflow_bounds) const {
     // FinalizeRipOffDrag().
     if (dragged_off_shelf_ && view_model_->view_at(i) == drag_view_)
       continue;
-    view_model_->view_at(i)->SetVisible(i <= last_visible_index_);
+    // If virtual keyboard is visible, only back button and app list button are
+    // shown.
+    const bool is_visible_item = !virtual_keyboard_visible ||
+                                 i == kBackButtonIndex ||
+                                 i == kAppListButtonIndex;
+    view_model_->view_at(i)->SetVisible(i <= last_visible_index_ &&
+                                        is_visible_item);
   }
 
   overflow_button_->SetVisible(show_overflow);
@@ -1803,12 +1805,6 @@ void ShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
-void ShelfView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this)
-    tooltip_.Init();
-}
-
 void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
   // Do not forward events to |shelf_| (which forwards events to the shelf
   // layout manager) as we do not want gestures on the overflow to open the app
@@ -2223,7 +2219,16 @@ bool ShelfView::CanPrepareForDrag(Pointer pointer,
 }
 
 void ShelfView::UpdateBackButton() {
+  const bool virtual_keyboard_visible =
+      Shell::Get()->system_tray_model()->virtual_keyboard()->visible();
+  gfx::Transform rotation;
+  // Rotate the back button when virtual keyboard is visible.
+  if (virtual_keyboard_visible) {
+    rotation.Rotate(270.0);
+    rotation.Translate(-GetBackButton()->height(), 0);
+  }
   GetBackButton()->layer()->SetOpacity(IsTabletModeEnabled() ? 1.f : 0.f);
+  GetBackButton()->layer()->SetTransform(rotation);
   GetBackButton()->SetFocusBehavior(
       IsTabletModeEnabled() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
 }

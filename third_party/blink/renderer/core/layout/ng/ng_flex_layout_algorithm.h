@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 
 namespace blink {
 
@@ -18,10 +18,12 @@ class NGConstraintSpace;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
-                               NGFragmentBuilder,
+                               NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGFlexLayoutAlgorithm(NGBlockNode, const NGConstraintSpace&, NGBreakToken*);
+  NGFlexLayoutAlgorithm(NGBlockNode,
+                        const NGConstraintSpace&,
+                        const NGBreakToken*);
 
   scoped_refptr<NGLayoutResult> Layout() override;
 

@@ -2,7 +2,6 @@ Tests that the Text API arguments are correctly validated.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS text.data is "abcdefg"
 PASS text.__proto__ is Text.prototype
 PASS text.splitText(4).data is "efg"
@@ -18,4 +17,5 @@ PASS text.data is "ab"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 !DOCTYPE html>

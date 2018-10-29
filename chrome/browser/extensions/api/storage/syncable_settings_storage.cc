@@ -17,13 +17,12 @@
 namespace extensions {
 
 SyncableSettingsStorage::SyncableSettingsStorage(
-    const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-        observers,
+    scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>> observers,
     const std::string& extension_id,
     ValueStore* delegate,
     syncer::ModelType sync_type,
     const syncer::SyncableService::StartSyncFlare& flare)
-    : observers_(observers),
+    : observers_(std::move(observers)),
       extension_id_(extension_id),
       delegate_(delegate),
       sync_type_(sync_type),

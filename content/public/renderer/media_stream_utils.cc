@@ -20,7 +20,6 @@
 #include "media/capture/video_capturer_source.h"
 #include "third_party/blink/public/platform/web_media_stream.h"
 #include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/web/web_media_stream_registry.h"
 
 namespace content {
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/system_tray_client.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/interfaces/constants.mojom.h"
 #include "ash/public/interfaces/system_tray_test_api.mojom.h"
@@ -63,103 +62,6 @@ class SystemTrayClientTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(SystemTrayClientTest);
 };
 
-// Test that a chrome update shows the update icon in the system menu.
-IN_PROC_BROWSER_TEST_F(SystemTrayClientTest, UpdateTrayIcon) {
-  // The tray icon is removed in UnifiedSystemTray.
-  // TODO(tetsui): Remove the test after UnifiedSystemTray launch.
-  // https://crbug.com/847104
-  if (ash::features::IsSystemTrayUnifiedEnabled())
-    return;
-
-  ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-
-  // When no update is pending, the icon isn't visible.
-  bool visible = false;
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_FALSE(visible);
-
-  // Simulate an upgrade. This sends a mojo message to ash.
-  UpgradeDetector* detector = UpgradeDetector::GetInstance();
-  detector->set_upgrade_notification_stage(
-      UpgradeDetector::UPGRADE_ANNOYANCE_LOW);
-  detector->NotifyUpgrade();
-  content::RunAllPendingInMessageLoop();
-
-  // Tray icon is now visible.
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_TRUE(visible);
-}
-
-// Tests that the update icon becomes visible after an update is detected
-// available for downloading over cellular connection. The update icon hides
-// after user's one time permission on the update is set successfully in Update
-// Engine.
-IN_PROC_BROWSER_TEST_F(SystemTrayClientTest, UpdateOverCellularTrayIcon) {
-  // The tray icon is removed in UnifiedSystemTray.
-  // TODO(tetsui): Remove the test after UnifiedSystemTray launch.
-  // https://crbug.com/847104
-  if (ash::features::IsSystemTrayUnifiedEnabled())
-    return;
-
-  ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-  wait_for.DisableAnimations();
-
-  // When no update is pending, the icon isn't visible.
-  bool visible = false;
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_FALSE(visible);
-
-  chromeos::UpdateEngineClient::Status status;
-  status.status =
-      chromeos::UpdateEngineClient::UPDATE_STATUS_NEED_PERMISSION_TO_UPDATE;
-  fake_update_engine_client_->set_default_status(status);
-  fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
-  content::RunAllPendingInMessageLoop();
-
-  // When an update is available over cellular networks, the icon is visible.
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_TRUE(visible);
-
-  wait_for.ShowBubble();
-  base::string16 label;
-  wait_for.GetBubbleLabelText(ash::VIEW_ID_TRAY_UPDATE_MENU_LABEL, &label);
-  EXPECT_EQ("Click to view update details", base::UTF16ToUTF8(label));
-
-  // Notifies that the user's one time permission on update over cellular
-  // connection is granted.
-  fake_update_engine_client_
-      ->NotifyUpdateOverCellularOneTimePermissionGranted();
-  content::RunAllPendingInMessageLoop();
-
-  // When user permission is granted, the icon becomes invisible.
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_FALSE(visible);
-}
-
-// Test that a flash update causes the update UI to show in the system menu.
-IN_PROC_BROWSER_TEST_F(SystemTrayClientTest, FlashUpdateTrayIcon) {
-  // The tray icon is removed in UnifiedSystemTray.
-  // TODO(tetsui): Remove the test after UnifiedSystemTray launch.
-  // https://crbug.com/847104
-  if (ash::features::IsSystemTrayUnifiedEnabled())
-    return;
-
-  ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-
-  // When no update is pending, the icon isn't visible.
-  bool visible = false;
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_FALSE(visible);
-
-  // Simulate a Flash update. This sends a mojo message to ash.
-  SystemTrayClient::Get()->SetFlashUpdateAvailable();
-  content::RunAllPendingInMessageLoop();
-
-  // Tray icon is now visible.
-  wait_for.IsTrayViewVisible(ash::VIEW_ID_TRAY_UPDATE_ICON, &visible);
-  EXPECT_TRUE(visible);
-}
-
 using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
@@ -186,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
 class SystemTrayClientClockTest : public chromeos::LoginManagerTest {
  public:
   SystemTrayClientClockTest()
-      : LoginManagerTest(false /* should_launch_browser */),
+      : LoginManagerTest(false /* should_launch_browser */,
+                         true /* should_initialize_webui */),
         // Use consumer emails to avoid having to fake a policy fetch.
         account_id1_(
             AccountId::FromUserEmailGaiaId("user1@gmail.com", "1111111111")),

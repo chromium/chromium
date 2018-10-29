@@ -15,7 +15,7 @@ typedef BOOL (WINAPI* SetDllDirectoryFunc)(LPCTSTR lpPathName);
 // effects of a previous SetDllDirectory call.
 class SetDllDirectoryCaller {
  public:
-  explicit SetDllDirectoryCaller() : func_(NULL) { }
+  SetDllDirectoryCaller() : func_(NULL) {}
 
   ~SetDllDirectoryCaller() {
     if (func_)
@@ -97,13 +97,18 @@ bool NSSDecryptor::Init(const base::FilePath& dll_path,
 }
 
 NSSDecryptor::NSSDecryptor()
-    : NSS_Init(NULL), NSS_Shutdown(NULL), PK11_GetInternalKeySlot(NULL),
-      PK11_CheckUserPassword(NULL), PK11_FreeSlot(NULL),
-      PK11_Authenticate(NULL), PK11SDR_Decrypt(NULL), SECITEM_FreeItem(NULL),
-      PL_ArenaFinish(NULL), PR_Cleanup(NULL),
-      nss3_dll_(NULL), softokn3_dll_(NULL),
-      is_nss_initialized_(false) {
-}
+    : NSS_Init(NULL),
+      NSS_Shutdown(NULL),
+      PK11_GetInternalKeySlot(NULL),
+      PK11_FreeSlot(NULL),
+      PK11_Authenticate(NULL),
+      PK11SDR_Decrypt(NULL),
+      SECITEM_FreeItem(NULL),
+      PL_ArenaFinish(NULL),
+      PR_Cleanup(NULL),
+      nss3_dll_(NULL),
+      softokn3_dll_(NULL),
+      is_nss_initialized_(false) {}
 
 NSSDecryptor::~NSSDecryptor() {
   Free();

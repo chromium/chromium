@@ -41,6 +41,7 @@
 #include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
@@ -96,9 +97,7 @@ MCSMessage BuildDownstreamMessage(
   mcs_proto::DataMessageStanza data_message;
   data_message.set_from(project_id);
   data_message.set_category(category);
-  for (std::map<std::string, std::string>::const_iterator iter = data.begin();
-       iter != data.end();
-       ++iter) {
+  for (auto iter = data.begin(); iter != data.end(); ++iter) {
     mcs_proto::AppData* app_data = data_message.add_app_data();
     app_data->set_key(iter->first);
     app_data->set_value(iter->second);
@@ -123,8 +122,8 @@ GCMClient::AccountTokenInfo MakeAccountToken(const std::string& email,
 std::map<std::string, std::string> MakeEmailToTokenMap(
     const std::vector<GCMClient::AccountTokenInfo>& account_tokens) {
   std::map<std::string, std::string> email_token_map;
-  for (std::vector<GCMClient::AccountTokenInfo>::const_iterator iter =
-           account_tokens.begin(); iter != account_tokens.end(); ++iter) {
+  for (auto iter = account_tokens.begin(); iter != account_tokens.end();
+       ++iter) {
     email_token_map[iter->email] = iter->access_token;
   }
   return email_token_map;
@@ -234,7 +233,8 @@ class FakeGCMInternalsBuilder : public GCMInternalsBuilder {
       base::RepeatingCallback<
           void(network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
-      GCMStatsRecorder* recorder) override;
+      GCMStatsRecorder* recorder,
+      network::NetworkConnectionTracker* network_connection_tracker) override;
 
  private:
   AutoAdvancingTestClock clock_;
@@ -266,7 +266,8 @@ FakeGCMInternalsBuilder::BuildConnectionFactory(
     base::RepeatingCallback<
         void(network::mojom::ProxyResolvingSocketFactoryRequest)>
         get_socket_factory_callback,
-    GCMStatsRecorder* recorder) {
+    GCMStatsRecorder* recorder,
+    network::NetworkConnectionTracker* network_connection_tracker) {
   return base::WrapUnique<ConnectionFactory>(new FakeConnectionFactory());
 }
 
@@ -557,10 +558,7 @@ void GCMClientImplTest::CompleteCheckinImpl(
   // For testing G-services settings.
   if (!digest.empty()) {
     response.set_digest(digest);
-    for (std::map<std::string, std::string>::const_iterator it =
-             settings.begin();
-         it != settings.end();
-         ++it) {
+    for (auto it = settings.begin(); it != settings.end(); ++it) {
       checkin_proto::GservicesSetting* setting = response.add_setting();
       setting->set_name(it->first);
       setting->set_value(it->second);
@@ -630,6 +628,7 @@ void GCMClientImplTest::InitializeGCMClient() {
       chrome_build_info, gcm_store_path(), task_runner_, base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
+      network::TestNetworkConnectionTracker::GetInstance(),
       base::WrapUnique<Encryptor>(new FakeEncryptor), this);
 }
 
@@ -1130,8 +1129,7 @@ TEST_F(GCMClientImplTest, DispatchDownstreamMessageSendError) {
   EXPECT_EQ(kExtensionAppId, last_app_id());
   EXPECT_EQ("007", last_error_details().message_id);
   EXPECT_EQ(1UL, last_error_details().additional_data.size());
-  MessageData::const_iterator iter =
-      last_error_details().additional_data.find("error_details");
+  auto iter = last_error_details().additional_data.find("error_details");
   EXPECT_TRUE(iter != last_error_details().additional_data.end());
   EXPECT_EQ("some details", iter->second);
 }

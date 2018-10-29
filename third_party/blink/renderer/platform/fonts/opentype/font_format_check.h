@@ -17,8 +17,10 @@ class FontFormatCheck {
   FontFormatCheck(sk_sp<SkData>);
   bool IsVariableFont();
   bool IsCbdtCblcColorFont();
+  bool IsColrCpalColorFont();
   bool IsSbixColorFont();
   bool IsCff2OutlineFont();
+  bool IsColorFont();
 
   // Still needed in FontCustomPlatformData.
   enum class VariableFontSubType {

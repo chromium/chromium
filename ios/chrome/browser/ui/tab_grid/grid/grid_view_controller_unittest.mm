@@ -132,13 +132,36 @@ TEST_F(GridViewControllerTest, SelectNonexistentItem) {
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
-// Tests that an item is replaced.
+// Tests that an item is replaced with a new identifier.
 TEST_F(GridViewControllerTest, ReplaceItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   GridItem* item = [[GridItem alloc] initWithIdentifier:@"NEW-ITEM"];
   [view_controller_ replaceItemID:@"A" withItem:item];
   EXPECT_NSEQ(@"NEW-ITEM", view_controller_.items[0].identifier);
+  EXPECT_EQ(2U, delegate_.itemCount);
+}
+
+// Tests that an item is replaced with same identifier.
+TEST_F(GridViewControllerTest, ReplaceItemSameIdentifier) {
+  // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
+  // an itemCount of 2.
+  GridItem* item = [[GridItem alloc] initWithIdentifier:@"A"];
+  item.title = @"NEW-ITEM-TITLE";
+  [view_controller_ replaceItemID:@"A" withItem:item];
+  EXPECT_NSEQ(@"A", view_controller_.items[0].identifier);
+  EXPECT_NSEQ(@"NEW-ITEM-TITLE", view_controller_.items[0].title);
+  EXPECT_EQ(2U, delegate_.itemCount);
+}
+
+// Tests that an item is not replaced if it doesn't exist.
+TEST_F(GridViewControllerTest, ReplaceItemNotFound) {
+  // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
+  // an itemCount of 2.
+  GridItem* item = [[GridItem alloc] initWithIdentifier:@"NOT-FOUND"];
+  [view_controller_ replaceItemID:@"NOT-FOUND" withItem:item];
+  EXPECT_NSNE(@"NOT-FOUND", view_controller_.items[0].identifier);
+  EXPECT_NSNE(@"NOT-FOUND", view_controller_.items[1].identifier);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 

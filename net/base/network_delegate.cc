@@ -172,10 +172,6 @@ bool NetworkDelegate::CanEnablePrivacyMode(const GURL& url,
   return OnCanEnablePrivacyMode(url, site_for_cookies);
 }
 
-bool NetworkDelegate::AreExperimentalCookieFeaturesEnabled() const {
-  return OnAreExperimentalCookieFeaturesEnabled();
-}
-
 bool NetworkDelegate::CancelURLRequestWithPolicyViolatingReferrerHeader(
     const URLRequest& request,
     const GURL& target_url,

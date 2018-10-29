@@ -25,8 +25,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
-#include "media/midi/midi_port_info.h"
 #include "media/midi/midi_service.h"
+#include "media/midi/midi_service.mojom.h"
 #include "media/midi/task_service.h"
 
 namespace midi {
@@ -163,14 +163,16 @@ void SetStringIfNonEmpty(base::DictionaryValue* value,
 MidiManagerAlsa::MidiManagerAlsa(MidiService* service) : MidiManager(service) {}
 
 MidiManagerAlsa::~MidiManagerAlsa() {
-  base::AutoLock lock(lazy_init_member_lock_);
+  {
+    base::AutoLock lock(out_client_lock_);
+    // Close the out client. This will trigger the event thread to stop,
+    // because of SND_SEQ_EVENT_CLIENT_EXIT.
+    out_client_.reset();
+  }
 
-  // Extra CHECK to verify all members are already reset.
-  CHECK(!in_client_);
-  CHECK(!out_client_);
-  CHECK(!decoder_);
-  CHECK(!udev_);
-  CHECK(!udev_monitor_);
+  // Ensure that no task is running any more.
+  bool result = service()->task_service()->UnbindInstance();
+  CHECK(result);
 }
 
 void MidiManagerAlsa::StartInitialization() {
@@ -179,44 +181,44 @@ void MidiManagerAlsa::StartInitialization() {
     return CompleteInitialization(Result::INITIALIZATION_ERROR);
   }
 
-  base::AutoLock lock(lazy_init_member_lock_);
-
-  // Create client handles.
-  snd_seq_t* tmp_seq = nullptr;
-  int err =
-      snd_seq_open(&tmp_seq, kAlsaHw, SND_SEQ_OPEN_INPUT, SND_SEQ_NONBLOCK);
-  if (err != 0) {
-    VLOG(1) << "snd_seq_open fails: " << snd_strerror(err);
-    return CompleteInitialization(Result::INITIALIZATION_ERROR);
+  // Create client handles and name the clients.
+  int err;
+  {
+    snd_seq_t* in_seq = nullptr;
+    err = snd_seq_open(&in_seq, kAlsaHw, SND_SEQ_OPEN_INPUT, SND_SEQ_NONBLOCK);
+    if (err != 0) {
+      VLOG(1) << "snd_seq_open fails: " << snd_strerror(err);
+      return CompleteInitialization(Result::INITIALIZATION_ERROR);
+    }
+    in_client_ = ScopedSndSeqPtr(in_seq);
+    in_client_id_ = snd_seq_client_id(in_client_.get());
+    err = snd_seq_set_client_name(in_client_.get(), "Chrome (input)");
+    if (err != 0) {
+      VLOG(1) << "snd_seq_set_client_name fails: " << snd_strerror(err);
+      return CompleteInitialization(Result::INITIALIZATION_ERROR);
+    }
   }
-  ScopedSndSeqPtr in_client(tmp_seq);
-  tmp_seq = nullptr;
-  in_client_id_ = snd_seq_client_id(in_client.get());
 
-  err = snd_seq_open(&tmp_seq, kAlsaHw, SND_SEQ_OPEN_OUTPUT, 0);
-  if (err != 0) {
-    VLOG(1) << "snd_seq_open fails: " << snd_strerror(err);
-    return CompleteInitialization(Result::INITIALIZATION_ERROR);
-  }
-  ScopedSndSeqPtr out_client(tmp_seq);
-  tmp_seq = nullptr;
-  out_client_id_ = snd_seq_client_id(out_client.get());
-
-  // Name the clients.
-  err = snd_seq_set_client_name(in_client.get(), "Chrome (input)");
-  if (err != 0) {
-    VLOG(1) << "snd_seq_set_client_name fails: " << snd_strerror(err);
-    return CompleteInitialization(Result::INITIALIZATION_ERROR);
-  }
-  err = snd_seq_set_client_name(out_client.get(), "Chrome (output)");
-  if (err != 0) {
-    VLOG(1) << "snd_seq_set_client_name fails: " << snd_strerror(err);
-    return CompleteInitialization(Result::INITIALIZATION_ERROR);
+  {
+    snd_seq_t* out_seq = nullptr;
+    err = snd_seq_open(&out_seq, kAlsaHw, SND_SEQ_OPEN_OUTPUT, 0);
+    if (err != 0) {
+      VLOG(1) << "snd_seq_open fails: " << snd_strerror(err);
+      return CompleteInitialization(Result::INITIALIZATION_ERROR);
+    }
+    base::AutoLock lock(out_client_lock_);
+    out_client_ = ScopedSndSeqPtr(out_seq);
+    out_client_id_ = snd_seq_client_id(out_client_.get());
+    err = snd_seq_set_client_name(out_client_.get(), "Chrome (output)");
+    if (err != 0) {
+      VLOG(1) << "snd_seq_set_client_name fails: " << snd_strerror(err);
+      return CompleteInitialization(Result::INITIALIZATION_ERROR);
+    }
   }
 
   // Create input port.
   in_port_id_ = snd_seq_create_simple_port(
-      in_client.get(), NULL, kCreateInputPortCaps, kCreatePortType);
+      in_client_.get(), NULL, kCreateInputPortCaps, kCreatePortType);
   if (in_port_id_ < 0) {
     VLOG(1) << "snd_seq_create_simple_port fails: "
             << snd_strerror(in_port_id_);
@@ -234,7 +236,7 @@ void MidiManagerAlsa::StartInitialization() {
   announce_dest.port = in_port_id_;
   snd_seq_port_subscribe_set_sender(subs, &announce_sender);
   snd_seq_port_subscribe_set_dest(subs, &announce_dest);
-  err = snd_seq_subscribe_port(in_client.get(), subs);
+  err = snd_seq_subscribe_port(in_client_.get(), subs);
   if (err != 0) {
     VLOG(1) << "snd_seq_subscribe_port on the announce port fails: "
             << snd_strerror(err);
@@ -242,40 +244,30 @@ void MidiManagerAlsa::StartInitialization() {
   }
 
   // Initialize decoder.
-  ScopedSndMidiEventPtr decoder = CreateScopedSndMidiEventPtr(0);
-  snd_midi_event_no_status(decoder.get(), 1);
+  decoder_ = CreateScopedSndMidiEventPtr(0);
+  snd_midi_event_no_status(decoder_.get(), 1);
 
   // Initialize udev and monitor.
-  device::ScopedUdevPtr udev(device::udev_new());
-  device::ScopedUdevMonitorPtr udev_monitor(
-      device::udev_monitor_new_from_netlink(udev.get(), kUdev));
-  if (!udev_monitor.get()) {
+  udev_ = device::ScopedUdevPtr(device::udev_new());
+  udev_monitor_ = device::ScopedUdevMonitorPtr(
+      device::udev_monitor_new_from_netlink(udev_.get(), kUdev));
+  if (!udev_monitor_.get()) {
     VLOG(1) << "udev_monitor_new_from_netlink fails";
     return CompleteInitialization(Result::INITIALIZATION_ERROR);
   }
   err = device::udev_monitor_filter_add_match_subsystem_devtype(
-      udev_monitor.get(), kUdevSubsystemSound, nullptr);
+      udev_monitor_.get(), kUdevSubsystemSound, nullptr);
   if (err != 0) {
     VLOG(1) << "udev_monitor_add_match_subsystem fails: "
             << base::safe_strerror(-err);
     return CompleteInitialization(Result::INITIALIZATION_ERROR);
   }
-  err = device::udev_monitor_enable_receiving(udev_monitor.get());
+  err = device::udev_monitor_enable_receiving(udev_monitor_.get());
   if (err != 0) {
     VLOG(1) << "udev_monitor_enable_receiving fails: "
             << base::safe_strerror(-err);
     return CompleteInitialization(Result::INITIALIZATION_ERROR);
   }
-
-  // Success! Now, initialize members from the temporaries. Do not
-  // initialize these earlier, since they need to be destroyed by the
-  // thread that calls Finalize(), not the destructor thread (and we
-  // check this in the destructor).
-  in_client_ = std::move(in_client);
-  out_client_ = std::move(out_client);
-  decoder_ = std::move(decoder);
-  udev_ = std::move(udev);
-  udev_monitor_ = std::move(udev_monitor);
 
   // Generate hotplug events for existing ports.
   // TODO(agoode): Check the return value for failure.
@@ -293,26 +285,6 @@ void MidiManagerAlsa::StartInitialization() {
       base::BindOnce(&MidiManagerAlsa::EventLoop, base::Unretained(this)));
 
   CompleteInitialization(Result::OK);
-}
-
-void MidiManagerAlsa::Finalize() {
-  {
-    base::AutoLock lock(out_client_lock_);
-    // Close the out client. This will trigger the event thread to stop,
-    // because of SND_SEQ_EVENT_CLIENT_EXIT.
-    out_client_.reset();
-  }
-
-  // Ensure that no task is running any more.
-  bool result = service()->task_service()->UnbindInstance();
-  CHECK(result);
-
-  // Destruct the other stuff we initialized in StartInitialization().
-  base::AutoLock lock(lazy_init_member_lock_);
-  udev_monitor_.reset();
-  udev_.reset();
-  decoder_.reset();
-  in_client_.reset();
 }
 
 void MidiManagerAlsa::DispatchSendMidiData(MidiManagerClient* client,
@@ -1203,8 +1175,8 @@ void MidiManagerAlsa::UpdatePortStateAndGenerateEvents() {
       uint32_t web_port_index = port_state_.push_back(std::move(new_port));
       it = new_port_state->erase(it);
 
-      MidiPortInfo info(opaque_key, manufacturer, port_name, version,
-                        PortState::OPENED);
+      mojom::PortInfo info(opaque_key, manufacturer, port_name, version,
+                           PortState::OPENED);
       switch (type) {
         case MidiPort::Type::kInput:
           if (Subscribe(web_port_index, client_id, port_id))
@@ -1307,28 +1279,34 @@ bool MidiManagerAlsa::CreateAlsaOutputPort(uint32_t port_index,
                                            int client_id,
                                            int port_id) {
   // Create the port.
-  int out_port = snd_seq_create_simple_port(
-      out_client_.get(), NULL, kCreateOutputPortCaps, kCreatePortType);
-  if (out_port < 0) {
-    VLOG(1) << "snd_seq_create_simple_port fails: " << snd_strerror(out_port);
-    return false;
-  }
-  // Activate port subscription.
-  snd_seq_port_subscribe_t* subs;
-  snd_seq_port_subscribe_alloca(&subs);
-  snd_seq_addr_t sender;
-  sender.client = out_client_id_;
-  sender.port = out_port;
-  snd_seq_port_subscribe_set_sender(subs, &sender);
-  snd_seq_addr_t dest;
-  dest.client = client_id;
-  dest.port = port_id;
-  snd_seq_port_subscribe_set_dest(subs, &dest);
-  int err = snd_seq_subscribe_port(out_client_.get(), subs);
-  if (err != 0) {
-    VLOG(1) << "snd_seq_subscribe_port fails: " << snd_strerror(err);
-    snd_seq_delete_simple_port(out_client_.get(), out_port);
-    return false;
+  int out_port;
+  {
+    base::AutoLock lock(out_client_lock_);
+    out_port = snd_seq_create_simple_port(
+        out_client_.get(), NULL, kCreateOutputPortCaps, kCreatePortType);
+
+    if (out_port < 0) {
+      VLOG(1) << "snd_seq_create_simple_port fails: " << snd_strerror(out_port);
+      return false;
+    }
+
+    // Activate port subscription.
+    snd_seq_port_subscribe_t* subs;
+    snd_seq_port_subscribe_alloca(&subs);
+    snd_seq_addr_t sender;
+    sender.client = out_client_id_;
+    sender.port = out_port;
+    snd_seq_port_subscribe_set_sender(subs, &sender);
+    snd_seq_addr_t dest;
+    dest.client = client_id;
+    dest.port = port_id;
+    snd_seq_port_subscribe_set_dest(subs, &dest);
+    int err = snd_seq_subscribe_port(out_client_.get(), subs);
+    if (err != 0) {
+      VLOG(1) << "snd_seq_subscribe_port fails: " << snd_strerror(err);
+      snd_seq_delete_simple_port(out_client_.get(), out_port);
+      return false;
+    }
   }
 
   // Update our map.
@@ -1338,14 +1316,19 @@ bool MidiManagerAlsa::CreateAlsaOutputPort(uint32_t port_index,
 }
 
 void MidiManagerAlsa::DeleteAlsaOutputPort(uint32_t port_index) {
-  base::AutoLock lock(out_ports_lock_);
-  auto it = out_ports_.find(port_index);
-  if (it == out_ports_.end())
-    return;
-
-  int alsa_port = it->second;
-  snd_seq_delete_simple_port(out_client_.get(), alsa_port);
-  out_ports_.erase(it);
+  int alsa_port;
+  {
+    base::AutoLock lock(out_ports_lock_);
+    auto it = out_ports_.find(port_index);
+    if (it == out_ports_.end())
+      return;
+    alsa_port = it->second;
+    out_ports_.erase(it);
+  }
+  {
+    base::AutoLock lock(out_client_lock_);
+    snd_seq_delete_simple_port(out_client_.get(), alsa_port);
+  }
 }
 
 bool MidiManagerAlsa::Subscribe(uint32_t port_index,

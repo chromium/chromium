@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/isolated_origin_util.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,9 +109,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   ~SecurityState() {
     storage::IsolatedContext* isolated_context =
         storage::IsolatedContext::GetInstance();
-    for (FileSystemMap::iterator iter = filesystem_permissions_.begin();
-         iter != filesystem_permissions_.end();
-         ++iter) {
+    for (auto iter = filesystem_permissions_.begin();
+         iter != filesystem_permissions_.end(); ++iter) {
       isolated_context->RemoveReference(iter->first);
     }
     UMA_HISTOGRAM_COUNTS_1M(
@@ -120,13 +120,13 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
 
   // Grant permission to request and commit URLs with the specified origin.
   void GrantCommitOrigin(const url::Origin& origin) {
-    if (origin.unique())
+    if (origin.opaque())
       return;
     origin_map_[origin] = CommitRequestPolicy::kCommitAndRequest;
   }
 
   void GrantRequestOrigin(const url::Origin& origin) {
-    if (origin.unique())
+    if (origin.opaque())
       return;
     // Anything already in |origin_map_| must have at least request permission
     // already. In that case, the emplace() below will be a no-op.
@@ -510,7 +510,7 @@ void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
   // TODO(dcheng): In the future, URLs with opaque origins would ideally carry
   // around an origin with them, so we wouldn't need to grant commit access to
   // the entire scheme.
-  if (!origin.unique())
+  if (!origin.opaque())
     GrantCommitOrigin(child_id, origin);
 
   // The scheme has already been whitelisted for every child process, so no need
@@ -524,7 +524,7 @@ void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
   if (state == security_state_.end())
     return;
 
-  if (origin.unique()) {
+  if (origin.opaque()) {
     // If it's impossible to grant commit rights to just the origin (among other
     // things, URLs with non-standard schemes will be treated as opaque
     // origins), then grant access to commit all URLs of that scheme.
@@ -544,7 +544,7 @@ void ChildProcessSecurityPolicyImpl::GrantRequestSpecificFileURL(
 
   {
     base::AutoLock lock(lock_);
-    SecurityStateMap::iterator state = security_state_.find(child_id);
+    auto state = security_state_.find(child_id);
     if (state == security_state_.end())
       return;
 
@@ -580,7 +580,7 @@ void ChildProcessSecurityPolicyImpl::GrantPermissionsForFile(
     int child_id, const base::FilePath& file, int permissions) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -591,7 +591,7 @@ void ChildProcessSecurityPolicyImpl::RevokeAllPermissionsForFile(
     int child_id, const base::FilePath& file) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -632,7 +632,7 @@ void ChildProcessSecurityPolicyImpl::GrantDeleteFromFileSystem(
 void ChildProcessSecurityPolicyImpl::GrantSendMidiSysExMessage(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -644,7 +644,7 @@ void ChildProcessSecurityPolicyImpl::GrantCommitOrigin(
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -656,7 +656,7 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOrigin(
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -683,7 +683,7 @@ void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(int child_id,
 
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -699,7 +699,7 @@ void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(int child_id,
 void ChildProcessSecurityPolicyImpl::GrantReadRawCookies(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -709,7 +709,7 @@ void ChildProcessSecurityPolicyImpl::GrantReadRawCookies(int child_id) {
 void ChildProcessSecurityPolicyImpl::RevokeReadRawCookies(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
 
@@ -742,7 +742,7 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(
       return false;
 
     url::Origin origin = url::Origin::Create(url);
-    return origin.unique() || CanRequestURL(child_id, GURL(origin.Serialize()));
+    return origin.opaque() || CanRequestURL(child_id, GURL(origin.Serialize()));
   }
 
   if (IsWebSafeScheme(scheme))
@@ -751,7 +751,7 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(
   {
     base::AutoLock lock(lock_);
 
-    SecurityStateMap::iterator state = security_state_.find(child_id);
+    auto state = security_state_.find(child_id);
     if (state == security_state_.end())
       return false;
 
@@ -795,7 +795,8 @@ bool ChildProcessSecurityPolicyImpl::CanRedirectToURL(const GURL& url) {
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
-                                                  const GURL& url) {
+                                                  const GURL& url,
+                                                  bool check_origin_locks) {
   if (!url.is_valid())
     return false;  // Can't commit invalid URLs.
 
@@ -813,8 +814,18 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
       return false;
 
     url::Origin origin = url::Origin::Create(url);
-    return origin.unique() || CanCommitURL(child_id, GURL(origin.Serialize()));
+    return origin.opaque() ||
+           CanCommitURL(child_id, GURL(origin.Serialize()), check_origin_locks);
   }
+
+  // With site isolation, a URL from a site may only be committed in a process
+  // dedicated to that site.  This check will ensure that |url| can't commit if
+  // the process is locked to a different site.  Note that this check is only
+  // effective for processes that are locked to a site, but even with strict
+  // site isolation, currently not all processes are locked (e.g., extensions
+  // or <webview> tags - see ShouldLockToOrigin()).
+  if (check_origin_locks && !CanAccessDataForOrigin(child_id, url))
+    return false;
 
   {
     base::AutoLock lock(lock_);
@@ -823,17 +834,12 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     // schemes_okay_to_commit_in_any_process_ here, which is stricter than
     // IsWebSafeScheme().
     //
-    // TODO(creis, nick): https://crbug.com/515309: in generalized Site
-    // Isolation and/or --site-per-process, there will be no such thing as a
-    // scheme that is okay to commit in any process. Instead, an URL from a site
-    // that is isolated may only be committed in a process dedicated to that
-    // site, so CanCommitURL will need to rely on explicit, per-process grants.
-    // Note how today, even with extension isolation, the line below does not
+    // TODO(creis, nick): https://crbug.com/515309: The line below does not
     // enforce that http pages cannot commit in an extension process.
     if (base::ContainsKey(schemes_okay_to_commit_in_any_process_, scheme))
       return true;
 
-    SecurityStateMap::iterator state = security_state_.find(child_id);
+    auto state = security_state_.find(child_id);
     if (state == security_state_.end())
       return false;
 
@@ -841,6 +847,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     // allowed to commit the URL.
     return state->second->CanCommitURL(url);
   }
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
+                                                  const GURL& url) {
+  return CanCommitURL(child_id, url, true /* check_origin_lock */);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanSetAsOriginHeader(int child_id,
@@ -854,7 +865,12 @@ bool ChildProcessSecurityPolicyImpl::CanSetAsOriginHeader(int child_id,
 
   // If this process can commit |url|, it can use |url| as an origin for
   // outbound requests.
-  if (CanCommitURL(child_id, url))
+  //
+  // TODO(alexmos): This should eventually also check the origin lock, but
+  // currently this is not done due to certain corner cases involving HTML
+  // imports and layout tests that simulate requests from isolated worlds.  See
+  // https://crbug.com/515309.
+  if (CanCommitURL(child_id, url, false /* check_origin_lock */))
     return true;
 
   // Allow schemes which may come from scripts executing in isolated worlds;
@@ -973,7 +989,7 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFile(
   if (!result) {
     // If this is a worker thread that has no access to a given file,
     // let's check that its renderer process has access to that file instead.
-    WorkerToMainProcessMap::iterator iter = worker_map_.find(child_id);
+    auto iter = worker_map_.find(child_id);
     if (iter != worker_map_.end() && iter->second != 0) {
       result = ChildProcessHasPermissionsForFile(iter->second,
                                                  file,
@@ -1015,20 +1031,27 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystemFile(
     return false;
   }
 
-  FileSystemPermissionPolicyMap::iterator found =
-      file_system_policy_map_.find(filesystem_url.type());
-  if (found == file_system_policy_map_.end())
-    return false;
+  int found_permissions = 0;
+  {
+    base::AutoLock lock(lock_);
+    auto found = file_system_policy_map_.find(filesystem_url.type());
+    if (found == file_system_policy_map_.end())
+      return false;
+    found_permissions = found->second;
+  }
 
-  if ((found->second & storage::FILE_PERMISSION_READ_ONLY) &&
+  if ((found_permissions & storage::FILE_PERMISSION_READ_ONLY) &&
       permissions & ~READ_FILE_GRANT) {
     return false;
   }
 
-  if (found->second & storage::FILE_PERMISSION_USE_FILE_PERMISSION)
+  // Note that HasPermissionsForFile (called below) will internally acquire the
+  // |lock_|, therefore the |lock_| has to be released before the call (since
+  // base::Lock is not reentrant).
+  if (found_permissions & storage::FILE_PERMISSION_USE_FILE_PERMISSION)
     return HasPermissionsForFile(child_id, filesystem_url.path(), permissions);
 
-  if (found->second & storage::FILE_PERMISSION_SANDBOX)
+  if (found_permissions & storage::FILE_PERMISSION_SANDBOX)
     return true;
 
   return false;
@@ -1079,7 +1102,7 @@ bool ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile(
 bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return false;
 
@@ -1089,7 +1112,7 @@ bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {
 bool ChildProcessSecurityPolicyImpl::CanReadRawCookies(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return false;
 
@@ -1107,7 +1130,7 @@ void ChildProcessSecurityPolicyImpl::AddChild(int child_id) {
 
 bool ChildProcessSecurityPolicyImpl::ChildProcessHasPermissionsForFile(
     int child_id, const base::FilePath& file, int permissions) {
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return false;
   return state->second->HasPermissionsForFile(file, permissions);
@@ -1115,28 +1138,26 @@ bool ChildProcessSecurityPolicyImpl::ChildProcessHasPermissionsForFile(
 
 bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(int child_id,
                                                             const GURL& url) {
-  // It's important to call GetSiteForURL before acquiring |lock_|, since
-  // GetSiteForURL consults IsIsolatedOrigin, which needs to grab the same
-  // lock.
-  //
-  // TODO(creis): We must pass the valid browser_context to convert hosted apps
-  // URLs. Currently, hosted apps cannot set cookies in this mode. See
-  // http://crbug.com/160576.
-  GURL site_url = SiteInstance::GetSiteForURL(nullptr, url);
+  // It's important to call DetermineProcessLockURL before
+  // acquiring |lock_|, since DetermineProcessLockURL consults
+  // IsIsolatedOrigin, which needs to grab the same lock.
+  GURL expected_process_lock =
+      SiteInstanceImpl::DetermineProcessLockURL(nullptr, url);
 
   base::AutoLock lock(lock_);
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end()) {
     // TODO(nick): Returning true instead of false here is a temporary
     // workaround for https://crbug.com/600441
     return true;
   }
-  bool can_access = state->second->CanAccessDataForOrigin(site_url);
+  bool can_access =
+      state->second->CanAccessDataForOrigin(expected_process_lock);
   if (!can_access) {
     // Returning false here will result in a renderer kill.  Set some crash
     // keys that will help understand the circumstances of that kill.
     base::debug::SetCrashKeyString(bad_message::GetRequestedSiteURLKey(),
-                                   site_url.spec());
+                                   expected_process_lock.spec());
     base::debug::SetCrashKeyString(bad_message::GetKilledProcessOriginLockKey(),
                                    state->second->origin_lock().spec());
 
@@ -1154,10 +1175,18 @@ void ChildProcessSecurityPolicyImpl::LockToOrigin(int child_id,
   // call GetOriginLock or CheckOriginLock from any thread).
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // "gurl" can be currently empty in some cases, such as file://blah.
-  DCHECK_EQ(SiteInstanceImpl::DetermineProcessLockURL(nullptr, gurl), gurl);
+#if DCHECK_IS_ON()
+  // Sanity-check that the |gurl| argument can be used as a lock.
+  RenderProcessHost* rph = RenderProcessHostImpl::FromID(child_id);
+  if (rph) {  // |rph| can be null in unittests.
+    DCHECK_EQ(SiteInstanceImpl::DetermineProcessLockURL(
+                  rph->GetBrowserContext(), gurl),
+              gurl);
+  }
+#endif
+
   base::AutoLock lock(lock_);
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   DCHECK(state != security_state_.end());
   state->second->LockToOrigin(gurl);
 }
@@ -1166,7 +1195,7 @@ ChildProcessSecurityPolicyImpl::CheckOriginLockResult
 ChildProcessSecurityPolicyImpl::CheckOriginLock(int child_id,
                                                 const GURL& site_url) {
   base::AutoLock lock(lock_);
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return ChildProcessSecurityPolicyImpl::CheckOriginLockResult::NO_LOCK;
   return state->second->CheckOriginLock(site_url);
@@ -1174,7 +1203,7 @@ ChildProcessSecurityPolicyImpl::CheckOriginLock(int child_id,
 
 GURL ChildProcessSecurityPolicyImpl::GetOriginLock(int child_id) {
   base::AutoLock lock(lock_);
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return GURL();
   return state->second->origin_lock();
@@ -1186,7 +1215,7 @@ void ChildProcessSecurityPolicyImpl::GrantPermissionsForFileSystem(
     int permission) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return;
   state->second->GrantPermissionsForFileSystem(filesystem_id, permission);
@@ -1198,7 +1227,7 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystem(
     int permission) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return false;
   return state->second->HasPermissionsForFileSystem(filesystem_id, permission);
@@ -1214,7 +1243,7 @@ void ChildProcessSecurityPolicyImpl::RegisterFileSystemPermissionPolicy(
 bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(int child_id) {
   base::AutoLock lock(lock_);
 
-  SecurityStateMap::iterator state = security_state_.find(child_id);
+  auto state = security_state_.find(child_id);
   if (state == security_state_.end())
     return false;
 

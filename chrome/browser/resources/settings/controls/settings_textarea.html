@@ -17,7 +17,9 @@
            exceeds the bounds, it will scroll by default. No space or comments
            allowed before closing tag. -->
       <textarea id="input" autofocus="[[autofocus]]" rows="3"
-          value="{{value::input}}" aria-label$="[[label]]"></textarea>
+          value="{{value::input}}" aria-label$="[[label]]"
+          on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
+          on-change="onInputChange_"></textarea>
       <div id="underline"></div>
     </div>
   </template>

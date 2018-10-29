@@ -247,7 +247,8 @@ void ChromeClientImpl::StartDragging(LocalFrame* frame,
                                      const SkBitmap& drag_image,
                                      const WebPoint& drag_image_offset) {
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
-  WebReferrerPolicy policy = web_frame->GetDocument().GetReferrerPolicy();
+  network::mojom::ReferrerPolicy policy =
+      web_frame->GetDocument().GetReferrerPolicy();
   web_frame->LocalRootFrameWidget()->StartDragging(
       policy, drag_data, mask, drag_image, drag_image_offset);
 }
@@ -256,11 +257,13 @@ bool ChromeClientImpl::AcceptsLoadDrops() const {
   return !web_view_->Client() || web_view_->Client()->AcceptsLoadDrops();
 }
 
-Page* ChromeClientImpl::CreateWindow(LocalFrame* frame,
-                                     const FrameLoadRequest& r,
-                                     const WebWindowFeatures& features,
-                                     NavigationPolicy navigation_policy,
-                                     SandboxFlags sandbox_flags) {
+Page* ChromeClientImpl::CreateWindow(
+    LocalFrame* frame,
+    const FrameLoadRequest& r,
+    const WebWindowFeatures& features,
+    NavigationPolicy navigation_policy,
+    SandboxFlags sandbox_flags,
+    const SessionStorageNamespaceId& session_storage_namespace_id) {
   if (!web_view_->Client())
     return nullptr;
 
@@ -277,7 +280,8 @@ Page* ChromeClientImpl::CreateWindow(LocalFrame* frame,
           WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
           static_cast<WebNavigationPolicy>(navigation_policy),
           r.GetShouldSetOpener() == kNeverSetOpener,
-          static_cast<WebSandboxFlags>(sandbox_flags)));
+          static_cast<WebSandboxFlags>(sandbox_flags),
+          session_storage_namespace_id));
   if (!new_view)
     return nullptr;
   return new_view->GetPage();
@@ -445,9 +449,9 @@ float ChromeClientImpl::WindowToViewportScalar(const float scalar_value) const {
 }
 
 WebScreenInfo ChromeClientImpl::GetScreenInfo() const {
-  if (!web_view_->WidgetClient())
+  if (!web_view_->Client())
     return {};
-  return web_view_->WidgetClient()->GetScreenInfo();
+  return web_view_->Client()->GetScreenInfo();
 }
 
 base::Optional<IntRect> ChromeClientImpl::VisibleContentRectForPainting()
@@ -837,7 +841,6 @@ void ChromeClientImpl::SetBrowserControlsState(float top_height,
 
 void ChromeClientImpl::SetBrowserControlsShownRatio(float ratio) {
   web_view_->GetBrowserControls().SetShownRatio(ratio);
-  web_view_->DidUpdateBrowserControls();
 }
 
 bool ChromeClientImpl::ShouldOpenModalDialogDuringPageDismissal(

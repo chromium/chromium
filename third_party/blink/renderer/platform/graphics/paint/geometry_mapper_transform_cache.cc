@@ -17,15 +17,8 @@ void GeometryMapperTransformCache::ClearCache() {
   s_global_generation++;
 }
 
-// Computes flatten(m) ^ -1, return true if the inversion succeeded.
-static bool InverseProjection(const TransformationMatrix& m,
-                              TransformationMatrix& out) {
-  out = m;
-  out.FlattenTo2d();
-  if (!out.IsInvertible())
-    return false;
-  out = out.Inverse();
-  return true;
+bool GeometryMapperTransformCache::IsValid() const {
+  return cache_generation_ == s_global_generation;
 }
 
 void GeometryMapperTransformCache::Update(
@@ -33,42 +26,109 @@ void GeometryMapperTransformCache::Update(
   DCHECK_NE(cache_generation_, s_global_generation);
   cache_generation_ = s_global_generation;
 
-  if (!node.Parent()) {
-    to_screen_.MakeIdentity();
-    to_screen_is_invertible_ = true;
-    projection_from_screen_.MakeIdentity();
-    projection_from_screen_is_valid_ = true;
-    plane_root_ = &node;
-    to_plane_root_.MakeIdentity();
-    from_plane_root_.MakeIdentity();
+  if (node.IsRoot()) {
+    DCHECK(node.Matrix().IsIdentity());
+    to_2d_translation_root_.MakeIdentity();
+    from_2d_translation_root_.MakeIdentity();
+    root_of_2d_translation_ = &node;
+    plane_root_transform_ = nullptr;
+    screen_transform_ = nullptr;
     return;
   }
 
   const GeometryMapperTransformCache& parent =
       node.Parent()->GetTransformCache();
 
+  // screen_transform_ will be updated only when needed.
+  screen_transform_ = nullptr;
+
+  if (node.IsIdentityOr2DTranslation()) {
+    root_of_2d_translation_ = parent.root_of_2d_translation_;
+    to_2d_translation_root_ = parent.to_2d_translation_root_;
+    to_2d_translation_root_.Translate(node.Matrix().E(), node.Matrix().F());
+    from_2d_translation_root_ = parent.from_2d_translation_root_;
+    from_2d_translation_root_.Translate(-node.Matrix().E(), -node.Matrix().F());
+
+    if (!parent.plane_root_transform_) {
+      // The parent doesn't have plane root transform means that the parent's
+      // plane root is the same as the 2d translation root, so this node
+      // which is a 2d translation also doesn't need plane root transform
+      // because the plane root is still the same as the 2d translation root.
+      plane_root_transform_ = nullptr;
+      return;
+    }
+  } else {
+    root_of_2d_translation_ = &node;
+    to_2d_translation_root_.MakeIdentity();
+    from_2d_translation_root_.MakeIdentity();
+  }
+
+  TransformationMatrix local = node.Matrix();
+  if (!node.IsIdentityOr2DTranslation())
+    local.ApplyTransformOrigin(node.Origin());
+
+  bool is_plane_root = !local.IsFlat() || !local.IsInvertible();
+  if (is_plane_root && root_of_2d_translation_ == &node) {
+    // We don't need plane root transform because the plane root is the same
+    // as the 2d translation root.
+    plane_root_transform_ = nullptr;
+    return;
+  }
+
+  if (!plane_root_transform_)
+    plane_root_transform_.reset(new PlaneRootTransform());
+
+  if (is_plane_root) {
+    plane_root_transform_->plane_root = &node;
+    plane_root_transform_->to_plane_root.MakeIdentity();
+    plane_root_transform_->from_plane_root.MakeIdentity();
+  } else {
+    plane_root_transform_->plane_root = parent.plane_root();
+    plane_root_transform_->to_plane_root = parent.to_plane_root();
+    plane_root_transform_->to_plane_root.Multiply(local);
+    plane_root_transform_->from_plane_root = local.Inverse();
+    plane_root_transform_->from_plane_root.Multiply(parent.from_plane_root());
+  }
+}
+
+void GeometryMapperTransformCache::UpdateScreenTransform(
+    const TransformPaintPropertyNode& node) {
+  // The cache should have been updated.
+  DCHECK_EQ(cache_generation_, s_global_generation);
+
+  // If the plane root is the root of the tree, we can just use the plane root
+  // transform as the screen transform.
+  if (plane_root()->IsRoot())
+    return;
+
+  // If the node is the root, then its plane root is itself, and we should have
+  // returned above.
+  DCHECK(!node.IsRoot());
+  node.Parent()->UpdateScreenTransform();
+  const auto& parent = node.Parent()->GetTransformCache();
+
   TransformationMatrix local = node.Matrix();
   local.ApplyTransformOrigin(node.Origin());
 
-  to_screen_ = parent.to_screen_;
+  screen_transform_.reset(new ScreenTransform());
+  screen_transform_->to_screen = parent.to_screen();
   if (node.FlattensInheritedTransform())
-    to_screen_.FlattenTo2d();
-  to_screen_.Multiply(local);
-  to_screen_is_invertible_ = to_screen_.IsInvertible();
-  projection_from_screen_is_valid_ =
-      InverseProjection(to_screen_, projection_from_screen_);
+    screen_transform_->to_screen.FlattenTo2d();
+  screen_transform_->to_screen.Multiply(local);
 
-  if (!local.IsFlat() || !local.IsInvertible()) {
-    plane_root_ = &node;
-    to_plane_root_.MakeIdentity();
-    from_plane_root_.MakeIdentity();
-  } else {  // (local.IsFlat() && local.IsInvertible())
-    plane_root_ = parent.plane_root_;
-    to_plane_root_ = parent.to_plane_root_;
-    to_plane_root_.Multiply(local);
-    from_plane_root_ = local.Inverse();
-    from_plane_root_.Multiply(parent.from_plane_root_);
-  }
+  auto to_screen_flattened = screen_transform_->to_screen;
+  to_screen_flattened.FlattenTo2d();
+  screen_transform_->projection_from_screen_is_valid =
+      to_screen_flattened.IsInvertible();
+  if (screen_transform_->projection_from_screen_is_valid)
+    screen_transform_->projection_from_screen = to_screen_flattened.Inverse();
 }
+
+#if DCHECK_IS_ON()
+void GeometryMapperTransformCache::CheckScreenTransformUpdated() const {
+  // We should create screen transform iff the plane root is not the root.
+  DCHECK_EQ(plane_root()->IsRoot(), !screen_transform_);
+}
+#endif
 
 }  // namespace blink

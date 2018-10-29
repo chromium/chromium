@@ -8,10 +8,6 @@
 #include "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/cocoa/browser_window_cocoa.h"
-#include "chrome/browser/ui/cocoa/browser_window_controller.h"
-#import "chrome/browser/ui/cocoa/location_bar/autocomplete_text_field.h"
-#import "chrome/browser/ui/cocoa/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -32,7 +28,8 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
     textField_.reset(
         [[NSTextField alloc] initWithFrame:NSMakeRect(20, 20, 100, 20)]);
     [textField_ setStringValue:@"some text"];
-    NSWindow* window = browser()->window()->GetNativeWindow();
+    NSWindow* window =
+        browser()->window()->GetNativeWindow().GetNativeNSWindow();
     [[window contentView] addSubview:textField_];
   }
 
@@ -74,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacCocoaBrowserTest,
   // filters all context menus no matter which control invokes them (as well as
   // the application Services menu). So to test, we just need a control with a
   // bit of selected text.
-  NSWindow* window = browser()->window()->GetNativeWindow();
+  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
   [window makeFirstResponder:textField_];
   [textField_ selectText:nil];
 

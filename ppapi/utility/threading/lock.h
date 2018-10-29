@@ -7,6 +7,9 @@
 
 #ifdef WIN32
 #include <windows.h>
+// MemoryBarrier is a Win32 macro that clashes with MemoryBarrier in
+// base/atomicops.h.
+#undef MemoryBarrier
 #else
 #include <pthread.h>
 #endif

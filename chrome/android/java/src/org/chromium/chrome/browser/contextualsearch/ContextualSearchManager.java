@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabRedirectHandler;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
@@ -567,7 +568,7 @@ public class ContextualSearchManager
     /** Accessor for the {@code InfoBarContainer} currently attached to the {@code Tab}. */
     private InfoBarContainer getInfoBarContainer() {
         Tab tab = mActivity.getActivityTab();
-        return tab == null ? null : tab.getInfoBarContainer();
+        return tab == null ? null : InfoBarContainer.get(tab);
     }
 
     /** Listens for notifications that should hide the Contextual Search bar. */
@@ -582,8 +583,8 @@ public class ContextualSearchManager
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
-                if (sadTabShown) {
+            public void onCrash(Tab tab) {
+                if (SadTab.isShowing(tab)) {
                     // Hide contextual search if the foreground tab crashed
                     hideContextualSearch(StateChangeReason.UNKNOWN);
                 }
@@ -678,17 +679,21 @@ public class ContextualSearchManager
      * @param caption The caption to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
+     * @param docId The ID of the document identified by the server, or 0 for not known.
+     * @param snippetHash The hash of a snippet from the surrounding text, as identified by the
+     *        server, or 0 for not known.
      */
     @CalledByNative
     public void onSearchTermResolutionResponse(boolean isNetworkUnavailable, int responseCode,
             final String searchTerm, final String displayText, final String alternateTerm,
             final String mid, boolean doPreventPreload, int selectionStartAdjust,
             int selectionEndAdjust, final String contextLanguage, final String thumbnailUrl,
-            final String caption, final String quickActionUri, final int quickActionCategory) {
+            final String caption, final String quickActionUri, final int quickActionCategory,
+            final long docId, final long snippetHash) {
         mNetworkCommunicator.handleSearchTermResolutionResponse(isNetworkUnavailable, responseCode,
                 searchTerm, displayText, alternateTerm, mid, doPreventPreload, selectionStartAdjust,
                 selectionEndAdjust, contextLanguage, thumbnailUrl, caption, quickActionUri,
-                quickActionCategory);
+                quickActionCategory, docId, snippetHash);
     }
 
     @Override
@@ -696,7 +701,7 @@ public class ContextualSearchManager
             String searchTerm, String displayText, String alternateTerm, String mid,
             boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
             String contextLanguage, String thumbnailUrl, String caption, String quickActionUri,
-            int quickActionCategory) {
+            int quickActionCategory, long docId, long snippetHash) {
         if (!mInternalStateController.isStillWorkingOn(InternalState.RESOLVING)) return;
 
         // Show an appropriate message for what to search for.
@@ -787,6 +792,10 @@ public class ContextualSearchManager
                 mContext.onSelectionAdjusted(selectionStartAdjust, selectionEndAdjust);
             }
         }
+
+        // Tell the interaction recorder about the docId and snippetHash, so we can correlate the
+        // signals and outcomes with this crawled document (when available).
+        mTapSuppressionInteractionRecorder.recordSnippetData(docId, snippetHash);
 
         mInternalStateController.notifyFinishedWorkOn(InternalState.RESOLVING);
     }
@@ -1326,6 +1335,14 @@ public class ContextualSearchManager
             if (didSelect) {
                 assert mContext != null;
                 mContext.onSelectionAdjusted(startAdjust, endAdjust);
+                // There's a race condition when we select the word between this Ack response and
+                // the onSelectionChanged call.  Update the selection in case this method won the
+                // race so we ensure that there's a valid selected word.
+                // See https://crbug.com/889657 for details.
+                String adjustedSelection = mContext.getSelection();
+                if (!TextUtils.isEmpty(adjustedSelection)) {
+                    mSelectionController.setSelectedText(adjustedSelection);
+                }
                 showSelectionAsSearchInBar(mSelectionController.getSelectedText());
                 mInternalStateController.notifyFinishedWorkOn(InternalState.START_SHOWING_TAP_UI);
             } else {

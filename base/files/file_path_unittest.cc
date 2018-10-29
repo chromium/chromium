@@ -506,9 +506,9 @@ TEST_F(FilePathTest, PathComponentsTest) {
     input.GetComponents(&comps);
 
     FilePath::StringType observed;
-    for (size_t j = 0; j < comps.size(); ++j) {
+    for (const auto& j : comps) {
       observed.append(FILE_PATH_LITERAL("|"), 1);
-      observed.append(comps[j]);
+      observed.append(j);
     }
     EXPECT_EQ(FilePath::StringType(cases[i].expected), observed) <<
               "i: " << i << ", input: " << input.value();
@@ -1240,9 +1240,9 @@ TEST_F(FilePathTest, EndsWithSeparator) {
     { FPL("bar"), false },
     { FPL("/foo/bar"), false },
   };
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    FilePath input = FilePath(cases[i].input).NormalizePathSeparators();
-    EXPECT_EQ(cases[i].expected, input.EndsWithSeparator());
+  for (const auto& i : cases) {
+    FilePath input = FilePath(i.input).NormalizePathSeparators();
+    EXPECT_EQ(i.expected, input.EndsWithSeparator());
   }
 }
 
@@ -1253,9 +1253,9 @@ TEST_F(FilePathTest, AsEndingWithSeparator) {
     { FPL("foo"), FPL("foo/") },
     { FPL("foo/"), FPL("foo/") }
   };
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    FilePath input = FilePath(cases[i].input).NormalizePathSeparators();
-    FilePath expected = FilePath(cases[i].expected).NormalizePathSeparators();
+  for (const auto& i : cases) {
+    FilePath input = FilePath(i.input).NormalizePathSeparators();
+    FilePath expected = FilePath(i.expected).NormalizePathSeparators();
     EXPECT_EQ(expected.value(), input.AsEndingWithSeparator().value());
   }
 }

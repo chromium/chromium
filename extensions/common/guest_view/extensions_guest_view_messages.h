@@ -25,6 +25,16 @@ IPC_MESSAGE_CONTROL1(ExtensionsGuestViewMsg_CreateMimeHandlerViewGuestACK,
 IPC_MESSAGE_CONTROL1(ExtensionsGuestViewMsg_MimeHandlerViewGuestOnLoadCompleted,
                      int /* element_instance_id */)
 
+// Notifies the embedder to the destroy the MimeHandlerViewFrameContainer
+// associated with |element_instance_id|.
+IPC_MESSAGE_CONTROL1(ExtensionsGuestViewMsg_DestroyFrameContainer,
+                     int /* element_instance_id */)
+
+// Notifies the embedder that the current guest creation has failed and it
+// should retry creating a MimeHandlerViewGuest.
+IPC_MESSAGE_CONTROL1(ExtensionsGuestViewMsg_RetryCreatingMimeHandlerViewGuest,
+                     int /* element_instance_id */)
+
 // Messages sent from the renderer to the browser.
 
 // Queries whether the RenderView of the provided |routing_id| is allowed to

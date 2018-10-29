@@ -12,6 +12,17 @@ import subprocess
 import sys
 import tempfile
 import time
+import traceback
+
+# Add src/testing/ into sys.path for importing xvfb.
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import xvfb
+
+# Unfortunately we need to copy these variables from ../test_env.py.
+# Importing it and using its get_sandbox_env breaks test runs on Linux
+# (it seems to unset DISPLAY).
+CHROME_SANDBOX_ENV = 'CHROME_DEVEL_SANDBOX'
+CHROME_SANDBOX_PATH = '/opt/chromium/chrome_sandbox'
 
 
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -199,3 +210,155 @@ def run_integration_test(script_to_run, extra_args, log_file, output):
   }, output)
 
   return integration_test_res
+
+
+class BaseIsolatedScriptArgsAdapter(object):
+  """The base class for all script adapters that need to translate flags
+  set by isolated script test contract into the specific test script's flags.
+  """
+
+  def __init__(self):
+    self._parser = argparse.ArgumentParser()
+    self._options = None
+    self._rest_args = None
+    self._parser.add_argument(
+        '--isolated-script-test-output', type=str,
+        required=True)
+    self._parser.add_argument(
+        '--isolated-script-test-filter', type=str,
+        required=False)
+    self._parser.add_argument(
+        '--isolated-script-test-repeat', type=int,
+        required=False)
+    self._parser.add_argument(
+        '--isolated-script-test-launcher-retry-limit', type=int,
+        required=False)
+    self._parser.add_argument(
+        '--isolated-script-test-also-run-disabled-tests',
+        default=False, action='store_true', required=False)
+
+    self._parser.add_argument('--xvfb', help='start xvfb', action='store_true')
+
+    # This argument is ignored for now.
+    self._parser.add_argument(
+        '--isolated-script-test-chartjson-output', type=str)
+    # This argument is ignored for now.
+    self._parser.add_argument('--isolated-script-test-perf-output', type=str)
+
+    self.add_extra_arguments(self._parser)
+
+  def add_extra_arguments(self, parser):
+    pass
+
+  def parse_args(self, args=None):
+    self._options, self._rest_args = self._parser.parse_known_args(args)
+
+  @property
+  def parser(self):
+    return self._parser
+
+  @property
+  def options(self):
+    return self._options
+
+  @property
+  def rest_args(self):
+    return self._rest_args
+
+  def generate_test_output_args(self, output):
+    del output  # unused
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_test_filter_args(self, test_filter_str):
+    del test_filter_str  # unused
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_test_repeat_args(self, repeat_count):
+    del repeat_count  # unused
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_test_launcher_retry_limit_args(self, retry_limit):
+    del retry_limit  # unused
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_test_also_run_disabled_tests_args(self):
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_sharding_args(self, total_shard, shard_index):
+    del total_shard, shard_index  # unused
+    raise RuntimeError('this method is not yet implemented')
+
+  def generate_isolated_script_cmd(self):
+    isolated_script_cmd = [sys.executable] + self._rest_args
+
+    isolated_script_cmd += self.generate_test_output_args(
+        self.options.isolated_script_test_output)
+
+    # Augment test filter args if needed
+    if self.options.isolated_script_test_filter:
+      isolated_script_cmd += self.generate_test_filter_args(
+          self.options.isolated_script_test_filter)
+
+    # Augment test repeat if needed
+    if self.options.isolated_script_test_repeat:
+      isolated_script_cmd += self.generate_test_repeat_args(
+          self.options.isolated_script_test_repeat)
+
+    # Augment test launcher retry limit args if needed
+    if self.options.isolated_script_test_launcher_retry_limit:
+      isolated_script_cmd += self.generate_test_launcher_retry_limit_args(
+          self.options.isolated_script_test_launcher_retry_limit)
+
+    # Augment test also run disable tests args if needed
+    if self.options.isolated_script_test_also_run_disabled_tests:
+      isolated_script_cmd += self.generate_test_also_run_disabled_tests_args()
+
+    # Augment shard args if needed
+    env = os.environ.copy()
+
+    total_shards = None
+    shard_index = None
+
+    if 'GTEST_TOTAL_SHARDS' in env:
+      total_shards = int(env['GTEST_TOTAL_SHARDS'])
+    if 'GTEST_SHARD_INDEX' in env:
+      shard_index = int(env['GTEST_SHARD_INDEX'])
+    if total_shards is not None and shard_index is not None:
+      isolated_script_cmd += self.generate_sharding_args(
+          total_shards, shard_index)
+
+    return isolated_script_cmd
+
+  def run_test(self):
+    self.parse_args()
+    cmd = self.generate_isolated_script_cmd()
+
+    env = os.environ.copy()
+
+    # Assume we want to set up the sandbox environment variables all the
+    # time; doing so is harmless on non-Linux platforms and is needed
+    # all the time on Linux.
+    env[CHROME_SANDBOX_ENV] = CHROME_SANDBOX_PATH
+    valid = True
+    rc = 0
+    try:
+      env['CHROME_HEADLESS'] = '1'
+      if self.options.xvfb:
+        return xvfb.run_executable(cmd, env)
+      else:
+         return run_command(cmd, env=env)
+
+    except Exception:
+      rc = 1
+      traceback.print_exc()
+      valid = False
+
+    if not valid:
+      failures = ['(entire test suite)']
+      with open(self.options.isolated_script_test_output, 'w') as fp:
+        json.dump({
+            'valid': valid,
+            'failures': failures,
+        }, fp)
+
+    return rc

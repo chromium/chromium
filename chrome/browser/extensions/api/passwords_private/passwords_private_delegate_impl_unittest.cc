@@ -152,14 +152,15 @@ PasswordsPrivateDelegateImplTest::~PasswordsPrivateDelegateImplTest() = default;
 
 void PasswordsPrivateDelegateImplTest::SetUpPasswordStore(
     std::vector<autofill::PasswordForm> forms) {
-  scoped_refptr<password_manager::TestPasswordStore>
-  password_store(static_cast<password_manager::TestPasswordStore*>(
-      PasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              &profile_,
-              password_manager::BuildPasswordStore<
-                  content::BrowserContext, password_manager::TestPasswordStore>)
-          .get()));
+  scoped_refptr<password_manager::TestPasswordStore> password_store(
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  &profile_,
+                  base::BindRepeating(&password_manager::BuildPasswordStore<
+                                      content::BrowserContext,
+                                      password_manager::TestPasswordStore>))
+              .get()));
   for (const autofill::PasswordForm& form : forms) {
     password_store->AddLogin(form);
   }
@@ -173,7 +174,7 @@ void PasswordsPrivateDelegateImplTest::SetUpRouters() {
   // factory, because at some point during the preceding initialization, a null
   // factory is set, resulting in nul PasswordsPrivateEventRouter.
   PasswordsPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
-      &profile_, BuildPasswordsPrivateEventRouter);
+      &profile_, base::BindRepeating(&BuildPasswordsPrivateEventRouter));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {

@@ -2,7 +2,6 @@ Tests that computed style is not affected by the zoom value
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS -webkit-border-horizontal-spacing, value: "20px"
 PASS -webkit-border-vertical-spacing, value: "20px"
 PASS -webkit-box-reflect, value: "below 20px -webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(white)) 0 fill / auto / 0px stretch"

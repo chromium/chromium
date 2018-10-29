@@ -871,7 +871,7 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
       // We're supposed to switch back to the attribute value state that
       // we were in when we were switched into this state. Rather than
       // keeping track of this explictly, we observe that the previous
-      // state can be determined by m_additionalAllowedCharacter.
+      // state can be determined by additional_allowed_character_.
       if (additional_allowed_character_ == '"')
         HTML_SWITCH_TO(kAttributeValueDoubleQuotedState);
       else if (additional_allowed_character_ == '\'')
@@ -1444,7 +1444,7 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
 }
 
 String HTMLTokenizer::BufferedCharacters() const {
-  // FIXME: Add an assert about m_state.
+  // FIXME: Add a DCHECK about state_.
   StringBuilder characters;
   characters.ReserveCapacity(NumberOfBufferedCharacters());
   characters.Append('<');
@@ -1484,9 +1484,9 @@ inline bool HTMLTokenizer::IsAppropriateEndTag() {
   if (buffered_end_tag_name_.size() != appropriate_end_tag_name_.size())
     return false;
 
-  size_t num_characters = buffered_end_tag_name_.size();
+  wtf_size_t num_characters = buffered_end_tag_name_.size();
 
-  for (size_t i = 0; i < num_characters; i++) {
+  for (wtf_size_t i = 0; i < num_characters; i++) {
     if (buffered_end_tag_name_[i] != appropriate_end_tag_name_[i])
       return false;
   }

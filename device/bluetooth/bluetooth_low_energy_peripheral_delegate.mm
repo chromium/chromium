@@ -75,11 +75,6 @@ class BluetoothLowEnergyPeripheralBridge {
   return self;
 }
 
-- (void)dealloc {
-  [bridge_->GetPeripheral() setDelegate:nil];
-  [super dealloc];
-}
-
 - (void)peripheral:(CBPeripheral*)peripheral
     didModifyServices:(NSArray*)invalidatedServices {
   bridge_->DidModifyServices(invalidatedServices);

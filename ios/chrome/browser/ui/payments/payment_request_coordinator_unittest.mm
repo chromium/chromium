@@ -78,8 +78,9 @@ typedef void (^mock_coordinator_select_shipping_option)(
 class PaymentRequestCoordinatorTest : public PaymentRequestUnitTestBase,
                                       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile();
     autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
@@ -90,7 +91,8 @@ class PaymentRequestCoordinatorTest : public PaymentRequestUnitTestBase,
     CreateTestPaymentRequest();
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that invoking start and stop on the coordinator presents and

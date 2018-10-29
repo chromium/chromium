@@ -129,13 +129,11 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.confirm_import_sync_data, null);
 
-        TextView prompt = (TextView) v.findViewById(R.id.sync_import_data_prompt);
+        TextView prompt = v.findViewById(R.id.sync_import_data_prompt);
         prompt.setText(getActivity().getString(R.string.sync_import_data_prompt, oldAccountName));
 
-        mConfirmImportOption = (RadioButtonWithDescription)
-                v.findViewById(R.id.sync_confirm_import_choice);
-        mKeepSeparateOption = (RadioButtonWithDescription)
-                v.findViewById(R.id.sync_keep_separate_choice);
+        mConfirmImportOption = v.findViewById(R.id.sync_confirm_import_choice);
+        mKeepSeparateOption = v.findViewById(R.id.sync_keep_separate_choice);
 
         mConfirmImportOption.setDescriptionText(getActivity().getString(
                 R.string.sync_import_existing_data_subtext, newAccountName));
@@ -169,7 +167,7 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
         if (importSyncType == ImportSyncType.SWITCHING_SYNC_ACCOUNTS) {
             // Re-order the buttons so that Import Data is last and Don't Import (the default) is
             // at the top.
-            LinearLayout layout = (LinearLayout) v.findViewById(R.id.sync_import_data_content);
+            LinearLayout layout = v.findViewById(R.id.sync_import_data_content);
             layout.removeView(mConfirmImportOption);
             layout.addView(mConfirmImportOption);
         }

@@ -69,8 +69,7 @@ class STORAGE_EXPORT QuotaTaskObserver {
   void RegisterTask(QuotaTask* task);
   void UnregisterTask(QuotaTask* task);
 
-  using TaskSet = std::set<QuotaTask*>;
-  TaskSet running_quota_tasks_;
+  std::set<QuotaTask*> running_quota_tasks_;
 };
 }
 

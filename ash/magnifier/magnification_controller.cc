@@ -175,9 +175,11 @@ void MagnificationController::SetEnabled(bool enabled) {
   // Keyboard overscroll creates layout issues with fullscreen magnification
   // so it needs to be disabled when magnification is enabled.
   // TODO(spqchan): Fix the keyboard overscroll issues.
-  keyboard::KeyboardController::Get()->set_keyboard_overscroll_override(
-      is_enabled_ ? keyboard::KEYBOARD_OVERSCROLL_OVERRIDE_DISABLED
-                  : keyboard::KEYBOARD_OVERSCROLL_OVERRIDE_NONE);
+  auto config = keyboard::KeyboardController::Get()->keyboard_config();
+  config.overscroll_behavior =
+      is_enabled_ ? keyboard::mojom::KeyboardOverscrollBehavior::kDisabled
+                  : keyboard::mojom::KeyboardOverscrollBehavior::kDefault;
+  keyboard::KeyboardController::Get()->UpdateKeyboardConfig(config);
 }
 
 bool MagnificationController::IsEnabled() const {
@@ -704,11 +706,8 @@ void MagnificationController::OnMouseMove(const gfx::Point& location) {
   int margin = kCursorPanningMargin / scale_;  // No need to consider DPI.
 
   // Reduce the bottom margin if the keyboard is visible.
-  bool reduce_bottom_margin = false;
-  if (keyboard::KeyboardController::Get()->enabled()) {
-    reduce_bottom_margin =
-        keyboard::KeyboardController::Get()->IsKeyboardVisible();
-  }
+  bool reduce_bottom_margin =
+      keyboard::KeyboardController::Get()->IsKeyboardVisible();
 
   MoveMagnifierWindowFollowPoint(mouse, margin, margin, margin, margin,
                                  reduce_bottom_margin);
@@ -886,7 +885,7 @@ void MagnificationController::MoveMagnifierWindowCenterPoint(
   gfx::Rect window_rect = GetViewportRect();
 
   // Reduce the viewport bounds if the keyboard is up.
-  if (keyboard::KeyboardController::Get()->enabled()) {
+  if (keyboard::KeyboardController::Get()->IsEnabled()) {
     gfx::Rect keyboard_rect = keyboard::KeyboardController::Get()
                                   ->GetKeyboardWindow()
                                   ->GetBoundsInScreen();

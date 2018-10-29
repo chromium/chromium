@@ -5,6 +5,9 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 
 #include "base/ios/ios_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "ios/web/public/features.h"
+#import "ios/web/public/web_state/web_frame.h"
 #include "ios/web/public/web_state/web_frame_util.h"
 #import "ios/web/public/web_state/web_state.h"
 #import "ios/web/public/web_state/web_state_observer.h"
@@ -15,7 +18,17 @@
 #error "This file requires ARC support."
 #endif
 
+using testing::Truly;
+
 namespace {
+
+// WebFrameWebStateObserverInttest is parameterized on this enum to test both
+// LegacyNavigationManager and WKBasedNavigationManager.
+enum class NavigationManagerChoice {
+  LEGACY,
+  WK_BASED,
+};
+
 // Mocks WebStateObserver navigation callbacks.
 class WebStateObserverMock : public web::WebStateObserver {
  public:
@@ -30,6 +43,11 @@ class WebStateObserverMock : public web::WebStateObserver {
  private:
   DISALLOW_COPY_AND_ASSIGN(WebStateObserverMock);
 };
+
+// A predicate that returns true if |frame| is a main frame.
+bool IsMainFrame(web::WebFrame* frame) {
+  return frame->IsMainFrame();
+}
 
 // Verifies that the web frame passed to the observer is the main frame.
 ACTION_P(VerifyMainWebFrame, web_state) {
@@ -51,10 +69,28 @@ ACTION_P(VerifyChildWebFrame, web_state) {
 
 namespace web {
 
-typedef WebTestWithWebState WebFrameWebStateObserverInttest;
+class WebFrameWebStateObserverInttest
+    : public WebTestWithWebState,
+      public ::testing::WithParamInterface<NavigationManagerChoice> {
+ protected:
+  void SetUp() override {
+    if (GetParam() == NavigationManagerChoice::LEGACY) {
+      scoped_feature_list_.InitAndDisableFeature(
+          web::features::kSlimNavigationManager);
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          web::features::kSlimNavigationManager);
+    }
+
+    WebTestWithWebState::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Web frame events should be registered on HTTP navigation.
-TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
+TEST_P(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
   testing::StrictMock<WebStateObserverMock> observer;
   web_state()->AddObserver(&observer);
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
@@ -69,7 +105,7 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
 }
 
 // Web frame events should be registered on HTTPS navigation.
-TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
+TEST_P(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
   testing::StrictMock<WebStateObserverMock> observer;
   web_state()->AddObserver(&observer);
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
@@ -84,24 +120,42 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
 }
 
 // Web frame event should be registered on HTTPS navigation with iframe.
-TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
+TEST_P(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   testing::StrictMock<WebStateObserverMock> observer;
   web_state()->AddObserver(&observer);
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
-      .Times(2)
-      .WillOnce(VerifyChildWebFrame(web_state()))
+
+  // The order in which the main and child frames become available is not
+  // guaranteed due to the async nature of messaging. The following expectations
+  // use separate matchers to identify main and child frames so that they can
+  // be matched in any order.
+  EXPECT_CALL(observer,
+              WebFrameDidBecomeAvailable(web_state(), Truly(IsMainFrame)))
       .WillOnce(VerifyMainWebFrame(web_state()));
+  EXPECT_CALL(observer,
+              WebFrameDidBecomeAvailable(web_state(), Not(Truly(IsMainFrame))))
+      .WillOnce(VerifyChildWebFrame(web_state()));
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl1"));
-  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
-      .Times(2)
-      .WillOnce(VerifyChildWebFrame(web_state()))
+
+  EXPECT_CALL(observer,
+              WebFrameDidBecomeAvailable(web_state(), Truly(IsMainFrame)))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
-      .Times(2)
-      .WillOnce(VerifyMainWebFrame(web_state()))
+  EXPECT_CALL(observer,
+              WebFrameDidBecomeAvailable(web_state(), Not(Truly(IsMainFrame))))
+      .WillOnce(VerifyChildWebFrame(web_state()));
+  EXPECT_CALL(observer,
+              WebFrameWillBecomeUnavailable(web_state(), Truly(IsMainFrame)))
+      .WillOnce(VerifyMainWebFrame(web_state()));
+  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(),
+                                                      Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl2"));
+
   web_state()->RemoveObserver(&observer);
 }
+
+INSTANTIATE_TEST_CASE_P(ProgrammaticWebFrameWebStateObserverInttest,
+                        WebFrameWebStateObserverInttest,
+                        ::testing::Values(NavigationManagerChoice::LEGACY,
+                                          NavigationManagerChoice::WK_BASED));
 
 }  // namespace web

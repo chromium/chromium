@@ -2,8 +2,8 @@ Test that no crash occurs when a SVG filter is deleted that used to be reference
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

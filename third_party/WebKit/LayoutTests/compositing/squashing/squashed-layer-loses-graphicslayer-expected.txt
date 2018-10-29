@@ -50,6 +50,7 @@ CASE 1, original layer tree:
     }
   ]
 }
+
 CASE 2, The original composited layer is no longer composited, which then also removes all squashing layers. The important point is that there should be an appropriate repaint to the root GraphicsLayer:
 {
   "layers": [

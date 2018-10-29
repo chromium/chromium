@@ -183,12 +183,14 @@ PlaceholderImage::SharedFont* PlaceholderImage::SharedFont::g_instance_ =
 
 PlaceholderImage::PlaceholderImage(ImageObserver* observer,
                                    const IntSize& size,
-                                   int64_t original_resource_size)
+                                   int64_t original_resource_size,
+                                   bool is_lazy_image)
     : Image(observer),
       size_(size),
       text_(original_resource_size <= 0
                 ? String()
                 : FormatOriginalResourceSizeBytes(original_resource_size)),
+      is_lazy_image_(is_lazy_image),
       paint_record_content_id_(-1) {}
 
 PlaceholderImage::~PlaceholderImage() = default;
@@ -245,6 +247,10 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   if (!src_rect.Intersects(FloatRect(0.0f, 0.0f,
                                      static_cast<float>(size_.Width()),
                                      static_cast<float>(size_.Height())))) {
+    return;
+  }
+  if (is_lazy_image_) {
+    // Keep the image without any color and text decorations.
     return;
   }
 

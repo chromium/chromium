@@ -62,11 +62,11 @@ void SendNativeKeyEventToXDisplay(ui::KeyboardCode key,
                                        XKeysymForWindowsKeyCode(key, false)));
 
   // Simulate the keys being pressed.
-  for (KeyCodes::iterator it = key_codes.begin(); it != key_codes.end(); it++)
+  for (auto it = key_codes.begin(); it != key_codes.end(); it++)
     XTestFakeKeyEvent(display, *it, x11::True, x11::CurrentTime);
 
   // Simulate the keys being released.
-  for (KeyCodes::iterator it = key_codes.begin(); it != key_codes.end(); it++)
+  for (auto it = key_codes.begin(); it != key_codes.end(); it++)
     XTestFakeKeyEvent(display, *it, x11::False, x11::CurrentTime);
 
   XFlush(display);

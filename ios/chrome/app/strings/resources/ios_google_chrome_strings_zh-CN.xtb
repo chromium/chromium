@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
-<translation id="3678774398092457402">希望 Chrome 保存您登录此网站时所用的密码吗？</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">您随时可以自定义<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。Google 可能会根据您访问的网站上的内容、在浏览器中的互动行为和活动，为您提供个性化的 Chrome 体验和其他 Google 服务体验（例如翻译、搜索和广告）。</translation>
 <translation id="5639704535586432836">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Google Chrome”，然后开启相机。</translation>
 <translation id="5642200033778930880">Google Chrome 无法在分割视图模式下使用您的相机</translation>
-<translation id="5703130498371792817">您对 Chrome 使用体验感到满意吗？欢迎<ph name="BEGIN_LINK" />为此应用评分<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="6036420186814142909">Google Chrome 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome 服务条款</translation>
 <translation id="7165736900384873061">开始使用 Google Chrome QR 码扫描器</translation>
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />将 Chrome 移到 Dock 中<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome 会使用 Face ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="7265369419224458312">您可直接在此处使用您在计算机上打开的标签页。只需在计算机上打开 Chrome，转到菜单，然后选择“登录 Chrome…”即可</translation>
 <translation id="728488472449859922">开启 Google Chrome QR 码扫描器</translation>
 <translation id="7400722733683201933">关于Google Chrome</translation>

@@ -649,6 +649,12 @@ Security.SecurityMainView = class extends UI.VBox {
       text.appendChild(Security.SecurityPanel.createCertificateViewerButtonForCert(
           Common.UIString('View certificate'), explanation.certificate));
     }
+
+    if (explanation.recommendations && explanation.recommendations.length) {
+      const recommendationList = text.createChild('ul', 'security-explanation-recommendations');
+      for (const recommendation of explanation.recommendations)
+        recommendationList.createChild('li').textContent = recommendation;
+    }
     return text;
   }
 

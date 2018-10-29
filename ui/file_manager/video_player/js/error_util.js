@@ -43,5 +43,5 @@ Function.prototype.wrap = function(opt_thisObject, var_args) {
       window.JSErrorCount++;
       throw e;
     }
-  }
+  };
 };

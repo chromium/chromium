@@ -1,0 +1,16 @@
+Tests that DOMAgent.setOuterHTML can handle whitespace-only text nodes.
+
+Setting textContent to " "
+
+Setting textContent to "NOT_WHITESPACE"
+Event Symbol(NodeInserted): #text
+
+Setting textContent to "OTHER_NOT_WHITESPACE"
+Event Symbol(CharacterDataModified): #text
+
+Setting textContent to "   "
+Event Symbol(NodeRemoved): #text
+
+Setting textContent to ""
+
+

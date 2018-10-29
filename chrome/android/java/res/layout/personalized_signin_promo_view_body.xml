@@ -21,7 +21,6 @@
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/signin_promo_signin_button"
-        style="@style/SigninButtonCompat"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginBottom="6dp"
@@ -30,9 +29,10 @@
         android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/signin_promo_continue_as"/>
+        android:text="@string/signin_promo_continue_as"
+        style="@style/FilledButton.Flat" />
 
-    <Button
+    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/signin_promo_choose_account_button"
         style="@style/SigninButtonBorderlessRegular"
         android:layout_width="match_parent"

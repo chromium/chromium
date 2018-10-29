@@ -56,22 +56,21 @@ class ArcWindowDelegateImpl : public ArcMetricsService::ArcWindowDelegate {
 
   ~ArcWindowDelegateImpl() override = default;
 
-  bool IsActiveArcAppWindow(const aura::Window* window) const override {
-    aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
-    return window == active && IsArcAppWindow(window);
+  bool IsArcAppWindow(const aura::Window* window) const override {
+    return arc::IsArcAppWindow(window);
   }
 
-  void RegisterFocusChangeObserver() override {
+  void RegisterActivationChangeObserver() override {
     // If WMHelper doesn't exist, do nothing. This occurs in tests.
     if (exo::WMHelper::HasInstance())
-      exo::WMHelper::GetInstance()->AddFocusObserver(service_);
+      exo::WMHelper::GetInstance()->AddActivationObserver(service_);
   }
 
-  void UnregisterFocusChangeObserver() override {
+  void UnregisterActivationChangeObserver() override {
     // If WMHelper is already destroyed, do nothing.
     // TODO(crbug.com/748380): Fix shutdown order.
     if (exo::WMHelper::HasInstance())
-      exo::WMHelper::GetInstance()->RemoveFocusObserver(service_);
+      exo::WMHelper::GetInstance()->RemoveActivationObserver(service_);
   }
 
  private:
@@ -122,14 +121,14 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
       weak_ptr_factory_(this) {
   arc_bridge_service_->metrics()->SetHost(this);
   arc_bridge_service_->process()->AddObserver(&process_observer_);
-  arc_window_delegate_->RegisterFocusChangeObserver();
+  arc_window_delegate_->RegisterActivationChangeObserver();
 }
 
 ArcMetricsService::~ArcMetricsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->process()->RemoveObserver(&process_observer_);
   arc_bridge_service_->metrics()->SetHost(nullptr);
-  arc_window_delegate_->UnregisterFocusChangeObserver();
+  arc_window_delegate_->UnregisterActivationChangeObserver();
 }
 
 void ArcMetricsService::SetArcWindowDelegateForTesting(
@@ -258,9 +257,11 @@ void ArcMetricsService::RecordNativeBridgeUMA() {
   UMA_HISTOGRAM_ENUMERATION("Arc.NativeBridge", native_bridge_type_);
 }
 
-void ArcMetricsService::OnWindowFocused(aura::Window* gained_focus,
-                                        aura::Window* lost_focus) {
-  if (!arc_window_delegate_->IsActiveArcAppWindow(gained_focus))
+void ArcMetricsService::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  if (!arc_window_delegate_->IsArcAppWindow(gained_active))
     return;
   UMA_HISTOGRAM_ENUMERATION(
       "Arc.UserInteraction",

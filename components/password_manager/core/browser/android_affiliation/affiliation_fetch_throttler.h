@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/network_change_notifier.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {
 class TickClock;
@@ -50,7 +50,7 @@ class AffiliationFetchThrottlerDelegate;
 // periods, so that requests will not be held back for too long after
 // connectivity is restored.
 class AffiliationFetchThrottler
-    : public net::NetworkChangeNotifier::NetworkChangeObserver {
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Creates an instance that will use |tick_clock| as its tick source, and will
   // post to |task_runner| to call the |delegate|'s OnSendNetworkRequest(). The
@@ -58,6 +58,7 @@ class AffiliationFetchThrottler
   AffiliationFetchThrottler(
       AffiliationFetchThrottlerDelegate* delegate,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const base::TickClock* tick_clock);
   ~AffiliationFetchThrottler() override;
 
@@ -114,11 +115,11 @@ class AffiliationFetchThrottler
   // Called back when the |exponential_backoff_| delay expires.
   void OnBackoffDelayExpiredCallback();
 
-  // net::NetworkChangeNotifier::NetworkChangeObserver:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
   const base::TickClock* tick_clock_;
   State state_;
   bool has_network_connectivity_;

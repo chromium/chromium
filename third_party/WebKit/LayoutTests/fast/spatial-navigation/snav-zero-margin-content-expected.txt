@@ -3,4 +3,3 @@ test1 test2
 
 TEST COMPLETE
 PASS gFocusedDocument.activeElement.getAttribute("id") is "end"
-

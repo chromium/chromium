@@ -8,6 +8,8 @@ source_set("app_shim") {
   sources = [
     "app_shim_handler_mac.cc",
     "app_shim_handler_mac.h",
+    "app_shim_host_bootstrap_mac.cc",
+    "app_shim_host_bootstrap_mac.h",
     "app_shim_host_mac.cc",
     "app_shim_host_mac.h",
     "app_shim_host_manager_mac.h",

@@ -76,7 +76,7 @@ std::set<std::string> GetDistinctHosts(const URLPatternSet& host_patterns,
     }
 
     // Check if we've already seen this host.
-    HostVector::iterator it = hosts_best_rcd.begin();
+    auto it = hosts_best_rcd.begin();
     for (; it != hosts_best_rcd.end(); ++it) {
       if (it->first == host)
         break;

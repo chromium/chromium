@@ -13,10 +13,6 @@
 
 namespace cc {
 
-namespace {
-const int kSolidQuadTileSize = 256;
-}
-
 SolidColorLayerImpl::SolidColorLayerImpl(LayerTreeImpl* tree_impl, int id)
     : LayerImpl(tree_impl, id) {
 }
@@ -41,32 +37,12 @@ void SolidColorLayerImpl::AppendSolidQuads(
   DCHECK_EQ(SkBlendMode::kSrcOver, shared_quad_state->blend_mode);
   if (alpha < std::numeric_limits<float>::epsilon())
     return;
-  // We create a series of smaller quads instead of just one large one so that
-  // the culler can reduce the total pixels drawn.
-  int right = visible_layer_rect.right();
-  int bottom = visible_layer_rect.bottom();
-  for (int x = visible_layer_rect.x(); x < visible_layer_rect.right();
-       x += kSolidQuadTileSize) {
-    for (int y = visible_layer_rect.y(); y < visible_layer_rect.bottom();
-         y += kSolidQuadTileSize) {
-      gfx::Rect quad_rect(x,
-                          y,
-                          std::min(right - x, kSolidQuadTileSize),
-                          std::min(bottom - y, kSolidQuadTileSize));
-      gfx::Rect visible_quad_rect =
-          occlusion_in_layer_space.GetUnoccludedContentRect(quad_rect);
-      if (visible_quad_rect.IsEmpty())
-        continue;
 
-      append_quads_data->visible_layer_area +=
-          visible_quad_rect.width() * visible_quad_rect.height();
-
-      auto* quad =
-          render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, color,
-                   force_anti_aliasing_off);
-    }
-  }
+  gfx::Rect visible_quad_rect =
+      occlusion_in_layer_space.GetUnoccludedContentRect(visible_layer_rect);
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+  quad->SetNew(shared_quad_state, visible_layer_rect, visible_quad_rect, color,
+               force_anti_aliasing_off);
 }
 
 void SolidColorLayerImpl::AppendQuads(viz::RenderPass* render_pass,

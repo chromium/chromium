@@ -380,6 +380,7 @@ Ak ste už s návodom skončili, prejdite pomocou čítačky ChromeVox na tlač
 <translation id="3914173277599553213">Povinné</translation>
 <translation id="3914732343065571127">Zoznam príkazov čítačky ChromeVox</translation>
 <translation id="3930498801443296724">Obsiahnutý citát</translation>
+<translation id="3941269780691800708">Čítať text pod kurzorom myši</translation>
 <translation id="3962990492275676168">Začať čítať z aktuálneho miesta</translation>
 <translation id="4004802134384979325">začiarknuté</translation>
 <translation id="4006140876663370126">obrázok</translation>
@@ -555,7 +556,7 @@ Ak ste už s návodom skončili, prejdite pomocou čítačky ChromeVox na tlač
 <translation id="5336381510091010269">autoinl+lst</translation>
 <translation id="5349770431644471053">Spätný odkaz</translation>
 <translation id="5350654862897073517">Začiatok dolného indexu</translation>
-<translation id="536031132345979795">Prejsť späť počas nepretržitého čítania</translation>
+<translation id="536031132345979795">Prejsť späť počas plynulého čítania</translation>
 <translation id="5368000168321181111">Zvukové signály sú vypnuté</translation>
 <translation id="5374320867641260420">Žiadne ďalšie tlačidlo</translation>
 <translation id="5376407118396657359">Prechádzajte po bunkách pomocou klávesov Hľadať + Ctrl + Alt.</translation>
@@ -765,7 +766,7 @@ Ak chcete otvoriť ponuku prehliadača Chrome, stlačte kombináciu klávesov Al
 <translation id="7161771961008409533">Kontextové tlačidlo</translation>
 <translation id="7165714724802225287">Aktuálny štýl zobrazenia je prekladaný.</translation>
 <translation id="7167657087543110">zvuková odozva na znaky</translation>
-<translation id="7170733337935166589">Prejsť dopredu počas nepretržitého čítania</translation>
+<translation id="7170733337935166589">Prejsť dopredu počas plynulého čítania</translation>
 <translation id="7181697990050180700">Ak chcete prispôsobiť klávesové skratky pre často používané príkazy, zadajte ich do zodpovedajúcich polí nižšie.</translation>
 <translation id="7203150201908454328">Rozbalené</translation>
 <translation id="7210211103303402262">minúty</translation>

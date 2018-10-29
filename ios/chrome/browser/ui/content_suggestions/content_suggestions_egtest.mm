@@ -18,21 +18,19 @@
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/ntp_snippets/mock_content_suggestions_provider.h"
-#include "components/reading_list/core/reading_list_entry.h"
-#include "components/reading_list/core/reading_list_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory_util.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_learn_more_item.h"
 #include "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_provider_test_singleton.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/history_test_util.h"
@@ -143,12 +141,12 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   // service with no provider registered, allowing to register fake providers
   // which do not require internet connection. The previous service is deleted.
   IOSChromeContentSuggestionsServiceFactory::GetInstance()->SetTestingFactory(
-      browserState, CreateChromeContentSuggestionsService);
+      browserState,
+      base::BindRepeating(&CreateChromeContentSuggestionsService));
 
   ContentSuggestionsService* service =
       IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
           browserState);
-  RegisterReadingListProvider(service, browserState);
   [[ContentSuggestionsTestSingleton sharedInstance]
       registerArticleProvider:service];
 }
@@ -157,12 +155,12 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   [self closeAllTabs];
   ios::ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
-  ReadingListModelFactory::GetForBrowserState(browserState)->DeleteAllEntries();
 
   // Resets the Service associated with this browserState to a service with
   // default providers. The previous service is deleted.
   IOSChromeContentSuggestionsServiceFactory::GetInstance()->SetTestingFactory(
-      browserState, CreateChromeContentSuggestionsServiceWithProviders);
+      browserState,
+      base::BindRepeating(&CreateChromeContentSuggestionsServiceWithProviders));
   [super tearDown];
 }
 
@@ -179,10 +177,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 - (void)setUp {
   self.provider->FireCategoryStatusChanged(self.category,
                                            CategoryStatus::AVAILABLE);
-
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->DeleteAllEntries();
   [super setUp];
 }
 
@@ -242,173 +236,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that after dismissing a ReadingList item, it is not displayed on the
-// NTP. But it is still unread in the Reading List surface.
-- (void)testSwipeToDismissReadingListItem {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  // Add two items to Reading List.
-  std::string stdTitle1{"test title1"};
-  std::string stdTitle2{"test title2"};
-  NSString* title1 = base::SysUTF8ToNSString(stdTitle1);
-  NSString* title2 = base::SysUTF8ToNSString(stdTitle2);
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(GURL("http://chromium.org/2"), stdTitle2,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  readingListModel->AddEntry(GURL("http://chromium.org/1"), stdTitle1,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-
-  // Check that the two items are present in a new tab.
-  [ChromeEarlGreyUI openNewTab];
-  [CellWithMatcher(grey_accessibilityID(title1))
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [CellWithMatcher(grey_accessibilityID(title2))
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Swipe to dismiss the first one.
-  [CellWithMatcher(grey_accessibilityID(title1))
-      performAction:[GREYActions
-                        actionForSwipeFastInDirection:kGREYDirectionLeft
-                               xOriginStartPercentage:0.9
-                               yOriginStartPercentage:0.5]];
-
-  // Check the swiped item is dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(title1),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-
-  // Check the dismissed item is not present when opening a new NTP.
-  ScrollUp();
-  [ChromeEarlGreyUI openNewTab];
-  [CellWithMatcher(grey_accessibilityID(title2))
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(title1)]
-      assertWithMatcher:grey_nil()];
-
-  // Open the Reading List surface.
-  ScrollUp();
-  [ChromeEarlGreyUI openToolsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLS_MENU_READING_LIST)]
-      performAction:grey_tap()];
-
-  // Check that both entries are unread in the ReadingList surface.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          StaticTextWithAccessibilityLabelId(
-                                              IDS_IOS_READING_LIST_READ_HEADER)]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_READING_LIST_UNREAD_HEADER)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(title1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // On iPad two Reading List items are displayed as the Reading List view is
-  // displayed modally, the NTP is still visible.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(title2),
-                     grey_not(grey_ancestor(
-                         chrome_test_util::ContentSuggestionCollectionView())),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Close Reading List.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_READING_LIST_DONE_BUTTON)]
-      performAction:grey_tap()];
-}
-
-// Tests that only the 3 most recent Reading List items are displayed.
-- (void)testReadingListItem {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  // Create entry titles for 4 unread entries and 1 read entry.
-  std::string stdTitle1{"test unread title1"};
-  std::string stdTitle2{"test unread title2"};
-  std::string stdTitle3{"test unread title3"};
-  std::string stdTitle4{"test unread title4"};
-  std::string stdReadTitle{"test read title"};
-  NSString* title1 = base::SysUTF8ToNSString(stdTitle1);
-  NSString* title2 = base::SysUTF8ToNSString(stdTitle2);
-  NSString* title3 = base::SysUTF8ToNSString(stdTitle3);
-  NSString* title4 = base::SysUTF8ToNSString(stdTitle4);
-  NSString* readTitle = base::SysUTF8ToNSString(stdReadTitle);
-
-  // Adds the entries: title1 is the oldest, title4 is the latest.
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(GURL("http://chromium.org/1"), stdTitle1,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  readingListModel->AddEntry(GURL("http://chromium.org/2"), stdTitle2,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  readingListModel->AddEntry(GURL("http://chromium.org/3"), stdTitle3,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  readingListModel->AddEntry(GURL("http://chromium.org/5"), stdReadTitle,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  readingListModel->SetReadStatus(GURL("http://chromium.org/5"), true);
-  readingListModel->AddEntry(GURL("http://chromium.org/4"), stdTitle4,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-
-  // Check that only the first 3 unread items are displayed.
-  [ChromeEarlGreyUI openNewTab];
-  [CellWithMatcher(grey_accessibilityID(title4))
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [CellWithMatcher(grey_accessibilityID(title3))
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [CellWithMatcher(grey_accessibilityID(title2))
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(readTitle)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(title1)]
-      assertWithMatcher:grey_nil()];
-}
-
-// Tests that tapping "More" on the Reading List section opens the Reading List
-// surface.
-- (void)testMoreReadingListSection {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-  // Add an entry to make sure the Reading List section is displayed.
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(GURL("http://chromium.org/2"), "test title",
-                             reading_list::ADDED_VIA_CURRENT_APP);
-
-  // Tap More.
-  [CellWithMatcher(chrome_test_util::StaticTextWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE)) performAction:grey_tap()];
-
-  // Check the Reading List surface is opened.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          StaticTextWithAccessibilityLabelId(
-                                              IDS_IOS_TOOLS_MENU_READING_LIST)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Close Reading List.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_READING_LIST_DONE_BUTTON)]
-      performAction:grey_tap()];
-}
 
 // Tests that a switch for the ContentSuggestions exists in the settings. The
 // behavior depends on having a real remote provider, so it cannot be tested
@@ -420,33 +247,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_OPTIONS_SEARCH_URL_SUGGESTIONS)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the section titles are displayed only if there are two sections.
-- (void)testSectionTitle {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(GURL("http://chromium.org"), "test title",
-                             reading_list::ADDED_VIA_CURRENT_APP);
-
-  [CellWithMatcher(chrome_test_util::StaticTextWithAccessibilityLabelId(
-      IDS_NTP_READING_LIST_SUGGESTIONS_SECTION_HEADER))
-      assertWithMatcher:grey_nil()];
-
-  std::vector<ContentSuggestion> suggestions;
-  suggestions.emplace_back(
-      Suggestion(self.category, "chromium", GURL("http://chromium.org")));
-  self.provider->FireSuggestionsChanged(self.category, std::move(suggestions));
-
-  [CellWithMatcher(chrome_test_util::StaticTextWithAccessibilityLabelId(
-      IDS_NTP_READING_LIST_SUGGESTIONS_SECTION_HEADER))
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -502,21 +302,16 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 
   // Test that the omnibox is visible and taking full width, before any scroll
   // happen on iPhone.
-  if (!content_suggestions::IsRegularXRegularSizeClass()) {
-    if (!IsUIRefreshPhase1Enabled()) {
-      CGFloat collectionWidth = ntp_home::CollectionView().bounds.size.width;
-      [[EarlGrey
-          selectElementWithMatcher:grey_accessibilityID(
-                                       ntp_home::FakeOmniboxAccessibilityID())]
-          assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                       ntp_home::OmniboxWidthBetween(
-                                           collectionWidth + 1, 1),
-                                       nil)];
-    }
-
+  if (!IsRegularXRegularSizeClass()) {
     // Test that the omnibox is still pinned to the top of the screen and
     // under the safe area.
-    CGFloat safeAreaTop = IsUIRefreshPhase1Enabled() ? StatusBarHeight() : 0;
+    CGFloat safeAreaTop = 0;
+    if (@available(iOS 11, *)) {
+      safeAreaTop = ntp_home::CollectionView().safeAreaInsets.top;
+    } else {
+      safeAreaTop = StatusBarHeight();
+    }
+
     CGFloat contentOffset = ntp_home::CollectionView().contentOffset.y;
     CGFloat fakeOmniboxOrigin = ntp_home::FakeOmnibox().frame.origin.y;
     CGFloat pinnedOffset = contentOffset - (fakeOmniboxOrigin - safeAreaTop);
@@ -553,149 +348,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   [CellWithMatcher(grey_accessibilityID(
       [ContentSuggestionsLearnMoreItem accessibilityIdentifier]))
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that when long pressing a Reading List entry, a context menu is shown.
-- (void)testReadingListLongPress {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  NSString* title = @"ReadingList test title";
-  std::string sTitle{"ReadingList test title"};
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(GURL("http://chromium.org"), sTitle,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-
-  [CellWithMatcher(grey_accessibilityID(title)) performAction:grey_longPress()];
-
-  if (!content_suggestions::IsRegularXRegularSizeClass()) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_APP_CANCEL)] assertWithMatcher:grey_interactable()];
-  }
-
-  // No read later as it is already in the Reading List section.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
-      assertWithMatcher:grey_nil()];
-}
-
-// Tests that "Open in New Tab" in context menu opens in a new tab.
-- (void)testReadingListOpenNewTab {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  // Setup.
-  [self setupReadingListContextMenu];
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Open in new tab.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
-      performAction:grey_tap()];
-
-  // Check a new page in normal model is opened.
-  [ChromeEarlGrey waitForMainTabCount:2];
-  [ChromeEarlGrey waitForIncognitoTabCount:0];
-
-  // Wait for the end of the new tab opening in background. This is needed as
-  // the iOS 11 devices cannot complete this animations while checking if the
-  // collection is present.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
-
-  // Check that the tab has been opened in background.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            ContentSuggestionCollectionView()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
-             @"Collection view not visible");
-
-  // Check the page has been correctly opened.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(1);
-  [ChromeEarlGrey waitForWebViewContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that "Open in New Incognito Tab" in context menu opens in a new
-// incognito tab.
-- (void)testReadingListOpenNewIncognitoTab {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  // Setup.
-  [self setupReadingListContextMenu];
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Open in new incognito tab.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
-      performAction:grey_tap()];
-
-  // Check that the tab has been opened in foreground.
-  [ChromeEarlGrey waitForWebViewContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-
-  GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
-                 @"Test did not switch to incognito");
-
-  // Check only one incognito tab has been opened.
-  [ChromeEarlGrey waitForIncognitoTabCount:1];
-  [ChromeEarlGrey waitForMainTabCount:1];
-}
-
-// Tests that "Remove" in context menu removes the entry.
-- (void)testReadingListRemove {
-  // TODO(crbug.com/807330): The collection view reading list section is not
-  // used in ui refresh.
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"ReadingList section does not exist in UI Refresh");
-  }
-
-  // Setup.
-  NSString* title = @"ReadingList test title";
-  [self setupReadingListContextMenu];
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Remove the element.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)]
-      performAction:grey_tap()];
-
-  // Check the entry has been removed.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(title),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-
-  // Check the entry is still unread in the Reading List model.
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  GREYAssertEqual(1, readingListModel->unread_size(),
-                  @"The number of unread entry has been changed.");
 }
 
 // Tests the "Open in New Tab" action of the Most Visited context menu.
@@ -759,7 +411,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
                  @"Test did not switch to incognito");
 }
 
-// Tests the "Remove" action of the Most Visited context menu, and the "Undo"
 // action.
 - (void)testMostVisitedRemoveUndo {
   [self setupMostVisitedTileLongPress];
@@ -804,7 +455,7 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 - (void)testMostVisitedLongPress {
   [self setupMostVisitedTileLongPress];
 
-  if (!content_suggestions::IsRegularXRegularSizeClass()) {
+  if (!IsRegularXRegularSizeClass()) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::ButtonWithAccessibilityLabelId(
                        IDS_APP_CANCEL)] assertWithMatcher:grey_interactable()];
@@ -832,24 +483,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 }
 
 #pragma mark - Test utils
-
-// Setup a Reading List item and long press it to open the context menu.
-- (void)setupReadingListContextMenu {
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-  std::string sTitle{"ReadingList test title"};
-  NSString* title = @"ReadingList test title";
-  ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingListModel->AddEntry(pageURL, sTitle,
-                             reading_list::ADDED_VIA_CURRENT_APP);
-  [CellWithMatcher(grey_accessibilityID(title)) performAction:grey_longPress()];
-  [ChromeEarlGrey waitForMainTabCount:1];
-  [ChromeEarlGrey waitForIncognitoTabCount:0];
-  GREYAssertEqual(1, readingListModel->unread_size(),
-                  @"There should be only one unread entry.");
-}
 
 // Setup a most visited tile, and open the context menu by long pressing on it.
 - (void)setupMostVisitedTileLongPress {

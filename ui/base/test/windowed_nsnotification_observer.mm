@@ -20,11 +20,11 @@
 
 @synthesize notificationCount = notificationCount_;
 
-- (id)initForNotification:(NSString*)name {
+- (instancetype)initForNotification:(NSString*)name {
   return [self initForNotification:name object:nil];
 }
 
-- (id)initForNotification:(NSString*)name object:(id)sender {
+- (instancetype)initForNotification:(NSString*)name object:(id)sender {
   if ((self = [super init])) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onNotification:)
@@ -34,8 +34,8 @@
   return self;
 }
 
-- (id)initForWorkspaceNotification:(NSString*)name
-                          bundleId:(NSString*)bundleId {
+- (instancetype)initForWorkspaceNotification:(NSString*)name
+                                    bundleId:(NSString*)bundleId {
   if ((self = [super init])) {
     bundleId_.reset([bundleId copy]);
     [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -58,7 +58,7 @@
 - (void)onNotification:(NSNotification*)notification {
   if (bundleId_) {
     NSRunningApplication* application =
-        [[notification userInfo] objectForKey:NSWorkspaceApplicationKey];
+        [notification userInfo][NSWorkspaceApplicationKey];
     if (![[application bundleIdentifier] isEqualToString:bundleId_])
       return;
   }

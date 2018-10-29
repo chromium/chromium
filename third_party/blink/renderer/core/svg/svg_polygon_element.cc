@@ -25,7 +25,7 @@
 namespace blink {
 
 inline SVGPolygonElement::SVGPolygonElement(Document& document)
-    : SVGPolyElement(SVGNames::polygonTag, document) {}
+    : SVGPolyElement(svg_names::kPolygonTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGPolygonElement)
 

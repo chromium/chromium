@@ -1165,6 +1165,7 @@ void AddFileToUwS(const base::FilePath& path, UwS* uws) {
   file->mutable_file_information()->set_active_file(
       PathHasActiveExtension(path));
   file->set_removal_status(REMOVAL_STATUS_MATCHED_ONLY);
+  file->set_quarantine_status(QUARANTINE_STATUS_UNSPECIFIED);
 }
 
 // Add a matched folder entry to |uws| with path given by SanitizePath(|path|)
@@ -1423,6 +1424,7 @@ TEST_P(CleanerLoggingServiceTest, AllExpectedRemovalsConfirmed) {
   uws4.set_id(4);
   uws4.set_state(UwS::REMOVABLE);
   AddFileToUwS(kFile1, &uws4);
+  logging_service_->AddDetectedUwS(uws4);
   EXPECT_TRUE(logging_service_->AllExpectedRemovalsConfirmed());
 }
 

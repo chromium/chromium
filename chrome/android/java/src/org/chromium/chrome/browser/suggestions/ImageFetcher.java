@@ -390,5 +390,10 @@ public class ImageFetcher {
         public Promise<Bitmap> getPromise() {
             return mThumbnailReceivedPromise;
         }
+
+        @Override
+        public String getMimeType() {
+            return null;
+        }
     }
 }

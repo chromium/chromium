@@ -95,9 +95,6 @@ void FakeBaseTabStripController::CloseTab(int index, CloseTabSource source) {
   RemoveTab(index);
 }
 
-void FakeBaseTabStripController::ToggleTabAudioMute(int index) {
-}
-
 void FakeBaseTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,

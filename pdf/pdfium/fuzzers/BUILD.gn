@@ -27,6 +27,7 @@ group("pdf_fuzzers") {
     ":pdf_jpx_fuzzer",
     ":pdf_psengine_fuzzer",
     ":pdf_streamparser_fuzzer",
+    ":pdf_xml_fuzzer",
     ":pdfium_fuzzer",
   ]
   if (pdf_enable_xfa) {
@@ -37,7 +38,6 @@ group("pdf_fuzzers") {
       ":pdf_css_fuzzer",
       ":pdf_fm2js_fuzzer",
       ":pdf_formcalc_fuzzer",
-      ":pdf_xml_fuzzer",
       ":pdfium_xfa_fuzzer",
     ]
     if (pdf_enable_xfa_bmp) {
@@ -59,20 +59,9 @@ group("pdf_fuzzers") {
 }
 
 fuzzer_test("pdfium_fuzzer") {
-  sources = [
-    "pdfium_fuzzer.cc",
-    "pdfium_fuzzer_helper.cc",
-    "pdfium_fuzzer_helper.h",
-  ]
+  sources = []
   deps = [
-    "//third_party/pdfium",
-    "//third_party/pdfium:test_support",
-    "//v8",
-    "//v8:v8_libplatform",
-  ]
-  additional_configs = [
-    "//third_party/pdfium:pdfium_core_config",
-    "//v8:external_startup_data",
+    "//third_party/pdfium/testing/fuzzers:pdfium_fuzzer_src",
   ]
   dict = "dicts/pdf.dict"
   seed_corpus = "//third_party/pdfium/testing/resources"
@@ -155,6 +144,14 @@ fuzzer_test("pdf_streamparser_fuzzer") {
   deps = [
     "//third_party/pdfium/testing/fuzzers:pdf_streamparser_fuzzer_src",
   ]
+}
+
+fuzzer_test("pdf_xml_fuzzer") {
+  sources = []
+  deps = [
+    "//third_party/pdfium/testing/fuzzers:pdf_xml_fuzzer_src",
+  ]
+  dict = "dicts/pdf_xml.dict"
 }
 
 if (pdf_enable_xfa) {
@@ -248,14 +245,6 @@ if (pdf_enable_xfa) {
     }
   }
 
-  fuzzer_test("pdf_xml_fuzzer") {
-    sources = []
-    deps = [
-      "//third_party/pdfium/testing/fuzzers:pdf_xml_fuzzer_src",
-    ]
-    dict = "dicts/pdf_xml.dict"
-  }
-
   fuzzer_test("pdf_bidi_fuzzer") {
     sources = []
     deps = [
@@ -271,20 +260,9 @@ if (pdf_enable_xfa) {
   }
 
   fuzzer_test("pdfium_xfa_fuzzer") {
-    sources = [
-      "pdfium_fuzzer_helper.cc",
-      "pdfium_fuzzer_helper.h",
-      "pdfium_xfa_fuzzer.cc",
-    ]
+    sources = []
     deps = [
-      "//third_party/pdfium",
-      "//third_party/pdfium:test_support",
-      "//v8",
-      "//v8:v8_libplatform",
-    ]
-    additional_configs = [
-      "//third_party/pdfium:pdfium_core_config",
-      "//v8:external_startup_data",
+      "//third_party/pdfium/testing/fuzzers:pdfium_xfa_fuzzer_src",
     ]
     dict = "dicts/pdf.dict"
     seed_corpus = "//third_party/pdfium/testing/resources"

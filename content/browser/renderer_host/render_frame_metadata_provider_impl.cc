@@ -34,11 +34,20 @@ void RenderFrameMetadataProviderImpl::Bind(
   render_frame_metadata_observer_client_binding_.Close();
   render_frame_metadata_observer_client_binding_.Bind(std::move(client_request),
                                                       task_runner_);
+
+  if (pending_report_all_frame_submission_.has_value()) {
+    ReportAllFrameSubmissionsForTesting(*pending_report_all_frame_submission_);
+    pending_report_all_frame_submission_.reset();
+  }
 }
 
 void RenderFrameMetadataProviderImpl::ReportAllFrameSubmissionsForTesting(
     bool enabled) {
-  DCHECK(render_frame_metadata_observer_ptr_);
+  if (!render_frame_metadata_observer_ptr_) {
+    pending_report_all_frame_submission_ = enabled;
+    return;
+  }
+
   render_frame_metadata_observer_ptr_->ReportAllFrameSubmissionsForTesting(
       enabled);
 }

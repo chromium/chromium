@@ -32,23 +32,48 @@ class CommandsIssuedQuery : public QueryManager::Query {
   void Resume() override;
   void Process(bool did_finish) override;
   void Destroy(bool have_context) override;
+  void BeginProcessingCommands() override;
+  void EndProcessingCommands() override;
 
  protected:
   ~CommandsIssuedQuery() override;
 
  private:
-  base::TimeTicks begin_time_;
+  enum class CommandProcessingState {
+    // Used prior to receiving the Begin notification and after End which
+    // completes the query.
+    kNotStarted,
+
+    // Used when the query is active and the commands with the associated
+    // context are being processed.
+    kProcessingCommands,
+
+    // Used when the query is active but the associated context has been
+    // de-scheduled.
+    kNotProcessingCommands
+  };
+
+  void Reset();
+
+  CommandProcessingState command_processing_state_ =
+      CommandProcessingState::kNotStarted;
+  base::TimeDelta elapsed_time_;
+  base::TimeTicks begin_command_processing_time_;
 };
 
 CommandsIssuedQuery::CommandsIssuedQuery(QueryManager* manager,
                                          GLenum target,
                                          scoped_refptr<gpu::Buffer> buffer,
                                          QuerySync* sync)
-    : Query(manager, target, std::move(buffer), sync) {}
+    : Query(manager, target, std::move(buffer), sync) {
+  Reset();
+}
 
 void CommandsIssuedQuery::Begin() {
+  DCHECK_EQ(command_processing_state_, CommandProcessingState::kNotStarted);
+
   MarkAsActive();
-  begin_time_ = base::TimeTicks::Now();
+  BeginProcessingCommands();
 }
 
 void CommandsIssuedQuery::Pause() {
@@ -60,9 +85,20 @@ void CommandsIssuedQuery::Resume() {
 }
 
 void CommandsIssuedQuery::End(base::subtle::Atomic32 submit_count) {
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - begin_time_;
+  base::TimeDelta elapsed = elapsed_time_;
+  if (begin_command_processing_time_ != base::TimeTicks())
+    elapsed += base::TimeTicks::Now() - begin_command_processing_time_;
+
   MarkAsPending(submit_count);
   MarkAsCompleted(elapsed.InMicroseconds());
+
+  Reset();
+}
+
+void CommandsIssuedQuery::Reset() {
+  command_processing_state_ = CommandProcessingState::kNotStarted;
+  begin_command_processing_time_ = base::TimeTicks();
+  elapsed_time_ = base::TimeDelta();
 }
 
 void CommandsIssuedQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
@@ -77,6 +113,29 @@ void CommandsIssuedQuery::Destroy(bool /* have_context */) {
   if (!IsDeleted()) {
     MarkAsDeleted();
   }
+}
+
+void CommandsIssuedQuery::BeginProcessingCommands() {
+  DCHECK_NE(command_processing_state_,
+            CommandProcessingState::kProcessingCommands);
+  DCHECK_EQ(begin_command_processing_time_, base::TimeTicks());
+
+  command_processing_state_ = CommandProcessingState::kProcessingCommands;
+  begin_command_processing_time_ = base::TimeTicks::Now();
+}
+
+void CommandsIssuedQuery::EndProcessingCommands() {
+  DCHECK_NE(command_processing_state_,
+            CommandProcessingState::kNotProcessingCommands);
+
+  // The query may been ended before all commands associated with the context
+  // were processed.
+  if (command_processing_state_ == CommandProcessingState::kNotStarted)
+    return;
+
+  command_processing_state_ = CommandProcessingState::kNotProcessingCommands;
+  elapsed_time_ += base::TimeTicks::Now() - begin_command_processing_time_;
+  begin_command_processing_time_ = base::TimeTicks();
 }
 
 CommandsIssuedQuery::~CommandsIssuedQuery() = default;
@@ -407,6 +466,16 @@ void QueryManager::ResumeQueries() {
       DCHECK(it.second->IsActive());
     }
   }
+}
+
+void QueryManager::BeginProcessingCommands() {
+  for (std::pair<const GLenum, scoped_refptr<Query>>& it : active_queries_)
+    it.second->BeginProcessingCommands();
+}
+
+void QueryManager::EndProcessingCommands() {
+  for (std::pair<const GLenum, scoped_refptr<Query>>& it : active_queries_)
+    it.second->EndProcessingCommands();
 }
 
 }  // namespace gpu

@@ -19,6 +19,7 @@
 namespace {
 
 constexpr char kAssetIDPlaceholder[] = "${ASSET_ID}";
+constexpr char kMachineNamePlaceholder[] = "${MACHINE_NAME}";
 constexpr char kSerialNumPlaceholder[] = "${SERIAL_NUM}";
 constexpr char kMACAddressPlaceholder[] = "${MAC_ADDR}";
 
@@ -71,11 +72,14 @@ void HostnameHandler::Shutdown() {
 std::string HostnameHandler::FormatHostname(const std::string& name_template,
                                             const std::string& asset_id,
                                             const std::string& serial,
-                                            const std::string& mac) {
+                                            const std::string& mac,
+                                            const std::string& machine_name) {
   std::string result = name_template;
   base::ReplaceSubstringsAfterOffset(&result, 0, kAssetIDPlaceholder, asset_id);
   base::ReplaceSubstringsAfterOffset(&result, 0, kSerialNumPlaceholder, serial);
   base::ReplaceSubstringsAfterOffset(&result, 0, kMACAddressPlaceholder, mac);
+  base::ReplaceSubstringsAfterOffset(&result, 0, kMachineNamePlaceholder,
+                                     machine_name);
 
   if (!IsValidHostname(result))
     return std::string();
@@ -116,6 +120,10 @@ void HostnameHandler::
                                    ->browser_policy_connector_chromeos()
                                    ->GetDeviceAssetID();
 
+  const std::string machine_name = g_browser_process->platform_part()
+                                       ->browser_policy_connector_chromeos()
+                                       ->GetMachineName();
+
   chromeos::NetworkStateHandler* handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
 
@@ -131,7 +139,7 @@ void HostnameHandler::
   }
 
   handler->SetHostname(
-      FormatHostname(hostname_template, asset_id, serial, mac));
+      FormatHostname(hostname_template, asset_id, serial, mac, machine_name));
 }
 
 }  // namespace policy

@@ -27,7 +27,7 @@
 @property(readonly, nonatomic) int exitCount;
 
 // Initialize for the given window and start tracking notifications.
-- (id)initWithWindow:(NSWindow*)window;
+- (instancetype)initWithWindow:(NSWindow*)window;
 
 // Keep spinning a run loop until the enter and exit counts match.
 - (void)waitForEnterCount:(int)enterCount exitCount:(int)exitCount;

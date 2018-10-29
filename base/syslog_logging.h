@@ -27,6 +27,10 @@ namespace logging {
 void BASE_EXPORT SetEventSource(const std::string& name,
                                 uint16_t category,
                                 uint32_t event_id);
+
+// The event source may get set more than once in tests.  This function allows
+// a test to reset the source when needed.
+void BASE_EXPORT ResetEventSourceForTesting();
 #endif  // defined(OS_WIN)
 
 // Creates a formatted message on the system event log. That would be the

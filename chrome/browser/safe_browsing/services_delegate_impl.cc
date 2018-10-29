@@ -50,7 +50,7 @@ void ServicesDelegateImpl::InitializeCsdService(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if defined(SAFE_BROWSING_CSD)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableClientSidePhishingDetection)) {
+          ::switches::kDisableClientSidePhishingDetection)) {
     csd_service_.reset(ClientSideDetectionService::Create(url_loader_factory));
   }
 #endif  // defined(SAFE_BROWSING_CSD)

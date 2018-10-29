@@ -125,7 +125,6 @@ TEST_F(SingleSampleMetricsFactoryImplTest, DefaultSingleSampleMetricWithValue) {
   base::RunLoop().RunUntilIdle();
   tester.ExpectUniqueSample(kMetricName, kLastSample, 1);
 
-#if 0  // TODO(crbug.com/836238): Temporarily disabled for field crash test.
   // Verify construction implicitly by requesting a histogram with the same
   // parameters; this test relies on the fact that histogram objects are unique
   // per name. Different parameters will result in a Dummy histogram returned.
@@ -136,7 +135,6 @@ TEST_F(SingleSampleMetricsFactoryImplTest, DefaultSingleSampleMetricWithValue) {
             base::Histogram::FactoryGet(
                 kMetricName, kMin, kMax, kBucketCount,
                 base::HistogramBase::kUmaTargetedHistogramFlag));
-#endif
 }
 
 TEST_F(SingleSampleMetricsFactoryImplTest, MultithreadedMetrics) {

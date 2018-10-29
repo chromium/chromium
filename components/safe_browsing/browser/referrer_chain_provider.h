@@ -26,6 +26,8 @@ class ReferrerChainProvider {
     SUCCESS_LANDING_REFERRER = 3,  // Successfully identified landing referrer.
     INVALID_URL = 4,
     NAVIGATION_EVENT_NOT_FOUND = 5,
+    SUCCESS_REFERRER = 6,  // Successfully identified extra referrers beyond the
+                           // landing referrer.
 
     // Always at the end.
     ATTRIBUTION_FAILURE_TYPE_MAX

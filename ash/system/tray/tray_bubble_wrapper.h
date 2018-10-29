@@ -12,12 +12,10 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace views {
-class TrayBubbleView;
-}
-
 namespace ash {
+
 class TrayBackgroundView;
+class TrayBubbleView;
 
 // Creates and manages the Widget and EventFilter components of a bubble.
 // TODO(tetsui): Remove this and use TrayBubbleBase for all bubbles.
@@ -27,13 +25,13 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
                                      public ::wm::ActivationChangeObserver {
  public:
   TrayBubbleWrapper(TrayBackgroundView* tray,
-                    views::TrayBubbleView* bubble_view,
+                    TrayBubbleView* bubble_view,
                     bool is_persistent);
   ~TrayBubbleWrapper() override;
 
   // TrayBubbleBase overrides:
   TrayBackgroundView* GetTray() const override;
-  views::TrayBubbleView* GetBubbleView() const override;
+  TrayBubbleView* GetBubbleView() const override;
   views::Widget* GetBubbleWidget() const override;
 
   // views::WidgetObserver overrides:
@@ -54,12 +52,12 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
                          aura::Window* lost_active) override;
 
   TrayBackgroundView* tray() { return tray_; }
-  views::TrayBubbleView* bubble_view() { return bubble_view_; }
+  TrayBubbleView* bubble_view() { return bubble_view_; }
   views::Widget* bubble_widget() { return bubble_widget_; }
 
  private:
   TrayBackgroundView* tray_;
-  views::TrayBubbleView* bubble_view_;  // unowned
+  TrayBubbleView* bubble_view_;  // unowned
   views::Widget* bubble_widget_;
   bool is_persistent_;
 

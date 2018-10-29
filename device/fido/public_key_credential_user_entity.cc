@@ -12,31 +12,30 @@ namespace device {
 
 // static
 base::Optional<PublicKeyCredentialUserEntity>
-PublicKeyCredentialUserEntity::CreateFromCBORValue(
-    const cbor::CBORValue& cbor) {
+PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map())
     return base::nullopt;
 
-  const cbor::CBORValue::MapValue& cbor_map = cbor.GetMap();
+  const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
-  auto user_id = cbor_map.find(cbor::CBORValue(kEntityIdMapKey));
+  auto user_id = cbor_map.find(cbor::Value(kEntityIdMapKey));
   if (user_id == cbor_map.end() || !user_id->second.is_bytestring())
     return base::nullopt;
 
   PublicKeyCredentialUserEntity user(user_id->second.GetBytestring());
 
-  auto user_name = cbor_map.find(cbor::CBORValue(kEntityNameMapKey));
+  auto user_name = cbor_map.find(cbor::Value(kEntityNameMapKey));
   if (user_name != cbor_map.end() && user_name->second.is_string()) {
     user.SetUserName(user_name->second.GetString());
   }
 
-  auto user_display_name = cbor_map.find(cbor::CBORValue(kDisplayNameMapKey));
+  auto user_display_name = cbor_map.find(cbor::Value(kDisplayNameMapKey));
   if (user_display_name != cbor_map.end() &&
       user_display_name->second.is_string()) {
     user.SetDisplayName(user_display_name->second.GetString());
   }
 
-  auto user_icon_url = cbor_map.find(cbor::CBORValue(kIconUrlMapKey));
+  auto user_icon_url = cbor_map.find(cbor::Value(kIconUrlMapKey));
   if (user_icon_url != cbor_map.end() && user_icon_url->second.is_string()) {
     user.SetIconUrl(GURL(user_icon_url->second.GetString()));
   }
@@ -62,8 +61,8 @@ PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::operator=(
 
 PublicKeyCredentialUserEntity::~PublicKeyCredentialUserEntity() = default;
 
-cbor::CBORValue PublicKeyCredentialUserEntity::ConvertToCBOR() const {
-  cbor::CBORValue::MapValue user_map;
+cbor::Value PublicKeyCredentialUserEntity::ConvertToCBOR() const {
+  cbor::Value::MapValue user_map;
   user_map.emplace(kEntityIdMapKey, user_id_);
   if (user_name_)
     user_map.emplace(kEntityNameMapKey, *user_name_);
@@ -72,7 +71,7 @@ cbor::CBORValue PublicKeyCredentialUserEntity::ConvertToCBOR() const {
   if (user_display_name_) {
     user_map.emplace(kDisplayNameMapKey, *user_display_name_);
   }
-  return cbor::CBORValue(std::move(user_map));
+  return cbor::Value(std::move(user_map));
 }
 
 PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::SetUserName(

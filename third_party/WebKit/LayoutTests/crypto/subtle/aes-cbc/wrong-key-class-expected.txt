@@ -2,7 +2,6 @@ Test calling AES-CBC encrypt with a HMAC key.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing a raw HMAC key from string literal...
 Using the HMAC key for AES-CBC encryption...
 error is: InvalidAccessError: key.algorithm does not match that of operation

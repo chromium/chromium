@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
-#include "components/cbor/cbor_reader.h"
+#include "components/cbor/reader.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "net/cert/x509_certificate.h"
@@ -24,26 +24,25 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseB2(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertificateChain::ParseB2");
 
-  cbor::CBORReader::DecoderError error;
-  base::Optional<cbor::CBORValue> value =
-      cbor::CBORReader::Read(message, &error);
+  cbor::Reader::DecoderError error;
+  base::Optional<cbor::Value> value = cbor::Reader::Read(message, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
-        base::StringPrintf("Failed to decode CBORValue. CBOR error: %s",
-                           cbor::CBORReader::ErrorCodeToString(error)));
+        base::StringPrintf("Failed to decode Value. CBOR error: %s",
+                           cbor::Reader::ErrorCodeToString(error)));
     return nullptr;
   }
   if (!value->is_array()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf(
-            "Expected top-level CBORValue to be an array. Actual type: %d",
+            "Expected top-level Value to be an array. Actual type: %d",
             static_cast<int>(value->type())));
     return nullptr;
   }
 
-  const cbor::CBORValue::ArrayValue& top_level_array = value->GetArray();
+  const cbor::Value::ArrayValue& top_level_array = value->GetArray();
   // Expect at least 2 elements (magic string and main certificate).
   if (top_level_array.size() < 2) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -77,12 +76,12 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseB2(
               i, static_cast<int>(top_level_array[i].type())));
       return nullptr;
     }
-    const cbor::CBORValue::MapValue& cert_map = top_level_array[i].GetMap();
+    const cbor::Value::MapValue& cert_map = top_level_array[i].GetMap();
 
     // Step 1. Each cert value MUST be a DER-encoded X.509v3 certificate
     // ([RFC5280]). Other key/value pairs in the same array item define
     // properties of this certificate. [spec text]
-    auto cert_iter = cert_map.find(cbor::CBORValue(kCertKey));
+    auto cert_iter = cert_map.find(cbor::Value(kCertKey));
     if (cert_iter == cert_map.end() || !cert_iter->second.is_bytestring()) {
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
@@ -92,7 +91,7 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseB2(
     }
     der_certs.push_back(cert_iter->second.GetBytestringAsString());
 
-    auto ocsp_iter = cert_map.find(cbor::CBORValue(kOcspKey));
+    auto ocsp_iter = cert_map.find(cbor::Value(kOcspKey));
     if (i == 1) {
       // Step 2. The first certificate’s ocsp value MUST be a complete,
       // DER-encoded OCSP response for that certificate (using the ASN.1 type
@@ -125,7 +124,7 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseB2(
     //
     // We use SCTs only of the main certificate.
     if (i == 1) {
-      auto sct_iter = cert_map.find(cbor::CBORValue(kSctKey));
+      auto sct_iter = cert_map.find(cbor::Value(kSctKey));
       if (sct_iter != cert_map.end()) {
         if (!sct_iter->second.is_bytestring()) {
           signed_exchange_utils::ReportErrorAndTraceEvent(

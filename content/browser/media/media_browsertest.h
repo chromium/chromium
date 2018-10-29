@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_split.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/test/content_browser_test.h"
 
 namespace content {
@@ -44,6 +45,9 @@ class MediaBrowserTest : public ContentBrowserTest {
 
   // Adds titles that RunTest() should wait for.
   virtual void AddTitlesToAwait(content::TitleWatcher* title_watcher);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace content

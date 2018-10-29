@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Autoupgrade mixed content: Optionally Blockable.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+</head>
+<body>
+  <script>
+    async_test(t => assert_image_loads(t), "Image autoupgraded");
+
+    function assert_image_loads(test) {
+        var url = new URL("http://web-platform.test:8443/mixed-autoupgrade/resources/pass.png")
+        var i = document.createElement('img');
+        i.onload = test.step_func_done(_ => {
+            assert_equals(i.naturalHeight, 64, "Height.");
+            assert_equals(i.naturalWidth, 168, "Width.");
+        });
+        i.onerror = test.unreached_func("Image should load successfully from " + url);
+        i.src = url;
+    }
+</script>
+</body>
+</html>

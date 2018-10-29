@@ -56,7 +56,6 @@ generated_json_strings("generated_api_json_strings") {
     "proxy.json",
     "tts.json",
     "tts_engine.json",
-    "webstore.json",
   ]
   if (is_chromeos) {
     sources += [ "file_browser_handler.json" ]

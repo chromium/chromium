@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dropdown_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="fill_horizontal"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/dropdown_body_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginVertical="@dimen/dropdown_vertical_margin" />
+
+    <View style="@style/HorizontalDivider"
+        android:id="@+id/dropdown_body_footer_divider"
+        android:layout_height="@dimen/divider_height"
+        android:layout_width="match_parent"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/dropdown_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

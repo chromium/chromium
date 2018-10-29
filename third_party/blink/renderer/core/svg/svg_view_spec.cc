@@ -51,7 +51,7 @@ SVGViewSpec* SVGViewSpec::CreateForViewElement(const SVGViewElement& view) {
     view_spec->preserve_aspect_ratio_ =
         view.preserveAspectRatio()->CurrentValue()->Clone();
   }
-  if (view.hasAttribute(SVGNames::zoomAndPanAttr))
+  if (view.hasAttribute(svg_names::kZoomAndPanAttr))
     view_spec->zoom_and_pan_ = view.zoomAndPan();
   return view_spec;
 }

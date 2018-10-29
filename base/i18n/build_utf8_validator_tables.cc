@@ -263,12 +263,9 @@ void MoveAllCharsToSets(PairVector* pairs) {
 // algorithm is working. Use the command-line option
 // --vmodule=build_utf8_validator_tables=1 to see this output.
 void LogStringSets(const PairVector& pairs) {
-  for (PairVector::const_iterator pair_it = pairs.begin();
-       pair_it != pairs.end();
-       ++pair_it) {
+  for (auto pair_it = pairs.begin(); pair_it != pairs.end(); ++pair_it) {
     std::string set_as_string;
-    for (StringSet::const_iterator set_it = pair_it->set.begin();
-         set_it != pair_it->set.end();
+    for (auto set_it = pair_it->set.begin(); set_it != pair_it->set.end();
          ++set_it) {
       set_as_string += base::StringPrintf("[\\x%02x-\\x%02x]",
                                           static_cast<int>(set_it->from()),
@@ -333,7 +330,7 @@ std::vector<State> GenerateStates(const PairVector& pairs) {
   std::vector<State> states(2, GenerateInvalidState());
   StateMap state_map;
   state_map.insert(std::make_pair(StringSet(), 0));
-  for (PairVector::const_iterator it = pairs.begin(); it != pairs.end(); ++it) {
+  for (auto it = pairs.begin(); it != pairs.end(); ++it) {
     DCHECK(it->character.empty());
     DCHECK(!it->set.empty());
     const Range& range = it->set.front();
@@ -376,16 +373,13 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
   std::vector<uint8_t> shifts;
   uint8_t pos = 0;
 
-  for (std::vector<State>::const_iterator state_it = states.begin();
-       state_it != states.end();
-       ++state_it) {
+  for (auto state_it = states.begin(); state_it != states.end(); ++state_it) {
     // We want to set |shift| to the (0-based) index of the least-significant
     // set bit in any of the ranges for this state, since this tells us how many
     // bits we can discard and still determine what range a byte lies in. Sadly
     // it appears that ffs() is not portable, so we do it clumsily.
     uint8_t shift = 7;
-    for (State::const_iterator range_it = state_it->begin();
-         range_it != state_it->end();
+    for (auto range_it = state_it->begin(); range_it != state_it->end();
          ++range_it) {
       while (shift > 0 && range_it->from % (1 << shift) != 0) {
         --shift;

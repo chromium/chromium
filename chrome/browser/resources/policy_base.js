@@ -16,7 +16,7 @@ cr.define('policy', function() {
   };
 
   /**
-   * A box that shows the status of cloud policy for a device or user.
+   * A box that shows the status of cloud policy for a device, machine or user.
    * @constructor
    * @extends {HTMLFieldSetElement}
    */
@@ -36,64 +36,77 @@ cr.define('policy', function() {
     decorate: function() {},
 
     /**
+     * Sets the text of a particular named label element in the status box
+     * and updates the visibility if needed.
+     * @param {string} labelName The name of the label element that is being
+     *     updated.
+     * @param {string} labelValue The new text content for the label.
+     * @param {boolean=} needsToBeShown True if we want to show the label
+     *     False otherwise.
+     */
+    setLabelAndShow_: function(labelName, labelValue, needsToBeShown = true) {
+      var labelElement = this.querySelector(labelName);
+      labelElement.textContent = labelValue || '';
+      if (needsToBeShown)
+        labelElement.parentElement.hidden = false;
+    },
+    /**
      * Populate the box with the given cloud policy status.
-     * @param {string} scope The policy scope, either "device" or "user".
+     * @param {string} scope The policy scope, either "device", "machine", or
+     *     "user".
      * @param {Object} status Dictionary with information about the status.
      */
     initialize: function(scope, status) {
+      const notSpecifiedString = loadTimeData.getString('notSpecified');
       if (scope == 'device') {
         // For device policy, set the appropriate title and populate the topmost
         // status item with the domain the device is enrolled into.
         this.querySelector('.legend').textContent =
             loadTimeData.getString('statusDevice');
-        var enrollmentDomain =
-            this.querySelector('.enterprise-enrollment-domain');
-        enrollmentDomain.textContent = status.enterpriseEnrollmentDomain;
-        enrollmentDomain.parentElement.hidden = false;
-        var displayDomain = this.querySelector('.enterprise-display-domain');
-        displayDomain.textContent = status.enterpriseDisplayDomain;
-        displayDomain.parentElement.hidden = false;
+        this.setLabelAndShow_(
+            '.enterprise-enrollment-domain', status.enterpriseEnrollmentDomain);
+        this.setLabelAndShow_(
+            '.enterprise-display-domain', status.enterpriseDisplayDomain);
 
         // Populate the device naming information.
         // Populate the asset identifier.
-        var assetId = this.querySelector('.asset-id');
-        assetId.textContent =
-            status.assetId || loadTimeData.getString('notSpecified');
-        assetId.parentElement.hidden = false;
+        this.setLabelAndShow_(
+            '.asset-id', status.assetId || notSpecifiedString);
 
         // Populate the device location.
-        var location = this.querySelector('.location');
-        location.textContent =
-            status.location || loadTimeData.getString('notSpecified');
-        location.parentElement.hidden = false;
+        this.setLabelAndShow_(
+            '.location', status.location || notSpecifiedString);
 
         // Populate the directory API ID.
-        var directoryApiId = this.querySelector('.directory-api-id');
-        directoryApiId.textContent =
-            status.directoryApiId || loadTimeData.getString('notSpecified');
-        directoryApiId.parentElement.hidden = false;
+        this.setLabelAndShow_(
+            '.directory-api-id', status.directoryApiId || notSpecifiedString);
+        this.setLabelAndShow_('.client-id', status.clientId);
+      } else if (scope == 'machine') {
+        // For machine policy, set the appropriate title and populate
+        // machine enrollment status with the information that applies
+        // to this machine.
+        this.querySelector('.legend').textContent =
+            loadTimeData.getString('statusMachine');
+        this.setLabelAndShow_('.machine-enrollment-device-id', status.deviceId);
+        this.setLabelAndShow_(
+            '.machine-enrollment-token', status.enrollmentToken);
+        this.setLabelAndShow_('.machine-enrollment-name', status.machine);
+        this.setLabelAndShow_('.machine-enrollment-domain', status.domain);
       } else {
         // For user policy, set the appropriate title and populate the topmost
         // status item with the username that policies apply to.
         this.querySelector('.legend').textContent =
             loadTimeData.getString('statusUser');
         // Populate the topmost item with the username.
-        var username = this.querySelector('.username');
-        username.textContent = status.username;
-        username.parentElement.hidden = false;
+        this.setLabelAndShow_('.username', status.username);
         // Populate the user gaia id.
-        var gaiaId = this.querySelector('.gaia-id');
-        gaiaId.textContent =
-            status.gaiaId || loadTimeData.getString('notSpecified');
-        gaiaId.parentElement.hidden = false;
+        this.setLabelAndShow_('.gaia-id', status.gaiaId || notSpecifiedString);
+        this.setLabelAndShow_('.client-id', status.clientId);
       }
-      // Populate all remaining items.
-      this.querySelector('.client-id').textContent = status.clientId || '';
-      this.querySelector('.time-since-last-refresh').textContent =
-          status.timeSinceLastRefresh || '';
-      this.querySelector('.refresh-interval').textContent =
-          status.refreshInterval || '';
-      this.querySelector('.status').textContent = status.status || '';
+      this.setLabelAndShow_(
+          '.time-since-last-refresh', status.timeSinceLastRefresh, false);
+      this.setLabelAndShow_('.refresh-interval', status.refreshInterval, false);
+      this.setLabelAndShow_('.status', status.status, false);
     },
   };
 

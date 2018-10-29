@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_transform_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
@@ -45,15 +46,19 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // a struct with default values is used to represent the state.
   struct State {
     TransformationMatrix matrix;
+    scoped_refptr<const ScrollPaintPropertyNode> scroll;
     FloatPoint3D origin;
     bool flattens_inherited_transform = false;
+    // Caches value of matrix_.IsIdentityOr2DTranslation(). The caller can set
+    // this field to true if the matrix is known to be identity or 2d
+    // translation, or the field will be updated automatically.
+    bool is_identity_or_2d_translation = false;
+    bool affected_by_outer_viewport_bounds_delta = false;
     BackfaceVisibility backface_visibility = BackfaceVisibility::kInherited;
     unsigned rendering_context_id = 0;
     CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
     CompositorElementId compositor_element_id;
-    scoped_refptr<const ScrollPaintPropertyNode> scroll;
-    bool affected_by_outer_viewport_bounds_delta = false;
-    CompositorStickyConstraint sticky_constraint;
+    std::unique_ptr<CompositorStickyConstraint> sticky_constraint;
 
     bool operator==(const State& o) const {
       return matrix == o.matrix && origin == o.origin &&
@@ -65,7 +70,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
              scroll == o.scroll &&
              affected_by_outer_viewport_bounds_delta ==
                  o.affected_by_outer_viewport_bounds_delta &&
-             sticky_constraint == o.sticky_constraint;
+             ((!sticky_constraint && !o.sticky_constraint) ||
+              (sticky_constraint && o.sticky_constraint &&
+               *sticky_constraint == *o.sticky_constraint));
     }
   };
 
@@ -91,8 +98,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       return parent_changed;
 
     DCHECK(!IsParentAlias()) << "Changed the state of an alias node.";
-    SetChanged();
     state_ = std::move(state);
+    SetChanged();
+    CheckAndUpdateIsIdentityOr2DTranslation();
     Validate();
     return true;
   }
@@ -118,8 +126,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return state_.affected_by_outer_viewport_bounds_delta;
   }
 
-  const cc::LayerStickyPositionConstraint& GetStickyConstraint() const {
-    return state_.sticky_constraint;
+  const cc::LayerStickyPositionConstraint* GetStickyConstraint() const {
+    return state_.sticky_constraint.get();
   }
 
   // If this is a scroll offset translation (i.e., has an associated scroll
@@ -132,6 +140,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // accumulated transform from its ancestors.
   bool FlattensInheritedTransform() const {
     return state_.flattens_inherited_transform;
+  }
+
+  bool IsIdentityOr2DTranslation() const {
+    DCHECK_EQ(state_.is_identity_or_2d_translation,
+              state_.matrix.IsIdentityOr2DTranslation());
+    return state_.is_identity_or_2d_translation;
   }
 
   // Returns the local BackfaceVisibility value set on this node.
@@ -175,33 +189,32 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   unsigned RenderingContextId() const { return state_.rendering_context_id; }
   bool HasRenderingContext() const { return state_.rendering_context_id; }
 
-#if DCHECK_IS_ON()
-  // The clone function is used by FindPropertiesNeedingUpdate.h for recording
-  // a transform node before it has been updated, to later detect changes.
-  scoped_refptr<TransformPaintPropertyNode> Clone() const {
-    return base::AdoptRef(new TransformPaintPropertyNode(
-        Parent(), State(state_), IsParentAlias()));
-  }
-
-  // The equality operator is used by FindPropertiesNeedingUpdate.h for checking
-  // if a transform node has changed.
-  bool operator==(const TransformPaintPropertyNode& o) const {
-    return Parent() == o.Parent() && state_ == o.state_ &&
-           IsParentAlias() == o.IsParentAlias();
-  }
-#endif
-
   std::unique_ptr<JSONObject> ToJSON() const;
 
   // Returns memory usage of the transform cache of this node plus ancestors.
   size_t CacheMemoryUsageInBytes() const;
 
  private:
+  friend class PaintPropertyNode<TransformPaintPropertyNode>;
+
   TransformPaintPropertyNode(const TransformPaintPropertyNode* parent,
                              State&& state,
                              bool is_parent_alias)
       : PaintPropertyNode(parent, is_parent_alias), state_(std::move(state)) {
+    CheckAndUpdateIsIdentityOr2DTranslation();
     Validate();
+  }
+
+  void CheckAndUpdateIsIdentityOr2DTranslation() {
+    if (IsParentAlias()) {
+      DCHECK(state_.matrix.IsIdentity());
+      state_.is_identity_or_2d_translation = true;
+    } else if (state_.is_identity_or_2d_translation) {
+      DCHECK(state_.matrix.IsIdentityOr2DTranslation());
+    } else {
+      state_.is_identity_or_2d_translation =
+          state_.matrix.IsIdentityOr2DTranslation();
+    }
   }
 
   void Validate() const {
@@ -209,23 +222,40 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     if (state_.scroll) {
       // If there is an associated scroll node, this can only be a 2d
       // translation for scroll offset.
-      DCHECK(state_.matrix.IsIdentityOr2DTranslation());
+      DCHECK(state_.is_identity_or_2d_translation);
       // The scroll compositor element id should be stored on the scroll node.
       DCHECK(!state_.compositor_element_id);
     }
 #endif
   }
 
-  // For access to getTransformCache() and setCachedTransform.
+  void SetChanged() {
+    // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is
+    // fixed, change the following condition to
+    //   DCHECK(!transform_cache_ || !transform_cache_->IsValid());
+    if (transform_cache_ && transform_cache_->IsValid()) {
+      DLOG(WARNING) << "Transform tree changed without invalidating the cache.";
+      GeometryMapperTransformCache::ClearCache();
+      GeometryMapperClipCache::ClearCache();
+    }
+    PaintPropertyNode::SetChanged();
+  }
+
+  // For access to GetTransformCache() and SetCachedTransform.
   friend class GeometryMapper;
   friend class GeometryMapperTest;
   friend class GeometryMapperTransformCache;
+  friend class GeometryMapperTransformCacheTest;
 
   const GeometryMapperTransformCache& GetTransformCache() const {
     if (!transform_cache_)
       transform_cache_.reset(new GeometryMapperTransformCache);
     transform_cache_->UpdateIfNeeded(*this);
     return *transform_cache_;
+  }
+  void UpdateScreenTransform() const {
+    DCHECK(transform_cache_);
+    transform_cache_->UpdateScreenTransform(*this);
   }
 
   State state_;

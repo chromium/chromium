@@ -39,6 +39,18 @@ struct BackgroundFetchResponse;
 struct BackgroundFetchResult;
 struct BackgroundFetchDescription;
 
+enum class BackgroundFetchPermission {
+  // Background Fetch is allowed.
+  ALLOWED,
+
+  // Background Fetch should be started in a paused state, to let the user
+  // decide whether to continue.
+  ASK,
+
+  // Background Fetch is blocked.
+  BLOCKED,
+};
+
 // Interface for launching background fetches. Implementing classes would
 // generally interface with the DownloadService or DownloadManager.
 // Must only be used on the UI thread and generally expected to be called by the
@@ -46,7 +58,8 @@ struct BackgroundFetchDescription;
 class CONTENT_EXPORT BackgroundFetchDelegate {
  public:
   using GetIconDisplaySizeCallback = base::OnceCallback<void(const gfx::Size&)>;
-  using GetPermissionForOriginCallback = base::OnceCallback<void(bool)>;
+  using GetPermissionForOriginCallback =
+      base::OnceCallback<void(BackgroundFetchPermission)>;
 
   // Client interface that a BackgroundFetchDelegate would use to signal the
   // progress of a background fetch.

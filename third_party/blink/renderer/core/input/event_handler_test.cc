@@ -178,7 +178,7 @@ TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
       WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   GetPage().GetAutoscrollController().Animate();
   GetPage().Animator().ServiceScriptedAnimations(WTF::CurrentTimeTicks());
@@ -301,7 +301,7 @@ TEST_F(EventHandlerTest, draggedInlinePositionTest) {
       WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   EXPECT_EQ(IntPoint(12, 29), GetDocument()
                                   .GetFrame()
@@ -339,7 +339,7 @@ TEST_F(EventHandlerTest, draggedSVGImagePositionTest) {
       WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   EXPECT_EQ(IntPoint(45, 44), GetDocument()
                                   .GetFrame()
@@ -777,7 +777,7 @@ TEST_F(EventHandlerTest, dragEndInNewDrag) {
       WebInputEvent::Modifiers::kLeftButtonDown, CurrentTimeTicks());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   // This reproduces what might be the conditions of http://crbug.com/677916
   //
@@ -824,9 +824,10 @@ TEST_F(EventHandlerTest, FakeMouseMoveNotStartDrag) {
           WebInputEvent::Modifiers::kRelativeMotionEvent,
       WebInputEvent::GetStaticTimeStampForTests());
   fake_mouse_move.SetFrameScale(1);
-  EXPECT_EQ(WebInputEventResult::kHandledSuppressed,
-            GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-                fake_mouse_move, Vector<WebMouseEvent>()));
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSuppressed,
+      GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+          fake_mouse_move, Vector<WebMouseEvent>(), Vector<WebMouseEvent>()));
 
   EXPECT_EQ(IntPoint(0, 0), GetDocument()
                                 .GetFrame()
@@ -880,7 +881,7 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
       CurrentTimeTicks());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   EXPECT_EQ("tooltip", LastToolTip());
 
@@ -1115,7 +1116,8 @@ TEST_F(EventHandlerSimTest, MouseLeaveIFrameResets) {
       WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_inside_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_inside_event, Vector<WebMouseEvent>());
+      mouse_move_inside_event, Vector<WebMouseEvent>(),
+      Vector<WebMouseEvent>());
   EXPECT_FALSE(
       GetDocument().GetFrame()->GetEventHandler().IsMousePositionUnknown());
   auto* child_frame =
@@ -1135,7 +1137,8 @@ TEST_F(EventHandlerSimTest, MouseLeaveIFrameResets) {
       WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_outside_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_outside_event, Vector<WebMouseEvent>());
+      mouse_move_outside_event, Vector<WebMouseEvent>(),
+      Vector<WebMouseEvent>());
   EXPECT_FALSE(
       GetDocument().GetFrame()->GetEventHandler().IsMousePositionUnknown());
   EXPECT_TRUE(GetDocument().GetFrame()->Tree().FirstChild());
@@ -1180,7 +1183,7 @@ TEST_F(EventHandlerSimTest, CursorStyleBeforeStartDragging) {
                                  WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, Vector<WebMouseEvent>());
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   EXPECT_EQ(Cursor::Type::kHelp, GetDocument()
                                      .GetFrame()
                                      ->GetChromeClient()

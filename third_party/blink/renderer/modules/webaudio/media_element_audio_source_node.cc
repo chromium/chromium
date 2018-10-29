@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_options.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -95,7 +95,7 @@ void MediaElementAudioSourceHandler::SetFormat(size_t number_of_channels,
       source_sample_rate != source_sample_rate_) {
     if (!number_of_channels ||
         number_of_channels > BaseAudioContext::MaxNumberOfChannels() ||
-        !AudioUtilities::IsValidAudioBufferSampleRate(source_sample_rate)) {
+        !audio_utilities::IsValidAudioBufferSampleRate(source_sample_rate)) {
       // process() will generate silence for these uninitialized values.
       DLOG(ERROR) << "setFormat(" << number_of_channels << ", "
                   << source_sample_rate << ") - unhandled format change";
@@ -136,19 +136,7 @@ void MediaElementAudioSourceHandler::SetFormat(size_t number_of_channels,
 }
 
 bool MediaElementAudioSourceHandler::WouldTaintOrigin() {
-  // If we're cross-origin and allowed access vie CORS, we're not tainted.
-  if (MediaElement()->GetWebMediaPlayer()->DidPassCORSAccessCheck()) {
-    return false;
-  }
-
-  // Handles the case where the url is a redirect to another site that we're not
-  // allowed to access.
-  if (!MediaElement()->HasSingleSecurityOrigin()) {
-    return true;
-  }
-
-  // Test to see if the current media URL taint the origin of the audio context?
-  return Context()->WouldTaintOrigin(MediaElement()->currentSrc());
+  return MediaElement()->GetWebMediaPlayer()->WouldTaintOrigin();
 }
 
 void MediaElementAudioSourceHandler::PrintCORSMessage(const String& message) {
@@ -217,14 +205,14 @@ void MediaElementAudioSourceHandler::unlock() {
 // ----------------------------------------------------------------
 
 MediaElementAudioSourceNode::MediaElementAudioSourceNode(
-    BaseAudioContext& context,
+    AudioContext& context,
     HTMLMediaElement& media_element)
     : AudioNode(context) {
   SetHandler(MediaElementAudioSourceHandler::Create(*this, media_element));
 }
 
 MediaElementAudioSourceNode* MediaElementAudioSourceNode::Create(
-    BaseAudioContext& context,
+    AudioContext& context,
     HTMLMediaElement& media_element,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
@@ -261,7 +249,7 @@ MediaElementAudioSourceNode* MediaElementAudioSourceNode::Create(
 }
 
 MediaElementAudioSourceNode* MediaElementAudioSourceNode::Create(
-    BaseAudioContext* context,
+    AudioContext* context,
     const MediaElementAudioSourceOptions& options,
     ExceptionState& exception_state) {
   return Create(*context, *options.mediaElement(), exception_state);

@@ -34,7 +34,6 @@ void swizzleUIImageImageNamed() {
   [whiteList addObject:@"glif-google-to-dots_28"];
   // TODO(crbug.com/721338): Add missing image.
   [whiteList addObject:@"voice_icon_keyboard_accessory"];
-  [whiteList addObject:@"voice_icon"];
   // TODO(crbug.com/754032): Add missing image.
   [whiteList addObject:@"ios_default_avatar"];
 

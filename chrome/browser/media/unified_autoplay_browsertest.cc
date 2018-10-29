@@ -71,6 +71,17 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
     return played;
   }
 
+  bool NavigateInRenderer(content::WebContents* web_contents, const GURL& url) {
+    content::TestNavigationObserver observer(web_contents);
+
+    bool result = content::ExecuteScriptWithoutUserGesture(
+        web_contents, "window.location = '" + url.spec() + "';");
+
+    if (result)
+      observer.Wait();
+    return result;
+  }
+
   void SetAutoplayForceAllowFlag(const GURL& url) {
     blink::mojom::AutoplayConfigurationClientAssociatedPtr client;
     GetWebContents()
@@ -94,9 +105,8 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
     content::WebContents* active_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    content::Referrer referrer(
-        active_contents->GetLastCommittedURL(),
-        blink::WebReferrerPolicy::kWebReferrerPolicyAlways);
+    content::Referrer referrer(active_contents->GetLastCommittedURL(),
+                               network::mojom::ReferrerPolicy::kAlways);
 
     content::OpenURLParams open_url_params(
         url, referrer, disposition, ui::PAGE_TRANSITION_LINK,
@@ -234,6 +244,85 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
 }
 
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, ForceWasActivated_Default) {
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+
+  NavigateParams params(browser(), kTestPageUrl, ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_FALSE(AttemptPlay(GetWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, ForceWasActivated_Yes) {
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+
+  NavigateParams params(browser(), kTestPageUrl, ui::PAGE_TRANSITION_LINK);
+  params.was_activated = content::WasActivatedOption::kYes;
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(AttemptPlay(GetWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
+                       Redirect_SameOrigin_WithGesture) {
+  const GURL kRedirectPageUrl =
+      embedded_test_server()->GetURL(kFramedTestPagePath);
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+
+  NavigateParams params(browser(), kRedirectPageUrl, ui::PAGE_TRANSITION_LINK);
+  params.was_activated = content::WasActivatedOption::kYes;
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(NavigateInRenderer(GetWebContents(), kTestPageUrl));
+  EXPECT_EQ(kTestPageUrl, GetWebContents()->GetLastCommittedURL());
+  EXPECT_TRUE(AttemptPlay(GetWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
+                       Redirect_SameOrigin_WithoutGesture) {
+  const GURL kRedirectPageUrl =
+      embedded_test_server()->GetURL(kFramedTestPagePath);
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+
+  NavigateParams params(browser(), kRedirectPageUrl, ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(NavigateInRenderer(GetWebContents(), kTestPageUrl));
+  EXPECT_EQ(kTestPageUrl, GetWebContents()->GetLastCommittedURL());
+  EXPECT_FALSE(AttemptPlay(GetWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
+                       Redirect_CrossOrigin_WithGesture) {
+  const GURL kRedirectPageUrl =
+      embedded_test_server()->GetURL(kFramedTestPagePath);
+  const GURL kTestPageUrl =
+      embedded_test_server()->GetURL("foo.example.com", kTestPagePath);
+
+  NavigateParams params(browser(), kRedirectPageUrl, ui::PAGE_TRANSITION_LINK);
+  params.was_activated = content::WasActivatedOption::kYes;
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(NavigateInRenderer(GetWebContents(), kTestPageUrl));
+  EXPECT_EQ(kTestPageUrl, GetWebContents()->GetLastCommittedURL());
+  EXPECT_FALSE(AttemptPlay(GetWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
+                       Redirect_CrossOrigin_WithoutGesture) {
+  const GURL kRedirectPageUrl =
+      embedded_test_server()->GetURL(kFramedTestPagePath);
+  const GURL kTestPageUrl =
+      embedded_test_server()->GetURL("foo.example.com", kTestPagePath);
+
+  NavigateParams params(browser(), kRedirectPageUrl, ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(NavigateInRenderer(GetWebContents(), kTestPageUrl));
+  EXPECT_EQ(kTestPageUrl, GetWebContents()->GetLastCommittedURL());
+  EXPECT_FALSE(AttemptPlay(GetWebContents()));
+}
+
 // Integration tests for the new unified autoplay sound settings UI.
 
 class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
@@ -241,7 +330,9 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
   ~UnifiedAutoplaySettingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    scoped_feature_list_.InitAndEnableFeature(media::kAutoplaySoundSettings);
+    scoped_feature_list_.InitWithFeatures(
+        {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings},
+        {});
     UnifiedAutoplayBrowserTest::SetUpOnMainThread();
   }
 

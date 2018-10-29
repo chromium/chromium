@@ -27,7 +27,15 @@ AccessibilityTest.define('SettingsAccessibilityTest', {
   /** @override */
   tests: {'Accessible with No Changes': function() {}},
   /** @override */
-  violationFilter: SettingsAccessibilityTest.violationFilter,
+  violationFilter:
+      Object.assign({}, SettingsAccessibilityTest.violationFilter, {
+        // Excuse link without an underline.
+        // TODO(https://crbug.com/894602): Remove this exception when settled
+        // with UX.
+        'link-in-text-block': function(nodeResult) {
+          return nodeResult.element.parentElement.id == 'multideviceSubLabel';
+        },
+      }),
 });
 
 GEN('#endif  // defined(OS_CHROMEOS)');

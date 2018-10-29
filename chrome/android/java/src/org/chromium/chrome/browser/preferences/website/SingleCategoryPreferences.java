@@ -36,6 +36,7 @@ import android.widget.TextView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ContentSettingsType;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.media.cdm.MediaDrmCredentialManager;
@@ -126,9 +127,8 @@ public class SingleCategoryPreferences extends PreferenceFragment
             return;
         }
 
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(new ResultsPopulator(), false);
-        fetcher.fetchPreferencesForCategory(mCategory);
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(false);
+        fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
@@ -159,13 +159,13 @@ public class SingleCategoryPreferences extends PreferenceFragment
             if (!mCategory.showSites(i)) continue;
             for (@ContentSettingException.Type int j = 0;
                     j < ContentSettingException.Type.NUM_ENTRIES; j++) {
-                if (ContentSettingException.CONTENT_TYPES[j]
+                if (ContentSettingException.getContentSettingsType(j)
                         == SiteSettingsCategory.contentSettingsType(i)) {
                     return ContentSetting.BLOCK == website.site().getContentSettingPermission(j);
                 }
             }
             for (@PermissionInfo.Type int j = 0; j < PermissionInfo.Type.NUM_ENTRIES; j++) {
-                if (PermissionInfo.CONTENT_TYPES[j]
+                if (PermissionInfo.getContentSettingsType(j)
                         == SiteSettingsCategory.contentSettingsType(i)) {
                     return (j == PermissionInfo.Type.MIDI)
                             ? false
@@ -475,7 +475,7 @@ public class SingleCategoryPreferences extends PreferenceFragment
                     mCategory.getContentSettingsType(), setting.toInt());
             getInfoForOrigins();
         } else if (THIRD_PARTY_COOKIES_TOGGLE_KEY.equals(preference.getKey())) {
-            prefServiceBridge.setBlockThirdPartyCookiesEnabled(!((boolean) newValue));
+            prefServiceBridge.setBlockThirdPartyCookiesEnabled(((boolean) newValue));
         } else if (NOTIFICATIONS_VIBRATE_TOGGLE_KEY.equals(preference.getKey())) {
             prefServiceBridge.setNotificationsVibrateEnabled((boolean) newValue);
         }
@@ -484,12 +484,17 @@ public class SingleCategoryPreferences extends PreferenceFragment
 
     private String getAddExceptionDialogMessage() {
         int resource = 0;
-        if (mCategory.showSites(SiteSettingsCategory.Type.AUTOPLAY)) {
+        if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)) {
+            resource = R.string.website_settings_add_site_description_automatic_downloads;
+        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTOPLAY)) {
             resource = R.string.website_settings_add_site_description_autoplay;
         } else if (mCategory.showSites(SiteSettingsCategory.Type.BACKGROUND_SYNC)) {
             resource = R.string.website_settings_add_site_description_background_sync;
         } else if (mCategory.showSites(SiteSettingsCategory.Type.JAVASCRIPT)) {
-            resource = R.string.website_settings_add_site_description_javascript;
+            resource = PrefServiceBridge.getInstance().isCategoryEnabled(
+                               ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT)
+                    ? R.string.website_settings_add_site_description_javascript_block
+                    : R.string.website_settings_add_site_description_javascript_allow;
         } else if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
             resource = PrefServiceBridge.getInstance().isCategoryEnabled(
                                ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND)
@@ -527,16 +532,13 @@ public class SingleCategoryPreferences extends PreferenceFragment
     // AddExceptionPreference.SiteAddedCallback:
     @Override
     public void onAddSite(String hostname) {
-        // The Sound content setting has exception lists for both BLOCK and ALLOW (others just
-        // have exceptions to ALLOW).
-        int setting = (mCategory.showSites(SiteSettingsCategory.Type.SOUND)
-                              && PrefServiceBridge.getInstance().isCategoryEnabled(
-                                         ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND))
+        int setting = (PrefServiceBridge.getInstance().isCategoryEnabled(
+                              mCategory.getContentSettingsType()))
                 ? ContentSetting.BLOCK.toInt()
                 : ContentSetting.ALLOW.toInt();
+
         PrefServiceBridge.getInstance().nativeSetContentSettingForPattern(
                 mCategory.getContentSettingsType(), hostname, setting);
-
         Toast.makeText(getActivity(),
                 String.format(getActivity().getString(
                         R.string.website_settings_add_site_toast),
@@ -573,12 +575,17 @@ public class SingleCategoryPreferences extends PreferenceFragment
                            ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY)) {
             exception = true;
         } else if (mCategory.showSites(SiteSettingsCategory.Type.JAVASCRIPT)
-                && !PrefServiceBridge.getInstance().isCategoryEnabled(
-                           ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT)) {
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SITE_SETTINGS_UI)
+                           || !PrefServiceBridge.getInstance().isCategoryEnabled(
+                                      ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT))) {
             exception = true;
         } else if (mCategory.showSites(SiteSettingsCategory.Type.BACKGROUND_SYNC)
                 && !PrefServiceBridge.getInstance().isCategoryEnabled(
                            ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC)) {
+            exception = true;
+        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)
+                && !PrefServiceBridge.getInstance().isCategoryEnabled(
+                           ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS)) {
             exception = true;
         }
         if (exception) {
@@ -865,7 +872,7 @@ public class SingleCategoryPreferences extends PreferenceFragment
                 (ChromeBaseCheckBoxPreference) getPreferenceScreen().findPreference(
                         THIRD_PARTY_COOKIES_TOGGLE_KEY);
         thirdPartyCookiesPref.setChecked(
-                !PrefServiceBridge.getInstance().isBlockThirdPartyCookiesEnabled());
+                PrefServiceBridge.getInstance().isBlockThirdPartyCookiesEnabled());
         thirdPartyCookiesPref.setEnabled(PrefServiceBridge.getInstance().isCategoryEnabled(
                 ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES));
         thirdPartyCookiesPref.setManagedPreferenceDelegate(

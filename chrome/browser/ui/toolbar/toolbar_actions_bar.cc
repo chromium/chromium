@@ -136,11 +136,6 @@ void ToolbarActionsBar::RegisterProfilePrefs(
 
 // static
 gfx::Size ToolbarActionsBar::GetIconAreaSize() {
-#if defined(OS_MACOSX)
-  // On Cocoa, the spec is a 24x24 button in a 28x28 space.
-  if (!base::FeatureList::IsEnabled(features::kViewsBrowserWindows))
-    return gfx::Size(24, 24);
-#endif
   return gfx::Size(28, 28);
 }
 
@@ -641,7 +636,7 @@ void ToolbarActionsBar::OnToolbarActionLoadFailed() {
 }
 
 void ToolbarActionsBar::OnToolbarActionRemoved(const std::string& action_id) {
-  ToolbarActions::iterator iter = toolbar_actions_.begin();
+  auto iter = toolbar_actions_.begin();
   while (iter != toolbar_actions_.end() && (*iter)->GetId() != action_id)
     ++iter;
 
@@ -774,12 +769,15 @@ void ToolbarActionsBar::OnToolbarModelInitialized() {
   ResizeDelegate(gfx::Tween::EASE_OUT);
 }
 
-void ToolbarActionsBar::TabInsertedAt(TabStripModel* tab_strip_model,
-                                      content::WebContents* contents,
-                                      int index,
-                                      bool foreground) {
-  if (foreground)
-    extensions::MaybeShowExtensionControlledNewTabPage(browser_, contents);
+void ToolbarActionsBar::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (tab_strip_model->empty() || !selection.active_tab_changed())
+    return;
+
+  extensions::MaybeShowExtensionControlledNewTabPage(browser_,
+                                                     selection.new_contents);
 }
 
 void ToolbarActionsBar::ReorderActions() {

@@ -29,10 +29,6 @@ enum class WindowType;
 
 namespace ash {
 
-namespace mojom {
-enum class WindowStyle;
-}
-
 // Functions for extracting properties that are used at a Window creation time.
 // Clients pass an initial set of properties when requesting a new aura::Window.
 // Not all of these properties need be persisted, some are used solely to
@@ -58,10 +54,6 @@ bool GetInitialBounds(const InitProperties& properties, gfx::Rect* bounds);
 bool GetWindowPreferredSize(const InitProperties& properties, gfx::Size* size);
 
 bool ShouldRemoveStandardFrame(const InitProperties& properties);
-
-bool ShouldEnableImmersive(const InitProperties& properties);
-
-mojom::WindowStyle GetWindowStyle(const InitProperties& properties);
 
 // Applies |properties| to |window| using |property_converter|.
 void ApplyProperties(

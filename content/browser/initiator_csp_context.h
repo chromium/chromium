@@ -20,8 +20,11 @@ namespace content {
 // `navigate-to` and `form-action` (in the case of form submissions).
 class InitiatorCSPContext : public CSPContext {
  public:
-  InitiatorCSPContext(const std::vector<ContentSecurityPolicy>& policies,
-                      base::Optional<CSPSource>& self_source);
+  InitiatorCSPContext(
+      const std::vector<ContentSecurityPolicy>& policies,
+      base::Optional<CSPSource>& self_source,
+      blink::mojom::NavigationInitiatorPtr navigation_initiator);
+  ~InitiatorCSPContext() override;
 
   void ReportContentSecurityPolicyViolation(
       const CSPViolationParams& violation_params) override;
@@ -35,6 +38,9 @@ class InitiatorCSPContext : public CSPContext {
 
  private:
   RenderFrameHostImpl* reporting_render_frame_host_impl_;
+  blink::mojom::NavigationInitiatorPtr initiator_ptr;
+
+  DISALLOW_COPY_AND_ASSIGN(InitiatorCSPContext);
 };
 
 }  // namespace content

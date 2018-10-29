@@ -8,6 +8,7 @@
 #include <memory>
 #include <ostream>
 
+#include "net/third_party/quic/core/frames/quic_inlined_frame.h"
 #include "net/third_party/quic/core/quic_buffer_allocator.h"
 #include "net/third_party/quic/core/quic_types.h"
 #include "net/third_party/quic/platform/api/quic_export.h"
@@ -15,7 +16,8 @@
 
 namespace quic {
 
-struct QUIC_EXPORT_PRIVATE QuicStreamFrame {
+struct QUIC_EXPORT_PRIVATE QuicStreamFrame
+    : public QuicInlinedFrame<QuicStreamFrame> {
   QuicStreamFrame();
   QuicStreamFrame(QuicStreamId stream_id,
                   bool fin,
@@ -29,11 +31,6 @@ struct QUIC_EXPORT_PRIVATE QuicStreamFrame {
   friend QUIC_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
                                                       const QuicStreamFrame& s);
 
-  // The union in QuicFrame requires the QuicStreamFrame |type| field to be the
-  // first field in the frame.
-  QuicFrameType type;
-
-  // QuicStreamFrame fields.
   bool fin;
   QuicPacketLength data_length;
   QuicStreamId stream_id;

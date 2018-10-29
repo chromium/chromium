@@ -156,6 +156,54 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /**
+     * Whether Autofill Upstream is enabled.
+     * @private
+     */
+    upstreamEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('upstreamEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the user has a secondary sync passphrase.
+     * @private
+     */
+    isUsingSecondaryPassphrase_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isUsingSecondaryPassphrase');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the upload-to-google state is active.
+     * @private
+     */
+    uploadToGoogleActive_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('uploadToGoogleActive');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the domain of the user's email is allowed.
+     * @private
+     */
+    userEmailDomainAllowed_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('userEmailDomainAllowed');
+      },
+      readOnly: true,
+    },
   },
 
   listeners: {
@@ -388,6 +436,26 @@ Polymer({
 
     // If user does not have Google Payments Account, return false.
     if (!this.hasGooglePaymentsAccount_)
+      return false;
+
+    // If the Autofill Upstream feature is not enabled, return false.
+    if (!this.upstreamEnabled_)
+      return false;
+
+    // Don't offer upload if user has a secondary passphrase. Users who have
+    // enabled a passphrase have chosen to not make their sync information
+    // accessible to Google. Since upload makes credit card data available
+    // to other Google systems, disable it for passphrase users.
+    if (this.isUsingSecondaryPassphrase_)
+      return false;
+
+    // If upload-to-Google state is not active, card cannot be saved to Google
+    // Payments. Return false.
+    if (!this.uploadToGoogleActive_)
+      return false;
+
+    // The domain of the user's email address is not allowed, return false.
+    if (!this.userEmailDomainAllowed_)
       return false;
 
     // If credit card enabled pref is false, return false.

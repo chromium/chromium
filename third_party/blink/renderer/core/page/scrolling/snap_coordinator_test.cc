@@ -620,83 +620,15 @@ TEST_F(SnapCoordinatorTest, VerticalRlSnapDataCalculation) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(10, 10, width - 20, height - 20),
       gfx::ScrollOffset(max_position.X(), max_position.Y()));
-  // Under vertical-rl writing mode, 'start' should align to the right, so the
-  // alignment on x should be reversed.
+  // Under vertical-rl writing mode, 'start' should align to the right
+  // and 'end' should align to the left.
   SnapAreaData expected_area(
-      ScrollSnapAlign(SnapAlignment::kEnd, SnapAlignment::kStart),
+      ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kEnd),
       gfx::RectF(192, 192, 116, 116), false);
   expected_container.AddSnapAreaData(expected_area);
 
   EXPECT_EQ_CONTAINER(expected_container, actual_container);
   EXPECT_EQ_AREA(expected_area, actual_container.at(0));
-}
-
-// The following tests check GetSnapPositionForPoint().
-TEST_F(SnapCoordinatorTest, SnapsIfScrolledAndSnappingAxesMatch) {
-  SetUpSingleSnapArea();
-  Element* area_element = GetDocument().getElementById("area");
-  Element* scroller_element = GetDocument().getElementById("scroller");
-  area_element->setAttribute(styleAttr, "scroll-snap-align: start;");
-  scroller_element->setAttribute(styleAttr, "scroll-snap-type: x mandatory");
-  GetDocument().UpdateStyleAndLayout();
-
-  SnapCoordinator* snap_coordinator = GetDocument().GetSnapCoordinator();
-  LayoutBox* snap_container = scroller_element->GetLayoutBox();
-  base::Optional<FloatPoint> snap_position =
-      snap_coordinator->GetSnapPositionForPoint(
-          *snap_container, FloatPoint(150, 150), true, false);
-  EXPECT_TRUE(snap_position.has_value());
-  EXPECT_EQ(200 - 8 - 10, snap_position.value().X());
-  EXPECT_EQ(150, snap_position.value().Y());
-}
-
-TEST_F(SnapCoordinatorTest, DoesNotSnapOnNonSnappingAxis) {
-  SetUpSingleSnapArea();
-  Element* area_element = GetDocument().getElementById("area");
-  Element* scroller_element = GetDocument().getElementById("scroller");
-  area_element->setAttribute(styleAttr, "scroll-snap-align: start;");
-  scroller_element->setAttribute(styleAttr, "scroll-snap-type: y mandatory");
-  GetDocument().UpdateStyleAndLayout();
-
-  SnapCoordinator* snap_coordinator = GetDocument().GetSnapCoordinator();
-  LayoutBox* snap_container = scroller_element->GetLayoutBox();
-  base::Optional<FloatPoint> snap_position =
-      snap_coordinator->GetSnapPositionForPoint(
-          *snap_container, FloatPoint(150, 150), true, false);
-  EXPECT_FALSE(snap_position.has_value());
-}
-
-TEST_F(SnapCoordinatorTest, DoesNotSnapOnEmptyContainer) {
-  SetUpSingleSnapArea();
-  Element* area_element = GetDocument().getElementById("area");
-  Element* scroller_element = GetDocument().getElementById("scroller");
-  area_element->setAttribute(styleAttr, "scroll-snap-align: none;");
-  scroller_element->setAttribute(styleAttr, "scroll-snap-type: x mandatory");
-  GetDocument().UpdateStyleAndLayout();
-
-  SnapCoordinator* snap_coordinator = GetDocument().GetSnapCoordinator();
-  LayoutBox* snap_container = scroller_element->GetLayoutBox();
-  base::Optional<FloatPoint> snap_position =
-      snap_coordinator->GetSnapPositionForPoint(
-          *snap_container, FloatPoint(150, 150), true, false);
-  ;
-  EXPECT_FALSE(snap_position.has_value());
-}
-
-TEST_F(SnapCoordinatorTest, DoesNotSnapOnNonSnapContainer) {
-  SetUpSingleSnapArea();
-  Element* area_element = GetDocument().getElementById("area");
-  Element* scroller_element = GetDocument().getElementById("scroller");
-  area_element->setAttribute(styleAttr, "scroll-snap-align: start;");
-  scroller_element->setAttribute(styleAttr, "scroll-snap-type: none");
-  GetDocument().UpdateStyleAndLayout();
-
-  SnapCoordinator* snap_coordinator = GetDocument().GetSnapCoordinator();
-  LayoutBox* snap_container = scroller_element->GetLayoutBox();
-  base::Optional<FloatPoint> snap_position =
-      snap_coordinator->GetSnapPositionForPoint(
-          *snap_container, FloatPoint(150, 150), true, false);
-  EXPECT_FALSE(snap_position.has_value());
 }
 
 }  // namespace

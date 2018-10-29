@@ -128,7 +128,7 @@ bool UserScriptListener::ShouldDelayRequest(const GURL& url) {
 
   for (ProfileDataMap::const_iterator pt = profile_data_.begin();
        pt != profile_data_.end(); ++pt) {
-    for (URLPatterns::const_iterator it = pt->second.url_patterns.begin();
+    for (auto it = pt->second.url_patterns.begin();
          it != pt->second.url_patterns.end(); ++it) {
       if ((*it).MatchesURL(url)) {
         // One of the user scripts wants to inject into this request, but the

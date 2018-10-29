@@ -38,4 +38,9 @@ Polymer({
   onRemoveTap_: function(event) {
     settings.CrostiniBrowserProxyImpl.getInstance().requestRemoveCrostini();
   },
+
+  /** @private */
+  onSharedPathsTap_: function(event) {
+    settings.navigateTo(settings.routes.CROSTINI_SHARED_PATHS);
+  },
 });

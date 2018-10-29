@@ -9,6 +9,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -33,7 +34,8 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/chrome_sync_client.h"
-#include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
+#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -50,6 +52,7 @@
 #include "components/sync/driver/sync_util.h"
 #include "components/unified_consent/feature.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -91,8 +94,8 @@ void UpdateNetworkTimeOnUIThread(base::Time network_time,
 void UpdateNetworkTime(const base::Time& network_time,
                        const base::TimeDelta& resolution,
                        const base::TimeDelta& latency) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&UpdateNetworkTimeOnUIThread, network_time, resolution,
                      latency, base::TimeTicks::Now()));
 }
@@ -128,7 +131,8 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
         BrowserContextDependencyManager::GetInstance()) {
   // The ProfileSyncService depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
-  // destruction order.
+  // destruction order. Note that some of the dependencies are listed here but
+  // actually plumbed in ChromeSyncClient, which this factory constructs.
   DependsOn(AboutSigninInternalsFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
@@ -149,12 +153,13 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(invalidation::DeprecatedProfileInvalidationProviderFactory::
                 GetInstance());
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
+  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
   DependsOn(SpellcheckServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  DependsOn(sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -165,12 +170,6 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(sync_wifi::WifiCredentialSyncableServiceFactory::GetInstance());
 #endif  // defined(OS_CHROMEOS)
-
-  // The following have not been converted to KeyedServices yet,
-  // and for now they are explicitly destroyed after the
-  // BrowserContextDependencyManager is told to DestroyBrowserContextServices,
-  // so they will be around when the ProfileSyncService is destroyed.
-
 }
 
 ProfileSyncServiceFactory::~ProfileSyncServiceFactory() {
@@ -242,17 +241,27 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
         base::BindRepeating(&GetSigninScopedDeviceIdForProfile, profile);
     init_params.gaia_cookie_manager_service =
         GaiaCookieManagerServiceFactory::GetForProfile(profile);
+
     bool use_fcm_invalidations =
         base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations);
-    auto* invalidation_provider =
-        use_fcm_invalidations
-            ? invalidation::ProfileInvalidationProviderFactory::GetForProfile(
-                  profile)
-            : invalidation::DeprecatedProfileInvalidationProviderFactory::
-                  GetForProfile(profile);
-    if (invalidation_provider) {
-      init_params.invalidations_identity_provider =
-          invalidation_provider->GetIdentityProvider();
+    if (use_fcm_invalidations) {
+      auto* fcm_invalidation_provider =
+          invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+              profile);
+      if (fcm_invalidation_provider) {
+        init_params.invalidations_identity_providers.push_back(
+            fcm_invalidation_provider->GetIdentityProvider());
+      }
+    }
+    // This code should stay here until all invalidation client are
+    // migrated from deprecated invalidation  infructructure.
+    // Since invalidations will work only if ProfileSyncService calls
+    // SetActiveAccountId for all identity providers.
+    auto* deprecated_invalidation_provider = invalidation::
+        DeprecatedProfileInvalidationProviderFactory::GetForProfile(profile);
+    if (deprecated_invalidation_provider) {
+      init_params.invalidations_identity_providers.push_back(
+          deprecated_invalidation_provider->GetIdentityProvider());
     }
 
     // TODO(tim): Currently, AUTO/MANUAL settings refer to the *first* time sync

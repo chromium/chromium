@@ -74,7 +74,7 @@ bool EventHandlerRegistry::EventTypeToClass(
     // process pointerrawmove events and hit-test them when
     // there is no listener on the page.
     *result = kPointerRawMoveEvent;
-  } else if (EventUtil::IsPointerEventType(event_type)) {
+  } else if (event_util::IsPointerEventType(event_type)) {
     // The pointer events never block scrolling and the compositor
     // only needs to know about the touch listeners.
     *result = kPointerEvent;

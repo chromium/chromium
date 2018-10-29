@@ -22,6 +22,19 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace {
+
+bool IsV1WindowedApp(Browser* browser) {
+  if (!browser->is_type_popup() || !browser->is_app())
+    return false;
+  // Crostini terminal windows do not have an app id and are handled by
+  // CrostiniAppWindowShelfController. All other app windows should have a non
+  // empty app id.
+  return !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
+}
+
+}  // namespace
+
 // This class monitors the WebContent of the all tab and notifies a navigation
 // to the BrowserStatusMonitor.
 class BrowserStatusMonitor::LocalWebContentsObserver
@@ -107,7 +120,7 @@ bool BrowserStatusMonitor::ShouldTrackBrowser(Browser* browser) {
 
 void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
   DCHECK(initialized_);
-  if (browser->is_type_popup() && browser->is_app()) {
+  if (IsV1WindowedApp(browser)) {
     // Note: A V1 application will set the tab strip observer when the app gets
     // added to the shelf. This makes sure that in the multi user case we will
     // only set the observer while the app item exists in the shelf.
@@ -117,7 +130,7 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
 
 void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
   DCHECK(initialized_);
-  if (browser->is_type_popup() && browser->is_app())
+  if (IsV1WindowedApp(browser))
     RemoveV1AppFromShelf(browser);
 
   UpdateBrowserItemState();
@@ -187,20 +200,19 @@ void BrowserStatusMonitor::WebContentsDestroyed(
 }
 
 void BrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
-  DCHECK(browser->is_type_popup() && browser->is_app());
+  DCHECK(IsV1WindowedApp(browser));
   DCHECK(initialized_);
 
   std::string app_id =
       web_app::GetAppIdFromApplicationName(browser->app_name());
-  if (!app_id.empty()) {
-    if (!IsV1AppInShelfWithAppId(app_id))
-      launcher_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
-    browser_to_app_id_map_[browser] = app_id;
-  }
+  DCHECK(!app_id.empty());
+  if (!IsV1AppInShelfWithAppId(app_id))
+    launcher_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
+  browser_to_app_id_map_[browser] = app_id;
 }
 
 void BrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
-  DCHECK(browser->is_type_popup() && browser->is_app());
+  DCHECK(IsV1WindowedApp(browser));
   DCHECK(initialized_);
 
   auto iter = browser_to_app_id_map_.find(browser);

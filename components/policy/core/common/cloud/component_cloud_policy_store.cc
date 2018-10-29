@@ -122,8 +122,7 @@ bool ComponentCloudPolicyStore::GetPolicyDomain(const std::string& policy_type,
 const std::string& ComponentCloudPolicyStore::GetCachedHash(
     const PolicyNamespace& ns) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<PolicyNamespace, std::string>::const_iterator it =
-      cached_hashes_.find(ns);
+  auto it = cached_hashes_.find(ns);
   return it == cached_hashes_.end() ? base::EmptyString() : it->second;
 }
 
@@ -150,7 +149,7 @@ void ComponentCloudPolicyStore::Load() {
   // Load cached policy protobuf for the assoicated domain.
   ContentMap protos;
   cache_->LoadAllSubkeys(domain_constants_->proto_cache_key, &protos);
-  for (ContentMap::iterator it = protos.begin(); it != protos.end(); ++it) {
+  for (auto it = protos.begin(); it != protos.end(); ++it) {
     const std::string& id(it->first);
     const PolicyNamespace ns(domain_constants_->domain, id);
 
@@ -263,12 +262,12 @@ void ComponentCloudPolicyStore::Purge(const PurgeFilter& filter) {
 
   // Purge cached hashes, so that those namespaces can be fetched again if the
   // policy state changes.
-  std::map<PolicyNamespace, std::string>::iterator it = cached_hashes_.begin();
+  auto it = cached_hashes_.begin();
   while (it != cached_hashes_.end()) {
     const PolicyNamespace ns(it->first);
     DCHECK_EQ(ns.domain, domain_constants_->domain);
     if (filter.Run(domain_constants_->domain, ns.component_id)) {
-      std::map<PolicyNamespace, std::string>::iterator prev = it;
+      auto prev = it;
       ++it;
       cached_hashes_.erase(prev);
       DCHECK(stored_policy_times_.count(ns));

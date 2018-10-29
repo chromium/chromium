@@ -57,6 +57,9 @@ class UI_BASE_EXPORT OSExchangeDataProviderMac
   // Returns the data for the specified type in the pasteboard.
   NSData* GetNSDataForType(NSString* type) const;
 
+  // Gets the underlying pasteboard.
+  NSPasteboard* GetPasteboard() const;
+
   // Returns the union of SupportedPasteboardTypes() and the types in the
   // current pasteboard.
   NSArray* GetAvailableTypes() const;

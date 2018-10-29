@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
@@ -74,7 +75,9 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
     mock_logger_ = static_cast<MockNotificationMetricsLogger*>(
         NotificationMetricsLoggerFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                &profile_, &MockNotificationMetricsLogger::FactoryForTests));
+                &profile_,
+                base::BindRepeating(
+                    &MockNotificationMetricsLogger::FactoryForTests)));
 
     PlatformNotificationServiceImpl::GetInstance()
         ->ClearClosedNotificationsForTesting();

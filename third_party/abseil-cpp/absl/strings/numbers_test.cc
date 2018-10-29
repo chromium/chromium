@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This file tests std::string processing functions related to numeric values.
+// This file tests string processing functions related to numeric values.
 
 #include "absl/strings/numbers.h"
 

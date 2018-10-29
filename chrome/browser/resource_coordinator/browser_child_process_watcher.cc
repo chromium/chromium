@@ -9,7 +9,6 @@
 #include "content/public/common/process_type.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/resource_coordinator/public/cpp/process_resource_coordinator.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 
 namespace resource_coordinator {
 
@@ -23,9 +22,6 @@ BrowserChildProcessWatcher::~BrowserChildProcessWatcher() {
 
 void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
-  if (!resource_coordinator::IsResourceCoordinatorEnabled())
-    return;
-
   if (data.process_type == content::PROCESS_TYPE_GPU) {
     gpu_process_resource_coordinator_ =
         std::make_unique<resource_coordinator::ProcessResourceCoordinator>(

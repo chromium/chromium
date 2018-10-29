@@ -17,6 +17,8 @@ bool AreResponseHeadersEqual(const net::HttpResponseHeaders* h1,
 
 namespace download {
 
+CompletionInfo::CompletionInfo() = default;
+
 CompletionInfo::CompletionInfo(
     const base::FilePath& path,
     uint64_t bytes_downloaded,
@@ -26,6 +28,10 @@ CompletionInfo::CompletionInfo(
       bytes_downloaded(bytes_downloaded),
       url_chain(url_chain),
       response_headers(std::move(response_headers)) {}
+
+CompletionInfo::CompletionInfo(const base::FilePath& path,
+                               uint64_t bytes_downloaded)
+    : path(path), bytes_downloaded(bytes_downloaded) {}
 
 CompletionInfo::CompletionInfo(const CompletionInfo& other) = default;
 
@@ -39,13 +45,13 @@ bool CompletionInfo::operator==(const CompletionInfo& other) const {
                                  other.response_headers.get());
 }
 
-DownloadMetaData::DownloadMetaData() : current_size(0u) {}
+DownloadMetaData::DownloadMetaData() : current_size(0u), paused(false) {}
 
 DownloadMetaData::DownloadMetaData(const DownloadMetaData& other) = default;
 
 bool DownloadMetaData::operator==(const DownloadMetaData& other) const {
   return guid == other.guid && current_size == other.current_size &&
-         completion_info == other.completion_info;
+         completion_info == other.completion_info && paused == other.paused;
 }
 
 DownloadMetaData::~DownloadMetaData() = default;

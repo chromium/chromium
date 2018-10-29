@@ -22,6 +22,7 @@ js_library("clear_browsing_data_dialog") {
   deps = [
     ":clear_browsing_data_browser_proxy",
     "../device_page:keyboard",
+    "../people_page:sync_browser_proxy",
     "//third_party/polymer/v1_0/components-chromium/iron-pages:iron-pages-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
     "//ui/webui/resources/js:cr",

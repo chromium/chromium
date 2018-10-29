@@ -40,6 +40,7 @@ class CastMainDelegate : public content::ContentMainDelegate {
 #if defined(OS_LINUX)
   void ZygoteForked() override;
 #endif  // defined(OS_LINUX)
+  bool ShouldCreateFeatureList() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;

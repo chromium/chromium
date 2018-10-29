@@ -13,15 +13,15 @@
 #include <string>
 
 #include "base/logging.h"
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // A Quad is defined by four corners, allowing it to have edges that are not
 // axis-aligned, unlike a Rect.
-class GFX_EXPORT QuadF {
+class GEOMETRY_EXPORT QuadF {
  public:
   constexpr QuadF() = default;
   constexpr QuadF(const PointF& p1,
@@ -115,10 +115,10 @@ inline bool operator!=(const QuadF& lhs, const QuadF& rhs) {
 }
 
 // Add a vector to a quad, offseting each point in the quad by the vector.
-GFX_EXPORT QuadF operator+(const QuadF& lhs, const Vector2dF& rhs);
+GEOMETRY_EXPORT QuadF operator+(const QuadF& lhs, const Vector2dF& rhs);
 // Subtract a vector from a quad, offseting each point in the quad by the
 // inverse of the vector.
-GFX_EXPORT QuadF operator-(const QuadF& lhs, const Vector2dF& rhs);
+GEOMETRY_EXPORT QuadF operator-(const QuadF& lhs, const Vector2dF& rhs);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

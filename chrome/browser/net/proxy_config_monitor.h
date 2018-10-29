@@ -22,6 +22,7 @@ class ProxyConfigWithAnnotation;
 
 class Profile;
 class PrefProxyConfigTracker;
+class PrefService;
 
 // Tracks the ProxyConfig to use, and passes any updates to a NetworkContext's
 // ProxyConfigClient. This also responds to errors related to proxy settings
@@ -42,10 +43,9 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   explicit ProxyConfigMonitor(Profile* profile);
 
   // Creates a ProxyConfigMonitor that gets proxy settings from the
-  // BrowserProcess's |local_state_|, for use with NetworkContexts not
-  // assocaited with a profile. Must be destroyed before the BrowserProcess's
-  // |local_state_|.
-  ProxyConfigMonitor();
+  // |local_state|, for use with NetworkContexts not
+  // associated with a profile. Must be destroyed before |local_state|.
+  explicit ProxyConfigMonitor(PrefService* local_state);
 
   ~ProxyConfigMonitor() override;
 

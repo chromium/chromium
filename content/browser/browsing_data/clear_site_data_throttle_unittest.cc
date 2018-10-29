@@ -9,8 +9,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_task_environment.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/resource_request_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_browser_thread.h"
@@ -38,7 +40,8 @@ const char kClearCookiesHeader[] = "Clear-Site-Data: \"cookies\"";
 
 void WaitForUIThread() {
   base::RunLoop run_loop;
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, run_loop.QuitClosure());
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           run_loop.QuitClosure());
   run_loop.Run();
 }
 

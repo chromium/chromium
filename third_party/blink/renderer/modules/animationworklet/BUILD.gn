@@ -12,10 +12,8 @@ blink_modules_sources("animationworklet") {
     "animation_worklet_global_scope.h",
     "animation_worklet_messaging_proxy.cc",
     "animation_worklet_messaging_proxy.h",
-    "animation_worklet_proxy_client_impl.cc",
-    "animation_worklet_proxy_client_impl.h",
-    "animation_worklet_thread.cc",
-    "animation_worklet_thread.h",
+    "animation_worklet_proxy_client.cc",
+    "animation_worklet_proxy_client.h",
     "animator.cc",
     "animator.h",
     "animator_definition.cc",
@@ -28,5 +26,7 @@ blink_modules_sources("animationworklet") {
     "worklet_animation.h",
     "worklet_animation_options.cc",
     "worklet_animation_options.h",
+    "worklet_group_effect_proxy.cc",
+    "worklet_group_effect_proxy.h",
   ]
 }

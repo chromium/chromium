@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -178,8 +179,8 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
     MDnsAPI::GetFactoryInstance()->SetTestingFactory(browser_context(),
                                                      GetMDnsFactory());
 
-    EventRouterFactory::GetInstance()->SetTestingFactory(browser_context(),
-                                                         &BuildEventRouter);
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        browser_context(), base::BindRepeating(&BuildEventRouter));
 
     // Do some sanity checking
     ASSERT_TRUE(MDnsAPI::Get(browser_context()));      // constructs MDnsAPI
@@ -198,9 +199,8 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
   }
 
   // Returns the mDNS API factory function (mock vs. real) to use for the test.
-  virtual BrowserContextKeyedServiceFactory::TestingFactoryFunction
-  GetMDnsFactory() {
-    return MDnsAPITestingFactoryFunction;
+  virtual BrowserContextKeyedServiceFactory::TestingFactory GetMDnsFactory() {
+    return base::BindRepeating(&MDnsAPITestingFactoryFunction);
   }
 
   void TearDown() override {
@@ -257,9 +257,8 @@ class MDnsAPIMaxServicesTest : public MDnsAPITest {
 
 class MDnsAPIDiscoveryTest : public MDnsAPITest {
  public:
-  BrowserContextKeyedServiceFactory::TestingFactoryFunction GetMDnsFactory()
-      override {
-    return MockedMDnsAPITestingFactoryFunction;
+  BrowserContextKeyedServiceFactory::TestingFactory GetMDnsFactory() override {
+    return base::BindRepeating(&MockedMDnsAPITestingFactoryFunction);
   }
 
   void SetUp() override {
@@ -274,7 +273,7 @@ class MDnsAPIDiscoveryTest : public MDnsAPITest {
 
 TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {
   EventRouterFactory::GetInstance()->SetTestingFactory(
-      browser_context(), &MockEventRouterFactoryFunction);
+      browser_context(), base::BindRepeating(&MockEventRouterFactoryFunction));
   extensions::EventListenerMap::ListenerList listeners;
 
   extensions::EventListenerInfo listener_info(
@@ -327,7 +326,7 @@ TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {
 
 TEST_F(MDnsAPIMaxServicesTest, OnServiceListDoesNotExceedLimit) {
   EventRouterFactory::GetInstance()->SetTestingFactory(
-      browser_context(), &MockEventRouterFactoryFunction);
+      browser_context(), base::BindRepeating(&MockEventRouterFactoryFunction));
 
   // This check should change when the [value=2048] changes in the IDL file.
   EXPECT_EQ(2048, api::mdns::MAX_SERVICE_INSTANCES_PER_EVENT);

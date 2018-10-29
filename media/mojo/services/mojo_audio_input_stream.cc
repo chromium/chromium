@@ -90,7 +90,7 @@ void MojoAudioInputStream::OnStreamCreated(
 
   DCHECK(socket_handle.is_valid());
 
-  base::ResetAndReturn(&stream_created_callback_)
+  std::move(stream_created_callback_)
       .Run({base::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted);

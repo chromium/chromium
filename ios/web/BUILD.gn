@@ -52,7 +52,7 @@ source_set("web") {
     "//services/network/public/mojom",
     "//services/service_manager",
     "//services/service_manager/embedder",
-    "//services/service_manager/runner/common",
+    "//services/service_manager/public/cpp",
   ]
 
   sources = [

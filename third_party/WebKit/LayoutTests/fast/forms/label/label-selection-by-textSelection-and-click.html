@@ -24,8 +24,8 @@ var testLabelClickWithSelectedText = async_test("Tests that Radio Input gets che
 // 3. Radio button should be checked.
 
 testLabelClickWithSelectedText.step(() => {
-  assert_exists(window, "chrome");
-  assert_exists(chrome, "gpuBenchmarking");
+  assert_own_property(window, "chrome");
+  assert_own_property(chrome, "gpuBenchmarking");
 
   var pointerActions =
           [{ source: "mouse",

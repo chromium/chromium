@@ -39,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -129,8 +130,8 @@ public class UrlBarTest {
                 LocationBarLayout locationBar =
                         (LocationBarLayout) mActivityTestRule.getActivity().findViewById(
                                 R.id.location_bar);
-                locationBar.cancelPendingAutocompleteStart();
-                locationBar.setAutocompleteController(controller);
+                locationBar.getAutocompleteCoordinator().cancelPendingAutocompleteStart();
+                locationBar.getAutocompleteCoordinator().setAutocompleteController(controller);
             }
         });
     }

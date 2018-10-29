@@ -50,11 +50,12 @@ class LocalSiteCharacteristicsDataStoreInspector {
   virtual void GetDatabaseSize(DatabaseSizeCallback on_have_data) = 0;
 
   // Retrieves the in-memory data for a given origin.
-  // On return |data| contains the available data for |origin|, or nullptr
-  // if no data is available for this origin.
-  virtual bool GetaDataForOrigin(
+  // On return |data| contains the available data for |origin| if available,
+  // and |is_dirty| is true if the entry needs flushing to disk.
+  // Returns true if an entry exists for |origin|.
+  virtual bool GetDataForOrigin(
       const url::Origin& origin,
-      /* TODO(siggi): more properties, like "dirty bit" */
+      bool* is_dirty,
       std::unique_ptr<SiteCharacteristicsProto>* data) = 0;
 
   // Retrieves the data store this inspector is associated with.

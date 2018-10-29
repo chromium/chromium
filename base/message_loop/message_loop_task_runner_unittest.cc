@@ -200,8 +200,9 @@ TEST_F(MessageLoopTaskRunnerTest, PostTaskAndReply_SameLoop) {
   EXPECT_LT(task_delete_order, reply_delete_order);
 }
 
+// Flaky, see https://crbug.com/856900 for details.
 TEST_F(MessageLoopTaskRunnerTest,
-       PostTaskAndReply_DeadReplyTaskRunnerBehavior) {
+       DISABLED_PostTaskAndReply_DeadReplyTaskRunnerBehavior) {
   // Annotate the scope as having memory leaks to suppress heapchecker reports.
   ANNOTATE_SCOPED_MEMORY_LEAK;
   MessageLoop* task_run_on = nullptr;

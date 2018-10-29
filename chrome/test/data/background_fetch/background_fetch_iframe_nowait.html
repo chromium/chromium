@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="../result_queue.js"></script>
+  </head>
+  <body>
+    <script>
+      navigator.serviceWorker.ready.then(swRegistration => {
+        swRegistration.backgroundFetch.fetch(
+            'iframe-fetch', '/background_fetch/types_of_cheese.txt');
+        sendResultToTest('ok');
+      });
+    </script>
+  </body>
+</html>

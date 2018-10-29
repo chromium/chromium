@@ -11,10 +11,10 @@ async_test(function(t) {
     video.play();
 
     video.onplaying = t.step_func(function() {
-        runAfterHideMediaControlsTimerFired(t.step_func_done(function() {
+        runAfterHideMediaControlsTimerFired(t.step_func(function() {
           assert_false(isControlsPanelVisible(video));
 
-          var coords = mediaControlsButtonCoordinates(video, "play-button");
+          var coords = elementCoordinates(enabledPlayButton(video));
 
           eventSender.gestureTapDown(coords[0], coords[1]);
           assert_false(video.paused);
@@ -25,9 +25,11 @@ async_test(function(t) {
           assert_false(isControlsPanelVisible(video));
 
           eventSender.gestureTap(coords[0], coords[1]);
-          // Tap shows the controls and do not pause.
-          assert_false(video.paused);
-          assert_true(isControlsPanelVisible(video));
+          runAfterDoubleTapTimerFired(t.step_func_done(() => {
+              // Tap shows the controls and do not pause.
+              assert_false(video.paused);
+              assert_true(isControlsPanelVisible(video));
+          }));
         }), video);
     });
 });

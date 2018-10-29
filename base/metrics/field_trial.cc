@@ -26,7 +26,9 @@
 #include "base/unguessable_token.h"
 
 // On POSIX, the fd is shared using the mapping in GlobalDescriptors.
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+#include "base/metrics/field_trial_memory_mac.h"
+#elif defined(OS_POSIX) && !defined(OS_NACL)
 #include "base/posix/global_descriptors.h"
 #endif
 
@@ -510,7 +512,7 @@ FieldTrialList::FieldTrialList(
 FieldTrialList::~FieldTrialList() {
   AutoLock auto_lock(lock_);
   while (!registered_.empty()) {
-    RegistrationMap::iterator it = registered_.begin();
+    auto it = registered_.begin();
     it->second->Release();
     registered_.erase(it->first);
   }
@@ -728,8 +730,8 @@ void FieldTrialList::GetActiveFieldTrialGroups(
     return;
   AutoLock auto_lock(global_->lock_);
 
-  for (RegistrationMap::iterator it = global_->registered_.begin();
-       it != global_->registered_.end(); ++it) {
+  for (auto it = global_->registered_.begin(); it != global_->registered_.end();
+       ++it) {
     FieldTrial::ActiveGroup active_group;
     if (it->second->GetActiveGroup(&active_group))
       active_groups->push_back(active_group);
@@ -829,7 +831,8 @@ void FieldTrialList::CreateTrialsFromCommandLine(
     int fd_key) {
   global_->create_trials_from_command_line_called_ = true;
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
   if (cmd_line.HasSwitch(field_trial_handle_switch)) {
     std::string switch_value =
         cmd_line.GetSwitchValueASCII(field_trial_handle_switch);
@@ -894,6 +897,15 @@ void FieldTrialList::AppendFieldTrialHandleIfNeeded(
 }
 #elif defined(OS_FUCHSIA)
 // TODO(fuchsia): Implement shared-memory configuration (crbug.com/752368).
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+// static
+FieldTrialMemoryServer* FieldTrialList::GetFieldTrialMemoryServer() {
+  if (global_ && kUseSharedMemoryForFieldTrials) {
+    InstantiateFieldTrialAllocatorIfNeeded();
+    return global_->field_trial_server_.get();
+  }
+  return nullptr;
+}
 #elif defined(OS_POSIX) && !defined(OS_NACL)
 // static
 SharedMemoryHandle FieldTrialList::GetFieldTrialHandle() {
@@ -1215,6 +1227,10 @@ std::string FieldTrialList::SerializeSharedMemoryHandleMetadata(
   ss << uintptr_handle << ",";
 #elif defined(OS_FUCHSIA)
   ss << shm.GetHandle() << ",";
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+  // The handle on Mac is looked up directly by the child, rather than being
+  // transferred to the child over the command line.
+  ss << "0,";
 #elif !defined(OS_POSIX)
 #error Unsupported OS
 #endif
@@ -1225,7 +1241,8 @@ std::string FieldTrialList::SerializeSharedMemoryHandleMetadata(
   return ss.str();
 }
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
 
 // static
 SharedMemoryHandle FieldTrialList::DeserializeSharedMemoryHandleMetadata(
@@ -1252,6 +1269,11 @@ SharedMemoryHandle FieldTrialList::DeserializeSharedMemoryHandleMetadata(
                     FALSE, DUPLICATE_SAME_ACCESS);
     CloseHandle(parent_handle);
   }
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+  mac::ScopedMachSendRight scoped_handle =
+      FieldTrialMemoryClient::AcquireMemoryObject();
+  if (scoped_handle == MACH_PORT_NULL)
+    return SharedMemoryHandle();
 #endif  // defined(OS_WIN)
 
   base::UnguessableToken guid;
@@ -1261,6 +1283,11 @@ SharedMemoryHandle FieldTrialList::DeserializeSharedMemoryHandleMetadata(
   int size;
   if (!base::StringToInt(tokens[3], &size))
     return SharedMemoryHandle();
+
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+  // Transfer ownership to SharedMemoryHandle.
+  mach_port_t handle = scoped_handle.release();
+#endif
 
   return SharedMemoryHandle(handle, static_cast<size_t>(size), guid);
 }
@@ -1291,7 +1318,8 @@ SharedMemoryHandle FieldTrialList::DeserializeSharedMemoryHandleMetadata(
 
 #endif
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
 // static
 bool FieldTrialList::CreateTrialsFromSwitchValue(
     const std::string& switch_value) {
@@ -1382,9 +1410,6 @@ void FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded() {
   SharedMemoryCreateOptions options;
   options.size = kFieldTrialAllocationSize;
   options.share_read_only = true;
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  options.type = SharedMemoryHandle::POSIX;
-#endif
 
   std::unique_ptr<SharedMemory> shm(new SharedMemory());
   if (!shm->Create(options))
@@ -1410,6 +1435,13 @@ void FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded() {
 #if !defined(OS_NACL)
   global_->readonly_allocator_handle_ = GetSharedMemoryReadOnlyHandle(
       global_->field_trial_allocator_->shared_memory());
+#endif
+
+#if defined(OS_MACOSX) && !defined(OS_IOS)
+  global_->field_trial_server_ = std::make_unique<FieldTrialMemoryServer>(
+      global_->readonly_allocator_handle_.GetMemoryObject());
+  bool ok = global_->field_trial_server_->Start();
+  DCHECK(ok);
 #endif
 }
 
@@ -1497,7 +1529,7 @@ const FieldTrial::EntropyProvider*
 }
 
 FieldTrial* FieldTrialList::PreLockedFind(const std::string& name) {
-  RegistrationMap::iterator it = registered_.find(name);
+  auto it = registered_.find(name);
   if (registered_.end() == it)
     return nullptr;
   return it->second;

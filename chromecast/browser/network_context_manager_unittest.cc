@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
@@ -30,8 +31,8 @@ class NetworkContextManagerTest : public testing::Test {
 
   void SetUp() override {
     // Create a fake URLRequestContextGetter on the IO thread.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &NetworkContextManagerTest::CreateURLRequestContextGetterOnIOThread,
             base::Unretained(this)));

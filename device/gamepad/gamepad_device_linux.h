@@ -41,9 +41,9 @@ class GamepadDeviceLinux : public AbstractHapticGamepad {
   bool IsEmpty() const;
 
   int GetJoydevIndex() const { return joydev_index_; }
-  std::string GetVendorId() const { return vendor_id_; }
-  std::string GetProductId() const { return product_id_; }
-  std::string GetVersionNumber() const { return version_number_; }
+  uint16_t GetVendorId() const { return vendor_id_; }
+  uint16_t GetProductId() const { return product_id_; }
+  uint16_t GetVersionNumber() const { return version_number_; }
   std::string GetName() const { return name_; }
   std::string GetSyspathPrefix() const { return syspath_prefix_; }
   GamepadBusType GetBusType() const { return bus_type_; }
@@ -119,13 +119,13 @@ class GamepadDeviceLinux : public AbstractHapticGamepad {
   std::vector<bool> button_indices_used_;
 
   // The vendor ID of the device.
-  std::string vendor_id_;
+  uint16_t vendor_id_;
 
   // The product ID of the device.
-  std::string product_id_;
+  uint16_t product_id_;
 
   // The version number of the device.
-  std::string version_number_;
+  uint16_t version_number_;
 
   // A string identifying the manufacturer and model of the device.
   std::string name_;

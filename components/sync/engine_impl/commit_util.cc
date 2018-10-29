@@ -48,8 +48,7 @@ void AddExtensionsActivityToMessage(
   activity->GetAndClearRecords(extensions_activity_buffer);
 
   const ExtensionsActivity::Records& records = *extensions_activity_buffer;
-  for (ExtensionsActivity::Records::const_iterator it = records.begin();
-       it != records.end(); ++it) {
+  for (auto it = records.begin(); it != records.end(); ++it) {
     sync_pb::ChromiumExtensionsActivity* activity_message =
         message->add_extensions_activity();
     activity_message->set_extension_id(it->second.extension_id);

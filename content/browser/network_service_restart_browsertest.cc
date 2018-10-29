@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback.h"
+#include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/frame_host/render_frame_message_filter.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/service_worker/embedded_worker_instance.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
+#include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,6 +36,10 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/test/ppapi_test_utils.h"
+#endif
 
 namespace content {
 
@@ -98,6 +109,33 @@ void WaitForCondition(base::RepeatingCallback<bool()> condition) {
   }
 }
 
+class ServiceWorkerStatusObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  void WaitForState(EmbeddedWorkerStatus expected_status) {
+    if (latest_status_ == expected_status)
+      return;
+
+    expected_status_ = expected_status;
+    base::RunLoop loop;
+    callback_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  void OnRunningStateChanged(int64_t version_id,
+                             EmbeddedWorkerStatus running_status) override {
+    latest_status_ = running_status;
+    if (expected_status_.has_value() &&
+        running_status == expected_status_.value()) {
+      std::move(callback_).Run();
+    }
+  }
+
+  base::Optional<EmbeddedWorkerStatus> expected_status_;
+  EmbeddedWorkerStatus latest_status_;
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
 // This test source has been excluded from Android as Android doesn't have
@@ -109,10 +147,18 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         network::features::kNetworkService);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(ENABLE_PLUGINS)
+    ASSERT_TRUE(ppapi::RegisterCorbTestPlugin(command_line));
+#endif
+    ContentBrowserTest::SetUpCommandLine(command_line);
+  }
+
   void SetUpOnMainThread() override {
     embedded_test_server()->RegisterRequestMonitor(
         base::BindRepeating(&NetworkServiceRestartBrowserTest::MonitorRequest,
                             base::Unretained(this)));
+    host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
     ContentBrowserTest::SetUpOnMainThread();
   }
@@ -275,6 +321,61 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   EXPECT_EQ(net::OK, LoadBasicRequest(network_context2.get(), GetTestURL()));
   EXPECT_TRUE(network_context2.is_bound());
   EXPECT_FALSE(network_context2.encountered_error());
+}
+
+void IncrementInt(int* i) {
+  *i = *i + 1;
+}
+
+// This test verifies basic functionality of RegisterNetworkServiceCrashHandler
+// and UnregisterNetworkServiceCrashHandler.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, CrashHandlers) {
+  network::mojom::NetworkContextPtr network_context = CreateNetworkContext();
+  EXPECT_TRUE(network_context.is_bound());
+
+  // Register 2 crash handlers.
+  int counter1 = 0;
+  int counter2 = 0;
+  NetworkServiceCrashHandlerId handler_id1 = RegisterNetworkServiceCrashHandler(
+      base::BindRepeating(&IncrementInt, base::Unretained(&counter1)));
+  NetworkServiceCrashHandlerId handler_id2 = RegisterNetworkServiceCrashHandler(
+      base::BindRepeating(&IncrementInt, base::Unretained(&counter2)));
+
+  // Crash the NetworkService process.
+  SimulateNetworkServiceCrash();
+  // |network_context| will receive an error notification, but it's not
+  // guaranteed to have arrived at this point. Flush the pointer to make sure
+  // the notification has been received.
+  network_context.FlushForTesting();
+  EXPECT_TRUE(network_context.is_bound());
+  EXPECT_TRUE(network_context.encountered_error());
+
+  // Verify the crash handlers executed.
+  EXPECT_EQ(1, counter1);
+  EXPECT_EQ(1, counter2);
+
+  // Revive the NetworkService process.
+  network_context = CreateNetworkContext();
+  EXPECT_TRUE(network_context.is_bound());
+
+  // Unregister one of the handlers.
+  UnregisterNetworkServiceCrashHandler(handler_id2);
+
+  // Crash the NetworkService process.
+  SimulateNetworkServiceCrash();
+  // |network_context| will receive an error notification, but it's not
+  // guaranteed to have arrived at this point. Flush the pointer to make sure
+  // the notification has been received.
+  network_context.FlushForTesting();
+  EXPECT_TRUE(network_context.is_bound());
+  EXPECT_TRUE(network_context.encountered_error());
+
+  // Verify only the first crash handler executed.
+  EXPECT_EQ(2, counter1);
+  EXPECT_EQ(1, counter2);
+
+  // Test cleanup.
+  UnregisterNetworkServiceCrashHandler(handler_id1);
 }
 
 // Make sure |StoragePartitionImpl::GetNetworkContext()| returns valid interface
@@ -590,6 +691,224 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, MultipleWorkerFetch) {
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
 }
 
+// Flaky on Linux TSan (https://crbug.com/889855)
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_FetchFromServiceWorkerControlledPage_NoFetchHandler \
+  DISABLED_FetchFromServiceWorkerControlledPage_NoFetchHandler
+#else
+#define MAYBE_FetchFromServiceWorkerControlledPage_NoFetchHandler \
+  FetchFromServiceWorkerControlledPage_NoFetchHandler
+#endif
+// Make sure fetch from a page controlled by a service worker which doesn't have
+// a fetch handler works after crash.
+IN_PROC_BROWSER_TEST_F(
+    NetworkServiceRestartBrowserTest,
+    MAYBE_FetchFromServiceWorkerControlledPage_NoFetchHandler) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+  ServiceWorkerStatusObserver observer;
+  ServiceWorkerContextWrapper* service_worker_context =
+      partition->GetServiceWorkerContext();
+  service_worker_context->AddObserver(&observer);
+
+  // Register a service worker which controls /service_worker/.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('empty.js')"));
+
+  // Navigate to a controlled page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/service_worker/fetch_from_page.html")));
+
+  // Fetch from the controlled page.
+  const std::string script = "fetch_from_page('/echo');";
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  // Crash the NetworkService process. Existing interfaces should receive error
+  // notifications at some point.
+  SimulateNetworkServiceCrash();
+  // Flush the interface to make sure the error notification was received.
+  partition->FlushNetworkInterfaceForTesting();
+
+  // Service worker should be stopped when network service crashes.
+  observer.WaitForState(EmbeddedWorkerStatus::STOPPED);
+
+  // Fetch from the controlled page again.
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  service_worker_context->RemoveObserver(&observer);
+}
+
+// Flaky on Linux TSan (https://crbug.com/889855)
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_FetchFromServiceWorkerControlledPage_PassThrough \
+  DISABLED_FetchFromServiceWorkerControlledPage_PassThrough
+#else
+#define MAYBE_FetchFromServiceWorkerControlledPage_PassThrough \
+  FetchFromServiceWorkerControlledPage_PassThrough
+#endif
+// Make sure fetch from a page controlled by a service worker which has a fetch
+// handler but falls back to the network works after crash.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
+                       MAYBE_FetchFromServiceWorkerControlledPage_PassThrough) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+  ServiceWorkerStatusObserver observer;
+  ServiceWorkerContextWrapper* service_worker_context =
+      partition->GetServiceWorkerContext();
+  service_worker_context->AddObserver(&observer);
+
+  // Register a service worker which controls /service_worker/.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('fetch_event_pass_through.js')"));
+
+  // Navigate to a controlled page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/service_worker/fetch_from_page.html")));
+
+  // Fetch from the controlled page.
+  const std::string script = "fetch_from_page('/echo');";
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  // Crash the NetworkService process. Existing interfaces should receive error
+  // notifications at some point.
+  SimulateNetworkServiceCrash();
+  // Flush the interface to make sure the error notification was received.
+  partition->FlushNetworkInterfaceForTesting();
+
+  // Service worker should be stopped when network service crashes.
+  observer.WaitForState(EmbeddedWorkerStatus::STOPPED);
+
+  // Fetch from the controlled page again.
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  service_worker_context->RemoveObserver(&observer);
+}
+
+// Flaky on Linux TSan (https://crbug.com/889855)
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_FetchFromServiceWorkerControlledPage_RespondWithFetch \
+  DISABLED_FetchFromServiceWorkerControlledPage_RespondWithFetch
+#else
+#define MAYBE_FetchFromServiceWorkerControlledPage_RespondWithFetch \
+  FetchFromServiceWorkerControlledPage_RespondWithFetch
+#endif
+// Make sure fetch from a page controlled by a service worker which has a fetch
+// handler and responds with fetch() works after crash.
+IN_PROC_BROWSER_TEST_F(
+    NetworkServiceRestartBrowserTest,
+    MAYBE_FetchFromServiceWorkerControlledPage_RespondWithFetch) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+  ServiceWorkerStatusObserver observer;
+  ServiceWorkerContextWrapper* service_worker_context =
+      partition->GetServiceWorkerContext();
+  service_worker_context->AddObserver(&observer);
+
+  // Register a service worker which controls /service_worker/.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_respond_with_fetch.js')"));
+
+  // Navigate to a controlled page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/service_worker/fetch_from_page.html")));
+
+  // Fetch from the controlled page.
+  const std::string script = "fetch_from_page('/echo');";
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  // Crash the NetworkService process. Existing interfaces should receive error
+  // notifications at some point.
+  SimulateNetworkServiceCrash();
+  // Flush the interface to make sure the error notification was received.
+  partition->FlushNetworkInterfaceForTesting();
+
+  // Service worker should be stopped when network service crashes.
+  observer.WaitForState(EmbeddedWorkerStatus::STOPPED);
+
+  // Fetch from the controlled page again.
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  service_worker_context->RemoveObserver(&observer);
+}
+
+// Make sure fetch from service worker context works after crash.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+  ServiceWorkerStatusObserver observer;
+  ServiceWorkerContextWrapper* service_worker_context =
+      partition->GetServiceWorkerContext();
+  service_worker_context->AddObserver(&observer);
+
+  const GURL page_url = embedded_test_server()->GetURL(
+      "/service_worker/fetch_from_service_worker.html");
+  const GURL fetch_url = embedded_test_server()->GetURL("/echo");
+
+  // Navigate to the page and register a service worker.
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_EQ("ready", EvalJs(shell(), "setup();"));
+
+  // Fetch from the service worker.
+  const std::string script =
+      "fetch_from_service_worker('" + fetch_url.spec() + "');";
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  // Crash the NetworkService process. Existing interfaces should receive error
+  // notifications at some point.
+  SimulateNetworkServiceCrash();
+  // Flush the interface to make sure the error notification was received.
+  partition->FlushNetworkInterfaceForTesting();
+
+  // Service worker should be stopped when network service crashes.
+  observer.WaitForState(EmbeddedWorkerStatus::STOPPED);
+
+  // Fetch from the service worker again.
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  service_worker_context->RemoveObserver(&observer);
+}
+
+// Make sure shared workers terminate after crash.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SharedWorker) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+
+  const GURL page_url =
+      embedded_test_server()->GetURL("/workers/fetch_from_shared_worker.html");
+  const GURL fetch_url = embedded_test_server()->GetURL("/echo");
+
+  // Navigate to the page and prepare a shared worker.
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
+
+  // Fetch from the shared worker to ensure it has started.
+  const std::string script =
+      "fetch_from_shared_worker('" + fetch_url.spec() + "');";
+  EXPECT_EQ("Echo", EvalJs(shell(), script));
+
+  // There should be one worker host. We will later wait for it to terminate.
+  SharedWorkerServiceImpl* service = partition->GetSharedWorkerService();
+  EXPECT_EQ(1u, service->worker_hosts_.size());
+  base::RunLoop loop;
+  service->SetWorkerTerminationCallbackForTesting(loop.QuitClosure());
+
+  // Crash the NetworkService process.
+  SimulateNetworkServiceCrash();
+
+  // Wait for the worker to detect the crash and self-terminate.
+  loop.Run();
+  EXPECT_TRUE(service->worker_hosts_.empty());
+}
+
 // Make sure the entry in |NetworkService::GetTotalNetworkUsages()| was cleared
 // after process closed.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
@@ -664,5 +983,108 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id1));
   EXPECT_FALSE(CheckContainsProcessID(network_usages, process_id2));
 }
+
+// Make sure cookie access doesn't hang or fail after a network process crash.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Cookies) {
+  auto* web_contents = shell()->web_contents();
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+
+  std::string cookie;
+  EXPECT_TRUE(ExecuteScriptAndExtractString(
+      web_contents, "window.domAutomationController.send(document.cookie);",
+      &cookie));
+  EXPECT_EQ("foo=bar", cookie);
+
+  SimulateNetworkServiceCrash();
+
+  auto* process = web_contents->GetMainFrame()->GetProcess();
+  scoped_refptr<RenderFrameMessageFilter> filter(
+      static_cast<RenderProcessHostImpl*>(process)
+          ->render_frame_message_filter_for_testing());
+  // Need to use FlushAsyncForTesting instead of FlushForTesting because the IO
+  // thread doesn't support nested message loops.
+  base::RunLoop run_loop;
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindLambdaForTesting([&]() {
+                             filter->GetCookieManager()->FlushAsyncForTesting(
+                                 run_loop.QuitClosure());
+                           }));
+
+  // content_shell uses in-memory cookie database, so the value saved earlier
+  // won't persist across crashes. What matters is that new access works.
+  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+
+  // This will hang without the fix.
+  EXPECT_TRUE(ExecuteScriptAndExtractString(
+      web_contents, "window.domAutomationController.send(document.cookie);",
+      &cookie));
+  EXPECT_EQ("foo=bar", cookie);
+}
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+// Make sure that "trusted" plugins continue to be able to issue cross-origin
+// requests after a network process crash.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
+  auto* web_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL("/title1.html")));
+
+  // Load the test plugin (see ppapi::RegisterFlashTestPlugin and
+  // ppapi/tests/power_saver_test_plugin.cc).
+  const char kLoadingScript[] = R"(
+      var obj = document.createElement('object');
+      obj.id = 'plugin';
+      obj.data = 'test.swf';
+      obj.type = 'application/x-shockwave-flash';
+      obj.width = 400;
+      obj.height = 400;
+
+      document.body.appendChild(obj);
+  )";
+  ASSERT_TRUE(ExecJs(web_contents, kLoadingScript));
+
+  // Ask the plugin to perform a cross-origin, CORB-eligible (i.e.
+  // application/json + nosniff) URL request.  Plugins with universal access
+  // should not be subject to CORS/CORB and so the request should go through.
+  // See also https://crbug.com/874515 and https://crbug.com/846339.
+  GURL cross_origin_url = embedded_test_server()->GetURL(
+      "cross.origin.com", "/site_isolation/nosniff.json");
+  const char kFetchScriptTemplate[] = R"(
+      new Promise(function (resolve, reject) {
+          var obj = document.getElementById('plugin');
+          function callback(event) {
+              // Ignore plugin messages unrelated to requestUrl.
+              if (!event.data.startsWith('requestUrl: '))
+                return;
+
+              obj.removeEventListener('message', callback);
+              resolve('msg-from-plugin: ' + event.data);
+          };
+          obj.addEventListener('message', callback);
+          obj.postMessage('requestUrl: ' + $1);
+      });
+  )";
+  std::string fetch_script = JsReplace(kFetchScriptTemplate, cross_origin_url);
+  ASSERT_EQ(
+      "msg-from-plugin: requestUrl: RESPONSE BODY: "
+      "runMe({ \"name\" : \"chromium\" });\n",
+      EvalJs(web_contents, fetch_script));
+
+  // Crash the Network Service process and wait until host frame's
+  // URLLoaderFactory has been refreshed.
+  SimulateNetworkServiceCrash();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+
+  // Try the fetch again - it should still work (i.e. the mechanism for relaxing
+  // CORB for universal-access-plugins should be resilient to network process
+  // crashes).  See also https://crbug.com/891904.
+  ASSERT_EQ(
+      "msg-from-plugin: requestUrl: RESPONSE BODY: "
+      "runMe({ \"name\" : \"chromium\" });\n",
+      EvalJs(web_contents, fetch_script));
+}
+#endif
 
 }  // namespace content

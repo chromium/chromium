@@ -10,12 +10,14 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/chromeos/file_system_provider/abort_callback.h"
 #include "chrome/browser/chromeos/file_system_provider/fileapi/provider_async_file_util.h"
 #include "chrome/browser/chromeos/file_system_provider/mount_path_util.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/file_system_provider/scoped_file_opener.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -47,8 +49,8 @@ class FileStreamReader::OperationRunner
 
     util::FileSystemURLParser parser(url);
     if (!parser.Parse()) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(std::move(callback), base::File::FILE_ERROR_SECURITY));
       return;
     }
@@ -75,9 +77,9 @@ class FileStreamReader::OperationRunner
 
     // If the file system got unmounted, then abort the reading operation.
     if (!file_system_.get()) {
-      BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                              base::BindOnce(callback, 0, false /* has_more */,
-                                             base::File::FILE_ERROR_ABORT));
+      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                               base::BindOnce(callback, 0, false /* has_more */,
+                                              base::File::FILE_ERROR_ABORT));
       return;
     }
 
@@ -99,8 +101,8 @@ class FileStreamReader::OperationRunner
 
     // If the file system got unmounted, then abort the get length operation.
     if (!file_system_.get()) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(std::move(callback),
                          base::Passed(base::WrapUnique<EntryMetadata>(NULL)),
                          base::File::FILE_ERROR_ABORT));
@@ -149,8 +151,8 @@ class FileStreamReader::OperationRunner
     if (result == base::File::FILE_OK)
       file_handle_ = file_handle;
 
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(std::move(callback), result));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(std::move(callback), result));
   }
 
   // Forwards a metadata to the IO thread.
@@ -161,8 +163,8 @@ class FileStreamReader::OperationRunner
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     abort_callback_ = AbortCallback();
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), base::Passed(&metadata), result));
   }
 
@@ -177,9 +179,9 @@ class FileStreamReader::OperationRunner
     if (!has_more)
       abort_callback_ = AbortCallback();
 
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(chunk_received_callback,
-                                           chunk_length, has_more, result));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(chunk_received_callback,
+                                            chunk_length, has_more, result));
   }
 
   AbortCallback abort_callback_;
@@ -207,8 +209,8 @@ FileStreamReader::~FileStreamReader() {
   // FileStreamReader doesn't have a Cancel() method like in FileStreamWriter.
   // Therefore, aborting and/or closing an opened file is done from the
   // destructor.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationRunner::CloseRunnerOnUIThread, runner_));
 
   // If a read is in progress, mark it as completed.
@@ -222,8 +224,8 @@ void FileStreamReader::Initialize(
   DCHECK_EQ(NOT_INITIALIZED, state_);
   state_ = INITIALIZING;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationRunner::OpenFileOnUIThread, runner_, url_,
                      base::Bind(&FileStreamReader::OnOpenFileCompleted,
                                 weak_ptr_factory_.GetWeakPtr(), pending_closure,
@@ -248,8 +250,8 @@ void FileStreamReader::OnOpenFileCompleted(
   DCHECK_EQ(base::File::FILE_OK, result);
 
   // Verify the last modification time.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationRunner::GetMetadataOnUIThread, runner_,
                      base::Bind(&FileStreamReader::OnInitializeCompleted,
                                 weak_ptr_factory_.GetWeakPtr(), pending_closure,
@@ -378,8 +380,8 @@ void FileStreamReader::ReadAfterInitialized(
   DCHECK_EQ(INITIALIZED, state_);
 
   current_length_ = 0;
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationRunner::ReadFileOnUIThread, runner_, buffer,
                      current_offset_, buffer_length,
                      base::Bind(&FileStreamReader::OnReadChunkReceived,
@@ -390,8 +392,8 @@ void FileStreamReader::GetLengthAfterInitialized() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(INITIALIZED, state_);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &OperationRunner::GetMetadataOnUIThread, runner_,
           base::BindOnce(&FileStreamReader::OnGetMetadataForGetLengthReceived,

@@ -117,7 +117,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
 
   // Create and fetch an OAuth2 token.
   std::string scope = "https://www.googleapis.com/auth/cloud_search.query";
-  OAuth2TokenService::ScopeSet scopes;
+  identity::ScopeSet scopes;
   scopes.insert(scope);
   token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
       "document_suggestions_service", identity_manager_, scopes,

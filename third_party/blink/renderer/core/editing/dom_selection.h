@@ -112,7 +112,7 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   void UpdateFrameSelection(const SelectionInDOMTree&,
                             Range*,
                             const SetSelectionOptions&) const;
-  // Convenience methods for accessors, does not check m_frame present.
+  // Convenience methods for accessors, does not check owner Frame presence.
   VisibleSelection GetVisibleSelection() const;
   bool IsBaseFirstInSelection() const;
   const Position& AnchorPosition() const;

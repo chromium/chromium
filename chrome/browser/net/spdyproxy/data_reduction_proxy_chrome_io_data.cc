@@ -38,8 +38,6 @@ namespace content {
 class BrowserContext;
 }
 
-using data_reduction_proxy::DataReductionProxyParams;
-
 namespace {
 
 // Adds the preview navigation to the black list.
@@ -74,8 +72,7 @@ void OnLoFiResponseReceivedOnUI(content::WebContents* web_contents) {
   }
 
   ui_tab_helper->ShowUIElement(
-      previews::PreviewsType::LOFI, base::Time() /* previews_freshness */,
-      true /* is_data_saver_user */, false /* is_reload */,
+      previews::PreviewsType::LOFI, true /* is_data_saver_user */,
       base::BindOnce(&AddPreviewNavigationToBlackListCallback,
                      web_contents->GetBrowserContext(),
                      web_contents->GetController()
@@ -88,11 +85,9 @@ void OnLoFiResponseReceivedOnUI(content::WebContents* web_contents) {
 
 std::unique_ptr<data_reduction_proxy::DataReductionProxyIOData>
 CreateDataReductionProxyChromeIOData(
-    net::NetLog* net_log,
     PrefService* prefs,
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner) {
-  DCHECK(net_log);
   DCHECK(prefs);
 
   bool enabled =
@@ -101,7 +96,7 @@ CreateDataReductionProxyChromeIOData(
   std::unique_ptr<data_reduction_proxy::DataReductionProxyIOData>
       data_reduction_proxy_io_data(
           new data_reduction_proxy::DataReductionProxyIOData(
-              DataReductionProxyChromeSettings::GetClient(), prefs, net_log,
+              DataReductionProxyChromeSettings::GetClient(), prefs,
               content::GetNetworkConnectionTracker(), io_task_runner,
               ui_task_runner, enabled, GetUserAgent(),
               version_info::GetChannelString(chrome::GetChannel())));

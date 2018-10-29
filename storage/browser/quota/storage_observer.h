@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "storage/browser/quota/quota_client.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace storage {
 
@@ -24,10 +24,10 @@ class STORAGE_EXPORT StorageObserver {
     blink::mojom::StorageType storage_type;
 
     // The origin to monitor usage for. Must be specified.
-    GURL origin;
+    url::Origin origin;
 
     Filter();
-    Filter(blink::mojom::StorageType storage_type, const GURL& origin);
+    Filter(blink::mojom::StorageType storage_type, const url::Origin& origin);
     bool operator==(const Filter& other) const;
   };
 
@@ -45,7 +45,7 @@ class STORAGE_EXPORT StorageObserver {
 
     MonitorParams();
     MonitorParams(blink::mojom::StorageType storage_type,
-                  const GURL& origin,
+                  const url::Origin& origin,
                   const base::TimeDelta& rate,
                   bool get_initial_state);
     MonitorParams(const Filter& filter,

@@ -2,7 +2,6 @@ Tests for multi-file drag onto file input elements for https://bugs.webkit.org/s
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Dragging a single (non-existant) file to a file input control:
 PASS fileInput.value is "C:\\fakepath\\DRTFakeFile"
 PASS fileInput.files.length is 1

@@ -459,3 +459,30 @@ TEST_F(NtpBackgroundServiceTest, GoodAlbumPhotosResponse) {
               StartsWith(preview.preview_url()));
   EXPECT_EQ(service()->album_photos_error_info().error_type, ErrorType::NONE);
 }
+
+TEST_F(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url("https://wallpapers.co/some_image");
+  image.add_attribution()->set_text("attribution text");
+  image.set_action_url("https://wallpapers.co/some_image/learn_more");
+  ntp::background::GetImagesInCollectionResponse response;
+  *response.add_images() = image;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  service()->FetchCollectionImageInfo("shapes");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(service()->IsValidBackdropUrl(
+      GURL("https://wallpapers.co/some_image=imageOptions")));
+
+  EXPECT_FALSE(service()->IsValidBackdropUrl(
+      GURL("http://wallpapers.co/some_image=imageOptions")));
+  EXPECT_FALSE(service()->IsValidBackdropUrl(
+      GURL("https://wallpapers.co/another_image")));
+}

@@ -92,13 +92,13 @@ test.util.sync.getFileList = function(contentWindow) {
 test.util.sync.selectFile = function(contentWindow, filename) {
   var rows = contentWindow.document.querySelectorAll('#detail-table li');
   test.util.sync.fakeKeyDown(
-      contentWindow, '#file-list', 'Home', 'Home', false, false, false);
+      contentWindow, '#file-list', 'Home', false, false, false);
   for (var index = 0; index < rows.length; ++index) {
     var selection = test.util.sync.getSelectedFiles(contentWindow);
     if (selection.length === 1 && selection[0] === filename)
       return true;
     test.util.sync.fakeKeyDown(
-        contentWindow, '#file-list', 'ArrowDown', 'Down', false, false, false);
+        contentWindow, '#file-list', 'ArrowDown', false, false, false);
   }
   console.error('Failed to select file "' + filename + '"');
   return false;
@@ -193,19 +193,17 @@ test.util.sync.selectFolderInTree = function(contentWindow, folderName) {
   var items =
       contentWindow.document.querySelectorAll('#directory-tree .tree-item');
   test.util.sync.fakeKeyDown(
-      contentWindow, '#directory-tree', 'Home', 'Home', false, false, false);
+      contentWindow, '#directory-tree', 'Home', false, false, false);
   for (var index = 0; index < items.length; ++index) {
     var selectedTreeItemName =
         test.util.sync.getSelectedTreeItem(contentWindow);
     if (selectedTreeItemName === folderName) {
       test.util.sync.fakeKeyDown(
-          contentWindow, '#directory-tree', 'Enter', 'Enter', false, false,
-          false);
+          contentWindow, '#directory-tree', 'Enter', false, false, false);
       return true;
     }
     test.util.sync.fakeKeyDown(
-        contentWindow, '#directory-tree', 'ArrowDown', 'Down', false, false,
-        false);
+        contentWindow, '#directory-tree', 'ArrowDown', false, false, false);
   }
 
   console.error('Failed to select folder in tree "' + folderName + '"');
@@ -228,7 +226,7 @@ test.util.sync.expandSelectedFolderInTree = function(contentWindow) {
   }
   test.util.sync.fakeKeyDown(
       contentWindow, '#directory-tree .tree-item[selected]', 'ArrowRight',
-      'Right', false, false, false);
+      false, false, false);
   return true;
 };
 
@@ -248,7 +246,7 @@ test.util.sync.collapseSelectedFolderInTree = function(contentWindow) {
   }
   test.util.sync.fakeKeyDown(
       contentWindow, '#directory-tree .tree-item[selected]', 'ArrowLeft',
-      'Left', false, false, false);
+      false, false, false);
   return true;
 };
 
@@ -339,9 +337,9 @@ test.util.sync.copyFile = function(contentWindow, filename) {
     return false;
   // Ctrl+C and Ctrl+V
   test.util.sync.fakeKeyDown(
-      contentWindow, '#file-list', 'c', 'U+0043', true, false, false);
+      contentWindow, '#file-list', 'c', true, false, false);
   test.util.sync.fakeKeyDown(
-      contentWindow, '#file-list', 'v', 'U+0056', true, false, false);
+      contentWindow, '#file-list', 'v', true, false, false);
   return true;
 };
 
@@ -358,7 +356,7 @@ test.util.sync.deleteFile = function(contentWindow, filename) {
     return false;
   // Delete
   test.util.sync.fakeKeyDown(
-      contentWindow, '#file-list', 'Delete', 'U+007F', false, false, false);
+      contentWindow, '#file-list', 'Delete', false, false, false);
   return true;
 };
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -289,9 +290,10 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
     for (const auto& chunk : raw_script_data->MetaDataChunks())
       total_metadata_size += chunk.size();
     meta_data = std::make_unique<Vector<char>>();
-    meta_data->ReserveInitialCapacity(total_metadata_size);
+    meta_data->ReserveInitialCapacity(
+        SafeCast<wtf_size_t>(total_metadata_size));
     for (const auto& chunk : raw_script_data->MetaDataChunks())
-      meta_data->Append(chunk.data(), chunk.size());
+      meta_data->Append(chunk.data(), static_cast<wtf_size_t>(chunk.size()));
   }
 
   return std::make_unique<InstalledScriptsManager::ScriptData>(

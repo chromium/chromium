@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -95,9 +96,9 @@ class GinJavaBridgeDispatcherHost
   bool FindObjectId(const base::android::JavaRef<jobject>& object,
                     GinJavaBoundObject::ObjectID* object_id);
   void RemoveFromRetainedObjectSetLocked(const JavaObjectWeakGlobalRef& ref);
-  JavaObjectWeakGlobalRef RemoveHolderLocked(
-      int32_t holder,
-      ObjectMap::iterator* iter_ptr);
+  JavaObjectWeakGlobalRef RemoveHolderLocked(int32_t holder,
+                                             ObjectMap::iterator* iter_ptr)
+      EXCLUSIVE_LOCKS_REQUIRED(objects_lock_);
 
   // The following objects are used only on the UI thread.
 
@@ -116,7 +117,7 @@ class GinJavaBridgeDispatcherHost
   JavaObjectWeakGlobalRef retained_object_set_;
   // Note that retained_object_set_ does not need to be consistent
   // with objects_.
-  ObjectMap objects_;
+  ObjectMap objects_ GUARDED_BY(objects_lock_);
   base::Lock objects_lock_;
 
   // The following objects are only used on the background thread.

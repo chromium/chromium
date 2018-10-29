@@ -8,10 +8,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_task_environment.h"
-#include "content/public/common/content_features.h"
 #include "content/renderer/dom_storage/local_storage_cached_area.h"
 #include "content/renderer/dom_storage/mock_leveldb_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/fake_renderer_scheduler.h"
 
 namespace content {
@@ -74,7 +74,7 @@ TEST_F(LocalStorageCachedAreasTest, CacheLimit) {
 
 TEST_F(LocalStorageCachedAreasTest, CloneBeforeGetArea) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMojoSessionStorage);
+  feature_list.InitAndEnableFeature(blink::features::kOnionSoupDOMStorage);
   const std::string kNamespace1 = base::GenerateGUID();
   const std::string kNamespace2 = base::GenerateGUID();
   const url::Origin kOrigin = url::Origin::Create(GURL("http://dom_storage1/"));

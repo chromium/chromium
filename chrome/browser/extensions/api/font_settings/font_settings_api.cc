@@ -281,8 +281,7 @@ void FontSettingsGetFontListFunction::FontListHasLoaded(
 bool FontSettingsGetFontListFunction::CopyFontsToResult(
     base::ListValue* fonts) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (base::ListValue::iterator it = fonts->begin();
-       it != fonts->end(); ++it) {
+  for (auto it = fonts->begin(); it != fonts->end(); ++it) {
     base::ListValue* font_list_value;
     if (!it->GetAsList(&font_list_value)) {
       NOTREACHED();

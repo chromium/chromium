@@ -19,6 +19,10 @@ class CORE_EXPORT LayoutNGTableCaption final
   void UpdateBlockLayout(bool relayout_children) override;
 
   const char* GetName() const override { return "LayoutNGTableCaption"; }
+
+ private:
+  void CalculateAndSetMargins(const NGConstraintSpace&,
+                              const NGPhysicalFragment&);
 };
 
 }  // namespace blink

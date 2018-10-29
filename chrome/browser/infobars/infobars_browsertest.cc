@@ -29,6 +29,7 @@
 #include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #include "chrome/browser/previews/previews_infobar_delegate.h"
+#include "chrome/browser/previews/previews_lite_page_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -58,7 +58,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/service_manager/sandbox/switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_features.h"
 
 #if !defined(OS_CHROMEOS)
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
@@ -66,10 +65,6 @@
 
 #if defined(OS_MACOSX)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
-#endif
-
-#if defined(OS_MACOSX) && !BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/startup/session_crashed_infobar_delegate.h"
 #endif
 
 #if !defined(USE_AURA)
@@ -228,7 +223,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
       {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
       {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
-      {"session_crashed", IBD::SESSION_CRASHED_INFOBAR_DELEGATE_MAC_IOS},
       {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
       {"data_reduction_proxy_preview",
@@ -236,6 +230,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
       {"page_load_capping", IBD::PAGE_LOAD_CAPPING_INFOBAR_DELEGATE},
       {"bloated_renderer", IBD::BLOATED_RENDERER_INFOBAR_DELEGATE},
+      {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
   };
   auto id = kIdentifiers.find(name);
   expected_identifiers_.push_back((id == kIdentifiers.end()) ? IBD::INVALID
@@ -378,12 +373,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       ObsoleteSystemInfoBarDelegate::Create(GetInfoBarService());
       break;
 
-    case IBD::SESSION_CRASHED_INFOBAR_DELEGATE_MAC_IOS:
-#if defined(OS_MACOSX) && !BUILDFLAG(MAC_VIEWS_BROWSER)
-      SessionCrashedInfoBarDelegate::Create(browser());
-#else
+    case IBD::SESSION_CRASHED_INFOBAR_DELEGATE_IOS:
       ADD_FAILURE() << "This infobar is not supported on this OS.";
-#endif
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:
@@ -391,15 +382,11 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA: {
-#if defined(USE_AURA)
+#if defined(USE_AURA) || defined(OS_MACOSX)
       ADD_FAILURE() << "This infobar is not supported on this toolkit.";
 #else
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-      if (!views_mode_controller::IsViewsBrowserCocoa()) {
-        ADD_FAILURE() << "This infobar is unsupported in the MacViews browser.";
-        return;
-      }
-#endif
+      // The translate infobar is only used on Android and iOS, neither of
+      // which currently runs browser_tests. So this is currently dead code.
       ChromeTranslateClient::CreateForWebContents(GetWebContents());
       ChromeTranslateClient* translate_client =
           ChromeTranslateClient::FromWebContents(GetWebContents());
@@ -413,9 +400,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     }
 
     case IBD::DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE:
-      PreviewsInfoBarDelegate::Create(GetWebContents(),
-                                      previews::PreviewsType::LOFI,
-                                      base::Time::Now(), true, true, nullptr);
+      PreviewsInfoBarDelegate::Create(
+          GetWebContents(), previews::PreviewsType::LOFI, true, nullptr);
       break;
 
     case IBD::AUTOMATION_INFOBAR_DELEGATE:
@@ -424,11 +410,15 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::PAGE_LOAD_CAPPING_INFOBAR_DELEGATE:
       PageLoadCappingInfoBarDelegate::Create(
-          GetWebContents(), PageLoadCappingInfoBarDelegate::PauseCallback());
+          GetWebContents(), base::DoNothing(), base::DoNothing());
       break;
 
     case IBD::BLOATED_RENDERER_INFOBAR_DELEGATE:
       BloatedRendererTabHelper::ShowInfoBar(GetInfoBarService());
+      break;
+
+    case IBD::LITE_PAGE_PREVIEWS_INFOBAR:
+      PreviewsLitePageInfoBarDelegate::Create(GetWebContents());
       break;
 
     default:
@@ -573,23 +563,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_obsolete_system) {
   ShowAndVerifyUi();
 }
 
-#if defined(OS_MACOSX) && !BUILDFLAG(MAC_VIEWS_BROWSER)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_session_crashed) {
-  ShowAndVerifyUi();
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_page_info) {
   ShowAndVerifyUi();
 }
 
-#if !defined(USE_AURA)
+#if !defined(USE_AURA) && !defined(OS_MACOSX)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  // The translate infobar is not supported in Mac Views mode.
-  if (!views_mode_controller::IsViewsBrowserCocoa())
-    return;
-#endif
   ShowAndVerifyUi();
 }
 #endif
@@ -607,6 +586,10 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_page_load_capping) {
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_bloated_renderer) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_previews_lite_page) {
   ShowAndVerifyUi();
 }
 

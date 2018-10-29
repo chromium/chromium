@@ -45,6 +45,8 @@ class CONTROLLER_EXPORT OomInterventionImpl
   virtual OomInterventionMetrics GetCurrentMemoryMetrics();
   void Check(TimerBase*);
 
+  void ReportMemoryStats(OomInterventionMetrics& current_memory);
+
   mojom::blink::DetectionArgsPtr detection_args_;
 
   mojom::blink::OomInterventionHostPtr host_;

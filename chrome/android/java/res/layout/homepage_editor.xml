@@ -39,17 +39,17 @@
             <View style="@style/ButtonBarTopDivider" />
 
             <LinearLayout style="@style/ButtonBar" >
-                <Button
+                <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/homepage_reset"
                     style="@style/ButtonBarButton"
                     android:text="@string/reset" />
 
-                <Button
+                <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/homepage_cancel"
                     style="@style/ButtonBarButton"
                     android:text="@string/cancel" />
 
-                <Button
+                <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/homepage_save"
                     style="@style/ButtonBarButton"
                     android:text="@string/save" />

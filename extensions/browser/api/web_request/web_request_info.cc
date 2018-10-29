@@ -175,8 +175,10 @@ bool CreateUploadDataSourcesFromResourceRequest(
         break;
 
       case network::DataElement::TYPE_FILE:
-        // Should not be hit in the Network Service case.
-        NOTREACHED();
+        // TODO(https://crbug.com/715679): This may not work when network
+        // process is sandboxed.
+        data_sources->push_back(
+            std::make_unique<FileUploadDataSource>(element.path()));
         break;
 
       default:
@@ -229,6 +231,8 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
 }  // namespace
 
 WebRequestInfo::WebRequestInfo() = default;
+WebRequestInfo::WebRequestInfo(WebRequestInfo&& other) = default;
+WebRequestInfo& WebRequestInfo::operator=(WebRequestInfo&& other) = default;
 
 WebRequestInfo::WebRequestInfo(net::URLRequest* url_request)
     : id(url_request->identifier()),

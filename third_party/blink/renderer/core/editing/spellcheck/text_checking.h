@@ -43,7 +43,7 @@ enum TextDecorationType {
 };
 
 struct GrammarDetail {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   int location;
   int length;
   Vector<String> guesses;
@@ -51,7 +51,7 @@ struct GrammarDetail {
 };
 
 struct TextCheckingResult {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   TextDecorationType decoration;
   int location;
   int length;

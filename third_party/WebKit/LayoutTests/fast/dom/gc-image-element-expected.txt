@@ -3,6 +3,7 @@ Tests for image elements firing their load events even when they're not in the d
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS: loaded
 PASS: loaded
 PASS: loaded

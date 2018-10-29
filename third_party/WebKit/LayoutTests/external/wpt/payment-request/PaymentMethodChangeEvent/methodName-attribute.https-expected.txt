@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Must have a methodName IDL attribute, which is initialized with to the methodName dictionary value PaymentMethodChangeEvent is not defined
-FAIL When no dictionary is passed, the methodName member defaults to the empty string PaymentMethodChangeEvent is not defined
-Harness: the test ran to completion.
-

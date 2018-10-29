@@ -5,15 +5,19 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AURA_WINDOW_PROPERTIES_H_
 #define UI_ACCESSIBILITY_PLATFORM_AURA_WINDOW_PROPERTIES_H_
 
+#include <string>
+
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/aura/window.h"
 
 namespace ui {
 
-AX_EXPORT extern const aura::WindowProperty<AXTreeIDRegistry::AXTreeID>* const
-    kChildAXTreeID;
+// Value is a serialized |ui::AXTreeID| because code in //ui/aura/mus needs
+// to serialize the window property, but //ui/aura cannot depend on
+// //ui/accessibility and hence cannot know about the type ui::AXTreeID.
+// TODO(dmazzoni): Convert from string to base::UnguessableToken.
+AX_EXPORT extern const aura::WindowProperty<std::string*>* const kChildAXTreeID;
 
 AX_EXPORT extern const aura::WindowProperty<ax::mojom::Role>* const
     kAXRoleOverride;

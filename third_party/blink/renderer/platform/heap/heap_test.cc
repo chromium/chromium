@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/heap/address_cache.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -51,6 +50,7 @@
 #include "third_party/blink/renderer/platform/heap/stack_frame_depth.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -192,7 +192,7 @@ struct ThreadMarkerHash {
 typedef std::pair<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeakPair;
 
 struct PairWithWeakHandling : public StrongWeakPair {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Regular constructor.
@@ -490,10 +490,10 @@ int OffHeapInt::destructor_calls_ = 0;
 class ThreadedTesterBase {
  protected:
   static void Test(ThreadedTesterBase* tester) {
-    Vector<std::unique_ptr<WebThread>, kNumberOfThreads> threads;
+    Vector<std::unique_ptr<Thread>, kNumberOfThreads> threads;
     for (int i = 0; i < kNumberOfThreads; i++) {
       threads.push_back(Platform::Current()->CreateThread(
-          WebThreadCreationParams(WebThreadType::kTestThread)
+          ThreadCreationParams(WebThreadType::kTestThread)
               .SetThreadNameForTest("blink gc testing thread")));
       PostCrossThreadTask(
           *threads.back()->GetTaskRunner(), FROM_HERE,
@@ -1394,7 +1394,7 @@ class UseMixin : public SimpleObject, public Mixin {
 int UseMixin::trace_count_ = 0;
 
 class VectorObject {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   VectorObject() { value_ = SimpleFinalizedObject::Create(); }
@@ -1408,7 +1408,7 @@ class VectorObject {
 class VectorObjectInheritedTrace : public VectorObject {};
 
 class VectorObjectNoTrace {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   VectorObjectNoTrace() { value_ = SimpleFinalizedObject::Create(); }
@@ -1418,7 +1418,7 @@ class VectorObjectNoTrace {
 };
 
 class TerminatedArrayItem {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   TerminatedArrayItem(IntWrapper* payload)
@@ -3128,7 +3128,7 @@ TEST(HeapTest, CrossThreadPersistentSet) {
 }
 
 class NonTrivialObject final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   NonTrivialObject() = default;
@@ -4092,79 +4092,6 @@ TEST(HeapTest, CheckAndMarkPointer) {
 #endif
 }
 
-TEST(HeapTest, PersistentHeapCollectionTypes) {
-  IntWrapper::destructor_calls_ = 0;
-
-  typedef PersistentHeapHashSet<Member<IntWrapper>> PSet;
-  typedef PersistentHeapListHashSet<Member<IntWrapper>> PListSet;
-  typedef PersistentHeapLinkedHashSet<Member<IntWrapper>> PLinkedSet;
-  typedef PersistentHeapHashMap<Member<IntWrapper>, Member<IntWrapper>> PMap;
-  typedef PersistentHeapHashMap<WeakMember<IntWrapper>, Member<IntWrapper>>
-      WeakPMap;
-  typedef PersistentHeapDeque<Member<IntWrapper>> PDeque;
-
-  ClearOutOldGarbage();
-  {
-    PDeque p_deque;
-    PSet p_set;
-    PListSet p_list_set;
-    PLinkedSet p_linked_set;
-    PMap p_map;
-    WeakPMap wp_map;
-
-    IntWrapper* two(IntWrapper::Create(2));
-    IntWrapper* four(IntWrapper::Create(4));
-    IntWrapper* five(IntWrapper::Create(5));
-    IntWrapper* six(IntWrapper::Create(6));
-    IntWrapper* seven(IntWrapper::Create(7));
-    IntWrapper* eight(IntWrapper::Create(8));
-    IntWrapper* nine(IntWrapper::Create(9));
-    Persistent<IntWrapper> ten(IntWrapper::Create(10));
-    IntWrapper* eleven(IntWrapper::Create(11));
-
-    p_deque.push_back(seven);
-    p_deque.push_back(two);
-
-    p_set.insert(four);
-    p_list_set.insert(eight);
-    p_linked_set.insert(nine);
-    p_map.insert(five, six);
-    wp_map.insert(ten, eleven);
-
-    PreciselyCollectGarbage();
-    EXPECT_EQ(0, IntWrapper::destructor_calls_);
-
-    EXPECT_EQ(2u, p_deque.size());
-    EXPECT_EQ(seven, p_deque.front());
-    EXPECT_EQ(seven, p_deque.TakeFirst());
-    EXPECT_EQ(two, p_deque.front());
-
-    EXPECT_EQ(1u, p_deque.size());
-
-    EXPECT_EQ(1u, p_set.size());
-    EXPECT_TRUE(p_set.Contains(four));
-
-    EXPECT_EQ(1u, p_list_set.size());
-    EXPECT_TRUE(p_list_set.Contains(eight));
-
-    EXPECT_EQ(1u, p_linked_set.size());
-    EXPECT_TRUE(p_linked_set.Contains(nine));
-
-    EXPECT_EQ(1u, p_map.size());
-    EXPECT_EQ(six, p_map.at(five));
-
-    EXPECT_EQ(1u, wp_map.size());
-    EXPECT_EQ(eleven, wp_map.at(ten));
-    ten.Clear();
-    PreciselyCollectGarbage();
-    EXPECT_EQ(0u, wp_map.size());
-  }
-
-  // Collect previous roots.
-  PreciselyCollectGarbage();
-  EXPECT_EQ(9, IntWrapper::destructor_calls_);
-}
-
 TEST(HeapTest, CollectionNesting) {
   ClearOutOldGarbage();
   int* key = &IntWrapper::destructor_calls_;
@@ -4225,10 +4152,11 @@ TEST(HeapTest, GarbageCollectedMixin) {
   PreciselyCollectGarbage();
   EXPECT_EQ(2, UseMixin::trace_count_);
 
-  PersistentHeapHashSet<WeakMember<Mixin>> weak_map;
-  weak_map.insert(UseMixin::Create());
+  Persistent<HeapHashSet<WeakMember<Mixin>>> weak_map =
+      new HeapHashSet<WeakMember<Mixin>>;
+  weak_map->insert(UseMixin::Create());
   PreciselyCollectGarbage();
-  EXPECT_EQ(0u, weak_map.size());
+  EXPECT_EQ(0u, weak_map->size());
 }
 
 TEST(HeapTest, CollectionNesting2) {
@@ -4314,20 +4242,23 @@ TEST(HeapTest, EmbeddedInDeque) {
   ClearOutOldGarbage();
   SimpleFinalizedObject::destructor_calls_ = 0;
   {
-    PersistentHeapDeque<VectorObject, 2> inline_deque;
-    PersistentHeapDeque<VectorObject> outline_deque;
+    Persistent<HeapDeque<VectorObject, 2>> inline_deque =
+        new HeapDeque<VectorObject, 2>;
+    Persistent<HeapDeque<VectorObject>> outline_deque =
+        new HeapDeque<VectorObject>;
     VectorObject i1, i2;
-    inline_deque.push_back(i1);
-    inline_deque.push_back(i2);
+    inline_deque->push_back(i1);
+    inline_deque->push_back(i2);
 
     VectorObject o1, o2;
-    outline_deque.push_back(o1);
-    outline_deque.push_back(o2);
+    outline_deque->push_back(o1);
+    outline_deque->push_back(o2);
 
-    PersistentHeapDeque<VectorObjectInheritedTrace> deque_inherited_trace;
+    Persistent<HeapDeque<VectorObjectInheritedTrace>> deque_inherited_trace =
+        new HeapDeque<VectorObjectInheritedTrace>;
     VectorObjectInheritedTrace it1, it2;
-    deque_inherited_trace.push_back(it1);
-    deque_inherited_trace.push_back(it2);
+    deque_inherited_trace->push_back(it1);
+    deque_inherited_trace->push_back(it2);
 
     PreciselyCollectGarbage();
     EXPECT_EQ(0, SimpleFinalizedObject::destructor_calls_);
@@ -4337,7 +4268,7 @@ TEST(HeapTest, EmbeddedInDeque) {
 }
 
 class InlinedVectorObject {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   InlinedVectorObject() = default;
@@ -4350,7 +4281,7 @@ class InlinedVectorObject {
 int InlinedVectorObject::destructor_calls_ = 0;
 
 class InlinedVectorObjectWithVtable {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   InlinedVectorObjectWithVtable() = default;
@@ -5516,10 +5447,9 @@ class ThreadedStrongificationTester {
     IntWrapper::destructor_calls_ = 0;
 
     MutexLocker locker(MainThreadMutex());
-    std::unique_ptr<WebThread> worker_thread =
-        Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
-                .SetThreadNameForTest("Test Worker Thread"));
+    std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
+        ThreadCreationParams(WebThreadType::kTestThread)
+            .SetThreadNameForTest("Test Worker Thread"));
     PostCrossThreadTask(*worker_thread->GetTaskRunner(), FROM_HERE,
                         CrossThreadBind(WorkerThreadMain));
 
@@ -5617,10 +5547,9 @@ class MemberSameThreadCheckTester {
     IntWrapper::destructor_calls_ = 0;
 
     MutexLocker locker(MainThreadMutex());
-    std::unique_ptr<WebThread> worker_thread =
-        Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
-                .SetThreadNameForTest("Test Worker Thread"));
+    std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
+        ThreadCreationParams(WebThreadType::kTestThread)
+            .SetThreadNameForTest("Test Worker Thread"));
     PostCrossThreadTask(
         *worker_thread->GetTaskRunner(), FROM_HERE,
         CrossThreadBind(&MemberSameThreadCheckTester::WorkerThreadMain,
@@ -5662,10 +5591,9 @@ class PersistentSameThreadCheckTester {
     IntWrapper::destructor_calls_ = 0;
 
     MutexLocker locker(MainThreadMutex());
-    std::unique_ptr<WebThread> worker_thread =
-        Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
-                .SetThreadNameForTest("Test Worker Thread"));
+    std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
+        ThreadCreationParams(WebThreadType::kTestThread)
+            .SetThreadNameForTest("Test Worker Thread"));
     PostCrossThreadTask(
         *worker_thread->GetTaskRunner(), FROM_HERE,
         CrossThreadBind(&PersistentSameThreadCheckTester::WorkerThreadMain,
@@ -5707,10 +5635,9 @@ class MarkingSameThreadCheckTester {
     IntWrapper::destructor_calls_ = 0;
 
     MutexLocker locker(MainThreadMutex());
-    std::unique_ptr<WebThread> worker_thread =
-        Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
-                .SetThreadNameForTest("Test Worker Thread"));
+    std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
+        ThreadCreationParams(WebThreadType::kTestThread)
+            .SetThreadNameForTest("Test Worker Thread"));
     Persistent<MainThreadObject> main_thread_object = new MainThreadObject();
     PostCrossThreadTask(
         *worker_thread->GetTaskRunner(), FROM_HERE,
@@ -6179,7 +6106,7 @@ class SimpleRefValue : public RefCounted<SimpleRefValue> {
 };
 
 class PartObjectWithRef {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   PartObjectWithRef(int i) : value_(SimpleRefValue::Create(i)) {}
@@ -6504,8 +6431,8 @@ TEST(HeapTest, CrossThreadWeakPersistent) {
   // Step 1: Initiate a worker thread, and wait for |object| to get allocated on
   // the worker thread.
   MutexLocker main_thread_mutex_locker(MainThreadMutex());
-  std::unique_ptr<WebThread> worker_thread = Platform::Current()->CreateThread(
-      WebThreadCreationParams(WebThreadType::kTestThread)
+  std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
+      ThreadCreationParams(WebThreadType::kTestThread)
           .SetThreadNameForTest("Test Worker Thread"));
   DestructorLockingObject* object = nullptr;
   PostCrossThreadTask(

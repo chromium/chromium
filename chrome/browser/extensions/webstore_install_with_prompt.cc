@@ -50,10 +50,6 @@ bool WebstoreInstallWithPrompt::CheckRequestorAlive() const {
   return !parent_window_tracker_->WasNativeWindowClosed();
 }
 
-const GURL& WebstoreInstallWithPrompt::GetRequestorURL() const {
-  return dummy_requestor_url_;
-}
-
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
 WebstoreInstallWithPrompt::CreateInstallPrompt() const {
   return std::make_unique<ExtensionInstallPrompt::Prompt>(
@@ -77,22 +73,6 @@ bool WebstoreInstallWithPrompt::ShouldShowAppInstalledBubble() const {
 
 WebContents* WebstoreInstallWithPrompt::GetWebContents() const {
   return dummy_web_contents_.get();
-}
-
-bool WebstoreInstallWithPrompt::CheckInlineInstallPermitted(
-    const base::DictionaryValue& webstore_data,
-    std::string* error) const {
-  // Assume the requestor is trusted.
-  *error = std::string();
-  return true;
-}
-
-bool WebstoreInstallWithPrompt::CheckRequestorPermitted(
-    const base::DictionaryValue& webstore_data,
-    std::string* error) const {
-  // Assume the requestor is trusted.
-  *error = std::string();
-  return true;
 }
 
 }  // namespace extensions

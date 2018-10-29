@@ -21,7 +21,6 @@ class Hyphenation;
 class NGContainerFragmentBuilder;
 class NGInlineBreakToken;
 class NGInlineItem;
-class NGInlineLayoutStateStack;
 struct NGPositionedFloat;
 
 // The line breaker needs to know which mode its in to properly handle floats.
@@ -51,10 +50,10 @@ class CORE_EXPORT NGLineBreaker {
   // the line.
   void NextLine(NGLineInfo*);
 
+  bool IsFinished() const { return item_index_ >= Items().size(); }
+
   // Create an NGInlineBreakToken for the last line returned by NextLine().
-  scoped_refptr<NGInlineBreakToken> CreateBreakToken(
-      const NGLineInfo&,
-      std::unique_ptr<const NGInlineLayoutStateStack>) const;
+  scoped_refptr<NGInlineBreakToken> CreateBreakToken(const NGLineInfo&) const;
 
   // Compute NGInlineItemResult for an open tag item.
   // Returns true if this item has edge and may have non-zero inline size.

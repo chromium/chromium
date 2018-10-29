@@ -241,7 +241,7 @@ Region::Shape::Shape(const IntRect& rect) {
   AppendSpan(rect.MaxY());
 }
 
-Region::Shape::Shape(size_t segments_capacity, size_t spans_capacity) {
+Region::Shape::Shape(wtf_size_t segments_capacity, wtf_size_t spans_capacity) {
   segments_.ReserveCapacity(segments_capacity);
   spans_.ReserveCapacity(spans_capacity);
 }
@@ -321,7 +321,7 @@ Region::Shape::SegmentIterator Region::Shape::SegmentsEnd(
     return nullptr;
 
   DCHECK_LT(it + 1, spans_.data() + spans_.size());
-  size_t segment_index = (it + 1)->segment_index;
+  wtf_size_t segment_index = (it + 1)->segment_index;
 
   SECURITY_DCHECK(segment_index <= segments_.size());
   return segments_.data() + segment_index;
@@ -381,9 +381,9 @@ IntRect Region::Shape::Bounds() const {
 }
 
 void Region::Shape::Translate(const IntSize& offset) {
-  for (size_t i = 0; i < segments_.size(); ++i)
+  for (wtf_size_t i = 0; i < segments_.size(); ++i)
     segments_[i] += offset.Width();
-  for (size_t i = 0; i < spans_.size(); ++i)
+  for (wtf_size_t i = 0; i < spans_.size(); ++i)
     spans_[i].y += offset.Height();
 }
 
@@ -407,8 +407,8 @@ Region::Shape Region::Shape::ShapeOperation(const Shape& shape1,
                   Operation::kShouldAddRemainingSpansFromShape2),
                 "invalid span combination");
 
-  size_t segments_capacity = shape1.SegmentsSize() + shape2.SegmentsSize();
-  size_t spans_capacity = shape1.SpansSize() + shape2.SpansSize();
+  wtf_size_t segments_capacity = shape1.SegmentsSize() + shape2.SegmentsSize();
+  wtf_size_t spans_capacity = shape1.SpansSize() + shape2.SpansSize();
   Shape result(segments_capacity, spans_capacity);
   if (Operation::TrySimpleOperation(shape1, shape2, result))
     return result;

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "services/ws/event_queue.h"
 #include "services/ws/injected_event_handler.h"
 #include "services/ws/window_service.h"
 #include "services/ws/window_service_delegate.h"
@@ -28,6 +29,13 @@ struct EventInjector::HandlerAndCallback {
   EventInjector::InjectEventCallback callback;
 };
 
+struct EventInjector::QueuedEvent {
+  int64_t display_id;
+  // |callback| is the callback supplied by the client.
+  EventInjector::InjectEventCallback callback;
+  std::unique_ptr<ui::Event> event;
+};
+
 EventInjector::EventInjector(WindowService* window_service)
     : window_service_(window_service) {
   DCHECK(window_service_);
@@ -36,6 +44,9 @@ EventInjector::EventInjector(WindowService* window_service)
 EventInjector::~EventInjector() {
   for (auto& handler_and_callback : handlers_)
     std::move(handler_and_callback->callback).Run(false);
+
+  for (auto& queued_event : queued_events_)
+    std::move(queued_event.callback).Run(false);
 }
 
 void EventInjector::AddBinding(mojom::EventInjectorRequest request) {
@@ -79,19 +90,33 @@ EventInjector::EventAndHost EventInjector::DetermineEventAndHost(
   }
 
   event_and_host.window_tree_host = window_tree_host;
-
-  // Map PointerEvents to Mouse/Touch event. This should be unnecessary.
-  // TODO: https://crbug.com/865781
-  if (event->IsMousePointerEvent()) {
-    event_and_host.event =
-        std::make_unique<ui::MouseEvent>(*event->AsPointerEvent());
-  } else if (event->IsTouchPointerEvent()) {
-    event_and_host.event =
-        std::make_unique<ui::TouchEvent>(*event->AsPointerEvent());
-  } else {
-    event_and_host.event = std::move(event);
-  }
+  event_and_host.event = std::move(event);
   return event_and_host;
+}
+
+void EventInjector::DispatchNextQueuedEvent() {
+  DCHECK(!queued_events_.empty());
+  QueuedEvent queued_event = std::move(queued_events_.front());
+  queued_events_.pop_front();
+
+  aura::WindowTreeHost* window_tree_host =
+      window_service_->delegate()->GetWindowTreeHostForDisplayId(
+          queued_event.display_id);
+  if (!window_tree_host) {
+    std::move(queued_event.callback).Run(false);
+    return;
+  }
+
+  std::unique_ptr<HandlerAndCallback> handler_and_callback =
+      std::make_unique<HandlerAndCallback>();
+  handler_and_callback->callback = std::move(queued_event.callback);
+  handler_and_callback->handler =
+      std::make_unique<InjectedEventHandler>(window_service_, window_tree_host);
+  InjectedEventHandler* handler = handler_and_callback->handler.get();
+  handlers_.push_back(std::move(handler_and_callback));
+  auto callback = base::BindOnce(&EventInjector::OnEventDispatched,
+                                 base::Unretained(this), handler);
+  handler->Inject(std::move(queued_event.event), std::move(callback));
 }
 
 void EventInjector::InjectEvent(int64_t display_id,
@@ -104,16 +129,16 @@ void EventInjector::InjectEvent(int64_t display_id,
     return;
   }
 
-  std::unique_ptr<HandlerAndCallback> handler_and_callback =
-      std::make_unique<HandlerAndCallback>();
-  handler_and_callback->callback = std::move(cb);
-  handler_and_callback->handler = std::make_unique<InjectedEventHandler>(
-      window_service_, event_and_host.window_tree_host);
-  InjectedEventHandler* handler = handler_and_callback->handler.get();
-  handlers_.push_back(std::move(handler_and_callback));
-  auto callback = base::BindOnce(&EventInjector::OnEventDispatched,
-                                 base::Unretained(this), handler);
-  handler->Inject(std::move(event_and_host.event), std::move(callback));
+  QueuedEvent queued_event;
+  queued_event.display_id = display_id;
+  queued_event.callback = std::move(cb);
+  queued_event.event = std::move(event_and_host.event);
+  queued_events_.push_back(std::move(queued_event));
+
+  // Both EventQueue and |this| are owned by WindowService, so Unretained() is
+  // safe.
+  window_service_->event_queue()->NotifyWhenReadyToDispatch(base::BindOnce(
+      &EventInjector::DispatchNextQueuedEvent, base::Unretained(this)));
 }
 
 void EventInjector::InjectEventNoAck(int64_t display_id,
@@ -123,10 +148,9 @@ void EventInjector::InjectEventNoAck(int64_t display_id,
   if (!event_and_host.window_tree_host)
     return;
 
-  // No need to do anything with the result of sending the event.
-  ignore_result(
-      event_and_host.window_tree_host->event_sink()->OnEventFromSource(
-          event_and_host.event.get()));
+  EventQueue::DispatchOrQueueEvent(window_service_,
+                                   event_and_host.window_tree_host,
+                                   event_and_host.event.get());
 }
 
 }  // namespace ws

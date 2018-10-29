@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#include "ios/web/public/web_state/web_frame_util.h"
 #import "ios/web/public/web_state/web_state.h"
 #import "testing/gtest_mac.h"
 
@@ -138,12 +139,14 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  [manager_
+      fetchFormsWithMinimumRequiredFieldsCount:
+          autofill::MinRequiredFieldsForHeuristics()
+                                       inFrame:web::GetMainWebFrame(web_state())
+                             completionHandler:^(NSString* actualResult) {
+                               block_was_called = YES;
+                               result = [actualResult copy];
+                             }];
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -174,12 +177,14 @@ TEST_F(JsAutofillManagerTest, ExtractFormlessForms_RestrictToFormlessCheckout) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  [manager_
+      fetchFormsWithMinimumRequiredFieldsCount:
+          autofill::MinRequiredFieldsForHeuristics()
+                                       inFrame:web::GetMainWebFrame(web_state())
+                             completionHandler:^(NSString* actualResult) {
+                               block_was_called = YES;
+                               result = [actualResult copy];
+                             }];
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -207,12 +212,14 @@ TEST_F(JsAutofillManagerTest, ExtractFormlessForms_AllFormlessForms) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  [manager_
+      fetchFormsWithMinimumRequiredFieldsCount:
+          autofill::MinRequiredFieldsForHeuristics()
+                                       inFrame:web::GetMainWebFrame(web_state())
+                             completionHandler:^(NSString* actualResult) {
+                               block_was_called = YES;
+                               result = [actualResult copy];
+                             }];
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -237,12 +244,20 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
   NSString* focus_element_javascript =
       [NSString stringWithFormat:@"%@.focus()", get_element_javascript];
   ExecuteJavaScript(focus_element_javascript);
-  [manager_ fillActiveFormField:
-                @"{\"name\":\"email\",\"identifier\":\"email\",\"value\":"
-                @"\"newemail@com\"}"
+  auto data = std::make_unique<base::DictionaryValue>();
+  data->SetString("name", "email");
+  data->SetString("identifier", "email");
+  data->SetString("value", "newemail@com");
+  __block BOOL block_was_called = NO;
+  [manager_ fillActiveFormField:std::move(data)
+                        inFrame:web::GetMainWebFrame(web_state())
               completionHandler:^{
+                block_was_called = YES;
               }];
-
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        return block_was_called;
+      }));
   NSString* element_value_javascript =
       [NSString stringWithFormat:@"%@.value", get_element_javascript];
   EXPECT_NSEQ(@"newemail@com", ExecuteJavaScript(element_value_javascript));
@@ -262,12 +277,14 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsNames) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  [manager_
+      fetchFormsWithMinimumRequiredFieldsCount:
+          autofill::MinRequiredFieldsForHeuristics()
+                                       inFrame:web::GetMainWebFrame(web_state())
+                             completionHandler:^(NSString* actualResult) {
+                               block_was_called = YES;
+                               result = [actualResult copy];
+                             }];
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -331,12 +348,14 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::MinRequiredFieldsForHeuristics()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  [manager_
+      fetchFormsWithMinimumRequiredFieldsCount:
+          autofill::MinRequiredFieldsForHeuristics()
+                                       inFrame:web::GetMainWebFrame(web_state())
+                             completionHandler:^(NSString* actualResult) {
+                               block_was_called = YES;
+                               result = [actualResult copy];
+                             }];
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });

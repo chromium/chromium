@@ -137,7 +137,7 @@ bool VerifyAlgorithmNameMappings(const AlgorithmNameMapping* begin,
       return false;
     String str(it->algorithm_name,
                static_cast<unsigned>(it->algorithm_name_length));
-    if (!str.ContainsOnlyASCII())
+    if (!str.ContainsOnlyASCIIOrEmpty())
       return false;
     if (str.UpperASCII() != str)
       return false;
@@ -228,17 +228,18 @@ class ErrorContext {
       return String();
 
     StringBuilder result;
-    const char* separator = ": ";
+    constexpr const char* separator = ": ";
 
-    size_t length = (messages_.size() - 1) * strlen(separator);
-    for (size_t i = 0; i < messages_.size(); ++i)
+    wtf_size_t length = (messages_.size() - 1) * strlen(separator);
+    for (wtf_size_t i = 0; i < messages_.size(); ++i)
       length += strlen(messages_[i]);
     result.ReserveCapacity(length);
 
-    for (size_t i = 0; i < messages_.size(); ++i) {
+    for (wtf_size_t i = 0; i < messages_.size(); ++i) {
       if (i)
         result.Append(separator, strlen(separator));
-      result.Append(messages_[i], strlen(messages_[i]));
+      result.Append(messages_[i],
+                    static_cast<wtf_size_t>(strlen(messages_[i])));
     }
 
     return result.ToString();

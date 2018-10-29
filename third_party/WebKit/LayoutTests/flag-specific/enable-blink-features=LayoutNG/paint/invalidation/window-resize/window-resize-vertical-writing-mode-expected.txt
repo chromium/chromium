@@ -128,59 +128,59 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [400, 0, 400, 600],
           "reason": "incremental"
         },
         {
           "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
           "rect": [581, 8, 68, 561],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
           "rect": [181, 8, 68, 561],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
           "rect": [510, 8, 68, 560],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
           "rect": [110, 8, 68, 560],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
           "rect": [723, 8, 68, 519],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
           "rect": [323, 8, 68, 519],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
           "rect": [652, 8, 68, 482],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
           "rect": [252, 8, 68, 482],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'NNNN'",
           "rect": [439, 8, 68, 172],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'NNNN'",
           "rect": [39, 8, 68, 172],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

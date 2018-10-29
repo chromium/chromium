@@ -21,6 +21,10 @@
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
 
+namespace base {
+class HistogramBase;
+}  // namespace base
+
 namespace viz {
 class HitTestDataProvider;
 class LocalSurfaceIdProvider;
@@ -41,7 +45,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   // reporting.
   class PipelineReporting {
    public:
-    PipelineReporting(viz::BeginFrameArgs args, base::TimeTicks now);
+    PipelineReporting(viz::BeginFrameArgs args,
+                      base::TimeTicks now,
+                      base::HistogramBase* submit_begin_frame_histogram);
     ~PipelineReporting();
 
     void Report();
@@ -55,6 +61,10 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
     // The time stamp for the begin frame to arrive on client side.
     base::TimeTicks frame_time_;
+
+    // Histogram metrics used to record
+    // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
+    base::HistogramBase* submit_begin_frame_histogram_;
   };
 
   struct CC_MOJO_EMBEDDER_EXPORT UnboundMessagePipes {
@@ -85,6 +95,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     UnboundMessagePipes pipes;
     bool enable_surface_synchronization = false;
     bool wants_animate_only_begin_frames = false;
+    const char* client_name = nullptr;
   };
 
   AsyncLayerTreeFrameSink(
@@ -111,6 +122,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   void DidAllocateSharedBitmap(mojo::ScopedSharedBufferHandle buffer,
                                const viz::SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
+  void ForceAllocateNewId() override;
 
  private:
   // mojom::CompositorFrameSinkClient implementation:
@@ -159,6 +171,14 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   gfx::Size last_submitted_size_in_pixels_;
   // Use this map to record the time when client received the BeginFrameArgs.
   base::flat_map<int64_t, PipelineReporting> pipeline_reporting_frame_times_;
+
+  // Histogram metrics used to record
+  // GraphicsPipeline.ClientName.ReceivedBeginFrame
+  base::HistogramBase* const receive_begin_frame_histogram_;
+
+  // Histogram metrics used to record
+  // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
+  base::HistogramBase* const submit_begin_frame_histogram_;
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AsyncLayerTreeFrameSink);

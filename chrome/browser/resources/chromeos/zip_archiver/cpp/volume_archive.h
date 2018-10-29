@@ -5,17 +5,21 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_ARCHIVE_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_ARCHIVE_H_
 
+#include <time.h>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
 
-#include "volume_reader.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_reader.h"
 
 // Defines a wrapper for operations executed on an archive. API is not meant
 // to be thread safe and its methods shouldn't be called in parallel.
 class VolumeArchive {
  public:
-  explicit VolumeArchive(VolumeReader* reader) : reader_(reader) {}
+  explicit VolumeArchive(std::unique_ptr<VolumeReader> reader);
 
-  virtual ~VolumeArchive() {}
+  virtual ~VolumeArchive();
 
   // For functions that need to return more than pass/fail results.
   enum Result {
@@ -25,10 +29,9 @@ class VolumeArchive {
   };
 
   // Initializes VolumeArchive. Should be called only once.
-  // In case of any errors call VolumeArchive::Cleanup and the error message can
-  // be obtained with VolumeArchive::error_message(). Encoding is the default
-  // encoding. Note, that other encoding may be used if specified in the
-  // archive file.
+  // In case of any errors, the error message can be obtained with
+  // VolumeArchive::error_message(). Encoding is the default encoding. Note,
+  // that other encoding may be used if specified in the archive file.
   virtual bool Init(const std::string& encoding) = 0;
 
   // Gets the next header. If path_name is set to nullptr, then there are no
@@ -78,28 +81,17 @@ class VolumeArchive {
   // buffer.
   virtual void MaybeDecompressAhead() = 0;
 
-  // Cleans all resources. Should be called only once. Returns true if
-  // successful. In case of failure the error message can be obtained with
-  // VolumeArchive::error_message().
-  virtual bool Cleanup() = 0;
-
-  VolumeReader* reader() const { return reader_; }
+  VolumeReader* reader() const { return reader_.get(); }
   std::string error_message() const { return error_message_; }
 
  protected:
-  // Cleans up the reader. Can be called multiple times, but once called reader
-  // cannot be reinitialized.
-  void CleanupReader() {
-    delete reader_;
-    reader_ = nullptr;
-  }
-
   void set_error_message(const std::string& error_message) {
     error_message_ = error_message;
   }
 
  private:
-  VolumeReader* reader_;  // The reader that actually reads the archive data.
+  // The reader that actually reads the archive data.
+  std::unique_ptr<VolumeReader> reader_;
   std::string error_message_;  // An error message set in case of any errors.
 };
 

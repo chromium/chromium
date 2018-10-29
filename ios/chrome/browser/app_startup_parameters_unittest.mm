@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/app_startup_parameters.h"
 
+#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -55,7 +56,7 @@ TEST_F(AppStartupParametersTest, QueryParametersPaymentRequest) {
       },
   };
 
-  for (size_t i = 0; i < arraysize(test_cases); ++i) {
+  for (size_t i = 0; i < base::size(test_cases); ++i) {
     const UniversalLinkDecodeTestCase& test_case = test_cases[i];
     AppStartupParameters* params = [[AppStartupParameters alloc]
         initWithUniversalLink:test_case.universal_link];

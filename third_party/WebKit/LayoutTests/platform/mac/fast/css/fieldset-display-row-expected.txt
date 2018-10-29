@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutFieldset {FIELDSET} at (2,0) size 780x37.59 [border: (2px groove #C0C0C0)]
-        LayoutText {#text} at (14,7) size 384x19
-          text run at (14,7) width 384: "If you can see this fieldset without crashing, then all is well."

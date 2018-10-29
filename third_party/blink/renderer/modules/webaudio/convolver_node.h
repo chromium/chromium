@@ -86,10 +86,6 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   // Normalize the impulse response or not. Must default to true.
   bool normalize_;
 
-  // True if the |buffer| attribute has ever been set to a non-null
-  // value.  Defaults to false.
-  bool buffer_has_been_set_;
-
   FRIEND_TEST_ALL_PREFIXES(ConvolverNodeTest, ReverbLifetime);
 };
 

@@ -68,7 +68,7 @@ class ErrorCallbackBase : public GarbageCollectedFinalized<ErrorCallbackBase> {
  public:
   virtual ~ErrorCallbackBase() {}
   virtual void Trace(blink::Visitor* visitor) {}
-  virtual void Invoke(FileError::ErrorCode) = 0;
+  virtual void Invoke(base::File::Error error) = 0;
 };
 
 class FileSystemCallbacksBase : public AsyncFileSystemCallbacks {
@@ -76,7 +76,7 @@ class FileSystemCallbacksBase : public AsyncFileSystemCallbacks {
   ~FileSystemCallbacksBase() override;
 
   // For ErrorCallback.
-  void DidFail(int code) final;
+  void DidFail(base::File::Error error) final;
 
   // Other callback methods are implemented by each subclass.
 
@@ -111,7 +111,7 @@ class ScriptErrorCallback final : public ErrorCallbackBase {
   ~ScriptErrorCallback() override {}
   void Trace(blink::Visitor*) override;
 
-  void Invoke(FileError::ErrorCode) override;
+  void Invoke(base::File::Error error) override;
 
  private:
   explicit ScriptErrorCallback(V8ErrorCallback*);
@@ -122,7 +122,7 @@ class PromiseErrorCallback final : public ErrorCallbackBase {
  public:
   explicit PromiseErrorCallback(ScriptPromiseResolver*);
   void Trace(Visitor*) override;
-  void Invoke(FileError::ErrorCode) override;
+  void Invoke(base::File::Error error) override;
 
  private:
   Member<ScriptPromiseResolver> resolver_;
@@ -371,8 +371,7 @@ class FileWriterCallbacks final : public FileSystemCallbacksBase {
       OnDidCreateFileWriterCallback*,
       ErrorCallbackBase*,
       ExecutionContext*);
-  void DidCreateFileWriter(std::unique_ptr<WebFileWriter>,
-                           long long length) override;
+  void DidCreateFileWriter(const KURL& path, long long length) override;
 
  private:
   FileWriterCallbacks(FileWriterBase*,

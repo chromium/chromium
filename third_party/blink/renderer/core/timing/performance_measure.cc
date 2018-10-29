@@ -31,7 +31,7 @@ ScriptValue PerformanceMeasure::detail(ScriptState* script_state) const {
 }
 
 AtomicString PerformanceMeasure::entryType() const {
-  return PerformanceEntryNames::measure;
+  return performance_entry_names::kMeasure;
 }
 
 PerformanceEntryType PerformanceMeasure::EntryTypeEnum() const {

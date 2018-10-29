@@ -4,6 +4,7 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="false" android:color="@color/black_alpha_38" />
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@color/modern_grey_800" android:state_enabled="false" />
     <item android:color="@color/default_text_color_link"/>
 </selector>

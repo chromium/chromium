@@ -2,7 +2,6 @@ Test Range.insertNode(fragment) when the fragment is empty and the range is coll
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS r.toString() is ""
 PASS p.childNodes.length is 2
 PASS p.childNodes[0] is t1

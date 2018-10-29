@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H
-#define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H
+#ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H_
+#define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H_
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/common/content_export.h"
 
@@ -85,6 +87,28 @@ class CONTENT_EXPORT StringUtil {
   static std::unique_ptr<protocol::Value> parseJSON(const String&);
 };
 
+// A read-only sequence of uninterpreted bytes with reference-counted storage.
+class CONTENT_EXPORT Binary {
+ public:
+  Binary(const Binary&);
+  Binary();
+  ~Binary();
+
+  const uint8_t* data() const { return bytes_->front(); }
+  size_t size() const { return bytes_->size(); }
+
+  String toBase64() const;
+
+  static Binary fromBase64(const String& base64, bool* success);
+  static Binary fromRefCounted(scoped_refptr<base::RefCountedMemory> memory);
+  static Binary fromVector(std::vector<uint8_t> data);
+  static Binary fromString(std::string data);
+
+ private:
+  explicit Binary(scoped_refptr<base::RefCountedMemory> bytes);
+  scoped_refptr<base::RefCountedMemory> bytes_;
+};
+
 std::unique_ptr<protocol::Value> toProtocolValue(
     const base::Value* value, int depth);
 std::unique_ptr<base::Value> toBaseValue(protocol::Value* value, int depth);
@@ -92,4 +116,4 @@ std::unique_ptr<base::Value> toBaseValue(protocol::Value* value, int depth);
 }  // namespace protocol
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H
+#endif  // CONTENT_BROWSER_DEVTOOLS_PROTOCOL_STRING_H_

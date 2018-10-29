@@ -27,7 +27,6 @@ namespace {
 
 const char kBookmarkBarId[] = "bookmark_bar_id";
 const char kBookmarkBarTag[] = "bookmark_bar";
-const char kBookmarksRootId[] = "32904_google_chrome_bookmarks";
 
 syncer::UpdateResponseData CreateUpdateResponseData(
     const std::string& server_id,
@@ -61,7 +60,6 @@ syncer::UpdateResponseData CreateUpdateResponseData(
 syncer::UpdateResponseData CreateBookmarkBarNodeUpdateData() {
   syncer::EntityData data;
   data.id = kBookmarkBarId;
-  data.parent_id = kBookmarksRootId;
   data.server_defined_unique_tag = kBookmarkBarTag;
 
   data.specifics.mutable_bookmark();

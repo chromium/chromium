@@ -27,6 +27,25 @@
 
 namespace {
 
+ui::TimestampServer* g_timestamp_server = nullptr;
+bool g_use_fixed_time_for_testing = false;
+
+// Clamps a TimeDelta to be within [-30 seconds, 30 seconds].
+base::TimeDelta ClampDeltaFromExternalSource(const base::TimeDelta& delta) {
+  // Ignore pathologically long deltas. External source is probably having
+  // issues.
+  constexpr base::TimeDelta pathologically_long_duration =
+      base::TimeDelta::FromSeconds(30);
+  if (delta > pathologically_long_duration)
+    return base::TimeDelta();
+
+  // Ignore negative deltas. External source is probably having issues.
+  if (delta < -pathologically_long_duration)
+    return base::TimeDelta();
+
+  return delta;
+}
+
 // Scroll amount for each wheelscroll event. 53 is also the value used for GTK+.
 const int kWheelScrollAmount = 53;
 
@@ -308,40 +327,36 @@ bool GetGestureTimes(const XEvent& xev, double* start_time, double* end_time) {
   return true;
 }
 
-int64_t g_last_seen_timestamp_ms = 0;
-int64_t g_rollover_ms = 0;
-
-// Takes Xlib Time and returns a time delta that is immune to timer rollover.
-// This function is not thread safe as we do not use a lock.
 base::TimeTicks TimeTicksFromXEventTime(Time timestamp) {
-  int64_t timestamp64 = timestamp;
+  // There's no way to convert from an X time to a base::TimeTicks without
+  // knowing the current X server time.
+  if (!g_timestamp_server)
+    return base::TimeTicks();
 
-  if (!timestamp)
-    return ui::EventTimeForNow();
+  // X11 uses a uint32_t on the wire protocol. Xlib casts this to an unsigned
+  // long by prepending with 0s. We cast back to a uint32_t so that subtraction
+  // works properly when the timestamp overflows back to 0.
+  uint32_t event_server_time_ms = static_cast<uint32_t>(timestamp);
+  uint32_t current_server_time_ms =
+      static_cast<uint32_t>(g_timestamp_server->GetCurrentServerTime());
 
-  // If this is the first event that we get, assume the time stamp roll-over
-  // might have happened before the process was started.
-  // Register a rollover if the distance between last timestamp and current one
-  // is larger than half the width. This avoids false rollovers even in a case
-  // where X server delivers reasonably close events out-of-order.
-  bool had_recent_rollover =
-      !g_last_seen_timestamp_ms ||
-      g_last_seen_timestamp_ms - timestamp64 > (UINT32_MAX >> 1);
+  // On X11, event times are in X11 Server time. To convert to base::TimeTicks,
+  // we perform a round-trip to the X11 Server, subtract the two times to get a
+  // TimeDelta, and then subtract that from base::TimeTicks::Now(). Since we're
+  // working with units of time from an external source, we clamp the TimeDelta
+  // to reasonable values.
+  int64_t delta_ms = static_cast<int64_t>(current_server_time_ms) -
+                     static_cast<int64_t>(event_server_time_ms);
+  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(delta_ms);
+  base::TimeDelta sanitized = ClampDeltaFromExternalSource(delta);
 
-  g_last_seen_timestamp_ms = timestamp64;
-  if (!had_recent_rollover)
-    return base::TimeTicks() +
-        base::TimeDelta::FromMilliseconds(g_rollover_ms + timestamp);
+  base::TimeTicks now;
+  if (g_use_fixed_time_for_testing)
+    now = base::TimeTicks() + base::TimeDelta::FromDays(1);
+  else
+    now = base::TimeTicks::Now();
 
-  DCHECK(timestamp64 <= UINT32_MAX)
-      << "X11 Time does not roll over 32 bit, the below logic is likely wrong";
-
-  base::TimeTicks now_ticks = ui::EventTimeForNow();
-  int64_t now_ms = (now_ticks - base::TimeTicks()).InMilliseconds();
-
-  g_rollover_ms = now_ms & ~static_cast<int64_t>(UINT32_MAX);
-  uint32_t delta = static_cast<uint32_t>(now_ms - timestamp);
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(now_ms - delta);
+  return now - sanitized;
 }
 
 }  // namespace
@@ -831,9 +846,16 @@ bool IsAltPressed() {
   return XModifierStateWatcher::GetInstance()->state() & Mod1Mask;
 }
 
-void ResetTimestampRolloverCountersForTesting() {
-  g_last_seen_timestamp_ms = 0;
-  g_rollover_ms = 0;
+void SetTimestampServer(TimestampServer* server) {
+  // This method must be setting or unsetting a timestamp server. It should
+  // never replace an existing timestamp server, nor change from
+  // nullptr->nullptr.
+  CHECK(!!g_timestamp_server ^ !!server);
+  g_timestamp_server = server;
+}
+
+void SetUseFixedTimeForXEventTesting(bool use_fixed_time) {
+  g_use_fixed_time_for_testing = use_fixed_time;
 }
 
 }  // namespace ui

@@ -120,6 +120,37 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void SetTopControlsShownRatio(content::WebContents* web_contents,
                                         float ratio) = 0;
 
+  // Whether or not the renderer's viewport size should be shrunk by the height
+  // of the browser's top controls.
+  // As top-chrome is slided up or down, we don't actually resize the web
+  // contents (for perf reasons) but we have to do a bunch of adjustments on the
+  // renderer side to make it appear to the user like we're resizing things
+  // smoothly:
+  //
+  // 1) Expose content beyond the web contents rect by expanding the clip.
+  // 2) Push bottom-fixed elements around until we get a resize. As top-chrome
+  //    hides, we push the fixed elements down by an equivalent amount so that
+  //    they appear to stay fixed to the viewport bottom.
+  //
+  // Only when the user releases their finger to finish the scroll do we
+  // actually resize the web contents and clear these adjustments. So web
+  // contents has two possible sizes, viewport filling and shrunk by the top
+  // controls.
+  //
+  // The GetTopControlsHeight is a static number that never changes (as long as
+  // the top-chrome slide with gesture scrolls feature is enabled). To get the
+  // actual "showing" height as the user sees, you multiply this by the shown
+  // ratio. However, it's not enough to know this value, the renderer also needs
+  // to know which direction it should be doing the above-mentioned adjustments.
+  // That's what the DoBrowserControlsShrinkRendererSize bit is for. It tells
+  // the renderer whether it's currently in the "viewport filling" or the
+  // "shrunk by top controls" state.
+  // The returned value should never change while sliding top-chrome is in
+  // progress (either due to an in-progress gesture scroll, or due to a
+  // renderer-initiated animation of the top controls shown ratio).
+  virtual bool DoBrowserControlsShrinkRendererSize(
+      const content::WebContents* contents) const = 0;
+
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to
   // calculate the top-chrome shown ratio from the gesture scroll offset.
@@ -167,6 +198,12 @@ class BrowserWindow : public ui::BaseWindow {
                                   content::WebContents* new_contents,
                                   int index,
                                   int reason) = 0;
+
+  // Called when a tab is detached. Subclasses which implement
+  // TabStripModelObserver should implement this instead of processing this
+  // in OnTabStripModelChanged(); the Browser will call this method.
+  virtual void OnTabDetached(content::WebContents* contents,
+                             bool was_active) = 0;
 
   // Called to force the zoom state to for the active tab to be recalculated.
   // |can_show_bubble| is true when a user presses the zoom up or down keyboard
@@ -335,7 +372,7 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Allows the BrowserWindow object to handle the specified keyboard event,
   // if the renderer did not process it.
-  virtual void HandleKeyboardEvent(
+  virtual bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) = 0;
 
   // Clipboard commands applied to the whole browser window.
@@ -373,6 +410,11 @@ class BrowserWindow : public ui::BaseWindow {
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) = 0;
 
+#if defined(OS_CHROMEOS) || defined(OS_MACOSX) || defined(OS_WIN) || \
+    defined(OS_LINUX)
+  virtual void ShowHatsBubbleFromAppMenuButton() = 0;
+#endif
+
   // Returns the height inset for RenderView when detached bookmark bar is
   // shown.  Invoked when a new RenderHostView is created for a non-NTP
   // navigation entry and the bookmark bar is detached.
@@ -400,13 +442,6 @@ class BrowserWindow : public ui::BaseWindow {
   friend class BrowserCloseManager;
   friend class BrowserView;
   virtual void DestroyBrowser() = 0;
-
-#if defined(OS_MACOSX)
-  // Creates a Cocoa browser window, in browser builds where both Views and
-  // Cocoa browsers windows are present.
-  static BrowserWindow* CreateBrowserWindowCocoa(Browser* browser,
-                                                 bool user_gesture);
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_H_

@@ -19,11 +19,11 @@ struct Packet {
   ~Packet();
   Packet(const Packet& packet);
 
-  std::string source;
-  std::string destination;
+  QuicString source;
+  QuicString destination;
   QuicTime tx_timestamp;
 
-  std::string contents;
+  QuicString contents;
   QuicByteCount size;
 };
 
@@ -57,7 +57,7 @@ class Endpoint : public Actor {
   virtual void SetTxPort(ConstrainedPortInterface* port) = 0;
 
  protected:
-  Endpoint(Simulator* simulator, std::string name);
+  Endpoint(Simulator* simulator, QuicString name);
 };
 
 }  // namespace simulator

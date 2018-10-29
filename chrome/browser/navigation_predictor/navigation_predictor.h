@@ -52,10 +52,6 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost {
   bool IsValidMetricFromRenderer(
       const blink::mojom::AnchorElementMetrics& metric) const;
 
-  // Retrieve scaling factors for each metric from Finch and save to this class.
-  // These scales are used to compute navigation scores.
-  void InitializeFieldTrialMetricScales();
-
   // Returns site engagement service, which can be used to get site engagement
   // score. Return value is guaranteed to be non-null.
   SiteEngagementService* GetEngagementService() const;
@@ -107,14 +103,17 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost {
   int number_of_anchors_url_incremented_ = 0;
 
   // Scaling factors used to compute navigation scores.
-  int ratio_area_scale_ = 100;
-  int is_same_host_scale_ = 0;
-  int contains_image_scale_ = 0;
-  int is_in_iframe_scale_ = 0;
-  int is_url_incremented_scale_ = 0;
-  int source_engagement_score_scale_ = 0;
-  int target_engagement_score_scale_ = 0;
-  int area_rank_scale_ = 0;
+  const int ratio_area_scale_;
+  const int is_in_iframe_scale_;
+  const int is_same_host_scale_;
+  const int contains_image_scale_;
+  const int is_url_incremented_scale_;
+  const int source_engagement_score_scale_;
+  const int target_engagement_score_scale_;
+  const int area_rank_scale_;
+
+  // Sum of all scales. Used to normalize the final computed weight.
+  const int sum_scales_;
 
   // Timing of document loaded and last click.
   base::TimeTicks document_loaded_timing_;

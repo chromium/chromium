@@ -2,7 +2,6 @@ Test that setting and getting grid-auto-columns and grid-auto-rows works as expe
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-auto-columns and grid-auto-rows set through CSS
 PASS window.getComputedStyle(gridAutoFixedFixed, '').getPropertyValue('grid-auto-rows') is "30px"
 PASS window.getComputedStyle(gridAutoFixedFixed, '').getPropertyValue('grid-auto-columns') is "50px"
@@ -14,6 +13,7 @@ PASS window.getComputedStyle(gridAutoAutoInMinMax, '').getPropertyValue('grid-au
 PASS window.getComputedStyle(gridAutoAutoInMinMax, '').getPropertyValue('grid-auto-columns') is "minmax(80px, auto)"
 PASS window.getComputedStyle(gridAutoFitContent, '').getPropertyValue('grid-auto-rows') is "fit-content(50%)"
 PASS window.getComputedStyle(gridAutoFitContent, '').getPropertyValue('grid-auto-columns') is "fit-content(30px)"
+
 
 Test that getting grid-template-columns and grid-template-rows set through CSS lists every track listed whether implicitly or explicitly created
 PASS window.getComputedStyle(gridAutoFixedFixedWithChildren, '').getPropertyValue('grid-auto-rows') is "30px"
@@ -29,6 +29,7 @@ PASS window.getComputedStyle(gridAutoMultipleTracks, '').getPropertyValue('grid-
 PASS window.getComputedStyle(gridAutoMultipleTracksNegativeIndexes, '').getPropertyValue('grid-template-columns') is "100px 25px 50px 100px"
 PASS window.getComputedStyle(gridAutoMultipleTracksNegativeIndexes, '').getPropertyValue('grid-template-rows') is "30px 10px 20px 30px"
 
+
 Test that grid-template-* definitions are not affected by grid-auto-* definitions
 PASS window.getComputedStyle(gridAutoFixedFixed, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridAutoFixedFixed, '').getPropertyValue('grid-template-rows') is "none"
@@ -37,9 +38,11 @@ PASS window.getComputedStyle(gridAutoMinMax, '').getPropertyValue('grid-template
 PASS window.getComputedStyle(gridAutoMinMaxContent, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridAutoMinMaxContent, '').getPropertyValue('grid-template-rows') is "none"
 
+
 Test the initial value
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is 'auto'
+
 
 Test getting and setting grid-auto-columns and grid-auto-rows through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "180px"
@@ -54,6 +57,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "fit
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "fit-content(5%) fit-content(40px)"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "2fr"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "1fr"
+
 
 Test setting grid-auto-columns and grid-auto-rows to bad minmax value through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "auto"
@@ -71,9 +75,11 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "auto"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "auto"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "auto"
 
+
 Test setting grid-auto-columns and grid-auto-rows to 'inherit' through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is '50px'
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is '101%'
+
 
 Test setting grid-auto-columns and grid-auto-rows to 'initial' through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is '150%'

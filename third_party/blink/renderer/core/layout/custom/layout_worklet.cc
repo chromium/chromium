@@ -64,7 +64,7 @@ bool LayoutWorklet::NeedsToCreateGlobalScope() {
 WorkletGlobalScopeProxy* LayoutWorklet::CreateGlobalScope() {
   DCHECK(NeedsToCreateGlobalScope());
   return new LayoutWorkletGlobalScopeProxy(
-      ToDocument(GetExecutionContext())->GetFrame(), ModuleResponsesMap(),
+      To<Document>(GetExecutionContext())->GetFrame(), ModuleResponsesMap(),
       pending_layout_registry_, GetNumberOfGlobalScopes() + 1);
 }
 

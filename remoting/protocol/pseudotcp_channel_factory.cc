@@ -49,7 +49,7 @@ void PseudoTcpChannelFactory::CreateChannel(
 }
 
 void PseudoTcpChannelFactory::CancelChannelCreation(const std::string& name) {
-  PendingSocketsMap::iterator it = pending_sockets_.find(name);
+  auto it = pending_sockets_.find(name);
   if (it == pending_sockets_.end()) {
     datagram_channel_factory_->CancelChannelCreation(name);
   } else {
@@ -86,7 +86,7 @@ void PseudoTcpChannelFactory::OnPseudoTcpConnected(
     const std::string& name,
     const ChannelCreatedCallback& callback,
     int result) {
-  PendingSocketsMap::iterator it = pending_sockets_.find(name);
+  auto it = pending_sockets_.find(name);
   DCHECK(it != pending_sockets_.end());
   std::unique_ptr<P2PStreamSocket> socket(it->second);
   pending_sockets_.erase(it);

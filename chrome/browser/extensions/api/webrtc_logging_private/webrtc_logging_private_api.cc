@@ -11,11 +11,13 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -253,10 +255,11 @@ bool WebrtcLoggingPrivateSetMetaDataFunction::RunAsync() {
   for (const MetaDataEntry& entry : params->meta_data)
     (*meta_data)[entry.key] = entry.value;
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&WebRtcLoggingHandlerHost::SetMetaData,
-                                         webrtc_logging_handler_host,
-                                         std::move(meta_data), callback));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&WebRtcLoggingHandlerHost::SetMetaData,
+                     webrtc_logging_handler_host, std::move(meta_data),
+                     callback));
 
   return true;
 }
@@ -271,8 +274,8 @@ bool WebrtcLoggingPrivateStartFunction::RunAsync() {
   if (!webrtc_logging_handler_host.get())
     return false;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::StartLogging,
                      webrtc_logging_handler_host, callback));
 
@@ -295,8 +298,8 @@ bool WebrtcLoggingPrivateSetUploadOnRenderCloseFunction::RunAsync() {
   // Post a task since this is an asynchronous extension function.
   // TODO(devlin): This is unneccessary; this should just be a
   // UIThreadExtensionFunction. Fix this.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &WebrtcLoggingPrivateSetUploadOnRenderCloseFunction::SendResponse,
           this, true));
@@ -313,8 +316,8 @@ bool WebrtcLoggingPrivateStopFunction::RunAsync() {
   if (!webrtc_logging_handler_host.get())
     return false;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::StopLogging,
                      webrtc_logging_handler_host, callback));
 
@@ -334,8 +337,8 @@ bool WebrtcLoggingPrivateStoreFunction::RunAsync() {
   const std::string local_log_id(HashIdWithOrigin(params->security_origin,
                                                   params->log_id));
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::StoreLog,
                      webrtc_logging_handler_host, local_log_id, callback));
 
@@ -358,8 +361,8 @@ bool WebrtcLoggingPrivateUploadStoredFunction::RunAsync() {
   const std::string local_log_id(HashIdWithOrigin(params->security_origin,
                                                   params->log_id));
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::UploadStoredLog,
                      logging_handler, local_log_id, callback));
 
@@ -378,9 +381,9 @@ bool WebrtcLoggingPrivateUploadFunction::RunAsync() {
   WebRtcLoggingHandlerHost::UploadDoneCallback callback = base::Bind(
       &WebrtcLoggingPrivateUploadFunction::FireCallback, this);
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&WebRtcLoggingHandlerHost::UploadLog,
-                                         logging_handler, callback));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&WebRtcLoggingHandlerHost::UploadLog,
+                                          logging_handler, callback));
 
   return true;
 }
@@ -395,8 +398,8 @@ bool WebrtcLoggingPrivateDiscardFunction::RunAsync() {
   if (!webrtc_logging_handler_host.get())
     return false;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::DiscardLog,
                      webrtc_logging_handler_host, callback));
 
@@ -439,8 +442,8 @@ bool WebrtcLoggingPrivateStartRtpDumpFunction::RunAsync() {
                          base::Bind(&WebRtcLoggingHandlerHost::OnRtpPacket,
                                     webrtc_logging_handler_host));
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::StartRtpDump,
                      webrtc_logging_handler_host, type, callback,
                      stop_callback));
@@ -476,8 +479,8 @@ bool WebrtcLoggingPrivateStopRtpDumpFunction::RunAsync() {
   WebRtcLoggingHandlerHost::GenericDoneCallback callback = base::Bind(
       &WebrtcLoggingPrivateStopRtpDumpFunction::FireCallback, this);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::StopRtpDump,
                      webrtc_logging_handler_host, type, callback));
   return true;
@@ -574,8 +577,8 @@ bool WebrtcLoggingPrivateStartEventLoggingFunction::RunAsync() {
       base::BindRepeating(
           &WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback, this);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&WebRtcLoggingHandlerHost::StartEventLogging,
                      webrtc_logging_handler_host, params->peer_connection_id,
                      params->max_log_size_bytes, params->web_app_id, callback));

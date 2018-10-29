@@ -16,8 +16,6 @@
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
-#include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR.
-
 using media::EmeConfigRule;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;

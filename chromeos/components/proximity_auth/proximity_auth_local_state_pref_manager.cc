@@ -112,12 +112,25 @@ ProximityAuthLocalStatePrefManager::GetProximityThreshold() const {
   return static_cast<ProximityThreshold>(pref_value);
 }
 
+bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginAllowed() const {
+  bool pref_value;
+  const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
+  if (!user_prefs ||
+      !user_prefs->GetBooleanWithoutPathExpansion(
+          chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
+          &pref_value)) {
+    PA_LOG(INFO) << "Failed to get is_chrome_login_allowed, not disallowing";
+    return true;
+  }
+  return pref_value;
+}
+
 void ProximityAuthLocalStatePrefManager::SetIsChromeOSLoginEnabled(
     bool is_enabled) {
   NOTREACHED();
 }
 
-bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() {
+bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() const {
   bool pref_value;
   const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
   if (!user_prefs ||

@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/mock_report_sender.h"
 
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
@@ -34,8 +36,8 @@ void MockReportSender::Send(
   if (!content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI))
     return;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&MockReportSender::NotifyReportSentOnUIThread,
                      base::Unretained(this)));
 }

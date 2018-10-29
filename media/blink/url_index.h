@@ -28,6 +28,7 @@ const int64_t kPositionNotSpecified = -1;
 
 class ResourceFetchContext;
 class UrlData;
+class UrlIndexTest;
 
 // A multibuffer for loading media resources which knows
 // how to create MultiBufferDataProviders to load data
@@ -59,6 +60,31 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Keep in sync with WebMediaPlayer::CORSMode.
   enum CORSMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
   typedef std::pair<GURL, CORSMode> KeyType;
+
+  // UrlData keeps track of how many clients are preloading or
+  // playing from this resource. This class encapsulates the
+  // adding and removing of counts to guarantee that the counts
+  // are accurate. Clients who wish to change the loading
+  // counts need to have one of these, assign an UrlData to it
+  // and call SetLoadingState() to releflect what the client is
+  // currently doing.
+  class MEDIA_BLINK_EXPORT UrlDataWithLoadingState {
+   public:
+    UrlDataWithLoadingState();
+    ~UrlDataWithLoadingState();
+
+    enum class LoadingState { kIdle, kPreload, kHasPlayed };
+
+    void SetLoadingState(LoadingState loading_state);
+    void SetUrlData(scoped_refptr<UrlData> url_data);
+    UrlData* url_data() const { return url_data_.get(); }
+
+   private:
+    LoadingState loading_state_ = LoadingState::kIdle;
+    scoped_refptr<UrlData> url_data_;
+    SEQUENCE_CHECKER(sequence_checker_);
+    DISALLOW_COPY_AND_ASSIGN(UrlDataWithLoadingState);
+  };
 
   // Accessors
   const GURL& url() const { return url_; }
@@ -99,7 +125,8 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Returns our url_index.
   UrlIndex* url_index() const { return url_index_; }
 
-  bool has_opaque_data() const { return has_opaque_data_; }
+  // This must be called after the response arrives.
+  bool is_cors_cross_origin() const { return is_cors_cross_origin_; }
 
   // Notifies the url index that this is currently used.
   // The url <-> URLData mapping will be eventually be invalidated if
@@ -119,7 +146,7 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   void set_range_supported();
   void set_last_modified(base::Time last_modified);
   void set_etag(const std::string& etag);
-  void set_has_opaque_data(bool has_opaque_data);
+  void set_is_cors_cross_origin(bool is_cors_cross_origin);
 
   // A redirect has occured (or we've found a better UrlData for the same
   // resource).
@@ -144,10 +171,21 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Virtual so we can override it for testing.
   virtual ResourceMultiBuffer* multibuffer();
 
+  // Callback for reporting number of bytes received by the network.
+  using BytesReceivedCB = base::RepeatingCallback<void(uint64_t)>;
+
+  // Register a BytesReceivedCallback for this UrlData. These callbacks will be
+  // copied to another UrlData if there is a redirect.
+  void AddBytesReceivedCallback(BytesReceivedCB bytes_received_cb);
+
   void AddBytesRead(int64_t b) { bytes_read_from_cache_ += b; }
   int64_t BytesReadFromCache() const { return bytes_read_from_cache_; }
-  void AddBytesReadFromNetwork(int64_t b) { bytes_read_from_network_ += b; }
+  void AddBytesReadFromNetwork(int64_t b);
   int64_t BytesReadFromNetwork() const { return bytes_read_from_network_; }
+
+  // Call |cb| when it's ok to start preloading an URL.
+  // Note that |cb| may be called directly from inside this function.
+  void WaitToLoad(base::OnceClosure cb);
 
  protected:
   UrlData(const GURL& url, CORSMode cors_mode, UrlIndex* url_index);
@@ -156,10 +194,27 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
  private:
   friend class ResourceMultiBuffer;
   friend class UrlIndex;
+  friend class UrlIndexTest;
   friend class base::RefCounted<UrlData>;
+
+  // Returns true if one or more clients are prelaoding and no clients
+  // are currently playing.
+  bool IsPreloading() const;
+
+  // Called by url_index when it's time to fire callbacks sent to WaitToLoad().
+  void LoadNow();
 
   void OnEmpty();
   void MergeFrom(const scoped_refptr<UrlData>& other);
+
+  // These two are called from UrlDataWithLoadingState to
+  // increase and decrease |playing_| and |preloading_|.
+  // They will also call the UrlIndex and and tell it to
+  // de-queue other resources waiting to load as needed.
+  void IncreaseLoadersInState(
+      UrlDataWithLoadingState::LoadingState loading_state);
+  void DecreaseLoadersInState(
+      UrlDataWithLoadingState::LoadingState loading_state);
 
   // Url we represent, note that there may be multiple UrlData for
   // the same url.
@@ -191,9 +246,8 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // will not cache this url.
   bool cacheable_;
 
-  // True if a service worker intercepted a request for this resource
-  // and provided an opaque response.
-  bool has_opaque_data_;
+  // https://html.spec.whatwg.org/#cors-cross-origin
+  bool is_cors_cross_origin_ = false;
 
   // Last time some media time used this resource.
   // Note that we use base::Time rather than base::TimeTicks because
@@ -214,6 +268,16 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
 
   ResourceMultiBuffer multibuffer_;
   std::vector<RedirectCB> redirect_callbacks_;
+
+  std::vector<BytesReceivedCB> bytes_received_callbacks_;
+
+  // Number of data sources that are currently preloading this url.
+  int preloading_ = 0;
+
+  // Number of data sources that are playing this url.
+  int playing_ = 0;
+
+  std::vector<base::OnceClosure> waiting_load_callbacks_;
 
   base::ThreadChecker thread_checker_;
   DISALLOW_COPY_AND_ASSIGN(UrlData);
@@ -256,10 +320,23 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   ResourceFetchContext* fetch_context() const { return fetch_context_; }
   int block_shift() const { return block_shift_; }
 
- private:
+  // Returns true kMaxParallelPreload or more urls are loading at the same time.
+  bool HasReachedMaxParallelPreload() const;
+
+  // Protected rather than private for testing.
+ protected:
   friend class UrlData;
   friend class ResourceMultiBuffer;
+  friend class UrlIndexTest;
   void RemoveUrlData(const scoped_refptr<UrlData>& url_data);
+
+  // Call url_data->LoadNow() when it's ok to start preloading.
+  // Note that LoadNow may be called immediately.
+  void WaitToLoad(UrlData* url_data);
+
+  // Let us know that |url_data| is done preloading. If other resources
+  // are waiting, we will let one of them know it's ok to load now.
+  void RemoveLoading(UrlData* url_data);
 
   // Virtual so we can override it in tests.
   virtual scoped_refptr<UrlData> NewUrlData(const GURL& url,
@@ -276,6 +353,9 @@ class MEDIA_BLINK_EXPORT UrlIndex {
   // log2 of block size in multibuffer cache. Defaults to kBlockSizeShift.
   // Currently only changed for testing purposes.
   const int block_shift_;
+
+  std::set<UrlData*> loading_;
+  std::deque<scoped_refptr<UrlData>> loading_queue_;
 
   base::MemoryPressureListener memory_pressure_listener_;
 };

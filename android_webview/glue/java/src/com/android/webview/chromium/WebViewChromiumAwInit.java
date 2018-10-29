@@ -34,6 +34,7 @@ import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.ScopedSysTraceEvent;
 import org.chromium.android_webview.VariationsSeedLoader;
+import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.command_line.CommandLineUtil;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
@@ -104,7 +105,7 @@ public class WebViewChromiumAwInit {
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
     }
 
-    AwTracingController getAwTracingController() {
+    public AwTracingController getAwTracingController() {
         synchronized (mLock) {
             if (mAwTracingController == null) {
                 ensureChromiumStartedLocked(true);
@@ -449,5 +450,9 @@ public class WebViewChromiumAwInit {
             mSeedLoader.finishVariationsInit();
             mSeedLoader = null; // Allow this to be GC'd after its background thread finishes.
         }
+    }
+
+    public WebViewChromiumRunQueue getRunQueue() {
+        return mFactory.getRunQueue();
     }
 }

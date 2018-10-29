@@ -9,10 +9,12 @@ PASS cssRule.type is 1
 PASS declaration.length is 0
 PASS declaration.getPropertyValue('mix-blend-mode') is ""
 
+
 Wrong type : "5px"
 PASS cssRule.type is 1
 PASS declaration.length is 0
 PASS declaration.getPropertyValue('mix-blend-mode') is ""
+
 
 Trailing comma : overlay,
 PASS cssRule.type is 1

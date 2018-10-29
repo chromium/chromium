@@ -57,7 +57,7 @@ class BrowserRootView : public views::internal::RootView {
   BrowserRootView(BrowserView* browser_view, views::Widget* widget);
   ~BrowserRootView() override;
 
-  // Overridden from views::View:
+  // views::View:
   bool GetDropFormats(
       int* formats,
       std::set<ui::Clipboard::FormatType>* format_types) override;
@@ -70,6 +70,10 @@ class BrowserRootView : public views::internal::RootView {
   const char* GetClassName() const override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+
+ protected:
+  // views::View:
+  void PaintChildren(const views::PaintInfo& paint_info) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, ClearDropInfo);

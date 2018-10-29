@@ -40,6 +40,10 @@ constexpr uint32_t kReadDirectoryInitialBatchSize = 64;
 // Maximum number of entries to send at a time for read directory,
 constexpr uint32_t kReadDirectoryMaxBatchSize = 2048;
 
+// Capacity of the task queue. Represents how many operations can be in-flight
+// over D-Bus concurrently.
+constexpr size_t kTaskQueueCapacity = 2;
+
 constexpr ProvidedFileSystemInterface::MetadataFieldMask kRequestableFields =
     ProvidedFileSystemInterface::MetadataField::METADATA_FIELD_IS_DIRECTORY |
     ProvidedFileSystemInterface::MetadataField::METADATA_FIELD_NAME |
@@ -80,6 +84,26 @@ bool IsRedundantRequest(ProvidedFileSystemInterface::MetadataFieldMask fields) {
   return (fields & kRequestableFields) == 0;
 }
 
+filesystem::mojom::FsFileType MapEntryType(bool is_directory) {
+  return is_directory ? filesystem::mojom::FsFileType::DIRECTORY
+                      : filesystem::mojom::FsFileType::REGULAR_FILE;
+}
+
+std::unique_ptr<smb_client::TempFileManager> CreateTempFileManager() {
+  return std::make_unique<smb_client::TempFileManager>();
+}
+
+void ConvertEntries(const smbprovider::DirectoryEntryListProto& entries_proto,
+                    storage::AsyncFileUtil::EntryList* out_entries) {
+  DCHECK(out_entries);
+
+  for (const smbprovider::DirectoryEntryProto& entry :
+       entries_proto.entries()) {
+    out_entries->emplace_back(base::FilePath(entry.name()),
+                              MapEntryType(entry.is_directory()));
+  }
+}
+
 // Metrics recording.
 void RecordReadDirectoryCount(int count) {
   UMA_HISTOGRAM_COUNTS_100000("NativeSmbFileShare.ReadDirectoryCount", count);
@@ -92,21 +116,6 @@ void RecordReadDirectoryDuration(const base::TimeDelta& delta) {
 }  // namespace
 
 namespace smb_client {
-
-namespace {
-
-filesystem::mojom::FsFileType MapEntryType(bool is_directory) {
-  return is_directory ? filesystem::mojom::FsFileType::DIRECTORY
-                      : filesystem::mojom::FsFileType::REGULAR_FILE;
-}
-
-constexpr size_t kTaskQueueCapacity = 2;
-
-std::unique_ptr<TempFileManager> CreateTempFileManager() {
-  return std::make_unique<TempFileManager>();
-}
-
-}  // namespace
 
 using file_system_provider::AbortCallback;
 
@@ -221,16 +230,11 @@ AbortCallback SmbFileSystem::ExecuteAction(
 AbortCallback SmbFileSystem::ReadDirectory(
     const base::FilePath& directory_path,
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
-  base::ElapsedTimer metrics_timer;
+  OperationId operation_id = task_queue_.GetNextOperationId();
 
-  auto reply =
-      base::BindOnce(&SmbFileSystem::HandleRequestReadDirectoryCallback,
-                     AsWeakPtr(), callback, std::move(metrics_timer));
-  SmbTask task = base::BindOnce(&SmbProviderClient::ReadDirectory,
-                                GetWeakSmbProviderClient(), GetMountId(),
-                                directory_path, std::move(reply));
+  StartReadDirectory(directory_path, operation_id, std::move(callback));
 
-  return EnqueueTaskAndGetCallback(std::move(task));
+  return CreateAbortCallback(operation_id);
 }
 
 AbortCallback SmbFileSystem::OpenFile(const base::FilePath& file_path,
@@ -524,6 +528,40 @@ void SmbFileSystem::ContinueCopy(
   EnqueueTask(std::move(task), operation_id);
 }
 
+void SmbFileSystem::StartReadDirectory(
+    const base::FilePath& directory_path,
+    OperationId operation_id,
+    storage::AsyncFileUtil::ReadDirectoryCallback callback) {
+  base::ElapsedTimer metrics_timer;
+
+  auto reply = base::BindOnce(&SmbFileSystem::HandleStartReadDirectoryCallback,
+                              AsWeakPtr(), std::move(callback), operation_id,
+                              std::move(metrics_timer));
+
+  SmbTask task = base::BindOnce(&SmbProviderClient::StartReadDirectory,
+                                GetWeakSmbProviderClient(), GetMountId(),
+                                directory_path, std::move(reply));
+
+  EnqueueTask(std::move(task), operation_id);
+}
+
+void SmbFileSystem::ContinueReadDirectory(
+    OperationId operation_id,
+    int32_t read_dir_token,
+    storage::AsyncFileUtil::ReadDirectoryCallback callback,
+    int entries_count,
+    base::ElapsedTimer metrics_timer) {
+  auto reply =
+      base::BindOnce(&SmbFileSystem::HandleContinueReadDirectoryCallback,
+                     AsWeakPtr(), std::move(callback), operation_id,
+                     read_dir_token, entries_count, std::move(metrics_timer));
+  SmbTask task = base::BindOnce(&SmbProviderClient::ContinueReadDirectory,
+                                GetWeakSmbProviderClient(), GetMountId(),
+                                read_dir_token, std::move(reply));
+
+  EnqueueTask(std::move(task), operation_id);
+}
+
 void SmbFileSystem::HandleRequestReadDirectoryCallback(
     storage::AsyncFileUtil::ReadDirectoryCallback callback,
     const base::ElapsedTimer& metrics_timer,
@@ -629,6 +667,71 @@ void SmbFileSystem::HandleContinueCopyCallback(
   }
 
   std::move(callback).Run(TranslateToFileError(error));
+}
+
+void SmbFileSystem::HandleStartReadDirectoryCallback(
+    storage::AsyncFileUtil::ReadDirectoryCallback callback,
+    OperationId operation_id,
+    base::ElapsedTimer metrics_timer,
+    smbprovider::ErrorType error,
+    int32_t read_dir_token,
+    const smbprovider::DirectoryEntryListProto& entries) {
+  task_queue_.TaskFinished();
+
+  int entries_count = 0;
+  ProcessReadDirectoryResults(std::move(callback), operation_id, read_dir_token,
+                              error, entries, entries_count,
+                              std::move(metrics_timer));
+}
+
+void SmbFileSystem::HandleContinueReadDirectoryCallback(
+    storage::AsyncFileUtil::ReadDirectoryCallback callback,
+    OperationId operation_id,
+    int32_t read_dir_token,
+    int entries_count,
+    base::ElapsedTimer metrics_timer,
+    smbprovider::ErrorType error,
+    const smbprovider::DirectoryEntryListProto& entries) {
+  task_queue_.TaskFinished();
+
+  ProcessReadDirectoryResults(std::move(callback), operation_id, read_dir_token,
+                              error, entries, entries_count,
+                              std::move(metrics_timer));
+}
+
+void SmbFileSystem::ProcessReadDirectoryResults(
+    storage::AsyncFileUtil::ReadDirectoryCallback callback,
+    OperationId operation_id,
+    int32_t read_dir_token,
+    smbprovider::ErrorType error,
+    const smbprovider::DirectoryEntryListProto& entries,
+    int entries_count,
+    base::ElapsedTimer metrics_timer) {
+  storage::AsyncFileUtil::EntryList entry_list;
+
+  if (error != smbprovider::ERROR_OPERATION_PENDING &&
+      error != smbprovider::ERROR_OK) {
+    callback.Run(TranslateToFileError(error), entry_list, false /* has_more */);
+  }
+
+  ConvertEntries(entries, &entry_list);
+  entries_count += entry_list.size();
+
+  const bool has_more = (error == smbprovider::ERROR_OPERATION_PENDING);
+
+  // Run |callback| with the next batch of results;
+  callback.Run(base::File::FILE_OK, entry_list, has_more);
+
+  if (has_more) {
+    // There are more directory entries to read.
+    ContinueReadDirectory(operation_id, read_dir_token, callback, entries_count,
+                          std::move(metrics_timer));
+    return;
+  }
+
+  // Read Directory is complete, record metrics.
+  RecordReadDirectoryCount(entries_count);
+  RecordReadDirectoryDuration(metrics_timer.Elapsed());
 }
 
 AbortCallback SmbFileSystem::HandleSyncRedundantGetMetadata(

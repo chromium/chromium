@@ -310,4 +310,44 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframe) {
   EXPECT_GT(10.2, feature3.GetRatioDistanceRootBottom());
 }
 
+TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframeNonHttp) {
+  SimRequest main_resource("content://example.com/page1", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  SimRequest image_resource("https://example.com/cat.png", "image/png");
+
+  LoadURL("content://example.com/page1");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body style='margin: 0px'>
+        <div style='height: %dpx;'></div>
+        <iframe id='iframe' src='https://example.com/iframe.html'
+            style='width: 300px; height: %dpx;
+            border-style: none; padding: 0px; margin: 0px;'></iframe>
+        <div style='height: %dpx;'></div>
+        </body>)HTML",
+      2 * kViewportHeight, kViewportHeight / 2, 10 * kViewportHeight));
+
+  iframe_resource.Complete(String::Format(
+      R"HTML(
+    <body style='margin: 0px'>
+    <div style='height: %dpx;'></div>
+    <a id='anchor' href="https://example.com/page2">example</a>
+    <div style='height: %dpx;'></div>
+    </body>)HTML",
+      kViewportHeight / 2, 5 * kViewportHeight));
+
+  Element* iframe = GetDocument().getElementById("iframe");
+  HTMLIFrameElement* iframe_element = ToHTMLIFrameElement(iframe);
+  Frame* sub = iframe_element->ContentFrame();
+  LocalFrame* subframe = ToLocalFrame(sub);
+
+  Element* anchor = subframe->GetDocument()->getElementById("anchor");
+  HTMLAnchorElement* anchor_element = ToHTMLAnchorElement(anchor);
+
+  EXPECT_FALSE(
+      AnchorElementMetrics::MaybeReportClickedMetricsOnClick(anchor_element)
+          .has_value());
+}
+
 }  // namespace blink

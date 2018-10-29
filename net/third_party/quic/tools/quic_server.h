@@ -47,7 +47,7 @@ class QuicServer : public net::EpollCallbackInterface {
 
   ~QuicServer() override;
 
-  std::string Name() const override { return "QuicServer"; }
+  QuicString Name() const override { return "QuicServer"; }
 
   // Start listening on the specified address.
   bool CreateUDPSocketAndListen(const QuicSocketAddress& address);

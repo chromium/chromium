@@ -21,13 +21,12 @@ namespace blink {
 
 namespace {
 
-FloatSize GetSpecifiedSize(const IntSize& size, float zoom) {
+FloatSize GetSpecifiedSize(const FloatSize& size, float zoom) {
   float un_zoom_factor = 1 / zoom;
   auto un_zoom_fn = [un_zoom_factor](float a) -> float {
     return a * un_zoom_factor;
   };
-  return FloatSize(un_zoom_fn(static_cast<float>(size.Width())),
-                   un_zoom_fn(static_cast<float>(size.Height())));
+  return FloatSize(un_zoom_fn(size.Width()), un_zoom_fn(size.Height()));
 }
 
 }  // namespace
@@ -67,7 +66,7 @@ CSSPaintDefinition::~CSSPaintDefinition() = default;
 
 scoped_refptr<Image> CSSPaintDefinition::Paint(
     const ImageResourceObserver& client,
-    const IntSize& container_size,
+    const FloatSize& container_size,
     const CSSStyleValueVector* paint_arguments) {
   // TODO: Break dependency on LayoutObject. Passing the Node should work.
   const LayoutObject& layout_object = static_cast<const LayoutObject&>(client);
@@ -80,7 +79,7 @@ scoped_refptr<Image> CSSPaintDefinition::Paint(
   MaybeCreatePaintInstance();
 
   v8::Isolate* isolate = script_state_->GetIsolate();
-  v8::Local<v8::Object> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
 
   // We may have failed to create an instance class, in which case produce an
   // invalid image.
@@ -93,8 +92,9 @@ scoped_refptr<Image> CSSPaintDefinition::Paint(
     color_params.SetOpacityMode(kOpaque);
   }
 
+  // Do subpixel snapping for the |container_size|.
   PaintRenderingContext2D* rendering_context = PaintRenderingContext2D::Create(
-      container_size, color_params, context_settings_, zoom);
+      RoundedIntSize(container_size), color_params, context_settings_, zoom);
   PaintSize* paint_size = PaintSize::Create(specified_size);
   StylePropertyMapReadOnly* style_map =
       new PrepopulatedComputedStylePropertyMap(
@@ -131,7 +131,7 @@ scoped_refptr<Image> CSSPaintDefinition::Paint(
   }
 
   return PaintGeneratedImage::Create(rendering_context->GetRecord(),
-                                     FloatSize(container_size));
+                                     container_size);
 }
 
 void CSSPaintDefinition::MaybeCreatePaintInstance() {
@@ -144,11 +144,11 @@ void CSSPaintDefinition::MaybeCreatePaintInstance() {
   v8::Local<v8::Function> constructor = constructor_.NewLocal(isolate);
   DCHECK(!IsUndefinedOrNull(constructor));
 
-  v8::Local<v8::Object> paint_instance;
-  if (V8ObjectConstructor::NewInstance(isolate, constructor)
-          .ToLocal(&paint_instance)) {
+  v8::Local<v8::Value> paint_instance;
+  if (V8ScriptRunner::CallAsConstructor(
+          isolate, constructor, ExecutionContext::From(script_state_), 0, {})
+          .ToLocal(&paint_instance))
     instance_.Set(isolate, paint_instance);
-  }
 
   did_call_constructor_ = true;
 }
@@ -156,7 +156,7 @@ void CSSPaintDefinition::MaybeCreatePaintInstance() {
 void CSSPaintDefinition::Trace(Visitor* visitor) {
   visitor->Trace(constructor_.Cast<v8::Value>());
   visitor->Trace(paint_.Cast<v8::Value>());
-  visitor->Trace(instance_.Cast<v8::Value>());
+  visitor->Trace(instance_);
   visitor->Trace(script_state_);
 }
 

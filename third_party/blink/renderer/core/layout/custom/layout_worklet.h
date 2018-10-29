@@ -52,7 +52,7 @@ class CORE_EXPORT LayoutWorklet : public Worklet,
   explicit LayoutWorklet(LocalFrame*);
 
   // TODO(ikilpatrick): Make selection of the global scope non-deterministic.
-  size_t SelectGlobalScope() final { return 0u; }
+  wtf_size_t SelectGlobalScope() final { return 0u; }
 
  private:
   friend class LayoutWorkletTest;

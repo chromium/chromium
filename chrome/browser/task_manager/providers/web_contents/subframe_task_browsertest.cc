@@ -43,11 +43,6 @@ base::string16 PrefixExpectedTabTitle(const std::string& title) {
                                     base::UTF8ToUTF16(title));
 }
 
-base::string16 PrefixExpectedTDIRowTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_ISOLATED_SUBFRAMES_PREFIX,
-                                    base::UTF8ToUTF16(title));
-}
-
 }  // namespace
 
 // A test for OOPIFs and how they show up in the task manager as
@@ -196,79 +191,6 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   EXPECT_NE(nullptr, unresponsive_task);
   EXPECT_TRUE(unresponsive_task == subframe_task_1 ||
               unresponsive_task == subframe_task_2);
-}
-
-// A test for top document isolation and how subframes show up in the task
-// manager as SubframeTasks.
-class SubframeTaskTDIBrowserTest : public InProcessBrowserTest {
- public:
-  SubframeTaskTDIBrowserTest() {}
-  ~SubframeTaskTDIBrowserTest() override {}
-
-  void SetUpOnMainThread() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kTopDocumentIsolation);
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    content::SetupCrossSiteRedirector(embedded_test_server());
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void NavigateTo(const char* page_url) const {
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(page_url));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubframeTaskTDIBrowserTest);
-};
-
-// Makes sure that subframe row gets updated with the new title when the main
-// frame's title changes.
-IN_PROC_BROWSER_TEST_F(SubframeTaskTDIBrowserTest,
-                       SubframeRowGetsUpdatedParentPageTitle) {
-  if (content::AreAllSitesIsolatedForTesting()) {
-    // If full site isolation is turned on, it supersedes top document
-    // isolation, so bail if it is.
-    return;
-  }
-
-  MockWebContentsTaskManager task_manager;
-  EXPECT_TRUE(task_manager.tasks().empty());
-  task_manager.StartObserving();
-
-  // Currently only the about:blank page.
-  ASSERT_EQ(1U, task_manager.tasks().size());
-  const Task* about_blank_task = task_manager.tasks().front();
-  EXPECT_EQ(Task::RENDERER, about_blank_task->GetType());
-  EXPECT_EQ(PrefixExpectedTabTitle("about:blank"), about_blank_task->title());
-
-  // Start with a known title, make sure everything starts correctly.
-  NavigateTo(kCrossSitePageUrl);
-
-  ASSERT_EQ(2U, task_manager.tasks().size());
-  const Task* main_task = task_manager.tasks()[0];
-  const Task* tdi_task = task_manager.tasks()[1];
-  EXPECT_EQ(Task::RENDERER, main_task->GetType());
-  EXPECT_EQ(Task::RENDERER, tdi_task->GetType());
-  std::string main_title = "cross-site iframe test";
-  EXPECT_EQ(PrefixExpectedTabTitle(main_title), main_task->title());
-  EXPECT_EQ(PrefixExpectedTDIRowTitle(main_title), tdi_task->title());
-
-  // Change the title on the main page, and make sure the TDI row reflects it.
-  std::string new_title = "new title";
-  std::string script = "document.title = '" + new_title + "'";
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher title_watcher(web_contents,
-                                      base::UTF8ToUTF16(new_title));
-  EXPECT_TRUE(ExecuteScript(web_contents, script));
-  base::string16 actual_title = title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(new_title, base::UTF16ToUTF8(actual_title));
-
-  EXPECT_EQ(PrefixExpectedTabTitle(new_title), main_task->title());
-  EXPECT_EQ(PrefixExpectedTDIRowTitle(new_title), tdi_task->title());
 }
 
 }  // namespace task_manager

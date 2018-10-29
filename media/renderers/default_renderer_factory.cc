@@ -78,7 +78,7 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       media_log_));
 
   GpuVideoAcceleratorFactories* gpu_factories = nullptr;
-  if (!get_gpu_factories_cb_.is_null())
+  if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
   std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool;

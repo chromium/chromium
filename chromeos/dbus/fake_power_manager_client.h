@@ -77,7 +77,8 @@ class CHROMEOS_EXPORT FakePowerManagerClient : public PowerManagerClient {
       base::WeakPtr<RenderProcessManagerDelegate> delegate) override;
   void DecreaseScreenBrightness(bool allow_off) override;
   void IncreaseScreenBrightness() override;
-  void SetScreenBrightnessPercent(double percent, bool gradual) override;
+  void SetScreenBrightness(
+      const power_manager::SetBacklightBrightnessRequest& request) override;
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
   void DecreaseKeyboardBrightness() override;
   void IncreaseKeyboardBrightness() override;
@@ -210,7 +211,7 @@ class CHROMEOS_EXPORT FakePowerManagerClient : public PowerManagerClient {
   // Current keyboard brightness in the range [0.0, 100.0].
   base::Optional<double> keyboard_brightness_percent_;
 
-  // Last screen brightness requested via SetScreenBrightnessPercent().
+  // Last screen brightness requested via SetScreenBrightness().
   // Unlike |screen_brightness_percent_|, this value will not be changed by
   // SetBacklightsForcedOff() method - a method that implicitly changes screen
   // brightness.

@@ -152,8 +152,7 @@ void AppendFormattedComponent(const std::string& spec,
 
     // Shift all the adjustments made for this component so the offsets are
     // valid for the original string and add them to |adjustments|.
-    for (base::OffsetAdjuster::Adjustments::iterator comp_iter =
-             component_transform_adjustments.begin();
+    for (auto comp_iter = component_transform_adjustments.begin();
          comp_iter != component_transform_adjustments.end(); ++comp_iter)
       comp_iter->original_offset += original_component_begin;
     if (adjustments) {
@@ -215,8 +214,7 @@ base::string16 FormatViewSourceUrl(
                                prefix_end, adjustments));
   // Revise |adjustments| by shifting to the offsets to prefix that the above
   // call to FormatUrl didn't get to see.
-  for (base::OffsetAdjuster::Adjustments::iterator it = adjustments->begin();
-       it != adjustments->end(); ++it)
+  for (auto it = adjustments->begin(); it != adjustments->end(); ++it)
     it->original_offset += kViewSourceLength;
 
   // Adjust positions of the parsed components.
@@ -419,6 +417,7 @@ const FormatUrlType kFormatUrlOmitHTTPS = 1 << 3;
 const FormatUrlType kFormatUrlExperimentalElideAfterHost = 1 << 4;
 const FormatUrlType kFormatUrlOmitTrivialSubdomains = 1 << 5;
 const FormatUrlType kFormatUrlTrimAfterHost = 1 << 6;
+const FormatUrlType kFormatUrlOmitFileScheme = 1 << 7;
 
 const FormatUrlType kFormatUrlOmitDefaults =
     kFormatUrlOmitUsernamePassword | kFormatUrlOmitHTTP |
@@ -488,7 +487,7 @@ base::string16 FormatUrlWithAdjustments(
   const url::Parsed& parsed = url.parsed_for_possibly_invalid_spec();
 
   // Scheme & separators.  These are ASCII.
-  const size_t scheme_size = static_cast<size_t>(parsed.CountCharactersBefore(
+  size_t scheme_size = static_cast<size_t>(parsed.CountCharactersBefore(
       url::Parsed::USERNAME, true /* include_delimiter */));
   base::string16 url_string;
   url_string.insert(url_string.end(), spec.begin(), spec.begin() + scheme_size);
@@ -624,10 +623,28 @@ base::string16 FormatUrlWithAdjustments(
       (((format_types & kFormatUrlOmitHTTP) &&
         url.SchemeIs(url::kHttpScheme)) ||
        ((format_types & kFormatUrlOmitHTTPS) &&
-        url.SchemeIs(url::kHttpsScheme)));
+        url.SchemeIs(url::kHttpsScheme)) ||
+       ((format_types & kFormatUrlOmitFileScheme) &&
+        url.SchemeIs(url::kFileScheme)));
 
   // If we need to strip out schemes do it after the fact.
   if (strip_scheme) {
+    DCHECK(new_parsed->scheme.is_valid());
+    size_t scheme_and_separator_len =
+        new_parsed->scheme.len + 3;  // +3 for ://.
+#if defined(OS_WIN)
+    // Because there's an additional leading slash after the scheme for local
+    // files on Windows, we should remove it for URL display when eliding
+    // the scheme by offsetting by an additional character.
+    if (url.SchemeIs(url::kFileScheme) &&
+        base::StartsWith(url_string, base::ASCIIToUTF16("file:///"),
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      ++new_parsed->path.begin;
+      ++scheme_size;
+      ++scheme_and_separator_len;
+    }
+#endif
+
     url_string.erase(0, scheme_size);
     // Because offsets in the |adjustments| are already calculated with respect
     // to the string with the http:// prefix in it, those offsets remain correct
@@ -640,10 +657,8 @@ base::string16 FormatUrlWithAdjustments(
       *prefix_end -= scheme_size;
 
     // Adjust new_parsed.
-    DCHECK(new_parsed->scheme.is_valid());
-    int delta = -(new_parsed->scheme.len + 3);  // +3 for ://.
     new_parsed->scheme.reset();
-    AdjustAllComponentsButScheme(delta, new_parsed);
+    AdjustAllComponentsButScheme(-scheme_and_separator_len, new_parsed);
   }
 
   return url_string;

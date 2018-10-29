@@ -36,8 +36,6 @@ class SandboxQuotaObserver
     : public FileUpdateObserver,
       public FileAccessObserver {
  public:
-  using PendingUpdateNotificationMap = std::map<base::FilePath, int64_t>;
-
   SandboxQuotaObserver(storage::QuotaManagerProxy* quota_manager_proxy,
                        base::SequencedTaskRunner* update_notify_runner,
                        ObfuscatedFileUtil* sandbox_file_util,
@@ -72,7 +70,7 @@ class SandboxQuotaObserver
   // Not owned; file_system_usage_cache_ should have longer lifetime than this.
   FileSystemUsageCache* file_system_usage_cache_;
 
-  PendingUpdateNotificationMap pending_update_notification_;
+  std::map<base::FilePath, int64_t> pending_update_notification_;
   base::OneShotTimer delayed_cache_update_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(SandboxQuotaObserver);

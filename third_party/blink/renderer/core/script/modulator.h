@@ -80,7 +80,11 @@ enum class ModuleScriptCustomFetchType {
   // Perform custom fetch steps for Worklet's addModule() function defined in
   // the Worklet spec:
   // https://drafts.css-houdini.org/worklets/#fetch-a-worklet-script
-  kWorkletAddModule
+  kWorkletAddModule,
+
+  // Fetch a Service Worker's installed module script from the Service Worker's
+  // script storage.
+  kInstalledServiceWorker
 };
 
 // A Modulator is an interface for "environment settings object" concept for
@@ -119,7 +123,7 @@ class CORE_EXPORT Modulator : public GarbageCollectedFinalized<Modulator>,
   virtual void FetchTree(
       const KURL&,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       const ScriptFetchOptions&,
       ModuleScriptCustomFetchType,
       ModuleTreeClient*) = 0;
@@ -138,7 +142,7 @@ class CORE_EXPORT Modulator : public GarbageCollectedFinalized<Modulator>,
   virtual void FetchDescendantsForInlineScript(
       ModuleScript*,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       ModuleTreeClient*) = 0;
 
   // Synchronously retrieves a single module script from existing module map

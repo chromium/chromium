@@ -86,11 +86,11 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
   ScrollbarOrientation Orientation() const { return orientation_; }
   bool IsLeftSideVerticalScrollbar() const;
 
-  int Value() const { return lroundf(current_pos_); }
+  int Value() const { return static_cast<int>(lroundf(current_pos_)); }
   float CurrentPos() const { return current_pos_; }
   int VisibleSize() const { return visible_size_; }
   int TotalSize() const { return total_size_; }
-  int Maximum() const { return total_size_ - visible_size_; }
+  int Maximum() const;
   ScrollbarControlSize GetControlSize() const { return control_size_; }
 
   ScrollbarPart PressedPart() const { return pressed_part_; }

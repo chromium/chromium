@@ -163,21 +163,20 @@ void SystemIndicatorManager::OnExtensionActionUpdated(
 
 bool SystemIndicatorManager::SendClickEventToExtensionForTest(
     const std::string& extension_id) {
-    extensions::SystemIndicatorManager::SystemIndicatorMap::iterator it =
-        system_indicators_.find(extension_id);
+  auto it = system_indicators_.find(extension_id);
 
-    if (it == system_indicators_.end())
-      return false;
+  if (it == system_indicators_.end())
+    return false;
 
-    it->second->OnStatusIconClicked();
-    return true;
+  it->second->OnStatusIconClicked();
+  return true;
 }
 
 void SystemIndicatorManager::CreateOrUpdateIndicator(
     const Extension* extension,
     ExtensionAction* extension_action) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  SystemIndicatorMap::iterator it = system_indicators_.find(extension->id());
+  auto it = system_indicators_.find(extension->id());
   if (it != system_indicators_.end()) {
     it->second->OnIconUpdated();
     return;

@@ -137,7 +137,7 @@ void CastTransportIPC::OnRawEvents(
 }
 
 void CastTransportIPC::OnRtt(uint32_t rtp_sender_ssrc, base::TimeDelta rtt) {
-  ClientMap::iterator it = clients_.find(rtp_sender_ssrc);
+  auto it = clients_.find(rtp_sender_ssrc);
   if (it == clients_.end()) {
     LOG(ERROR) << "Received RTT report for unknown SSRC: " << rtp_sender_ssrc;
     return;
@@ -148,7 +148,7 @@ void CastTransportIPC::OnRtt(uint32_t rtp_sender_ssrc, base::TimeDelta rtt) {
 void CastTransportIPC::OnRtcpCastMessage(
     uint32_t rtp_sender_ssrc,
     const media::cast::RtcpCastMessage& cast_message) {
-  ClientMap::iterator it = clients_.find(rtp_sender_ssrc);
+  auto it = clients_.find(rtp_sender_ssrc);
   if (it == clients_.end()) {
     LOG(ERROR) << "Received cast message for unknown SSRC: " << rtp_sender_ssrc;
     return;
@@ -157,7 +157,7 @@ void CastTransportIPC::OnRtcpCastMessage(
 }
 
 void CastTransportIPC::OnReceivedPli(uint32_t rtp_sender_ssrc) {
-  ClientMap::iterator it = clients_.find(rtp_sender_ssrc);
+  auto it = clients_.find(rtp_sender_ssrc);
   if (it == clients_.end()) {
     LOG(ERROR) << "Received picture loss indicator for unknown SSRC: "
                << rtp_sender_ssrc;

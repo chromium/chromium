@@ -44,7 +44,7 @@ class AtomicStringTable;
 struct ICUConverterWrapper;
 
 class WTF_EXPORT WTFThreadData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   WTFThreadData();

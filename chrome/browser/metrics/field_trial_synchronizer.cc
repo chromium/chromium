@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/metrics/persistent_system_profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -48,8 +50,14 @@ void FieldTrialSynchronizer::NotifyAllRenderers(
 void FieldTrialSynchronizer::OnFieldTrialGroupFinalized(
     const std::string& field_trial_name,
     const std::string& group_name) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  // The FieldTrialSynchronizer may have been created before any BrowserThread
+  // is created, so we don't need to synchronize with child processes in which
+  // case there are no child processes to notify yet.
+  if (!content::BrowserThread::IsThreadInitialized(BrowserThread::UI))
+    return;
+
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FieldTrialSynchronizer::NotifyAllRenderers, this,
                      field_trial_name, group_name));
 }

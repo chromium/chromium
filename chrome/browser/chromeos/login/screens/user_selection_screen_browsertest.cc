@@ -40,7 +40,8 @@ constexpr char kManagedTestUserGaiaId[] = "3333333333";
 class UserSelectionScreenTest : public LoginManagerTest {
  public:
   UserSelectionScreenTest()
-      : LoginManagerTest(false /* should_launch_browser */) {}
+      : LoginManagerTest(false /* should_launch_browser */,
+                         true /* should_initialize_webui */) {}
   ~UserSelectionScreenTest() override = default;
 
   // LoginManagerTest:

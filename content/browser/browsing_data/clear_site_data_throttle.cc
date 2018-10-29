@@ -11,9 +11,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "content/browser/service_worker/service_worker_response_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -72,7 +74,7 @@ int ParametersMask2(bool clear_cookies, bool clear_storage, bool clear_cache) {
 // the UI thread.
 void JumpFromUIToIOThread(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE, std::move(callback));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO}, std::move(callback));
 }
 
 // Finds the BrowserContext associated with the request and requests
@@ -256,8 +258,8 @@ void ClearSiteDataThrottle::ConsoleMessagesDelegate::OutputMessages(
     return;
 
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OutputMessagesOnUIThread, web_contents_getter,
                      std::move(messages_), output_formatted_message_function_));
 
@@ -367,7 +369,7 @@ bool ClearSiteDataThrottle::HandleHeader() {
   }
 
   url::Origin origin = url::Origin::Create(GetCurrentURL());
-  if (origin.unique()) {
+  if (origin.opaque()) {
     delegate_->AddMessage(GetCurrentURL(), "Not supported for unique origins.",
                           CONSOLE_MESSAGE_LEVEL_ERROR);
     return false;
@@ -523,8 +525,8 @@ void ClearSiteDataThrottle::ExecuteClearingTask(const url::Origin& origin,
                                                 bool clear_cache,
                                                 base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&UIThreadSiteDataClearer::Run,
                      ResourceRequestInfo::ForRequest(request_)
                          ->GetWebContentsGetterForRequest(),

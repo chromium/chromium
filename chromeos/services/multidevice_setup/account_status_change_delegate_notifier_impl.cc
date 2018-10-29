@@ -11,11 +11,8 @@
 #include "base/no_destructor.h"
 #include "base/time/clock.h"
 #include "chromeos/components/proximity_auth/logging/logging.h"
+#include "chromeos/services/multidevice_setup/host_device_timestamp_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider_impl.h"
-#include "chromeos/services/multidevice_setup/setup_flow_completion_recorder.h"
-#include "components/cryptauth/proto/cryptauth_api.pb.h"
-#include "components/cryptauth/remote_device_ref.h"
-#include "components/cryptauth/software_feature_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -56,11 +53,12 @@ std::unique_ptr<AccountStatusChangeDelegateNotifier>
 AccountStatusChangeDelegateNotifierImpl::Factory::BuildInstance(
     HostStatusProvider* host_status_provider,
     PrefService* pref_service,
-    SetupFlowCompletionRecorder* setup_flow_completion_recorder,
+    HostDeviceTimestampManager* host_device_timestamp_manager,
+    OobeCompletionTracker* oobe_completion_tracker,
     base::Clock* clock) {
   return base::WrapUnique(new AccountStatusChangeDelegateNotifierImpl(
-      host_status_provider, pref_service, setup_flow_completion_recorder,
-      clock));
+      host_status_provider, pref_service, host_device_timestamp_manager,
+      oobe_completion_tracker, clock));
 }
 
 // static
@@ -75,13 +73,17 @@ void AccountStatusChangeDelegateNotifierImpl::RegisterPrefs(
                               kTimestampNotSet);
   registry->RegisterInt64Pref(kExistingUserChromebookAddedPrefName,
                               kTimestampNotSet);
+
+  registry->RegisterInt64Pref(kOobeSetupFlowTimestampPrefName,
+                              kTimestampNotSet);
   registry->RegisterStringPref(
-      kHostDeviceIdFromMostRecentHostStatusUpdatePrefName, kNoHost);
+      kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName, kNoHost);
 }
 
 AccountStatusChangeDelegateNotifierImpl::
     ~AccountStatusChangeDelegateNotifierImpl() {
   host_status_provider_->RemoveObserver(this);
+  oobe_completion_tracker_->RemoveObserver(this);
 }
 
 void AccountStatusChangeDelegateNotifierImpl::OnDelegateSet() {
@@ -103,29 +105,50 @@ const char AccountStatusChangeDelegateNotifierImpl::
     kExistingUserChromebookAddedPrefName[] =
         "multidevice_setup.existing_user_chromebook_added";
 
+// Note that, despite the pref string name, this pref only records the IDs of
+// verified hosts. In particular, if a host has been set but is waiting for
+// verification, it will not recorded.
 // static
 const char AccountStatusChangeDelegateNotifierImpl::
-    kHostDeviceIdFromMostRecentHostStatusUpdatePrefName[] =
+    kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName[] =
         "multidevice_setup.host_device_id_from_most_recent_sync";
+
+// The timestamps (in milliseconds since UNIX Epoch, aka JavaTime) of the user
+// seeing setup flow in OOBE. If it is 0, the user did not see the setup flow in
+// OOBE.
+// static
+const char
+    AccountStatusChangeDelegateNotifierImpl::kOobeSetupFlowTimestampPrefName[] =
+        "multidevice_setup.oobe_setup_flow_timestamp ";
 
 AccountStatusChangeDelegateNotifierImpl::
     AccountStatusChangeDelegateNotifierImpl(
         HostStatusProvider* host_status_provider,
         PrefService* pref_service,
-        SetupFlowCompletionRecorder* setup_flow_completion_recorder,
+        HostDeviceTimestampManager* host_device_timestamp_manager,
+        OobeCompletionTracker* oobe_completion_tracker,
         base::Clock* clock)
     : host_status_provider_(host_status_provider),
       pref_service_(pref_service),
-      setup_flow_completion_recorder_(setup_flow_completion_recorder),
+      host_device_timestamp_manager_(host_device_timestamp_manager),
+      oobe_completion_tracker_(oobe_completion_tracker),
       clock_(clock) {
-  host_device_id_from_most_recent_update_ =
+  verified_host_device_id_from_most_recent_update_ =
       LoadHostDeviceIdFromEndOfPreviousSession();
   host_status_provider_->AddObserver(this);
+  oobe_completion_tracker_->AddObserver(this);
 }
 
 void AccountStatusChangeDelegateNotifierImpl::OnHostStatusChange(
     const HostStatusProvider::HostStatusWithDevice& host_status_with_device) {
   CheckForMultiDeviceEvents(host_status_with_device);
+}
+
+void AccountStatusChangeDelegateNotifierImpl::OnOobeCompleted() {
+  pref_service_->SetInt64(kOobeSetupFlowTimestampPrefName,
+                          clock_->Now().ToJavaTime());
+  if (delegate())
+    delegate()->OnNoLongerNewUser();
 }
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
@@ -137,40 +160,60 @@ void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
     return;
   }
 
-  // Track and update host info.
-  base::Optional<std::string> host_device_id_before_update =
-      host_device_id_from_most_recent_update_;
+  // Track and update host status.
+  base::Optional<mojom::HostStatus> host_status_before_update =
+      host_status_from_most_recent_update_;
+  host_status_from_most_recent_update_ = host_status_with_device.host_status();
 
-  // Check if a host has been set.
-  if (host_status_with_device.host_device()) {
-    host_device_id_from_most_recent_update_ =
+  // Track and update verified host info.
+  base::Optional<std::string> verified_host_device_id_before_update =
+      verified_host_device_id_from_most_recent_update_;
+
+  // Check if a host has been verified.
+  if (host_status_with_device.host_status() ==
+      mojom::HostStatus::kHostVerified) {
+    verified_host_device_id_from_most_recent_update_ =
         host_status_with_device.host_device()->GetDeviceId();
     pref_service_->SetString(
-        kHostDeviceIdFromMostRecentHostStatusUpdatePrefName,
-        *host_device_id_from_most_recent_update_);
+        kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName,
+        *verified_host_device_id_from_most_recent_update_);
   } else {
     // No host set.
-    host_device_id_from_most_recent_update_.reset();
+    verified_host_device_id_from_most_recent_update_.reset();
+    pref_service_->SetString(
+        kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName, kNoHost);
   }
 
   CheckForNewUserPotentialHostExistsEvent(host_status_with_device);
+  CheckForNoLongerNewUserEvent(host_status_with_device,
+                               host_status_before_update);
   CheckForExistingUserHostSwitchedEvent(host_status_with_device,
-                                        host_device_id_before_update);
-  CheckForExistingUserChromebookAddedEvent(host_device_id_before_update);
+                                        verified_host_device_id_before_update);
+  CheckForExistingUserChromebookAddedEvent(
+      host_status_with_device, verified_host_device_id_before_update);
 }
 
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForNewUserPotentialHostExistsEvent(
         const HostStatusProvider::HostStatusWithDevice&
             host_status_with_device) {
+  // We do not notify the user if they already had a chance to go through setup
+  // flow in OOBE.
+  if (pref_service_->GetInt64(kOobeSetupFlowTimestampPrefName) !=
+      kTimestampNotSet) {
+    return;
+  }
+
   // We only check for new user events if there is no enabled host.
-  if (host_device_id_from_most_recent_update_)
+  if (verified_host_device_id_from_most_recent_update_)
     return;
 
-  // If the observer has been notified of this event before, the user is not
-  // new.
+  // If the observer has been notified of a potential verified host in the past,
+  // they are not considered a new user.
   if (pref_service_->GetInt64(kNewUserPotentialHostExistsPrefName) !=
-      kTimestampNotSet) {
+          kTimestampNotSet ||
+      pref_service_->GetInt64(kExistingUserChromebookAddedPrefName) !=
+          kTimestampNotSet) {
     return;
   }
 
@@ -186,18 +229,45 @@ void AccountStatusChangeDelegateNotifierImpl::
                           clock_->Now().ToJavaTime());
 }
 
+void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(
+    const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
+    const base::Optional<mojom::HostStatus> host_status_before_update) {
+  // We are only looking for the case when the host status switched from
+  // kEligibleHostExistsButNoHostSet to something else.
+  if (host_status_with_device.host_status() ==
+          mojom::HostStatus::kEligibleHostExistsButNoHostSet ||
+      host_status_before_update !=
+          mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
+    return;
+  }
+
+  // If the user has ever had a verified host, they have already left the 'new
+  // user' state.
+  if (pref_service_->GetInt64(kExistingUserChromebookAddedPrefName) !=
+      kTimestampNotSet) {
+    return;
+  }
+
+  delegate()->OnNoLongerNewUser();
+}
+
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserHostSwitchedEvent(
         const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-        const base::Optional<std::string>& host_device_id_before_update) {
-  // The host switched event requires both a pre-update and a post-update host.
-  if (!host_device_id_from_most_recent_update_ ||
-      !host_device_id_before_update) {
+        const base::Optional<std::string>&
+            verified_host_device_id_before_update) {
+  // The host switched event requires both a pre-update and a post-update
+  // verified host.
+  if (!verified_host_device_id_from_most_recent_update_ ||
+      !verified_host_device_id_before_update) {
     return;
   }
+
   // If the host stayed the same, there was no switch.
-  if (*host_device_id_from_most_recent_update_ == *host_device_id_before_update)
+  if (*verified_host_device_id_from_most_recent_update_ ==
+      *verified_host_device_id_before_update) {
     return;
+  }
 
   delegate()->OnConnectedHostSwitchedForExistingUser(
       host_status_with_device.host_device()->name());
@@ -207,25 +277,35 @@ void AccountStatusChangeDelegateNotifierImpl::
 
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserChromebookAddedEvent(
-        const base::Optional<std::string>& host_device_id_before_update) {
-  // The Chromebook added event requires that a set host was found by the
-  // update, i.e. there was no host before the host status update but afterward
-  // there is a set host.
-  if (!host_device_id_from_most_recent_update_ || host_device_id_before_update)
+        const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
+        const base::Optional<std::string>&
+            verified_host_device_id_before_update) {
+  // The Chromebook added event requires that a verified host was found by the
+  // update, i.e. there was no verified host before the host status update but
+  // afterward there was a verified host.
+  if (!verified_host_device_id_from_most_recent_update_ ||
+      verified_host_device_id_before_update) {
+    return;
+  }
+
+  // This event is specific to setup taking place on a different Chromebook.
+  if (host_device_timestamp_manager_->WasHostSetFromThisChromebook())
     return;
 
-  delegate()->OnNewChromebookAddedForExistingUser();
+  delegate()->OnNewChromebookAddedForExistingUser(
+      host_status_with_device.host_device()->name());
   pref_service_->SetInt64(kExistingUserChromebookAddedPrefName,
                           clock_->Now().ToJavaTime());
 }
 
 base::Optional<std::string> AccountStatusChangeDelegateNotifierImpl::
     LoadHostDeviceIdFromEndOfPreviousSession() {
-  std::string host_device_id_from_most_recent_update = pref_service_->GetString(
-      kHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
-  if (host_device_id_from_most_recent_update.empty())
+  std::string verified_host_device_id_from_most_recent_update =
+      pref_service_->GetString(
+          kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
+  if (verified_host_device_id_from_most_recent_update.empty())
     return base::nullopt;
-  return host_device_id_from_most_recent_update;
+  return verified_host_device_id_from_most_recent_update;
 }
 
 }  // namespace multidevice_setup

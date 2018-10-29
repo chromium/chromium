@@ -40,7 +40,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   static void Fetch(
       const KURL&,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       const ScriptFetchOptions&,
       Modulator*,
       ModuleScriptCustomFetchType,
@@ -51,7 +51,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   static void FetchDescendantsForInlineScript(
       ModuleScript*,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       Modulator*,
       ModuleScriptCustomFetchType,
       ModuleTreeLinkerRegistry*,
@@ -68,7 +68,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
  private:
   ModuleTreeLinker(
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       Modulator*,
       ModuleScriptCustomFetchType,
       ModuleTreeLinkerRegistry*,
@@ -113,7 +113,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
                                   HeapHashSet<Member<ModuleScript>>*) const;
 
   const Member<FetchClientSettingsObjectSnapshot> fetch_client_settings_object_;
-  const WebURLRequest::RequestContext destination_;
+  const mojom::RequestContextType destination_;
   const Member<Modulator> modulator_;
   const ModuleScriptCustomFetchType custom_fetch_type_;
   HashSet<KURL> visited_set_;

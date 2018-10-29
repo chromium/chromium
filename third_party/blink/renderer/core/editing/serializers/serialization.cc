@@ -74,7 +74,7 @@ namespace blink {
 using namespace HTMLNames;
 
 class AttributeChange {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   AttributeChange() : name_(g_null_atom, g_null_atom, g_null_atom) {}

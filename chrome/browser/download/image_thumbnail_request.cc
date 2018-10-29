@@ -9,6 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/download/thumbnail_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
 
@@ -40,26 +42,6 @@ std::string LoadImageData(const base::FilePath& path) {
   return data;
 }
 
-SkBitmap ScaleDownBitmap(int icon_size, const SkBitmap& decoded_image) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-  if (decoded_image.drawsNothing())
-    return decoded_image;
-
-  // Shrink the image down so that its smallest dimension is equal to or
-  // smaller than the requested size.
-  int min_dimension = std::min(decoded_image.width(), decoded_image.height());
-
-  if (min_dimension <= icon_size)
-    return decoded_image;
-
-  uint64_t width = static_cast<uint64_t>(decoded_image.width());
-  uint64_t height = static_cast<uint64_t>(decoded_image.height());
-  return skia::ImageOperations::Resize(
-      decoded_image, skia::ImageOperations::RESIZE_BEST,
-      width * icon_size / min_dimension, height * icon_size / min_dimension);
-}
-
 }  // namespace
 
 ImageThumbnailRequest::ImageThumbnailRequest(
@@ -86,11 +68,9 @@ void ImageThumbnailRequest::Start(const base::FilePath& path) {
 
 void ImageThumbnailRequest::OnImageDecoded(const SkBitmap& decoded_image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ScaleDownBitmap, icon_size_, decoded_image),
-      base::BindOnce(&ImageThumbnailRequest::FinishRequest,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ScaleDownBitmap(icon_size_, decoded_image,
+                  base::BindOnce(&ImageThumbnailRequest::FinishRequest,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ImageThumbnailRequest::OnDecodeImageFailed() {
@@ -109,10 +89,10 @@ void ImageThumbnailRequest::OnLoadComplete(const std::string& data) {
   ImageDecoder::Start(this, data);
 }
 
-void ImageThumbnailRequest::FinishRequest(const SkBitmap& thumbnail) {
+void ImageThumbnailRequest::FinishRequest(SkBitmap thumbnail) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(std::move(callback_), thumbnail));
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(std::move(callback_), std::move(thumbnail)));
   delete this;
 }

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/browser/resource_context.h"
@@ -53,7 +54,7 @@ LayoutTestBrowserContext::CreateURLRequestContextGetter(
     URLRequestInterceptorScopedVector request_interceptors) {
   return new LayoutTestURLRequestContextGetter(
       ignore_certificate_errors(), IsOffTheRecord(), GetPath(),
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO),
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
       protocol_handlers, std::move(request_interceptors), net_log());
 }
 

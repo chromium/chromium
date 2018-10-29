@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -348,7 +349,7 @@ class DiscardableImageGenerator {
                 const gfx::Rect& image_rect,
                 const SkMatrix& matrix,
                 SkFilterQuality filter_quality) {
-    if (!paint_image.IsLazyGenerated())
+    if (paint_image.IsTextureBacked())
       return;
 
     SkIRect src_irect;
@@ -451,14 +452,14 @@ DiscardableImageMap::TakeDecodingModeMap() {
 void DiscardableImageMap::GetDiscardableImagesInRect(
     const gfx::Rect& rect,
     std::vector<const DrawImage*>* images) const {
-  *images = images_rtree_.SearchRefs(rect);
+  images_rtree_.SearchRefs(rect, images);
 }
 
 const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(
     PaintImage::Id image_id) const {
-  static const Rects kEmptyRects;
+  static const base::NoDestructor<Rects> kEmptyRects;
   auto it = image_id_to_rects_.find(image_id);
-  return it == image_id_to_rects_.end() ? kEmptyRects : it->second;
+  return it == image_id_to_rects_.end() ? *kEmptyRects : it->second;
 }
 
 void DiscardableImageMap::Reset() {

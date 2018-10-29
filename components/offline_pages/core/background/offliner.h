@@ -21,7 +21,7 @@ class Offliner {
   // WARNING: You must update histograms.xml to match any changes made to
   // this enum (ie, OfflinePagesBackgroundOfflinerRequestStatus histogram enum).
   // Also update related switch code in RequestCoordinatorEventLogger.
-  enum RequestStatus {
+  enum class RequestStatus {
     // No status determined/reported yet. Interim status, not sent in callback.
     UNKNOWN = 0,
     // Page loaded but not (yet) saved. Interim status, not sent in callback.
@@ -75,8 +75,8 @@ class Offliner {
     LOADING_FAILED_NET_ERROR = 19,
     // Loader failed to load page due to HTTP error.
     LOADING_FAILED_HTTP_ERROR = 20,
-    // NOTE: insert new values above this line and update histogram enum too.
-    STATUS_COUNT
+
+    kMaxValue = LOADING_FAILED_HTTP_ERROR,
   };
 
   // Reports the load progress of a request.

@@ -131,7 +131,8 @@ void XmppPushClient::UpdateCredentials(
     login_.reset(new notifier::Login(
         this, xmpp_settings_, notifier_options_.request_context_getter,
         GetServerList(notifier_options_), notifier_options_.try_ssltcp_first,
-        notifier_options_.auth_mechanism, traffic_annotation));
+        notifier_options_.auth_mechanism, traffic_annotation,
+        notifier_options_.network_connection_tracker));
     login_->StartConnection();
   }
 }

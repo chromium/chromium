@@ -5,10 +5,14 @@
 #import "ios/web/web_state/error_translation_util.h"
 
 #include <CFNetwork/CFNetwork.h>
+#include <Foundation/Foundation.h>
 
 #import "base/ios/ns_error_util.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/web/public/web_client.h"
+#import "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,7 +21,8 @@
 namespace web {
 
 bool GetNetErrorFromIOSErrorCode(NSInteger ios_error_code,
-                                 int* net_error_code) {
+                                 int* net_error_code,
+                                 NSURL* url) {
   DCHECK(net_error_code);
   bool translation_success = true;
   switch (ios_error_code) {
@@ -40,7 +45,13 @@ bool GetNetErrorFromIOSErrorCode(NSInteger ios_error_code,
       *net_error_code = net::ERR_CONNECTION_TIMED_OUT;
       break;
     case kCFURLErrorUnsupportedURL:
-      *net_error_code = net::ERR_UNKNOWN_URL_SCHEME;
+      if (GetWebClient()->IsAppSpecificURL(net::GURLWithNSURL(url))) {
+        // Scheme is valid, but URL is not supported.
+        *net_error_code = net::ERR_INVALID_URL;
+      } else {
+        // Scheme is not app-specific and not supported by WebState.
+        *net_error_code = net::ERR_UNKNOWN_URL_SCHEME;
+      }
       break;
     case kCFURLErrorCannotFindHost:
       *net_error_code = net::ERR_NAME_NOT_RESOLVED;
@@ -154,7 +165,9 @@ NSError* NetErrorFromError(NSError* error) {
           isEqualToString:static_cast<NSString*>(kCFErrorDomainCFNetwork)]) {
     // Attempt to translate NSURL and CFNetwork error codes into their
     // corresponding net error codes.
-    GetNetErrorFromIOSErrorCode(underlying_error.code, &net_error_code);
+    NSString* url_spec = error.userInfo[NSURLErrorFailingURLStringErrorKey];
+    NSURL* url = url_spec ? [NSURL URLWithString:url_spec] : nil;
+    GetNetErrorFromIOSErrorCode(underlying_error.code, &net_error_code, url);
   }
   return NetErrorFromError(error, net_error_code);
 }

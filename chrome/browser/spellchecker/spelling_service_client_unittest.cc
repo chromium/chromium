@@ -61,8 +61,7 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
                       const std::vector<SpellCheckResult>& results) {
     EXPECT_EQ(success_, success);
     base::string16 text(base::UTF8ToUTF16(sanitized_request_text_));
-    for (std::vector<SpellCheckResult>::const_iterator it = results.begin();
-         it != results.end(); ++it) {
+    for (auto it = results.begin(); it != results.end(); ++it) {
       text.replace(it->location, it->length, it->replacements[0]);
     }
     EXPECT_EQ(corrected_text_, text);

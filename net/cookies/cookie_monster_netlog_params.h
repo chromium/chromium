@@ -50,6 +50,16 @@ std::unique_ptr<base::Value> NetLogCookieMonsterCookieRejectedHttponly(
     const CanonicalCookie* new_cookie,
     NetLogCaptureMode capture_mode);
 
+// Returns a Value containing NetLog parameters for when, upon an attempted
+// cookie addition which is rejected due to a conflict with a secure cookie, a
+// pre-existing cookie would have been deleted but is instead preserved because
+// the addition failed.
+std::unique_ptr<base::Value> NetLogCookieMonsterCookiePreservedSkippedSecure(
+    const CanonicalCookie* skipped_secure,
+    const CanonicalCookie* preserved,
+    const CanonicalCookie* new_cookie,
+    NetLogCaptureMode capture_mode);
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_MONSTER_NETLOG_PARAMS_H_

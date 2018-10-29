@@ -41,6 +41,7 @@
 #include "content/renderer/gpu/layer_tree_view.h"
 #include "content/test/stub_layer_tree_view_delegate.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/fake_renderer_scheduler.h"
@@ -86,7 +87,7 @@ class WebLocalFrameImpl;
 class WebRemoteFrameImpl;
 class WebSettings;
 
-namespace FrameTestHelpers {
+namespace frame_test_helpers {
 
 class TestWebFrameClient;
 class TestWebRemoteFrameClient;
@@ -180,29 +181,32 @@ class LayerTreeViewFactory {
 
 class TestWebWidgetClient : public WebWidgetClient {
  public:
+  TestWebWidgetClient();
   ~TestWebWidgetClient() override = default;
 
-  // WebWidgetClient:
-  WebLayerTreeView* InitializeLayerTreeView() override;
+  content::LayerTreeView* layer_tree_view() { return layer_tree_view_; }
 
  private:
+  content::LayerTreeView* layer_tree_view_ = nullptr;
   LayerTreeViewFactory layer_tree_view_factory_;
 };
 
 class TestWebViewClient : public WebViewClient, public WebWidgetClient {
  public:
+  // If no delegate is given, a stub is used.
+  explicit TestWebViewClient(content::LayerTreeViewDelegate* = nullptr);
   ~TestWebViewClient() override = default;
 
   content::LayerTreeView* layer_tree_view() { return layer_tree_view_; }
 
   // WebWidgetClient:
-  WebLayerTreeView* InitializeLayerTreeView() override;
   void ScheduleAnimation() override { animation_scheduled_ = true; }
 
   // WebViewClient:
   bool CanHandleGestureEvent() override { return true; }
   bool CanUpdateLayout() override { return true; }
   WebWidgetClient* WidgetClient() override { return this; }
+  blink::WebScreenInfo GetScreenInfo() override { return {}; }
 
   bool AnimationScheduled() { return animation_scheduled_; }
   void ClearAnimationScheduled() { animation_scheduled_ = false; }
@@ -312,8 +316,9 @@ class TestWebFrameClient : public WebLocalFrameClient {
                                   const WebString& fallback_name,
                                   WebSandboxFlags,
                                   const ParsedFeaturePolicy&,
-                                  const WebFrameOwnerProperties&) override;
-  void DidStartLoading(bool) override;
+                                  const WebFrameOwnerProperties&,
+                                  FrameOwnerElementType) override;
+  void DidStartLoading() override;
   void DidStopLoading() override;
   void DidCreateDocumentLoader(WebDocumentLoader*) override;
   service_manager::InterfaceProvider* GetInterfaceProvider() override {
@@ -374,7 +379,7 @@ class TestWebRemoteFrameClient : public WebRemoteFrameClient {
   WebRemoteFrame* frame_ = nullptr;
 };
 
-}  // namespace FrameTestHelpers
+}  // namespace frame_test_helpers
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_TEST_HELPERS_H_

@@ -65,4 +65,3 @@ PASS event.dataTransfer.dropEffect is "none"
 PASS event.dataTransfer.dropEffect is "none"
 
 TEST COMPLETE
-

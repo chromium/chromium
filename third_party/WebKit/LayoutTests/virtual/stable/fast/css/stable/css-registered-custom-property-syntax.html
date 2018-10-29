@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+
+<script>
+
+function assert_registration_failed(registrator) {
+  try {
+    registrator();
+  } catch (e) {
+    // We accept either of these errors:
+    let syntax_error = 'SyntaxError: Failed to execute \'registerProperty\' on \'CSS\':' +
+                       ' The syntax provided is not a valid custom property syntax.';
+    let type_error   = 'TypeError: CSS.registerProperty is not a function';
+    assert_true(e.toString() == syntax_error || e.toString() == type_error, 'Unexpected error: ' + e);
+    return true;
+  }
+  assert_true(false, 'CSS.registerProperty did not throw');
+}
+
+test(function() {
+  assert_registration_failed(() => {
+    CSS.registerProperty({
+      name: '--transform-function',
+      syntax: '<transform-function>',
+      initialValue: 'rotateX(0deg)',
+      inherits: false
+    });
+  });
+}, 'Custom properties with <transform-function> syntax should not be exposed to stable');
+
+test(function() {
+  assert_registration_failed(() => {
+    CSS.registerProperty({
+      name: '--transform-list',
+      syntax: '<transform-list>',
+      initialValue: 'rotateX(0deg)',
+      inherits: false
+    });
+  });
+}, 'Custom properties with <transform-list> syntax should not be exposed to stable');
+
+test(function() {
+  assert_registration_failed(() => {
+    CSS.registerProperty({
+      name: '--image',
+      syntax: '<image>',
+      initialValue: 'url("a")',
+      inherits: false
+    });
+  });
+}, 'Custom properties with <image> syntax should not be exposed to stable');
+
+</script>

@@ -256,8 +256,8 @@ void AwContentsClientBridge::ProvideClientCertificateResponse(
   // Convert the encoded chain to a vector of strings.
   std::vector<std::string> encoded_chain_strings;
   if (!encoded_chain_ref.is_null()) {
-    base::android::JavaArrayOfByteArrayToStringVector(
-        env, encoded_chain_ref.obj(), &encoded_chain_strings);
+    base::android::JavaArrayOfByteArrayToStringVector(env, encoded_chain_ref,
+                                                      &encoded_chain_strings);
   }
 
   std::vector<base::StringPiece> encoded_chain;
@@ -437,6 +437,7 @@ void AwContentsClientBridge::OnReceivedError(
     const AwWebResourceRequest& request,
     int error_code,
     bool safebrowsing_hit) {
+  DCHECK(request.is_renderer_initiated.has_value());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -450,7 +451,8 @@ void AwContentsClientBridge::OnReceivedError(
   AwWebResourceRequest::ConvertToJava(env, request, &java_web_resource_request);
   Java_AwContentsClientBridge_onReceivedError(
       env, obj, java_web_resource_request.jurl, request.is_main_frame,
-      request.has_user_gesture, java_web_resource_request.jmethod,
+      request.has_user_gesture, *request.is_renderer_initiated,
+      java_web_resource_request.jmethod,
       java_web_resource_request.jheader_names,
       java_web_resource_request.jheader_values, error_code, jstring_description,
       safebrowsing_hit);

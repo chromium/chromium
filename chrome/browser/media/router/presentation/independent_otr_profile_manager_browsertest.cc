@@ -272,6 +272,9 @@ IN_PROC_BROWSER_TEST_F(IndependentOTRProfileManagerTest,
 
   bool destroyed = false;
   watcher.Watch(otr_profile, &destroyed);
+  // Run tasks to ensure that Mojo connections are created before the profile is
+  // destroyed.
+  base::RunLoop().RunUntilIdle();
   original_profile.reset();
   // |original_profile| being destroyed should trigger the dependent OTR
   // profile to be destroyed.
@@ -303,6 +306,9 @@ IN_PROC_BROWSER_TEST_F(IndependentOTRProfileManagerTest,
   bool destroyed2 = false;
   watcher1.Watch(otr_profile1, &destroyed1);
   watcher2.Watch(otr_profile2, &destroyed2);
+  // Run tasks to ensure that Mojo connections are created before the profile is
+  // destroyed.
+  base::RunLoop().RunUntilIdle();
   original_profile.reset();
   // |original_profile| being destroyed should trigger the dependent OTR
   // profiles to be destroyed.

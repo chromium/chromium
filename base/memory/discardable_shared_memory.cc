@@ -391,24 +391,30 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
     DPLOG(ERROR) << "madvise() failed";
   }
 #elif defined(OS_WIN)
-  if (base::win::GetVersion() >= base::win::VERSION_WIN8_1) {
-    // Discard the purged pages, which releases the physical storage (resident
-    // memory, compressed or swapped), but leaves them reserved & committed.
-    // This does not free commit for use by other applications, but allows the
-    // system to avoid compressing/swapping these pages to free physical memory.
-    static const auto discard_virtual_memory =
-        reinterpret_cast<decltype(&::DiscardVirtualMemory)>(GetProcAddress(
-            GetModuleHandle(L"kernel32.dll"), "DiscardVirtualMemory"));
-    if (discard_virtual_memory) {
-      DWORD discard_result = discard_virtual_memory(
-          static_cast<char*>(shared_memory_mapping_.memory()) +
-              AlignToPageSize(sizeof(SharedState)),
-          AlignToPageSize(mapped_size_));
-      if (discard_result != ERROR_SUCCESS) {
-        DLOG(DCHECK) << "DiscardVirtualMemory() failed in Purge(): "
-                     << logging::SystemErrorCodeToString(discard_result);
-      }
-    }
+  // On Windows, discarded pages are not returned to the system immediately and
+  // not guaranteed to be zeroed when returned to the application.
+  using DiscardVirtualMemoryFunction =
+      DWORD(WINAPI*)(PVOID virtualAddress, SIZE_T size);
+  static DiscardVirtualMemoryFunction discard_virtual_memory =
+      reinterpret_cast<DiscardVirtualMemoryFunction>(GetProcAddress(
+          GetModuleHandle(L"Kernel32.dll"), "DiscardVirtualMemory"));
+
+  char* address = static_cast<char*>(shared_memory_mapping_.memory()) +
+                  AlignToPageSize(sizeof(SharedState));
+  size_t length = AlignToPageSize(mapped_size_);
+
+  // Use DiscardVirtualMemory when available because it releases faster than
+  // MEM_RESET.
+  DWORD ret = ERROR_NOT_SUPPORTED;
+  if (discard_virtual_memory) {
+    ret = discard_virtual_memory(address, length);
+  }
+
+  // DiscardVirtualMemory is buggy in Win10 SP0, so fall back to MEM_RESET on
+  // failure.
+  if (ret != ERROR_SUCCESS) {
+    void* ptr = VirtualAlloc(address, length, MEM_RESET, PAGE_READWRITE);
+    CHECK(ptr);
   }
 #endif
 

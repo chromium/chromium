@@ -26,7 +26,7 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
                                              public MIDIAccessorClient {
  public:
   struct PortDescriptor {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     String id;
     String manufacturer;
     String name;

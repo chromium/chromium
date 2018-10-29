@@ -52,11 +52,11 @@ namespace {
 
 // TODO(layout-dev): Once we generate fragment for all inline element, we should
 // use |LayoutObject::EnclosingBlockFlowFragment()|.
-const NGPhysicalBoxFragment* EnclosingBlockFlowFragmentOf(
+const NGPhysicalBoxFragment* ContainingBlockFlowFragmentOf(
     const LayoutInline& node) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
-  return node.EnclosingBlockFlowFragment();
+  return node.ContainingBlockFlowFragment();
 }
 
 }  // anonymous namespace
@@ -91,9 +91,21 @@ LayoutInline* LayoutInline::CreateAnonymous(Document* document) {
 }
 
 bool LayoutInline::IsFirstLineAnonymous() const {
-  // TODO(kojii): We can add a flag, but this seems enough for now.
-  return IsAnonymous() && Parent() && Parent()->IsLayoutBlockFlow() &&
-         !PreviousSibling() && !NextSibling();
+  return false;
+}
+
+// A private class to distinguish anonymous inline box for ::first-line from
+// other inline boxes.
+class LayoutInlineForFirstLine : public LayoutInline {
+ public:
+  LayoutInlineForFirstLine(Element* element) : LayoutInline(element) {}
+  bool IsFirstLineAnonymous() const final { return true; }
+};
+
+LayoutInline* LayoutInline::CreateAnonymousForFirstLine(Document* document) {
+  LayoutInline* layout_inline = new LayoutInlineForFirstLine(nullptr);
+  layout_inline->SetDocumentForAnonymous(document);
+  return layout_inline;
 }
 
 void LayoutInline::WillBeDestroyed() {
@@ -667,11 +679,18 @@ void LayoutInline::Paint(const PaintInfo& paint_info) const {
 template <typename GeneratorContext>
 void LayoutInline::GenerateLineBoxRects(GeneratorContext& yield) const {
   if (const NGPhysicalBoxFragment* box_fragment =
-          EnclosingBlockFlowFragmentOf(*this)) {
+          ContainingBlockFlowFragmentOf(*this)) {
     const auto& descendants =
         NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, this);
-    for (const auto& descendant : descendants)
-      yield(descendant.RectInContainerBox().ToLayoutRect());
+    const LayoutBlock* block_for_flipping = nullptr;
+    if (UNLIKELY(HasFlippedBlocksWritingMode()))
+      block_for_flipping = ContainingBlock();
+    for (const auto& descendant : descendants) {
+      LayoutRect rect = descendant.RectInContainerBox().ToLayoutRect();
+      if (UNLIKELY(block_for_flipping))
+        block_for_flipping->FlipForWritingMode(rect);
+      yield(rect);
+    }
     return;
   }
   if (!AlwaysCreateLineBoxes()) {
@@ -858,8 +877,14 @@ void LayoutInline::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
 }
 
 LayoutPoint LayoutInline::FirstLineBoxTopLeft() const {
+  // This method is called from various places. It's mainly (only?) about
+  // calculating offsetLeft and offsetTop, though. Thus the callers seem to
+  // expect a purely physical point. This is what NG does. Legacy, on the other
+  // hand, sets the block-axis coordinate relatively to the block-start border
+  // edge, which means that offsetLeft will be wrong when writing-mode is
+  // vertical-rl.
   if (const NGPhysicalBoxFragment* box_fragment =
-          EnclosingBlockFlowFragmentOf(*this)) {
+          ContainingBlockFlowFragmentOf(*this)) {
     const auto& fragments =
         NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, this);
     if (fragments.IsEmpty())
@@ -911,7 +936,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
                                const HitTestLocation& location_in_container,
                                const LayoutPoint& accumulated_offset,
                                HitTestAction hit_test_action) {
-  if (EnclosingNGBlockFlow()) {
+  if (ContainingNGBlockFlow()) {
     // In LayoutNG, we reach here only when called from
     // PaintLayer::HitTestContents() without going through any ancestor, in
     // which case the element must have self painting layer.
@@ -943,12 +968,6 @@ class HitTestCulledInlinesGeneratorContext {
   HitTestCulledInlinesGeneratorContext(Region& region,
                                        const HitTestLocation& location)
       : intersected_(false), region_(region), location_(location) {}
-  void operator()(const FloatRect& rect) {
-    if (location_.Intersects(rect)) {
-      intersected_ = true;
-      region_.Unite(EnclosingIntRect(rect));
-    }
-  }
   void operator()(const LayoutRect& rect) {
     if (location_.Intersects(rect)) {
       intersected_ = true;
@@ -980,10 +999,14 @@ bool LayoutInline::HitTestCulledInline(
   Region region_result;
   HitTestCulledInlinesGeneratorContext context(region_result,
                                                adjusted_location);
+
+  // NG generates purely physical rectangles here, while legacy sets the block
+  // offset on the rectangles relatively to the block-start. NG is doing the
+  // right thing. Legacy is wrong.
   if (container_fragment) {
-    DCHECK(EnclosingNGBlockFlow());
+    DCHECK(ContainingNGBlockFlow());
     DCHECK(container_fragment->IsDescendantOfNotSelf(
-        *EnclosingNGBlockFlow()->PaintFragment()));
+        *ContainingNGBlockFlow()->PaintFragment()));
     const NGPhysicalContainerFragment& traversal_root =
         ToNGPhysicalContainerFragment(container_fragment->PhysicalFragment());
     DCHECK(traversal_root.IsInline() || traversal_root.IsLineBox());
@@ -997,7 +1020,7 @@ bool LayoutInline::HitTestCulledInline(
       context(rect);
     }
   } else {
-    DCHECK(!EnclosingNGBlockFlow());
+    DCHECK(!ContainingNGBlockFlow());
     GenerateCulledLineBoxRects(context, this);
   }
 
@@ -1025,7 +1048,7 @@ PositionWithAffinity LayoutInline::PositionForPoint(
     continuation = ToLayoutBlockFlow(continuation)->InlineElementContinuation();
   }
 
-  if (const LayoutBlockFlow* ng_block_flow = EnclosingNGBlockFlow())
+  if (const LayoutBlockFlow* ng_block_flow = ContainingNGBlockFlow())
     return ng_block_flow->PositionForPoint(point);
 
   DCHECK(CanUseInlineBox(*this));
@@ -1056,13 +1079,16 @@ class LinesBoundingBoxGeneratorContext {
 
 LayoutRect LayoutInline::LinesBoundingBox() const {
   if (const NGPhysicalBoxFragment* box_fragment =
-          EnclosingBlockFlowFragmentOf(*this)) {
+          ContainingBlockFlowFragmentOf(*this)) {
     NGPhysicalOffsetRect bounding_box;
     auto children =
         NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, this);
     for (const auto& child : children)
       bounding_box.UniteIfNonZero(child.RectInContainerBox());
-    return bounding_box.ToLayoutRect();
+    LayoutRect rect = bounding_box.ToLayoutRect();
+    if (UNLIKELY(HasFlippedBlocksWritingMode()))
+      ContainingBlock()->FlipForWritingMode(rect);
+    return rect;
   }
 
   if (!AlwaysCreateLineBoxes()) {
@@ -1198,7 +1224,7 @@ LayoutRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
 
 LayoutRect LayoutInline::LinesVisualOverflowBoundingBox() const {
   if (const NGPhysicalBoxFragment* box_fragment =
-          EnclosingBlockFlowFragmentOf(*this)) {
+          ContainingBlockFlowFragmentOf(*this)) {
     NGPhysicalOffsetRect result;
     auto children =
         NGInlineFragmentTraversal::SelfFragmentsOf(*box_fragment, this);
@@ -1304,6 +1330,24 @@ LayoutRect LayoutInline::VisualOverflowRect() const {
     }
   }
   return overflow_rect;
+}
+
+LayoutRect LayoutInline::ReferenceBoxForClipPath() const {
+  // The spec just says to use the border box as clip-path reference box. It
+  // doesn't say what to do if there are multiple lines. Gecko uses the first
+  // fragment in that case. We'll do the same here (but correctly with respect
+  // to writing-mode - Gecko has some issues there).
+  // See crbug.com/641907
+  LayoutRect bounding_box;
+  if (const NGPaintFragment* fragment = FirstInlineFragment()) {
+    bounding_box.SetLocation(
+        fragment->InlineOffsetToContainerBox().ToLayoutPoint());
+    bounding_box.SetSize(fragment->Size().ToLayoutSize());
+  } else if (const InlineFlowBox* flow_box = FirstLineBox()) {
+    bounding_box = flow_box->FrameRect();
+    ContainingBlock()->FlipForWritingMode(bounding_box);
+  }
+  return bounding_box;
 }
 
 bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
@@ -1456,6 +1500,8 @@ void LayoutInline::DirtyLinesFromChangedChild(
     LayoutObject* child,
     MarkingBehavior marking_behavior) {
   if (IsInLayoutNGInlineFormattingContext()) {
+    // TODO(yosin): We should move |SetAncestorLineBoxDirty()| into
+    // |DirtyLinesFromChangedChild()| like legacy layout.
     SetAncestorLineBoxDirty();
     NGPaintFragment::DirtyLinesFromChangedChild(child);
     return;
@@ -1534,9 +1580,7 @@ LayoutSize LayoutInline::OffsetForInFlowPositionedInline(
                                               : logical_offset.TransposedSize();
 }
 
-void LayoutInline::ImageChanged(WrappedImagePtr,
-                                CanDeferInvalidation,
-                                const IntRect*) {
+void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   if (!Parent())
     return;
 

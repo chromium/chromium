@@ -35,17 +35,12 @@ extern NSString* const kFindInPageContainerViewId;
 // Updates the results count in Find Bar.
 - (void)updateResultsCount:(FindInPageModel*)model;
 
-// Display find bar view. For legacy UI on iPad, it makes best effort to
-// horizontally align find bar with alignment frame, unless alignment frame is
-// too wide or too narrow. When too wide, the find bar is shorter and
-// right-aligned. When |alignmentFrame| is too narrow, the find bar will
-// horizontally fill |parentView|. For new UI on iPad, the find bar aligns with
-// the right border of |parentView| and below |toolbarView|. If |selectText|
-// flag is YES, the text in the text input field will be selected.
+// Display find bar view. For regular size, the find bar aligns with the right
+// border of |parentView| and below |toolbarView|. For compact size, the find
+// bar overlaps the |toolbarView|. If |selectText| flag is YES, the text in the
+// text input field will be selected.
 - (void)addFindBarViewToParentView:(UIView*)parentView
                   usingToolbarView:(UIView*)toolbarView
-                    alignWithFrame:(CGRect)alignmentFrame
-                             frame:(CGRect)findBarFrame
                         selectText:(BOOL)selectText
                           animated:(BOOL)animated;
 // Hide find bar view.

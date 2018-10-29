@@ -9,7 +9,7 @@
 namespace test {
 
 float GetNativeWindowAlphaValue(gfx::NativeWindow window) {
-  return [window alphaValue];
+  return [window.GetNativeNSWindow() alphaValue];
 }
 
 }  // namespace test

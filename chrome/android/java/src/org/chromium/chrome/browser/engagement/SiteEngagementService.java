@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.engagement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
-
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**

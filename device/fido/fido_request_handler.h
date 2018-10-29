@@ -41,7 +41,7 @@ class FidoRequestHandler : public FidoRequestHandlerBase {
 
   ~FidoRequestHandler() override {
     if (!is_complete())
-      CancelOngoingTasks();
+      CancelActiveAuthenticators();
   }
 
   bool is_complete() const { return completion_callback_.is_null(); }
@@ -72,7 +72,7 @@ class FidoRequestHandler : public FidoRequestHandlerBase {
 
     // Once response has been passed to the relying party, cancel all other on
     // going requests.
-    CancelOngoingTasks(authenticator->GetId());
+    CancelActiveAuthenticators(authenticator->GetId());
     std::move(completion_callback_)
         .Run(*return_code, std::move(response_data),
              authenticator->AuthenticatorTransport());

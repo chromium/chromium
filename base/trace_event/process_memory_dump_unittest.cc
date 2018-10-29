@@ -12,8 +12,8 @@
 #include "base/process/process_metrics.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_infra_background_whitelist.h"
-#include "base/trace_event/trace_event_argument.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

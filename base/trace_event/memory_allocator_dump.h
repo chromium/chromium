@@ -18,7 +18,7 @@
 #include "base/optional.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 

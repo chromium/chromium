@@ -94,6 +94,10 @@ declare_args() {
   # This arg can be overridden but not supports += operator.
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
   default_command_line_flags = ""
+
+  # Set to true to disable secure flac/opus support in EME, when using
+  # cast CMA media backend and supporting Widevine or Playready.
+  disable_secure_flac_and_opus_decoding = false
 }
 
 declare_args() {
@@ -105,7 +109,7 @@ declare_args() {
 
 declare_args() {
   # Use Playready CDMs for internal non-desktop builds.
-  use_playready = !is_cast_desktop_build && chromecast_branding != "public"
+  enable_playready = !is_cast_desktop_build && chromecast_branding != "public"
 }
 
 # This is the release version, which takes the form <major>.<minor>. Internal

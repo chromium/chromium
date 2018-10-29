@@ -25,7 +25,6 @@ db = request.result
 db = null
 request = null
 Run GC outside of request's callback via setTimeout()
-window.gc()
 
 doThirdOpen():
 request = indexedDB.open(dbname, 2)

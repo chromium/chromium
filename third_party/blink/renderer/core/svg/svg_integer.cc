@@ -79,7 +79,7 @@ void SVGInteger::CalculateAnimatedValue(SVGAnimationElement* animation_element,
   animation_element->AnimateAdditiveNumber(
       percentage, repeat_count, from_integer->Value(), to_integer->Value(),
       to_at_end_of_duration_integer->Value(), animated_float);
-  value_ = static_cast<int>(roundf(animated_float));
+  value_ = clampTo<int>(roundf(animated_float));
 }
 
 float SVGInteger::CalculateDistance(SVGPropertyBase* other, SVGElement*) {

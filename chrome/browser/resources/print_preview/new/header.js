@@ -24,10 +24,18 @@ Polymer({
     /** @type {!print_preview_new.State} */
     state: Number,
 
-    /** @private {boolean} */
+    /** @private */
     printButtonEnabled_: {
       type: Boolean,
       value: false,
+    },
+
+    /** @private */
+    printButtonLabel_: {
+      type: String,
+      value: function() {
+        return loadTimeData.getString('printButton');
+      },
     },
 
     /** @private {?string} */
@@ -47,9 +55,11 @@ Polymer({
     errorMessage: String,
   },
 
-  observers:
-      ['update_(settings.copies.value, settings.duplex.value, ' +
-       'settings.pages.value, state, destination.id)'],
+  observers: [
+    'update_(settings.copies.value, settings.duplex.value, ' +
+        'settings.pages.value, state, destination.id)',
+    'updatePrintButtonLabel_(destination.id)'
+  ],
 
   /** @private {!print_preview_new.State} */
   lastState_: print_preview_new.State.NOT_READY,
@@ -76,12 +86,9 @@ Polymer({
              print_preview.Destination.GooglePromotedId.DOCS);
   },
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPrintButton_: function() {
-    return loadTimeData.getString(
+  /** @private */
+  updatePrintButtonLabel_: function() {
+    this.printButtonLabel_ = loadTimeData.getString(
         this.isPdfOrDrive_() ? 'saveButton' : 'printButton');
   },
 

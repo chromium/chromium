@@ -13,6 +13,8 @@
 #include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace autofill_assistant {
@@ -26,12 +28,14 @@ DevtoolsClient::DevtoolsClient(
       renderer_crashed_(false),
       next_message_id_(0),
       weak_ptr_factory_(this) {
-  browser_main_thread_ = content::BrowserThread::GetTaskRunnerForThread(
-      content::BrowserThread::UI);
+  browser_main_thread_ = base::CreateSingleThreadTaskRunnerWithTraits(
+      {content::BrowserThread::UI});
   agent_host_->AttachClient(this);
 }
 
-DevtoolsClient::~DevtoolsClient() {}
+DevtoolsClient::~DevtoolsClient() {
+  agent_host_->DetachClient(this);
+}
 
 input::Domain* DevtoolsClient::GetInput() {
   return &input_domain_;
@@ -104,7 +108,7 @@ void DevtoolsClient::DispatchProtocolMessage(
                 ? DispatchMessageReply(std::move(message), *message_dict)
                 : DispatchEvent(std::move(message), *message_dict);
   if (!success)
-    DLOG(ERROR) << "Unhandled protocol message: " << json_message;
+    DVLOG(2) << "Unhandled protocol message: " << json_message;
 }
 
 bool DevtoolsClient::DispatchMessageReply(
@@ -188,7 +192,7 @@ bool DevtoolsClient::DispatchEvent(std::unique_ptr<base::Value> owning_message,
   EventHandlerMap::const_iterator it = event_handlers_.find(method);
   if (it == event_handlers_.end()) {
     if (method != "Inspector.targetCrashed")
-      LOG(ERROR) << "Unknown event: " << method;
+      DVLOG(2) << "Unknown event: " << method;
     return false;
   }
   if (!it->second.is_null()) {

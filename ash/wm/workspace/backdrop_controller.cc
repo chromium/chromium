@@ -48,8 +48,6 @@ class BackdropEventHandler : public ui::EventHandler {
         case ui::ET_MOUSE_PRESSED:
         case ui::ET_MOUSEWHEEL:
         case ui::ET_TOUCH_PRESSED:
-        case ui::ET_POINTER_DOWN:
-        case ui::ET_POINTER_WHEEL_CHANGED:
         case ui::ET_GESTURE_BEGIN:
         case ui::ET_SCROLL:
         case ui::ET_SCROLL_FLING_START:

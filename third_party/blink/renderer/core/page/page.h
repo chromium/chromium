@@ -114,7 +114,7 @@ class CORE_EXPORT Page final : public GarbageCollectedFinalized<Page>,
   void CloseSoon();
   bool IsClosing() const { return is_closing_; }
 
-  using PageSet = PersistentHeapHashSet<WeakMember<Page>>;
+  using PageSet = HeapHashSet<WeakMember<Page>>;
 
   // Return the current set of full-fledged, ordinary pages.
   // Each created and owned by a WebView.

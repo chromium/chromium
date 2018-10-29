@@ -60,8 +60,7 @@ void TaskGraphRunnerTestBase::ScheduleTasks(
   Task::Vector new_dependents;
   TaskGraph new_graph;
 
-  for (std::vector<TaskInfo>::const_iterator it = tasks.begin();
-       it != tasks.end(); ++it) {
+  for (auto it = tasks.begin(); it != tasks.end(); ++it) {
     scoped_refptr<FakeTaskImpl> new_task(
         new FakeTaskImpl(this, it->namespace_index, it->id));
     new_graph.nodes.push_back(

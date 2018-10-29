@@ -41,6 +41,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   ~MojoVideoDecoderService() final;
 
   // mojom::VideoDecoder implementation
+  void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
   void Construct(
       mojom::VideoDecoderClientAssociatedPtrInfo client,
       mojom::MediaLogAssociatedPtrInfo media_log,
@@ -61,15 +62,18 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // running mojom::VideoDecoder callbacks after connection error happens and
   // |this| is deleted. It's not safe to run the callbacks after a connection
   // error.
-  void OnDecoderInitialized(InitializeCallback callback, bool success);
+  void OnDecoderInitialized(bool success);
   void OnReaderRead(DecodeCallback callback,
+                    std::unique_ptr<ScopedDecodeTrace> trace_event,
                     scoped_refptr<DecoderBuffer> buffer);
-  void OnDecoderDecoded(DecodeCallback callback, DecodeStatus status);
+  void OnDecoderDecoded(DecodeCallback callback,
+                        std::unique_ptr<ScopedDecodeTrace> trace_event,
+                        DecodeStatus status);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
-  void OnReaderFlushed(ResetCallback callback);
+  void OnReaderFlushed();
 
-  void OnDecoderReset(ResetCallback callback);
+  void OnDecoderReset();
   void OnDecoderOutput(const scoped_refptr<VideoFrame>& frame);
 
   void OnDecoderRequestedOverlayInfo(
@@ -104,6 +108,9 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;
+
+  InitializeCallback init_cb_;
+  ResetCallback reset_cb_;
 
   ProvideOverlayInfoCB provide_overlay_info_cb_;
 

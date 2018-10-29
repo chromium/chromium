@@ -5,23 +5,26 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_
 
+#include <memory>
+
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 class TestOmniboxEditModel : public OmniboxEditModel {
  public:
   TestOmniboxEditModel(OmniboxView* view, OmniboxEditController* controller);
+  ~TestOmniboxEditModel() override;
 
   // OmniboxEditModel:
   bool PopupIsOpen() const override;
-  AutocompleteMatch CurrentMatch(GURL*) const override;
+  AutocompleteMatch CurrentMatch(GURL* alternate_nav_url) const override;
 
   void SetPopupIsOpen(bool open);
 
-  void SetCurrentMatch(const AutocompleteMatch& match);
+  void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
  private:
   bool popup_is_open_;
-  AutocompleteMatch current_match_;
+  std::unique_ptr<AutocompleteMatch> override_current_match_;
 
   DISALLOW_COPY_AND_ASSIGN(TestOmniboxEditModel);
 };

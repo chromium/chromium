@@ -7,9 +7,6 @@ package org.chromium.base;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 /**
  * This class provides package checking related methods.
@@ -32,22 +29,6 @@ public class PackageUtils {
             // Do nothing, versionCode stays -1
         }
         return versionCode;
-    }
-
-    /**
-     * Decodes into a Bitmap an Image resource stored in another package.
-     * @param otherPackage The package containing the resource.
-     * @param resourceId The id of the resource.
-     * @return A Bitmap containing the resource or null if the package could not be found.
-     */
-    public static Bitmap decodeImageResource(String otherPackage, int resourceId) {
-        PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
-        try {
-            Resources resources = packageManager.getResourcesForApplication(otherPackage);
-            return BitmapFactory.decodeResource(resources, resourceId);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
     }
 
     private PackageUtils() {

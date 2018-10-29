@@ -551,7 +551,10 @@ void EnrollmentHandlerChromeOS::HandlePolicyValidationResult(
     } else {
       domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
       SetStep(STEP_ROBOT_AUTH_FETCH);
-      client_->FetchRobotAuthCodes(dm_auth_->Clone());
+      client_->FetchRobotAuthCodes(
+          dm_auth_->Clone(),
+          base::BindOnce(&EnrollmentHandlerChromeOS::OnRobotAuthCodesFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   } else {
     ReportResult(EnrollmentStatus::ForValidationError(validator->status()));
@@ -559,11 +562,14 @@ void EnrollmentHandlerChromeOS::HandlePolicyValidationResult(
 }
 
 void EnrollmentHandlerChromeOS::OnRobotAuthCodesFetched(
-    CloudPolicyClient* client) {
-  DCHECK_EQ(client_.get(), client);
+    DeviceManagementStatus status,
+    const std::string& auth_code) {
   CHECK_EQ(STEP_ROBOT_AUTH_FETCH, enrollment_step_);
-
-  if (client->robot_api_auth_code().empty()) {
+  if (status != DM_STATUS_SUCCESS) {
+    OnClientError(client_.get());
+    return;
+  }
+  if (auth_code.empty()) {
     // If the server doesn't provide an auth code, skip the robot auth setup.
     // This allows clients running against the test server to transparently skip
     // robot auth.
@@ -583,8 +589,8 @@ void EnrollmentHandlerChromeOS::OnRobotAuthCodesFetched(
   // Use the system request context to avoid sending user cookies.
   gaia_oauth_client_.reset(new gaia::GaiaOAuthClient(
       g_browser_process->shared_url_loader_factory()));
-  gaia_oauth_client_->GetTokensFromAuthCode(
-      client_info, client->robot_api_auth_code(), 0 /* max_retries */, this);
+  gaia_oauth_client_->GetTokensFromAuthCode(client_info, auth_code,
+                                            0 /* max_retries */, this);
 }
 
 // GaiaOAuthClient::Delegate callback for OAuth2 refresh token fetched.

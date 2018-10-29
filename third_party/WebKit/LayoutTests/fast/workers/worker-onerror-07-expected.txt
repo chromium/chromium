@@ -7,9 +7,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Worker-level onerror handler triggered:
 PASS errorEvent.message is "Uncaught ReferenceError: foo is not defined"
 PASS stripURL(errorEvent.filename) is "[blob: URL]"
-PASS errorEvent.lineno is 14
+PASS errorEvent.lineno is 13
 PASS errorEvent.colno is 9
-PASS errorEvent.error is null
 PASS successfullyParsed is true
 
 TEST COMPLETE

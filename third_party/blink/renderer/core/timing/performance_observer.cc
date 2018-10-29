@@ -34,12 +34,10 @@ PerformanceObserver* PerformanceObserver::Create(
     return new PerformanceObserver(
         context, DOMWindowPerformance::performance(*window), callback);
   }
-  if (context->IsWorkerGlobalScope()) {
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
     UseCounter::Count(context, WebFeature::kPerformanceObserverForWorker);
-    return new PerformanceObserver(context,
-                                   WorkerGlobalScopePerformance::performance(
-                                       *ToWorkerGlobalScope(context)),
-                                   callback);
+    return new PerformanceObserver(
+        context, WorkerGlobalScopePerformance::performance(*scope), callback);
   }
   V8ThrowException::ThrowTypeError(
       script_state->GetIsolate(),

@@ -121,6 +121,7 @@ public class WebApkInfoTest {
         intent.putExtra(ShortcutHelper.EXTRA_FORCE_NAVIGATION, true);
         intent.putExtra(ShortcutHelper.EXTRA_URL, START_URL);
         intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+        intent.putExtra(WebApkConstants.EXTRA_USE_TRANSPARENT_SPLASH, true);
 
         WebApkInfo info = WebApkInfo.create(intent);
 
@@ -147,6 +148,7 @@ public class WebApkInfoTest {
         Assert.assertEquals(ICON_MURMUR2_HASH, info.iconUrlToMurmur2HashMap().get(ICON_URL));
 
         Assert.assertEquals(SOURCE, info.source());
+        Assert.assertTrue(info.useTransparentSplash());
 
         Assert.assertEquals(null, info.icon());
         Assert.assertEquals(null, info.badgeIcon());

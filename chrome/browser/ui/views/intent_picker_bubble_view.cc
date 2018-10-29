@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -165,6 +166,8 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   intent_picker_bubble_->GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
   intent_picker_bubble_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  DCHECK(intent_picker_bubble_->HasCandidates());
   intent_picker_bubble_->GetIntentPickerLabelButtonAt(0)->MarkAsSelected(
       nullptr);
   widget->Show();
@@ -388,6 +391,10 @@ IntentPickerLabelButton* IntentPickerBubbleView::GetIntentPickerLabelButtonAt(
   return static_cast<IntentPickerLabelButton*>(temp_contents->child_at(index));
 }
 
+bool IntentPickerBubbleView::HasCandidates() const {
+  return app_info_.size() > 0;
+}
+
 void IntentPickerBubbleView::RunCallback(
     const std::string& launch_name,
     apps::mojom::AppType app_type,
@@ -417,7 +424,9 @@ void IntentPickerBubbleView::AdjustScrollViewVisibleRegion() {
 void IntentPickerBubbleView::SetSelectedAppIndex(int index,
                                                  const ui::Event* event) {
   // The selected app must be a value in the range [0, app_info_.size()-1].
+  DCHECK(HasCandidates());
   DCHECK_LT(static_cast<size_t>(index), app_info_.size());
+  DCHECK_GE(static_cast<size_t>(index), 0u);
 
   GetIntentPickerLabelButtonAt(selected_app_tag_)->MarkAsUnselected(nullptr);
   selected_app_tag_ = index;

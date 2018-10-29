@@ -148,6 +148,17 @@ class AURA_EXPORT WindowObserver {
   virtual void OnWindowRemovingFromRootWindow(Window* window,
                                               Window* new_root) {}
 
+  // Called from SetBoundsInScreen() when a window is moving to a new display as
+  // the result of changing bounds. |new_display_id| is the specified new
+  // display id. This is called before the bounds are actually changed.
+  virtual void OnWillMoveWindowToDisplay(Window* window,
+                                         int64_t new_display_id) {}
+
+  // Called from SetBoundsInScreen() when the task of the window moving to a new
+  // display finished. Sometimes the window may stay in the old display, but
+  // this will be called anyways.
+  virtual void OnDidMoveWindowToDisplay(Window* window) {}
+
   // Called when the window title has changed.
   virtual void OnWindowTitleChanged(Window* window) {}
 

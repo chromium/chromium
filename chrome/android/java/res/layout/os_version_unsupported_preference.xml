@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Layout for a preference with a title and a compound drawable below. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PreferenceLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@android:id/title"
+        style="@style/PreferenceTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/os_version_title" />
+
+    <TextView
+        android:id="@android:id/summary"
+        style="@style/PreferenceSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/os_deprecation_warning"
+        style="@style/PreferenceSummary"
+        android:layout_marginTop="7dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:text="@string/deprecation_warning"
+        android:drawablePadding="30dp"
+        android:drawableEnd="@drawable/exclamation_triangle"
+        android:layout_marginEnd="17dp"
+        android:visibility="gone" />
+</LinearLayout>

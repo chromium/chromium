@@ -23,11 +23,18 @@ bool IsVideoInputMediaType(MediaStreamType type) {
 }
 
 bool IsScreenCaptureMediaType(MediaStreamType type) {
+  return IsDesktopCaptureMediaType(type) || IsTabCaptureMediaType(type);
+}
+
+bool IsDesktopCaptureMediaType(MediaStreamType type) {
   return (type == MEDIA_DISPLAY_VIDEO_CAPTURE ||
-          type == MEDIA_GUM_TAB_AUDIO_CAPTURE ||
-          type == MEDIA_GUM_TAB_VIDEO_CAPTURE ||
           type == MEDIA_GUM_DESKTOP_AUDIO_CAPTURE ||
           type == MEDIA_GUM_DESKTOP_VIDEO_CAPTURE);
+}
+
+bool IsTabCaptureMediaType(MediaStreamType type) {
+  return (type == MEDIA_GUM_TAB_AUDIO_CAPTURE ||
+          type == MEDIA_GUM_TAB_VIDEO_CAPTURE);
 }
 
 bool IsDeviceMediaType(MediaStreamType type) {
@@ -78,9 +85,39 @@ MediaStreamDevice::MediaStreamDevice(MediaStreamType type,
   DCHECK(input.IsValid());
 }
 
-MediaStreamDevice::MediaStreamDevice(const MediaStreamDevice& other) = default;
+MediaStreamDevice::MediaStreamDevice(const MediaStreamDevice& other) {
+  type = other.type;
+  id = other.id;
+  video_facing = other.video_facing;
+  group_id = other.group_id;
+  matched_output_device_id = other.matched_output_device_id;
+  name = other.name;
+  input = other.input;
+  session_id = other.session_id;
+  camera_calibration = other.camera_calibration;
+  if (other.display_media_info.has_value())
+    display_media_info = other.display_media_info->Clone();
+}
 
 MediaStreamDevice::~MediaStreamDevice() {}
+
+MediaStreamDevice& MediaStreamDevice::operator=(
+    const MediaStreamDevice& other) {
+  if (&other == this)
+    return *this;
+  type = other.type;
+  id = other.id;
+  video_facing = other.video_facing;
+  group_id = other.group_id;
+  matched_output_device_id = other.matched_output_device_id;
+  name = other.name;
+  input = other.input;
+  session_id = other.session_id;
+  camera_calibration = other.camera_calibration;
+  if (other.display_media_info.has_value())
+    display_media_info = other.display_media_info->Clone();
+  return *this;
+}
 
 bool MediaStreamDevice::IsSameDevice(
     const MediaStreamDevice& other_device) const {

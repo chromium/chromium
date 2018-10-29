@@ -9,6 +9,7 @@
 #include <utility>
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/platform/modules/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,6 +44,7 @@ using blink::protocol::Array;
 using ProtocolCache = blink::protocol::CacheStorage::Cache;
 using blink::protocol::CacheStorage::Cache;
 using blink::protocol::CacheStorage::CachedResponse;
+using blink::protocol::CacheStorage::CachedResponseType;
 using blink::protocol::CacheStorage::DataEntry;
 using blink::protocol::CacheStorage::Header;
 // Renaming Response since there is another blink::Response.
@@ -72,7 +75,7 @@ String BuildCacheId(const String& security_origin, const String& cache_name) {
 ProtocolResponse ParseCacheId(const String& id,
                               String* security_origin,
                               String* cache_name) {
-  size_t pipe = id.find('|');
+  wtf_size_t pipe = id.find('|');
   if (pipe == WTF::kNotFound)
     return ProtocolResponse::Error("Invalid cache id.");
   *security_origin = id.Substring(0, pipe);
@@ -171,6 +174,26 @@ CString CacheStorageErrorString(mojom::blink::CacheStorageError error) {
   return "";
 }
 
+CachedResponseType ResponseTypeToString(
+    network::mojom::FetchResponseType type) {
+  switch (type) {
+    case network::mojom::FetchResponseType::kBasic:
+      return protocol::CacheStorage::CachedResponseTypeEnum::Basic;
+    case network::mojom::FetchResponseType::kCORS:
+      return protocol::CacheStorage::CachedResponseTypeEnum::Cors;
+    case network::mojom::FetchResponseType::kDefault:
+      return protocol::CacheStorage::CachedResponseTypeEnum::Default;
+    case network::mojom::FetchResponseType::kError:
+      return protocol::CacheStorage::CachedResponseTypeEnum::Error;
+    case network::mojom::FetchResponseType::kOpaque:
+      return protocol::CacheStorage::CachedResponseTypeEnum::OpaqueResponse;
+    case network::mojom::FetchResponseType::kOpaqueRedirect:
+      return protocol::CacheStorage::CachedResponseTypeEnum::OpaqueRedirect;
+  }
+  NOTREACHED();
+  return "";
+}
+
 struct DataRequestParams {
   String cache_name;
   int skip_count;
@@ -184,18 +207,19 @@ struct RequestResponse {
   int response_status;
   String response_status_text;
   double response_time;
+  network::mojom::FetchResponseType response_type;
   HTTPHeaderMap response_headers;
 };
 
 class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
  public:
-  ResponsesAccumulator(int num_responses,
+  ResponsesAccumulator(wtf_size_t num_responses,
                        const DataRequestParams& params,
                        mojom::blink::CacheStorageCacheAssociatedPtr cache_ptr,
                        std::unique_ptr<RequestEntriesCallback> callback)
       : params_(params),
         num_responses_left_(num_responses),
-        responses_(static_cast<size_t>(num_responses)),
+        responses_(num_responses),
         cache_ptr_(std::move(cache_ptr)),
         callback_(std::move(callback)) {}
 
@@ -231,6 +255,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
     request_response.response_status = response->status_code;
     request_response.response_status_text = response->status_text;
     request_response.response_time = response->response_time.ToDoubleT();
+    request_response.response_type = response->response_type;
     for (const auto& header : response->headers) {
       request_response.response_headers.Set(AtomicString(header.key),
                                             AtomicString(header.value));
@@ -263,6 +288,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
               .setResponseStatus(request_response.response_status)
               .setResponseStatusText(request_response.response_status_text)
               .setResponseTime(request_response.response_time)
+              .setResponseType(
+                  ResponseTypeToString(request_response.response_type))
               .setResponseHeaders(
                   SerializeHeaders(request_response.response_headers))
               .build();
@@ -364,7 +391,8 @@ class CachedResponseFileReaderLoaderClient final
   void DidFinishLoading() override {
     std::unique_ptr<CachedResponse> response =
         CachedResponse::create()
-            .setBody(Base64Encode(data_->Data(), data_->size()))
+            .setBody(
+                Base64Encode(data_->Data(), SafeCast<unsigned>(data_->size())))
             .build();
     callback_->sendSuccess(std::move(response));
     dispose();

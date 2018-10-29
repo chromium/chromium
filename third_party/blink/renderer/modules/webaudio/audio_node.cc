@@ -416,7 +416,7 @@ void AudioHandler::EnableOutputsIfNecessary() {
 #if DEBUG_AUDIONODE_REFERENCES > 1
   fprintf(stderr,
           "[%16p]: %16p: %2d: EnableOutputsIfNecessary: is_disabled %d count "
-          "%d output size %zu\n",
+          "%d output size %u\n",
           Context(), this, GetNodeType(), is_disabled_, connection_ref_count_,
           outputs_.size());
 #endif

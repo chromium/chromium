@@ -29,12 +29,12 @@ enum class ColorSpaceGamut {
   kEnd
 };
 
-namespace ColorSpaceUtilities {
+namespace color_space_utilities {
 
 PLATFORM_EXPORT ColorSpaceGamut GetColorSpaceGamut(const WebScreenInfo&);
 ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile*);
 
-}  // namespace ColorSpaceUtilities
+}  // namespace color_space_utilities
 
 }  // namespace blink
 

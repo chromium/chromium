@@ -29,6 +29,8 @@ std::string GetMainWebFrameId(WebState* web_state) {
 }
 
 WebFrame* GetWebFrameWithId(WebState* web_state, const std::string& frame_id) {
+  if (frame_id.size() == 0)
+    return nullptr;
   WebFramesManager* manager = WebFramesManager::FromWebState(web_state);
   DCHECK(manager);
   return manager->GetFrameWithId(frame_id);

@@ -16,23 +16,22 @@
     app:columnCount="3"
     app:rowCount="2">
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
         android:id="@+id/thumbnail"
-        android:layout_width="@dimen/download_manager_generic_thumbnail_size"
-        android:layout_height="@dimen/download_manager_generic_thumbnail_size"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:scaleType="center"
         app:layout_column="0"
         app:layout_row="0"
         app:layout_rowSpan="2"
-        app:layout_gravity="center_vertical"
-        app:chrometint="@color/dark_mode_tint" />
+        app:layout_gravity="center_vertical" />
 
     <org.chromium.chrome.browser.download.home.view.SelectionView
         android:id="@+id/selection"
-        android:layout_width="@dimen/download_manager_generic_thumbnail_size"
-        android:layout_height="@dimen/download_manager_generic_thumbnail_size"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_column="0"

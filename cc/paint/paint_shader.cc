@@ -214,7 +214,7 @@ PaintShader::PaintShader(Type type) : shader_type_(type) {}
 PaintShader::~PaintShader() = default;
 
 bool PaintShader::has_discardable_images() const {
-  return (image_ && image_.IsLazyGenerated()) ||
+  return (image_ && !image_.IsTextureBacked()) ||
          (record_ && record_->HasDiscardableImages());
 }
 
@@ -268,6 +268,12 @@ sk_sp<PaintShader> PaintShader::CreateScaledPaintRecord(
     const SkMatrix& ctm,
     gfx::SizeF* raster_scale) const {
   DCHECK_EQ(shader_type_, Type::kPaintRecord);
+
+  // If this is already fixed scale, then this is already good to go.
+  if (scaling_behavior_ == ScalingBehavior::kFixedScale) {
+    *raster_scale = gfx::SizeF(1.f, 1.f);
+    return sk_ref_sp<PaintShader>(this);
+  }
 
   // For creating a decoded PaintRecord shader, we need to do the following:
   // 1) Figure out the scale at which the record should be rasterization given

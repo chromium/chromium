@@ -28,6 +28,14 @@ message MediaPerception {
   // A single AudioVisualPerception message or array of audio-visual
   // perceptions.
   repeated AudioVisualPerception audio_visual_perception = 4;
+
+  // Stores metadata such as version of media perception features.
+  optional Metadata metadata = 5;
+}
+
+// Stores metadata such as version of media perception features.
+message Metadata {
+  optional string visual_experience_controller_version = 1;
 }
 
 // Used to transmit a history of image frames and their associated annotations.
@@ -91,6 +99,9 @@ message PerceptionSample {
   optional AudioPerception audio_perception = 3;
 
   optional AudioVisualPerception audio_visual_perception = 4;
+
+  // Stores metadata such as version of media perception features.
+  optional Metadata metadata = 5;
 }
 
 // Perception results based on both audio and video inputs.

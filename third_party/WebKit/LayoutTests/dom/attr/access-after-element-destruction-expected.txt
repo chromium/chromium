@@ -2,7 +2,6 @@ Tests that accessing Attr after its Element has been destroyed works without cra
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS attributes.length is 1
 PASS attributes[0] is attributes.item(0)
 PASS attributes.getNamedItem('a') is attributes.item(0)

@@ -2,7 +2,6 @@ isContentEditable should not change if its ancestor's contentEditable is set, no
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 document.designMode = "on"
 PASS document.getElementById("div").contentEditable is "inherit"
 PASS document.getElementById("div").isContentEditable is false

@@ -3,7 +3,6 @@ Test bad inputs to HKDF deriveBits()
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 deriveBits() with an unsupported hash...
 error is: NotSupportedError: HkdfParams: hash: HMAC: Unsupported operation: digest
 

@@ -17,7 +17,7 @@ namespace content {
 VirtualFidoDiscovery::VirtualFidoDiscovery(
     ScopedVirtualAuthenticatorEnvironment* environment,
     ::device::FidoTransportProtocol transport)
-    : FidoDiscovery(transport), environment_(environment) {}
+    : FidoDeviceDiscovery(transport), environment_(environment) {}
 
 VirtualFidoDiscovery::~VirtualFidoDiscovery() {
   environment_->OnDiscoveryDestroyed(this);
@@ -28,7 +28,7 @@ void VirtualFidoDiscovery::AddVirtualDevice(
   // The real implementation would never notify the client's observer about
   // devices before the client calls Start(), mimic the same behavior.
   if (is_start_requested()) {
-    FidoDiscovery::AddDevice(std::move(device));
+    FidoDeviceDiscovery::AddDevice(std::move(device));
   } else {
     devices_pending_discovery_start_.push_back(std::move(device));
   }
@@ -36,12 +36,12 @@ void VirtualFidoDiscovery::AddVirtualDevice(
 
 bool VirtualFidoDiscovery::RemoveVirtualDevice(base::StringPiece device_id) {
   DCHECK(is_start_requested());
-  return ::device::FidoDiscovery::RemoveDevice(device_id);
+  return ::device::FidoDeviceDiscovery::RemoveDevice(device_id);
 }
 
 void VirtualFidoDiscovery::StartInternal() {
   for (auto& device : devices_pending_discovery_start_)
-    FidoDiscovery::AddDevice(std::move(device));
+    FidoDeviceDiscovery::AddDevice(std::move(device));
   devices_pending_discovery_start_.clear();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(

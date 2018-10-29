@@ -9,6 +9,7 @@
 #include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -18,6 +19,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_POSIX)
@@ -301,6 +303,36 @@ TEST_F(ScopedTaskEnvironmentTest, FastForwardAdvanceTickClock) {
   // clock.
   scoped_task_environment.FastForwardBy(kLongTaskDelay);
   EXPECT_EQ(kLongTaskDelay * 2, tick_clock->NowTicks() - tick_clock_ref);
+}
+
+namespace {
+
+class MockLifetimeObserver : public ScopedTaskEnvironment::LifetimeObserver {
+ public:
+  MockLifetimeObserver() = default;
+  ~MockLifetimeObserver() override = default;
+
+  MOCK_METHOD2(OnScopedTaskEnvironmentCreated,
+               void(ScopedTaskEnvironment::MainThreadType,
+                    scoped_refptr<SingleThreadTaskRunner>));
+  MOCK_METHOD0(OnScopedTaskEnvironmentDestroyed, void());
+};
+
+}  // namespace
+
+TEST_F(ScopedTaskEnvironmentTest, LifetimeObserver) {
+  testing::StrictMock<MockLifetimeObserver> lifetime_observer;
+  ScopedTaskEnvironment::SetLifetimeObserver(&lifetime_observer);
+
+  EXPECT_CALL(lifetime_observer,
+              OnScopedTaskEnvironmentCreated(testing::_, testing::_));
+  std::unique_ptr<ScopedTaskEnvironment> task_environment(
+      std::make_unique<ScopedTaskEnvironment>());
+  testing::Mock::VerifyAndClearExpectations(&lifetime_observer);
+
+  EXPECT_CALL(lifetime_observer, OnScopedTaskEnvironmentDestroyed());
+  task_environment.reset();
+  testing::Mock::VerifyAndClearExpectations(&lifetime_observer);
 }
 
 INSTANTIATE_TEST_CASE_P(

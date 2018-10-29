@@ -2,7 +2,6 @@ Test WebKitMutationObserver.observe on a subtree
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing basic aspects of subtree observation.
 ...attribute and characterData changes in subtree
 PASS mutations.length is 2
@@ -12,6 +11,7 @@ PASS mutations[0].attributeName is "foo"
 PASS mutations[0].attributeNamespace is null
 PASS mutations[1].type is "characterData"
 PASS mutations[1].target is subDiv.firstChild
+
 
 Testing two observers at different depths.
 PASS mutations.length is 1
@@ -25,6 +25,7 @@ PASS mutations2[0].target is subDiv
 PASS mutations2[0].attributeName is "foo"
 PASS mutations2[0].attributeNamespace is null
 
+
 Testing one observer at two different depths.
 PASS calls is 1
 PASS mutations.length is 1
@@ -32,6 +33,7 @@ PASS mutations[0].type is "attributes"
 PASS mutations[0].target is subDiv
 PASS mutations[0].attributeName is "foo"
 PASS mutations[0].attributeNamespace is null
+
 
 Testing that transiently detached nodes are still observed via subtree.
 ...both changes should be received. Change detached subDiv again.
@@ -54,6 +56,7 @@ PASS mutations.length is 1
 PASS mutations[0].type is "characterData"
 PASS mutations[0].target is subDiv.firstChild
 
+
 Testing correct behavior of transient observation with complex movement .
 ...All changes should be received except for setting the "d" attribute on subDiv3 before it was reachable from div.
 PASS mutations.length is 6
@@ -74,6 +77,7 @@ PASS mutations[4].attributeName is "f"
 PASS mutations[5].type is "attributes"
 PASS mutations[5].target is subDiv2
 PASS mutations[5].attributeName is "g"
+
 
 PASS successfullyParsed is true
 

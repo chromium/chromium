@@ -1,0 +1,32 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Make the GCP installer.
+action("gcp_installer") {
+  script = "build/make_setup.py"
+
+  outputs = [
+    "$root_out_dir/gcp_installer.exe",
+  ]
+
+  args = [
+    rebase_path("//", root_build_dir),
+    rebase_path(".", root_build_dir),
+    rebase_path(root_out_dir, root_build_dir),
+    rebase_path(target_gen_dir, root_build_dir),
+  ]
+
+  deps = [
+    "//chrome/credential_provider/eventlog:gcp_eventlog_provider",
+    "//chrome/credential_provider/gaiacp:gaia1_0",
+    "//chrome/credential_provider/setup:gcp_setup",
+    "//chrome/credential_provider/setup:gcp_sfx",
+  ]
+}
+
+group("credential_provider") {
+  deps = [
+    ":gcp_installer",
+  ]
+}

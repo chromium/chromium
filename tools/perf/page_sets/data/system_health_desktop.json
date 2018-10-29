@@ -12,6 +12,9 @@
         "browse:media:tumblr": {
             "DEFAULT": "system_health_desktop_036.wprgo"
         },
+        "browse:media:tumblr:2018": {
+            "DEFAULT": "system_health_desktop_55cb9dd713.wprgo"
+        },
         "browse:media:youtube": {
             "DEFAULT": "system_health_desktop_026.wprgo",
             "linux": "system_health_desktop_026.wprgo",
@@ -27,14 +30,26 @@
         "browse:news:flipboard": {
             "DEFAULT": "system_health_desktop_021.wprgo"
         },
+        "browse:news:flipboard:2018": {
+            "DEFAULT": "system_health_desktop_4c82ac641b.wprgo"
+        },
         "browse:news:hackernews": {
             "DEFAULT": "system_health_desktop_014.wprgo"
+        },
+        "browse:news:hackernews:2018": {
+            "DEFAULT": "system_health_desktop_45995e1b9c.wprgo"
         },
         "browse:news:nytimes": {
             "DEFAULT": "system_health_desktop_015.wprgo"
         },
+        "browse:news:nytimes:2018": {
+            "DEFAULT": "system_health_desktop_e2dd18933f.wprgo"
+        },
         "browse:news:reddit": {
             "DEFAULT": "system_health_desktop_016.wprgo"
+        },
+        "browse:news:reddit:2018": {
+            "DEFAULT": "system_health_desktop_907087980d.wprgo"
         },
         "browse:search:google": {
             "DEFAULT": "system_health_desktop_037.wprgo"
@@ -44,6 +59,9 @@
         },
         "browse:search:google_india": {
             "DEFAULT": "system_health_desktop_039.wprgo"
+        },
+        "browse:search:google_india:2018": {
+            "DEFAULT": "system_health_desktop_b576da862c.wprgo"
         },
         "browse:social:facebook_infinite_scroll": {
             "DEFAULT": "system_health_desktop_055.wprgo"
@@ -57,8 +75,14 @@
         "browse:social:twitter": {
             "DEFAULT": "system_health_desktop_053.wprgo"
         },
+        "browse:social:twitter:2018": {
+            "DEFAULT": "system_health_desktop_6bd6f0c70a.wprgo"
+        },
         "browse:social:twitter_infinite_scroll": {
             "DEFAULT": "system_health_desktop_054.wprgo"
+        },
+        "browse:social:twitter_infinite_scroll:2018": {
+            "DEFAULT": "system_health_desktop_f6af33019a.wprgo"
         },
         "browse:tech:discourse_infinite_scroll": {
             "DEFAULT": "system_health_desktop_058.wprgo"
@@ -81,11 +105,11 @@
         "browse_accessibility:tech:codesearch:2018": {
             "DEFAULT": "system_health_desktop_063.wprgo"
         },
-        "browse_accessibility:tools:gmail_compose": {
-            "DEFAULT": "system_health_desktop_059.wprgo"
-        },
         "load:games:alphabetty": {
             "DEFAULT": "system_health_desktop_005.wprgo"
+        },
+        "load:games:alphabetty:2018": {
+            "DEFAULT": "system_health_desktop_8360dd959c.wprgo"
         },
         "load:games:bubbles": {
             "DEFAULT": "system_health_desktop_005.wprgo"
@@ -126,8 +150,14 @@
         "load:news:bbc": {
             "DEFAULT": "system_health_desktop_002.wprgo"
         },
+        "load:news:bbc:2018": {
+            "DEFAULT": "system_health_desktop_72c5149b77.wprgo"
+        },
         "load:news:cnn": {
             "DEFAULT": "system_health_desktop_006.wprgo"
+        },
+        "load:news:cnn:2018": {
+            "DEFAULT": "system_health_desktop_3c603ac582.wprgo"
         },
         "load:news:flipboard": {
             "DEFAULT": "system_health_desktop_020.wprgo"
@@ -135,20 +165,35 @@
         "load:news:hackernews": {
             "DEFAULT": "system_health_desktop_008.wprgo"
         },
+        "load:news:hackernews:2018": {
+            "DEFAULT": "system_health_desktop_fd099ca6a6.wprgo"
+        },
         "load:news:nytimes": {
             "DEFAULT": "system_health_desktop_009.wprgo"
+        },
+        "load:news:nytimes:2018": {
+            "DEFAULT": "system_health_desktop_6d7605317e.wprgo"
         },
         "load:news:qq": {
             "DEFAULT": "system_health_desktop_010.wprgo"
         },
+        "load:news:qq:2018": {
+            "DEFAULT": "system_health_desktop_413e958e1c.wprgo"
+        },
         "load:news:reddit": {
             "DEFAULT": "system_health_desktop_011.wprgo"
+        },
+        "load:news:reddit:2018": {
+            "DEFAULT": "system_health_desktop_b3e531107c.wprgo"
         },
         "load:news:wikipedia": {
             "DEFAULT": "system_health_desktop_002.wprgo"
         },
         "load:search:amazon": {
             "DEFAULT": "system_health_desktop_000.wprgo"
+        },
+        "load:search:amazon:2018": {
+            "DEFAULT": "system_health_desktop_af501c33ad.wprgo"
         },
         "load:search:baidu": {
             "DEFAULT": "system_health_desktop_000.wprgo"
@@ -165,6 +210,9 @@
         "load:search:taobao": {
             "DEFAULT": "system_health_desktop_000.wprgo"
         },
+        "load:search:taobao:2018": {
+            "DEFAULT": "system_health_desktop_d312e21b98.wprgo"
+        },
         "load:search:yahoo": {
             "DEFAULT": "system_health_desktop_000.wprgo"
         },
@@ -177,6 +225,9 @@
         "load:social:instagram": {
             "DEFAULT": "system_health_desktop_001.wprgo"
         },
+        "load:social:instagram:2018": {
+            "DEFAULT": "system_health_desktop_341437d15c.wprgo"
+        },
         "load:social:pinterest": {
             "DEFAULT": "system_health_desktop_001.wprgo"
         },
@@ -188,6 +239,9 @@
         },
         "load:social:vk": {
             "DEFAULT": "system_health_desktop_001.wprgo"
+        },
+        "load:social:vk:2018": {
+            "DEFAULT": "system_health_desktop_a099b947c2.wprgo"
         },
         "load:tools:docs": {
             "DEFAULT": "system_health_desktop_004.wprgo"
@@ -207,14 +261,23 @@
         "load:tools:stackoverflow": {
             "DEFAULT": "system_health_desktop_004.wprgo"
         },
+        "load:tools:stackoverflow:2018": {
+            "DEFAULT": "system_health_desktop_acb5e9444f.wprgo"
+        },
         "load:tools:weather": {
             "DEFAULT": "system_health_desktop_004.wprgo"
         },
         "load_accessibility:media:wikipedia": {
             "DEFAULT": "system_health_desktop_059.wprgo"
         },
+        "load_accessibility:media:wikipedia:2018": {
+            "DEFAULT": "system_health_desktop_6903b36338.wprgo"
+        },
         "load_accessibility:shopping:amazon": {
             "DEFAULT": "system_health_desktop_059.wprgo"
+        },
+        "load_accessibility:shopping:amazon:2018": {
+            "DEFAULT": "system_health_desktop_c69a8c0e2f.wprgo"
         },
         "long_running:tools:gmail-background": {
             "DEFAULT": "system_health_desktop_028.wprgo"
@@ -225,6 +288,9 @@
         "multitab:misc:typical24": {
             "DEFAULT": "system_health_desktop_049.wprgo"
         },
+        "multitab:misc:typical24:2018": {
+            "DEFAULT": "system_health_desktop_37bd086ce0.wprgo"
+        },
         "play:media:google_play_music": {
             "DEFAULT": "system_health_desktop_030.wprgo"
         },
@@ -233,6 +299,9 @@
         },
         "play:media:soundcloud": {
             "DEFAULT": "system_health_desktop_030.wprgo"
+        },
+        "play:media:soundcloud:2018": {
+            "DEFAULT": "system_health_desktop_57d9c71c88.wprgo"
         },
         "search:portal:google": {
             "DEFAULT": "system_health_desktop_022.wprgo"

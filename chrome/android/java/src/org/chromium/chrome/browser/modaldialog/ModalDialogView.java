@@ -40,15 +40,16 @@ public class ModalDialogView implements View.OnClickListener {
         void onClick(@ButtonType int buttonType);
 
         /**
-         * Handle cancel event when the dialog is not dismissed by actions on the dialog such as
-         * back press, and on tab modal dialog, tab switcher button click.
+         * Handle dismiss event when the dialog is dismissed by actions on the dialog. Note that it
+         * can be dangerous to the {@code dismissalCause} for business logic other than metrics
+         * recording, unless the dismissal cause is fully controlled by the client (e.g. button
+         * clicked), because the dismissal cause can be different values depending on modal dialog
+         * type and mode of presentation (e.g. it could be unknown on VR but a specific value on
+         * non-VR).
+         * @param dismissalCause The reason of the dialog being dismissed.
+         * @see DialogDismissalCause
          */
-        void onCancel();
-
-        /**
-         * Handle dismiss event when the dialog is dismissed by actions on the dialog.
-         */
-        void onDismiss();
+        void onDismiss(@DialogDismissalCause int dismissalCause);
     }
 
     /** Parameters that can be used to create a new ModalDialogView. */

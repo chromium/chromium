@@ -32,6 +32,7 @@ import logging
 import math
 import re
 
+from blinkpy.common.path_finder import TESTS_IN_BLINK
 from blinkpy.web_tests.layout_package.json_results_generator import convert_times_trie_to_flat_paths
 from blinkpy.web_tests.models import test_expectations
 
@@ -45,7 +46,10 @@ class LayoutTestFinder(object):
         self._port = port
         self._options = options
         self._filesystem = self._port.host.filesystem
-        self.LAYOUT_TESTS_DIRECTORIES = ('src', 'third_party', 'WebKit', 'LayoutTests')
+        if TESTS_IN_BLINK:
+            self.LAYOUT_TESTS_DIRECTORIES = ('src', 'third_party', 'blink', 'web_tests')
+        else:
+            self.LAYOUT_TESTS_DIRECTORIES = ('src', 'third_party', 'WebKit', 'LayoutTests')
 
     def find_tests(self, args, test_list=None, fastest_percentile=None):
         paths = self._strip_test_dir_prefixes(args)

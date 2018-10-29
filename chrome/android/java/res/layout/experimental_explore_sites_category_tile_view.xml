@@ -15,7 +15,7 @@
 
     <!-- Main icon/image -->
     <ImageView
-        android:id="@+id/explore_sites_category_tile_icon"
+        android:id="@+id/experimental_explore_sites_category_tile_icon"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
 
     <!-- Category title -->
     <TextView
-        android:id="@+id/explore_sites_category_tile_title"
+        android:id="@+id/experimental_explore_sites_category_tile_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

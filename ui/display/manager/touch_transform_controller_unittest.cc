@@ -41,7 +41,7 @@ ui::TouchDeviceTransform CreateTouchDeviceTransform(
 
 ui::TouchscreenDevice CreateTouchscreenDevice(unsigned int id,
                                               const gfx::Size& size) {
-  return ui::TouchscreenDevice(id, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+  return ui::TouchscreenDevice(id, ui::InputDeviceType::INPUT_DEVICE_USB,
                                std::string(), size, 0);
 }
 

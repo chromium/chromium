@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/values.h"
+#include "chrome/browser/ui/ash/ksv/keyboard_shortcut_viewer_util.h"
 #include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chromeos/chromeos_switches.h"
 #include "content/public/browser/web_ui.h"
@@ -20,6 +21,7 @@
 namespace {
 
 struct KeyboardsStateResult {
+  bool has_internal_keyboard = false;
   bool has_external_non_apple_keyboard = false;
   bool has_apple_keyboard = false;
 };
@@ -28,6 +30,9 @@ KeyboardsStateResult GetKeyboardsState() {
   KeyboardsStateResult result;
   for (const ui::InputDevice& keyboard :
        ui::InputDeviceManager::GetInstance()->GetKeyboardDevices()) {
+    result.has_internal_keyboard |=
+        (keyboard.type == ui::INPUT_DEVICE_INTERNAL);
+
     const ui::EventRewriterChromeOS::DeviceType type =
         ui::EventRewriterChromeOS::GetDeviceType(keyboard);
     if (type == ui::EventRewriterChromeOS::kDeviceAppleKeyboard) {
@@ -64,8 +69,8 @@ void KeyboardHandler::RegisterMessages() {
       base::BindRepeating(&KeyboardHandler::HandleInitialize,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "showKeyboardShortcutsOverlay",
-      base::BindRepeating(&KeyboardHandler::HandleShowKeyboardShortcutsOverlay,
+      "showKeyboardShortcutViewer",
+      base::BindRepeating(&KeyboardHandler::HandleShowKeyboardShortcutViewer,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "initializeKeyboardWatcher",
@@ -93,13 +98,9 @@ void KeyboardHandler::HandleInitialize(const base::ListValue* args) {
   UpdateKeyboards();
 }
 
-void KeyboardHandler::HandleShowKeyboardShortcutsOverlay(
+void KeyboardHandler::HandleShowKeyboardShortcutViewer(
     const base::ListValue* args) const {
-  ash::mojom::NewWindowControllerPtr new_window_controller;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &new_window_controller);
-  new_window_controller->ShowKeyboardOverlay();
+  keyboard_shortcut_viewer_util::ToggleKeyboardShortcutViewer();
 }
 
 void KeyboardHandler::HandleKeyboardChange(const base::ListValue* args) {
@@ -146,6 +147,8 @@ void KeyboardHandler::UpdateShowKeys() {
       base::Value(keyboards_state.has_external_non_apple_keyboard));
   keyboard_params.SetKey("showAppleCommandKey",
                          base::Value(keyboards_state.has_apple_keyboard));
+  keyboard_params.SetKey("hasInternalKeyboard",
+                         base::Value(keyboards_state.has_internal_keyboard));
 
   FireWebUIListener(kShowKeysChangedName, keyboard_params);
 }

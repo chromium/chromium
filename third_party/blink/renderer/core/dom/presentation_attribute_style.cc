@@ -34,11 +34,11 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -75,9 +75,9 @@ using PresentationAttributeCache =
                 Member<PresentationAttributeCacheEntry>,
                 AlreadyHashed>;
 static PresentationAttributeCache& GetPresentationAttributeCache() {
-  DEFINE_STATIC_LOCAL(PresentationAttributeCache, cache,
+  DEFINE_STATIC_LOCAL(Persistent<PresentationAttributeCache>, cache,
                       (new PresentationAttributeCache));
-  return cache;
+  return *cache;
 }
 
 static bool AttributeNameSort(const std::pair<StringImpl*, AtomicString>& p1,

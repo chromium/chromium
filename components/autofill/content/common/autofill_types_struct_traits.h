@@ -236,6 +236,10 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return r.name;
   }
 
+  static const base::string16& button_title(const autofill::FormData& r) {
+    return r.button_title;
+  }
+
   static const GURL& origin(const autofill::FormData& r) { return r.origin; }
 
   static const GURL& action(const autofill::FormData& r) { return r.action; }

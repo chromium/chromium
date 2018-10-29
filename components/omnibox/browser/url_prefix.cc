@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/url_prefix.h"
 
 #include "base/i18n/case_conversion.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -28,15 +29,15 @@ const URLPrefix* BestURLPrefixInternal(
 const URLPrefix* BestURLPrefixWithWWWCase(
     const base::string16& lower_text,
     const base::string16& lower_prefix_suffix) {
-  CR_DEFINE_STATIC_LOCAL(URLPrefix, www_prefix,
-                         (base::ASCIIToUTF16("www."), 1));
+  static base::NoDestructor<URLPrefix> www_prefix(base::ASCIIToUTF16("www."),
+                                                  1);
   const URLPrefix* best_prefix =
       BestURLPrefixInternal(lower_text, lower_prefix_suffix);
   if ((best_prefix == nullptr ||
-       best_prefix->num_components < www_prefix.num_components) &&
-      base::StartsWith(lower_text, www_prefix.prefix + lower_prefix_suffix,
+       best_prefix->num_components < www_prefix->num_components) &&
+      base::StartsWith(lower_text, www_prefix->prefix + lower_prefix_suffix,
                        base::CompareCase::SENSITIVE))
-    best_prefix = &www_prefix;
+    best_prefix = www_prefix.get();
   return best_prefix;
 }
 
@@ -50,8 +51,9 @@ URLPrefix::URLPrefix(const base::string16& lower_prefix, size_t num_components)
 
 // static
 const URLPrefixes& URLPrefix::GetURLPrefixes() {
-  CR_DEFINE_STATIC_LOCAL(URLPrefixes, prefixes, ());
-  if (prefixes.empty()) {
+  static base::NoDestructor<URLPrefixes> prefixes([]() {
+    URLPrefixes prefixes;
+
     // Keep this list in descending number of components.
     prefixes.push_back(URLPrefix(base::ASCIIToUTF16("http://www."), 2));
     prefixes.push_back(URLPrefix(base::ASCIIToUTF16("https://www."), 2));
@@ -60,8 +62,10 @@ const URLPrefixes& URLPrefix::GetURLPrefixes() {
     prefixes.push_back(URLPrefix(base::ASCIIToUTF16("https://"), 1));
     prefixes.push_back(URLPrefix(base::ASCIIToUTF16("ftp://"), 1));
     prefixes.push_back(URLPrefix(base::string16(), 0));
-  }
-  return prefixes;
+
+    return prefixes;
+  }());
+  return *prefixes;
 }
 
 // static

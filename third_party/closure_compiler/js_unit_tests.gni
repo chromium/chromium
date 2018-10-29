@@ -50,6 +50,7 @@ template("js_unit_tests") {
                              "deps",
                              "mocks",
                            ])
+    testonly = true
     sources = []
     foreach(dep, deps) {
       sources += get_target_outputs(dep)
@@ -61,6 +62,14 @@ template("js_unit_tests") {
     args = [ "--output" ] + rebase_path(outputs, root_build_dir)
     args += [ "--input" ] + [ "{{source}}" ]
 
+    # js_unit_test.py needs to walk .js_library dependency files relative to the
+    # gen_dir, but we'd like to reference the corresponding .js source files
+    # in the source dir, not the gen dir. Pass a prefix to remap --input args.
+    args += [
+      "--include_prefix",
+      rebase_path("//", "{{root_gen_dir}}", "//"),
+    ]
+
     if (defined(mocks)) {
       args += [ "--mocks" ] + rebase_path(mocks, root_build_dir)
       data = mocks
@@ -71,6 +80,7 @@ template("js_unit_tests") {
     type_check_target_name = target_name + "_" + dep + "_type_check"
     type_check_deps += [ ":$type_check_target_name" ]
     js_type_check(type_check_target_name) {
+      testonly = true
       forward_variables_from(invoker, [ "closure_flags" ])
       deps = [
         dep,
@@ -79,12 +89,33 @@ template("js_unit_tests") {
   }
   type_check_group_name = target_name + "_type_check"
   group(type_check_group_name) {
+    testonly = true
     deps = type_check_deps
   }
   group(target_name) {
     data = get_target_outputs(":$html_gen_target_name")
+    testonly = true
     deps = [
       ":$html_gen_target_name",
     ]
+  }
+}
+
+# Simple wrapper around js_library to describe a unit test.
+template("js_unittest") {
+  js_library(target_name) {
+    testonly = true
+
+    # Forward everything that js_library forwards except testonly (omitting that
+    # causes gn to emit "Assignment had no effect" if it's added redundantly).
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "externs_list",
+                             "extra_deps",
+                             "extra_sources",
+                             "sources",
+                             "visibility",
+                           ])
   }
 }

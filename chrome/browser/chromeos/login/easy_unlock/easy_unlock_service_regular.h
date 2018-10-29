@@ -109,6 +109,12 @@ class EasyUnlockServiceRegular
   bool IsAllowedInternal() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
+  // Returns true if there is no BETTER_TOGETHER_HOST supported or enabled, but
+  // there *are* EASY_UNLOCK_HOSTs supported or enabled. This can only happen if
+  // the user's phone has not yet fully updated to the new multidevice world.
+  // TODO(crbug.com/894585): Remove this legacy special case after M71.
+  bool IsInLegacyHostMode() const override;
+
   void OnWillFinalizeUnlock(bool success) override;
   void OnSuspendDoneInternal() override;
   void HandleUserReauth(const UserContext& user_context) override;
@@ -128,6 +134,8 @@ class EasyUnlockServiceRegular
   void OnFeatureStatesChanged(
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
+
+  void ShowChromebookAddedNotification();
 
   void ShowNotificationIfNewDevicePresent(
       const std::set<std::string>& public_keys_before_sync,
@@ -233,6 +241,9 @@ class EasyUnlockServiceRegular
   // Caches feature state of Smart Lock. This service should only actively be
   // running if its value is kEnabledByUser. Populated by using
   // |multidevice_setup_client_|.
+  // Note: In the legacy case--see https://crbug.com/894585--the service can be
+  // active if its value is kUnavailableNoVerifiedHost as long as
+  // IsInLegacyHostMode() is true and there is a valid unlock key.
   multidevice_setup::mojom::FeatureState feature_state_ =
       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost;
 

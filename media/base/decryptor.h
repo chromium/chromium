@@ -36,6 +36,8 @@ class MEDIA_EXPORT Decryptor {
     kStatusMax = kError
   };
 
+  static const char* GetStatusName(Status status);
+
   // TODO(xhwang): Unify this with DemuxerStream::Type.
   enum StreamType { kAudio, kVideo, kStreamTypeMax = kVideo };
 

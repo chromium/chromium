@@ -5,17 +5,22 @@
 package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Context;
+import android.content.Intent;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.download.home.PrefetchStatusProvider;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
+import org.chromium.chrome.browser.download.home.StableIds;
 import org.chromium.chrome.browser.download.home.empty.EmptyCoordinator;
 import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.ViewListItem;
+import org.chromium.chrome.browser.download.home.metrics.FilterChangeLogger;
 import org.chromium.chrome.browser.download.home.storage.StorageCoordinator;
 import org.chromium.chrome.browser.download.home.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
@@ -67,6 +72,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         void onEmptyStateChanged(boolean isEmpty);
     }
 
+    private final Context mContext;
     private final StorageCoordinator mStorageCoordinator;
     private final FilterCoordinator mFilterCoordinator;
     private final EmptyCoordinator mEmptyCoordinator;
@@ -78,7 +84,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      * Creates an instance of a DateOrderedListCoordinator, which will visually represent
      * {@code provider} as a list of items.
      * @param context The {@link Context} to use to build the views.
-     * @param offTheRecord Whether or not to include off the record items.
+     * @param config The {@link DownloadManagerUiConfig} to provide UI configuration params.
      * @param provider The {@link OfflineContentProvider} to visually represent.
      * @param deleteController A class to manage whether or not items can be deleted.
      * @param filterObserver A {@link FilterCoordinator.Observer} that should be notified of
@@ -86,34 +92,34 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      *                       need to take action based on the visual state of the list.
      * @param dateOrderedListObserver A {@link DateOrderedListObserver}.
      */
-    public DateOrderedListCoordinator(Context context, Boolean offTheRecord,
+    public DateOrderedListCoordinator(Context context, DownloadManagerUiConfig config,
             OfflineContentProvider provider, DeleteController deleteController,
             SelectionDelegate<ListItem> selectionDelegate,
             FilterCoordinator.Observer filterObserver,
             DateOrderedListObserver dateOrderedListObserver) {
-        PrefetchStatusProvider prefetchProvider = new PrefetchStatusProvider();
+        mContext = context;
 
         ListItemModel model = new ListItemModel();
         DecoratedListItemModel decoratedModel = new DecoratedListItemModel(model);
-        mListView = new DateOrderedListView(context, decoratedModel, dateOrderedListObserver);
-        mMediator = new DateOrderedListMediator(offTheRecord, provider, context::startActivity,
-                deleteController, selectionDelegate, dateOrderedListObserver, model);
+        mListView =
+                new DateOrderedListView(context, config, decoratedModel, dateOrderedListObserver);
+        mMediator = new DateOrderedListMediator(provider, this ::startShareIntent, deleteController,
+                selectionDelegate, config, dateOrderedListObserver, model);
 
-        mEmptyCoordinator =
-                new EmptyCoordinator(context, prefetchProvider, mMediator.getEmptySource());
+        mEmptyCoordinator = new EmptyCoordinator(context, mMediator.getEmptySource());
 
         mStorageCoordinator = new StorageCoordinator(context, mMediator.getFilterSource());
 
-        mFilterCoordinator =
-                new FilterCoordinator(context, prefetchProvider, mMediator.getFilterSource());
+        mFilterCoordinator = new FilterCoordinator(context, mMediator.getFilterSource());
         mFilterCoordinator.addObserver(mMediator::onFilterTypeSelected);
         mFilterCoordinator.addObserver(filterObserver);
         mFilterCoordinator.addObserver(mEmptyCoordinator);
+        mFilterCoordinator.addObserver(new FilterChangeLogger());
 
         decoratedModel.addHeader(
-                new ViewListItem(Long.MAX_VALUE - 1L, mStorageCoordinator.getView()));
+                new ViewListItem(StableIds.STORAGE_HEADER, mStorageCoordinator.getView()));
         decoratedModel.addHeader(
-                new ViewListItem(Long.MAX_VALUE - 2L, mFilterCoordinator.getView()));
+                new ViewListItem(StableIds.FILTERS_HEADER, mFilterCoordinator.getView()));
         initializeView(context);
     }
 
@@ -147,13 +153,13 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     // ToolbarListActionDelegate implementation.
     @Override
-    public void deleteSelectedItems() {
-        mMediator.deleteSelectedItems();
+    public int deleteSelectedItems() {
+        return mMediator.deleteSelectedItems();
     }
 
     @Override
-    public void shareSelectedItems() {
-        mMediator.shareSelectedItems();
+    public int shareSelectedItems() {
+        return mMediator.shareSelectedItems();
     }
 
     /** Called to handle a back press event. */
@@ -163,13 +169,17 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     @Override
     public void setSearchQuery(String query) {
-        // TODO(crbug.com/881047): Check with UX, if the text on empty view should change during
-        // search.
+        mEmptyCoordinator.setInSearchMode(!TextUtils.isEmpty(query));
         mMediator.onFilterStringChanged(query);
     }
 
     /** Sets the UI and list to filter based on the {@code filter} {@link FilterType}. */
     public void setSelectedFilter(@FilterType int filter) {
         mFilterCoordinator.setSelectedFilter(filter);
+    }
+
+    private void startShareIntent(Intent intent) {
+        mContext.startActivity(Intent.createChooser(
+                intent, mContext.getString(R.string.share_link_chooser_title)));
     }
 }

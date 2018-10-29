@@ -53,10 +53,10 @@ void FullyClippedStateStackAlgorithm<Strategy>::PushFullyClippedState(
     const Node* node) {
   DCHECK_EQ(size(), DepthCrossingShadowBoundaries<Strategy>(*node));
 
-  // FIXME: m_fullyClippedStack was added in response to
+  // FIXME: fully_clipped_stack_ was added in response to
   // <https://bugs.webkit.org/show_bug.cgi?id=26364> ("Search can find text
   // that's hidden by overflow:hidden"), but the logic here will not work
-  // correctly if a shadow tree redistributes nodes. m_fullyClippedStack relies
+  // correctly if a shadow tree redistributes nodes. fully_clipped_stack_ relies
   // on the assumption that DOM node hierarchy matches the layout tree, which is
   // not necessarily true if there happens to be shadow DOM distribution or
   // other mechanics that shuffle around the layout objects regardless of node

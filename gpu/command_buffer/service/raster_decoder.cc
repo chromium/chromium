@@ -57,8 +57,12 @@
 #include "gpu/command_buffer/service/raster_decoder_context_state.h"
 #include "gpu/command_buffer/service/service_font_manager.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/vertex_array_manager.h"
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
+#include "gpu/command_buffer/service/wrapped_sk_image.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpaceXformCanvas.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
@@ -280,17 +284,22 @@ bool AllowedBetweenBeginEndRaster(CommandId command) {
 // matches GrContext state tracking.
 bool PermitsInconsistentContextState(CommandId command) {
   switch (command) {
+    case kBeginQueryEXT:
     case kBeginRasterCHROMIUMImmediate:
     case kCreateAndConsumeTextureINTERNALImmediate:
     case kCreateTransferCacheEntryINTERNAL:
+    case kDeleteQueriesEXTImmediate:
     case kDeleteTexturesImmediate:
     case kDeleteTransferCacheEntryINTERNAL:
+    case kEndQueryEXT:
     case kEndRasterCHROMIUM:
     case kFinish:
     case kFlush:
+    case kGenQueriesEXTImmediate:
     case kGetError:
     case kInsertFenceSyncCHROMIUM:
     case kRasterCHROMIUM:
+    case kSetActiveURLCHROMIUM:
     case kUnlockTransferCacheEntryINTERNAL:
     case kWaitSyncTokenCHROMIUM:
       return true;
@@ -506,7 +515,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     return feature_info_->gl_version_info();
   }
 
-  gles2::MemoryTracker* memory_tracker() { return group_->memory_tracker(); }
+  MemoryTracker* memory_tracker() { return group_->memory_tracker(); }
 
   gles2::VertexArrayManager* vertex_array_manager() {
     return vertex_array_manager_.get();
@@ -609,7 +618,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoTexParameteri(GLuint texture_id, GLenum pname, GLint param);
   void DoBindTexImage2DCHROMIUM(GLuint texture_id, GLint image_id);
   void DoTraceEndCHROMIUM();
-  void DoResetActiveURLCHROMIUM();
   void DoProduceTextureDirect(GLuint texture, const volatile GLbyte* key);
   void DoReleaseTexImage2DCHROMIUM(GLuint texture_id, GLint image_id);
   bool TexStorage2DImage(gles2::TextureRef* texture_ref,
@@ -647,9 +655,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool DoBindOrCopyTexImageIfNeeded(gles2::Texture* texture,
                                     GLenum textarget,
                                     GLuint texture_unit);
-  void DoCompressedCopyTextureCHROMIUM(GLuint source_id, GLuint dest_id) {
-    NOTIMPLEMENTED();
-  }
   void DoLoseContextCHROMIUM(GLenum current, GLenum other) { NOTIMPLEMENTED(); }
   void DoBeginRasterCHROMIUM(GLuint sk_color,
                              GLuint msaa_sample_count,
@@ -803,6 +808,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   // Raster helpers.
   scoped_refptr<ServiceFontManager> font_manager_;
+  std::unique_ptr<SharedImageRepresentationSkia> shared_image_;
   sk_sp<SkSurface> sk_surface_;
 
   std::unique_ptr<SkDeferredDisplayListRecorder> recorder_;
@@ -1246,7 +1252,12 @@ void RasterDecoderImpl::RestoreBufferBindings() const {
 }
 
 void RasterDecoderImpl::RestoreFramebufferBindings() const {
-  NOTIMPLEMENTED();
+  PessimisticallyResetGrContext();
+  state_.fbo_binding_for_scissor_workaround_dirty = true;
+  state_.stencil_state_changed_since_validation = true;
+
+  if (workarounds().flush_on_framebuffer_change)
+    api()->glFlushFn();
 }
 
 void RasterDecoderImpl::RestoreRenderbufferBindings() {
@@ -1468,10 +1479,12 @@ void RasterDecoderImpl::BeginDecoding() {
   gpu_tracer_->BeginDecoding();
   gpu_trace_commands_ = gpu_tracer_->IsTracing() && *gpu_decoder_category_;
   gpu_debug_commands_ = log_commands() || debug() || gpu_trace_commands_;
+  query_manager_->BeginProcessingCommands();
 }
 
 void RasterDecoderImpl::EndDecoding() {
   gpu_tracer_->EndDecoding();
+  query_manager_->EndProcessingCommands();
 }
 
 const char* RasterDecoderImpl::GetCommandName(unsigned int command_id) const {
@@ -2099,7 +2112,7 @@ void RasterDecoderImpl::DoCreateAndConsumeTextureINTERNAL(
       client_id, TextureMetadata(use_buffer, buffer_usage, resource_format,
                                  GetCapabilities())));
 
-  gles2::Texture* texture = static_cast<gles2::Texture*>(
+  gles2::Texture* texture = gles2::Texture::CheckedCast(
       group_->mailbox_manager()->ConsumeTexture(mailbox));
   if (!texture) {
     // Create texture to handle invalid mailbox (see http://crbug.com/472465).
@@ -2336,11 +2349,11 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   Bucket* url_bucket = GetBucket(c.url_bucket_id);
   static constexpr size_t kMaxStrLen = 1024;
   if (!url_bucket || url_bucket->size() == 0 ||
-      url_bucket->size() > kMaxStrLen + 1) {
+      url_bucket->size() > kMaxStrLen) {
     return error::kInvalidArguments;
   }
 
-  size_t size = url_bucket->size() - 1;
+  size_t size = url_bucket->size();
   const char* url_str = url_bucket->GetDataAs<const char*>(0, size);
   if (!url_str)
     return error::kInvalidArguments;
@@ -2348,10 +2361,6 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   GURL url(base::StringPiece(url_str, size));
   client_->SetActiveURL(std::move(url));
   return error::kNoError;
-}
-
-void RasterDecoderImpl::DoResetActiveURLCHROMIUM() {
-  client_->ResetActiveURL();
 }
 
 void RasterDecoderImpl::DoProduceTextureDirect(GLuint client_id,
@@ -2996,9 +3005,10 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(
   DLOG_IF(ERROR, !mailbox.Verify()) << "BeginRasterCHROMIUM was "
                                        "passed a mailbox that was not "
                                        "generated by ProduceTextureCHROMIUM.";
-  gles2::Texture* texture = static_cast<gles2::Texture*>(
-      group_->mailbox_manager()->ConsumeTexture(mailbox));
-  if (!texture) {
+
+  DCHECK(!shared_image_);
+  shared_image_ = group_->shared_image_manager()->ProduceSkia(mailbox);
+  if (!shared_image_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glBeginRasterCHROMIUM",
                        "passed invalid mailbox.");
     return;
@@ -3008,78 +3018,8 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(
   DCHECK(!raster_canvas_);
   raster_decoder_context_state_->need_context_state_reset = true;
 
-  if (texture->target() != GL_TEXTURE_2D &&
-      texture->target() != GL_TEXTURE_RECTANGLE_ARB) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                       "invalid texture target");
-    return;
-  }
-
-  // This function should look identical to
-  // ResourceProvider::ScopedSkSurfaceProvider.
-  GrGLTextureInfo texture_info;
-  int width;
-  int height;
-  int depth;
-  if (!texture->GetLevelSize(texture->target(), 0, &width, &height, &depth)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                       "missing texture size info");
-    return;
-  }
-  GLenum type;
-  GLenum internal_format;
-  if (!texture->GetLevelType(texture->target(), 0, &type, &internal_format)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                       "missing texture type info");
-    return;
-  }
-  texture_info.fID = texture->service_id();
-  texture_info.fTarget = texture->target();
-
-  // GetInternalFormat may return a base internal format but Skia requires a
-  // sized internal format. So this may be adjusted below.
-  texture_info.fFormat = GetInternalFormat(&gl_version_info(), internal_format);
-  switch (color_type) {
-    case kARGB_4444_SkColorType:
-      if (internal_format != GL_RGBA4 && internal_format != GL_RGBA) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                           "color type mismatch");
-        return;
-      }
-      if (texture_info.fFormat == GL_RGBA)
-        texture_info.fFormat = GL_RGBA4;
-      break;
-    case kRGBA_8888_SkColorType:
-      if (internal_format != GL_RGBA8_OES && internal_format != GL_RGBA) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                           "color type mismatch");
-        return;
-      }
-      if (texture_info.fFormat == GL_RGBA)
-        texture_info.fFormat = GL_RGBA8_OES;
-      break;
-    case kBGRA_8888_SkColorType:
-      if (internal_format != GL_BGRA_EXT && internal_format != GL_BGRA8_EXT) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                           "color type mismatch");
-        return;
-      }
-      if (texture_info.fFormat == GL_BGRA_EXT)
-        texture_info.fFormat = GL_BGRA8_EXT;
-      if (texture_info.fFormat == GL_RGBA)
-        texture_info.fFormat = GL_RGBA8_OES;
-      break;
-    default:
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
-                         "unsupported color type");
-      return;
-  }
-
-  GrBackendTexture gr_texture(width, height, GrMipMapped::kNo, texture_info);
-
-  uint32_t flags = 0;
-
   // Use unknown pixel geometry to disable LCD text.
+  uint32_t flags = 0;
   SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
   if (can_use_lcd_text) {
     // LegacyFontHost will get LCD text and skia figures out what type to use.
@@ -3093,13 +3033,13 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(
   if (final_msaa_count >
       gr_context()->maxSurfaceSampleCountForColorType(sk_color_type))
     final_msaa_count = 0;
-  sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
-      gr_context(), gr_texture, kTopLeft_GrSurfaceOrigin, final_msaa_count,
-      sk_color_type, nullptr, &surface_props);
 
+  sk_surface_ = shared_image_->BeginWriteAccess(gr_context(), final_msaa_count,
+                                                sk_color_type, surface_props);
   if (!sk_surface_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
                        "failed to create surface");
+    shared_image_.reset();
     return;
   }
 
@@ -3112,7 +3052,8 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(
   if (!color_space_entry || !color_space_entry->color_space().IsValid()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
                        "failed to find valid color space");
-    sk_surface_.reset();
+    shared_image_->EndWriteAccess(std::move(sk_surface_));
+    shared_image_.reset();
     return;
   }
 
@@ -3134,14 +3075,14 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(
 
   // All or nothing clearing, as no way to validate the client's input on what
   // is the "used" part of the texture.
-  if (texture->IsLevelCleared(texture->target(), 0))
-    return;
-
   // TODO(enne): This doesn't handle the case where the background color
   // changes and so any extra pixels outside the raster area that get
   // sampled may be incorrect.
+  if (shared_image_->IsCleared())
+    return;
+
   raster_canvas_->drawColor(sk_color);
-  texture->SetLevelCleared(texture->target(), 0, true);
+  shared_image_->SetCleared();
 }
 
 scoped_refptr<Buffer> RasterDecoderImpl::GetShmBuffer(uint32_t shm_id) {
@@ -3229,7 +3170,7 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
 void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoEndRasterCHROMIUM");
   if (!sk_surface_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glEndRasterCHROMIUM",
                        "EndRasterCHROMIUM without BeginRasterCHROMIUM");
     return;
   }
@@ -3244,7 +3185,13 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     sk_surface_->draw(ddl.get());
   }
   sk_surface_->prepareForExternalIO();
-  sk_surface_.reset();
+  if (!shared_image_) {
+    // Test only path for  SetUpForRasterCHROMIUMForTest.
+    sk_surface_.reset();
+  } else {
+    shared_image_->EndWriteAccess(std::move(sk_surface_));
+    shared_image_.reset();
+  }
 
   // Unlock all font handles. This needs to be deferred until
   // SkSurface::prepareForExternalIO since that flushes batched Gr operations in

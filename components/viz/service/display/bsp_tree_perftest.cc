@@ -44,7 +44,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
 
   void SetupTree() override {
     gfx::Size viewport = gfx::Size(720, 1038);
-    layer_tree_host()->SetViewportSizeAndScale(viewport, 1.f, LocalSurfaceId());
+    layer_tree_host()->SetViewportSizeAndScale(viewport, 1.f, LocalSurfaceId(),
+                                               base::TimeTicks());
     scoped_refptr<cc::Layer> root =
         ParseTreeFromJson(json_, &content_layer_client_);
     ASSERT_TRUE(root.get());

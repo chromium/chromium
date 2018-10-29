@@ -12,11 +12,36 @@
 
 namespace gfx {
 
+namespace {
+
+int ToFlooredIntIgnoringError(float f, float error) {
+  int rounded = ToRoundedInt(f);
+  return std::abs(rounded - f) < error ? rounded : ToFlooredInt(f);
+}
+
+int ToCeiledIntIgnoringError(float f, float error) {
+  int rounded = ToRoundedInt(f);
+  return std::abs(rounded - f) < error ? rounded : ToCeiledInt(f);
+}
+
+}  // anonymous namespace
+
 Rect ToEnclosingRect(const RectF& r) {
   int left = ToFlooredInt(r.x());
   int right = r.width() ? ToCeiledInt(r.right()) : left;
   int top = ToFlooredInt(r.y());
   int bottom = r.height() ? ToCeiledInt(r.bottom()) : top;
+
+  Rect result;
+  result.SetByBounds(left, top, right, bottom);
+  return result;
+}
+
+Rect ToEnclosingRectIgnoringError(const RectF& r, float error) {
+  int left = ToFlooredIntIgnoringError(r.x(), error);
+  int right = r.width() ? ToCeiledIntIgnoringError(r.right(), error) : left;
+  int top = ToFlooredIntIgnoringError(r.y(), error);
+  int bottom = r.height() ? ToCeiledIntIgnoringError(r.bottom(), error) : top;
 
   Rect result;
   result.SetByBounds(left, top, right, bottom);

@@ -213,12 +213,9 @@ public class ContextualSearchImageControl {
         mImageVisibilityAnimator.setDuration(OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS);
         mImageVisibilityAnimator.setInterpolator(mCustomImageVisibilityInterpolator);
         mImageVisibilityAnimator.setValues(mCustomImageVisibilityPercentage, visible ? 1.f : 0.f);
-        mImageVisibilityAnimator.addUpdateListener(new CompositorAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(CompositorAnimator animator) {
-                if (mExpandedPercentage > 0.f) return;
-                mCustomImageVisibilityPercentage = animator.getAnimatedValue();
-            }
+        mImageVisibilityAnimator.addUpdateListener(animator -> {
+            if (mExpandedPercentage > 0.f) return;
+            mCustomImageVisibilityPercentage = animator.getAnimatedValue();
         });
         mImageVisibilityAnimator.addListener(new AnimatorListenerAdapter() {
             @Override

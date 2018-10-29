@@ -17,8 +17,7 @@ namespace resource_coordinator {
 // static
 bool PageSignalReceiver::IsEnabled() {
   // Check that service_manager is active and Resource Coordinator is enabled.
-  return content::ServiceManagerConnection::GetForProcess() != nullptr &&
-         resource_coordinator::IsResourceCoordinatorEnabled();
+  return content::ServiceManagerConnection::GetForProcess() != nullptr;
 }
 
 // static

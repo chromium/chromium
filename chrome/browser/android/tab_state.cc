@@ -504,7 +504,7 @@ ScopedJavaLocalRef<jobject>
   if (referrer_url) {
     referrer = content::Referrer(
         GURL(base::android::ConvertJavaStringToUTF8(env, referrer_url)),
-        static_cast<blink::WebReferrerPolicy>(referrer_policy));
+        static_cast<network::mojom::ReferrerPolicy>(referrer_policy));
   }
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(

@@ -55,9 +55,6 @@ class ProcessMemoryMetricsEmitter
   virtual void ReceivedProcessInfos(
       std::vector<resource_coordinator::mojom::ProcessInfoPtr> process_infos);
 
-  // Virtual for testing. Whether the GRC is enabled.
-  virtual bool IsResourceCoordinatorEnabled();
-
   // Virtual for testing.
   virtual ukm::UkmRecorder* GetUkmRecorder();
 

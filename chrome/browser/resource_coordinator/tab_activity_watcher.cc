@@ -5,7 +5,9 @@
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_logger.h"
 #include "chrome/browser/resource_coordinator/tab_ranker/mru_features.h"
 #include "chrome/browser/resource_coordinator/tab_ranker/tab_features.h"
@@ -55,6 +57,17 @@ class TabActivityWatcher::WebContentsData
     if (web_contents()->IsBeingDestroyed() || backgrounded_time_.is_null())
       return base::nullopt;
 
+    // Only Scores Oldest N tabs (based on least recently used index calculated
+    // as mru.total - mru.index - 1).
+    const auto mru = GetMRUFeatures();
+    const int lru_index = mru.total - mru.index - 1;
+
+    // If the least recently used index is greater than or equals to N, which
+    // means the tab is not in the oldest N list, we should simply skip it.
+    // The N is defaulted as kMaxInt so that all tabs are scored.
+    if (lru_index >= GetNumOldestTabsToScoreWithTabRanker())
+      return base::nullopt;
+
     const Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
     if (!browser)
       return base::nullopt;
@@ -66,8 +79,8 @@ class TabActivityWatcher::WebContentsData
 
     float score;
     tab_ranker::TabRankerResult result =
-        TabActivityWatcher::GetInstance()->predictor_.ScoreTab(
-            tab, window, GetMRUFeatures(), &score);
+        TabActivityWatcher::GetInstance()->predictor_.ScoreTab(tab, window, mru,
+                                                               &score);
     if (result == tab_ranker::TabRankerResult::kSuccess)
       return score;
     return base::nullopt;
@@ -503,8 +516,8 @@ void TabActivityWatcher::ResetForTesting() {
 
 // static
 TabActivityWatcher* TabActivityWatcher::GetInstance() {
-  CR_DEFINE_STATIC_LOCAL(TabActivityWatcher, instance, ());
-  return &instance;
+  static base::NoDestructor<TabActivityWatcher> instance;
+  return instance.get();
 }
 
 // When a WillCloseAllTabs is invoked, all MRU index of that tab_strip_model

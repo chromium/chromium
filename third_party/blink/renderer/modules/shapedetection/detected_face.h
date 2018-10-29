@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_FACE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/shapedetection/landmark.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -24,6 +25,7 @@ class MODULES_EXPORT DetectedFace final : public ScriptWrappable {
   DOMRectReadOnly* boundingBox() const;
   const HeapVector<Landmark>& landmarks() const;
 
+  ScriptValue toJSONForBinding(ScriptState*) const;
   void Trace(blink::Visitor*) override;
 
  private:

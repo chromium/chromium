@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -437,9 +438,11 @@ base::string16 AutofillExternalDelegate::GetSettingsSuggestionValue()
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
 
     case PopupType::kPersonalInformation:
+    case PopupType::kUnspecified:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE);
 
-    default:
+    case PopupType::kPasswords:
+      NOTREACHED();
       return base::string16();
   }
 }

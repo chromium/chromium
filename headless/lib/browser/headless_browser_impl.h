@@ -14,19 +14,24 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
 
 namespace ui {
 class Compositor;
 }  // namespace ui
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace headless {
 
 class HeadlessBrowserContextImpl;
 class HeadlessBrowserMainParts;
+class HeadlessRequestContextManager;
+class HeadlessWebContentsImpl;
 
 extern const base::FilePath::CharType kDefaultProfileName[];
 
@@ -99,7 +104,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   HeadlessBrowserContext* default_browser_context_;  // Not owned.
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-
+  std::unique_ptr<HeadlessRequestContextManager>
+      system_request_context_manager_;
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_;
 
  private:

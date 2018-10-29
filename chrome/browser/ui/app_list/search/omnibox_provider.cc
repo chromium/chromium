@@ -23,7 +23,8 @@ namespace app_list {
 OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller)
     : profile_(profile),
-      is_zero_state_enabled_(features::IsZeroStateSuggestionsEnabled()),
+      is_zero_state_enabled_(
+          app_list_features::IsZeroStateSuggestionsEnabled()),
       list_controller_(list_controller),
       controller_(std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),

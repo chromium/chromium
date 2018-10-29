@@ -3,4 +3,3 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 PASS resizeEventCount is 1
-

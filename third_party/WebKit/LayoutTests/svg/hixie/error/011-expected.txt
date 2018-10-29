@@ -1,0 +1,1 @@
+CONSOLE ERROR: line 1: Error: <svg> attribute viewBox: Expected number, "0 0,, 1 1".

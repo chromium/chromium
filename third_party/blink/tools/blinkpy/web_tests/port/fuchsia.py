@@ -268,9 +268,9 @@ class FuchsiaPort(base.Port):
 
 
 class ChromiumFuchsiaDriver(driver.Driver):
-    def __init__(self, port, worker_number, pixel_tests, no_timeout=False):
+    def __init__(self, port, worker_number, no_timeout=False):
         super(ChromiumFuchsiaDriver, self).__init__(
-            port, worker_number, pixel_tests, no_timeout)
+            port, worker_number, no_timeout)
 
     def _base_cmd_line(self):
         return ['run', 'content_shell']

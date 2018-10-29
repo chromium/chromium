@@ -7,7 +7,7 @@
 #import <XCTest/XCTest.h>
 
 #include "base/ios/ios_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #include "ios/chrome/test/app/navigation_test_util.h"
@@ -123,10 +123,7 @@ id<GREYMatcher> ShareMenuCollectionView() {
 - (void)printCurrentPage {
   // EarlGrey does not have the ability to interact with the share menu in
   // iOS11, so use the dispatcher to trigger the print view controller instead.
-  if (base::ios::IsRunningOnIOS11OrLater()) {
-    DCHECK(!IsUIRefreshPhase1Enabled());
-    [chrome_test_util::DispatcherForActiveViewController() printTab];
-  } else {
+  if (!base::ios::IsRunningOnIOS11OrLater()) {
     [ChromeEarlGreyUI openShareMenu];
     id<GREYMatcher> printButton =
         chrome_test_util::ButtonWithAccessibilityLabel(@"Print");

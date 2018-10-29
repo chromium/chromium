@@ -39,18 +39,6 @@ class PreviewsInfoBarDelegate : public ConfirmInfoBarDelegate {
     INFOBAR_INDEX_BOUNDARY
   };
 
-  // Values of the UMA Previews.InfoBarTimestamp histogram. This enum must
-  // remain synchronized with the enum of the same name in
-  // metrics/histograms/histograms.xml.
-  enum PreviewsInfoBarTimestamp {
-    TIMESTAMP_SHOWN = 0,
-    TIMESTAMP_NOT_SHOWN_PREVIEW_NOT_STALE = 1,
-    TIMESTAMP_NOT_SHOWN_STALENESS_NEGATIVE = 2,
-    TIMESTAMP_NOT_SHOWN_STALENESS_GREATER_THAN_MAX = 3,
-    TIMESTAMP_UPDATED_NOW_SHOWN = 4,
-    TIMESTAMP_INDEX_BOUNDARY
-  };
-
   ~PreviewsInfoBarDelegate() override;
 
   // Creates a preview infobar and corresponding delegate and adds the infobar
@@ -58,9 +46,7 @@ class PreviewsInfoBarDelegate : public ConfirmInfoBarDelegate {
   // dismissed.
   static void Create(content::WebContents* web_contents,
                      previews::PreviewsType previews_type,
-                     base::Time previews_freshness,
                      bool is_data_saver_user,
-                     bool is_reload,
                      previews::PreviewsUIService* previews_ui_service);
 
   // ConfirmInfoBarDelegate overrides:
@@ -68,17 +54,12 @@ class PreviewsInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::string16 GetMessageText() const override;
   base::string16 GetLinkText() const override;
 
-  base::string16 GetTimestampText() const;
-
-  // A key to identify opt out events.
-  static const void* OptOutEventKey();
+  base::string16 GetStalePreviewTimestampText() const;
 
  private:
   PreviewsInfoBarDelegate(PreviewsUITabHelper* ui_tab_helper,
                           previews::PreviewsType previews_type,
-                          base::Time previews_freshness,
-                          bool is_data_saver_user,
-                          bool is_reload);
+                          bool is_data_saver_user);
 
   // ConfirmInfoBarDelegate overrides:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -89,10 +70,6 @@ class PreviewsInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   PreviewsUITabHelper* ui_tab_helper_;
   previews::PreviewsType previews_type_;
-  // The time at which the preview associated with this infobar was created. A
-  // value of zero means that the creation time is unknown.
-  const base::Time previews_freshness_;
-  const bool is_reload_;
   mutable PreviewsInfoBarAction infobar_dismissed_action_;
 
   const base::string16 message_text_;

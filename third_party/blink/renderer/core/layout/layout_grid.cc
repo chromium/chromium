@@ -34,12 +34,12 @@
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
-#include "third_party/blink/renderer/core/paint/grid_painter.h"
+#include "third_party/blink/renderer/core/paint/block_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
@@ -49,8 +49,6 @@ LayoutGrid::LayoutGrid(Element* element)
       grid_(Grid::Create(this)),
       track_sizing_algorithm_(this, *grid_) {
   DCHECK(!ChildrenInline());
-  if (!IsAnonymous())
-    UseCounter::Count(GetDocument(), WebFeature::kCSSGridLayout);
 }
 
 LayoutGrid::~LayoutGrid() = default;
@@ -267,18 +265,35 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
     LayoutSize previous_size = Size();
     has_definite_logical_height_ = HasDefiniteLogicalHeight();
 
-    // Grid's layout logic controls the grid item's override height, hence
-    // we need to clear any override height set previously, so it doesn't
-    // interfere in current layout execution.
-    // Grid never uses the override width, that's why we don't need to clear it.
     has_any_orthogonal_item_ = false;
     for (auto* child = FirstInFlowChildBox(); child;
          child = child->NextInFlowSiblingBox()) {
+      // Grid's layout logic controls the grid item's override height, hence
+      // we need to clear any override height set previously, so it doesn't
+      // interfere in current layout execution.
+      // Grid never uses the override width, that's why we don't need to clear
+      // it.
       child->ClearOverrideLogicalHeight();
+
+      // We may need to repeat the track sizing in case of any grid item was
+      // orthogonal.
       if (GridLayoutUtils::IsOrthogonalChild(*this, *child))
         has_any_orthogonal_item_ = true;
-    }
 
+      // We keep a cache of items with baseline as alignment values so
+      // that we only compute the baseline shims for such items. This
+      // cache is needed for performance related reasons due to the
+      // cost of evaluating the item's participation in a baseline
+      // context during the track sizing algorithm.
+      if (IsBaselineAlignmentForChild(*child, kGridColumnAxis)) {
+        track_sizing_algorithm_.CacheBaselineAlignedItem(*child,
+                                                         kGridColumnAxis);
+      }
+      if (IsBaselineAlignmentForChild(*child, kGridRowAxis)) {
+        track_sizing_algorithm_.CacheBaselineAlignedItem(*child, kGridRowAxis);
+      }
+    }
+    baseline_items_cached_ = true;
     UpdateLogicalWidth();
 
     TextAutosizer::LayoutScope text_autosizer_layout_scope(this, &layout_scope);
@@ -358,6 +373,9 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
   UpdateAfterLayout();
 
   ClearNeedsLayout();
+
+  track_sizing_algorithm_.ClearBaselineItemsCache();
+  baseline_items_cached_ = false;
 }
 
 LayoutUnit LayoutGrid::GridGap(
@@ -482,6 +500,17 @@ void LayoutGrid::ComputeIntrinsicLogicalWidths(
   PlaceItemsOnGrid(algorithm, base::nullopt);
 
   PerformGridItemsPreLayout(algorithm);
+
+  if (baseline_items_cached_) {
+    algorithm.CopyBaselineItemsCache(track_sizing_algorithm_, kGridRowAxis);
+  } else {
+    for (auto* child = FirstInFlowChildBox(); child;
+         child = child->NextInFlowSiblingBox()) {
+      if (IsBaselineAlignmentForChild(*child, kGridRowAxis)) {
+        algorithm.CacheBaselineAlignedItem(*child, kGridRowAxis);
+      }
+    }
+  }
 
   ComputeTrackSizesForIndefiniteSize(algorithm, kForColumns, min_logical_width,
                                      max_logical_width);
@@ -1127,7 +1156,6 @@ void LayoutGrid::DirtyGrid() {
     return;
 
   grid_->SetNeedsItemsPlacement(true);
-  grid_items_overflowing_grid_area_.resize(0);
 }
 
 Vector<LayoutUnit> LayoutGrid::TrackSizesForComputedStyle(
@@ -1225,7 +1253,6 @@ void LayoutGrid::UpdateGridAreaLogicalSize(
 void LayoutGrid::LayoutGridItems() {
   PopulateGridPositionsForDirection(kForColumns);
   PopulateGridPositionsForDirection(kForRows);
-  grid_items_overflowing_grid_area_.resize(0);
 
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
@@ -1269,20 +1296,14 @@ void LayoutGrid::LayoutGridItems() {
     // paint them even if the grid-area is not visible. Using physical
     // dimensions for simplicity, so we can forget about orthogonalty.
     LayoutUnit child_grid_area_height =
-        IsHorizontalWritingMode()
-            ? child->OverrideContainingBlockContentLogicalHeight()
-            : child->OverrideContainingBlockContentLogicalWidth();
+        child->OverrideContainingBlockContentHeight();
     LayoutUnit child_grid_area_width =
-        IsHorizontalWritingMode()
-            ? child->OverrideContainingBlockContentLogicalWidth()
-            : child->OverrideContainingBlockContentLogicalHeight();
+        child->OverrideContainingBlockContentWidth();
     LayoutRect grid_area_rect(
         GridAreaLogicalPosition(area),
         LayoutSize(child_grid_area_width, child_grid_area_height));
     LayoutRect child_overflow_rect = child->FrameRect();
     child_overflow_rect.SetSize(child->VisualOverflowRect().Size());
-    if (!grid_area_rect.Contains(child_overflow_rect))
-      grid_items_overflowing_grid_area_.push_back(child);
   }
 }
 
@@ -1606,7 +1627,7 @@ LayoutUnit LayoutGrid::BaselinePosition(FontBaseline,
 
 LayoutUnit LayoutGrid::FirstLineBoxBaseline() const {
   if (IsWritingModeRoot() || !grid_->HasGridItems() ||
-      ShouldApplySizeContainment())
+      ShouldApplyLayoutContainment())
     return LayoutUnit(-1);
   const LayoutBox* baseline_child = nullptr;
   const LayoutBox* first_child = nullptr;
@@ -1615,8 +1636,9 @@ LayoutUnit LayoutGrid::FirstLineBoxBaseline() const {
   for (size_t column = 0;
        !is_baseline_aligned && column < grid_->NumTracks(kForColumns);
        column++) {
-    for (size_t index = 0; index < grid_->Cell(0, column).size(); index++) {
-      const LayoutBox* child = grid_->Cell(0, column)[index];
+    const GridItemList& cell = grid_->Cell(0, column);
+    for (size_t index = 0; index < cell.size(); index++) {
+      const LayoutBox* child = cell[index];
       DCHECK(!child->IsOutOfFlowPositioned());
       // If an item participates in baseline alignment, we select such item.
       if (IsBaselineAlignmentForChild(*child, kGridColumnAxis)) {
@@ -2081,8 +2103,8 @@ void LayoutGrid::GridAreaPositionForInFlowChild(
     LayoutUnit& start,
     LayoutUnit& end) const {
   DCHECK(!child.IsOutOfFlowPositioned());
-  const GridSpan& span =
-      track_sizing_algorithm_.GetGrid().GridItemSpan(child, direction);
+  const Grid& grid = track_sizing_algorithm_.GetGrid();
+  const GridSpan& span = grid.GridItemSpan(child, direction);
   // TODO (lajava): This is a common pattern, why not defining a function like
   // positions(direction) ?
   auto& positions =
@@ -2092,8 +2114,11 @@ void LayoutGrid::GridAreaPositionForInFlowChild(
   // The 'positions' vector includes distribution offset (because of content
   // alignment) and gutters so we need to subtract them to get the actual
   // end position for a given track (this does not have to be done for the
-  // last track as there are no more positions's elements after it).
-  if (span.EndLine() < positions.size() - 1)
+  // last track as there are no more positions's elements after it, nor for
+  // collapsed tracks).
+  if (span.EndLine() < positions.size() - 1 &&
+      !(grid.HasAutoRepeatEmptyTracks(direction) &&
+        grid.IsEmptyAutoRepeatTrack(direction, span.EndLine())))
     end -= GridGap(direction) + GridItemOffset(direction);
 }
 
@@ -2332,8 +2357,10 @@ LayoutPoint LayoutGrid::GridAreaLogicalPosition(const GridArea& area) const {
 void LayoutGrid::PaintChildren(const PaintInfo& paint_info,
                                const LayoutPoint& paint_offset) const {
   DCHECK(!grid_->NeedsItemsPlacement());
-  if (grid_->HasGridItems())
-    GridPainter(*this).PaintChildren(paint_info, paint_offset);
+  if (grid_->HasGridItems()) {
+    BlockPainter(*this).PaintChildrenAtomically(grid_->GetOrderIterator(),
+                                                paint_info);
+  }
 }
 
 bool LayoutGrid::CachedHasDefiniteLogicalHeight() const {

@@ -12,4 +12,8 @@ DxDiagNode::DxDiagNode(const DxDiagNode& other) = default;
 
 DxDiagNode::~DxDiagNode() = default;
 
+bool DxDiagNode::IsEmpty() const {
+  return values.empty() && children.empty();
+}
+
 }  // namespace gpu

@@ -16,5 +16,6 @@ FAIL Out-of-range argument: 4294967296 assert_throws: function "() => memory.gro
 FAIL Out-of-range argument: 68719476736 assert_throws: function "() => memory.grow(value)" threw object "RangeError: WebAssembly.Memory.grow(): maximum memory size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Out-of-range argument: "0x100000000" assert_throws: function "() => memory.grow(value)" threw object "RangeError: WebAssembly.Memory.grow(): maximum memory size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Out-of-range argument: object "[object Object]" assert_throws: function "() => memory.grow(value)" threw object "RangeError: WebAssembly.Memory.grow(): maximum memory size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
+PASS Stray argument
 Harness: the test ran to completion.
 

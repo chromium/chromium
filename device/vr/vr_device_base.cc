@@ -23,7 +23,6 @@ void VRDeviceBase::PauseTracking() {}
 void VRDeviceBase::ResumeTracking() {}
 
 mojom::VRDisplayInfoPtr VRDeviceBase::GetVRDisplayInfo() {
-  DCHECK(display_info_);
   return display_info_.Clone();
 }
 
@@ -46,9 +45,9 @@ void VRDeviceBase::SetMagicWindowEnabled(bool enabled) {
 }
 
 void VRDeviceBase::ListenToDeviceChanges(
-    mojom::XRRuntimeEventListenerPtr listener,
+    mojom::XRRuntimeEventListenerAssociatedPtrInfo listener_info,
     mojom::XRRuntime::ListenToDeviceChangesCallback callback) {
-  listener_ = std::move(listener);
+  listener_.Bind(std::move(listener_info));
   std::move(callback).Run(display_info_.Clone());
 }
 
@@ -65,12 +64,7 @@ void VRDeviceBase::GetFrameData(
 void VRDeviceBase::SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info) {
   DCHECK(display_info);
   DCHECK(display_info->id == id_);
-  bool initialized = !!display_info_;
   display_info_ = std::move(display_info);
-
-  // Don't notify when the VRDisplayInfo is initially set.
-  if (!initialized)
-    return;
 
   if (listener_)
     listener_->OnDisplayInfoChanged(display_info_.Clone());
@@ -101,6 +95,10 @@ void VRDeviceBase::OnMagicWindowFrameDataRequest(
 
 void VRDeviceBase::SetListeningForActivate(bool is_listening) {
   OnListeningForActivate(is_listening);
+}
+
+void VRDeviceBase::EnsureInitialized(EnsureInitializedCallback callback) {
+  std::move(callback).Run();
 }
 
 void VRDeviceBase::RequestHitTest(

@@ -17,6 +17,10 @@ namespace base {
 class DictionaryValue;
 }
 
+// The What's New promo command for testing.
+extern const char kTestWhatsNewCommand[];
+extern const char kTestWhatsNewMessage[];
+
 // Helper class for NotificationPromo that deals with mobile_ntp promos.
 class NotificationPromoWhatsNew {
  public:

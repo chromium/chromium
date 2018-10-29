@@ -93,7 +93,7 @@ void FFTFrame::DoFFT(const float* data) {
   // Compensate for that by scaling the input by half so the FFT has the
   // correct scaling.
   float scale = 0.5f;
-  VectorMath::Vsmul(data, 1, &scale, scaled_data.Data(), 1, fft_size_);
+  vector_math::Vsmul(data, 1, &scale, scaled_data.Data(), 1, fft_size_);
 
   vDSP_ctoz((DSPComplex*)scaled_data.Data(), 2, &frame_, 1, fft_size_ / 2);
   vDSP_fft_zrip(fft_setup_, &frame_, 1, log2fft_size_, FFT_FORWARD);
@@ -105,7 +105,7 @@ void FFTFrame::DoInverseFFT(float* data) {
 
   // Do final scaling so that x == IFFT(FFT(x))
   float scale = 1.0f / fft_size_;
-  VectorMath::Vsmul(data, 1, &scale, data, 1, fft_size_);
+  vector_math::Vsmul(data, 1, &scale, data, 1, fft_size_);
 }
 
 FFTSetup FFTFrame::FftSetupForSize(unsigned fft_size) {

@@ -70,7 +70,7 @@ static int GetRoutingID(PP_Instance instance) {
 
 std::string LookupAttribute(const std::map<std::string, std::string>& args,
                             const std::string& key) {
-  std::map<std::string, std::string>::const_iterator it = args.find(key);
+  auto it = args.find(key);
   if (it != args.end())
     return it->second;
   return std::string();

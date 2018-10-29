@@ -13,14 +13,11 @@ cast_source_set("media") {
     ]
     deps = [
       "//base",
+      "//chromecast:chromecast_buildflags",
       "//chromecast/media",
       "//chromecast/media/cdm",
       "//components/cdm/common",
       "//media",
     ]
-  }
-
-  if (use_playready) {
-    public_configs = [ "//chromecast:playready_config" ]
   }
 }

@@ -89,7 +89,7 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(ScriptState* script_state,
                                            "The frame is not working."));
   }
 
-  Document& document = *ToDocument(ExecutionContext::From(script_state));
+  Document& document = *To<Document>(ExecutionContext::From(script_state));
   if (options.hasSysex() && options.sysex()) {
     UseCounter::Count(
         document,
@@ -102,12 +102,10 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(ScriptState* script_state,
   UseCounter::CountCrossOriginIframe(
       document, WebFeature::kRequestMIDIAccessIframe_ObscuredByFootprinting);
 
-  if (!document.GetFrame()->IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kMidiFeature,
-          ReportOptions::kReportOnFailure)) {
+  if (!document.IsFeatureEnabled(mojom::FeaturePolicyFeature::kMidiFeature,
+                                 ReportOptions::kReportOnFailure,
+                                 kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(document, WebFeature::kMidiDisabledByFeaturePolicy);
-    document.AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, kWarningMessageLevel, kFeaturePolicyConsoleWarning));
     return ScriptPromise::RejectWithDOMException(
         script_state, DOMException::Create(DOMExceptionCode::kSecurityError,
                                            kFeaturePolicyErrorMessage));

@@ -5,6 +5,7 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_LOOP_TASK_RUNNER_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_LOOP_TASK_RUNNER_H_
 
+#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -105,7 +106,7 @@ class BASE_EXPORT MessageLoopTaskRunner : public SingleThreadTaskRunner,
   int next_sequence_num_ = 0;
 
   // Whether to add the queue time to tasks.
-  bool add_queue_time_to_tasks_ = false;
+  base::subtle::Atomic32 add_queue_time_to_tasks_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MessageLoopTaskRunner);
 };

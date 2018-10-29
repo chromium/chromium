@@ -90,10 +90,17 @@ void FocusSynchronizer::SetActiveFocusClientInternal(
 }
 
 void FocusSynchronizer::SetFocusedWindow(WindowMus* window) {
-  const uint32_t change_id = delegate_->CreateChangeIdForFocus(focused_window_);
+  WindowMus* prev_focused_window = focused_window_;
   focused_window_ = window;
-  window_tree_->SetFocus(change_id,
-                         window ? window->server_id() : kInvalidServerId);
+  // Do not call SetFocus() for resetting the focus. It'll be simply ignored on
+  // the server anyway, but the client can't set the new focused window when the
+  // server picks up a new focused window during SetFocus() and its reply.
+  // See https://crbug.com/897875
+  if (!window)
+    return;
+  const uint32_t change_id =
+      delegate_->CreateChangeIdForFocus(prev_focused_window);
+  window_tree_->SetFocus(change_id, window->server_id());
 }
 
 void FocusSynchronizer::OnActiveFocusClientChanged(

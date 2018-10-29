@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Trải nghiệm các tính năng thông minh của Google trong Chromium</translation>
 <translation id="2730884209570016437">Chromium không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh.</translation>
 <translation id="2797210818057553964">Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong mục Cài đặt Chromium</translation>
+<translation id="2915596697727466327">Chromium sử dụng Face ID để đảm bảo rằng chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
 <translation id="3256316712990552818">Đã sao chép vào Chromium</translation>
 <translation id="3413120535237193088">Để nhận dấu trang trên tất cả các thiết bị của bạn, hãy đăng nhập vào Chromium.</translation>
 <translation id="3473048256428424907">Bật trình quét QR của Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Các tab bạn đã mở trong Chromium trên thiết bị khác sẽ xuất hiện tại đây.</translation>
 <translation id="495292094137889840">Bắt đầu dùng trình quét QR của Chromium</translation>
 <translation id="5231355151045086930">Đăng xuất khỏi Chromium</translation>
-<translation id="5416919929805616771">Bạn thích Chromium? <ph name="BEGIN_LINK" />Xếp hạng ứng dụng này<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
 <translation id="5945387852661427312">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chromium của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Đăng xuất khỏi Chromium sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="6068866989048414399">Điều khoản dịch vụ của Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chromium hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chromium sang thanh dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Có được trải nghiệm Google tốt hơn trong Chromium dựa trên vị trí của bạn.</translation>
-<translation id="8353224596138547809">Bạn có muốn Chromium lưu mật khẩu của bạn cho trang web này không?</translation>
 <translation id="8508544542427105412">Bạn có thể tùy chỉnh mục <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> bất cứ lúc nào. Google có thể sử dụng nội dung trên các trang web bạn truy cập, hoạt động và những tương tác trên trình duyệt để cá nhân hóa Chromium và các dịch vụ của Google, chẳng hạn như Dịch, Tìm kiếm và quảng cáo.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8809780021347235332">Để lưu hình ảnh, nhấn vào Cài đặt để cho phép Chromium sử dụng ảnh của bạn</translation>

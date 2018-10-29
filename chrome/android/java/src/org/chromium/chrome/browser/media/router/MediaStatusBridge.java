@@ -38,6 +38,20 @@ public class MediaStatusBridge {
     }
 
     /**
+     * Gets the idle reason. Only meaningful if we are in PLAYER_STATE_IDLE.
+     * - IDLE_REASON_NONE = 0
+     * - IDLE_REASON_FINISHED = 1
+     * - IDLE_REASON_CANCELED = 2
+     * - IDLE_REASON_INTERRUPTED = 3
+     * - IDLE_REASON_ERROR = 4
+     * See https://developers.google.com/android/reference/com/google/android/gms/cast/MediaStatus
+     */
+    @CalledByNative
+    public int idleReason() {
+        return mStatus.getIdleReason();
+    }
+
+    /**
      * The main title of the media. For example, in a MediaStatus representing
      * a YouTube Cast session, this could be the title of the video.
      */

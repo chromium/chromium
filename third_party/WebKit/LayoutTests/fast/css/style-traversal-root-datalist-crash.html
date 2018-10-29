@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="root">
+  <div id="d"></div>
+  <datalist id="messages">
+    <option>
+      <input list="messages">
+      <style>
+        .parent > .child { color:pink }
+      </style>
+    </option>
+  </datalist>
+</div>
+<script>
+  test(() => {
+    document.body.offsetTop;
+    // Make sure we have a StyleInvalidationRoot.
+    d.classList.add("parent");
+    // Nested remove() in UA shadow for <input list=messages>
+    root.remove();
+  }, "Nested removal should not cause a DCHECK or crash.");
+</script>

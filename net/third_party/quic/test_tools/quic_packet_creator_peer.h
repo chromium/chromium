@@ -43,6 +43,10 @@ class QuicPacketCreatorPeer {
                                              size_t buffer_len);
   static OwningSerializedPacketPointer SerializeConnectivityProbingPacket(
       QuicPacketCreator* creator);
+  static OwningSerializedPacketPointer
+  SerializePathChallengeConnectivityProbingPacket(QuicPacketCreator* creator,
+                                                  QuicPathFrameBuffer* payload);
+
   static EncryptionLevel GetEncryptionLevel(QuicPacketCreator* creator);
   static QuicFramer* framer(QuicPacketCreator* creator);
 };

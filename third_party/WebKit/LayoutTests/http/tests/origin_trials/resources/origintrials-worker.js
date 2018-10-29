@@ -34,12 +34,12 @@ expect_failure_worker = () => {
   }, 'Accessing attribute should throw error in ' + worker_type + ' worker');
   test(() => {
     var testObject = self.internals.originTrialsTest();
-    assert_not_exists(testObject, 'normalAttribute');
+    assert_false('normalAttribute' in testObject);
     assert_equals(testObject.normalAttribute, undefined);
   }, 'Attribute should not exist in ' + worker_type + ' worker');
   test(() => {
     var testObject = self.internals.originTrialsTest();
-    assert_not_exists(testObject, 'CONSTANT');
+    assert_false('CONSTANT' in testObject);
     assert_equals(testObject.CONSTANT, undefined);
   }, 'Constant should not exist in ' + worker_type + ' worker');
   done();
@@ -53,7 +53,7 @@ expect_failure_worker_implied = () => {
   var worker_type = get_worker_type();
   test(() => {
     var testObject = self.internals.originTrialsTest();
-    assert_not_exists(testObject, 'impliedAttribute');
+    assert_false('impliedAttribute' in testObject);
     assert_equals(testObject.impliedAttribute, undefined);
   }, 'Implied attribute should not exist in ' + worker_type + ' worker');
   done();

@@ -8,11 +8,22 @@
 // Protocol to communicate GoogleServicesSettingsVC actions to its coordinator.
 @protocol GoogleServicesSettingsLocalCommands<NSObject>
 
-// Called when the "Google Activity Controls" dialog should be opened.
+// Restarts the authentication flow.
+- (void)restartAuthenticationFlow;
+
+// Opens the reauth sync dialog.
+- (void)openReauthDialogAsSyncIsInAuthError;
+
+// Opens the passphrase dialog.
+- (void)openPassphraseDialog;
+
+// Opens the "Google Activity Controls" dialog.
 - (void)openGoogleActivityControlsDialog;
-// Called when the "Encryption" dialog should be opened.
+
+// Opens the "Encryption" dialog.
 - (void)openEncryptionDialog;
-// Called when the "Manage Synced Data" web page should be opened.
+
+// Opens the "Manage Synced Data" web page.
 - (void)openManageSyncedDataWebPage;
 
 @end

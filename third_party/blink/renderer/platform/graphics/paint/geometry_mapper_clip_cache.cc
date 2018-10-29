@@ -20,6 +20,10 @@ void GeometryMapperClipCache::ClearCache() {
   g_clip_cache_generation++;
 }
 
+bool GeometryMapperClipCache::IsValid() const {
+  return cache_generation_ == g_clip_cache_generation;
+}
+
 void GeometryMapperClipCache::InvalidateCacheIfNeeded() {
   if (cache_generation_ != g_clip_cache_generation) {
     clip_cache_.clear();

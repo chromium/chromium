@@ -19,13 +19,6 @@ class CONTENT_EXPORT InputDispositionHandler {
   virtual ~InputDispositionHandler() {}
 
   // Called upon event ack receipt from the renderer.
-  virtual void OnKeyboardEventAck(
-      const NativeWebKeyboardEventWithLatencyInfo& event,
-      InputEventAckSource ack_source,
-      InputEventAckState ack_result) = 0;
-  virtual void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
-                               InputEventAckSource ack_source,
-                               InputEventAckState ack_result) = 0;
   virtual void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
                                InputEventAckSource ack_source,
                                InputEventAckState ack_result) = 0;

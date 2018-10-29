@@ -95,7 +95,7 @@ WiredDisplayMediaRouteProvider::WiredDisplayMediaRouteProvider(
 }
 
 WiredDisplayMediaRouteProvider::~WiredDisplayMediaRouteProvider() {
-  if (is_observing_displays_ && PresentationReceiverWindowEnabled()) {
+  if (is_observing_displays_) {
     display::Screen::GetScreen()->RemoveObserver(this);
     is_observing_displays_ = false;
   }
@@ -204,7 +204,7 @@ void WiredDisplayMediaRouteProvider::StartObservingMediaSinks(
     return;
 
   // Start observing displays if |this| isn't already observing.
-  if (!is_observing_displays_ && PresentationReceiverWindowEnabled()) {
+  if (!is_observing_displays_) {
     display::Screen::GetScreen()->AddObserver(this);
     is_observing_displays_ = true;
   }
@@ -316,8 +316,6 @@ void WiredDisplayMediaRouteProvider::OnDisplayMetricsChanged(
 }
 
 std::vector<Display> WiredDisplayMediaRouteProvider::GetAllDisplays() const {
-  if (!PresentationReceiverWindowEnabled())
-    return {};
   return display::Screen::GetScreen()->GetAllDisplays();
 }
 

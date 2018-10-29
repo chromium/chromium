@@ -16,6 +16,8 @@ Rules from the stylesheet:
 #b65536_𐀀 { color: green; }
 #a119558_𝌆 { color: red; }
 #b119558_𝌆 { color: green; }
+
+
 Expected result:
 
 #a61_a { color: red; }

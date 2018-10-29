@@ -42,6 +42,7 @@ public class SingleTabModel implements TabModel {
 
         for (TabModelObserver observer : mObservers) {
             observer.didAddTab(tab, TabLaunchType.FROM_LINK);
+            observer.didSelectTab(tab, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
         }
 
         int state = ApplicationStatus.getStateForActivity(mActivity);

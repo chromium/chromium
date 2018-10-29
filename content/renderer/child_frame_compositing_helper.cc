@@ -39,7 +39,7 @@ void ChildFrameCompositingHelper::ChildFrameGone(
   scoped_refptr<cc::SolidColorLayer> crashed_layer =
       cc::SolidColorLayer::Create();
   crashed_layer->SetMasksToBounds(true);
-  crashed_layer->SetBackgroundColor(SK_ColorBLACK);
+  crashed_layer->SetBackgroundColor(SK_ColorGRAY);
 
   if (child_frame_compositor_->GetLayer()) {
     SkBitmap* sad_bitmap = child_frame_compositor_->GetSadPageBitmap();
@@ -71,7 +71,7 @@ void ChildFrameCompositingHelper::ChildFrameGone(
                                     false /* is_surface_layer */);
 }
 
-void ChildFrameCompositingHelper::SetPrimarySurfaceId(
+void ChildFrameCompositingHelper::SetSurfaceId(
     const viz::SurfaceId& surface_id,
     const gfx::Size& frame_size_in_dip,
     const cc::DeadlinePolicy& deadline) {
@@ -85,8 +85,8 @@ void ChildFrameCompositingHelper::SetPrimarySurfaceId(
   surface_layer_->SetSurfaceHitTestable(true);
   surface_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
-  surface_layer_->SetPrimarySurfaceId(surface_id, deadline);
-  surface_layer_->SetFallbackSurfaceId(fallback_surface_id_);
+  surface_layer_->SetSurfaceId(surface_id, deadline);
+  surface_layer_->SetOldestAcceptableFallback(fallback_surface_id_);
 
   // TODO(lfg): Investigate if it's possible to propagate the information
   // about the child surface's opacity. https://crbug.com/629851.
@@ -100,18 +100,18 @@ void ChildFrameCompositingHelper::SetPrimarySurfaceId(
   surface_layer_->SetBounds(frame_size_in_dip);
 }
 
-void ChildFrameCompositingHelper::SetFallbackSurfaceId(
+void ChildFrameCompositingHelper::SetOldestAcceptableFallback(
     const viz::SurfaceId& surface_id,
     const gfx::Size& frame_size_in_dip) {
   fallback_surface_id_ = surface_id;
 
   if (!surface_layer_) {
-    SetPrimarySurfaceId(surface_id, frame_size_in_dip,
-                        cc::DeadlinePolicy::UseDefaultDeadline());
+    SetSurfaceId(surface_id, frame_size_in_dip,
+                 cc::DeadlinePolicy::UseDefaultDeadline());
     return;
   }
 
-  surface_layer_->SetFallbackSurfaceId(surface_id);
+  surface_layer_->SetOldestAcceptableFallback(surface_id);
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {

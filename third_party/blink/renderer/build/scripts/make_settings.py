@@ -73,6 +73,7 @@ class MakeSettingsWriter(json5_generator.Writer):
         self._template_context = {
             'input_files': self._input_files,
             'settings': self.json5_file.name_dictionaries,
+            'header_guard': self.make_header_guard(self._relative_output_dir + 'settings_macros.h')
         }
 
     @template_expander.use_jinja('templates/settings_macros.h.tmpl', filters=filters)

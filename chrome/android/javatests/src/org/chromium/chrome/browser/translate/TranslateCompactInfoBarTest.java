@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBar;
@@ -27,6 +28,8 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
+import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -52,7 +55,7 @@ public class TranslateCompactInfoBarTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mInfoBarContainer = mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        mInfoBarContainer = mActivityTestRule.getInfoBarContainer();
         mListener = new InfoBarTestAnimationListener();
         mInfoBarContainer.addAnimationListener(mListener);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
@@ -128,5 +131,40 @@ public class TranslateCompactInfoBarTest {
         mActivityTestRule.getActivity().setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    /**
+     * Test tab focus is correct, even after closing and (manually) re-opening infobar.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Main"})
+    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    public void testTranslateCompactInfoBarReopenOnTarget()
+            throws InterruptedException, TimeoutException {
+        mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
+        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
+
+        TranslateCompactInfoBar infoBar =
+                (TranslateCompactInfoBar) mInfoBarContainer.getInfoBarsForTesting().get(0);
+
+        // Only the source tab is selected.
+        Assert.assertTrue(infoBar.isSourceTabSelectedForTesting());
+        Assert.assertFalse(infoBar.isTargetTabSelectedForTesting());
+
+        // Translate.
+        TranslateUtil.clickTargetMenuItem(infoBar, "en");
+        // Close bar.
+        InfoBarUtil.clickCloseButton(infoBar);
+
+        // Invoke bar by clicking the manual translate button.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), R.id.translate_id);
+
+        infoBar = (TranslateCompactInfoBar) mInfoBarContainer.getInfoBarsForTesting().get(0);
+
+        // Only the target tab is selected.
+        Assert.assertFalse(infoBar.isSourceTabSelectedForTesting());
+        Assert.assertTrue(infoBar.isTargetTabSelectedForTesting());
     }
 }

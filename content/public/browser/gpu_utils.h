@@ -9,11 +9,17 @@
 #include "content/common/content_export.h"
 #include "gpu/config/gpu_preferences.h"
 
+namespace gpu {
+class GpuChannelEstablishFactory;
+}
+
 namespace content {
 
 CONTENT_EXPORT const gpu::GpuPreferences GetGpuPreferencesFromCommandLine();
 
 CONTENT_EXPORT void StopGpuProcess(const base::Closure& callback);
+
+CONTENT_EXPORT gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory();
 
 }  // namespace content
 

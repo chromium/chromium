@@ -88,7 +88,7 @@ class StringPrinter(Printer):
 
 class String16Printer(StringPrinter):
     def to_string(self):
-        return webkit.ustring_to_string(self.val['_M_dataplus']['_M_p'])
+        return blink.ustring_to_string(self.val['_M_dataplus']['_M_p'])
 pp_set.add_printer(
     'string16',
     '^string16|std::basic_string<(unsigned short|base::char16).*>$',

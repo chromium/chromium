@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_goaway_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 
 namespace quic {
 
 QuicGoAwayFrame::QuicGoAwayFrame()
-    : error_code(QUIC_NO_ERROR), last_good_stream_id(0) {}
+    : control_frame_id(kInvalidControlFrameId),
+      error_code(QUIC_NO_ERROR),
+      last_good_stream_id(0) {}
 
 QuicGoAwayFrame::QuicGoAwayFrame(QuicControlFrameId control_frame_id,
                                  QuicErrorCode error_code,
                                  QuicStreamId last_good_stream_id,
                                  const QuicString& reason)
-    : QuicControlFrame(control_frame_id),
+    : control_frame_id(control_frame_id),
       error_code(error_code),
       last_good_stream_id(last_good_stream_id),
       reason_phrase(reason) {}

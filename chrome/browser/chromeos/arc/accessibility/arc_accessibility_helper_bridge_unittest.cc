@@ -305,7 +305,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
       arc::mojom::AccessibilityNotificationStateType::SURFACE_REMOVED);
 
   // Ax tree of the surface should be reset as the tree no longer exists.
-  EXPECT_EQ(-1, test_surface.GetAXTreeId());
+  EXPECT_EQ(ui::AXTreeIDUnknown(), test_surface.GetAXTreeId());
 
   EXPECT_EQ(0U, notification_key_to_tree_.size());
 

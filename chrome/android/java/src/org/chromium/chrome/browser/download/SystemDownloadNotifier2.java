@@ -11,7 +11,6 @@ import android.support.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.PendingState;
 
 import java.lang.annotation.Retention;
@@ -75,8 +74,6 @@ public class SystemDownloadNotifier2 implements DownloadNotifier {
         boolean mIsSupportedMimeType;
         boolean mCanDownloadWhileMetered;
         boolean mIsAutoResumable;
-        @FailState
-        int mFailState;
         @PendingState
         int mPendingState;
 
@@ -136,9 +133,10 @@ public class SystemDownloadNotifier2 implements DownloadNotifier {
     }
 
     @Override
-    public void notifyDownloadFailed(DownloadInfo info, @FailState int failState) {
-        getDownloadNotificationService().notifyDownloadFailed(info.getContentId(),
-                info.getFileName(), info.getIcon(), info.isOffTheRecord(), failState);
+    public void notifyDownloadFailed(DownloadInfo info) {
+        NotificationInfo notificationInfo =
+                new NotificationInfo(NotificationType.FAILED, info, NotificationPriority.HIGH);
+        addPendingNotification(notificationInfo);
     }
 
     @Override
@@ -235,13 +233,14 @@ public class SystemDownloadNotifier2 implements DownloadNotifier {
                         info.getFileName(), info.getProgress(), info.getBytesReceived(),
                         info.getTimeRemainingInMillis(), notificationInfo.mStartTime,
                         info.isOffTheRecord(), notificationInfo.mCanDownloadWhileMetered,
-                        info.getIsTransient(), info.getIcon());
+                        info.getIsTransient(), info.getIcon(), info.getOriginalUrl(),
+                        info.getShouldPromoteOrigin());
                 break;
             case NotificationType.PAUSED:
                 getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),
                         info.getFileName(), true, false, info.isOffTheRecord(),
-                        info.getIsTransient(), info.getIcon(), false, false,
-                        info.getPendingState());
+                        info.getIsTransient(), info.getIcon(), info.getOriginalUrl(),
+                        info.getShouldPromoteOrigin(), false, true, info.getPendingState());
                 break;
             case NotificationType.SUCCEEDED:
                 final int notificationId =
@@ -249,7 +248,8 @@ public class SystemDownloadNotifier2 implements DownloadNotifier {
                                 info.getContentId(), info.getFilePath(), info.getFileName(),
                                 notificationInfo.mSystemDownloadId, info.isOffTheRecord(),
                                 notificationInfo.mIsSupportedMimeType, info.getIsOpenable(),
-                                info.getIcon(), info.getOriginalUrl(), info.getReferrer(),
+                                info.getIcon(), info.getOriginalUrl(),
+                                info.getShouldPromoteOrigin(), info.getReferrer(),
                                 info.getBytesTotalSize());
 
                 if (info.getIsOpenable()) {
@@ -260,13 +260,14 @@ public class SystemDownloadNotifier2 implements DownloadNotifier {
                 break;
             case NotificationType.FAILED:
                 getDownloadNotificationService().notifyDownloadFailed(info.getContentId(),
-                        info.getFileName(), info.getIcon(), info.isOffTheRecord(),
-                        notificationInfo.mFailState);
+                        info.getFileName(), info.getIcon(), info.getOriginalUrl(),
+                        info.getShouldPromoteOrigin(), info.isOffTheRecord(), info.getFailState());
                 break;
             case NotificationType.INTERRUPTED:
                 getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),
                         info.getFileName(), info.isResumable(), notificationInfo.mIsAutoResumable,
-                        info.isOffTheRecord(), info.getIsTransient(), info.getIcon(), false, false,
+                        info.isOffTheRecord(), info.getIsTransient(), info.getIcon(),
+                        info.getOriginalUrl(), info.getShouldPromoteOrigin(), false, false,
                         notificationInfo.mPendingState);
                 break;
         }

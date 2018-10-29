@@ -185,8 +185,7 @@ std::vector<CertEntry> MatchCerts(const std::vector<QuicString>& certs,
       client_cached_cert_hashes.size() % sizeof(uint64_t) == 0 &&
       !client_cached_cert_hashes.empty();
 
-  for (std::vector<QuicString>::const_iterator i = certs.begin();
-       i != certs.end(); ++i) {
+  for (auto i = certs.begin(); i != certs.end(); ++i) {
     CertEntry entry;
 
     if (cached_valid) {
@@ -234,8 +233,7 @@ std::vector<CertEntry> MatchCerts(const std::vector<QuicString>& certs,
 size_t CertEntriesSize(const std::vector<CertEntry>& entries) {
   size_t entries_size = 0;
 
-  for (std::vector<CertEntry>::const_iterator i = entries.begin();
-       i != entries.end(); ++i) {
+  for (auto i = entries.begin(); i != entries.end(); ++i) {
     entries_size++;
     switch (i->type) {
       case CertEntry::COMPRESSED:
@@ -257,8 +255,7 @@ size_t CertEntriesSize(const std::vector<CertEntry>& entries) {
 // SerializeCertEntries serialises |entries| to |out|, which must have enough
 // space to contain them.
 void SerializeCertEntries(uint8_t* out, const std::vector<CertEntry>& entries) {
-  for (std::vector<CertEntry>::const_iterator i = entries.begin();
-       i != entries.end(); ++i) {
+  for (auto i = entries.begin(); i != entries.end(); ++i) {
     *out++ = static_cast<uint8_t>(i->type);
     switch (i->type) {
       case CertEntry::COMPRESSED:
@@ -320,8 +317,7 @@ std::vector<uint64_t> HashCerts(const std::vector<QuicString>& certs) {
   std::vector<uint64_t> ret;
   ret.reserve(certs.size());
 
-  for (std::vector<QuicString>::const_iterator i = certs.begin();
-       i != certs.end(); ++i) {
+  for (auto i = certs.begin(); i != certs.end(); ++i) {
     ret.push_back(QuicUtils::FNV1a_64_Hash(*i));
   }
 

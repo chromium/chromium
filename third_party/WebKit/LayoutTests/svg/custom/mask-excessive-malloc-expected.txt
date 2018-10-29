@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGResourceMasker {mask} [id="mask"] [maskUnits=objectBoundingBox] [maskContentUnits=userSpaceOnUse]
-      LayoutSVGRect {rect} at (0,0) size 33554428x33554428 [fill={[type=SOLID] [color=#FFFFFF]}] [x=0.00] [y=0.00] [width=33554428.00] [height=33554428.00]
-    LayoutSVGPath {path} at (200,200) size 100x200 [fill={[type=SOLID] [color=#0000FF]}] [data="M 200 200 l 100 0 l 0 200 l -100 0 Z"]
-      [masker="mask"] LayoutSVGResourceMasker {mask} at (190,180) size 33554238x33554248

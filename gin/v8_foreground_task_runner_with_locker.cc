@@ -57,6 +57,13 @@ void V8ForegroundTaskRunnerWithLocker::PostTask(
                                 std::move(task)));
 }
 
+void V8ForegroundTaskRunnerWithLocker::PostNonNestableTask(
+    std::unique_ptr<v8::Task> task) {
+  task_runner_->PostNonNestableTask(
+      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_),
+                                std::move(task)));
+}
+
 void V8ForegroundTaskRunnerWithLocker::PostDelayedTask(
     std::unique_ptr<v8::Task> task,
     double delay_in_seconds) {
@@ -72,6 +79,10 @@ void V8ForegroundTaskRunnerWithLocker::PostIdleTask(
   DCHECK(IdleTasksEnabled());
   idle_task_runner()->PostIdleTask(
       std::make_unique<IdleTaskWithLocker>(isolate_, std::move(task)));
+}
+
+bool V8ForegroundTaskRunnerWithLocker::NonNestableTasksEnabled() const {
+  return true;
 }
 
 }  // namespace gin

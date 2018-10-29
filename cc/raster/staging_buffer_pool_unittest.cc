@@ -4,8 +4,6 @@
 
 #include "cc/raster/staging_buffer_pool.h"
 
-#include "base/memory/memory_coordinator_client.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,9 +35,10 @@ TEST(StagingBufferPoolTest, ShutdownImmediatelyAfterCreation) {
   flush_message_loop();
 
   // Now, destroy the pool, and trigger a notification from the
-  // MemoryCoordinatorClientRegistry.
+  // MemoryPressureListener.
   pool = nullptr;
-  base::MemoryCoordinatorClientRegistry::GetInstance()->PurgeMemory();
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   // Allow the callbacks in the observers to run.
   flush_message_loop();
   // No crash.

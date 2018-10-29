@@ -23,6 +23,7 @@ namespace content {
 // A public interface to manage CORS origin access lists on the UI thread.
 // The shared network::cors::OriginAccessList instance can only be accessed on
 // the IO thread. Callers on UI thread must use this wrapper class.
+// TODO(toyoshim): Remove once the NetworkService is enabled.
 class CONTENT_EXPORT SharedCorsOriginAccessList
     : public base::RefCountedThreadSafe<SharedCorsOriginAccessList> {
  public:
@@ -31,19 +32,13 @@ class CONTENT_EXPORT SharedCorsOriginAccessList
   // Sets the access list to an internal network::cors::OriginAccessList
   // instance so that its IsAllowed() method works for all users that refer the
   // shared network::cors::OriginAccessList instance returned by
-  // origin_access_list() below. |patterns| will be moved so to pass the lists
-  // to the IO thread. |closure| runs on the IO thread.
+  // origin_access_list() below. |allow_patterns| and |block_patterns| will be
+  // moved so to pass the lists to the IO thread.
   // Should be called on the UI thread, and |closure| runs on the UI thread too.
-  // TODO(toyoshim): Once the NetworkService is enabled, these operations will
-  // be done over the NetworkContext interfaces, and these methods can be
-  // deleted.
-  virtual void SetAllowListForOrigin(
+  virtual void SetForOrigin(
       const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns,
-      base::OnceClosure closure) = 0;
-  virtual void SetBlockListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure) = 0;
 
   // Gets a shared OriginAccessList instance pointer. |this| should outlives

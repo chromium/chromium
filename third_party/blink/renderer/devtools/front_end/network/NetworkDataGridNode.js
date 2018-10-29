@@ -780,7 +780,8 @@ Network.NetworkRequestNode = class extends Network.NetworkNode {
    * @return {boolean}
    */
   _isFailed() {
-    return (this._request.failed && !this._request.statusCode) || (this._request.statusCode >= 400);
+    return (this._request.failed && !this._request.statusCode) || (this._request.statusCode >= 400) ||
+        (!!this._request.signedExchangeInfo() && !!this._request.signedExchangeInfo().errors);
   }
 
   /**
@@ -957,7 +958,9 @@ Network.NetworkRequestNode = class extends Network.NetworkNode {
     } else if (this._request.fetchedViaServiceWorker) {
       this._setTextAndTitle(cell, Common.UIString('(from ServiceWorker)'));
       cell.classList.add('network-dim-cell');
-    } else if (this._request.redirectSource() && this._request.redirectSource().signedExchangeInfo()) {
+    } else if (
+        this._request.redirectSource() && this._request.redirectSource().signedExchangeInfo() &&
+        !this._request.redirectSource().signedExchangeInfo().errors) {
       this._setTextAndTitle(cell, Common.UIString('(from signed-exchange)'));
       cell.classList.add('network-dim-cell');
     } else if (this._request.cached()) {

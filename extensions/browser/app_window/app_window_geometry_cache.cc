@@ -67,11 +67,9 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
   extension_data[window_id].last_change = now;
 
   if (extension_data.size() > kMaxCachedWindows) {
-    ExtensionData::iterator oldest = extension_data.end();
+    auto oldest = extension_data.end();
     // Too many windows in the cache, find the oldest one to remove.
-    for (ExtensionData::iterator it = extension_data.begin();
-         it != extension_data.end();
-         ++it) {
+    for (auto it = extension_data.begin(); it != extension_data.end(); ++it) {
       // Don't expunge the window that was just added.
       if (it->first == window_id)
         continue;
@@ -99,18 +97,13 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
 void AppWindowGeometryCache::SyncToStorage() {
   std::set<std::string> tosync;
   tosync.swap(unsynced_extensions_);
-  for (std::set<std::string>::const_iterator it = tosync.begin(),
-                                             eit = tosync.end();
-       it != eit;
-       ++it) {
+  for (auto it = tosync.cbegin(), eit = tosync.cend(); it != eit; ++it) {
     const std::string& extension_id = *it;
     const ExtensionData& extension_data = cache_[extension_id];
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    for (ExtensionData::const_iterator it = extension_data.begin(),
-                                       eit = extension_data.end();
-         it != eit;
-         ++it) {
+    for (auto it = extension_data.cbegin(), eit = extension_data.cend();
+         it != eit; ++it) {
       std::unique_ptr<base::DictionaryValue> value =
           std::make_unique<base::DictionaryValue>();
       const gfx::Rect& bounds = it->second.bounds;
@@ -156,8 +149,7 @@ bool AppWindowGeometryCache::GetGeometry(const std::string& extension_id,
     DCHECK(extension_data_it != cache_.end());
   }
 
-  ExtensionData::const_iterator window_data_it =
-      extension_data_it->second.find(window_id);
+  auto window_data_it = extension_data_it->second.find(window_id);
 
   if (window_data_it == extension_data_it->second.end())
     return false;
@@ -219,7 +211,7 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.
     const std::string& window_id = it.key();
-    ExtensionData::iterator cached_window = extension_data.find(window_id);
+    auto cached_window = extension_data.find(window_id);
     if (cached_window == extension_data.end()) {
       const base::DictionaryValue* stored_window;
       if (it.value().GetAsDictionary(&stored_window)) {

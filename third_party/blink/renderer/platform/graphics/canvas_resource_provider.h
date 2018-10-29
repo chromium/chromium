@@ -73,6 +73,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kAllowImageChromiumPresentationMode  // Use CHROMIUM_image gl extension
   };
 
+  enum ResourceProviderType {
+    kTexture = 0,
+    kBitmap = 1,
+    kSharedBitmap = 2,
+    kMaxValue = kSharedBitmap,
+  };
+
+  void static RecordTypeToUMA(ResourceProviderType type);
+
   static std::unique_ptr<CanvasResourceProvider> Create(
       const IntSize&,
       ResourceUsage,
@@ -174,8 +183,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
  private:
   class CanvasImageProvider : public cc::ImageProvider {
    public:
-    CanvasImageProvider(cc::ImageDecodeCache*,
-                        const gfx::ColorSpace& target_color_space);
+    CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
+                        cc::ImageDecodeCache* cache_f16,
+                        const gfx::ColorSpace& target_color_space,
+                        SkColorType target_color_type);
     ~CanvasImageProvider() override;
 
     // cc::ImageProvider implementation.
@@ -189,7 +200,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
     bool cleanup_task_pending_ = false;
     std::vector<ScopedDecodedDrawImage> locked_images_;
-    cc::PlaybackImageProvider playback_image_provider_;
+    cc::PlaybackImageProvider playback_image_provider_n32_;
+    base::Optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
     base::WeakPtrFactory<CanvasImageProvider> weak_factory_;
   };
@@ -197,6 +209,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
   virtual scoped_refptr<CanvasResource> CreateResource();
   cc::ImageDecodeCache* ImageDecodeCache();
+  cc::ImageDecodeCache* ImageDecodeCacheF16();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;

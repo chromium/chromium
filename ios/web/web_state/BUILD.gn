@@ -103,6 +103,7 @@ source_set("error_translation_util") {
   deps = [
     "//base",
     "//ios/net",
+    "//ios/web/public",
     "//net",
   ]
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/prerender/prerender_final_status.h"
 #include "chrome/browser/prerender/prerender_link_manager.h"
 #include "chrome/browser/prerender/prerender_link_manager_factory.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/prerender_messages.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "content/public/browser/browser_task_traits.h"
 
 using content::BrowserThread;
 
@@ -95,8 +97,8 @@ void PrerenderMessageFilter::OverrideThreadForMessage(
 }
 
 void PrerenderMessageFilter::OnChannelClosing() {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PrerenderMessageFilter::OnChannelClosingInUIThread,
                      this));
 }

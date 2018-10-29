@@ -22,11 +22,6 @@ class RecentModelFactory : public BrowserContextKeyedServiceFactory {
   // Returns the RecentModel for |profile|, creating it if not created yet.
   static RecentModel* GetForProfile(Profile* profile);
 
-  // Sets the RecentModel for |profile| for testing.
-  static RecentModel* SetForProfileAndUseForTest(
-      Profile* profile,
-      std::unique_ptr<RecentModel> model);
-
   // Returns the singleton RecentModelFactory instance.
   static RecentModelFactory* GetInstance();
 
@@ -41,8 +36,6 @@ class RecentModelFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  static RecentModel* model_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(RecentModelFactory);
 };

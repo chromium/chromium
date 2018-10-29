@@ -52,8 +52,8 @@ class ContentServiceBrowserTest : public ContentBrowserTest {
 
 class StopLoadingObserver : public content::NavigableContentsObserver {
  public:
-  StopLoadingObserver() {}
-  ~StopLoadingObserver() override {}
+  StopLoadingObserver() = default;
+  ~StopLoadingObserver() override = default;
 
   void CallOnNextStopLoading(base::OnceClosure callback) {
     callback_ = std::move(callback);
@@ -73,8 +73,8 @@ class StopLoadingObserver : public content::NavigableContentsObserver {
 
 class NavigationObserver : public content::NavigableContentsObserver {
  public:
-  NavigationObserver() {}
-  ~NavigationObserver() override {}
+  NavigationObserver() = default;
+  ~NavigationObserver() override = default;
 
   void CallOnNextNavigation(base::OnceClosure callback) {
     callback_ = std::move(callback);
@@ -100,6 +100,35 @@ class NavigationObserver : public content::NavigableContentsObserver {
   GURL last_url_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
+};
+
+class NavigationSuppressedObserver : public content::NavigableContentsObserver {
+ public:
+  NavigationSuppressedObserver() = default;
+  ~NavigationSuppressedObserver() override = default;
+
+  void CallOnNextNavigationSuppression(base::OnceClosure callback) {
+    callback_ = std::move(callback);
+  }
+
+  size_t navigations_suppressed() const { return navigations_suppressed_; }
+  const GURL& last_url() const { return last_url_; }
+
+ private:
+  void DidSuppressNavigation(const GURL& url,
+                             WindowOpenDisposition disposition,
+                             bool from_user_gesture) override {
+    ++navigations_suppressed_;
+    last_url_ = url;
+    if (callback_)
+      std::move(callback_).Run();
+  }
+
+  base::OnceClosure callback_;
+  size_t navigations_suppressed_ = 0;
+  GURL last_url_;
+
+  DISALLOW_COPY_AND_ASSIGN(NavigationSuppressedObserver);
 };
 
 // Verifies that the embedded Content Service is reachable. Does a basic
@@ -135,6 +164,58 @@ IN_PROC_BROWSER_TEST_F(ContentServiceBrowserTest, DidFinishNavigation) {
 
   EXPECT_EQ(1u, observer.navigations_finished());
   EXPECT_EQ(kTestUrl, observer.last_url());
+}
+
+IN_PROC_BROWSER_TEST_F(ContentServiceBrowserTest, SuppressNavigations) {
+  auto params = mojom::NavigableContentsParams::New();
+  params->suppress_navigations = true;
+  auto contents =
+      std::make_unique<NavigableContents>(GetFactory(), std::move(params));
+
+  NavigationObserver navigation_observer;
+
+  NavigationSuppressedObserver suppressed_observer;
+  base::RunLoop suppressed_loop;
+  suppressed_observer.CallOnNextNavigationSuppression(
+      suppressed_loop.QuitClosure());
+
+  contents->AddObserver(&navigation_observer);
+  contents->AddObserver(&suppressed_observer);
+
+  // This URL is expected to elicit an automatic navigation on load, which
+  // should be suppressed because |suppress_navigations| is |true|.
+  const GURL kTestUrl =
+      embedded_test_server()->GetURL("/navigate_on_load.html");
+  contents->Navigate(kTestUrl);
+
+  EXPECT_EQ(0u, navigation_observer.navigations_finished());
+  EXPECT_EQ(0u, suppressed_observer.navigations_suppressed());
+
+  suppressed_loop.Run();
+
+  EXPECT_EQ(1u, navigation_observer.navigations_finished());
+  EXPECT_EQ(1u, suppressed_observer.navigations_suppressed());
+
+  EXPECT_EQ(kTestUrl, navigation_observer.last_url());
+  EXPECT_EQ(embedded_test_server()->GetURL("/hello.html"),
+            suppressed_observer.last_url());
+
+  // Now force a navigation on the same contents. It should complete and we can
+  // verify that only two navigations (the initial explicit navigation above,
+  // and the one we do here) were completed. This effectively confirms that the
+  // scripted navigation to "/hello.html" was fully suppressed.
+  const GURL kTestUrl2 = embedded_test_server()->GetURL("/title1.html");
+  contents->Navigate(kTestUrl2);
+
+  base::RunLoop navigation_loop;
+  navigation_observer.CallOnNextNavigation(navigation_loop.QuitClosure());
+  navigation_loop.Run();
+
+  contents->RemoveObserver(&navigation_observer);
+  contents->RemoveObserver(&suppressed_observer);
+
+  EXPECT_EQ(2u, navigation_observer.navigations_finished());
+  EXPECT_EQ(kTestUrl2, navigation_observer.last_url());
 }
 
 }  // namespace

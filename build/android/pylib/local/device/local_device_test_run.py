@@ -54,7 +54,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     self._tools = {}
 
   #override
-  def RunTests(self):
+  def RunTests(self, results):
     tests = self._GetTests()
 
     exit_now = threading.Event()
@@ -115,7 +115,6 @@ class LocalDeviceTestRun(test_run.TestRun):
     try:
       with signal_handler.SignalHandler(signal.SIGTERM, stop_tests):
         tries = 0
-        results = []
         while tries < self._env.max_tries and tests:
           logging.info('STARTING TRY #%d/%d', tries + 1, self._env.max_tries)
           if tries > 0 and self._env.recover_devices:
@@ -144,6 +143,11 @@ class LocalDeviceTestRun(test_run.TestRun):
                   t, base_test_result.ResultType.NOTRUN)
               for t in test_names if not t.endswith('*'))
 
+          # As soon as we know the names of the tests, we populate |results|.
+          # The tests in try_results will have their results updated by
+          # try_results.AddResult() as they are run.
+          results.append(try_results)
+
           try:
             if self._ShouldShard():
               tc = test_collection.TestCollection(self._CreateShards(tests))
@@ -160,8 +164,6 @@ class LocalDeviceTestRun(test_run.TestRun):
                       base_test_result.ResultType.TIMEOUT,
                       log=_SIGTERM_TEST_LOG))
             raise
-          finally:
-            results.append(try_results)
 
           tries += 1
           tests = self._GetTestsToRetry(tests, try_results)
@@ -173,8 +175,6 @@ class LocalDeviceTestRun(test_run.TestRun):
             logging.info('All tests completed.')
     except TestsTerminated:
       pass
-
-    return results
 
   def _GetTestsToRetry(self, tests, try_results):
 

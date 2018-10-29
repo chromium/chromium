@@ -4,51 +4,49 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/scroll_customization_callbacks.h"
 
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state_callback.h"
 
 namespace blink {
 
 void ScrollCustomizationCallbacks::SetDistributeScroll(
-    Element* element,
+    Node* node,
     ScrollStateCallback* scroll_state_callback) {
-  distribute_scroll_callbacks_.Set(element, scroll_state_callback);
+  distribute_scroll_callbacks_.Set(node, scroll_state_callback);
 }
 
 ScrollStateCallback* ScrollCustomizationCallbacks::GetDistributeScroll(
-    Element* element) {
-  auto it = distribute_scroll_callbacks_.find(element);
+    Node* node) {
+  auto it = distribute_scroll_callbacks_.find(node);
   if (it == distribute_scroll_callbacks_.end())
     return nullptr;
   return it->value.Get();
 }
 
 void ScrollCustomizationCallbacks::SetApplyScroll(
-    Element* element,
+    Node* node,
     ScrollStateCallback* scroll_state_callback) {
-  apply_scroll_callbacks_.Set(element, scroll_state_callback);
+  apply_scroll_callbacks_.Set(node, scroll_state_callback);
 }
 
-void ScrollCustomizationCallbacks::RemoveApplyScroll(Element* element) {
-  apply_scroll_callbacks_.erase(element);
+void ScrollCustomizationCallbacks::RemoveApplyScroll(Node* node) {
+  apply_scroll_callbacks_.erase(node);
 }
 
-ScrollStateCallback* ScrollCustomizationCallbacks::GetApplyScroll(
-    Element* element) {
-  auto it = apply_scroll_callbacks_.find(element);
+ScrollStateCallback* ScrollCustomizationCallbacks::GetApplyScroll(Node* node) {
+  auto it = apply_scroll_callbacks_.find(node);
   if (it == apply_scroll_callbacks_.end())
     return nullptr;
   return it->value.Get();
 }
 
-bool ScrollCustomizationCallbacks::InScrollPhase(Element* element) const {
-  return in_scrolling_phase_.Contains(element) &&
-         in_scrolling_phase_.at(element);
+bool ScrollCustomizationCallbacks::InScrollPhase(Node* node) const {
+  return in_scrolling_phase_.Contains(node) && in_scrolling_phase_.at(node);
 }
 
-void ScrollCustomizationCallbacks::SetInScrollPhase(Element* element,
-                                                    bool value) {
-  DCHECK(element);
-  in_scrolling_phase_.Set(element, value);
+void ScrollCustomizationCallbacks::SetInScrollPhase(Node* node, bool value) {
+  DCHECK(node);
+  in_scrolling_phase_.Set(node, value);
 }
 
 }  // namespace blink

@@ -192,8 +192,7 @@ void MenuRunnerImpl::SiblingMenuCreated(MenuItemView* menu) {
 
 MenuRunnerImpl::~MenuRunnerImpl() {
   delete menu_;
-  for (std::set<MenuItemView*>::iterator i = sibling_menus_.begin();
-       i != sibling_menus_.end(); ++i)
+  for (auto i = sibling_menus_.begin(); i != sibling_menus_.end(); ++i)
     delete *i;
 }
 

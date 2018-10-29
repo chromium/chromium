@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/password_form.h"
@@ -21,14 +22,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -39,12 +38,6 @@ namespace {
 
 // Maximum height of the credential list. The unit is one row's height.
 constexpr double kMaxHeightAccounts = 3.5;
-
-views::StyledLabel::RangeStyleInfo GetLinkStyle() {
-  auto result = views::StyledLabel::RangeStyleInfo::CreateForLink();
-  result.disable_line_wrapping = false;
-  return result;
-}
 
 // Creates a list view of credentials in |forms|.
 views::ScrollView* CreateCredentialsView(
@@ -114,22 +107,11 @@ ui::ModalType AccountChooserDialogView::GetModalType() const {
 }
 
 base::string16 AccountChooserDialogView::GetWindowTitle() const {
-  return controller_->GetAccoutChooserTitle().first;
+  return controller_->GetAccoutChooserTitle();
 }
 
 bool AccountChooserDialogView::ShouldShowCloseButton() const {
   return false;
-}
-
-void AccountChooserDialogView::AddedToWidget() {
-  std::pair<base::string16, gfx::Range> title_content =
-      controller_->GetAccoutChooserTitle();
-  std::unique_ptr<views::StyledLabel> title_label =
-      std::make_unique<views::StyledLabel>(title_content.first, this);
-  title_label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
-  if (!title_content.second.is_empty())
-    title_label->AddStyleRange(title_content.second, GetLinkStyle());
-  GetBubbleFrameView()->SetTitleView(std::move(title_label));
 }
 
 void AccountChooserDialogView::WindowClosing() {
@@ -163,13 +145,15 @@ base::string16 AccountChooserDialogView::GetDialogButtonLabel(
   return l10n_util::GetStringUTF16(message_id);
 }
 
-void AccountChooserDialogView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                      const gfx::Range& range,
-                                                      int event_flags) {
-  // On Mac the button click event may be dispatched after the dialog was
-  // hidden. Thus, the controller can be NULL.
-  if (controller_)
-    controller_->OnSmartLockLinkClicked();
+views::View* AccountChooserDialogView::CreateFootnoteView() {
+  if (!controller_->ShouldShowFooter())
+    return nullptr;
+  views::Label* label = new views::Label(
+      l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
+      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL, STYLE_SECONDARY);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
 }
 
 void AccountChooserDialogView::ButtonPressed(views::Button* sender,
@@ -194,9 +178,7 @@ void AccountChooserDialogView::InitWindow() {
           .get()));
 }
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 AccountChooserPrompt* CreateAccountChooserPromptView(
     PasswordDialogController* controller, content::WebContents* web_contents) {
   return new AccountChooserDialogView(controller, web_contents);
 }
-#endif

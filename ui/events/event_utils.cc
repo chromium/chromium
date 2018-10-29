@@ -89,8 +89,7 @@ display::Display::TouchSupport GetInternalDisplayTouchSupport() {
   if (!screen)
     return display::Display::TouchSupport::UNKNOWN;
   const std::vector<display::Display>& displays = screen->GetAllDisplays();
-  for (std::vector<display::Display>::const_iterator it = displays.begin();
-       it != displays.end(); ++it) {
+  for (auto it = displays.begin(); it != displays.end(); ++it) {
     if (it->IsInternal())
       return it->touch_support();
   }
@@ -173,14 +172,6 @@ const char* EventTypeName(EventType type) {
     CASE_TYPE(ET_TOUCH_MOVED);
     CASE_TYPE(ET_TOUCH_CANCELLED);
     CASE_TYPE(ET_DROP_TARGET_EVENT);
-    CASE_TYPE(ET_POINTER_DOWN);
-    CASE_TYPE(ET_POINTER_MOVED);
-    CASE_TYPE(ET_POINTER_UP);
-    CASE_TYPE(ET_POINTER_CANCELLED);
-    CASE_TYPE(ET_POINTER_ENTERED);
-    CASE_TYPE(ET_POINTER_EXITED);
-    CASE_TYPE(ET_POINTER_WHEEL_CHANGED);
-    CASE_TYPE(ET_POINTER_CAPTURE_CHANGED);
     CASE_TYPE(ET_GESTURE_SCROLL_BEGIN);
     CASE_TYPE(ET_GESTURE_SCROLL_END);
     CASE_TYPE(ET_GESTURE_SCROLL_UPDATE);

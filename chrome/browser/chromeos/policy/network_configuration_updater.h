@@ -7,9 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "base/sequence_checker.h"
+#include "chromeos/network/onc/onc_parsed_certificates.h"
+#include "chromeos/policy_certificate_provider.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_service.h"
 
@@ -17,11 +22,11 @@ namespace base {
 class DictionaryValue;
 class ListValue;
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 class ManagedNetworkConfigurationHandler;
-}
+}  // namespace chromeos
 
 namespace policy {
 
@@ -33,7 +38,8 @@ class PolicyMap;
 // Shill. Certificates are imported with the chromeos::onc::CertificateImporter.
 // For user policies the subclass UserNetworkConfigurationUpdater must be used.
 // Does not handle proxy settings.
-class NetworkConfigurationUpdater : public PolicyService::Observer {
+class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
+                                    public PolicyService::Observer {
  public:
   ~NetworkConfigurationUpdater() override;
 
@@ -43,17 +49,30 @@ class NetworkConfigurationUpdater : public PolicyService::Observer {
                        const PolicyMap& current) override;
   void OnPolicyServiceInitialized(PolicyDomain domain) override;
 
+  // chromeos::PolicyCertificateProvider:
+  void AddPolicyProvidedCertsObserver(
+      chromeos::PolicyCertificateProvider::Observer* observer) override;
+  void RemovePolicyProvidedCertsObserver(
+      chromeos::PolicyCertificateProvider::Observer* observer) override;
+  net::CertificateList GetAllServerAndAuthorityCertificates() const override;
+  net::CertificateList GetAllAuthorityCertificates() const override;
+  net::CertificateList GetWebTrustedCertificates() const override;
+  net::CertificateList GetCertificatesWithoutWebTrust() const override;
+
  protected:
   NetworkConfigurationUpdater(
       onc::ONCSource onc_source,
       std::string policy_key,
+      bool allow_trusted_certs_from_policy,
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
 
   virtual void Init();
 
-  // Imports the certificates part of the policy.
-  virtual void ImportCertificates(const base::ListValue& certificates_onc) = 0;
+  // Called in the subclass to import client certificates provided by the ONC
+  // policy. The client certificates to be imported can be obtained using
+  // |GetClientcertificates()|.
+  virtual void ImportClientCertificates() = 0;
 
   // Pushes the network part of the policy to the
   // ManagedNetworkConfigurationHandler. This can be overridden by subclasses to
@@ -72,10 +91,15 @@ class NetworkConfigurationUpdater : public PolicyService::Observer {
                           base::DictionaryValue* global_network_config,
                           base::ListValue* certificates);
 
+  const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
+  GetClientCertificates() const;
+
   onc::ONCSource onc_source_;
 
   // Pointer to the global singleton or a test instance.
   chromeos::ManagedNetworkConfigurationHandler* network_config_handler_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   // Called if the ONC policy changed.
@@ -86,13 +110,29 @@ class NetworkConfigurationUpdater : public PolicyService::Observer {
 
   std::string LogHeader() const;
 
+  // Imports the certificates part of the policy.
+  void ImportCertificates(const base::ListValue& certificates_onc);
+
+  void NotifyPolicyProvidedCertsChanged();
+
   std::string policy_key_;
+
+  // Whether Web trust is allowed or not.
+  bool allow_trusted_certificates_from_policy_;
 
   // Used to register for notifications from the |policy_service_|.
   PolicyChangeRegistrar policy_change_registrar_;
 
   // Used to retrieve the policies.
   PolicyService* policy_service_;
+
+  // Holds certificates from the last parsed ONC policy.
+  std::unique_ptr<chromeos::onc::OncParsedCertificates> certs_;
+
+  // Observer list for notifying about ONC-provided server and CA certificate
+  // changes.
+  base::ObserverList<chromeos::PolicyCertificateProvider::Observer,
+                     true>::Unchecked observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationUpdater);
 };

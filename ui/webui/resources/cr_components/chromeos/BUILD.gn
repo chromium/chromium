@@ -4,9 +4,12 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
+assert(is_chromeos, "Only ChromeOS components belong here.")
+
 group("closure_compile") {
   deps = [
     ":chromeos_resources",
+    "multidevice_setup:closure_compile",
     "network:closure_compile",
     "quick_unlock:closure_compile",
   ]

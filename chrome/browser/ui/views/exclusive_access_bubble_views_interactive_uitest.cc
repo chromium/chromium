@@ -6,7 +6,6 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -33,22 +32,14 @@ class ExclusiveAccessBubbleViewsTest : public FullscreenControllerTest,
   bool was_observing_in_destroying_ = false;
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubbleViewsTest);
 };
 
-#if defined(OS_MACOSX)
-// Encounters an internal MacOS assert: http://crbug.com/823490
-#define MAYBE_NativeClose DISABLED_NativeClose
-#else
-#define MAYBE_NativeClose NativeClose
-#endif
 // Simulate obscure codepaths resulting in the bubble Widget being closed before
 // the ExclusiveAccessBubbleViews destructor asks for it. If a close bypasses
 // the destructor, animations could still be running that attempt to manipulate
 // a destroyed Widget and crash.
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_NativeClose) {
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, NativeClose) {
   EXPECT_FALSE(bubble());
   EnterActiveTabFullscreen();
   EXPECT_TRUE(bubble());

@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/backend/filter_group.h"
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/media/cma/backend/mixer_input.h"
 #include "chromecast/media/cma/backend/mock_mixer_source.h"
@@ -170,10 +171,10 @@ class FilterGroupTest : public testing::Test {
     EXPECT_CALL(*post_processor_, SetContentType(kDefaultContentType));
     EXPECT_CALL(*post_processor_, UpdatePlayoutChannel(kDefaultPlayoutChannel));
     filter_group_ = std::make_unique<FilterGroup>(
-        kNumInputChannels, type, mix_to_mono, "test_filter",
-        std::move(post_processor),
-        std::unordered_set<std::string>() /* device_ids */,
+        kNumInputChannels, type, "test_filter", std::move(post_processor),
+        base::flat_set<std::string>() /* device_ids */,
         std::vector<FilterGroup*>());
+    filter_group_->SetMixToMono(mix_to_mono);
     filter_group_->Initialize(kInputSampleRate);
     filter_group_->AddInput(&input_);
     filter_group_->UpdatePlayoutChannel(kChannelAll);

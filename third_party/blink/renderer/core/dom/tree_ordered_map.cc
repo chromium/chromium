@@ -155,12 +155,12 @@ const HeapVector<Member<Element>>& TreeOrderedMap::GetAllElementsById(
     const AtomicString& key,
     const TreeScope& scope) const {
   DCHECK(key);
-  DEFINE_STATIC_LOCAL(HeapVector<Member<Element>>, empty_vector,
+  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
                       (new HeapVector<Member<Element>>));
 
   Map::iterator it = map_.find(key);
   if (it == map_.end())
-    return empty_vector;
+    return *empty_vector;
 
   Member<MapEntry>& entry = it->value;
   DCHECK(entry->count);

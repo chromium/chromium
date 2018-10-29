@@ -70,14 +70,18 @@ class QUIC_EXPORT_PRIVATE QpackDecoder {
       kStart,
       kVarintResume,
       kVarintDone,
-      // This might be followed by the name as a string literal.
-      kNameString,
+      // This might be followed by the name as a string literal,
+      // optionally Huffman encoded.
+      kReadName,
+      kDecodeName,
       // This might be followed by the length of the value.
       kValueLengthStart,
       kValueLengthResume,
       kValueLengthDone,
-      // This might be followed by the value as a string literal.
-      kValueString,
+      // This might be followed by the value as a string literal,
+      // optionally Huffman encoded.
+      kReadValue,
+      kDecodeValue,
       kDone,
     };
 
@@ -86,11 +90,13 @@ class QUIC_EXPORT_PRIVATE QpackDecoder {
     size_t DoStart(QuicStringPiece data);
     size_t DoVarintResume(QuicStringPiece data);
     void DoVarintDone();
-    size_t DoNameString(QuicStringPiece data);
+    size_t DoReadName(QuicStringPiece data);
+    void DoDecodeName();
     size_t DoValueLengthStart(QuicStringPiece data);
     size_t DoValueLengthResume(QuicStringPiece data);
     void DoValueLengthDone();
-    size_t DoValueString(QuicStringPiece data);
+    size_t DoReadValue(QuicStringPiece data);
+    void DoDecodeValue();
     void DoDone();
 
     void OnError(QuicStringPiece error_message);

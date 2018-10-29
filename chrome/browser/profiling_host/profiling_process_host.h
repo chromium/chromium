@@ -74,6 +74,10 @@ class ProfilingProcessHost {
   // Every 24-hours, reports the profiling mode.
   base::RepeatingTimer metrics_timer_;
 
+  // If this URL is non empty, then we will use it instead of the default crash
+  // service URL.
+  std::string upload_url_;
+
   DISALLOW_COPY_AND_ASSIGN(ProfilingProcessHost);
 };
 

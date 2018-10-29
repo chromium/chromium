@@ -19,13 +19,13 @@ namespace device {
 namespace {
 
 // http://www.usb.org/developers/hidpage
-const uint32_t kGenericDesktopUsagePage = 0x01;
-const uint32_t kJoystickUsageNumber = 0x04;
-const uint32_t kGameUsageNumber = 0x05;
-const uint32_t kMultiAxisUsageNumber = 0x08;
+const uint16_t kGenericDesktopUsagePage = 0x01;
+const uint16_t kJoystickUsageNumber = 0x04;
+const uint16_t kGameUsageNumber = 0x05;
+const uint16_t kMultiAxisUsageNumber = 0x08;
 
-const int kVendorSteelSeries = 0x1038;
-const int kProductNimbus = 0x1420;
+const uint16_t kVendorSteelSeries = 0x1038;
+const uint16_t kProductNimbus = 0x1420;
 
 void CopyNSStringAsUTF16LittleEndian(NSString* src,
                                      UChar* dest,
@@ -192,9 +192,9 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVersionNumberKey))));
   NSString* product = CFToNSCast(CFCastStrict<CFStringRef>(
       IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey))));
-  int vendor_int = [vendor_id intValue];
-  int product_int = [product_id intValue];
-  int version_int = [version_number intValue];
+  uint16_t vendor_int = [vendor_id intValue];
+  uint16_t product_int = [product_id intValue];
+  uint16_t version_int = [version_number intValue];
 
   // The SteelSeries Nimbus and other Made for iOS gamepads should be handled
   // through the GameController interface. Blacklist it here so it doesn't
@@ -206,12 +206,8 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   if (!state)
     return;  // No available slot for this device
 
-  char vendor_as_str[5], product_as_str[5], version_as_str[5];
-  snprintf(vendor_as_str, sizeof(vendor_as_str), "%04x", vendor_int);
-  snprintf(product_as_str, sizeof(product_as_str), "%04x", product_int);
-  snprintf(version_as_str, sizeof(version_as_str), "%04x", version_int);
   state->mapper = GetGamepadStandardMappingFunction(
-      vendor_as_str, product_as_str, version_as_str, GAMEPAD_BUS_UNKNOWN);
+      vendor_int, product_int, version_int, GAMEPAD_BUS_UNKNOWN);
 
   NSString* ident =
       [NSString stringWithFormat:@"%@ (%sVendor: %04x Product: %04x)", product,

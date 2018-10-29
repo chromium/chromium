@@ -64,7 +64,7 @@ class UserManagerTest : public testing::Test {
     command_line.AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 
-    settings_helper_.ReplaceProvider(kDeviceOwner);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     // Populate the stub DeviceSettingsProvider with valid values.
     SetDeviceSettings(false, "", false);

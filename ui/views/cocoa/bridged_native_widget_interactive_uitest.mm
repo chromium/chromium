@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/views/cocoa/bridged_native_widget.h"
+#import "ui/views_bridge_mac/bridged_native_widget_impl.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -66,7 +66,7 @@ class BridgedNativeWidgetUITest : public test::WidgetTest {
   }
 
   NSWindow* test_window() {
-    return widget_->GetNativeWindow();
+    return widget_->GetNativeWindow().GetNativeNSWindow();
   }
 
  protected:
@@ -296,7 +296,7 @@ TEST_F(BridgedNativeWidgetUITest, DISABLED_HitTest) {
   const NSPoint bottom_right_point = {398, 2};
   const NSPoint right_of_bottom_right = {398 + 10, 2};
 
-  NSWindow* window = widget.GetNativeWindow();
+  NSWindow* window = widget.GetNativeWindow().GetNativeNSWindow();
 
   EXPECT_FALSE([window ignoresMouseEvents]);
   // OSX uses both the alpha value of the window and the underlying CALayer to

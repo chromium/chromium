@@ -451,7 +451,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
         return kv.script;
     }
 
-    size_t pos = canonical_locale.ReverseFind('-');
+    wtf_size_t pos = canonical_locale.ReverseFind('-');
     if (pos == kNotFound)
       break;
     // script = 4ALPHA
@@ -482,10 +482,10 @@ UScriptCode ScriptCodeForHanFromSubtags(const String& locale, char delimiter) {
   // Some sites emit lang="en-JP" when English is set as the preferred
   // language. Use script/region subtags of the content locale to pick the
   // fallback font for unified Han ideographs.
-  for (size_t end = locale.find(delimiter); end != kNotFound;) {
-    size_t begin = end + 1;
+  for (wtf_size_t end = locale.find(delimiter); end != kNotFound;) {
+    wtf_size_t begin = end + 1;
     end = locale.find(delimiter, begin);
-    size_t len = (end == kNotFound ? locale.length() : end) - begin;
+    wtf_size_t len = (end == kNotFound ? locale.length() : end) - begin;
     UScriptCode script;
     switch (len) {
       case 2:  // region = 2ALPHA / 3DIGIT

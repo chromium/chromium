@@ -119,7 +119,7 @@ enum NotificationType {
 
 struct NotificationLog {
   NotificationType type;
-  GURL pattern;
+  GURL scope;
   int64_t registration_id;
 };
 
@@ -140,26 +140,26 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
 
   // ServiceWorkerContextCoreObserver overrides.
   void OnRegistrationCompleted(int64_t registration_id,
-                               const GURL& pattern) override {
+                               const GURL& scope) override {
     NotificationLog log;
     log.type = REGISTRATION_COMPLETED;
-    log.pattern = pattern;
+    log.scope = scope;
     log.registration_id = registration_id;
     notifications_.push_back(log);
   }
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& pattern) override {
+                            const GURL& scope) override {
     NotificationLog log;
     log.type = REGISTRATION_STORED;
-    log.pattern = pattern;
+    log.scope = scope;
     log.registration_id = registration_id;
     notifications_.push_back(log);
   }
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& pattern) override {
+                             const GURL& scope) override {
     NotificationLog log;
     log.type = REGISTRATION_DELETED;
-    log.pattern = pattern;
+    log.scope = scope;
     log.registration_id = registration_id;
     notifications_.push_back(log);
   }
@@ -273,10 +273,10 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
 
 // Make sure OnRegistrationCompleted is called on observer.
 TEST_F(ServiceWorkerContextTest, RegistrationCompletedObserver) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -291,18 +291,18 @@ TEST_F(ServiceWorkerContextTest, RegistrationCompletedObserver) {
   ASSERT_EQ(2u, observer.events().size());
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::RegistrationCompleted,
             observer.events()[0].type);
-  EXPECT_EQ(pattern, observer.events()[0].url);
+  EXPECT_EQ(scope, observer.events()[0].url);
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::VersionActivated,
             observer.events()[1].type);
-  EXPECT_EQ(pattern, observer.events()[1].url);
+  EXPECT_EQ(scope, observer.events()[1].url);
 }
 
 // Make sure OnNoControllees is called on observer.
 TEST_F(ServiceWorkerContextTest, NoControlleesObserver) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
       options, 1l /* dummy registration id */, context()->AsWeakPtr());
@@ -327,16 +327,16 @@ TEST_F(ServiceWorkerContextTest, NoControlleesObserver) {
   ASSERT_EQ(1u, observer.events().size());
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::NoControllees,
             observer.events()[0].type);
-  EXPECT_EQ(pattern, observer.events()[0].url);
+  EXPECT_EQ(scope, observer.events()[0].url);
   EXPECT_EQ(2l, observer.events()[0].version_id);
 }
 
 // Make sure OnVersionActivated is called on observer.
 TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
       options, 1l /* dummy registration id */, context()->AsWeakPtr());
@@ -360,10 +360,10 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
 
 // Make sure OnVersionRedundant is called on observer.
 TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
       options, 1l /* dummy registration id */, context()->AsWeakPtr());
@@ -387,10 +387,10 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
 
 // Make sure basic registration is working.
 TEST_F(ServiceWorkerContextTest, Register) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   RecordableEmbeddedWorkerInstanceClient* client = nullptr;
   client = helper_->CreateAndRegisterMockInstanceClient<
@@ -418,14 +418,14 @@ TEST_F(ServiceWorkerContextTest, Register) {
 
   ASSERT_EQ(2u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -436,10 +436,10 @@ TEST_F(ServiceWorkerContextTest, Register) {
 // registration callback should indicate success, but there should be no waiting
 // or active worker in the registration.
 TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   helper_.reset();  // Make sure the process lookups stay overridden.
   helper_.reset(new RejectInstallTestHelper);
@@ -471,11 +471,11 @@ TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
 
   ASSERT_EQ(1u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
@@ -485,10 +485,10 @@ TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
 // Test registration when the service worker rejects the activate event. The
 // worker should be activated anyway.
 TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   helper_.reset();
   helper_.reset(new RejectActivateTestHelper);
@@ -520,14 +520,14 @@ TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
 
   ASSERT_EQ(2u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -536,9 +536,9 @@ TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
 
 // Make sure registrations are cleaned up when they are unregistered.
 TEST_F(ServiceWorkerContextTest, Unregister) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   bool called = false;
   int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
@@ -552,15 +552,14 @@ TEST_F(ServiceWorkerContextTest, Unregister) {
   EXPECT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
 
   called = false;
-  context()->UnregisterServiceWorker(pattern,
-                                     MakeUnregisteredCallback(&called));
+  context()->UnregisterServiceWorker(scope, MakeUnregisteredCallback(&called));
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(called);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
@@ -568,22 +567,22 @@ TEST_F(ServiceWorkerContextTest, Unregister) {
 
   ASSERT_EQ(3u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
   EXPECT_EQ(REGISTRATION_DELETED, notifications_[2].type);
-  EXPECT_EQ(pattern, notifications_[2].pattern);
+  EXPECT_EQ(scope, notifications_[2].scope);
   EXPECT_EQ(registration_id, notifications_[2].registration_id);
 }
 
 // Make sure registrations are cleaned up when they are unregistered in bulk.
 TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
-  GURL origin1_p1("https://www.example.com/test");
-  GURL origin1_p2("https://www.example.com/hello");
-  GURL origin2_p1("https://www.example.com:8080/again");
-  GURL origin3_p1("https://www.other.com/");
+  GURL origin1_s1("https://www.example.com/test");
+  GURL origin1_s2("https://www.example.com/hello");
+  GURL origin2_s1("https://www.example.com:8080/again");
+  GURL origin3_s1("https://www.other.com/");
   int64_t registration_id1 = blink::mojom::kInvalidServiceWorkerRegistrationId;
   int64_t registration_id2 = blink::mojom::kInvalidServiceWorkerRegistrationId;
   int64_t registration_id3 = blink::mojom::kInvalidServiceWorkerRegistrationId;
@@ -592,7 +591,7 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   {
     bool called = false;
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = origin1_p1;
+    options.scope = origin1_s1;
     context()->RegisterServiceWorker(
         GURL("https://www.example.com/service_worker.js"), options,
         MakeRegisteredCallback(&called, &registration_id1));
@@ -604,7 +603,7 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   {
     bool called = false;
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = origin1_p2;
+    options.scope = origin1_s2;
     context()->RegisterServiceWorker(
         GURL("https://www.example.com/service_worker2.js"), options,
         MakeRegisteredCallback(&called, &registration_id2));
@@ -616,7 +615,7 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   {
     bool called = false;
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = origin2_p1;
+    options.scope = origin2_s1;
     context()->RegisterServiceWorker(
         GURL("https://www.example.com:8080/service_worker3.js"), options,
         MakeRegisteredCallback(&called, &registration_id3));
@@ -628,7 +627,7 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   {
     bool called = false;
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = origin3_p1;
+    options.scope = origin3_s1;
     context()->RegisterServiceWorker(
         GURL("https://www.other.com/service_worker4.js"), options,
         MakeRegisteredCallback(&called, &registration_id4));
@@ -647,7 +646,7 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
             registration_id4);
 
   bool called = false;
-  context()->DeleteForOrigin(origin1_p1.GetOrigin(),
+  context()->DeleteForOrigin(origin1_s1.GetOrigin(),
                              MakeUnregisteredCallback(&called));
 
   ASSERT_FALSE(called);
@@ -655,23 +654,23 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   ASSERT_TRUE(called);
 
   context()->storage()->FindRegistrationForId(
-      registration_id1, origin1_p1.GetOrigin(),
+      registration_id1, origin1_s1.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
   context()->storage()->FindRegistrationForId(
-      registration_id2, origin1_p2.GetOrigin(),
+      registration_id2, origin1_s2.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
   context()->storage()->FindRegistrationForId(
-      registration_id3, origin2_p1.GetOrigin(),
+      registration_id3, origin2_s1.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
 
   context()->storage()->FindRegistrationForId(
-      registration_id4, origin3_p1.GetOrigin(),
+      registration_id4, origin3_s1.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -681,41 +680,41 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   ASSERT_EQ(10u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
   EXPECT_EQ(registration_id1, notifications_[0].registration_id);
-  EXPECT_EQ(origin1_p1, notifications_[0].pattern);
+  EXPECT_EQ(origin1_s1, notifications_[0].scope);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
   EXPECT_EQ(registration_id1, notifications_[1].registration_id);
-  EXPECT_EQ(origin1_p1, notifications_[1].pattern);
+  EXPECT_EQ(origin1_s1, notifications_[1].scope);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[2].type);
-  EXPECT_EQ(origin1_p2, notifications_[2].pattern);
+  EXPECT_EQ(origin1_s2, notifications_[2].scope);
   EXPECT_EQ(registration_id2, notifications_[2].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[3].type);
-  EXPECT_EQ(origin1_p2, notifications_[3].pattern);
+  EXPECT_EQ(origin1_s2, notifications_[3].scope);
   EXPECT_EQ(registration_id2, notifications_[3].registration_id);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[4].type);
-  EXPECT_EQ(origin2_p1, notifications_[4].pattern);
+  EXPECT_EQ(origin2_s1, notifications_[4].scope);
   EXPECT_EQ(registration_id3, notifications_[4].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[5].type);
-  EXPECT_EQ(origin2_p1, notifications_[5].pattern);
+  EXPECT_EQ(origin2_s1, notifications_[5].scope);
   EXPECT_EQ(registration_id3, notifications_[5].registration_id);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[6].type);
-  EXPECT_EQ(origin3_p1, notifications_[6].pattern);
+  EXPECT_EQ(origin3_s1, notifications_[6].scope);
   EXPECT_EQ(registration_id4, notifications_[6].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[7].type);
-  EXPECT_EQ(origin3_p1, notifications_[7].pattern);
+  EXPECT_EQ(origin3_s1, notifications_[7].scope);
   EXPECT_EQ(registration_id4, notifications_[7].registration_id);
   EXPECT_EQ(REGISTRATION_DELETED, notifications_[8].type);
-  EXPECT_EQ(origin1_p1, notifications_[8].pattern);
+  EXPECT_EQ(origin1_s1, notifications_[8].scope);
   EXPECT_EQ(registration_id1, notifications_[8].registration_id);
   EXPECT_EQ(REGISTRATION_DELETED, notifications_[9].type);
-  EXPECT_EQ(origin1_p2, notifications_[9].pattern);
+  EXPECT_EQ(origin1_s2, notifications_[9].scope);
   EXPECT_EQ(registration_id2, notifications_[9].registration_id);
 }
 
 // Make sure registering a new script shares an existing registration.
 TEST_F(ServiceWorkerContextTest, RegisterNewScript) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   bool called = false;
   int64_t old_registration_id =
@@ -747,26 +746,26 @@ TEST_F(ServiceWorkerContextTest, RegisterNewScript) {
 
   ASSERT_EQ(4u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(old_registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(old_registration_id, notifications_[1].registration_id);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[2].type);
-  EXPECT_EQ(pattern, notifications_[2].pattern);
+  EXPECT_EQ(scope, notifications_[2].scope);
   EXPECT_EQ(new_registration_id, notifications_[2].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[3].type);
-  EXPECT_EQ(pattern, notifications_[3].pattern);
+  EXPECT_EQ(scope, notifications_[3].scope);
   EXPECT_EQ(new_registration_id, notifications_[3].registration_id);
 }
 
-// Make sure that when registering a duplicate pattern+script_url
+// Make sure that when registering a duplicate scope+script_url
 // combination, that the same registration is used.
 TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   bool called = false;
   int64_t old_registration_id =
@@ -795,13 +794,13 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
 
   ASSERT_EQ(3u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(old_registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(old_registration_id, notifications_[1].registration_id);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[2].type);
-  EXPECT_EQ(pattern, notifications_[2].pattern);
+  EXPECT_EQ(scope, notifications_[2].scope);
   EXPECT_EQ(old_registration_id, notifications_[2].registration_id);
 }
 
@@ -912,10 +911,10 @@ class ServiceWorkerContextRecoveryTest
 };
 
 TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
-  GURL pattern("https://www.example.com/");
+  GURL scope("https://www.example.com/");
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = pattern;
+  options.scope = scope;
 
   if (is_storage_on_disk()) {
     // Reinitialize the helper to test on-disk storage.
@@ -935,7 +934,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   EXPECT_TRUE(called);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -946,7 +945,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   // The storage is disabled while the recovery process is running, so the
   // operation should be aborted.
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorAbort,
                      false /* expect_waiting */, true /* expect_active */));
@@ -955,7 +954,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   // The context started over and the storage was re-initialized, so the
   // registration should not be found.
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, true /* expect_active */));
@@ -970,7 +969,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   EXPECT_TRUE(called);
 
   context()->storage()->FindRegistrationForId(
-      registration_id, pattern.GetOrigin(),
+      registration_id, scope.GetOrigin(),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -978,17 +977,17 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
 
   ASSERT_EQ(5u, notifications_.size());
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[0].type);
-  EXPECT_EQ(pattern, notifications_[0].pattern);
+  EXPECT_EQ(scope, notifications_[0].scope);
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[1].type);
-  EXPECT_EQ(pattern, notifications_[1].pattern);
+  EXPECT_EQ(scope, notifications_[1].scope);
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
   EXPECT_EQ(STORAGE_RECOVERED, notifications_[2].type);
   EXPECT_EQ(REGISTRATION_COMPLETED, notifications_[3].type);
-  EXPECT_EQ(pattern, notifications_[3].pattern);
+  EXPECT_EQ(scope, notifications_[3].scope);
   EXPECT_EQ(registration_id, notifications_[3].registration_id);
   EXPECT_EQ(REGISTRATION_STORED, notifications_[4].type);
-  EXPECT_EQ(pattern, notifications_[4].pattern);
+  EXPECT_EQ(scope, notifications_[4].scope);
   EXPECT_EQ(registration_id, notifications_[4].registration_id);
 }
 

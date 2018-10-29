@@ -8,6 +8,7 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/test/mus/window_port_mus_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/gfx/geometry/rect.h"
@@ -73,23 +74,17 @@ class HitTestDataProviderAuraTest : public test::AuraTestBaseMus {
     test::AuraTestBaseMus::SetUp();
 
     root_ = std::make_unique<Window>(nullptr);
-    root_->SetProperty(client::kEmbedType,
-                       client::WindowEmbedType::EMBED_IN_OWNER);
     root_->Init(ui::LAYER_NOT_DRAWN);
     root_->SetEventTargeter(std::make_unique<WindowTargeter>());
     root_->SetBounds(gfx::Rect(0, 0, 300, 200));
     root_->Show();
 
     window2_ = new Window(nullptr);
-    window2_->SetProperty(client::kEmbedType,
-                          client::WindowEmbedType::EMBED_IN_OWNER);
     window2_->Init(ui::LAYER_TEXTURED);
     window2_->SetBounds(gfx::Rect(20, 30, 40, 60));
     window2_->Show();
 
     window3_ = new Window(nullptr);
-    window3_->SetProperty(client::kEmbedType,
-                          client::WindowEmbedType::EMBED_IN_OWNER);
     window3_->Init(ui::LAYER_TEXTURED);
     window3_->SetEventTargeter(std::make_unique<WindowTargeter>());
     window3_->SetBounds(gfx::Rect(50, 60, 100, 40));

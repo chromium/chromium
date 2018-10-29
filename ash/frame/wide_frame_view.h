@@ -6,7 +6,7 @@
 #define ASH_FRAME_WIDE_FRAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/frame/caption_buttons/caption_button_model.h"
+#include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"

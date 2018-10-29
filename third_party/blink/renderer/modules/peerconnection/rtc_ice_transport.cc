@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -20,6 +19,8 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_server.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event_init.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_quic_transport.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/webrtc/api/jsepicecandidate.h"
 #include "third_party/webrtc/api/peerconnectioninterface.h"
 #include "third_party/webrtc/p2p/base/portallocator.h"
@@ -78,7 +79,7 @@ class DefaultIceTransportAdapterCrossThreadFactory
 }  // namespace
 
 RTCIceTransport* RTCIceTransport::Create(ExecutionContext* context) {
-  LocalFrame* frame = ToDocument(context)->GetFrame();
+  LocalFrame* frame = To<Document>(context)->GetFrame();
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
       frame->GetTaskRunner(TaskType::kNetworking);
   scoped_refptr<base::SingleThreadTaskRunner> host_thread =
@@ -110,7 +111,7 @@ RTCIceTransport::RTCIceTransport(
   DCHECK(adapter_factory);
   DCHECK(proxy_thread->BelongsToCurrentThread());
 
-  LocalFrame* frame = ToDocument(context)->GetFrame();
+  LocalFrame* frame = To<Document>(context)->GetFrame();
   DCHECK(frame);
   proxy_.reset(new IceTransportProxy(
       frame->GetFrameScheduler(), std::move(proxy_thread),
@@ -121,6 +122,29 @@ RTCIceTransport::RTCIceTransport(
 
 RTCIceTransport::~RTCIceTransport() {
   DCHECK(!proxy_);
+}
+
+bool RTCIceTransport::HasConsumer() const {
+  return consumer_;
+}
+
+IceTransportProxy* RTCIceTransport::ConnectConsumer(
+    RTCQuicTransport* consumer) {
+  DCHECK(consumer);
+  DCHECK(proxy_);
+  if (!consumer_) {
+    consumer_ = consumer;
+  } else {
+    DCHECK_EQ(consumer_, consumer);
+  }
+  return proxy_.get();
+}
+
+void RTCIceTransport::DisconnectConsumer(RTCQuicTransport* consumer) {
+  DCHECK(consumer);
+  DCHECK(proxy_);
+  DCHECK_EQ(consumer, consumer_);
+  consumer_ = nullptr;
 }
 
 String RTCIceTransport::role() const {
@@ -335,6 +359,9 @@ void RTCIceTransport::start(const RTCIceParameters& remote_parameters,
     }
     proxy_->Start(ConvertIceParameters(remote_parameters), role,
                   initial_remote_candidates);
+    if (consumer_) {
+      consumer_->OnTransportStarted();
+    }
   } else {
     remote_candidates_.clear();
     state_ = RTCIceTransportState::kNew;
@@ -347,7 +374,13 @@ void RTCIceTransport::stop() {
   if (IsClosed()) {
     return;
   }
+  if (HasConsumer()) {
+    consumer_->stop();
+  }
+  // Stopping the consumer should cause it to disconnect.
+  DCHECK(!HasConsumer());
   state_ = RTCIceTransportState::kClosed;
+  selected_candidate_pair_ = base::nullopt;
   proxy_.reset();
 }
 
@@ -423,7 +456,23 @@ void RTCIceTransport::OnStateChanged(cricket::IceTransportState new_state) {
     return;
   }
   state_ = local_new_state;
+  if (state_ == RTCIceTransportState::kFailed) {
+    selected_candidate_pair_ = base::nullopt;
+  }
   DispatchEvent(*Event::Create(EventTypeNames::statechange));
+}
+
+void RTCIceTransport::OnSelectedCandidatePairChanged(
+    const std::pair<cricket::Candidate, cricket::Candidate>&
+        selected_candidate_pair) {
+  RTCIceCandidate* local =
+      ConvertToRtcIceCandidate(selected_candidate_pair.first);
+  RTCIceCandidate* remote =
+      ConvertToRtcIceCandidate(selected_candidate_pair.second);
+  selected_candidate_pair_ = RTCIceCandidatePair();
+  selected_candidate_pair_->setLocal(local);
+  selected_candidate_pair_->setRemote(remote);
+  DispatchEvent(*Event::Create(EventTypeNames::selectedcandidatepairchange));
 }
 
 bool RTCIceTransport::RaiseExceptionIfClosed(
@@ -459,6 +508,7 @@ void RTCIceTransport::Trace(blink::Visitor* visitor) {
   visitor->Trace(local_candidates_);
   visitor->Trace(remote_candidates_);
   visitor->Trace(selected_candidate_pair_);
+  visitor->Trace(consumer_);
   EventTargetWithInlineData::Trace(visitor);
   ContextLifecycleObserver::Trace(visitor);
 }

@@ -26,8 +26,9 @@ class AudioDeviceListenerMacTest : public testing::Test {
     // It's important to create the device listener from the message loop in
     // order to ensure we don't end up with unbalanced TaskObserver calls.
     message_loop_.task_runner()->PostTask(
-        FROM_HERE, base::Bind(&AudioDeviceListenerMacTest::CreateDeviceListener,
-                              base::Unretained(this)));
+        FROM_HERE,
+        base::BindOnce(&AudioDeviceListenerMacTest::CreateDeviceListener,
+                       base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 

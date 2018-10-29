@@ -27,23 +27,16 @@ int GetCocoaLayoutConstant(LayoutConstant constant) {
 #endif
 
 int GetLayoutConstant(LayoutConstant constant) {
-  const int mode = ui::MaterialDesignController::GetMode();
-  static const int kBookmarkBarVerticalMargin = 4;
-  const bool hybrid = mode == ui::MaterialDesignController::MATERIAL_HYBRID;
-  const bool touch_optimized_material =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
-  const bool newer_material = ui::MaterialDesignController::IsNewerMaterialUi();
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
   switch (constant) {
     case BOOKMARK_BAR_HEIGHT:
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
-      return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
-             kBookmarkBarVerticalMargin;
+      return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) + 4;
     case BOOKMARK_BAR_BUTTON_HEIGHT:
-      return touch_optimized_material ? 36 : 28;
+      return touch_ui ? 36 : 28;
     case BOOKMARK_BAR_NTP_HEIGHT:
-      return touch_optimized_material ? GetLayoutConstant(BOOKMARK_BAR_HEIGHT)
-                                      : 39;
+      return touch_ui ? GetLayoutConstant(BOOKMARK_BAR_HEIGHT) : 39;
     case HOSTED_APP_MENU_BUTTON_SIZE:
       return 24;
     case HOSTED_APP_PAGE_ACTION_ICON_SIZE:
@@ -51,54 +44,40 @@ int GetLayoutConstant(LayoutConstant constant) {
       // stretching the container view.
       return 16;
     case LOCATION_BAR_BUBBLE_VERTICAL_PADDING:
-      return hybrid ? 1 : 3;
+      return 3;
     case LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING:
-      return hybrid ? 3 : 2;
+      return 2;
     case LOCATION_BAR_BUBBLE_CORNER_RADIUS:
       // TODO(tapted): This should match BubbleBorder::GetBorderRadius() once
       // MD is default for secondary UI everywhere. That is, the constant should
       // move to views/layout_provider.h so that all bubbles are consistent.
-      return newer_material ? 8 : 2;
+      return 8;
     case LOCATION_BAR_BUBBLE_ANCHOR_VERTICAL_INSET:
       return 1;
-    case LOCATION_BAR_ELEMENT_PADDING: {
-      constexpr int kPadding[] = {1, 3, 3, 2, 3};
-      return kPadding[mode];
-    }
-    case LOCATION_BAR_BETWEEN_ELEMENTS_PADDING: {
-      constexpr int kPadding[] = {1, 3, 3, 0, 0};
-      return kPadding[mode];
-    }
-    case LOCATION_BAR_HEIGHT: {
-      constexpr int kHeights[] = {28, 32, 36, 28, 36};
-      return kHeights[mode];
-    }
+    case LOCATION_BAR_ELEMENT_PADDING:
+      return touch_ui ? 3 : 2;
+    case LOCATION_BAR_HEIGHT:
+      return touch_ui ? 36 : 28;
     case LOCATION_BAR_ICON_SIZE:
-      return touch_optimized_material ? 20 : 16;
+      return touch_ui ? 20 : 16;
     case TAB_AFTER_TITLE_PADDING:
-      return touch_optimized_material ? 8 : 4;
+      return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:
       return 16;
     case TAB_ALERT_INDICATOR_ICON_WIDTH:
-      return touch_optimized_material ? 12 : 16;
-    case TAB_HEIGHT: {
-      constexpr int kTabHeight[] = {29, 33, 41, 34, 41};
-      return kTabHeight[mode] + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-    }
+      return touch_ui ? 12 : 16;
+    case TAB_HEIGHT:
+      return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
     case TAB_PRE_TITLE_PADDING:
-      return newer_material ? 8 : 6;
+      return 8;
     case TAB_STACK_DISTANCE:
-      return touch_optimized_material ? 4 : 6;
+      return touch_ui ? 4 : 6;
     case TABSTRIP_TOOLBAR_OVERLAP:
-      return ui::MaterialDesignController::IsRefreshUi() ? 1 : 0;
-    case TOOLBAR_ELEMENT_PADDING: {
-      constexpr int kPadding[] = {0, 8, 0, 4, 0};
-      return kPadding[mode];
-    }
-    case TOOLBAR_STANDARD_SPACING: {
-      constexpr int kSpacings[] = {4, 8, 12, 8, 12};
-      return kSpacings[mode];
-    }
+      return 1;
+    case TOOLBAR_ELEMENT_PADDING:
+      return touch_ui ? 0 : 4;
+    case TOOLBAR_STANDARD_SPACING:
+      return touch_ui ? 12 : 8;
     default:
       break;
   }
@@ -107,27 +86,18 @@ int GetLayoutConstant(LayoutConstant constant) {
 }
 
 gfx::Insets GetLayoutInsets(LayoutInset inset) {
-  const int mode = ui::MaterialDesignController::GetMode();
-  const bool touch_optimized_material =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
   switch (inset) {
-    case LOCATION_BAR_ICON_INTERIOR_PADDING: {
-      if (ui::MaterialDesignController::IsRefreshUi()) {
-        return touch_optimized_material ? gfx::Insets(5, 10)
-                                        : gfx::Insets(4, 8);
-      }
-
-      return touch_optimized_material ? gfx::Insets(5) : gfx::Insets(4);
-    }
+    case LOCATION_BAR_ICON_INTERIOR_PADDING:
+      return touch_ui ? gfx::Insets(5, 10) : gfx::Insets(4, 8);
 
     case TOOLBAR_BUTTON:
-      return gfx::Insets(touch_optimized_material ? 12 : 6);
+      return gfx::Insets(touch_ui ? 12 : 6);
 
     case TOOLBAR_ACTION_VIEW: {
       // TODO(afakhry): Unify all toolbar button sizes on all platforms.
       // https://crbug.com/822967.
-      constexpr int kToolbarActionsInsets[] = {2, 4, 10, 2, 10};
-      return gfx::Insets(kToolbarActionsInsets[mode]);
+      return gfx::Insets(touch_ui ? 10 : 2);
     }
   }
   NOTREACHED();

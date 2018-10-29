@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef DoubleOrLongOrBooleanSequence_h
-#define DoubleOrLongOrBooleanSequence_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_DOUBLE_OR_LONG_OR_BOOLEAN_SEQUENCE_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_DOUBLE_OR_LONG_OR_BOOLEAN_SEQUENCE_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -24,7 +24,7 @@ namespace blink {
 class LongOrBoolean;
 
 class CORE_EXPORT DoubleOrLongOrBooleanSequence final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   DoubleOrLongOrBooleanSequence();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -94,4 +94,4 @@ struct V8TypeOf<DoubleOrLongOrBooleanSequence> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::DoubleOrLongOrBooleanSequence);
 
-#endif  // DoubleOrLongOrBooleanSequence_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_DOUBLE_OR_LONG_OR_BOOLEAN_SEQUENCE_H_

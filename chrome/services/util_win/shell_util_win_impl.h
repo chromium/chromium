@@ -5,7 +5,12 @@
 #ifndef CHROME_SERVICES_UTIL_WIN_SHELL_UTIL_WIN_IMPL_H_
 #define CHROME_SERVICES_UTIL_WIN_SHELL_UTIL_WIN_IMPL_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "chrome/services/util_win/public/mojom/shell_util_win.mojom.h"
 #include "services/service_manager/public/cpp/service_context_ref.h"
 
@@ -18,24 +23,14 @@ class ShellUtilWinImpl : public chrome::mojom::ShellUtilWin {
  private:
   // chrome::mojom::ShellUtilWin:
   void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override;
-
-  void CallGetOpenFileName(
-      uint32_t owner,
-      uint32_t flags,
-      const std::vector<std::tuple<base::string16, base::string16>>& filters,
-      const base::FilePath& initial_directory,
-      const base::FilePath& initial_filename,
-      CallGetOpenFileNameCallback callback) override;
-
-  void CallGetSaveFileName(
-      uint32_t owner,
-      uint32_t flags,
-      const std::vector<std::tuple<base::string16, base::string16>>& filters,
-      uint32_t one_based_filter_index,
-      const base::FilePath& initial_directory,
-      const base::FilePath& suggested_filename,
-      const base::string16& default_extension,
-      CallGetSaveFileNameCallback callback) override;
+  void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
+                             uint32_t owner,
+                             const base::string16& title,
+                             const base::FilePath& default_path,
+                             const std::vector<ui::FileFilterSpec>& filter,
+                             int32_t file_type_index,
+                             const base::string16& default_extension,
+                             CallExecuteSelectFileCallback callback) override;
 
   const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
 

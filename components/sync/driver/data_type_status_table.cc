@@ -13,8 +13,7 @@ namespace {
 ModelTypeSet GetTypesFromErrorMap(
     const DataTypeStatusTable::TypeErrorMap& errors) {
   ModelTypeSet result;
-  for (DataTypeStatusTable::TypeErrorMap::const_iterator it = errors.begin();
-       it != errors.end(); ++it) {
+  for (auto it = errors.begin(); it != errors.end(); ++it) {
     DCHECK(!result.Has(it->first));
     result.Put(it->first);
   }
@@ -33,8 +32,7 @@ DataTypeStatusTable::~DataTypeStatusTable() {}
 void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
   DVLOG(1) << "Setting " << errors.size() << " new failed types.";
 
-  for (TypeErrorMap::const_iterator iter = errors.begin(); iter != errors.end();
-       ++iter) {
+  for (auto iter = errors.begin(); iter != errors.end(); ++iter) {
     SyncError::ErrorType failure_type = iter->second.error_type();
     switch (failure_type) {
       case SyncError::UNSET:

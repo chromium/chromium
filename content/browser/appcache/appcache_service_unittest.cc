@@ -43,8 +43,7 @@ class MockResponseReader : public AppCacheResponseReader {
                      int info_size,
                      const char* data,
                      int data_size)
-      : AppCacheResponseReader(response_id,
-                               base::WeakPtr<AppCacheDiskCacheInterface>()),
+      : AppCacheResponseReader(response_id, /*disk_cache=*/nullptr),
         info_(info),
         info_size_(info_size),
         data_(data),

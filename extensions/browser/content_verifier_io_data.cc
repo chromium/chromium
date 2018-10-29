@@ -47,8 +47,7 @@ void ContentVerifierIOData::Clear() {
 const ContentVerifierIOData::ExtensionData* ContentVerifierIOData::GetData(
     const std::string& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::map<std::string, std::unique_ptr<ExtensionData>>::iterator found =
-      data_map_.find(extension_id);
+  auto found = data_map_.find(extension_id);
   if (found != data_map_.end())
     return found->second.get();
   else

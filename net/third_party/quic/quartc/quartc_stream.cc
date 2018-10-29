@@ -9,7 +9,7 @@
 namespace quic {
 
 QuartcStream::QuartcStream(QuicStreamId id, QuicSession* session)
-    : QuicStream(id, session, /*is_static=*/false) {
+    : QuicStream(id, session, /*is_static=*/false, BIDIRECTIONAL) {
   sequencer()->set_level_triggered(true);
 }
 

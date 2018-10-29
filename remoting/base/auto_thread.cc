@@ -212,8 +212,8 @@ void AutoThread::ThreadMain() {
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher.
   std::unique_ptr<base::FileDescriptorWatcher> file_descriptor_watcher;
   if (message_loop.type() == base::MessageLoop::TYPE_IO) {
-    file_descriptor_watcher.reset(new base::FileDescriptorWatcher(
-        static_cast<base::MessageLoopForIO*>(&message_loop)));
+    file_descriptor_watcher.reset(
+        new base::FileDescriptorWatcher(message_loop.task_runner()));
   }
 #endif
 

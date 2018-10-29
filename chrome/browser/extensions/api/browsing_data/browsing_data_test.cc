@@ -5,23 +5,42 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/scoped_account_consistency.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/browser_sync/profile_sync_service.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/core/browser/profile_oauth2_token_service.h"
+#include "components/signin/core/browser/signin_buildflags.h"
+#include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/cookies/canonical_cookie.h"
+#include "url/gurl.h"
 
 using extension_function_test_utils::RunFunctionAndReturnError;
 using extension_function_test_utils::RunFunctionAndReturnSingleResult;
@@ -298,6 +317,34 @@ class ExtensionBrowsingDataTest : public InProcessBrowserTest {
   content::BrowsingDataRemover* remover_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Sets the APISID Gaia cookie, which is monitored by the AccountReconcilor.
+bool SetGaiaCookieForProfile(Profile* profile) {
+  GURL google_url = GaiaUrls::GetInstance()->google_url();
+  net::CanonicalCookie cookie("APISID", std::string(), "." + google_url.host(),
+                              "/", base::Time(), base::Time(), base::Time(),
+                              false, false, net::CookieSameSite::DEFAULT_MODE,
+                              net::COOKIE_PRIORITY_DEFAULT);
+
+  bool success = false;
+  base::RunLoop loop;
+  base::OnceClosure loop_quit = loop.QuitClosure();
+  base::OnceCallback<void(bool)> callback =
+      base::BindLambdaForTesting([&success, &loop_quit](bool s) {
+        success = s;
+        std::move(loop_quit).Run();
+      });
+  network::mojom::CookieManager* cookie_manager =
+      content::BrowserContext::GetDefaultStoragePartition(profile)
+          ->GetCookieManagerForBrowserProcess();
+  cookie_manager->SetCanonicalCookie(
+      cookie, true, true,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
+  loop.Run();
+  return success;
+}
+#endif
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, RemovalProhibited) {
@@ -357,6 +404,101 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, RemoveBrowsingDataAll) {
           ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS,
       GetRemovalMask());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Test that Sync is not paused when browsing data is cleared.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a Sync account and a secondary account.
+  const char kPrimaryAccountId[] = "primary_account_id";
+  const char kSecondaryAccountId[] = "secondary_account_id";
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  token_service->UpdateCredentials(kPrimaryAccountId, "token");
+  ASSERT_TRUE(token_service->RefreshTokenIsAvailable(kPrimaryAccountId));
+  token_service->UpdateCredentials(kSecondaryAccountId, "token");
+  ASSERT_TRUE(token_service->RefreshTokenIsAvailable(kSecondaryAccountId));
+  SigninManager* signin_manager = SigninManagerFactory::GetForProfile(profile);
+  signin_manager->SetAuthenticatedAccountInfo(kPrimaryAccountId,
+                                              "user@gmail.com");
+  // Sync is running.
+  browser_sync::ProfileSyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  sync_service->SetFirstSetupComplete();
+  sync_ui_util::MessageType sync_status =
+      sync_ui_util::GetStatus(profile, sync_service, *signin_manager);
+  ASSERT_EQ(sync_ui_util::SYNCED, sync_status);
+  // Clear browsing data.
+  scoped_refptr<BrowsingDataRemoveFunction> function =
+      new BrowsingDataRemoveFunction();
+  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
+                      function.get(), kRemoveEverythingArguments, browser()));
+  // Check that the Sync token was not revoked.
+  EXPECT_TRUE(token_service->RefreshTokenIsAvailable(kPrimaryAccountId));
+  EXPECT_FALSE(token_service->RefreshTokenHasError(kPrimaryAccountId));
+  // Check that the secondary token was revoked.
+  EXPECT_FALSE(token_service->RefreshTokenIsAvailable(kSecondaryAccountId));
+}
+
+// Test that Sync is paused when browsing data is cleared if Sync was in
+// authentication error.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a Sync account with authentication error.
+  const char kAccountId[] = "account_id";
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  token_service->UpdateCredentials(kAccountId, "token");
+  ASSERT_TRUE(token_service->RefreshTokenIsAvailable(kAccountId));
+  SigninManager* signin_manager = SigninManagerFactory::GetForProfile(profile);
+  signin_manager->SetAuthenticatedAccountInfo(kAccountId, "user@gmail.com");
+  token_service->GetDelegate()->UpdateAuthError(
+      kAccountId, GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER));
+  // Sync is not running.
+  sync_ui_util::MessageType sync_status = sync_ui_util::GetStatus(
+      profile, ProfileSyncServiceFactory::GetForProfile(profile),
+      *signin_manager);
+  ASSERT_NE(sync_ui_util::SYNCED, sync_status);
+  // Clear browsing data.
+  scoped_refptr<BrowsingDataRemoveFunction> function =
+      new BrowsingDataRemoveFunction();
+  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
+                      function.get(), kRemoveEverythingArguments, browser()));
+  // Check that the account was not removed and Sync was paused.
+  EXPECT_TRUE(token_service->RefreshTokenIsAvailable(kAccountId));
+  EXPECT_EQ(GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_CLIENT,
+            token_service->GetAuthError(kAccountId)
+                .GetInvalidGaiaCredentialsReason());
+}
+
+// Test that the tokens are revoked when browsing data is cleared when there is
+// no primary account.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
+  Profile* profile = browser()->profile();
+  // Set a Gaia cookie.
+  ASSERT_TRUE(SetGaiaCookieForProfile(profile));
+  // Set a non-Sync account.
+  const char kAccountId[] = "account_id";
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  token_service->UpdateCredentials(kAccountId, "token");
+  ASSERT_TRUE(token_service->RefreshTokenIsAvailable(kAccountId));
+  // Clear browsing data.
+  scoped_refptr<BrowsingDataRemoveFunction> function =
+      new BrowsingDataRemoveFunction();
+  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
+                      function.get(), kRemoveEverythingArguments, browser()));
+  // Check that the account was removed.
+  EXPECT_FALSE(token_service->RefreshTokenIsAvailable(kAccountId));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, BrowsingDataOriginTypeMask) {
   RunBrowsingDataRemoveFunctionAndCompareOriginTypeMask("{}", 0);

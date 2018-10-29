@@ -76,7 +76,7 @@ class LinkHighlightImplTest : public testing::Test,
   }
 
   void SetUp() override {
-    WebURL url = URLTestHelpers::RegisterMockedURLLoadFromBase(
+    WebURL url = url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8("http://www.test.com/"), test::CoreTestDataPath(),
         WebString::FromUTF8("test_touch_link_highlight.html"));
     web_view_helper_.InitializeAndLoad(url.GetString().Utf8());
@@ -108,7 +108,7 @@ class LinkHighlightImplTest : public testing::Test,
     return local_frame_view->GetPaintArtifactCompositorForTesting();
   }
 
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
 INSTANTIATE_TEST_CASE_P(All, LinkHighlightImplTest, testing::Bool());

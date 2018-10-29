@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/stl_util.h"
 #include "device/usb/mojo/type_converters.h"
+#include "device/usb/public/cpp/usb_utils.h"
 #include "device/usb/usb_descriptors.h"
 #include "device/usb/usb_device.h"
 
@@ -52,20 +53,6 @@ void OnTransferOut(mojom::UsbDevice::GenericTransferOutCallback callback,
                    scoped_refptr<base::RefCountedBytes> buffer,
                    size_t buffer_size) {
   std::move(callback).Run(mojo::ConvertTo<mojom::UsbTransferStatus>(status));
-}
-
-std::vector<mojom::UsbIsochronousPacketPtr> BuildIsochronousPacketArray(
-    const std::vector<uint32_t>& packet_lengths,
-    mojom::UsbTransferStatus status) {
-  std::vector<mojom::UsbIsochronousPacketPtr> packets;
-  packets.reserve(packet_lengths.size());
-  for (uint32_t packet_length : packet_lengths) {
-    auto packet = mojom::UsbIsochronousPacket::New();
-    packet->length = packet_length;
-    packet->status = status;
-    packets.push_back(std::move(packet));
-  }
-  return packets;
 }
 
 void OnIsochronousTransferIn(

@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/accounts_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_ui_constants.h"
@@ -34,9 +34,7 @@
 #import "ios/chrome/browser/ui/settings/sync_settings_collection_view_controller.h"
 #import "ios/chrome/browser/ui/static_content/static_html_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar/legacy/toolbar_controller_constants.h"
-#import "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/web/public/block_types.h"
@@ -52,8 +50,8 @@ namespace {
 
 id<GREYMatcher> SettingsSwitchIsToggledOn(BOOL isToggledOn) {
   MatchesBlock matches = ^BOOL(id element) {
-    SettingsSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(element);
+    LegacySettingsSwitchCell* switch_cell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.on && isToggledOn) || (!switch_view.on && !isToggledOn);
   };
@@ -69,8 +67,8 @@ id<GREYMatcher> SettingsSwitchIsToggledOn(BOOL isToggledOn) {
 
 id<GREYMatcher> SettingsSwitchIsEnabled(BOOL isEnabled) {
   MatchesBlock matches = ^BOOL(id element) {
-    SettingsSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(element);
+    LegacySettingsSwitchCell* switch_cell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.enabled && isEnabled) ||
            (!switch_view.enabled && !isEnabled);
@@ -247,19 +245,23 @@ id<GREYMatcher> ShareButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
+id<GREYMatcher> TabletTabSwitcherOpenButton() {
+  return ButtonWithAccessibilityLabelId(IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER);
+}
+
 id<GREYMatcher> ShowTabsButton() {
   return grey_allOf(grey_accessibilityID(kToolbarStackButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibilityIdentifier,
-                                   BOOL isToggledOn) {
-  return SettingsSwitchCell(accessibilityIdentifier, isToggledOn, YES);
+id<GREYMatcher> LegacySettingsSwitchCell(NSString* accessibilityIdentifier,
+                                         BOOL isToggledOn) {
+  return LegacySettingsSwitchCell(accessibilityIdentifier, isToggledOn, YES);
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibilityIdentifier,
-                                   BOOL isToggledOn,
-                                   BOOL isEnabled) {
+id<GREYMatcher> LegacySettingsSwitchCell(NSString* accessibilityIdentifier,
+                                         BOOL isToggledOn,
+                                         BOOL isEnabled) {
   return grey_allOf(grey_accessibilityID(accessibilityIdentifier),
                     SettingsSwitchIsToggledOn(isToggledOn),
                     SettingsSwitchIsEnabled(isEnabled),
@@ -465,6 +467,10 @@ id<GREYMatcher> NewTabPageOmnibox() {
   return grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)),
       grey_minimumVisiblePercent(0.2), nil);
+}
+
+id<GREYMatcher> WebViewMatcher() {
+  return web::WebViewInWebState(chrome_test_util::GetCurrentWebState());
 }
 
 }  // namespace chrome_test_util

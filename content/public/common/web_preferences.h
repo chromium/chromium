@@ -229,16 +229,16 @@ struct CONTENT_EXPORT WebPreferences {
 
   bool immersive_mode_enabled;
 
-  bool text_autosizing_enabled;
-
   bool double_tap_to_zoom_enabled;
+
+  bool text_autosizing_enabled;
 
 #if defined(OS_ANDROID)
   float font_scale_factor;
   float device_scale_adjustment;
   bool force_enable_zoom;
   bool fullscreen_supported;
-  std::string media_playback_gesture_whitelist_scope;
+  GURL media_playback_gesture_whitelist_scope;
   GURL default_video_poster_url;
   bool support_deprecated_target_density_dpi;
   bool use_legacy_background_size_shorthand_behavior;

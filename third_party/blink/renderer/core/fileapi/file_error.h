@@ -73,6 +73,9 @@ CORE_EXPORT extern const char kTypeMismatchErrorMessage[];
 CORE_EXPORT void ThrowDOMException(ExceptionState&,
                                    ErrorCode,
                                    String message = String());
+CORE_EXPORT void ThrowDOMException(ExceptionState& exception_state,
+                                   base::File::Error error,
+                                   String message = String());
 CORE_EXPORT DOMException* CreateDOMException(ErrorCode);
 CORE_EXPORT DOMException* CreateDOMException(base::File::Error);
 

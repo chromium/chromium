@@ -25,6 +25,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/cert/cert_verifier.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver_impl.h"

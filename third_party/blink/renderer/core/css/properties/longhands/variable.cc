@@ -11,6 +11,41 @@
 
 namespace blink {
 
+namespace {
+
+void ApplyInitialValue(StyleResolverState& state,
+                       const AtomicString& name,
+                       const PropertyRegistration* registration) {
+  bool is_inherited_property = !registration || registration->Inherits();
+  state.Style()->RemoveVariable(name, is_inherited_property);
+}
+
+void ApplyInheritValue(StyleResolverState& state,
+                       const AtomicString& name,
+                       const PropertyRegistration* registration) {
+  bool is_inherited_property = !registration || registration->Inherits();
+  state.Style()->RemoveVariable(name, is_inherited_property);
+
+  CSSVariableData* parent_value =
+      state.ParentStyle()->GetVariable(name, is_inherited_property);
+
+  if (!parent_value)
+    return;
+
+  state.Style()->SetVariable(name, parent_value, is_inherited_property);
+
+  if (registration) {
+    const CSSValue* parent_css_value =
+        parent_value ? state.ParentStyle()->GetRegisteredVariable(
+                           name, is_inherited_property)
+                     : nullptr;
+    state.Style()->SetRegisteredVariable(name, parent_css_value,
+                                         is_inherited_property);
+  }
+}
+
+}  // namespace
+
 void Variable::ApplyValue(StyleResolverState& state,
                           const CSSValue& value) const {
   const CSSCustomPropertyDeclaration& declaration =
@@ -26,71 +61,18 @@ void Variable::ApplyValue(StyleResolverState& state,
   bool inherit = declaration.IsInherit(is_inherited_property);
   DCHECK(!(initial && inherit));
 
-  if (!initial && !inherit) {
-    if (declaration.Value()->NeedsVariableResolution()) {
-      if (is_inherited_property) {
-        state.Style()->SetUnresolvedInheritedVariable(name,
-                                                      declaration.Value());
-      } else {
-        state.Style()->SetUnresolvedNonInheritedVariable(name,
-                                                         declaration.Value());
-      }
-      return;
-    }
-
-    if (!registration) {
-      state.Style()->SetResolvedUnregisteredVariable(name, declaration.Value());
-      return;
-    }
-
-    const CSSValue* parsed_value = declaration.Value()->ParseForSyntax(
-        registration->Syntax(), state.GetDocument().GetSecureContextMode());
-    if (parsed_value) {
-      DCHECK(parsed_value);
-      if (is_inherited_property) {
-        state.Style()->SetResolvedInheritedVariable(name, declaration.Value(),
-                                                    parsed_value);
-      } else {
-        state.Style()->SetResolvedNonInheritedVariable(
-            name, declaration.Value(), parsed_value);
-      }
-      return;
-    }
-    if (is_inherited_property)
-      inherit = true;
-    else
-      initial = true;
-  }
-  DCHECK(initial ^ inherit);
-
-  state.Style()->RemoveVariable(name, is_inherited_property);
+  // TODO(andruud): Use regular initial/inherit dispatch in StyleBuilder
+  //                once custom properties are Ribbonized.
   if (initial) {
-    return;
-  }
-
-  DCHECK(inherit);
-  CSSVariableData* parent_value =
-      state.ParentStyle()->GetVariable(name, is_inherited_property);
-  const CSSValue* parent_css_value =
-      registration && parent_value ? state.ParentStyle()->GetRegisteredVariable(
-                                         name, is_inherited_property)
-                                   : nullptr;
-
-  if (!is_inherited_property) {
-    DCHECK(registration);
-    if (parent_value) {
-      state.Style()->SetResolvedNonInheritedVariable(name, parent_value,
-                                                     parent_css_value);
-    }
-    return;
-  }
-
-  if (parent_value) {
-    if (!registration) {
-      state.Style()->SetResolvedUnregisteredVariable(name, parent_value);
-    } else {
-      state.Style()->SetResolvedInheritedVariable(name, parent_value,
-                                                  parent_css_value);
+    ApplyInitialValue(state, name, registration);
+  } else if (inherit) {
+    ApplyInheritValue(state, name, registration);
+  } else {
+    state.Style()->SetVariable(name, declaration.Value(),
+                               is_inherited_property);
+    if (registration) {
+      state.Style()->SetRegisteredVariable(name, nullptr,
+                                           is_inherited_property);
     }
   }
 }

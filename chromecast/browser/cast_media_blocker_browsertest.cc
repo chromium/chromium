@@ -54,10 +54,11 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
 
     // Changing states is not instant, but should be timely (< 0.5s).
     for (size_t i = 0; i < 5; i++) {
+      LOG(INFO) << "Checking media blocking, re-try = " << i;
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(50));
+          base::TimeDelta::FromMilliseconds(100));
       run_loop.Run();
 
       const std::string command =

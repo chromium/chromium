@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
@@ -44,10 +46,16 @@ class GroupCoordinator {
   void RemoveObserver(const base::UnguessableToken& group_id,
                       Observer* observer);
 
+  // Runs a |callback| for each member associated with the given |group_id|.
+  void ForEachMemberInGroup(
+      const base::UnguessableToken& group_id,
+      base::RepeatingCallback<void(Member*)> callback) const;
+
+ protected:
   // Returns the current members in the group having the given |group_id|. Note
   // that the validity of the returned reference is uncertain once any of the
   // other non-const methods are called.
-  const std::vector<Member*>& GetCurrentMembers(
+  const std::vector<Member*>& GetCurrentMembersUnsafe(
       const base::UnguessableToken& group_id) const;
 
  private:
@@ -74,6 +82,13 @@ class GroupCoordinator {
   void MaybePruneGroupMapEntry(typename GroupMap::iterator it);
 
   GroupMap groups_;
+
+#if DCHECK_IS_ON()
+  // Incremented with each mutation, and used to sanity-check that there aren't
+  // any possible re-entrancy bugs. It's okay if this rolls over, since the
+  // implementation is only doing DCHECK_EQ's.
+  size_t mutation_count_ = 0;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -1,3 +1,13 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 #include <openssl/arm_arch.h>
 
 @ Silence ARMv8 deprecated IT instruction warnings. This file is used by both
@@ -965,3 +975,4 @@ OPENSSL_armcap_P:
 .long	0
 .private_extern	_OPENSSL_armcap_P
 #endif
+#endif  // !OPENSSL_NO_ASM

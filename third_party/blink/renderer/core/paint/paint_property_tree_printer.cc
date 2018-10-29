@@ -77,10 +77,12 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNode> {
       const ObjectPaintProperties& properties,
       PropertyTreePrinter<TransformPaintPropertyNode>& printer) {
     printer.AddNode(properties.PaintOffsetTranslation());
+    printer.AddNode(properties.StickyTranslation());
     printer.AddNode(properties.Transform());
     printer.AddNode(properties.Perspective());
     printer.AddNode(properties.ReplacedContentTransform());
     printer.AddNode(properties.ScrollTranslation());
+    printer.AddNode(properties.TransformIsolationNode());
   }
 };
 
@@ -102,6 +104,7 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNode> {
     printer.AddNode(properties.OverflowControlsClip());
     printer.AddNode(properties.InnerBorderRadiusClip());
     printer.AddNode(properties.OverflowClip());
+    printer.AddNode(properties.ClipIsolationNode());
   }
 };
 
@@ -118,8 +121,12 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNode> {
       PropertyTreePrinter<EffectPaintPropertyNode>& printer) {
     printer.AddNode(properties.Effect());
     printer.AddNode(properties.Filter());
+    printer.AddNode(properties.VerticalScrollbarEffect());
+    printer.AddNode(properties.HorizontalScrollbarEffect());
     printer.AddNode(properties.Mask());
     printer.AddNode(properties.ClipPath());
+    printer.AddNode(properties.LinkHighlightEffect());
+    printer.AddNode(properties.EffectIsolationNode());
   }
 };
 
@@ -156,7 +163,7 @@ void SetDebugName(const PropertyTreeNode* node,
 
 }  // namespace
 
-namespace PaintPropertyTreePrinter {
+namespace paint_property_tree_printer {
 
 void UpdateDebugNames(const VisualViewport& viewport) {
   viewport.GetPageScaleNode()->SetDebugName("VisualViewport Scale Node");
@@ -169,11 +176,14 @@ void UpdateDebugNames(const LayoutObject& object,
                       ObjectPaintProperties& properties) {
   SetDebugName(properties.PaintOffsetTranslation(), "PaintOffsetTranslation",
                object);
+  SetDebugName(properties.StickyTranslation(), "StickyTranslation", object);
   SetDebugName(properties.Transform(), "Transform", object);
   SetDebugName(properties.Perspective(), "Perspective", object);
   SetDebugName(properties.ReplacedContentTransform(),
                "ReplacedContentTransform", object);
   SetDebugName(properties.ScrollTranslation(), "ScrollTranslation", object);
+  SetDebugName(properties.TransformIsolationNode(), "TransformIsolationNode",
+               object);
 
   SetDebugName(properties.FragmentClip(), "FragmentClip", object);
   SetDebugName(properties.ClipPathClip(), "ClipPathClip", object);
@@ -186,15 +196,23 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.InnerBorderRadiusClip(), "InnerBorderRadiusClip",
                object);
   SetDebugName(properties.OverflowClip(), "OverflowClip", object);
+  SetDebugName(properties.ClipIsolationNode(), "ClipIsolationNode", object);
 
   SetDebugName(properties.Effect(), "Effect", object);
   SetDebugName(properties.Filter(), "Filter", object);
+  SetDebugName(properties.VerticalScrollbarEffect(), "VerticalScrollbarEffect",
+               object);
+  SetDebugName(properties.HorizontalScrollbarEffect(),
+               "HorizontalScrollbarEffect", object);
   SetDebugName(properties.Mask(), "Mask", object);
   SetDebugName(properties.ClipPath(), "ClipPath", object);
+  SetDebugName(properties.LinkHighlightEffect(), "LinkHighlightEffect", object);
+  SetDebugName(properties.EffectIsolationNode(), "EffectIsolationNode", object);
+
   SetDebugName(properties.Scroll(), "Scroll", object);
 }
 
-}  // namespace PaintPropertyTreePrinter
+}  // namespace paint_property_tree_printer
 
 }  // namespace blink
 

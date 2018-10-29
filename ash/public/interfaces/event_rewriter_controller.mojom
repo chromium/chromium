@@ -12,6 +12,9 @@ interface SpokenFeedbackEventRewriterDelegate {
   // the rewriter discarded the event, false if the rewriter continues event
   // propagation.
   DispatchKeyEventToChromeVox(ui.mojom.Event event, bool capture);
+
+  // Used to send mouse events to the ChromeVox extension.
+  DispatchMouseEventToChromeVox(ui.mojom.Event event);
 };
 
 // Allows clients to toggle some event rewriting behavior.
@@ -34,4 +37,7 @@ interface EventRewriterController {
 
   // Discards key events and sends to spoken feedback when true.
   CaptureAllKeysForSpokenFeedback(bool capture);
+
+  // Sends mouse events to ChromeVox when true.
+  SetSendMouseEventsToDelegate(bool value);
 };

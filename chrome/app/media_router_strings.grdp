@@ -210,6 +210,9 @@
   <message name="IDS_MEDIA_ROUTER_STATUS_NO_DEVICES_FOUND" desc="Status text shown to indicate that no Cast device was found.">
     No devices found
   </message>
+  <message name="IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON" desc="The accessibility label that gets read by screen readers for a button shown when no Cast device was found. Clicking on the button opens a new tab.">
+    No devices found. Open a help center article in a new tab.
+  </message>
   <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Chromecast help center explaining possible reasons why none are detected.">
     No Cast destinations found. Need help?
   </message>
@@ -218,6 +221,9 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_SINK_CONNECTING" desc="Text shown as the status of a Cast destination that we are starting a Cast session on.">
     Connecting...
+  </message>
+  <message name="IDS_MEDIA_ROUTER_STOP_CASTING" desc="Text shown when user hovers over the stop icon for a cast device.">
+    Stop casting
   </message>
 
   <!-- Sink Search -->

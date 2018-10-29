@@ -45,11 +45,9 @@ void ExternalProcessImporterBridge::AddBookmarks(
   // Debug bounds-check which prevents pushing an iterator beyond its end()
   // (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 == s.end()|).
   int bookmarks_left = bookmarks.end() - bookmarks.begin();
-  for (std::vector<ImportedBookmarkEntry>::const_iterator it =
-           bookmarks.begin(); it < bookmarks.end();) {
+  for (auto it = bookmarks.begin(); it < bookmarks.end();) {
     std::vector<ImportedBookmarkEntry> bookmark_group;
-    std::vector<ImportedBookmarkEntry>::const_iterator end_group =
-        it + std::min(bookmarks_left, kNumBookmarksToSend);
+    auto end_group = it + std::min(bookmarks_left, kNumBookmarksToSend);
     bookmark_group.assign(it, end_group);
 
     (*observer_)->OnBookmarksImportGroup(bookmark_group);
@@ -71,11 +69,9 @@ void ExternalProcessImporterBridge::SetFavicons(
   // Debug bounds-check which prevents pushing an iterator beyond its end()
   // (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 == s.end()|).
   int favicons_left = favicons.end() - favicons.begin();
-  for (favicon_base::FaviconUsageDataList::const_iterator it = favicons.begin();
-       it < favicons.end();) {
+  for (auto it = favicons.begin(); it < favicons.end();) {
     favicon_base::FaviconUsageDataList favicons_group;
-    favicon_base::FaviconUsageDataList::const_iterator end_group =
-        it + std::min(favicons_left, kNumFaviconsToSend);
+    auto end_group = it + std::min(favicons_left, kNumFaviconsToSend);
     favicons_group.assign(it, end_group);
 
     (*observer_)->OnFaviconsImportGroup(favicons_group);
@@ -94,11 +90,9 @@ void ExternalProcessImporterBridge::SetHistoryItems(
   // Debug bounds-check which prevents pushing an iterator beyond its end()
   // (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 == s.end()|).
   int rows_left = rows.end() - rows.begin();
-  for (std::vector<ImporterURLRow>::const_iterator it = rows.begin();
-       it < rows.end();) {
+  for (auto it = rows.begin(); it < rows.end();) {
     std::vector<ImporterURLRow> row_group;
-    std::vector<ImporterURLRow>::const_iterator end_group =
-        it + std::min(rows_left, kNumHistoryRowsToSend);
+    auto end_group = it + std::min(rows_left, kNumHistoryRowsToSend);
     row_group.assign(it, end_group);
 
     (*observer_)->OnHistoryImportGroup(row_group, visit_source);
@@ -133,13 +127,10 @@ void ExternalProcessImporterBridge::SetAutofillFormData(
   // its end() (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 ==
   // s.end()|).
   int autofill_form_data_entries_left = entries.end() - entries.begin();
-  for (std::vector<ImporterAutofillFormDataEntry>::const_iterator it =
-           entries.begin();
-       it < entries.end();) {
+  for (auto it = entries.begin(); it < entries.end();) {
     std::vector<ImporterAutofillFormDataEntry> autofill_form_data_entry_group;
-    std::vector<ImporterAutofillFormDataEntry>::const_iterator end_group =
-        it +
-        std::min(autofill_form_data_entries_left, kNumAutofillFormDataToSend);
+    auto end_group = it + std::min(autofill_form_data_entries_left,
+                                   kNumAutofillFormDataToSend);
     autofill_form_data_entry_group.assign(it, end_group);
 
     (*observer_)->OnAutofillFormDataImportGroup(autofill_form_data_entry_group);

@@ -144,21 +144,6 @@ base::Optional<PasswordHashData> ConvertToPasswordHashData(
 
 HashPasswordManager::HashPasswordManager(PrefService* prefs) : prefs_(prefs) {}
 
-bool HashPasswordManager::SavePasswordHash(const base::string16& password) {
-  if (!prefs_)
-    return false;
-
-  base::Optional<SyncPasswordData> current_sync_password_data =
-      RetrievePasswordHash();
-  // If it is the same password, no need to save password hash again.
-  if (current_sync_password_data.has_value() &&
-      current_sync_password_data->MatchesPassword(password)) {
-    return true;
-  }
-
-  return SavePasswordHash(SyncPasswordData(password, true));
-}
-
 bool HashPasswordManager::SavePasswordHash(const std::string username,
                                            const base::string16& password,
                                            bool is_gaia_password) {
@@ -186,20 +171,6 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
 
   return SavePasswordHash(
       PasswordHashData(username, password, true, is_gaia_password));
-}
-
-bool HashPasswordManager::SavePasswordHash(
-    const SyncPasswordData& sync_password_data) {
-  bool should_save = sync_password_data.force_update ||
-                     !prefs_->HasPrefPath(prefs::kSyncPasswordHash);
-  return should_save ? (EncryptAndSaveToPrefs(
-                            prefs::kSyncPasswordHash,
-                            base::NumberToString(sync_password_data.hash)) &&
-                        EncryptAndSaveToPrefs(
-                            prefs::kSyncPasswordLengthAndHashSalt,
-                            LengthAndSaltToString(sync_password_data.salt,
-                                                  sync_password_data.length)))
-                     : false;
 }
 
 bool HashPasswordManager::SavePasswordHash(
@@ -245,22 +216,6 @@ void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
   }
 }
 
-base::Optional<SyncPasswordData> HashPasswordManager::RetrievePasswordHash() {
-  if (!prefs_ || !prefs_->HasPrefPath(prefs::kSyncPasswordHash))
-    return base::nullopt;
-
-  SyncPasswordData result;
-  std::string hash_str =
-      RetrievedDecryptedStringFromPrefs(prefs::kSyncPasswordHash);
-  if (!base::StringToUint64(hash_str, &result.hash))
-    return base::nullopt;
-
-  StringToLengthAndSalt(
-      RetrievedDecryptedStringFromPrefs(prefs::kSyncPasswordLengthAndHashSalt),
-      &result.length, &result.salt);
-  return result;
-}
-
 std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   std::vector<PasswordHashData> result;
   if (!prefs_ || !prefs_->HasPrefPath(prefs::kPasswordHashDataList))
@@ -297,10 +252,6 @@ base::Optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   return base::nullopt;
 }
 
-bool HashPasswordManager::HasPasswordHash() {
-  return prefs_ ? prefs_->HasPrefPath(prefs::kSyncPasswordHash) : false;
-}
-
 bool HashPasswordManager::HasPasswordHash(const std::string& username,
                                           bool is_gaia_password) {
   if (username.empty() || !prefs_ ||
@@ -317,66 +268,6 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   }
 
   return false;
-}
-
-void HashPasswordManager::MaybeMigrateExistingSyncPasswordHash(
-    const std::string& sync_username) {
-  if (!prefs_ || sync_username.empty())
-    return;
-
-  // For a very small portion of Canary and Dev users, there maybe a captured
-  // password hash with no |is_gaia_password| field.
-  // Note that, there's at most one such hash.
-  bool has_sync_password =
-      HasPasswordHash(sync_username, /*is_gaia_password=*/true);
-  if (prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
-    ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-    auto entry_to_remove = update->GetList().end();
-    for (auto it = update->GetList().begin(); it != update->GetList().end();
-         it++) {
-      if (it->FindKey(kIsGaiaFieldKey))
-        continue;
-      // If there's another hash matches |sync_username|, remove the entry
-      // without |is_gaia_password| field. Otherwise, set the missing
-      // |is_gaia_password| field to true.
-      if (has_sync_password) {
-        entry_to_remove = it;
-      } else {
-        std::string encrypted_is_gaia_value =
-            EncryptString(BooleanToString(true));
-        it->SetKey(kIsGaiaFieldKey, base::Value(encrypted_is_gaia_value));
-      }
-      break;
-    }
-    if (entry_to_remove != update->GetList().end())
-      update->GetList().erase(entry_to_remove);
-  }
-
-  if (!prefs_->HasPrefPath(prefs::kSyncPasswordHash) ||
-      !prefs_->HasPrefPath(prefs::kSyncPasswordLengthAndHashSalt)) {
-    return;
-  }
-
-  // For users who are still use |kSyncPasswordHash| and
-  // |kSyncPasswordLengthAndHashSalt| to store password hashes, migrate them
-  // to |prefs::kPasswordHashDataList|.
-  base::Optional<SyncPasswordData> captured_sync_password_hash =
-      RetrievePasswordHash();
-
-  if (!captured_sync_password_hash)
-    return;
-
-  PasswordHashData password_hash_data;
-  password_hash_data.username = sync_username;
-  password_hash_data.length = captured_sync_password_hash->length;
-  password_hash_data.salt = captured_sync_password_hash->salt;
-  password_hash_data.hash = captured_sync_password_hash->hash;
-  password_hash_data.force_update = true;
-  password_hash_data.is_gaia_password = true;
-
-  SavePasswordHash(password_hash_data);
-  prefs_->ClearPref(prefs::kSyncPasswordHash);
-  prefs_->ClearPref(prefs::kSyncPasswordLengthAndHashSalt);
 }
 
 bool HashPasswordManager::EncryptAndSaveToPrefs(const std::string& pref_name,

@@ -8,11 +8,8 @@
   <template>
     <style>
       :host {
-        --calculated-paper-slider-height: var(--paper-slider-height, 2px);
         display: inline-flex;
-        /* Counteract the margin on #sliderContainer in paper-slider.html. */
-        margin-inline-end:
-            calc(-15px - var(--calculated-paper-slider-height) / 2);
+        margin-inline-end: -16px;
       }
 
       cr-policy-pref-indicator {
@@ -55,9 +52,9 @@
       <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
     </template>
     <div class="outer">
-      <cr-slider id="slider" disabled$="[[disableSlider_]]" snaps
-          on-immediate-value-changed="onSliderChanged_" max="[[max]]"
-          min="[[min]]">
+      <cr-slider id="slider" disabled$="[[disableSlider_]]" ticks="[[ticks]]"
+          on-value-changed="onSliderChanged_" max="[[max]]" min="[[min]]"
+          update-value-instantly="[[updateValueInstantly]]">
       </cr-slider>
       <div id="labels" disabled$="[[disableSlider_]]">
         <div id="label-begin">[[labelMin]]</div>

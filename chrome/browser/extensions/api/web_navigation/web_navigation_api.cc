@@ -173,8 +173,7 @@ void WebNavigationEventRouter::RecordNewWebContents(
 }
 
 void WebNavigationEventRouter::TabAdded(content::WebContents* tab) {
-  std::map<content::WebContents*, PendingWebContents>::iterator iter =
-      pending_web_contents_.find(tab);
+  auto iter = pending_web_contents_.find(tab);
   if (iter == pending_web_contents_.end())
     return;
 
@@ -199,8 +198,8 @@ void WebNavigationEventRouter::TabAdded(content::WebContents* tab) {
 
 void WebNavigationEventRouter::TabDestroyed(content::WebContents* tab) {
   pending_web_contents_.erase(tab);
-  for (std::map<content::WebContents*, PendingWebContents>::iterator i =
-           pending_web_contents_.begin(); i != pending_web_contents_.end(); ) {
+  for (auto i = pending_web_contents_.begin();
+       i != pending_web_contents_.end();) {
     if (i->second.source_web_contents == tab)
       pending_web_contents_.erase(i++);
     else
@@ -222,7 +221,7 @@ WebNavigationTabObserver::~WebNavigationTabObserver() {}
 // static
 WebNavigationTabObserver* WebNavigationTabObserver::Get(
     content::WebContents* web_contents) {
-  TabObserverMap::iterator i = g_tab_observer.Get().find(web_contents);
+  auto i = g_tab_observer.Get().find(web_contents);
   return i == g_tab_observer.Get().end() ? NULL : i->second;
 }
 
@@ -245,11 +244,8 @@ void WebNavigationTabObserver::FrameDeleted(
 void WebNavigationTabObserver::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
-  if (old_host) {
-    RenderFrameDeleted(old_host);
-    navigation_state_.FrameHostDeleted(old_host);
-  }
-
+  if (old_host)
+    RenderFrameHostPendingDeletion(old_host);
   navigation_state_.FrameHostCreated(new_host);
 }
 
@@ -473,6 +469,30 @@ bool WebNavigationTabObserver::IsReferenceFragmentNavigation(
       url.ReplaceComponents(replacements);
 }
 
+void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
+    content::RenderFrameHost* pending_delete_rfh) {
+  // The |pending_delete_rfh| and its children are now pending deletion.
+  // Stop tracking them.
+
+  // 1) Collect them.
+  std::vector<content::RenderFrameHost*> to_be_deleted;
+  for (content::RenderFrameHost* render_frame_host : navigation_state_) {
+    if (render_frame_host == pending_delete_rfh ||
+        render_frame_host->IsDescendantOf(pending_delete_rfh)) {
+      to_be_deleted.push_back(render_frame_host);
+    }
+  }
+
+  // 2) Delete them.
+  for (content::RenderFrameHost* render_frame_host : to_be_deleted) {
+    // The RenderFrame may still be loading. Call RenderFrameDeleted()
+    // immediately to properly dispatch a load error occurred.
+    RenderFrameDeleted(render_frame_host);
+
+    navigation_state_.FrameHostDeleted(render_frame_host);
+  }
+}
+
 ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
   std::unique_ptr<GetFrame::Params> params(GetFrame::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
@@ -535,8 +555,7 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
       observer->frame_navigation_state();
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;
-  for (FrameNavigationState::const_iterator it = navigation_state.begin();
-       it != navigation_state.end(); ++it) {
+  for (auto it = navigation_state.begin(); it != navigation_state.end(); ++it) {
     GURL frame_url = navigation_state.GetUrl(*it);
     if (!navigation_state.IsValidUrl(frame_url))
       continue;

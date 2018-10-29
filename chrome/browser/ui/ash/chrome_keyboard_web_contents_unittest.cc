@@ -27,9 +27,10 @@ class ChromeKeyboardWebContentsTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void CreateWebContents(const GURL& url) {
-    chrome_keyboard_web_contents_ =
-        std::make_unique<ChromeKeyboardWebContents>(profile(), url);
+  void CreateWebContents(const GURL& url,
+                         ChromeKeyboardWebContents::LoadCallback callback) {
+    chrome_keyboard_web_contents_ = std::make_unique<ChromeKeyboardWebContents>(
+        profile(), url, std::move(callback));
   }
 
  protected:
@@ -61,7 +62,7 @@ class TestDelegate : public content::WebContentsDelegate {
 
 // Calling SetKeyboardUrl with a different URL should open the new page.
 TEST_F(ChromeKeyboardWebContentsTest, SetKeyboardUrl) {
-  CreateWebContents(GURL("http://foo.com"));
+  CreateWebContents(GURL("http://foo.com"), base::DoNothing());
   ASSERT_TRUE(chrome_keyboard_web_contents_->web_contents());
 
   // Override the delegate to test that OpenURLFromTab gets called.

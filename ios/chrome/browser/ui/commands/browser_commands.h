@@ -9,13 +9,12 @@
 
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/external_search_commands.h"
-#import "ios/chrome/browser/ui/commands/history_popup_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/commands/tools_menu_commands.h"
 
+class GURL;
 @class OpenNewTabCommand;
 @class ReadingListAddCommand;
 
@@ -27,9 +26,7 @@
                           PageInfoCommands,
                           PopupMenuCommands,
                           QRScannerCommands,
-                          SnackbarCommands,
-                          TabHistoryPopupCommands,
-                          ToolsMenuCommands>
+                          SnackbarCommands>
 
 // Closes the current tab.
 - (void)closeCurrentTab;
@@ -48,12 +45,6 @@
 
 // Bookmarks the current page.
 - (void)bookmarkPage;
-
-// TODO(crbug.com/800266): Remove this command when the StackView and
-// TabSwitcher are removed.
-// Opens a new tab as specified by |newTabCommand|.
-// DEPRECATED: Don't add uses for this command.
-- (void)openNewTab:(OpenNewTabCommand*)newTabCommand;
 
 // Prints the currently active tab.
 - (void)printTab;
@@ -77,9 +68,6 @@
 // Shows the source of the current page.
 - (void)viewSource;
 #endif
-
-// Shows the "rate this app" dialog.
-- (void)showRateThisAppDialog;
 
 // Shows the Find In Page bar.
 - (void)showFindInPage;
@@ -125,6 +113,9 @@
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
+
+// Unfocus omnibox then switch to the first tab displaying |URL|.
+- (void)unfocusOmniboxAndSwitchToTabWithURL:(const GURL&)URL;
 
 @end
 

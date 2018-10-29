@@ -243,18 +243,6 @@ make_patch_fs() {
     exit 13
   fi
 
-  local patch_keychain_reauthorize_dir="${patch_fs}/.keychain_reauthorize"
-  if ! mkdir "${patch_keychain_reauthorize_dir}"; then
-    err "could not mkdir patch_keychain_reauthorize_dir"
-    exit 13
-  fi
-
-  if ! cp -p "${SCRIPT_DIR}/keychain_reauthorizers/${old_app_bundleid}" \
-             "${patch_keychain_reauthorize_dir}/${old_app_bundleid}"; then
-    err "could not copy keychain_reauthorize"
-    exit 13
-  fi
-
   local patch_dotpatch_dir="${patch_fs}/.patch"
   if ! mkdir "${patch_dotpatch_dir}"; then
     err "could not mkdir patch_dotpatch_dir"

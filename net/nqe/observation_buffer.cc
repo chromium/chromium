@@ -58,6 +58,10 @@ void ObservationBuffer::AddObservation(const Observation& observation) {
   DCHECK(observations_.empty() ||
          observation.timestamp() >= observations_.back().timestamp());
 
+  DCHECK(observation.signal_strength() == INT32_MIN ||
+         (observation.signal_strength() >= 0 &&
+          observation.signal_strength() <= 4));
+
   // Evict the oldest element if the buffer is already full.
   if (observations_.size() == params_->observation_buffer_size())
     observations_.pop_front();
@@ -68,9 +72,12 @@ void ObservationBuffer::AddObservation(const Observation& observation) {
 
 base::Optional<int32_t> ObservationBuffer::GetPercentile(
     base::TimeTicks begin_timestamp,
-    const base::Optional<int32_t>& current_signal_strength,
+    int32_t current_signal_strength,
     int percentile,
     size_t* observations_count) const {
+  DCHECK(current_signal_strength == INT32_MIN ||
+         (current_signal_strength >= 0 && current_signal_strength <= 4));
+
   // Stores weighted observations in increasing order by value.
   std::vector<WeightedObservation> weighted_observations;
 
@@ -105,62 +112,6 @@ base::Optional<int32_t> ObservationBuffer::GetPercentile(
   return weighted_observations.at(weighted_observations.size() - 1).value;
 }
 
-void ObservationBuffer::GetPercentileForEachHostWithCounts(
-    base::TimeTicks begin_timestamp,
-    int percentile,
-    const base::Optional<std::set<IPHash>>& host_filter,
-    std::map<IPHash, int32_t>* host_keyed_percentiles,
-    std::map<IPHash, size_t>* host_keyed_counts) const {
-  DCHECK_GE(Capacity(), Size());
-  DCHECK_LE(0, percentile);
-  DCHECK_GE(100, percentile);
-
-  host_keyed_percentiles->clear();
-  host_keyed_counts->clear();
-
-  // Filter the observations based on timestamp, and the
-  // presence of a valid host tag. Split the observations into a map keyed by
-  // the remote host to make it easy to calculate percentiles for each host.
-  std::map<IPHash, std::vector<int32_t>> host_keyed_observations;
-  for (const auto& observation : observations_) {
-    // Look at only those observations which have a |host|.
-    if (!observation.host())
-      continue;
-
-    IPHash host = observation.host().value();
-    if (host_filter && (host_filter->find(host) == host_filter->end()))
-      continue;
-
-    // Filter the observations recorded before |begin_timestamp|.
-    if (observation.timestamp() < begin_timestamp)
-      continue;
-
-    // Skip 0 values of RTT.
-    if (observation.value() < 1)
-      continue;
-
-    // Create the map entry if it did not already exist. Does nothing if
-    // |host| was seen before.
-    host_keyed_observations.emplace(host, std::vector<int32_t>());
-    host_keyed_observations[host].push_back(observation.value());
-  }
-
-  if (host_keyed_observations.empty())
-    return;
-
-  // Calculate the percentile values for each host.
-  for (auto& host_observations : host_keyed_observations) {
-    IPHash host = host_observations.first;
-    auto& observations = host_observations.second;
-    std::sort(observations.begin(), observations.end());
-    size_t count = observations.size();
-    DCHECK_GT(count, 0u);
-    (*host_keyed_counts)[host] = count;
-    int percentile_index = ((count - 1) * percentile) / 100;
-    (*host_keyed_percentiles)[host] = observations[percentile_index];
-  }
-}
-
 void ObservationBuffer::RemoveObservationsWithSource(
     bool deleted_observation_sources[NETWORK_QUALITY_OBSERVATION_SOURCE_MAX]) {
   base::EraseIf(observations_,
@@ -172,7 +123,7 @@ void ObservationBuffer::RemoveObservationsWithSource(
 
 void ObservationBuffer::ComputeWeightedObservations(
     const base::TimeTicks& begin_timestamp,
-    const base::Optional<int32_t>& current_signal_strength,
+    int32_t current_signal_strength,
     std::vector<WeightedObservation>* weighted_observations,
     double* total_weight) const {
   DCHECK_GE(Capacity(), Size());
@@ -190,10 +141,9 @@ void ObservationBuffer::ComputeWeightedObservations(
         pow(weight_multiplier_per_second_, time_since_sample_taken.InSeconds());
 
     double signal_strength_weight = 1.0;
-    if (current_signal_strength && observation.signal_strength()) {
+    if (current_signal_strength >= 0 && observation.signal_strength() >= 0) {
       int32_t signal_strength_weight_diff =
-          std::abs(current_signal_strength.value() -
-                   observation.signal_strength().value());
+          std::abs(current_signal_strength - observation.signal_strength());
       signal_strength_weight =
           pow(weight_multiplier_per_signal_level_, signal_strength_weight_diff);
     }

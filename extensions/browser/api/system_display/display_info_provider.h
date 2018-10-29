@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "ui/display/display_observer.h"
 
 namespace display {
 class Display;
@@ -36,13 +37,13 @@ struct TouchCalibrationPairQuad;
 // Implementation class for chrome.system.display extension API
 // (system_display_api.cc). Callbacks that provide an error string use an
 // empty string for success.
-class DisplayInfoProvider {
+class DisplayInfoProvider : public display::DisplayObserver {
  public:
   using DisplayUnitInfoList = std::vector<api::system_display::DisplayUnitInfo>;
   using DisplayLayoutList = std::vector<api::system_display::DisplayLayout>;
   using ErrorCallback = base::OnceCallback<void(base::Optional<std::string>)>;
 
-  virtual ~DisplayInfoProvider();
+  ~DisplayInfoProvider() override;
 
   // Returns a pointer to DisplayInfoProvider or null if Create() or
   // InitializeForTesting() have not been called yet.
@@ -82,6 +83,10 @@ class DisplayInfoProvider {
   virtual void GetDisplayLayout(
       base::OnceCallback<void(DisplayLayoutList result)> callback);
 
+  // Start/Stop observing display state change
+  virtual void StartObserving();
+  virtual void StopObserving();
+
   // Implements overscan calibration methods. See system_display.idl. These
   // return false if |id| is invalid.
   virtual bool OverscanCalibrationStart(const std::string& id);
@@ -113,6 +118,9 @@ class DisplayInfoProvider {
  protected:
   DisplayInfoProvider();
 
+  // Trigger OnDisplayChangedEvent
+  void DispatchOnDisplayChangedEvent();
+
   // Create a DisplayUnitInfo from a display::Display for implementations of
   // GetAllDisplaysInfo()
   static api::system_display::DisplayUnitInfo CreateDisplayUnitInfo(
@@ -127,6 +135,12 @@ class DisplayInfoProvider {
   virtual void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
       api::system_display::DisplayUnitInfo* unit);
+
+  // DisplayObserver
+  void OnDisplayAdded(const display::Display& new_display) override;
+  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayInfoProvider);
 };

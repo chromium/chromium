@@ -246,7 +246,8 @@ NativeRequestBehavior FeedSchedulerHost::ShouldSessionRequestData(
   OnSuggestionsShown();
   DVLOG(2) << "Specifying NativeRequestBehavior of "
            << static_cast<int>(behavior);
-  UMA_HISTOGRAM_ENUMERATION("Feed.Scheduler.RequestBehavior", behavior);
+  UMA_HISTOGRAM_ENUMERATION("ContentSuggestions.Feed.Scheduler.RequestBehavior",
+                            behavior);
   return behavior;
 }
 
@@ -397,7 +398,8 @@ bool FeedSchedulerHost::ShouldRefresh(TriggerType trigger) {
   }
 
   DVLOG(2) << "Requesting refresh from trigger " << static_cast<int>(trigger);
-  UMA_HISTOGRAM_ENUMERATION("Feed.Scheduler.RefreshTrigger", trigger);
+  UMA_HISTOGRAM_ENUMERATION("ContentSuggestions.Feed.Scheduler.RefreshTrigger",
+                            trigger);
   tracking_oustanding_request_ = true;
   return true;
 }

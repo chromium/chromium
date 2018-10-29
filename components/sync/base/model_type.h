@@ -35,8 +35,9 @@ namespace syncer {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 //
 // |kModelTypeInfoMap| struct entries are in the same order as their definition
-// in ModelType enum. Don't forget to update the |kModelTypeInfoMap| struct in
-// model_type.cc when you make changes in ModelType enum.
+// in ModelType enum. When you make changes in ModelType enum, don't forget to
+// update the |kModelTypeInfoMap| struct in model_type.cc and also the
+// SyncModelType and SyncModelTypeByMacro histogram suffixes in histograms.xml
 enum ModelType {
   // Object type unknown.  Objects may transition through
   // the unknown state during their initial creation, before
@@ -340,8 +341,9 @@ const char* ModelTypeToString(ModelType model_type);
 const char* ModelTypeToHistogramSuffix(ModelType model_type);
 
 // Some histograms take an integer parameter that represents a model type.
-// The mapping from ModelType to integer is defined here. It should match the
-// mapping from integer to labels defined in histograms.xml.
+// The mapping from ModelType to integer is defined here. It defines a
+// completely different order than the ModelType enum itself. The mapping should
+// match the SyncModelTypes mapping from integer to labels defined in enums.xml.
 int ModelTypeToHistogramInt(ModelType model_type);
 
 // Returns for every model_type a positive unique integer that is stable over

@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow DIV class='box'",
           "rect": [28, 20, 300, 300],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

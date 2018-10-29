@@ -114,10 +114,6 @@ class PerfDataGeneratorTest(unittest.TestCase):
           'script': '//testing/trigger_scripts/perf_device_trigger.py'
         },
         'merge': {
-          'args': [
-            '--service-account-file',
-            'C:\\creds\\service_accounts\\service-account-chromium-perf-histograms.json'
-          ],
           'script': '//tools/perf/process_perf_results.py'
         },
         'swarming': {
@@ -168,10 +164,6 @@ class PerfDataGeneratorTest(unittest.TestCase):
           'script': '//testing/trigger_scripts/perf_device_trigger.py'
         },
         'merge': {
-          'args': [
-            '--service-account-file',
-            '/creds/service_accounts/service-account-chromium-perf-histograms.json'
-          ],
           'script': '//tools/perf/process_perf_results.py'
         },
         'swarming': {
@@ -221,10 +213,6 @@ class PerfDataGeneratorTest(unittest.TestCase):
           'script': '//testing/trigger_scripts/perf_device_trigger.py'
         },
         'merge': {
-          'args': [
-            '--service-account-file',
-            '/creds/service_accounts/service-account-chromium-perf-histograms.json'
-          ],
           'script': '//tools/perf/process_perf_results.py'
         },
         'swarming': {

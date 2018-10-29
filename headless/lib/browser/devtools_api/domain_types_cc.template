@@ -15,15 +15,6 @@
 
 namespace headless {
 
-namespace internal {
-
-template <typename T>
-std::unique_ptr<base::Value> ToValue(const T& value) {
-  return ToValueImpl(value, static_cast<T*>(nullptr));
-}
-
-}  // namespace internal
-
 namespace {{domain.domain | camelcase_to_hacker_style}} {
 {% for type in domain.types %}
   {% if not (type.type == "object") or not ("properties" in type) %}{% continue %}{% endif %}

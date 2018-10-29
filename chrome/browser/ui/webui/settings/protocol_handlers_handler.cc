@@ -114,8 +114,8 @@ void ProtocolHandlersHandler::UpdateHandlerList() {
   registry->GetRegisteredProtocols(&protocols);
 
   base::ListValue handlers;
-  for (std::vector<std::string>::iterator protocol = protocols.begin();
-       protocol != protocols.end(); protocol++) {
+  for (auto protocol = protocols.begin(); protocol != protocols.end();
+       protocol++) {
     std::unique_ptr<base::DictionaryValue> handler_value(
         new base::DictionaryValue());
     GetHandlersForProtocol(*protocol, handler_value.get());

@@ -27,7 +27,8 @@ class RecentFile;
 }  // namespace chromeos
 
 namespace crostini {
-enum class ConciergeClientResult;
+enum class CrostiniResult;
+struct LinuxPackageInfo;
 }
 
 namespace file_manager {
@@ -294,7 +295,7 @@ class FileManagerPrivateMountCrostiniFunction
   ~FileManagerPrivateMountCrostiniFunction() override;
 
   bool RunAsync() override;
-  void RestartCallback(crostini::ConciergeClientResult);
+  void RestartCallback(crostini::CrostiniResult);
 
  private:
   std::string source_path_;
@@ -302,23 +303,25 @@ class FileManagerPrivateMountCrostiniFunction
   DISALLOW_COPY_AND_ASSIGN(FileManagerPrivateMountCrostiniFunction);
 };
 
-// Implements the chrome.fileManagerPrivate.sharePathWithCrostini
-// method.  Shares specified path.
-class FileManagerPrivateInternalSharePathWithCrostiniFunction
+// Implements the chrome.fileManagerPrivate.sharePathsWithCrostini
+// method.  Shares specified paths.
+class FileManagerPrivateInternalSharePathsWithCrostiniFunction
     : public UIThreadExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.sharePathWithCrostini",
-                             FILEMANAGERPRIVATEINTERNAL_SHAREPATHWITHCROSTINI)
-  FileManagerPrivateInternalSharePathWithCrostiniFunction() = default;
+  DECLARE_EXTENSION_FUNCTION(
+      "fileManagerPrivateInternal.sharePathsWithCrostini",
+      FILEMANAGERPRIVATEINTERNAL_SHAREPATHSWITHCROSTINI)
+  FileManagerPrivateInternalSharePathsWithCrostiniFunction() = default;
 
  protected:
-  ~FileManagerPrivateInternalSharePathWithCrostiniFunction() override = default;
+  ~FileManagerPrivateInternalSharePathsWithCrostiniFunction() override =
+      default;
 
  private:
   ResponseAction Run() override;
-  void SharePathCallback(bool success, std::string failure_reason);
+  void SharePathsCallback(bool success, std::string failure_reason);
   DISALLOW_COPY_AND_ASSIGN(
-      FileManagerPrivateInternalSharePathWithCrostiniFunction);
+      FileManagerPrivateInternalSharePathsWithCrostiniFunction);
 };
 
 // Implements the chrome.fileManagerPrivate.getCrostiniSharedPaths
@@ -344,6 +347,26 @@ class FileManagerPrivateInternalGetCrostiniSharedPathsFunction
       FileManagerPrivateInternalGetCrostiniSharedPathsFunction);
 };
 
+// Implements the chrome.fileManagerPrivate.getLinuxPackageInfo method.
+// Retrieves information about a Linux package.
+class FileManagerPrivateInternalGetLinuxPackageInfoFunction
+    : public UIThreadExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getLinuxPackageInfo",
+                             FILEMANAGERPRIVATEINTERNAL_GETLINUXPACKAGEINFO)
+  FileManagerPrivateInternalGetLinuxPackageInfoFunction() = default;
+
+ protected:
+  ~FileManagerPrivateInternalGetLinuxPackageInfoFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+  void OnGetLinuxPackageInfo(
+      const crostini::LinuxPackageInfo& linux_package_info);
+  DISALLOW_COPY_AND_ASSIGN(
+      FileManagerPrivateInternalGetLinuxPackageInfoFunction);
+};
+
 // Implements the chrome.fileManagerPrivate.installLinuxPackage method.
 // Starts installation of a Linux package.
 class FileManagerPrivateInternalInstallLinuxPackageFunction
@@ -358,7 +381,7 @@ class FileManagerPrivateInternalInstallLinuxPackageFunction
 
  private:
   ResponseAction Run() override;
-  void OnInstallLinuxPackage(crostini::ConciergeClientResult result,
+  void OnInstallLinuxPackage(crostini::CrostiniResult result,
                              const std::string& failure_reason);
   DISALLOW_COPY_AND_ASSIGN(
       FileManagerPrivateInternalInstallLinuxPackageFunction);
@@ -423,6 +446,19 @@ class FileManagerPrivateInternalGetRecentFilesFunction
 
   const ChromeExtensionFunctionDetails chrome_details_;
   DISALLOW_COPY_AND_ASSIGN(FileManagerPrivateInternalGetRecentFilesFunction);
+};
+
+// Implements the chrome.fileManagerPrivate.detectCharacterEncoding method.
+class FileManagerPrivateDetectCharacterEncodingFunction
+    : public UIThreadExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.detectCharacterEncoding",
+                             FILEMANAGERPRIVATE_DETECTCHARACTERENCODING);
+
+ protected:
+  ~FileManagerPrivateDetectCharacterEncodingFunction() override = default;
+
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

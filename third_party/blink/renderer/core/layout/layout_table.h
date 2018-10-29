@@ -157,7 +157,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock {
                 LayoutObject* before_child = nullptr) override;
 
   struct ColumnStruct {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     explicit ColumnStruct(unsigned initial_span = 1) : span(initial_span) {}
 
     unsigned span;
@@ -426,10 +426,11 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock {
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void SimplifiedNormalFlowLayout() override;
-  bool RecalcOverflowAfterStyleChange() override;
+  bool RecalcOverflow() override;
   void EnsureIsReadyForPaintInvalidation() override;
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
   bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override;
+  void ColumnStructureChanged();
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
@@ -473,7 +474,10 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock {
       OverlayScrollbarClipBehavior =
           kIgnorePlatformOverlayScrollbarSize) const override;
 
-  void AddOverflowFromChildren() override;
+  void ComputeVisualOverflow(const LayoutRect&, bool recompute_floats) final;
+
+  void AddVisualOverflowFromChildren();
+  void AddLayoutOverflowFromChildren() override;
 
   void RecalcSections() const;
 
@@ -561,6 +565,12 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock {
   mutable bool needs_section_recalc_ : 1;
 
   bool column_logical_width_changed_ : 1;
+  // This flag indicates whether any columns (with or without fixed widths) have
+  // been added or removed since the last layout. If they have, then the true
+  // size of the cell contents needs to be determined with a full layout before
+  // the layout cache is updated. The layout cache can be invalid when layout is
+  // valid (e.g. if the table is being painted for the first time).
+  mutable bool column_structure_changed_ : 1;
   mutable bool column_layout_objects_valid_ : 1;
   mutable unsigned no_cell_colspan_at_least_;
   unsigned CalcNoCellColspanAtLeast() const {

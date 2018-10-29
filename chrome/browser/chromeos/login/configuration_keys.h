@@ -13,13 +13,19 @@ namespace configuration {
 // Please keep keys grouped by screens and ordered according to OOBE flow.
 
 extern const char kWelcomeNext[];
+extern const char kEnableDemoMode[];
+
+extern const char kDemoModePreferencesNext[];
 
 extern const char kNetworkSelectGUID[];
+extern const char kNetworkOfflineDemo[];
 
 extern const char kDeviceRequisition[];
 
 extern const char kEULASendUsageStatistics[];
 extern const char kEULAAutoAccept[];
+
+extern const char kArcTosAutoAccept[];
 
 extern const char kUpdateSkipUpdate[];
 

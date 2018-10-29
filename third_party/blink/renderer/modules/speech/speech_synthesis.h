@@ -89,8 +89,12 @@ class MODULES_EXPORT SpeechSynthesis final
   void HandleSpeakingCompleted(SpeechSynthesisUtterance*, bool error_occurred);
   void FireEvent(const AtomicString& type,
                  SpeechSynthesisUtterance*,
-                 unsigned long char_index,
+                 uint32_t char_index,
                  const String& name);
+
+  void FireErrorEvent(SpeechSynthesisUtterance*,
+                      unsigned long char_index,
+                      const String& error);
 
   // Returns the utterance at the front of the queue.
   SpeechSynthesisUtterance* CurrentSpeechUtterance() const;

@@ -7,13 +7,13 @@ from contrib.cluster_telemetry import page_set
 from contrib.cluster_telemetry import repaint_helpers
 
 from core import perf_benchmark
-from measurements import smoothness
+from measurements import rendering
 
 
 class RepaintCT(perf_benchmark.PerfBenchmark):
   """Measures repaint performance for Cluster Telemetry."""
 
-  test = smoothness.Smoothness
+  test = rendering.Rendering
 
   @classmethod
   def Name(cls):

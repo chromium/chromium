@@ -53,6 +53,11 @@ void FakeVoiceInteractionController::NotifyLocaleChanged(
   locale_ = locale;
 }
 
+void FakeVoiceInteractionController::NotifyLaunchWithMicOpen(
+    bool launch_with_mic_open) {
+  launch_with_mic_open_ = launch_with_mic_open;
+}
+
 void FakeVoiceInteractionController::IsSettingEnabled(
     IsSettingEnabledCallback callback) {
   std::move(callback).Run(voice_interaction_settings_enabled_);

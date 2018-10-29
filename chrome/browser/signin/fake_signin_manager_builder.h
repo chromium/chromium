@@ -22,7 +22,7 @@ class Profile;
 // In order to match the API of SigninManagerFactory::GetForProfile(), returns a
 // FakeSigninManagerBase* on ChromeOS, and a FakeSigninManager* on all other
 // platforms. The returned instance is initialized.
-std::unique_ptr<KeyedService> BuildFakeSigninManagerBase(
+std::unique_ptr<KeyedService> BuildFakeSigninManagerForTesting(
     content::BrowserContext* context);
 
 class FakeSigninManagerForTesting

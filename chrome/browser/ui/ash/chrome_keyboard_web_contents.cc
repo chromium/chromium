@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/ash/chrome_keyboard_web_contents.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_bounds_observer.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -18,9 +21,11 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/platform/web_gesture_event.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/keyboard/keyboard_controller.h"
+#include "ui/compositor/layer.h"
 #include "ui/keyboard/keyboard_resource_util.h"
 
 namespace {
@@ -124,7 +129,9 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
 ChromeKeyboardWebContents::ChromeKeyboardWebContents(
     content::BrowserContext* context,
-    const GURL& url) {
+    const GURL& url,
+    LoadCallback callback)
+    : callback_(std::move(callback)) {
   DCHECK(context);
   content::WebContents::CreateParams web_contents_params(
       context, content::SiteInstance::CreateForURL(context, url));
@@ -136,6 +143,32 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
       web_contents_.get());
   Observe(web_contents_.get());
   LoadContents(url);
+
+  aura::Window* keyboard_window = web_contents_->GetNativeView();
+  keyboard_window->set_owned_by_parent(false);
+
+  // Only use transparent background when fullscreen handwriting or the new UI
+  // is enabled. The old UI sometimes reloads itself, which will cause the
+  // keyboard to be see-through.
+  // TODO(https://crbug.com/840731): Find a permanent fix for this on the
+  // keyboard extension side.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableFullscreenHandwritingVirtualKeyboard) ||
+      base::FeatureList::IsEnabled(features::kEnableVirtualKeyboardMdUi)) {
+    content::RenderWidgetHostView* view =
+        web_contents_->GetMainFrame()->GetView();
+    view->SetBackgroundColor(SK_ColorTRANSPARENT);
+    view->GetNativeView()->SetTransparent(true);
+  }
+
+  // By default, layers in WebContents are clipped at the window bounds,
+  // but this causes the shadows to be clipped too, so clipping needs to
+  // be disabled.
+  keyboard_window->layer()->SetMasksToBounds(false);
+  keyboard_window->SetProperty(ui::kAXRoleOverride, ax::mojom::Role::kKeyboard);
+
+  window_bounds_observer_ =
+      std::make_unique<ChromeKeyboardBoundsObserver>(keyboard_window);
 }
 
 ChromeKeyboardWebContents::~ChromeKeyboardWebContents() = default;
@@ -171,9 +204,11 @@ void ChromeKeyboardWebContents::RenderViewCreated(
 void ChromeKeyboardWebContents::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // TODO(mash): Support virtual keyboard. https://crbug.com/843332.
-  if (!features::IsMultiProcessMash())
-    keyboard::KeyboardController::Get()->NotifyKeyboardWindowLoaded();
+  // TODO(https://crbug.com/845780): Change this to a DCHECK when we change
+  // ReloadKeyboardIfNeeded to also have a callback.
+  if (callback_.is_null())
+    return;
+  std::move(callback_).Run();
 }
 
 void ChromeKeyboardWebContents::LoadContents(const GURL& url) {

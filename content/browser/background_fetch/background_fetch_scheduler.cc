@@ -52,19 +52,26 @@ BackgroundFetchScheduler::~BackgroundFetchScheduler() = default;
 
 void BackgroundFetchScheduler::AddJobController(Controller* controller) {
   DCHECK(controller);
+  controller_queue_.push_back(controller);
 
-  if (controller->IsProcessingARequest()) {
-    // There is a resuming download from the previous session, no need to
-    // schedule.
+  std::vector<scoped_refptr<content::BackgroundFetchRequestInfo>>
+      outstanding_requests = controller->TakeOutstandingRequests();
+  // There are active downloads from the previous session.
+  if (!outstanding_requests.empty()) {
+    // The current assumption is that there can be at most one active fetch
+    // at any given time.
     DCHECK(!active_controller_);
+    DCHECK_EQ(outstanding_requests.size(), 1u);
+
     active_controller_ = controller;
-    active_controller_->Resume(
-        base::BindOnce(&BackgroundFetchScheduler::MarkRequestAsComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
+    for (auto& request_info : outstanding_requests) {
+      active_controller_->StartRequest(
+          std::move(request_info),
+          base::BindOnce(&BackgroundFetchScheduler::MarkRequestAsComplete,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
-  controller_queue_.push_back(controller);
   if (!active_controller_)
     ScheduleDownload();
 }
@@ -110,10 +117,7 @@ void BackgroundFetchScheduler::DidPopNextRequest(
   }
 
   if (error != blink::mojom::BackgroundFetchError::NONE) {
-    active_controller_->Finish(
-        blink::mojom::BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE);
-    active_controller_ = nullptr;
-    ScheduleDownload();
+    // This fetch is being abandoned, after which something will be scheduled.
     return;
   }
 
@@ -147,11 +151,8 @@ void BackgroundFetchScheduler::DidMarkRequestAsComplete(
     return;
 
   if (error != blink::mojom::BackgroundFetchError::NONE) {
+    // This fetch is being abandoned, after which something will be scheduled.
     DCHECK_EQ(error, blink::mojom::BackgroundFetchError::STORAGE_ERROR);
-    active_controller_->Finish(
-        blink::mojom::BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE);
-    active_controller_ = nullptr;
-    ScheduleDownload();
     return;
   }
 

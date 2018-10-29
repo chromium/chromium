@@ -44,11 +44,6 @@ version_info::Channel GetChannel();
 version_info::Channel GetChannelByName(const std::string& channel);
 #endif
 
-#if defined(OS_CHROMEOS)
-// Sets channel before use.
-void SetChannel(const std::string& channel);
-#endif
-
 #if defined(OS_POSIX) && defined(GOOGLE_CHROME_BUILD)
 // Returns a channel-specific suffix to use when constructing the path of the
 // default user data directory, allowing multiple channels to run side-by-side.

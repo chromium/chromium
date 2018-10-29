@@ -35,7 +35,7 @@
 namespace blink {
 
 class SQLValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum Type { kNullValue, kNumberValue, kStringValue };

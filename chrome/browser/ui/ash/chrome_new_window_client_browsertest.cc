@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 
+#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/extensions/bookmark_app_navigation_browsertest.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -46,6 +52,9 @@ Browser* GetLastActiveBrowser() {
 }  // namespace
 
 using ChromeNewWindowClientBrowserTest = InProcessBrowserTest;
+
+using ChromeNewWindowClientWebAppBrowserTest =
+    extensions::test::BookmarkAppNavigationBrowserTest;
 
 // Tests that when we open a new window by pressing 'Ctrl-N', we should use the
 // current active window's profile to determine on which profile's desktop we
@@ -113,4 +122,42 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Profile::INCOGNITO_PROFILE,
             GetLastActiveBrowser()->profile()->GetProfileType());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientWebAppBrowserTest, OpenWebApp) {
+  InstallTestBookmarkApp(GetAppUrlHost());
+  const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
+  const char* key =
+      arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
+
+  {
+    // Calling OpenWebAppFromArc for a not installed HTTPS URL should open in
+    // an ordinary browser tab.
+    const GURL url("https://www.google.com");
+    auto observer = GetTestNavigationObserver(url);
+    ChromeNewWindowClient::Get()->OpenWebAppFromArc(url);
+    observer->WaitForNavigationFinished();
+
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_FALSE(GetLastActiveBrowser()->is_app());
+    content::WebContents* contents =
+        GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(url, contents->GetLastCommittedURL());
+    EXPECT_NE(nullptr, contents->GetUserData(key));
+  }
+
+  {
+    // Calling OpenWebAppFromArc for an installed web app URL should open in an
+    // app window.
+    auto observer = GetTestNavigationObserver(app_url);
+    ChromeNewWindowClient::Get()->OpenWebAppFromArc(app_url);
+    observer->WaitForNavigationFinished();
+
+    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_TRUE(GetLastActiveBrowser()->is_app());
+    content::WebContents* contents =
+        GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(app_url, contents->GetLastCommittedURL());
+    EXPECT_NE(nullptr, contents->GetUserData(key));
+  }
 }

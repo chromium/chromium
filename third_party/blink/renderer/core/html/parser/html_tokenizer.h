@@ -138,9 +138,9 @@ class CORE_EXPORT HTMLTokenizer {
   // that terminates a script element.
   String BufferedCharacters() const;
 
-  size_t NumberOfBufferedCharacters() const {
-    // Notice that we add 2 to the length of the m_temporaryBuffer to
-    // account for the "</" characters, which are effecitvely buffered in
+  wtf_size_t NumberOfBufferedCharacters() const {
+    // Notice that we add 2 to the length of the temporary_buffer_ to
+    // account for the "</" characters, which are effectively buffered in
     // the tokenizer's state machine.
     return temporary_buffer_.size() ? temporary_buffer_.size() + 2 : 0;
   }
@@ -260,7 +260,7 @@ class CORE_EXPORT HTMLTokenizer {
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
 
-  // m_token is owned by the caller. If nextToken is not on the stack,
+  // token_ is owned by the caller. If NextToken is not on the stack,
   // this member might be pointing to unallocated memory.
   HTMLToken* token_;
 

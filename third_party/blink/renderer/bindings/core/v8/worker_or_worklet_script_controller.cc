@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -162,17 +161,8 @@ bool WorkerOrWorkletScriptController::InitializeContextIfNeeded(
   v8::Local<v8::Context> context;
   {
     // Initialize V8 extensions before creating the context.
-    Vector<const char*> extension_names;
-    if (global_scope_->IsServiceWorkerGlobalScope() &&
-        Platform::Current()->AllowScriptExtensionForServiceWorker(
-            ToWorkerGlobalScope(global_scope_.Get())->Url())) {
-      const V8Extensions& extensions = ScriptController::RegisteredExtensions();
-      extension_names.ReserveInitialCapacity(extensions.size());
-      for (const auto* extension : extensions)
-        extension_names.push_back(extension->name());
-    }
-    v8::ExtensionConfiguration extension_configuration(extension_names.size(),
-                                                       extension_names.data());
+    v8::ExtensionConfiguration extension_configuration =
+        ScriptController::ExtensionsFor(global_scope_);
 
     V8PerIsolateData::UseCounterDisabledScope use_counter_disabled(
         V8PerIsolateData::From(isolate_));
@@ -185,8 +175,6 @@ bool WorkerOrWorkletScriptController::InitializeContextIfNeeded(
   script_state_ = ScriptState::Create(context, world_);
 
   ScriptState::Scope scope(script_state_);
-
-  InitializeV8ExtrasBinding(script_state_);
 
   // Associate the global proxy object, the global object and the worker
   // instance (C++ object) as follows.
@@ -255,6 +243,10 @@ bool WorkerOrWorkletScriptController::InitializeContextIfNeeded(
         V8String(isolate_, disable_eval_pending_));
     disable_eval_pending_ = String();
   }
+
+  // This can only be called after the global object is fully initialised, as it
+  // reads values from it.
+  InitializeV8ExtrasBinding(script_state_);
 
   return true;
 }
@@ -346,9 +338,6 @@ bool WorkerOrWorkletScriptController::Evaluate(
         *error_event =
             ErrorEvent::Create(state.error_message, state.location_->Clone(),
                                state.exception, world_.get());
-        StoreExceptionForInspector(script_state_, *error_event,
-                                   state.exception.V8Value(),
-                                   script_state_->GetContext()->Global());
       }
     } else {
       DCHECK(!global_scope_->ShouldSanitizeScriptError(state.location_->Url(),

@@ -3,14 +3,6 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Buttons -->
-    <style name="ButtonCompat" parent="ButtonCompatBase">
-        <item name="android:background">@drawable/button_compat</item>
-    </style>
-    <style name="ButtonCompatBorderless" parent="ButtonCompat">
-        <item name="android:background">@drawable/button_borderless_compat</item>
-    </style>
-
     <!-- Used by Chrome and Content -->
     <style name="RobotoMediumStyle" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif-medium</item>

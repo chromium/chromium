@@ -5,6 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 To manually test, move the caret to the end of the line. 
 The content must scroll for the caret to reach the end of the editable text.
 PASS editableContainer.scrollLeft > 0 is true

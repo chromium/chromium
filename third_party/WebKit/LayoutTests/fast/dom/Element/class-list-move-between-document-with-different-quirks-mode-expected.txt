@@ -2,7 +2,6 @@ Tests that moving an element between documents with different quirks mode works
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 In standards mode
 PASS htmlElement.classList.contains("A") is true
 PASS htmlElement.classList.contains("a") is true

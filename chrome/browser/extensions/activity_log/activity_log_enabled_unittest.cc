@@ -135,7 +135,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   EXPECT_EQ(0,
       profile2->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
 
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "Watchdog Extension ")
@@ -192,7 +192,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   EXPECT_FALSE(activity_log1->IsDatabaseEnabled());
   EXPECT_FALSE(activity_log2->IsDatabaseEnabled());
 
-  scoped_refptr<Extension> extension2 =
+  scoped_refptr<const Extension> extension2 =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "Watchdog Extension ")
@@ -240,7 +240,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
   EXPECT_FALSE(activity_log->IsWatchdogAppActive());
 
   // Enable the extension.
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "Watchdog Extension ")
@@ -294,7 +294,7 @@ TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
       0, profile->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
 
   // Testing adding an extension maintains pref and active correctness.
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "Watchdog Extension ")

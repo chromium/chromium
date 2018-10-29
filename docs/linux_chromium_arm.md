@@ -23,8 +23,8 @@ and library dependencies directly from Ubuntu:
 ### Installing the sysroot
 
 A prebuilt sysroot image is kept up to date on Cloud Storage. It will
-automatically be installed by gclient runhooks installed if you have
-`target_arch=arm` in your `GYP_DEFINES`.
+automatically be installed by gclient runhooks if `target_cpu=["arm"]`
+is present in your `.gclient` file.
 
 To install the sysroot manually you can run:
 

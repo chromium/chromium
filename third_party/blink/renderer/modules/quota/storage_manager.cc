@@ -64,12 +64,11 @@ ScriptPromise StorageManager::persist(ScriptState* script_state) {
     return promise;
   }
 
-  DCHECK(execution_context->IsDocument());
-  Document* doc = ToDocumentOrNull(execution_context);
+  Document* doc = To<Document>(execution_context);
   GetPermissionService(ExecutionContext::From(script_state))
       .RequestPermission(
           CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
-          Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr),
+          LocalFrame::HasTransientUserActivation(doc->GetFrame()),
           WTF::Bind(&StorageManager::PermissionRequestComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 

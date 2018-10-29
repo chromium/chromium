@@ -313,7 +313,8 @@ void VideoTrackRecorder::Encoder::RetrieveFrameOnMainThread(
     DCHECK(context_provider->ContextGL());
     video_renderer_->Copy(video_frame.get(), canvas_.get(),
                           media::Context3D(context_provider->ContextGL(),
-                                           context_provider->GrContext()));
+                                           context_provider->GrContext()),
+                          context_provider->ContextSupport());
 
     SkPixmap pixmap;
     if (!bitmap_.peekPixels(&pixmap)) {

@@ -118,7 +118,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testHttpLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(0, PAGE_URL, LINK_URL,
@@ -156,7 +156,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @EnableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testHttpLinkWithCustomContextMenu() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(0, PAGE_URL, LINK_URL,
@@ -175,8 +175,9 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
         int[] expected2 = {R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_open_in_other_window, R.id.contextmenu_copy_link_address,
-                R.id.contextmenu_save_link_as, R.id.contextmenu_share_link};
+                R.id.contextmenu_open_in_other_window, R.id.contextmenu_open_in_ephemeral_tab,
+                R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
+                R.id.contextmenu_share_link};
         checkMenuOptions(contextMenuParams, expected2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB);
@@ -191,7 +192,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testMailLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams =
@@ -230,7 +231,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testTelLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams =
@@ -270,7 +271,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testVideoLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.VIDEO,
@@ -310,7 +311,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testImageLoFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,
@@ -344,7 +345,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testImageHiFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,
@@ -379,7 +380,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CUSTOM_CONTEXT_MENU)
+    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testHttpLinkWithImageHiFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,

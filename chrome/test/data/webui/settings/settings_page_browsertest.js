@@ -104,7 +104,8 @@ SettingsPageBrowserTest.prototype = {
    */
   verifySubpagesHidden: function(section) {
     // Check if there are sub-pages to verify.
-    const pages = section.querySelector('* /deep/ settings-animated-pages');
+    const pages = section.firstElementChild.shadowRoot.querySelector(
+        'settings-animated-pages');
     if (!pages)
       return;
 

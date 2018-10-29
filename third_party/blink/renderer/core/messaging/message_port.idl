@@ -25,11 +25,12 @@
  *
  */
 
-// https://html.spec.whatwg.org/#message-ports
+// https://html.spec.whatwg.org/multipage/web-messaging.html#message-ports
 
 [
     ActiveScriptWrappable,
-    Exposed=(Window,Worker,AudioWorklet)
+    Exposed=(Window,Worker,AudioWorklet),
+    Transferable
 ] interface MessagePort : EventTarget {
     [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, optional sequence<object> transfer = []);
     [RuntimeEnabled=PostMessageOptions, CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, PostMessageOptions options);

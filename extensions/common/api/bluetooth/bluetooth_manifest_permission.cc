@@ -95,9 +95,7 @@ bool BluetoothManifestPermission::CheckRequest(
     const BluetoothPermissionRequest& request) const {
 
   device::BluetoothUUID param_uuid(request.uuid);
-  for (BluetoothUuidSet::const_iterator it = uuids_.begin();
-       it != uuids_.end();
-       ++it) {
+  for (auto it = uuids_.cbegin(); it != uuids_.cend(); ++it) {
     device::BluetoothUUID uuid(*it);
     if (param_uuid == uuid)
       return true;

@@ -40,15 +40,19 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
   DCHECK(!consumer_handle_.is_valid());
   DCHECK(!pending_read_);
 
-  mojo::DataPipe pipe(blink::BlobUtils::GetDataPipeCapacity(blob_size));
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = blink::BlobUtils::GetDataPipeCapacity(blob_size);
 
-  if (!pipe.consumer_handle.is_valid()) {
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  MojoResult rv =
+      mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+  if (rv != MOJO_RESULT_OK) {
     std::move(callback).Run(std::move(entry), false /* success */);
     return;
   }
-  DCHECK(pipe.producer_handle.is_valid());
-
-  consumer_handle_ = std::move(pipe.consumer_handle);
 
   disk_cache_body_index_ = disk_cache_body_index;
   entry_ = std::move(entry);
@@ -56,7 +60,7 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
 
   blink::mojom::BlobReaderClientPtr client;
   client_binding_.Bind(MakeRequest(&client));
-  blob->ReadAll(std::move(pipe.producer_handle), std::move(client));
+  blob->ReadAll(std::move(producer_handle), std::move(client));
 
   handle_watcher_.Watch(
       consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,

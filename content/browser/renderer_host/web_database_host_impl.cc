@@ -9,7 +9,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/origin_util.h"
@@ -359,8 +361,8 @@ blink::mojom::WebDatabase& WebDatabaseHostImpl::GetWebDatabase() {
   if (!database_provider_) {
     // The interface binding needs to occur on the UI thread, as we can
     // only call RenderProcessHost::FromID() on the UI thread.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             [](int process_id, blink::mojom::WebDatabaseRequest request) {
               RenderProcessHost* host = RenderProcessHost::FromID(process_id);
@@ -374,7 +376,7 @@ blink::mojom::WebDatabase& WebDatabaseHostImpl::GetWebDatabase() {
 }
 
 bool WebDatabaseHostImpl::ValidateOrigin(const url::Origin& origin) {
-  if (origin.unique()) {
+  if (origin.opaque()) {
     mojo::ReportBadMessage("Invalid origin.");
     return false;
   }

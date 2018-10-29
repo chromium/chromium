@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -39,11 +40,6 @@ namespace file_tasks {
 namespace {
 
 constexpr char kAppIdSeparator = '/';
-
-constexpr char kIntentHelperFileproviderUrl[] =
-    "content://org.chromium.arc.intent_helper.fileprovider/";
-constexpr char kFileSystemFileproviderUrl[] =
-    "content://org.chromium.arc.file_system.fileprovider/";
 
 // Converts an Android intent action (see kIntentAction* in
 // components/arc/intent_helper/intent_constants.h) to a file task action ID
@@ -122,10 +118,10 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
     // TODO(niwa): Remove this and update path_util to use
     // file_system.fileprovider by default once we complete migration.
     std::string url_string = content_urls[i].spec();
-    if (base::StartsWith(url_string, kIntentHelperFileproviderUrl,
+    if (base::StartsWith(url_string, arc::kIntentHelperFileproviderUrl,
                          base::CompareCase::INSENSITIVE_ASCII)) {
-      url_string.replace(0, strlen(kIntentHelperFileproviderUrl),
-                         kFileSystemFileproviderUrl);
+      url_string.replace(0, strlen(arc::kIntentHelperFileproviderUrl),
+                         arc::kFileSystemFileproviderUrl);
     }
 
     arc::mojom::ContentUrlWithMimeTypePtr url_with_type =

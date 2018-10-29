@@ -25,12 +25,6 @@
       ]
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [8, 8],
-      "bounds": [285, 285],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (positioned) DIV id='container'",
       "bounds": [600, 600],
       "contentsOpaque": true,
@@ -53,8 +47,7 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [-307, 8, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

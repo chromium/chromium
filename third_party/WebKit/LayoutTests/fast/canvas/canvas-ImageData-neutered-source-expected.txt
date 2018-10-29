@@ -2,7 +2,6 @@ Tests how putImageData and createImageBitmap would react when the source data is
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS len is 4
 PASS image.data[0] is 255
 PASS image.data[1] is 0
@@ -22,4 +21,5 @@ PASS Promise rejected as expected: InvalidStateError: The source data has been d
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

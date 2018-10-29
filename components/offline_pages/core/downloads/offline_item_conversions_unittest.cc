@@ -20,8 +20,13 @@ using OfflineItemProgressUnit =
 
 namespace offline_pages {
 
+namespace {
+const GURL kTestUrl("http://www.example.com");
+const GURL kTestOriginalUrl("http://www.exampleoriginalurl.com");
+
+}  // namespace
+
 TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
-  GURL url("example_url");
   std::string name_space = "test_namespace";
   std::string guid = "test_guid";
   ClientId client_id(name_space, guid);
@@ -32,21 +37,26 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   base::Time last_access_time = base::Time::Now();
   std::string title = "test title";
 
-  OfflinePageItem offline_page_item(url, offline_id, client_id, file_path,
+  OfflinePageItem offline_page_item(kTestUrl, offline_id, client_id, file_path,
                                     file_size, creation_time);
+  offline_page_item.original_url = kTestOriginalUrl;
   offline_page_item.title = base::UTF8ToUTF16(title);
   offline_page_item.last_access_time = last_access_time;
+  offline_page_item.file_missing_time = base::Time::Now();
 
   OfflineItem offline_item =
       OfflineItemConversions::CreateOfflineItem(offline_page_item, true);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(url, offline_item.page_url);
+  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
   EXPECT_EQ(title, offline_item.title);
   EXPECT_EQ(file_path, offline_item.file_path);
   EXPECT_EQ(creation_time, offline_item.creation_time);
+  EXPECT_EQ(creation_time, offline_item.completion_time);
   EXPECT_EQ(last_access_time, offline_item.last_accessed_time);
   EXPECT_EQ(file_size, offline_item.total_size_bytes);
+  EXPECT_EQ(file_size, offline_item.received_bytes);
   EXPECT_EQ("multipart/related", offline_item.mime_type);
   EXPECT_EQ(OfflineItemFilter::FILTER_PAGE, offline_item.filter);
   EXPECT_EQ(OfflineItemState::COMPLETE, offline_item.state);
@@ -56,7 +66,9 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   EXPECT_EQ(OfflineItemProgressUnit::PERCENTAGE, offline_item.progress.unit);
   EXPECT_TRUE(offline_item.is_suggested);
   EXPECT_TRUE(offline_item.is_openable);
-  EXPECT_FALSE(offline_item.externally_removed);
+  EXPECT_TRUE(offline_item.externally_removed);
+  EXPECT_EQ(FailState::NO_FAILURE, offline_item.fail_state);
+  EXPECT_EQ(PendingState::NOT_PENDING, offline_item.pending_state);
 
   // Enabled P2P sharing and flag the item as suggested when creating the
   // OfflineItem. Then check that only the mime type is and is_suggested
@@ -75,26 +87,32 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
 }
 
 TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
-  GURL url("example_url");
   std::string name_space = "test_namespace";
   std::string guid = "test_guid";
   ClientId client_id(name_space, guid);
   int64_t request_id = 5;
   base::Time creation_time = base::Time::Now();
 
-  SavePageRequest save_page_request(request_id, url, client_id, creation_time,
-                                    false);
+  SavePageRequest save_page_request(request_id, kTestUrl, client_id,
+                                    creation_time, false);
+  save_page_request.set_original_url(kTestOriginalUrl);
   save_page_request.set_request_state(SavePageRequest::RequestState::OFFLINING);
+  save_page_request.set_fail_state(FailState::NETWORK_FAILED);
+  save_page_request.set_pending_state(PendingState::PENDING_ANOTHER_DOWNLOAD);
 
   OfflineItem offline_item =
       OfflineItemConversions::CreateOfflineItem(save_page_request);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(url, offline_item.page_url);
-  EXPECT_EQ("", offline_item.title);
+  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
+  EXPECT_EQ(kTestUrl.host(), offline_item.title);
   EXPECT_EQ(base::FilePath(), offline_item.file_path);
   EXPECT_EQ(creation_time, offline_item.creation_time);
+  EXPECT_EQ(base::Time(), offline_item.completion_time);
   EXPECT_EQ(base::Time(), offline_item.last_accessed_time);
+  EXPECT_EQ(-1L, offline_item.total_size_bytes);
+  EXPECT_EQ(0, offline_item.received_bytes);
   EXPECT_EQ("multipart/related", offline_item.mime_type);
   EXPECT_EQ(OfflineItemFilter::FILTER_PAGE, offline_item.filter);
   EXPECT_EQ(OfflineItemState::IN_PROGRESS, offline_item.state);
@@ -102,6 +120,8 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
   EXPECT_FALSE(offline_item.progress.max.has_value());
   EXPECT_EQ(OfflineItemProgressUnit::PERCENTAGE, offline_item.progress.unit);
   EXPECT_FALSE(offline_item.is_suggested);
+  EXPECT_EQ(FailState::NETWORK_FAILED, offline_item.fail_state);
+  EXPECT_EQ(PendingState::NOT_PENDING, offline_item.pending_state);
 
   // Disable P2P sharing of offline pages and check that only the mime type is
   // different.

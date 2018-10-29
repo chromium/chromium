@@ -33,10 +33,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_types.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/webaudio/analyser_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.h"
@@ -56,9 +56,6 @@
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_node.h"
 #include "third_party/blink/renderer/modules/webaudio/gain_node.h"
 #include "third_party/blink/renderer/modules/webaudio/iir_filter_node.h"
-#include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
-#include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
-#include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_completion_event.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_node.h"
@@ -79,10 +76,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-// Recording of audio audibility stops after the context has been running for
-// this long.  We don't need this information for the lifetime of the context.
-const double kStopRecordingAudibilityTime = 10;
 
 BaseAudioContext* BaseAudioContext::Create(
     Document& document,
@@ -119,9 +112,6 @@ BaseAudioContext::~BaseAudioContext() {
   }
 
   GetDeferredTaskHandler().ContextWillBeDestroyed();
-  DCHECK(!active_source_nodes_.size());
-  DCHECK(!is_resolving_resume_promises_);
-  DCHECK(!resume_resolvers_.size());
 }
 
 void BaseAudioContext::Initialize() {
@@ -179,6 +169,10 @@ void BaseAudioContext::Uninitialize() {
   listener_->WaitForHRTFDatabaseLoaderThreadCompletion();
 
   Clear();
+
+  DCHECK(!is_resolving_resume_promises_);
+  DCHECK_EQ(resume_resolvers_.size(), 0u);
+  DCHECK_EQ(active_source_nodes_.size(), 0u);
 }
 
 void BaseAudioContext::ContextDestroyed(ExecutionContext*) {
@@ -231,8 +225,8 @@ AudioBuffer* BaseAudioContext::createBuffer(unsigned number_of_channels,
                         ("WebAudio.AudioBuffer.Length", 1, 1000000, 50));
     // The limits are the min and max AudioBuffer sample rates currently
     // supported.  We use explicit values here instead of
-    // AudioUtilities::minAudioBufferSampleRate() and
-    // AudioUtilities::maxAudioBufferSampleRate().  The number of buckets is
+    // audio_utilities::minAudioBufferSampleRate() and
+    // audio_utilities::maxAudioBufferSampleRate().  The number of buckets is
     // fairly arbitrary.
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, audio_buffer_sample_rate_histogram,
@@ -365,32 +359,6 @@ ConstantSourceNode* BaseAudioContext::createConstantSource(
   DCHECK(IsMainThread());
 
   return ConstantSourceNode::Create(*this, exception_state);
-}
-
-MediaElementAudioSourceNode* BaseAudioContext::createMediaElementSource(
-    HTMLMediaElement* media_element,
-    ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-  return MediaElementAudioSourceNode::Create(*this, *media_element,
-                                             exception_state);
-}
-
-MediaStreamAudioSourceNode* BaseAudioContext::createMediaStreamSource(
-    MediaStream* media_stream,
-    ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-  return MediaStreamAudioSourceNode::Create(*this, *media_stream,
-                                            exception_state);
-}
-
-MediaStreamAudioDestinationNode* BaseAudioContext::createMediaStreamDestination(
-    ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-  // Set number of output channels to stereo by default.
-  return MediaStreamAudioDestinationNode::Create(*this, 2, exception_state);
 }
 
 ScriptProcessorNode* BaseAudioContext::createScriptProcessor(
@@ -633,6 +601,16 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
 
   context_state_ = new_state;
 
+  // Audibility checks only happen when the context is running so manual
+  // notification is required when the context gets suspended or closed.
+  if (was_audible_ && context_state_ != kRunning) {
+    was_audible_ = false;
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBind(&BaseAudioContext::NotifyAudibleAudioStopped,
+                        WrapCrossThreadPersistent(this)));
+  }
+
   // Notify context that state changed
   if (GetExecutionContext()) {
     GetExecutionContext()
@@ -656,7 +634,7 @@ void BaseAudioContext::NotifySourceNodeFinishedProcessing(
 }
 
 Document* BaseAudioContext::GetDocument() const {
-  return ToDocument(GetExecutionContext());
+  return To<Document>(GetExecutionContext());
 }
 
 void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
@@ -719,7 +697,7 @@ static bool IsAudible(const AudioBus* rendered_data) {
   for (unsigned k = 0; k < rendered_data->NumberOfChannels(); ++k) {
     const float* data = rendered_data->Channel(k)->Data();
     float channel_energy;
-    VectorMath::Vsvesq(data, 1, &channel_energy, data_size);
+    vector_math::Vsvesq(data, 1, &channel_energy, data_size);
     energy += channel_energy;
   }
 
@@ -749,28 +727,23 @@ void BaseAudioContext::HandlePostRenderTasks(const AudioBus* destination_bus) {
     // Detect silence (or not) for MEI
     bool is_audible = IsAudible(destination_bus);
 
-    // We want to keep track of the total audible audio, but we don't need to
-    // record the start and stop of audible audio after
-    // |kStopRecordingAudibilityTime|.
     if (is_audible) {
       ++total_audible_renders_;
     }
 
-    if (currentTime() <= kStopRecordingAudibilityTime) {
-      if (was_audible_ != is_audible) {
-        // Audibility changed in this render, so report the change.
-        was_audible_ = is_audible;
-        if (is_audible) {
-          PostCrossThreadTask(
-              *task_runner_, FROM_HERE,
-              CrossThreadBind(&BaseAudioContext::NotifyAudibleAudioStarted,
-                              WrapCrossThreadPersistent(this)));
-        } else {
-          PostCrossThreadTask(
-              *task_runner_, FROM_HERE,
-              CrossThreadBind(&BaseAudioContext::NotifyAudibleAudioStopped,
-                              WrapCrossThreadPersistent(this)));
-        }
+    if (was_audible_ != is_audible) {
+      // Audibility changed in this render, so report the change.
+      was_audible_ = is_audible;
+      if (is_audible) {
+        PostCrossThreadTask(
+            *task_runner_, FROM_HERE,
+            CrossThreadBind(&BaseAudioContext::NotifyAudibleAudioStarted,
+                            WrapCrossThreadPersistent(this)));
+      } else {
+        PostCrossThreadTask(
+            *task_runner_, FROM_HERE,
+            CrossThreadBind(&BaseAudioContext::NotifyAudibleAudioStopped,
+                            WrapCrossThreadPersistent(this)));
       }
     }
   }
@@ -977,30 +950,13 @@ void BaseAudioContext::UpdateWorkletGlobalScopeOnRenderingThread() {
   if (TryLock()) {
     if (audio_worklet_thread_) {
       AudioWorkletGlobalScope* global_scope =
-          ToAudioWorkletGlobalScope(audio_worklet_thread_->GlobalScope());
+          To<AudioWorkletGlobalScope>(audio_worklet_thread_->GlobalScope());
       DCHECK(global_scope);
       global_scope->SetCurrentFrame(CurrentSampleFrame());
     }
 
     unlock();
   }
-}
-
-bool BaseAudioContext::WouldTaintOrigin(const KURL& url) const {
-  // Data URLs don't taint the origin.
-  if (url.ProtocolIsData()) {
-    return false;
-  }
-
-  Document* document = GetDocument();
-  if (document && document->GetSecurityOrigin()) {
-    // The origin is tainted if and only if we cannot read content from the URL.
-    return !document->GetSecurityOrigin()->CanRequest(url);
-  }
-
-  // Be conservative and assume it's tainted if it's not a data url and if we
-  // can't get the security origin of the document.
-  return true;
 }
 
 }  // namespace blink

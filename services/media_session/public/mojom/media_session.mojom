@@ -4,8 +4,106 @@
 
 module media_session.mojom;
 
+// Next MinVersion: 2
+
+[Extensible]
+enum MediaPlaybackState {
+  kPaused,
+  kPlaying,
+};
+
+// Contains state information about a MediaSession.
+struct MediaSessionInfo {
+  [Extensible]
+  enum SessionState {
+    // The MediaSession is currently playing media.
+    kActive,
+
+    // The MediaSession is currently playing at a reduced volume (ducking).
+    kDucking,
+
+    // The MediaSession is currently paused.
+    kSuspended,
+
+    // The MediaSession is not currently playing media.
+    kInactive,
+  };
+
+  // The current audio focus state of the MediaSession.
+  SessionState state;
+
+  // If true then we will always duck this MediaSession instead of suspending.
+  bool force_duck;
+
+  // The playback state tells the client whether the audio is playing. This is
+  // different from the audio focus state as it is common for a media session
+  // to hold audio focus sometimes even though it is not actually playing.
+  [MinVersion=1] MediaPlaybackState playback_state;
+};
+
+// Contains debugging information about a MediaSession. This will be displayed
+// on the Media Internals WebUI.
+struct MediaSessionDebugInfo {
+  // A unique name for the MediaSession.
+  string name;
+
+  // The owner of the MediaSession.
+  string owner;
+
+  // State information stored in a string e.g. Ducked.
+  string state;
+};
+
+// The observer for observing media session events.
+// Next Method ID: 1
+interface MediaSessionObserver {
+  // The info associated with the session changed.
+  MediaSessionInfoChanged@0(MediaSessionInfo info);
+};
+
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
 // TODO(https://crbug.com/875004): migrate media session from content/public
 // to mojo.
-interface MediaSession {};
+// Next Method ID: 9
+interface MediaSession {
+  [Extensible]
+  enum SuspendType {
+    // Suspended by the system because a transient sound needs to be played.
+    kSystem,
+    // Suspended by the UI.
+    kUI,
+    // Suspended by the page via script or user interaction.
+    kContent,
+  };
+
+  // Returns information about the MediaSession.
+  GetMediaSessionInfo@0() => (MediaSessionInfo info);
+
+  // Returns debug information about the MediaSession.
+  GetDebugInfo@1() => (MediaSessionDebugInfo info);
+
+  // Let the media session start ducking such that the volume multiplier
+  // is reduced.
+  StartDucking@2();
+
+  // Let the media session stop ducking such that the volume multiplier is
+  // recovered.
+  StopDucking@3();
+
+  // Suspend the media session.
+  // |type| represents the origin of the request.
+  Suspend@4(SuspendType suspend_type);
+
+  // Resume the media session.
+  // |type| represents the origin of the request.
+  Resume@5(SuspendType suspend_type);
+
+  AddObserver@6(MediaSessionObserver observer);
+
+  // Skip to the previous track.
+  PreviousTrack@7();
+
+  // Skip to the next track.
+  NextTrack@8();
+};

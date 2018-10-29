@@ -48,7 +48,7 @@ class ConnectTestApp : public Service,
                        public test::mojom::ConnectTestService,
                        public test::mojom::StandaloneApp,
                        public test::mojom::BlockedInterface,
-                       public test::mojom::UserIdTest {
+                       public test::mojom::IdentityTest {
  public:
   ConnectTestApp() {}
   ~ConnectTestApp() override {}
@@ -67,8 +67,8 @@ class ConnectTestApp : public Service,
         &ConnectTestApp::BindStandaloneAppRequest, base::Unretained(this)));
     registry_.AddInterface<test::mojom::BlockedInterface>(base::BindRepeating(
         &ConnectTestApp::BindBlockedInterfaceRequest, base::Unretained(this)));
-    registry_.AddInterface<test::mojom::UserIdTest>(base::BindRepeating(
-        &ConnectTestApp::BindUserIdTestRequest, base::Unretained(this)));
+    registry_.AddInterface<test::mojom::IdentityTest>(base::BindRepeating(
+        &ConnectTestApp::BindIdentityTestRequest, base::Unretained(this)));
   }
   void OnBindInterface(const BindSourceInfo& source_info,
                        const std::string& interface_name,
@@ -102,9 +102,9 @@ class ConnectTestApp : public Service,
     blocked_bindings_.AddBinding(this, std::move(request));
   }
 
-  void BindUserIdTestRequest(test::mojom::UserIdTestRequest request,
-                             const BindSourceInfo& source_info) {
-    user_id_test_bindings_.AddBinding(this, std::move(request));
+  void BindIdentityTestRequest(test::mojom::IdentityTestRequest request,
+                               const BindSourceInfo& source_info) {
+    identity_test_bindings_.AddBinding(this, std::move(request));
   }
 
   // test::mojom::ConnectTestService:
@@ -165,10 +165,10 @@ class ConnectTestApp : public Service,
     std::move(callback).Run("Called Blocked Interface!");
   }
 
-  // test::mojom::UserIdTest:
-  void ConnectToClassAppAsDifferentUser(
+  // test::mojom::IdentityTest:
+  void ConnectToClassAppWithIdentity(
       const service_manager::Identity& target,
-      ConnectToClassAppAsDifferentUserCallback callback) override {
+      ConnectToClassAppWithIdentityCallback callback) override {
     context()->connector()->StartService(target);
     mojom::ConnectResult result;
     Identity resolved_identity;
@@ -199,7 +199,7 @@ class ConnectTestApp : public Service,
   mojo::BindingSet<test::mojom::ConnectTestService> bindings_;
   mojo::BindingSet<test::mojom::StandaloneApp> standalone_bindings_;
   mojo::BindingSet<test::mojom::BlockedInterface> blocked_bindings_;
-  mojo::BindingSet<test::mojom::UserIdTest> user_id_test_bindings_;
+  mojo::BindingSet<test::mojom::IdentityTest> identity_test_bindings_;
   test::mojom::ExposedInterfacePtr caller_;
 
   DISALLOW_COPY_AND_ASSIGN(ConnectTestApp);

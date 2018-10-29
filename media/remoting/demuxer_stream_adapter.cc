@@ -65,8 +65,8 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
       BindToCurrentLoop(base::Bind(&DemuxerStreamAdapter::OnReceivedRpc,
                                    weak_factory_.GetWeakPtr()));
   main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&RpcBroker::RegisterMessageReceiverCallback,
-                            rpc_broker_, rpc_handle_, receive_callback));
+      FROM_HERE, base::BindOnce(&RpcBroker::RegisterMessageReceiverCallback,
+                                rpc_broker_, rpc_handle_, receive_callback));
 
   stream_sender_.Bind(std::move(stream_sender_info));
   stream_sender_.set_connection_error_handler(
@@ -77,8 +77,8 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
 DemuxerStreamAdapter::~DemuxerStreamAdapter() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&RpcBroker::UnregisterMessageReceiverCallback,
-                            rpc_broker_, rpc_handle_));
+      FROM_HERE, base::BindOnce(&RpcBroker::UnregisterMessageReceiverCallback,
+                                rpc_broker_, rpc_handle_));
 }
 
 int64_t DemuxerStreamAdapter::GetBytesWrittenAndReset() {
@@ -187,8 +187,8 @@ void DemuxerStreamAdapter::Initialize(int remote_callback_handle) {
                           : video_config_.AsHumanReadableString())
                   << '}';
   main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&RpcBroker::SendMessageToRemote, rpc_broker_,
-                            base::Passed(&rpc)));
+      FROM_HERE, base::BindOnce(&RpcBroker::SendMessageToRemote, rpc_broker_,
+                                base::Passed(&rpc)));
 }
 
 void DemuxerStreamAdapter::ReadUntil(std::unique_ptr<pb::RpcMessage> message) {
@@ -371,8 +371,8 @@ void DemuxerStreamAdapter::SendReadAck() {
                                 : "DID NOT CHANGE")
                   << '}';
   main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&RpcBroker::SendMessageToRemote, rpc_broker_,
-                            base::Passed(&rpc)));
+      FROM_HERE, base::BindOnce(&RpcBroker::SendMessageToRemote, rpc_broker_,
+                                base::Passed(&rpc)));
   // Resets callback handle after completing the reading request.
   read_until_callback_handle_ = RpcBroker::kInvalidHandle;
 
@@ -399,7 +399,7 @@ void DemuxerStreamAdapter::OnFatalError(StopTrigger stop_trigger) {
 
   data_pipe_writer_.Close();
 
-  base::ResetAndReturn(&error_callback_).Run(stop_trigger);
+  std::move(error_callback_).Run(stop_trigger);
 }
 
 }  // namespace remoting

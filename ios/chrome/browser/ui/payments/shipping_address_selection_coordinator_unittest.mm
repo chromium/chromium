@@ -26,8 +26,9 @@ class PaymentRequestShippingAddressSelectionCoordinatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     // Add testing profiles to the database. Make the less frequently used one
     // incomplete.
@@ -47,7 +48,8 @@ class PaymentRequestShippingAddressSelectionCoordinatorTest
     payment_request()->SetRegionDataLoader(&test_region_data_loader_);
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 
  private:
   autofill::TestRegionDataLoader test_region_data_loader_;

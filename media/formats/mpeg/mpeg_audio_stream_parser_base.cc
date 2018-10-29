@@ -230,7 +230,7 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
     if (!config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()))
       return -1;
 
-    if (!init_cb_.is_null()) {
+    if (init_cb_) {
       InitParameters params(kInfiniteDuration);
       params.detected_audio_track_count = 1;
       std::move(init_cb_).Run(params);

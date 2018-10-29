@@ -43,4 +43,9 @@ public class ActivityHostImpl extends BaseActivityHost {
     public void loadUri(Uri uri) {
         mActivity.loadUri(uri);
     }
+
+    @Override
+    public void setTopBarView(IObjectWrapper topBarView) {
+        mActivity.setTopBarContentView(ObjectWrapper.unwrap(topBarView, View.class));
+    }
 }

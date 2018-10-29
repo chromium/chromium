@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef FloatOrBoolean_h
-#define FloatOrBoolean_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_FLOAT_OR_BOOLEAN_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_FLOAT_OR_BOOLEAN_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -22,7 +22,7 @@
 namespace blink {
 
 class CORE_EXPORT FloatOrBoolean final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   FloatOrBoolean();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -92,4 +92,4 @@ struct V8TypeOf<FloatOrBoolean> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::FloatOrBoolean);
 
-#endif  // FloatOrBoolean_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_FLOAT_OR_BOOLEAN_H_

@@ -43,15 +43,15 @@ class TextCodecUTF8 : public TextCodec {
   static std::unique_ptr<TextCodec> Create(const TextEncoding&, const void*);
 
   String Decode(const char*,
-                size_t length,
+                wtf_size_t length,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  CString Encode(const UChar*, size_t length, UnencodableHandling) override;
-  CString Encode(const LChar*, size_t length, UnencodableHandling) override;
+  CString Encode(const UChar*, wtf_size_t length, UnencodableHandling) override;
+  CString Encode(const LChar*, wtf_size_t length, UnencodableHandling) override;
 
   template <typename CharType>
-  CString EncodeCommon(const CharType* characters, size_t length);
+  CString EncodeCommon(const CharType* characters, wtf_size_t length);
 
   template <typename CharType>
   bool HandlePartialSequence(CharType*& destination,

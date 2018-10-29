@@ -35,7 +35,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_heuristic_parameters.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
@@ -91,6 +90,9 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(const IntSize& size,
 }
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DLayerBridgeIsDeferred",
+                        is_deferral_enabled_);
+
   if (IsHibernating())
     logger_->ReportHibernationEvent(kHibernationEndedWithTeardown);
   ResetResourceProvider();
@@ -255,17 +257,6 @@ void Canvas2DLayerBridge::Hibernate() {
   logger_->DidStartHibernating();
 }
 
-void Canvas2DLayerBridge::ReportResourceProviderCreationFailure() {
-  if (!resource_provider_creation_failed_at_least_once_) {
-    // Only count the failure once per instance so that the histogram may
-    // reflect the proportion of Canvas2DLayerBridge instances with surface
-    // allocation failures.
-    CanvasMetrics::CountCanvasContextUsage(
-        CanvasMetrics::kGPUAccelerated2DCanvasSurfaceCreationFailed);
-    resource_provider_creation_failed_at_least_once_ = true;
-  }
-}
-
 CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
   return resource_host_ ? resource_host_->ResourceProvider() : nullptr;
 }
@@ -313,9 +304,6 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider(
   // in GetOrCreateCanvasResourceProvider.
   resource_provider =
       resource_host_->GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
-
-  if (!resource_provider)
-    ReportResourceProviderCreationFailure();
 
   if (resource_provider && IsAccelerated() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
@@ -389,8 +377,6 @@ void Canvas2DLayerBridge::DisableDeferral(DisableDeferralReason reason) {
                       ("Canvas.GPUAccelerated2DCanvasDisableDeferralReason",
                        kDisableDeferralReasonCount));
   gpu_disabled_histogram.Count(reason);
-  CanvasMetrics::CountCanvasContextUsage(
-      CanvasMetrics::kGPUAccelerated2DCanvasDeferralDisabled);
   FlushRecording();
   // Because we will be discarding the recorder, if the flush failed
   // content will be lost -> force m_haveRecordedDrawCommands to false
@@ -546,8 +532,6 @@ bool Canvas2DLayerBridge::CheckResourceProviderValid() {
     ResetResourceProvider();
     if (resource_host_)
       resource_host_->NotifyGpuContextLost();
-    CanvasMetrics::CountCanvasContextUsage(
-        CanvasMetrics::kAccelerated2DCanvasGPUContextLost);
     return false;
   }
   return !!GetOrCreateResourceProvider();
@@ -570,9 +554,6 @@ bool Canvas2DLayerBridge::Restore() {
     CanvasResourceProvider* resource_provider =
         resource_host_->GetOrCreateCanvasResourceProviderImpl(
             kPreferAcceleration);
-
-    if (!resource_provider)
-      ReportResourceProviderCreationFailure();
 
     // The current paradigm does not support switching from accelerated to
     // non-accelerated, which would be tricky due to changes to the layer tree,
@@ -651,7 +632,7 @@ void Canvas2DLayerBridge::DidDraw(const FloatRect& rect) {
     }
     base::CheckedNumeric<int> threshold_size = size_.Width();
     threshold_size *= size_.Height();
-    threshold_size *= CanvasHeuristicParameters::kExpensiveOverdrawThreshold;
+    threshold_size *= canvas_heuristic_parameters::kExpensiveOverdrawThreshold;
     if (!threshold_size.IsValid()) {
       DisableDeferral(kDisableDeferralReasonExpensiveOverdrawHeuristic);
       return;

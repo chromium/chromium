@@ -105,10 +105,6 @@ class SigninCreateProfileHandlerTest : public BrowserWithTestWindowTest {
 
     handler_.reset(new TestSigninCreateProfileHandler(web_ui(),
                                                       profile_manager()));
-
-    TestingProfile::TestingFactories factories;
-    factories.push_back(std::make_pair(SigninManagerFactory::GetInstance(),
-                                       BuildFakeSigninManagerBase));
   }
 
   void TearDown() override {

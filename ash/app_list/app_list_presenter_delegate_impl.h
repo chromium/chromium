@@ -10,6 +10,8 @@
 #include "ash/app_list/presenter/app_list_presenter_delegate.h"
 #include "ash/ash_export.h"
 #include "base/macros.h"
+#include "base/scoped_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/keyboard/keyboard_controller_observer.h"
 
@@ -18,6 +20,10 @@ class AppListPresenterImpl;
 class AppListView;
 class AppListViewDelegate;
 }  // namespace app_list
+
+namespace display {
+class Screen;
+}  // namespace display
 
 namespace ui {
 class LocatedEvent;
@@ -33,7 +39,8 @@ class AppListControllerImpl;
 // update its layout as necessary.
 class ASH_EXPORT AppListPresenterDelegateImpl
     : public app_list::AppListPresenterDelegate,
-      public ui::EventHandler {
+      public ui::EventHandler,
+      public display::DisplayObserver {
  public:
   explicit AppListPresenterDelegateImpl(AppListControllerImpl* controller);
   ~AppListPresenterDelegateImpl() override;
@@ -44,7 +51,8 @@ class ASH_EXPORT AppListPresenterDelegateImpl
             int64_t display_id,
             int current_apps_page) override;
   void OnShown(int64_t display_id) override;
-  void OnDismissed() override;
+  void OnClosing() override;
+  void OnClosed() override;
   gfx::Vector2d GetVisibilityAnimationOffset(
       aura::Window* root_window) override;
   base::TimeDelta GetVisibilityAnimationDuration(aura::Window* root_window,
@@ -55,6 +63,10 @@ class ASH_EXPORT AppListPresenterDelegateImpl
   aura::Window* GetRootWindowForDisplayId(int64_t display_id) override;
   void OnVisibilityChanged(bool visible, aura::Window* root_window) override;
   void OnTargetVisibilityChanged(bool visible) override;
+
+  // DisplayObserver overrides:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
  private:
   void ProcessLocatedEvent(ui::LocatedEvent* event);
@@ -74,6 +86,9 @@ class ASH_EXPORT AppListPresenterDelegateImpl
 
   // Not owned, owns this class.
   AppListControllerImpl* const controller_ = nullptr;
+
+  // An observer that notifies AppListView when the display has changed.
+  ScopedObserver<display::Screen, display::DisplayObserver> display_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListPresenterDelegateImpl);
 };

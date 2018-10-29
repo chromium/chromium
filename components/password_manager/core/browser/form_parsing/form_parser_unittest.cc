@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <set>
+#include <utility>
 
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,14 +33,16 @@ namespace password_manager {
 
 namespace {
 
+using UsernameDetectionMethod = FormDataParser::UsernameDetectionMethod;
+
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
 // generated in GetFormDataAndExpectation().
 constexpr char kNonimportantValue[] = "non-important unique";
 
 // Use this in FieldDataDescription below to mark the expected username and
-// password fields. The *_FILLING variants apply to FormParsingMode::FILLING
-// only, the *_SAVING variants to FormParsingMode::SAVING only, the suffix-less
-// variants to both.
+// password fields. The *_FILLING variants apply to
+// FormDataParser::Mode::kFilling only, the *_SAVING variants to
+// FormDataParser::Mode::kSaving only, the suffix-less variants to both.
 enum class ElementRole {
   NONE,
   USERNAME_FILLING,
@@ -84,6 +88,7 @@ struct FormParsingTestCase {
   const autofill::ValueElementVector* all_possible_passwords = nullptr;
   const autofill::ValueElementVector* all_possible_usernames = nullptr;
   bool username_may_use_prefilled_placeholder = false;
+  base::Optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
 };
 
 // Returns numbers which are distinct from each other within the scope of one
@@ -303,17 +308,19 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
     ParseResultIds save_result;
     const FormData form_data = GetFormDataAndExpectation(
         test_case.fields, &predictions, &fill_result, &save_result);
-    for (auto mode : {FormParsingMode::FILLING, FormParsingMode::SAVING}) {
+    FormDataParser parser;
+    parser.set_predictions(std::move(predictions));
+    for (auto mode :
+         {FormDataParser::Mode::kFilling, FormDataParser::Mode::kSaving}) {
       SCOPED_TRACE(
           testing::Message("Test description: ")
           << test_case.description_for_logging << ", parsing mode = "
-          << (mode == FormParsingMode::FILLING ? "Filling" : "Saving"));
+          << (mode == FormDataParser::Mode::kFilling ? "Filling" : "Saving"));
 
-      std::unique_ptr<PasswordForm> parsed_form =
-          ParseFormData(form_data, &predictions, mode);
+      std::unique_ptr<PasswordForm> parsed_form = parser.Parse(form_data, mode);
 
       const ParseResultIds& expected_ids =
-          mode == FormParsingMode::FILLING ? fill_result : save_result;
+          mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
       if (expected_ids.IsEmpty()) {
         EXPECT_FALSE(parsed_form) << "Expected no parsed results";
@@ -347,6 +354,9 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
           EXPECT_EQ(*test_case.all_possible_usernames,
                     parsed_form->other_possible_usernames);
         }
+      }
+      if (test_case.readonly_status) {
+        EXPECT_EQ(*test_case.readonly_status, parser.readonly_status());
       }
     }
   }
@@ -1330,6 +1340,83 @@ TEST(FormParserTest, CVC) {
   });
 }
 
+// Check that "readonly status" is reported accordingly.
+TEST(FormParserTest, ReadonlyStatus) {
+  CheckTestData({
+      {
+          "Server hints prevent heuristics from using readonly.",
+          {
+              {.role = ElementRole::USERNAME, .form_control_type = "text"},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .prediction = {.type = autofill::PASSWORD},
+               .is_readonly = true,
+               .form_control_type = "password"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kNoHeuristics,
+      },
+      {
+          "Autocomplete attributes prevent heuristics from using readonly.",
+          {
+              {.role = ElementRole::USERNAME, .form_control_type = "text"},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .autocomplete_attribute = "current-password",
+               .is_readonly = true,
+               .form_control_type = "password"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kNoHeuristics,
+      },
+      {
+          "No password fields are a special case of not going through local "
+          "heuristics.",
+          {
+              {.form_control_type = "text"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kNoHeuristics,
+      },
+      {
+          "No readonly passwords ignored.",
+          {
+              {.role = ElementRole::USERNAME, .form_control_type = "text"},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               // While readonly, this field is not ignored because it was
+               // autofilled before.
+               .is_readonly = true,
+               .properties_mask = FieldPropertiesFlags::AUTOFILLED_ON_PAGELOAD,
+               .form_control_type = "password"},
+              {.role = ElementRole::NEW_PASSWORD,
+               .is_readonly = false,
+               .form_control_type = "password"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kNoneIgnored,
+      },
+      {
+          "Some readonly passwords ignored.",
+          {
+              {.role = ElementRole::USERNAME, .form_control_type = "text"},
+              {.is_readonly = true, .form_control_type = "password"},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .is_readonly = false,
+               .form_control_type = "password"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kSomeIgnored,
+      },
+      {
+          "All readonly passwords ignored.",
+          {
+              {.form_control_type = "text"},
+              {.is_readonly = true, .form_control_type = "password"},
+          },
+          .readonly_status =
+              FormDataParser::ReadonlyPasswordFields::kAllIgnored,
+      },
+  });
+}
+
 TEST(FormParserTest, HistogramsForUsernameDetectionMethod) {
   struct HistogramTestCase {
     FormParsingTestCase parsing_data;
@@ -1436,6 +1523,25 @@ TEST(FormParserTest, HistogramsForUsernameDetectionMethod) {
     tester.ExpectUniqueSample("PasswordManager.UsernameDetectionMethod",
                               histogram_test_case.expected_method,
                               2);
+  }
+}
+
+TEST(FormParserTest, GetSignonRealm) {
+  struct TestCase {
+    const char* input;
+    const char* expected_output;
+  } test_cases[]{
+      {"http://example.com/", "http://example.com/"},
+      {"http://example.com/signup", "http://example.com/"},
+      {"https://google.com/auth?a=1#b", "https://google.com/"},
+  };
+
+  for (const TestCase& test_case : test_cases) {
+    SCOPED_TRACE(testing::Message("Input: ")
+                 << test_case.input << " "
+                 << "Expected output: " << test_case.expected_output);
+    GURL input(test_case.input);
+    EXPECT_EQ(test_case.expected_output, GetSignonRealm(input));
   }
 }
 

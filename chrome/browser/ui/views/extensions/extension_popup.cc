@@ -158,10 +158,13 @@ void ExtensionPopup::OnWidgetActivationChanged(views::Widget* widget,
     CloseUnlessUnderInspection();
 }
 
-void ExtensionPopup::ActiveTabChanged(content::WebContents* old_contents,
-                                      content::WebContents* new_contents,
-                                      int index,
-                                      int reason) {
+void ExtensionPopup::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (tab_strip_model->empty() || !selection.active_tab_changed())
+    return;
+
   GetWidget()->Close();
 }
 

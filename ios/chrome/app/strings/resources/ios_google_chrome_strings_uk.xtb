@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">З Chrome ви можете заощадити час, розмістивши свої облікові записи в Інтернеті. Додати або вилучити облікові записи можна в налаштуваннях.</translation>
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3345341804167540816">Використовуйте Chrome на всіх пристроях</translation>
-<translation id="3678774398092457402">Зберегти пароль для цього сайту в Chrome?</translation>
 <translation id="384394811301901750">Зараз Google Chrome не може використовувати камеру</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Ви переходите з облікового запису для синхронізації <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Ваші наявні дані Chrome збережені в домені <ph name="DOMAIN" />. Дані буде видалено з цього пристрою, але вони залишаться в обліковому записі <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" /> можна будь-коли змінювати. Google може використовувати вміст відвіданих сайтів, дані веб-перегляду й інші дії, щоб персоналізувати Chrome та інші сервіси Google, як-от Перекладач, Пошук і оголошення.</translation>
 <translation id="5639704535586432836">Відкрийте меню "Параметри" &gt; "Приватність" &gt; "Камера" &gt; "Google Chrome" і ввімкніть камеру.</translation>
 <translation id="5642200033778930880">Google Chrome не може використовувати камеру в режимі розділеного екрана</translation>
-<translation id="5703130498371792817">Користуєтеся Chrome? <ph name="BEGIN_LINK" />Оцініть цей додаток<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Порада щодо Chrome. Деякі кнопки зараз розташовані внизу екрана, як-от "Назад", "Уперед" і "Пошук".</translation>
 <translation id="6036420186814142909">У Google Chrome є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Умови використання Google Chrome</translation>
 <translation id="7165736900384873061">Використовувати сканер QR-кодів у Google Chrome</translation>
 <translation id="7172660552945675509">Порада. <ph name="BEGIN_LINK" />Перемістіть Chrome на панель Dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome використовує Face ID, щоб забезпечити авторизований доступ до ваших паролів.</translation>
 <translation id="7265369419224458312">Тут ви можете переглядати вкладки, відкриті на комп’ютері. Просто запустіть Chrome на комп’ютері, перейдіть у меню та виберіть "Увійти в Chrome…"</translation>
 <translation id="728488472449859922">Увімкнути сканер QR-кодів у Google Chrome</translation>
 <translation id="7400722733683201933">Про Google Chrome</translation>

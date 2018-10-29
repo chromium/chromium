@@ -38,7 +38,7 @@ template <typename F>
 void ExpectNoThrow(const F& f) {
   try {
     f();
-  } catch (TestException e) {
+  } catch (const TestException& e) {
     ADD_FAILURE() << "Unexpected exception thrown from " << e.what();
   }
 }
@@ -179,7 +179,7 @@ TEST(ThrowingValueTest, ThrowingStreamOps) {
 }
 
 // Tests the operator<< of ThrowingValue by forcing ConstructorTracker to emit
-// a nonfatal failure that contains the std::string representation of the Thrower
+// a nonfatal failure that contains the string representation of the Thrower
 TEST(ThrowingValueTest, StreamOpsOutput) {
   using ::testing::TypeSpec;
   exceptions_internal::ConstructorTracker ct(exceptions_internal::countdown);
@@ -548,21 +548,21 @@ TEST(ExceptionSafetyTesterTest, IncompleteTypesAreNotTestable) {
   // Test that providing operation and inveriants still does not allow for the
   // the invocation of .Test() and .Test(op) because it lacks a factory
   auto without_fac =
-      testing::MakeExceptionSafetyTester().WithOperation(op).WithInvariants(
+      testing::MakeExceptionSafetyTester().WithOperation(op).WithContracts(
           inv, testing::strong_guarantee);
   EXPECT_FALSE(HasNullaryTest(without_fac));
   EXPECT_FALSE(HasUnaryTest(without_fac));
 
-  // Test that providing invariants and factory allows the invocation of
+  // Test that providing contracts and factory allows the invocation of
   // .Test(op) but does not allow for .Test() because it lacks an operation
   auto without_op = testing::MakeExceptionSafetyTester()
-                        .WithInvariants(inv, testing::strong_guarantee)
+                        .WithContracts(inv, testing::strong_guarantee)
                         .WithFactory(fac);
   EXPECT_FALSE(HasNullaryTest(without_op));
   EXPECT_TRUE(HasUnaryTest(without_op));
 
   // Test that providing operation and factory still does not allow for the
-  // the invocation of .Test() and .Test(op) because it lacks invariants
+  // the invocation of .Test() and .Test(op) because it lacks contracts
   auto without_inv =
       testing::MakeExceptionSafetyTester().WithOperation(op).WithFactory(fac);
   EXPECT_FALSE(HasNullaryTest(without_inv));
@@ -577,7 +577,7 @@ std::unique_ptr<ExampleStruct> ExampleFunctionFactory() {
 
 void ExampleFunctionOperation(ExampleStruct*) {}
 
-testing::AssertionResult ExampleFunctionInvariant(ExampleStruct*) {
+testing::AssertionResult ExampleFunctionContract(ExampleStruct*) {
   return testing::AssertionSuccess();
 }
 
@@ -593,16 +593,16 @@ struct {
 
 struct {
   testing::AssertionResult operator()(ExampleStruct* example_struct) const {
-    return ExampleFunctionInvariant(example_struct);
+    return ExampleFunctionContract(example_struct);
   }
-} example_struct_invariant;
+} example_struct_contract;
 
 auto example_lambda_factory = []() { return ExampleFunctionFactory(); };
 
 auto example_lambda_operation = [](ExampleStruct*) {};
 
-auto example_lambda_invariant = [](ExampleStruct* example_struct) {
-  return ExampleFunctionInvariant(example_struct);
+auto example_lambda_contract = [](ExampleStruct* example_struct) {
+  return ExampleFunctionContract(example_struct);
 };
 
 // Testing that function references, pointers, structs with operator() and
@@ -612,28 +612,28 @@ TEST(ExceptionSafetyTesterTest, MixedFunctionTypes) {
   EXPECT_TRUE(testing::MakeExceptionSafetyTester()
                   .WithFactory(ExampleFunctionFactory)
                   .WithOperation(ExampleFunctionOperation)
-                  .WithInvariants(ExampleFunctionInvariant)
+                  .WithContracts(ExampleFunctionContract)
                   .Test());
 
   // function pointer
   EXPECT_TRUE(testing::MakeExceptionSafetyTester()
                   .WithFactory(&ExampleFunctionFactory)
                   .WithOperation(&ExampleFunctionOperation)
-                  .WithInvariants(&ExampleFunctionInvariant)
+                  .WithContracts(&ExampleFunctionContract)
                   .Test());
 
   // struct
   EXPECT_TRUE(testing::MakeExceptionSafetyTester()
                   .WithFactory(example_struct_factory)
                   .WithOperation(example_struct_operation)
-                  .WithInvariants(example_struct_invariant)
+                  .WithContracts(example_struct_contract)
                   .Test());
 
   // lambda
   EXPECT_TRUE(testing::MakeExceptionSafetyTester()
                   .WithFactory(example_lambda_factory)
                   .WithOperation(example_lambda_operation)
-                  .WithInvariants(example_lambda_invariant)
+                  .WithContracts(example_lambda_contract)
                   .Test());
 }
 
@@ -658,9 +658,9 @@ struct {
 } invoker;
 
 auto tester =
-    testing::MakeExceptionSafetyTester().WithOperation(invoker).WithInvariants(
+    testing::MakeExceptionSafetyTester().WithOperation(invoker).WithContracts(
         CheckNonNegativeInvariants);
-auto strong_tester = tester.WithInvariants(testing::strong_guarantee);
+auto strong_tester = tester.WithContracts(testing::strong_guarantee);
 
 struct FailsBasicGuarantee : public NonNegative {
   void operator()() {
@@ -690,7 +690,7 @@ TEST(ExceptionCheckTest, StrongGuaranteeFailure) {
   EXPECT_FALSE(strong_tester.WithInitialValue(FollowsBasicGuarantee{}).Test());
 }
 
-struct BasicGuaranteeWithExtraInvariants : public NonNegative {
+struct BasicGuaranteeWithExtraContracts : public NonNegative {
   // After operator(), i is incremented.  If operator() throws, i is set to 9999
   void operator()() {
     int old_i = i;
@@ -701,21 +701,21 @@ struct BasicGuaranteeWithExtraInvariants : public NonNegative {
 
   static constexpr int kExceptionSentinel = 9999;
 };
-constexpr int BasicGuaranteeWithExtraInvariants::kExceptionSentinel;
+constexpr int BasicGuaranteeWithExtraContracts::kExceptionSentinel;
 
-TEST(ExceptionCheckTest, BasicGuaranteeWithExtraInvariants) {
+TEST(ExceptionCheckTest, BasicGuaranteeWithExtraContracts) {
   auto tester_with_val =
-      tester.WithInitialValue(BasicGuaranteeWithExtraInvariants{});
+      tester.WithInitialValue(BasicGuaranteeWithExtraContracts{});
   EXPECT_TRUE(tester_with_val.Test());
   EXPECT_TRUE(
       tester_with_val
-          .WithInvariants([](BasicGuaranteeWithExtraInvariants* o) {
-            if (o->i == BasicGuaranteeWithExtraInvariants::kExceptionSentinel) {
+          .WithContracts([](BasicGuaranteeWithExtraContracts* o) {
+            if (o->i == BasicGuaranteeWithExtraContracts::kExceptionSentinel) {
               return testing::AssertionSuccess();
             }
             return testing::AssertionFailure()
                    << "i should be "
-                   << BasicGuaranteeWithExtraInvariants::kExceptionSentinel
+                   << BasicGuaranteeWithExtraContracts::kExceptionSentinel
                    << ", but is " << o->i;
           })
           .Test());
@@ -740,7 +740,7 @@ struct HasReset : public NonNegative {
   void reset() { i = 0; }
 };
 
-testing::AssertionResult CheckHasResetInvariants(HasReset* h) {
+testing::AssertionResult CheckHasResetContracts(HasReset* h) {
   h->reset();
   return testing::AssertionResult(h->i == 0);
 }
@@ -759,14 +759,14 @@ TEST(ExceptionCheckTest, ModifyingChecker) {
   };
 
   EXPECT_FALSE(tester.WithInitialValue(FollowsBasicGuarantee{})
-                   .WithInvariants(set_to_1000, is_1000)
+                   .WithContracts(set_to_1000, is_1000)
                    .Test());
   EXPECT_TRUE(strong_tester.WithInitialValue(FollowsStrongGuarantee{})
-                  .WithInvariants(increment)
+                  .WithContracts(increment)
                   .Test());
   EXPECT_TRUE(testing::MakeExceptionSafetyTester()
                   .WithInitialValue(HasReset{})
-                  .WithInvariants(CheckHasResetInvariants)
+                  .WithContracts(CheckHasResetContracts)
                   .Test(invoker));
 }
 
@@ -799,7 +799,7 @@ TEST(ExceptionCheckTest, NonEqualityComparable) {
     return testing::AssertionResult(nec->i == NonEqualityComparable().i);
   };
   auto strong_nec_tester = tester.WithInitialValue(NonEqualityComparable{})
-                               .WithInvariants(nec_is_strong);
+                               .WithContracts(nec_is_strong);
 
   EXPECT_TRUE(strong_nec_tester.Test());
   EXPECT_FALSE(strong_nec_tester.Test(
@@ -833,14 +833,14 @@ struct {
   testing::AssertionResult operator()(ExhaustivenessTester<T>*) const {
     return testing::AssertionSuccess();
   }
-} CheckExhaustivenessTesterInvariants;
+} CheckExhaustivenessTesterContracts;
 
 template <typename T>
 unsigned char ExhaustivenessTester<T>::successes = 0;
 
 TEST(ExceptionCheckTest, Exhaustiveness) {
   auto exhaust_tester = testing::MakeExceptionSafetyTester()
-                            .WithInvariants(CheckExhaustivenessTesterInvariants)
+                            .WithContracts(CheckExhaustivenessTesterContracts)
                             .WithOperation(invoker);
 
   EXPECT_TRUE(
@@ -849,7 +849,7 @@ TEST(ExceptionCheckTest, Exhaustiveness) {
 
   EXPECT_TRUE(
       exhaust_tester.WithInitialValue(ExhaustivenessTester<ThrowingValue<>>{})
-          .WithInvariants(testing::strong_guarantee)
+          .WithContracts(testing::strong_guarantee)
           .Test());
   EXPECT_EQ(ExhaustivenessTester<ThrowingValue<>>::successes, 0xF);
 }
@@ -931,8 +931,8 @@ TEST(ThrowingValueTraitsTest, RelationalOperators) {
 }
 
 TEST(ThrowingAllocatorTraitsTest, Assignablility) {
-  EXPECT_TRUE(std::is_move_assignable<ThrowingAllocator<int>>::value);
-  EXPECT_TRUE(std::is_copy_assignable<ThrowingAllocator<int>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<ThrowingAllocator<int>>::value);
+  EXPECT_TRUE(absl::is_copy_assignable<ThrowingAllocator<int>>::value);
   EXPECT_TRUE(std::is_nothrow_move_assignable<ThrowingAllocator<int>>::value);
   EXPECT_TRUE(std::is_nothrow_copy_assignable<ThrowingAllocator<int>>::value);
 }

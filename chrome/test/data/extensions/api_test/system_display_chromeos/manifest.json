@@ -1,0 +1,12 @@
+{
+  "name": "ondisplaychangedevent",
+  "manifest_version": 2,
+  "version": "1.0",
+  "description": "Test system.display API",
+  "permissions": ["system.display"],
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}

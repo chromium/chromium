@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 39: The Web Audio autoplay policy will be re-enabled in Chrome 70 (October 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
-CONSOLE WARNING: line 43: The Web Audio autoplay policy will be re-enabled in Chrome 70 (October 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
+CONSOLE WARNING: line 39: The Web Audio autoplay policy will be re-enabled in Chrome 71 (December 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
+CONSOLE WARNING: line 43: The Web Audio autoplay policy will be re-enabled in Chrome 71 (December 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
 CONSOLE WARNING: line 347: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
 CONSOLE WARNING: line 353: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
 CONSOLE WARNING: line 523: The provided value '9x' is not a valid enum value of type OverSampleType.

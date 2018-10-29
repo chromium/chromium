@@ -20,22 +20,12 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='im'",
           "rect": [11, 131, 100, 100],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='im'",
-          "rect": [11, 131, 50, 100],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [11, 131, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [11, 131, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

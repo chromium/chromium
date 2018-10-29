@@ -71,7 +71,7 @@ class V0CustomElementCallbackQueue
   Member<Element> element_;
   HeapVector<Member<V0CustomElementProcessingStep>> queue_;
   ElementQueueId owner_;
-  size_t index_;
+  wtf_size_t index_;
   bool in_created_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(V0CustomElementCallbackQueue);

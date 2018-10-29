@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -34,6 +35,10 @@ class BindingManager implements ComponentCallbacks2 {
     private final int mMaxSize;
     private final Iterable<ChildProcessConnection> mRanking;
     private final Runnable mDelayedClearer;
+
+    // If not null, this is a connection in |mConnections| that does not have a moderate binding
+    // added by BindingManager.
+    private ChildProcessConnection mWaivedConnection;
 
     @Override
     public void onTrimMemory(final int level) {
@@ -78,20 +83,7 @@ class BindingManager implements ComponentCallbacks2 {
         Log.i(TAG, "Reduce connections from %d to %d", oldSize, newSize);
         removeOldConnections(oldSize - newSize);
         assert mConnections.size() == newSize;
-    }
-
-    private void addAndUseConnection(ChildProcessConnection connection) {
-        // Note that the size of connections is currently fairly small (40).
-        // If it became bigger we should consider using an alternate data structure.
-        boolean alreadyInQueue = !mConnections.add(connection);
-        if (!alreadyInQueue) connection.addModerateBinding();
-        assert mConnections.size() <= mMaxSize;
-    }
-
-    private void removeConnection(ChildProcessConnection connection) {
-        boolean alreadyInQueue = mConnections.remove(connection);
-        if (alreadyInQueue) connection.removeModerateBinding();
-        assert !mConnections.contains(connection);
+        ensureLowestRankIsWaived();
     }
 
     private void removeAllConnections() {
@@ -103,11 +95,35 @@ class BindingManager implements ComponentCallbacks2 {
         int numRemoved = 0;
         for (ChildProcessConnection connection : mRanking) {
             if (mConnections.contains(connection)) {
-                connection.removeModerateBinding();
+                removeModerateBindingIfNeeded(connection);
                 mConnections.remove(connection);
                 if (++numRemoved == numberOfConnections) break;
             }
         }
+    }
+
+    private void removeModerateBindingIfNeeded(ChildProcessConnection connection) {
+        if (connection == mWaivedConnection) {
+            mWaivedConnection = null;
+        } else {
+            connection.removeModerateBinding();
+        }
+    }
+
+    private void ensureLowestRankIsWaived() {
+        Iterator<ChildProcessConnection> itr = mRanking.iterator();
+        if (!itr.hasNext()) return;
+        ChildProcessConnection lowestRanked = itr.next();
+
+        if (lowestRanked == mWaivedConnection) return;
+        if (mWaivedConnection != null) {
+            assert mConnections.contains(mWaivedConnection);
+            mWaivedConnection.addModerateBinding();
+            mWaivedConnection = null;
+        }
+        if (!mConnections.contains(lowestRanked)) return;
+        lowestRanked.removeModerateBinding();
+        mWaivedConnection = lowestRanked;
     }
 
     /**
@@ -162,13 +178,26 @@ class BindingManager implements ComponentCallbacks2 {
         context.registerComponentCallbacks(this);
     }
 
-    public void increaseRecency(ChildProcessConnection connection) {
+    public void addConnection(ChildProcessConnection connection) {
         assert LauncherThread.runningOnLauncherThread();
-        addAndUseConnection(connection);
+
+        // Note that the size of connections is currently fairly small (40).
+        // If it became bigger we should consider using an alternate data structure.
+        boolean alreadyInQueue = !mConnections.add(connection);
+        if (!alreadyInQueue) connection.addModerateBinding();
+        assert mConnections.size() <= mMaxSize;
     }
 
-    public void dropRecency(ChildProcessConnection connection) {
+    public void removeConnection(ChildProcessConnection connection) {
         assert LauncherThread.runningOnLauncherThread();
-        removeConnection(connection);
+        boolean alreadyInQueue = mConnections.remove(connection);
+        if (alreadyInQueue) removeModerateBindingIfNeeded(connection);
+        assert !mConnections.contains(connection);
+    }
+
+    // Separate from other public methods so it allows client to update ranking after
+    // adding and removing connection.
+    public void rankingChanged() {
+        ensureLowestRankIsWaived();
     }
 }

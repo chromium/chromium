@@ -6,8 +6,8 @@
 
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/common/page_state.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "ui/base/page_transition_types.h"
 
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
@@ -36,7 +36,7 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyAlways) {
   sessions::SerializedNavigationEntry navigation =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
-      blink::kWebReferrerPolicyAlways, &navigation);
+      static_cast<int>(network::mojom::ReferrerPolicy::kAlways), &navigation);
 
   content::PageState page_state =
       content::PageState::CreateFromURL(sessions::test_data::kVirtualURL);
@@ -47,7 +47,8 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyAlways) {
   EXPECT_EQ(sessions::test_data::kIndex, navigation.index());
   EXPECT_EQ(sessions::test_data::kUniqueID, navigation.unique_id());
   EXPECT_EQ(sessions::test_data::kReferrerURL, navigation.referrer_url());
-  EXPECT_EQ(blink::kWebReferrerPolicyAlways, navigation.referrer_policy());
+  EXPECT_EQ(static_cast<int>(network::mojom::ReferrerPolicy::kAlways),
+            navigation.referrer_policy());
   EXPECT_EQ(sessions::test_data::kVirtualURL, navigation.virtual_url());
   EXPECT_EQ(sessions::test_data::kTitle, navigation.title());
   EXPECT_EQ(page_state.ToEncodedData(), navigation.encoded_page_state());
@@ -73,7 +74,7 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
   sessions::SerializedNavigationEntry navigation =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   sessions::SerializedNavigationEntryTestHelper::SetReferrerPolicy(
-      blink::kWebReferrerPolicyNever, &navigation);
+      static_cast<int>(network::mojom::ReferrerPolicy::kNever), &navigation);
 
   content::PageState page_state =
       content::PageState::CreateFromURL(sessions::test_data::kVirtualURL);
@@ -102,7 +103,8 @@ TEST_F(ChromeSerializedNavigationDriverTest, SanitizeWithReferrerPolicyNever) {
 
   // Fields that were sanitized.
   EXPECT_EQ(GURL(), navigation.referrer_url());
-  EXPECT_EQ(blink::kWebReferrerPolicyDefault, navigation.referrer_policy());
+  EXPECT_EQ(static_cast<int>(network::mojom::ReferrerPolicy::kDefault),
+            navigation.referrer_policy());
   EXPECT_EQ(page_state.ToEncodedData(), navigation.encoded_page_state());
 }
 

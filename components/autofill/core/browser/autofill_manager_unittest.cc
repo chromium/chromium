@@ -102,12 +102,13 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
                               AutofillDownloadManager::Observer* observer)
       : TestAutofillDownloadManager(driver, observer) {}
 
-  MOCK_METHOD5(StartUploadRequest,
+  MOCK_METHOD6(StartUploadRequest,
                bool(const FormStructure&,
                     bool,
                     const ServerFieldTypeSet&,
                     const std::string&,
-                    bool));
+                    bool,
+                    PrefService*));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
@@ -289,8 +290,13 @@ class AutofillManagerTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_.Init(autofill_client_.GetDatabase(), nullptr,
-                        autofill_client_.GetPrefs(), nullptr, false);
+    personal_data_.Init(/*profile_database=*/autofill_client_.GetDatabase(),
+                        /*account_database=*/nullptr,
+                        /*pref_service=*/autofill_client_.GetPrefs(),
+                        /*identity_manager=*/nullptr,
+                        /*client_profile_validator=*/nullptr,
+                        /*history_service=*/nullptr,
+                        /*is_off_the_record=*/false);
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
     autofill_driver_ =
         std::make_unique<testing::NiceMock<MockAutofillDriver>>();
@@ -2667,8 +2673,7 @@ TEST_F(AutofillManagerTest, FillAutofilledForm) {
   FormData form;
   test::CreateTestAddressFormData(&form);
   // Mark the address fields as autofilled.
-  for (std::vector<FormFieldData>::iterator iter = form.fields.begin();
-       iter != form.fields.end(); ++iter) {
+  for (auto iter = form.fields.begin(); iter != form.fields.end(); ++iter) {
     iter->is_autofilled = true;
   }
 
@@ -2705,8 +2710,7 @@ TEST_F(AutofillManagerTest, FillAutofilledForm) {
 
   // Now set the credit card fields to also be auto-filled, and try again to
   // fill the credit card data
-  for (std::vector<FormFieldData>::iterator iter = form.fields.begin();
-       iter != form.fields.end(); ++iter) {
+  for (auto iter = form.fields.begin(); iter != form.fields.end(); ++iter) {
     iter->is_autofilled = true;
   }
 
@@ -2903,6 +2907,9 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
+  form_with_multiple_componentized_phone_fields.origin =
+      GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3000,6 +3007,8 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3081,6 +3090,9 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
+  form_with_multiple_componentized_phone_fields.origin =
+      GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3184,6 +3196,8 @@ TEST_F(AutofillManagerTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_misclassified_extension;
+  form_with_misclassified_extension.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3274,6 +3288,8 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
   std::string guid(work_profile->guid());
 
   FormData form_with_no_complete_number;
+  form_with_no_complete_number.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3359,6 +3375,8 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_FocusOnSecondPhoneNumber) {
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3444,6 +3462,8 @@ TEST_F(AutofillManagerTest, FillFirstPhoneNumber_HiddenFieldShouldNotCount) {
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3597,6 +3617,8 @@ TEST_F(AutofillManagerTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_sections;
+  form_with_multiple_sections.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
@@ -3771,8 +3793,7 @@ TEST_F(AutofillManagerTest, FormChangesAddField) {
   test::CreateTestAddressFormData(&form);
 
   // Remove the phone field -- we'll add it back later.
-  std::vector<FormFieldData>::iterator pos =
-      form.fields.begin() + kPhoneFieldOffset;
+  auto pos = form.fields.begin() + kPhoneFieldOffset;
   FormFieldData field = *pos;
   pos = form.fields.erase(pos);
 
@@ -3797,6 +3818,8 @@ TEST_F(AutofillManagerTest, FormChangesAddField) {
 TEST_F(AutofillManagerTest, FormChangesVisibilityOfFields) {
   // Set up our form data.
   FormData form;
+  form.origin = GURL("http://www.foo.com/");
+
   FormFieldData field;
 
   // Default is zero, have to set to a number autofill can process.
@@ -4235,6 +4258,7 @@ TEST_F(AutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
 TEST_F(AutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Set up our form data.
   FormData form;
+  form.origin = GURL("https://www.myform.com");
   FormFieldData field;
   test::CreateTestFormField("First Name", "firstname", "", "text", &field);
   form.fields.push_back(field);
@@ -4472,7 +4496,6 @@ class ProfileMatchingTypesTest
       public ::testing::WithParamInterface<
           std::tuple<ProfileMatchingTypesTestCase,
                      int,        // AutofillProfile::ValidityState
-                     bool,       // Enable AutofillVoteUsingInvalidProfileValues
                      bool>> {};  // AutofillProfile::ValidationSource
 
 const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
@@ -4568,27 +4591,18 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   const auto& test_case = std::get<0>(GetParam());
   auto validity_state =
       static_cast<AutofillProfile::ValidityState>(std::get<1>(GetParam()));
-  const auto& vote_using_invalid_profile_data = std::get<2>(GetParam());
   const auto& validation_source =
-      static_cast<AutofillProfile::ValidationSource>(std::get<3>(GetParam()));
+      static_cast<AutofillProfile::ValidationSource>(std::get<2>(GetParam()));
 
   SCOPED_TRACE(base::StringPrintf(
       "Test: input_value='%s', field_type=%s, validity_state=%d, "
-      "validation_source=%d, vote_using_invalid_profile_data=%d",
+      "validation_source=%d ",
       test_case.input_value,
       AutofillType(test_case.field_type).ToString().c_str(), validity_state,
-      validation_source, vote_using_invalid_profile_data));
+      validation_source));
 
   ASSERT_LE(AutofillProfile::UNVALIDATED, validity_state);
   ASSERT_LE(validity_state, AutofillProfile::UNSUPPORTED);
-
-  // Enable/Disable ignoring invalid profile data for the scope of this test.
-  base::test::ScopedFeatureList sfl;
-  if (vote_using_invalid_profile_data) {
-    sfl.InitAndEnableFeature(features::kAutofillVoteUsingInvalidProfileData);
-  } else {
-    sfl.InitAndDisableFeature(features::kAutofillVoteUsingInvalidProfileData);
-  }
 
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
@@ -4611,10 +4625,14 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   profiles[2].set_guid("00000000-0000-0000-0000-000000000001");
 
   // Set the validity state for the matching field type.
-  auto field_type_group = AutofillType(test_case.field_type).group();
-  if (field_type_group != CREDIT_CARD) {
+  if (GroupTypeOfServerFieldType(test_case.field_type) != CREDIT_CARD) {
     for (auto& profile : profiles) {
-      if (profile.IsAnInvalidPhoneNumber(test_case.field_type)) {
+      if (test_case.field_type == UNKNOWN_TYPE) {
+        // An UNKNOWN type is always UNVALIDATED
+        validity_state = AutofillProfile::UNVALIDATED;
+      } else if (profile.IsAnInvalidPhoneNumber(test_case.field_type)) {
+        // a phone field is a compound field, an invalid part would make it
+        // invalid.
         validity_state = AutofillProfile::INVALID;
       }
       profile.SetValidityState(test_case.field_type, validity_state,
@@ -4647,54 +4665,22 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       profiles, credit_cards, "en-us", &form_structure);
 
   ASSERT_EQ(1U, form_structure.field_count());
+
   ServerFieldTypeSet possible_types = form_structure.field(0)->possible_types();
-  EXPECT_EQ(1U, possible_types.size());
+  ASSERT_EQ(1U, possible_types.size());
+  EXPECT_EQ(*possible_types.begin(), test_case.field_type);
 
-  if (test_case.field_type != EMPTY_TYPE &&
-      test_case.field_type != UNKNOWN_TYPE &&
-      ((validation_source == AutofillProfile::SERVER &&
-        GroupTypeOfServerFieldType(test_case.field_type) != CREDIT_CARD) ||
-       (validation_source == AutofillProfile::CLIENT &&
-        AutofillProfile::IsClientValidationSupportedForType(
-            test_case.field_type))) &&
-      validity_state == AutofillProfile::INVALID) {
-    // For the phone types we get more than one possible type match for one
-    // piece of data, therefore the count is not clear.
-    if (AutofillType(test_case.field_type).group() != PHONE_HOME) {
-      // There are two addresses in the US, every other type/value pair is
-      // unique.
-      int expected_count =
-          (test_case.field_type == ADDRESS_HOME_COUNTRY &&
-           base::StartsWith(test_case.input_value, "U",
-                            base::CompareCase::INSENSITIVE_ASCII))
-              ? 2
-              : 1;
-      histogram_tester.ExpectBucketCount(
-          "Autofill.InvalidProfileData.UsedForMetrics",
-          vote_using_invalid_profile_data, expected_count);
-    }
-    EXPECT_EQ(*possible_types.begin(), vote_using_invalid_profile_data
-                                           ? test_case.field_type
-                                           : UNKNOWN_TYPE);
-
+  // We don't add validity states for credit card fields.
+  if (GroupTypeOfServerFieldType(test_case.field_type) != CREDIT_CARD) {
     ServerFieldTypeValidityStatesMap possible_types_validities =
         form_structure.field(0)->possible_types_validities();
-    bool has_possible_types_validities =
-        field_type_group != CREDIT_CARD &&
-        (vote_using_invalid_profile_data ||
-         validity_state != AutofillProfile::INVALID);
-    EXPECT_EQ(has_possible_types_validities ? 1U : 0U,
-              possible_types_validities.size());
-    if (has_possible_types_validities) {
-      EXPECT_NE(possible_types_validities.end(),
-                possible_types_validities.find(test_case.field_type));
-      EXPECT_EQ(possible_types_validities[test_case.field_type][0],
-                (validation_source == AutofillProfile::SERVER)
-                    ? validity_state
-                    : AutofillProfile::UNVALIDATED);
-    }
-  } else {
-    EXPECT_EQ(*possible_types.begin(), test_case.field_type);
+    ASSERT_EQ(1U, possible_types_validities.size());
+    EXPECT_NE(possible_types_validities.end(),
+              possible_types_validities.find(test_case.field_type));
+    EXPECT_EQ(possible_types_validities[test_case.field_type][0],
+              (validation_source == AutofillProfile::SERVER)
+                  ? validity_state
+                  : AutofillProfile::UNVALIDATED);
   }
 }
 
@@ -4705,7 +4691,6 @@ INSTANTIATE_TEST_CASE_P(
         testing::ValuesIn(kProfileMatchingTypesTestCases),
         testing::Range(static_cast<int>(AutofillProfile::UNVALIDATED),
                        static_cast<int>(AutofillProfile::UNSUPPORTED) + 1),
-        testing::Bool(),
         testing::Bool()));
 
 // Tests that DeterminePossibleFieldTypesForUpload is called when a form is
@@ -4793,7 +4778,7 @@ TEST_F(AutofillManagerTest, DeterminePossibleFieldTypesWithMultipleValidities) {
     std::vector<AutofillProfile::ValidityState> expected_validity_states;
   } TestFieldData;
 
-  std::vector<TestFieldData> test_cases[2];
+  std::vector<TestFieldData> test_cases[3];
   // Tennessee appears in both of the user's profile as ADDRESS_HOME_STATE. In
   // the first one, it's VALID, and for the other, it's INVALID. Therefore, the
   // possible_field_types would only include the type ADDRESS_HOME_STATE, and
@@ -4806,6 +4791,9 @@ TEST_F(AutofillManagerTest, DeterminePossibleFieldTypesWithMultipleValidities) {
   // UNVALIDATED.
   test_cases[1].push_back(
       {"Alice", NAME_FIRST, {AutofillProfile::UNVALIDATED}});
+  // An UNKNOWN type is always UNVALIDATED.
+  test_cases[2].push_back(
+      {"What a beautiful day!", UNKNOWN_TYPE, {AutofillProfile::UNVALIDATED}});
 
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
@@ -5932,11 +5920,6 @@ TEST_F(AutofillManagerTest, ShouldUploadForm) {
     EXPECT_TRUE(autofill_manager_->ShouldUploadForm(FormStructure(form)));
   }
 
-  // Has two fields which are password fields.
-  test::CreateTestFormField("New Password", "new_pw", "", "password", &field);
-  form.fields.push_back(field);
-  EXPECT_TRUE(autofill_manager_->ShouldUploadForm(FormStructure(form)));
-
   // Autofill disabled.
   autofill_manager_->SetAutofillEnabled(false);
   EXPECT_FALSE(autofill_manager_->ShouldUploadForm(FormStructure(form)));
@@ -6173,57 +6156,6 @@ TEST_F(AutofillManagerTest, FormWithLongOptionValuesIsAcceptable) {
   }
 }
 
-// Test that a sign-in form submission sends an upload with types matching the
-// fields.
-TEST_F(AutofillManagerTest, SignInFormSubmission_Upload) {
-  // Set up our form data (it's already filled out with user data).
-  FormData form;
-  form.origin = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
-
-  std::vector<ServerFieldTypeSet> expected_types;
-  ServerFieldTypeSet types;
-
-  FormFieldData field;
-  test::CreateTestFormField("Email", "email", "theking@gmail.com", "text",
-                            &field);
-  form.fields.push_back(field);
-  types.insert(EMAIL_ADDRESS);
-  expected_types.push_back(types);
-
-  test::CreateTestFormField("Password", "pw", "", "password", &field);
-  form.fields.push_back(field);
-  FormsSeen(std::vector<FormData>(1, form));
-  types.clear();
-  types.insert(PASSWORD);
-  expected_types.push_back(types);
-
-  FormsSeen({form});
-
-  // We will expect these types in the upload and no observed submission. (the
-  // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
-  autofill_manager_->SetExpectedObservedSubmission(true);
-  autofill_manager_->SetCallParentUploadFormData(true);
-
-  std::unique_ptr<FormStructure> form_structure(new FormStructure(form));
-  form_structure->set_is_signin_upload(true);
-  form_structure->field(1)->set_possible_types({autofill::PASSWORD});
-
-  std::string signature = form_structure->FormSignatureAsStr();
-
-  ServerFieldTypeSet uploaded_available_types;
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(_, false, _, std::string(), true))
-      .WillOnce(DoAll(SaveArg<2>(&uploaded_available_types), Return(true)));
-  autofill_manager_->MaybeStartVoteUploadProcess(std::move(form_structure),
-                                                 base::TimeTicks::Now(), true);
-
-  EXPECT_EQ(signature, autofill_manager_->GetSubmittedFormSignature());
-  EXPECT_NE(uploaded_available_types.end(),
-            uploaded_available_types.find(autofill::PASSWORD));
-}
-
 // Test that with small form upload enabled but heuristics and query disabled
 // we get uploads but not quality metrics.
 TEST_F(AutofillManagerTest, SmallForm_Upload_NoHeuristicsOrQuery) {
@@ -6261,7 +6193,7 @@ TEST_F(AutofillManagerTest, SmallForm_Upload_NoHeuristicsOrQuery) {
   autofill_manager_->SetExpectedObservedSubmission(true);
   autofill_manager_->SetCallParentUploadFormData(true);
   EXPECT_CALL(*download_manager_,
-              StartUploadRequest(_, false, _, std::string(), true));
+              StartUploadRequest(_, false, _, std::string(), true, _));
 
   base::HistogramTester histogram_tester;
   FormSubmitted(form);

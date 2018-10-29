@@ -64,7 +64,6 @@ class P2PSocketTcpTestBase : public testing::Test {
     local_address_ = ParseAddress(kTestLocalIpAddress, kTestPort1);
 
     socket_impl_->remote_address_ = dest_;
-    socket_impl_->state_ = P2PSocket::STATE_CONNECTING;
     socket_impl_->OnConnected(net::OK);
     base::RunLoop().RunUntilIdle();
   }

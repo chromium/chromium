@@ -478,10 +478,11 @@ typedef std::map<GURL, std::pair<int, base::Time>> OriginCountAndLastVisitMap;
 // Statistics -----------------------------------------------------------------
 
 // HistoryCountResult encapsulates the result of a call to
-// HistoryBackend::GetHistoryCount.
+// HistoryBackend::GetHistoryCount or
+// HistoryBackend::CountUniqueHostsVisitedLastMonth.
 struct HistoryCountResult {
-  // Indicates whether the call to HistoryBackend::GetHistoryCount was
-  // successful or not. If false, then |count| is undefined.
+  // Indicates whether the call was successful or not. If false, then |count|
+  // is undefined.
   bool success = false;
   int count = 0;
 };

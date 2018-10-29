@@ -2,7 +2,6 @@ Test the parsing of the cursor property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test a bunch of cursor rules which should round-trip exactly.
 PASS roundtripCssRule(`cursor: auto;`) is "cursor: auto;"
 PASS roundtripCssRule(`cursor: none;`) is "cursor: none;"
@@ -23,6 +22,7 @@ PASS roundtripCssRule(`cursor: url("file:///foo.png") 12 3, url("file:///foo2.pn
 PASS roundtripCssRule(`cursor: url("file:///foo.png") -2 3, pointer;`) is "cursor: url(\"file:///foo.png\") -2 3, pointer;"
 PASS roundtripCssRule(`cursor: url("file:///foo.png") 2 -3, pointer;`) is "cursor: url(\"file:///foo.png\") 2 -3, pointer;"
 PASS roundtripCssRule(`cursor: url("file:///foo.png") -1 -1, pointer;`) is "cursor: url(\"file:///foo.png\") -1 -1, pointer;"
+
 
 Test a bunch of invalid cursor rules which shouldn't parse at all.
 PASS roundtripCssRule(`cursor: nonexistent;`) is ""

@@ -56,6 +56,9 @@ void RecordContextLost(ContextType type, viz::ContextLostReason reason) {
     case ContextType::FOR_TESTING:
       // Don't record UMA, this is just for tests.
       break;
+    case ContextType::XR_COMPOSITING:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.XRCompositing", reason);
+      break;
   }
 }
 
@@ -91,6 +94,8 @@ std::string ContextTypeToString(ContextType type) {
       return "Unknown";
     case ContextType::FOR_TESTING:
       return "ForTesting";
+    case ContextType::XR_COMPOSITING:
+      return "XRCompositing";
   }
 }
 

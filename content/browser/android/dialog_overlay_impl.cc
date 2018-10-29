@@ -160,7 +160,6 @@ void DialogOverlayImpl::UnregisterCallbacksIfNeeded() {
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
   if (delegate)
     delegate->SetOverlayMode(false);
-
   if (observed_window_android_) {
     auto* window_android = web_contents()->GetNativeView()->GetWindowAndroid();
     if (window_android)
@@ -241,6 +240,7 @@ void DialogOverlayImpl::OnDetachedFromWindow() {
   ScopedJavaLocalRef<jobject> obj = obj_.get(env);
   if (!obj.is_null())
     Java_DialogOverlayImpl_onWindowToken(env, obj, nullptr);
+  Stop();
 }
 
 void DialogOverlayImpl::RegisterWindowObserverIfNeeded(

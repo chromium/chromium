@@ -67,8 +67,8 @@
   <message name="IDS_SSL_CONNECTION_TITLE" desc="Title for the SSL connection explanation." translateable="false">
     Connection
   </message>
-  <message name="IDS_STRONG_SSL_SUMMARY" desc="Summary phrase for a site that uses a modern, secure TLS protocol and cipher." translateable="false">
-    secure (strong <ph name="PROTOCOL_VERSION">$1<ex>TLS 1.2</ex></ph>)
+  <message name="IDS_SECURE_SSL_SUMMARY" desc="Summary phrase for a site that uses a modern, secure TLS protocol and cipher." translateable="false">
+    secure connection settings
   </message>
   <message name="IDS_PRIVATE_KEY_PINNING_BYPASSED" desc="Summary phrase for a security state where Private Key Pinning is ignored because the certificate chains to a locally-trusted root." translateable="false">
     Public-Key-Pinning bypassed
@@ -76,38 +76,31 @@
   <message name="IDS_PRIVATE_KEY_PINNING_BYPASSED_DESCRIPTION" desc="Description of a security state where Private Key Pinning is ignored because the certificate chains to a locally-trusted root." translateable="false">
     Public-Key-Pinning was bypassed by a local root certificate.
   </message>
-  <message name="IDS_STRONG_SSL_DESCRIPTION" desc="Description of a site that uses a modern, secure TLS protocol and cipher." translateable="false">
-    The connection to this site is encrypted and authenticated using <ph name="PROTOCOL_VERSION">$1<ex>TLS 1.2</ex></ph> (a strong protocol), <ph name="KEY_EXCHANGE">$2<ex>ECDHE_RSA</ex></ph> (a strong key exchange), and <ph name="CIPHER_SUTE">$3<ex>AES_128_GCM</ex></ph> (a strong cipher).
+  <message name="IDS_SSL_DESCRIPTION" desc="Description of a site's TLS settings." translateable="false">
+    The connection to this site is encrypted and authenticated using <ph name="PROTOCOL_VERSION">$1<ex>TLS 1.2</ex></ph>, <ph name="KEY_EXCHANGE">$2<ex>ECDHE_RSA</ex></ph>, and <ph name="CIPHER_SUTE">$3<ex>AES_128_GCM</ex></ph>.
   </message>
   <message name="IDS_OBSOLETE_SSL_SUMMARY" desc="Summary phrase for a site that uses an outdated SSL settings (protocol, key exchange, or cipher)." translateable="false">
     obsolete connection settings
   </message>
-  <message name="IDS_OBSOLETE_SSL_DESCRIPTION" desc="Description of a site that uses an outdated TLS protocol or cipher." translateable="false">
-    The connection to this site uses <ph name="PROTOCOL">$1<ex>TLS 1.0</ex></ph> (<ph name="A_PROTOCOL">$2<ex>an obsolete protocol</ex></ph>), <ph name="KEY_EXCHANGE">$3<ex>ECDHE_RSA</ex></ph> (<ph name="A_KEY_EXCHANGE">$4<ex>an obsolete key exchange</ex></ph>), and <ph name="CIPHER">$5<ex>AES_256_CBC with HMAC-SHA1</ex></ph> (<ph name="A_CIPHER">$6<ex>an obsolete cipher</ex></ph>).
-  </message>
   <message name="IDS_CIPHER_WITH_MAC" desc="Description of an SSL cipher that contains a separate (bulk) cipher and MAC." translateable="false">
     <ph name="CIPHER">$1<ex>AES_256_CBC</ex></ph> with <ph name="MAC">$2<ex>HMAC-SHA1</ex></ph>
   </message>
-  <message name="IDS_SSL_AN_OBSOLETE_PROTOCOL" desc="A phrase to describe an SSL/TLS protocol (usually an older version like TLS 1.0) that is old and insecure" translateable="false">
-    an obsolete protocol
-  </message>
-  <message name="IDS_SSL_A_STRONG_PROTOCOL" desc="A phrase to describe an SSL/TLS protocol (e.g. TLS 1.2 or QUIC) that is modern and secure." translateable="false">
-    a strong protocol
-  </message>
-  <message name="IDS_SSL_AN_OBSOLETE_KEY_EXCHANGE" desc="A phrase to describe an SSL/TLS key exchange (e.g. ECDHE) that is old and insecure." translateable="false">
-    an obsolete key exchange
-  </message>
-  <message name="IDS_SSL_A_STRONG_KEY_EXCHANGE" desc="A phrase to describe an SSL/TLS key exchange (e.g. RSA) that is modern and secure." translateable="false">
-    a strong key exchange
-  </message>
-  <message name="IDS_SSL_AN_OBSOLETE_CIPHER" desc="A phrase to describe an SSL/TLS cipher (e.g. AES_256_CBC) that is old and insecure." translateable="false">
-    an obsolete cipher
-  </message>
-  <message name="IDS_SSL_A_STRONG_CIPHER" desc="A phrase to describe an SSL/TLS cipher (e.g. AES_128_GCM or ChaCha20 with Poly1305) that is modern and secure." translateable="false">
-    a strong cipher
-  </message>
   <message name="IDS_SSL_KEY_EXCHANGE_WITH_GROUP" desc="A phrase to describe an SSL/TLS ECDHE-based key exchange with a group." translateable="false">
     <ph name="A_KEY_EXCHANGE">$1<ex>ECDHE_RSA</ex></ph> with <ph name="A_GROUP">$2<ex>X25519</ex></ph>
+  </message>
+
+  <!-- Recommendations for sites using obsolete TLS settings. -->
+  <message name="IDS_SSL_RECOMMEND_PROTOCOL" desc="A recommendation to the site owner to use a modern TLS protocol" translateable="false">
+    <ph name="PROTOCOL">$1<ex>TLS 1.0</ex></ph> is obsolete. Enable TLS 1.2 or later.
+  </message>
+  <message name="IDS_SSL_RECOMMEND_KEY_EXCHANGE" desc="A recommendation to the site owner to use a modern TLS key exchange" translateable="false">
+    RSA key exchange is obsolete. Enable an ECDHE-based cipher suite.
+  </message>
+  <message name="IDS_SSL_RECOMMEND_CIPHER" desc="A recommendation to the site owner to use a modern TLS cipher" translateable="false">
+    <ph name="CIPHER">$1<ex>3DES_EDE_CBC</ex></ph> is obsolete. Enable an AES-GCM-based cipher suite.
+  </message>
+  <message name="IDS_SSL_RECOMMEND_SIGNATURE" desc="A recommendation to the site owner to use a modern TLS server signature" translateable="false">
+    The server signature uses SHA-1, which is obsolete. Enable a SHA-2 signature algorithm instead. (Note this is different from the signature in the certificate.)
   </message>
 
   <!-- Mixed Content -->

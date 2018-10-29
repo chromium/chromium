@@ -1,7 +1,10 @@
 This test for a crash when indenting a particular selection inside an already indented table. It should not crash.
 1	
 2
+
+
 3
+	
 4
 
 

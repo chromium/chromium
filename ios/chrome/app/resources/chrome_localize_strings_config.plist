@@ -64,7 +64,12 @@
 					<key>output</key>
 					<string>NSPhotoLibraryAddUsageDescription</string>
 				</dict>
-
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_FACE_ID_USAGE_DESCRIPTION</string>
+					<key>output</key>
+					<string>NSFaceIDUsageDescription</string>
+				</dict>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWTAB_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWINCOGNITOTAB_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE</string>

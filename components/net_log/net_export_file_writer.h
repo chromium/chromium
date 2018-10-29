@@ -20,6 +20,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/log/net_log_capture_mode.h"
+#include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace base {
@@ -36,14 +37,15 @@ namespace net_log {
 
 class ChromeNetLog;
 
-// NetExportFileWriter is used exclusively as a support class for net-export.
-// It's a singleton that acts as the interface to all NetExportMessageHandlers
-// which can tell it to start or stop logging in response to user actions from
-// net-export UIs. Because it's a singleton, the logging state can be shared
-// between multiple instances of the net-export UI. Internally, it manages a
+// NetExportFileWriter is used exclusively as a support class for
+// chrome://net-export/. There's a single instance created globally that acts as
+// the interface to all NetExportMessageHandlers which can tell it to start or
+// stop logging in response to user actions from chrome://net-export/ UIs.
+// Because there's only one instance, the logging state can be shared between
+// multiple instances of the chrome://net-export/ UI. Internally, it manages a
 // pipe to an instance of network::NetLogExporter and handles the
 // attaching/detaching of it to the NetLog. This class is used by the iOS and
-// non-iOS implementations of net-export.
+// non-iOS implementations of chrome://net-export/.
 //
 // NetExportFileWriter maintains the current logging state using the members
 // |state_|, |log_exists_|, |log_capture_mode_known_|, |log_capture_mode_|.
@@ -79,6 +81,10 @@ class NetExportFileWriter {
 
   using FilePathCallback = base::Callback<void(const base::FilePath&)>;
   using DirectoryGetter = base::Callback<bool(base::FilePath*)>;
+
+  // Constructs a NetExportFileWriter. Only one instance is created in browser
+  // process.
+  NetExportFileWriter();
 
   ~NetExportFileWriter();
 
@@ -144,11 +150,6 @@ class NetExportFileWriter {
   // initialization. Should only be used by unit tests.
   void SetDefaultLogBaseDirectoryGetterForTest(const DirectoryGetter& getter);
 
- protected:
-  // Constructs a NetExportFileWriter. Only one instance is created in browser
-  // process.
-  NetExportFileWriter();
-
  private:
   friend class ChromeNetLog;
   friend class NetExportFileWriterTest;
@@ -188,6 +189,8 @@ class NetExportFileWriter {
 
   void OnStartResult(net::NetLogCaptureMode capture_mode, int result);
   void OnStopResult(int result);
+
+  void OnConnectionError();
 
   // Contains tasks to be done after |net_log_exporter_| has completely
   // stopped writing.

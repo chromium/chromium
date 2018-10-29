@@ -34,6 +34,12 @@ const char kIgnoreCertificateErrorsSPKIList[] =
 // user data directory.
 const char kLogNetLog[] = "log-net-log";
 
+// Causes SSL key material to be logged to the specified file for debugging
+// purposes. See
+// https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
+// for the format.
+const char kSSLKeyLogFile[] = "ssl-key-log-file";
+
 // Don't send HTTP-Referer headers.
 const char kNoReferrers[] = "no-referrers";
 

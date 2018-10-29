@@ -419,8 +419,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     _closeButton.exclusiveTouch = YES;
     _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
 
-    // TODO(crbug.com/228611): Add IDR_ constant and use GetNativeImageNamed().
-    UIImage* image = [UIImage imageNamed:@"infobar_close"];
+    UIImage* image = [UIImage imageNamed:@"download_close"];
     [_closeButton setImage:image forState:UIControlStateNormal];
 
     [_closeButton addTarget:self

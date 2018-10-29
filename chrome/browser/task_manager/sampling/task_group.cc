@@ -10,13 +10,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/nacl/browser/nacl_browser.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/memory_coordinator.h"
-#include "content/public/common/content_features.h"
 #include "gpu/ipc/common/memory_stats.h"
 
 #if defined(OS_WIN)
@@ -97,7 +97,6 @@ TaskGroup::TaskGroup(
       swapped_mem_bytes_(-1),
       memory_footprint_(-1),
       gpu_memory_(-1),
-      memory_state_(base::MemoryState::UNKNOWN),
       per_process_network_usage_rate_(-1),
       cumulative_per_process_network_usage_(0),
 #if defined(OS_WIN)
@@ -212,22 +211,13 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
     refresh_flags &= ~shared_refresh_flags;
   }
 
-  // 6- Refresh memory state when memory coordinator is enabled.
-  if (TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_MEMORY_STATE,
-                                                    refresh_flags) &&
-      base::FeatureList::IsEnabled(features::kMemoryCoordinator)) {
-    memory_state_ =
-        content::MemoryCoordinator::GetInstance()->GetStateForProcess(
-            process_handle_);
-  }
-
   // The remaining resource refreshes are time consuming and cannot be done on
   // the UI thread. Do them all on the worker thread using the TaskGroupSampler.
-  // 7-  CPU usage.
-  // 8-  Memory usage.
-  // 9-  Idle Wakeups per second.
-  // 10-  (Linux and ChromeOS only) The number of file descriptors current open.
-  // 11- Process priority (foreground vs. background).
+  // 6-  CPU usage.
+  // 7-  Memory usage.
+  // 8-  Idle Wakeups per second.
+  // 9-  (Linux and ChromeOS only) The number of file descriptors current open.
+  // 10- Process priority (foreground vs. background).
   if (worker_thread_sampler_)
     worker_thread_sampler_->Refresh(refresh_flags);
 }
@@ -274,8 +264,8 @@ void TaskGroup::RefreshWindowsHandles() {
 
 #if BUILDFLAG(ENABLE_NACL)
 void TaskGroup::RefreshNaClDebugStubPort(int child_process_unique_id) {
-  content::BrowserThread::PostTaskAndReplyWithResult(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&GetNaClDebugStubPortOnIoThread, child_process_unique_id),
       base::Bind(&TaskGroup::OnRefreshNaClDebugStubPortDone,
                  weak_ptr_factory_.GetWeakPtr()));

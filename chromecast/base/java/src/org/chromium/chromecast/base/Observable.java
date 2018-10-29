@@ -85,7 +85,7 @@ public abstract class Observable<T> {
     /**
      * Returns an Observable that is activated only when the given Observable is not activated.
      */
-    public static Observable<Unit> not(Observable<?> observable) {
+    public static Observable<?> not(Observable<?> observable) {
         Controller<Unit> opposite = new Controller<>();
         opposite.set(Unit.unit());
         observable.subscribe(x -> {

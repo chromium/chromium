@@ -117,6 +117,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // the platform (Chrome OS / desktop) and type of policy that is in effect.
   std::unique_ptr<PolicyStatusProvider> user_status_provider_;
   std::unique_ptr<PolicyStatusProvider> device_status_provider_;
+  std::unique_ptr<PolicyStatusProvider> machine_status_provider_;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_;
 

@@ -476,18 +476,10 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
 
   EXPECT_EQ(6, back_model->GetItemCount());
 
-  // On Mac ui::MenuModel::GetLabelAt should return unescaped strings.
-#if defined(OS_MACOSX)
-  EXPECT_EQ(ASCIIToUTF16("A B"), back_model->GetLabelAt(3));
-  EXPECT_EQ(ASCIIToUTF16("A & B"), back_model->GetLabelAt(2));
-  EXPECT_EQ(ASCIIToUTF16("A && B"), back_model->GetLabelAt(1));
-  EXPECT_EQ(ASCIIToUTF16("A &&& B"), back_model->GetLabelAt(0));
-#else
   EXPECT_EQ(ASCIIToUTF16("A B"), back_model->GetLabelAt(3));
   EXPECT_EQ(ASCIIToUTF16("A && B"), back_model->GetLabelAt(2));
   EXPECT_EQ(ASCIIToUTF16("A &&&& B"), back_model->GetLabelAt(1));
   EXPECT_EQ(ASCIIToUTF16("A &&&&&& B"), back_model->GetLabelAt(0));
-#endif // defined(OS_MACOSX)
 }
 
 // Test asynchronous loading of favicon from history service.

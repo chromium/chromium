@@ -11,6 +11,7 @@ PASS internals.updateStyleAndReturnAffectedElementCount() is 6
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 foo
 foo
 foo

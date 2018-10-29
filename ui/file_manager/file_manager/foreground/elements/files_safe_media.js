@@ -90,6 +90,12 @@ var FilesSafeMedia = Polymer({
         this.fire('files-safe-media-tap-inside');
       } else if (event.data === 'tap-outside') {
         this.fire('files-safe-media-tap-outside');
+      } else if (event.data === 'webview-loaded') {
+        if (this.webview_)
+          this.webview_.setAttribute('loaded', '');
+      } else if (event.data === 'webview-cleared') {
+        if (this.webview_)
+          this.webview_.removeAttribute('loaded');
       }
     }.bind(this));
   }

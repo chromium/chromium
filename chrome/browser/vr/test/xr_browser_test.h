@@ -34,6 +34,8 @@ class XrBrowserTestBase : public InProcessBrowserTest {
       base::TimeDelta::FromMilliseconds(100);
   static constexpr base::TimeDelta kPollTimeoutShort =
       base::TimeDelta::FromMilliseconds(1000);
+  static constexpr base::TimeDelta kPollTimeoutMedium =
+      base::TimeDelta::FromMilliseconds(5000);
   static constexpr base::TimeDelta kPollTimeoutLong =
       base::TimeDelta::FromMilliseconds(10000);
   // Still considered XR-wide instead of VR-specific since OpenVR can be used

@@ -14,6 +14,29 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "services/identity/public/cpp/identity_manager.h"
+#include "services/identity/public/cpp/primary_account_mutator.h"
+
+#if !defined(OS_CHROMEOS)
+#include "services/identity/public/cpp/primary_account_mutator_impl.h"
+#endif
+
+namespace {
+
+// Helper function returning a newly constructed PrimaryAccountMutator for
+// |profile|.  May return null if mutation of the signed-in state is not
+// supported on the current platform.
+std::unique_ptr<identity::PrimaryAccountMutator> BuildPrimaryAccountMutator(
+    Profile* profile) {
+#if !defined(OS_CHROMEOS)
+  return std::make_unique<identity::PrimaryAccountMutatorImpl>(
+      AccountTrackerServiceFactory::GetForProfile(profile),
+      SigninManagerFactory::GetForProfile(profile));
+#else
+  return nullptr;
+#endif
+}
+
+}  // namespace
 
 // Subclass that wraps IdentityManager in a KeyedService (as IdentityManager is
 // a client-side library intended for use by any process, it would be a layering
@@ -29,7 +52,8 @@ class IdentityManagerWrapper : public KeyedService,
             SigninManagerFactory::GetForProfile(profile),
             ProfileOAuth2TokenServiceFactory::GetForProfile(profile),
             AccountTrackerServiceFactory::GetForProfile(profile),
-            GaiaCookieManagerServiceFactory::GetForProfile(profile)) {}
+            GaiaCookieManagerServiceFactory::GetForProfile(profile),
+            BuildPrimaryAccountMutator(profile)) {}
 };
 
 IdentityManagerFactory::IdentityManagerFactory()

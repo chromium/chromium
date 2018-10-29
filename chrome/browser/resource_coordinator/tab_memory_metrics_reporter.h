@@ -63,7 +63,7 @@ class TabMemoryMetricsReporter : public TabLoadTracker::Observer {
   };
 
   struct WebContentsDataComparator {
-    bool operator()(const WebContentsData& a, const WebContentsData& b);
+    bool operator()(const WebContentsData& a, const WebContentsData& b) const;
   };
 
   void MonitorWebContents(content::WebContents* web_contents);

@@ -46,6 +46,7 @@ import pdl  # pylint: disable=F0401
 type_traits = {
     "any": "*",
     "string": "string",
+    "binary": "string",
     "integer": "number",
     "number": "number",
     "boolean": "boolean",

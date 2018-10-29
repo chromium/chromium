@@ -65,10 +65,10 @@ std::unique_ptr<ScriptRegexp> EmailInputType::CreateEmailRegexp() {
 
 String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
                                                   const String& address) {
-  if (address.ContainsOnlyASCII())
+  if (address.ContainsOnlyASCIIOrEmpty())
     return address;
 
-  size_t at_position = address.find('@');
+  wtf_size_t at_position = address.find('@');
   if (at_position == kNotFound)
     return address;
   String host = address.Substring(at_position + 1);
@@ -104,10 +104,10 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
 
 String EmailInputType::ConvertEmailAddressToUnicode(
     const String& address) const {
-  if (!address.ContainsOnlyASCII())
+  if (!address.ContainsOnlyASCIIOrEmpty())
     return address;
 
-  size_t at_position = address.find('@');
+  wtf_size_t at_position = address.find('@');
   if (at_position == kNotFound)
     return address;
 
@@ -219,7 +219,7 @@ String EmailInputType::TypeMismatchText() const {
     return GetLocale().QueryString(
         WebLocalizedString::kValidationTypeMismatchForEmailEmpty);
   String at_sign = String("@");
-  size_t at_index = invalid_address.find('@');
+  wtf_size_t at_index = invalid_address.find('@');
   if (at_index == kNotFound)
     return GetLocale().QueryString(
         WebLocalizedString::kValidationTypeMismatchForEmailNoAtSign, at_sign,
@@ -237,7 +237,7 @@ String EmailInputType::TypeMismatchText() const {
     return GetLocale().QueryString(
         WebLocalizedString::kValidationTypeMismatchForEmailEmptyDomain, at_sign,
         unicode_address);
-  size_t invalid_char_index = local_part.Find(IsInvalidLocalPartCharacter);
+  wtf_size_t invalid_char_index = local_part.Find(IsInvalidLocalPartCharacter);
   if (invalid_char_index != kNotFound) {
     unsigned char_length = U_IS_LEAD(local_part[invalid_char_index]) ? 2 : 1;
     return GetLocale().QueryString(
@@ -252,7 +252,7 @@ String EmailInputType::TypeMismatchText() const {
         at_sign, domain.Substring(invalid_char_index, char_length));
   }
   if (!CheckValidDotUsage(domain)) {
-    size_t at_index_in_unicode = unicode_address.find('@');
+    wtf_size_t at_index_in_unicode = unicode_address.find('@');
     DCHECK_NE(at_index_in_unicode, kNotFound);
     return GetLocale().QueryString(
         WebLocalizedString::kValidationTypeMismatchForEmailInvalidDots,
@@ -276,7 +276,7 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
   Vector<String> addresses;
   no_line_break_value.Split(',', true, addresses);
   StringBuilder stripped_value;
-  for (size_t i = 0; i < addresses.size(); ++i) {
+  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     if (i > 0)
       stripped_value.Append(',');
     stripped_value.Append(StripLeadingAndTrailingHTMLSpaces(addresses[i]));
@@ -293,7 +293,7 @@ String EmailInputType::ConvertFromVisibleValue(
   sanitized_value.Split(',', true, addresses);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
-  for (size_t i = 0; i < addresses.size(); ++i) {
+  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     if (i > 0)
       builder.Append(',');
     builder.Append(
@@ -311,7 +311,7 @@ String EmailInputType::VisibleValue() const {
   value.Split(',', true, addresses);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
-  for (size_t i = 0; i < addresses.size(); ++i) {
+  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     if (i > 0)
       builder.Append(',');
     builder.Append(ConvertEmailAddressToUnicode(addresses[i]));

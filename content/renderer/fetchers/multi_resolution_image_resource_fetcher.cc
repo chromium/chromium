@@ -26,7 +26,7 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
     const GURL& image_url,
     WebLocalFrame* frame,
     int id,
-    WebURLRequest::RequestContext request_context,
+    blink::mojom::RequestContextType request_context,
     blink::mojom::FetchCacheMode cache_mode,
     Callback callback)
     : callback_(std::move(callback)),
@@ -41,7 +41,7 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
   // To prevent cache tainting, the favicon requests have to by-pass the service
   // workers. This should ideally not happen or at least not all the time.
   // See https://crbug.com/448427
-  if (request_context == WebURLRequest::kRequestContextFavicon)
+  if (request_context == blink::mojom::RequestContextType::FAVICON)
     fetcher_->SetSkipServiceWorker(true);
 
   fetcher_->SetCacheMode(cache_mode);

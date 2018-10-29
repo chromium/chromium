@@ -46,6 +46,14 @@ void FullscreenWebStateListObserver::SetWebStateList(
   }
 }
 
+const WebStateList* FullscreenWebStateListObserver::GetWebStateList() const {
+  return web_state_list_;
+}
+
+WebStateList* FullscreenWebStateListObserver::GetWebStateList() {
+  return web_state_list_;
+}
+
 void FullscreenWebStateListObserver::Disconnect() {
   SetWebStateList(nullptr);
 }

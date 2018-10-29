@@ -20,7 +20,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/run_loop.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -52,27 +51,6 @@ class LockScreenAppFocuser {
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenAppFocuser);
 };
-
-// Keeps tabbing through |view| until the view loses focus.
-// The number of generated tab events will be limited - if the focus is still
-// within the view by the time the limit is hit, this will return false.
-bool TabThroughView(ui::test::EventGenerator* event_generator,
-                    views::View* view,
-                    bool reverse) {
-  if (!HasFocusInAnyChildView(view)) {
-    ADD_FAILURE() << "View not focused initially.";
-    return false;
-  }
-
-  for (int i = 0; i < 50; ++i) {
-    event_generator->PressKey(ui::KeyboardCode::VKEY_TAB,
-                              reverse ? ui::EF_SHIFT_DOWN : 0);
-    if (!HasFocusInAnyChildView(view))
-      return true;
-  }
-
-  return false;
-}
 
 testing::AssertionResult VerifyFocused(views::View* view) {
   if (!view->GetWidget()->IsActive())
@@ -127,9 +105,9 @@ TEST_F(LockScreenSanityTest, PasswordSubmitCallsLoginScreenClient) {
   // Password submit runs mojo.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(false);
-  EXPECT_CALL(
-      *client,
-      AuthenticateUser_(users()[0]->basic_user_info->account_id, _, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(
+                  users()[0]->basic_user_info->account_id, _, false, _));
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
@@ -151,12 +129,13 @@ TEST_F(LockScreenSanityTest,
   LoginPasswordView::TestApi password_test_api =
       MakeLoginPasswordTestApi(contents, AuthTarget::kPrimary);
 
-  MockLoginScreenClient::AuthenticateUserCallback callback;
+  MockLoginScreenClient::AuthenticateUserWithPasswordOrPinCallback callback;
   auto submit_password = [&]() {
     // Capture the authentication callback.
-    client->set_authenticate_user_callback_storage(&callback);
-    EXPECT_CALL(*client, AuthenticateUser_(testing::_, testing::_, testing::_,
-                                           testing::_));
+    client->set_authenticate_user_with_password_or_pin_callback_storage(
+        &callback);
+    EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                             testing::_, testing::_, testing::_, testing::_));
 
     // Submit password with content 'a'. This creates a browser-process
     // authentication request stored in |callback|.

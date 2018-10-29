@@ -33,7 +33,7 @@ constexpr char kTestUser1GaiaId[] = "test-user1@gmail.com";
 class ResetTest : public LoginManagerTest {
  public:
   ResetTest()
-      : LoginManagerTest(false),
+      : LoginManagerTest(false, true /* should_initialize_webui */),
         update_engine_client_(NULL),
         session_manager_client_(NULL),
         power_manager_client_(NULL) {}

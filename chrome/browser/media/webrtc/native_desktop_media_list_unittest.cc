@@ -117,8 +117,7 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
 
     base::AutoLock lock(frame_values_lock_);
 
-    std::map<SourceId, int8_t>::iterator it =
-        frame_values_.find(selected_window_id_);
+    auto it = frame_values_.find(selected_window_id_);
     int8_t value = (it != frame_values_.end()) ? it->second : 0;
     std::unique_ptr<webrtc::DesktopFrame> frame(
         new webrtc::BasicDesktopFrame(webrtc::DesktopSize(10, 10)));
@@ -520,4 +519,37 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
   window_capturer_->SetWindowList(window_list_);
 
   run_loop.Run();
+}
+
+// This test verifies that webrtc::DesktopCapturer::CaptureFrame() is not
+// called when the thumbnail size is empty.
+TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
+  window_capturer_ = new FakeWindowCapturer();
+  model_ = std::make_unique<NativeDesktopMediaList>(
+      DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_));
+  model_->SetThumbnailSize(gfx::Size());
+
+  // Set update period to reduce the time it takes to run tests.
+  model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(observer_, OnSourceAdded(model_.get(), 0))
+      .WillOnce(
+          DoAll(CheckListSize(model_.get(), 1),
+                QuitRunLoop(base::ThreadTaskRunnerHandle::Get(), &run_loop)));
+  // Called upon webrtc::DesktopCapturer::CaptureFrame() call.
+  ON_CALL(observer_, OnSourceThumbnailChanged(_, _))
+      .WillByDefault(testing::InvokeWithoutArgs([]() { NOTREACHED(); }));
+
+  model_->StartUpdating(&observer_);
+
+  AddNativeWindow(0);
+  window_capturer_->SetWindowList(window_list_);
+
+  run_loop.Run();
+
+  EXPECT_EQ(model_->GetSource(0).id.type, DesktopMediaID::TYPE_WINDOW);
+  EXPECT_EQ(model_->GetSource(0).id.id, 0);
+  EXPECT_EQ(model_->GetSource(0).thumbnail.size(), gfx::Size());
 }

@@ -79,9 +79,9 @@ bool IsFinalTtsEventType(TtsEventType event_type) {
 //
 
 UtteranceContinuousParameters::UtteranceContinuousParameters()
-    : rate(blink::SpeechSynthesisConstants::kDoublePrefNotSet),
-      pitch(blink::SpeechSynthesisConstants::kDoublePrefNotSet),
-      volume(blink::SpeechSynthesisConstants::kDoublePrefNotSet) {}
+    : rate(blink::kWebSpeechSynthesisDoublePrefNotSet),
+      pitch(blink::kWebSpeechSynthesisDoublePrefNotSet),
+      volume(blink::kWebSpeechSynthesisDoublePrefNotSet) {}
 
 //
 // VoiceData
@@ -501,38 +501,29 @@ int TtsControllerImpl::GetMatchingVoice(
     if (!voice.lang.empty() && !utterance->lang().empty()) {
       // An exact language match is worth more than a partial match.
       if (voice.lang == utterance->lang()) {
-        score += 64;
+        score += 128;
       } else if (l10n_util::GetLanguage(voice.lang) ==
                  l10n_util::GetLanguage(utterance->lang())) {
-        score += 32;
+        score += 64;
       }
-    }
-
-    // Prefer the system language after that.
-    if (!voice.lang.empty()) {
-      if (l10n_util::GetLanguage(voice.lang) ==
-          l10n_util::GetLanguage(app_lang))
-        score += 16;
     }
 
     // Next, prefer required event types.
     if (utterance->required_event_types().size() > 0) {
       bool has_all_required_event_types = true;
-      for (std::set<TtsEventType>::const_iterator iter =
-               utterance->required_event_types().begin();
-           iter != utterance->required_event_types().end();
-           ++iter) {
+      for (auto iter = utterance->required_event_types().begin();
+           iter != utterance->required_event_types().end(); ++iter) {
         if (voice.events.find(*iter) == voice.events.end()) {
           has_all_required_event_types = false;
           break;
         }
       }
       if (has_all_required_event_types)
-        score += 8;
+        score += 32;
     }
 
 #if defined(OS_CHROMEOS)
-    // Finally, prefer the user's preference voice for the language:
+    // Prefer the user's preference voice for the language:
     if (lang_to_voice_pref) {
       // First prefer the user's preference voice for the utterance language,
       // if the utterance language is specified.
@@ -541,7 +532,7 @@ int TtsControllerImpl::GetMatchingVoice(
         lang_to_voice_pref->GetString(l10n_util::GetLanguage(utterance->lang()),
                                       &voice_id);
         if (VoiceIdMatches(voice_id, voice))
-          score += 4;
+          score += 16;
       }
 
       // Then prefer the user's preference voice for the system language.
@@ -550,7 +541,7 @@ int TtsControllerImpl::GetMatchingVoice(
       lang_to_voice_pref->GetString(l10n_util::GetLanguage(app_lang),
                                     &voice_id);
       if (VoiceIdMatches(voice_id, voice))
-        score += 2;
+        score += 8;
 
       // Finally, prefer the user's preference voice for any language. This will
       // pick the default voice if there is no better match for the current
@@ -558,9 +549,19 @@ int TtsControllerImpl::GetMatchingVoice(
       voice_id.clear();
       lang_to_voice_pref->GetString("noLanguageCode", &voice_id);
       if (VoiceIdMatches(voice_id, voice))
-        score += 1;
+        score += 4;
     }
 #endif  // defined(OS_CHROMEOS)
+
+    // Finally, prefer system language.
+    if (!voice.lang.empty()) {
+      if (voice.lang == app_lang) {
+        score += 2;
+      } else if (l10n_util::GetLanguage(voice.lang) ==
+                 l10n_util::GetLanguage(app_lang)) {
+        score += 1;
+      }
+    }
 
     if (score > best_score) {
       best_score = score;
@@ -579,28 +580,27 @@ void TtsControllerImpl::UpdateUtteranceDefaults(Utterance* utterance) {
   // Update pitch, rate and volume from user prefs if not set explicitly
   // on this utterance.
   const PrefService* prefs = GetPrefService(utterance);
-  if (rate == blink::SpeechSynthesisConstants::kDoublePrefNotSet) {
+  if (rate == blink::kWebSpeechSynthesisDoublePrefNotSet) {
     rate = prefs ? prefs->GetDouble(prefs::kTextToSpeechRate)
-                 : blink::SpeechSynthesisConstants::kDefaultTextToSpeechRate;
+                 : blink::kWebSpeechSynthesisDefaultTextToSpeechRate;
   }
-  if (pitch == blink::SpeechSynthesisConstants::kDoublePrefNotSet) {
+  if (pitch == blink::kWebSpeechSynthesisDoublePrefNotSet) {
     pitch = prefs ? prefs->GetDouble(prefs::kTextToSpeechPitch)
-                  : blink::SpeechSynthesisConstants::kDefaultTextToSpeechPitch;
+                  : blink::kWebSpeechSynthesisDefaultTextToSpeechPitch;
   }
-  if (volume == blink::SpeechSynthesisConstants::kDoublePrefNotSet) {
-    volume = prefs
-                 ? prefs->GetDouble(prefs::kTextToSpeechVolume)
-                 : blink::SpeechSynthesisConstants::kDefaultTextToSpeechVolume;
+  if (volume == blink::kWebSpeechSynthesisDoublePrefNotSet) {
+    volume = prefs ? prefs->GetDouble(prefs::kTextToSpeechVolume)
+                   : blink::kWebSpeechSynthesisDefaultTextToSpeechVolume;
   }
 #else
   // Update pitch, rate and volume to defaults if not explicity set on
   // this utterance.
-  if (rate == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    rate = blink::SpeechSynthesisConstants::kDefaultTextToSpeechRate;
-  if (pitch == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    pitch = blink::SpeechSynthesisConstants::kDefaultTextToSpeechPitch;
-  if (volume == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    volume = blink::SpeechSynthesisConstants::kDefaultTextToSpeechVolume;
+  if (rate == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    rate = blink::kWebSpeechSynthesisDefaultTextToSpeechRate;
+  if (pitch == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    pitch = blink::kWebSpeechSynthesisDefaultTextToSpeechPitch;
+  if (volume == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    volume = blink::kWebSpeechSynthesisDefaultTextToSpeechVolume;
 #endif  // defined(OS_CHROMEOS)
   utterance->set_continuous_parameters(rate, pitch, volume);
 }
@@ -624,21 +624,18 @@ void TtsControllerImpl::VoicesChanged() {
   if (!platform_impl_)
     return;
 
-  for (std::set<VoicesChangedDelegate*>::iterator iter =
-           voices_changed_delegates_.begin();
-       iter != voices_changed_delegates_.end(); ++iter) {
-    (*iter)->OnVoicesChanged();
-  }
+  for (auto& delegate : voices_changed_delegates_)
+    delegate.OnVoicesChanged();
 }
 
 void TtsControllerImpl::AddVoicesChangedDelegate(
     VoicesChangedDelegate* delegate) {
-  voices_changed_delegates_.insert(delegate);
+  voices_changed_delegates_.AddObserver(delegate);
 }
 
 void TtsControllerImpl::RemoveVoicesChangedDelegate(
     VoicesChangedDelegate* delegate) {
-  voices_changed_delegates_.erase(delegate);
+  voices_changed_delegates_.RemoveObserver(delegate);
 }
 
 void TtsControllerImpl::RemoveUtteranceEventDelegate(

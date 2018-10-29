@@ -8,7 +8,6 @@ Tests that a 'selected text changed' notification fires on a focusable element w
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Got SelectedTextChanged notification on focusable element with role=textbox.
 PASS successfullyParsed is true
 

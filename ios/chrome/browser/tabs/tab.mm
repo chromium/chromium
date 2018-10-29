@@ -66,7 +66,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/open_in_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -100,6 +100,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -125,9 +126,6 @@ NSString* const kTabUrlKey = @"url";
 
   OpenInController* _openInController;
 
-  // Last visited timestamp.
-  double _lastVisitedTimestamp;
-
   // The Overscroll controller responsible for displaying the
   // overscrollActionsView above the toolbar.
   OverscrollActionsController* _overscrollActionsController;
@@ -141,8 +139,6 @@ NSString* const kTabUrlKey = @"url";
   // Universal Second Factor (U2F) call controller.
   U2FController* _secondFactorController;
 
-  // View displayed upon PagePlaceholderTabHelperDelegate request.
-  UIImageView* _pagePlaceholder;
 }
 
 // Returns the OpenInController for this tab.
@@ -175,8 +171,6 @@ NSString* const kTabUrlKey = @"url";
 
     _browserState =
         ios::ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
-
-    [self updateLastVisitedTimestamp];
   }
   return self;
 }
@@ -211,13 +205,6 @@ NSString* const kTabUrlKey = @"url";
   }
 
   return base::SysUTF16ToNSString(title);
-}
-
-- (NSString*)urlDisplayString {
-  base::string16 urlText = url_formatter::FormatUrl(
-      self.webState->GetVisibleURL(), url_formatter::kFormatUrlOmitNothing,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
-  return base::SysUTF16ToNSString(urlText);
 }
 
 - (NSString*)tabId {
@@ -330,13 +317,6 @@ NSString* const kTabUrlKey = @"url";
   return self.webState ? self.webState->GetNavigationManager() : nullptr;
 }
 
-- (void)goToItem:(const web::NavigationItem*)item {
-  DCHECK(item);
-  int index = self.navigationManager->GetIndexOfItem(item);
-  DCHECK_NE(index, -1);
-  self.navigationManager->GoToIndex(index);
-}
-
 - (void)goBack {
   if (self.navigationManager) {
     DCHECK(self.navigationManager->CanGoBack());
@@ -351,14 +331,6 @@ NSString* const kTabUrlKey = @"url";
     base::RecordAction(base::UserMetricsAction("Forward"));
     self.navigationManager->GoForward();
   }
-}
-
-- (double)lastVisitedTimestamp {
-  return _lastVisitedTimestamp;
-}
-
-- (void)updateLastVisitedTimestamp {
-  _lastVisitedTimestamp = [[NSDate date] timeIntervalSince1970];
 }
 
 - (void)willUpdateSnapshot {
@@ -462,8 +434,8 @@ NSString* const kTabUrlKey = @"url";
 - (OpenInController*)openInController {
   if (!_openInController) {
     _openInController = [[OpenInController alloc]
-        initWithRequestContext:_browserState->GetRequestContext()
-                 webController:self.webController];
+        initWithURLLoaderFactory:_browserState->GetSharedURLLoaderFactory()
+                   webController:self.webController];
     _openInController.baseView = self.view;
   }
   return _openInController;
@@ -505,12 +477,6 @@ NSString* const kTabUrlKey = @"url";
 
 - (TabModel*)parentTabModel {
   return _parentTabModel;
-}
-
-// TODO(crbug.com/620465): this require the Tab's WebState to be a WebStateImpl,
-// remove this helper once this is no longer true (and fix the unit tests).
-- (web::NavigationManagerImpl*)navigationManagerImpl {
-  return static_cast<web::NavigationManagerImpl*>(self.navigationManager);
 }
 
 // TODO(crbug.com/620465): this require the Tab's WebState to be a WebStateImpl,

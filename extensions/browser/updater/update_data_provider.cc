@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_verifier.h"
@@ -147,7 +148,7 @@ void UpdateDataProvider::RunInstallCallback(
     return;
   }
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(
           FROM_HERE,
           base::BindOnce(InstallUpdateCallback, browser_context_, extension_id,

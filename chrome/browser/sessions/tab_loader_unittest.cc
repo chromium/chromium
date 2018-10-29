@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -244,23 +243,6 @@ TEST_F(TabLoaderTest, LoadsAreStaggered) {
   EXPECT_EQ(1u, TabLoadTracker::Get()->GetLoadedTabCount());
   EXPECT_EQ(1u, TabLoadTracker::Get()->GetLoadingTabCount());
   EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
-}
-
-TEST_F(TabLoaderTest, OnMemoryStateChange) {
-  // Multiple contents are necessary to make sure that the tab loader
-  // doesn't immediately kick off loading of all tabs and detach.
-  CreateMultipleRestoredWebContents(0, 2);
-
-  // Create the tab loader.
-  TabLoader::RestoreTabs(restored_tabs_, clock_.NowTicks());
-  EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
-  EXPECT_EQ(1u, tab_loader_.scheduled_to_load_count());
-
-  // Simulate memory pressure and expect the tab loader to disable loading and
-  // to have initiated a self-destroy.
-  EXPECT_TRUE(tab_loader_.is_loading_enabled());
-  tab_loader_.OnMemoryStateChange(base::MemoryState::THROTTLED);
-  EXPECT_TRUE(TabLoaderTester::shared_tab_loader() == nullptr);
 }
 
 TEST_F(TabLoaderTest, OnMemoryPressure) {

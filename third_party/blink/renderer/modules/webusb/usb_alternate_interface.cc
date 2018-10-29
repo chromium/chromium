@@ -12,16 +12,16 @@ namespace blink {
 
 USBAlternateInterface* USBAlternateInterface::Create(
     const USBInterface* interface,
-    size_t alternate_index) {
+    wtf_size_t alternate_index) {
   return new USBAlternateInterface(interface, alternate_index);
 }
 
 USBAlternateInterface* USBAlternateInterface::Create(
     const USBInterface* interface,
-    size_t alternate_setting,
+    uint8_t alternate_setting,
     ExceptionState& exception_state) {
   const auto& alternates = interface->Info().alternates;
-  for (size_t i = 0; i < alternates.size(); ++i) {
+  for (wtf_size_t i = 0; i < alternates.size(); ++i) {
     if (alternates[i]->alternate_setting == alternate_setting)
       return USBAlternateInterface::Create(interface, i);
   }
@@ -30,7 +30,7 @@ USBAlternateInterface* USBAlternateInterface::Create(
 }
 
 USBAlternateInterface::USBAlternateInterface(const USBInterface* interface,
-                                             size_t alternate_index)
+                                             wtf_size_t alternate_index)
     : interface_(interface), alternate_index_(alternate_index) {
   DCHECK(interface_);
   DCHECK_LT(alternate_index_, interface_->Info().alternates.size());
@@ -46,7 +46,7 @@ USBAlternateInterface::Info() const {
 
 HeapVector<Member<USBEndpoint>> USBAlternateInterface::endpoints() const {
   HeapVector<Member<USBEndpoint>> endpoints;
-  for (size_t i = 0; i < Info().endpoints.size(); ++i)
+  for (wtf_size_t i = 0; i < Info().endpoints.size(); ++i)
     endpoints.push_back(USBEndpoint::Create(this, i));
   return endpoints;
 }

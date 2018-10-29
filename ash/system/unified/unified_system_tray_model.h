@@ -33,6 +33,22 @@ class ASH_EXPORT UnifiedSystemTrayModel {
 
   bool IsExpandedOnOpen() const;
 
+  // Returns empty if it's not manually expanded/collapsed. Otherwise, the value
+  // is true if the notification is manually expanded, and false if it's
+  // manually collapsed.
+  base::Optional<bool> GetNotificationExpanded(
+      const std::string& notification_id) const;
+
+  // Sets a notification of |notification_id| is manually |expanded|.
+  void SetNotificationExpanded(const std::string& notification_id,
+                               bool expanded);
+
+  // Removes the state of the notification of |notification_id|.
+  void RemoveNotificationExpanded(const std::string& notification_id);
+
+  // Clears all changes by SetNotificatinExpanded().
+  void ClearNotificationChanges();
+
   float display_brightness() const { return display_brightness_; }
   float keyboard_brightness() const { return keyboard_brightness_; }
 
@@ -55,6 +71,11 @@ class ASH_EXPORT UnifiedSystemTrayModel {
 
   // The last value of the keyboard brightness slider. Between 0.0 and 1.0.
   float keyboard_brightness_ = 1.f;
+
+  // Stores Manual changes to notification expanded / collapsed state in order
+  // to restore on reopen.
+  // <notification ID, if notification is manually expanded>
+  std::map<std::string, bool> notification_changes_;
 
   std::unique_ptr<DBusObserver> dbus_observer_;
 

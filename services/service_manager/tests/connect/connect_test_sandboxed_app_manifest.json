@@ -2,7 +2,6 @@
   "name": "connect_test_sandboxed_app",
   "display_name": "Sandboxed Connect Test App",
   "sandbox_type": "superduper",
-  "options": { "can_connect_to_other_services_as_any_user": true },
   "interface_provider_specs": {
     "service_manager:connector": {
     }

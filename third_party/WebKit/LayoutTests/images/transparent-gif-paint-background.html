@@ -1,0 +1,25 @@
+<!doctype HTML>
+<!doctype HTML>
+<style>
+img {
+  display: block;
+  background-color: blue;
+}
+</style>
+Test passes if green is seen.
+<!-- This is a 100x100 fully transparent gif -->
+<img id="image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="100" height="100"/>
+<script>
+  if (window.testRunner)
+    window.testRunner.waitUntilDone();
+  onload = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const image = document.getElementById("image");
+        image.style.backgroundColor = 'green';
+        if (window.testRunner)
+          window.testRunner.notifyDone();
+      });
+    });
+  };
+</script>

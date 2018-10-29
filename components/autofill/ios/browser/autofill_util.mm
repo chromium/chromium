@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -14,11 +18,19 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/ios/browser/autofill_switches.h"
 #import "ios/web/public/navigation_item.h"
 #import "ios/web/public/navigation_manager.h"
 #include "ios/web/public/ssl_status.h"
+#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace {
+// The timeout for any JavaScript call in this file.
+// It is only used if IsAutofillIFrameMessagingEnabled is enabled.
+const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+}
 
 namespace autofill {
 
@@ -54,7 +66,8 @@ std::unique_ptr<base::Value> ParseJson(NSString* json_string) {
 bool ExtractFormsData(NSString* forms_json,
                       bool filtered,
                       const base::string16& form_name,
-                      const GURL& page_url,
+                      const GURL& main_frame_url,
+                      const GURL& frame_origin,
                       std::vector<FormData>* forms_data) {
   DCHECK(forms_data);
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
@@ -70,7 +83,8 @@ bool ExtractFormsData(NSString* forms_json,
   // AutofillManager structures.
   for (const auto& form_dict : *forms_list) {
     autofill::FormData form;
-    if (ExtractFormData(form_dict, filtered, form_name, page_url, &form))
+    if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
+                        frame_origin, &form))
       forms_data->push_back(std::move(form));
   }
   return true;
@@ -79,7 +93,8 @@ bool ExtractFormsData(NSString* forms_json,
 bool ExtractFormData(const base::Value& form_value,
                      bool filtered,
                      const base::string16& form_name,
-                     const GURL& page_url,
+                     const GURL& main_frame_url,
+                     const GURL& form_frame_origin,
                      autofill::FormData* form_data) {
   DCHECK(form_data);
   // Each form should be a JSON dictionary.
@@ -98,13 +113,13 @@ bool ExtractFormData(const base::Value& form_value,
   if (!form_dictionary->GetString("origin", &origin))
     return false;
 
-  // Use GURL object to verify origin of host page URL.
+  // Use GURL object to verify origin of host frame URL.
   form_data->origin = GURL(origin);
-  if (form_data->origin.GetOrigin() != page_url.GetOrigin())
+  if (form_data->origin.GetOrigin() != form_frame_origin)
     return false;
 
   // main_frame_origin is used for logging UKM.
-  form_data->main_frame_origin = url::Origin::Create(page_url);
+  form_data->main_frame_origin = url::Origin::Create(main_frame_url);
 
   // Action is optional.
   base::string16 action;
@@ -191,6 +206,80 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   }
 
   return field_data->option_values.size() == field_data->option_contents.size();
+}
+
+void ExecuteJavaScriptFunction(const std::string& name,
+                               const std::vector<base::Value>& parameters,
+                               web::WebFrame* frame,
+                               CRWJSInjectionReceiver* js_injection_receiver,
+                               base::OnceCallback<void(NSString*)> callback) {
+  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
+    ExecuteJavaScriptFunctionInWebFrame(name, parameters, frame,
+                                        std::move(callback));
+  } else {
+    ExecuteJavaScriptFunctionInWebState(name, parameters, js_injection_receiver,
+                                        std::move(callback));
+  }
+}
+
+void ExecuteJavaScriptFunctionInWebFrame(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    web::WebFrame* frame,
+    base::OnceCallback<void(NSString*)> cb) {
+  __block base::OnceCallback<void(NSString*)> callback = std::move(cb);
+
+  if (!frame) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(nil);
+    }
+    return;
+  }
+  DCHECK(frame->CanCallJavaScriptFunction());
+  if (!callback.is_null()) {
+    bool called = frame->CallJavaScriptFunction(
+        name, parameters, base::BindOnce(^(const base::Value* res) {
+          NSString* result = nil;
+          if (res && res->is_string()) {
+            result = base::SysUTF8ToNSString(res->GetString());
+          }
+          std::move(callback).Run(result);
+        }),
+        base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+    if (!called) {
+      std::move(callback).Run(nil);
+    }
+  } else {
+    frame->CallJavaScriptFunction(name, parameters);
+  }
+}
+
+void ExecuteJavaScriptFunctionInWebState(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    CRWJSInjectionReceiver* js_injection_receiver,
+    base::OnceCallback<void(NSString*)> cb) {
+  __block base::OnceCallback<void(NSString*)> callback = std::move(cb);
+
+  std::string function_name = "__gCrWeb." + name;
+  NSMutableArray* json_parameters = [[NSMutableArray alloc] init];
+  for (auto& value : parameters) {
+    std::string dataString;
+    base::JSONWriter::Write(value, &dataString);
+    [json_parameters addObject:base::SysUTF8ToNSString(dataString)];
+  }
+  NSString* command = [NSString
+      stringWithFormat:@"%s(%@);", function_name.c_str(),
+                       [json_parameters componentsJoinedByString:@", "]];
+  if (!callback.is_null()) {
+    [js_injection_receiver
+        executeJavaScript:command
+        completionHandler:^(id result, NSError* error) {
+          std::move(callback).Run(base::mac::ObjCCastStrict<NSString>(result));
+        }];
+  } else {
+    [js_injection_receiver executeJavaScript:command completionHandler:nil];
+  }
 }
 
 }  // namespace autofill

@@ -46,37 +46,29 @@ void MockAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {
 
 bool MockAckHandler::IsUnacked(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
-  InvalidationVector::const_iterator it = std::find_if(
-      unacked_invalidations_.begin(),
-      unacked_invalidations_.end(),
-      matcher);
+  auto it = std::find_if(unacked_invalidations_.begin(),
+                         unacked_invalidations_.end(), matcher);
   return it != unacked_invalidations_.end();
 }
 
 bool MockAckHandler::IsAcknowledged(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
-  InvalidationVector::const_iterator it = std::find_if(
-      acked_invalidations_.begin(),
-      acked_invalidations_.end(),
-      matcher);
+  auto it = std::find_if(acked_invalidations_.begin(),
+                         acked_invalidations_.end(), matcher);
   return it != acked_invalidations_.end();
 }
 
 bool MockAckHandler::IsDropped(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
-  InvalidationVector::const_iterator it = std::find_if(
-      dropped_invalidations_.begin(),
-      dropped_invalidations_.end(),
-      matcher);
+  auto it = std::find_if(dropped_invalidations_.begin(),
+                         dropped_invalidations_.end(), matcher);
   return it != dropped_invalidations_.end();
 }
 
 bool MockAckHandler::IsUnsent(const Invalidation& invalidation) const {
   AckHandleMatcher matcher(invalidation.ack_handle());
-  InvalidationVector::const_iterator it1 = std::find_if(
-      unsent_invalidations_.begin(),
-      unsent_invalidations_.end(),
-      matcher);
+  auto it1 = std::find_if(unsent_invalidations_.begin(),
+                          unsent_invalidations_.end(), matcher);
   return it1 != unsent_invalidations_.end();
 }
 
@@ -88,16 +80,14 @@ void MockAckHandler::Acknowledge(
     const invalidation::ObjectId& id,
     const AckHandle& handle) {
   AckHandleMatcher matcher(handle);
-  InvalidationVector::iterator it = std::find_if(
-      unacked_invalidations_.begin(),
-      unacked_invalidations_.end(),
-      matcher);
+  auto it = std::find_if(unacked_invalidations_.begin(),
+                         unacked_invalidations_.end(), matcher);
   if (it != unacked_invalidations_.end()) {
     acked_invalidations_.push_back(*it);
     unacked_invalidations_.erase(it);
   }
 
-  IdHandleMap::iterator it2 = unrecovered_drop_events_.find(id);
+  auto it2 = unrecovered_drop_events_.find(id);
   if (it2 != unrecovered_drop_events_.end() && it2->second.Equals(handle)) {
     unrecovered_drop_events_.erase(it2);
   }
@@ -107,10 +97,8 @@ void MockAckHandler::Drop(
     const invalidation::ObjectId& id,
     const AckHandle& handle) {
   AckHandleMatcher matcher(handle);
-  InvalidationVector::iterator it = std::find_if(
-      unacked_invalidations_.begin(),
-      unacked_invalidations_.end(),
-      matcher);
+  auto it = std::find_if(unacked_invalidations_.begin(),
+                         unacked_invalidations_.end(), matcher);
   if (it != unacked_invalidations_.end()) {
     dropped_invalidations_.push_back(*it);
     unacked_invalidations_.erase(it);

@@ -1123,16 +1123,6 @@ def check_for_non_standard_constructs(clean_lines, line_number,
                   'The class %s probably needs a virtual destructor due to '
                   'having virtual method(s), one declared at line %d.'
                   % (classinfo.name, classinfo.virtual_method_line_number))
-        # Look for mixed bool and unsigned bitfields.
-        if classinfo.bool_bitfields and classinfo.unsigned_bitfields:
-            bool_list = ', '.join(classinfo.bool_bitfields)
-            unsigned_list = ', '.join(classinfo.unsigned_bitfields)
-            error(classinfo.line_number, 'runtime/bitfields', 5,
-                  'The class %s contains mixed unsigned and bool bitfields, '
-                  'which will pack into separate words on the MSVC compiler.\n'
-                  'Bool bitfields are [%s].\nUnsigned bitfields are [%s].\n'
-                  'Consider converting bool bitfields to unsigned.'
-                  % (classinfo.name, bool_list, unsigned_list))
     else:
         classinfo.brace_depth = brace_depth
 

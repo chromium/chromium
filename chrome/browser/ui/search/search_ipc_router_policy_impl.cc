@@ -58,6 +58,10 @@ bool SearchIPCRouterPolicyImpl::ShouldProcessResetCustomLinks() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
 
+bool SearchIPCRouterPolicyImpl::ShouldProcessDoesUrlResolve() {
+  return !is_incognito_ && search::IsInstantNTP(web_contents_);
+}
+
 bool SearchIPCRouterPolicyImpl::ShouldProcessLogEvent() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }

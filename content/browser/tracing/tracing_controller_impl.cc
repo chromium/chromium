@@ -49,6 +49,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/win/windows_version.h"
 #include "content/browser/tracing/etw_tracing_agent_win.h"
 #endif
 
@@ -189,24 +190,26 @@ TracingControllerImpl::GenerateMetadataDict() const {
   if (soname)
     metadata_dict->SetString("chrome-library-name", soname.value());
 #endif  // defined(OS_ANDROID)
+  metadata_dict->SetInteger("chrome-bitness", 8 * sizeof(uintptr_t));
 
   // OS
 #if defined(OS_CHROMEOS)
   metadata_dict->SetString("os-name", "CrOS");
-  int32_t major_version;
-  int32_t minor_version;
-  int32_t bugfix_version;
-  // OperatingSystemVersion only has a POSIX implementation which returns the
-  // wrong versions for CrOS.
-  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
-                                               &bugfix_version);
-  metadata_dict->SetString(
-      "os-version", base::StringPrintf("%d.%d.%d", major_version, minor_version,
-                                       bugfix_version));
 #else
   metadata_dict->SetString("os-name", base::SysInfo::OperatingSystemName());
+#endif
   metadata_dict->SetString("os-version",
                            base::SysInfo::OperatingSystemVersion());
+#if defined(OS_WIN)
+  if (base::win::OSInfo::GetInstance()->architecture() ==
+      base::win::OSInfo::X64_ARCHITECTURE) {
+    if (base::win::OSInfo::GetInstance()->wow64_status() ==
+        base::win::OSInfo::WOW64_ENABLED) {
+      metadata_dict->SetString("os-wow64", "enabled");
+    } else {
+      metadata_dict->SetString("os-wow64", "disabled");
+    }
+  }
 #endif
   metadata_dict->SetString("os-arch",
                            base::SysInfo::OperatingSystemArchitecture());
@@ -284,11 +287,10 @@ TracingControllerImpl* TracingControllerImpl::GetInstance() {
   return g_tracing_controller;
 }
 
-bool TracingControllerImpl::GetCategories(
-    const GetCategoriesDoneCallback& callback) {
+bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  coordinator_->GetCategories(base::BindRepeating(
-      [](const GetCategoriesDoneCallback& callback, bool success,
+  coordinator_->GetCategories(base::BindOnce(
+      [](GetCategoriesDoneCallback callback, bool success,
          const std::string& categories) {
         const std::vector<std::string> split = base::SplitString(
             categories, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -296,9 +298,9 @@ bool TracingControllerImpl::GetCategories(
         for (const auto& category : split) {
           category_set.insert(category);
         }
-        callback.Run(category_set);
+        std::move(callback).Run(category_set);
       },
-      callback));
+      std::move(callback)));
   // TODO(chiniforooshan): The actual success value should be sent by the
   // callback asynchronously.
   return true;
@@ -306,7 +308,7 @@ bool TracingControllerImpl::GetCategories(
 
 bool TracingControllerImpl::StartTracing(
     const base::trace_event::TraceConfig& trace_config,
-    const StartTracingDoneCallback& callback) {
+    StartTracingDoneCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(chiniforooshan): The actual value should be received by callback and
   // this function should return void.
@@ -331,12 +333,12 @@ bool TracingControllerImpl::StartTracing(
       std::make_unique<base::trace_event::TraceConfig>(trace_config);
   coordinator_->StartTracing(
       trace_config.ToString(),
-      base::BindRepeating(
-          [](const StartTracingDoneCallback& callback, bool success) {
+      base::BindOnce(
+          [](StartTracingDoneCallback callback, bool success) {
             if (!callback.is_null())
-              callback.Run();
+              std::move(callback).Run();
           },
-          callback));
+          std::move(callback)));
   // TODO(chiniforooshan): The actual success value should be sent by the
   // callback asynchronously.
   return true;
@@ -379,15 +381,15 @@ bool TracingControllerImpl::StopTracing(
 }
 
 bool TracingControllerImpl::GetTraceBufferUsage(
-    const GetTraceBufferUsageCallback& callback) {
+    GetTraceBufferUsageCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  coordinator_->RequestBufferUsage(base::BindRepeating(
-      [](const GetTraceBufferUsageCallback& callback, bool success,
-         float percent_full, uint32_t approximate_count) {
-        callback.Run(percent_full, approximate_count);
+  coordinator_->RequestBufferUsage(base::BindOnce(
+      [](GetTraceBufferUsageCallback callback, bool success, float percent_full,
+         uint32_t approximate_count) {
+        std::move(callback).Run(percent_full, approximate_count);
       },
-      callback));
+      std::move(callback)));
   // TODO(chiniforooshan): The actual success value should be sent by the
   // callback asynchronously.
   return true;
@@ -403,7 +405,7 @@ void TracingControllerImpl::RegisterTracingUI(TracingUI* tracing_ui) {
 }
 
 void TracingControllerImpl::UnregisterTracingUI(TracingUI* tracing_ui) {
-  std::set<TracingUI*>::iterator it = tracing_uis_.find(tracing_ui);
+  auto it = tracing_uis_.find(tracing_ui);
   DCHECK(it != tracing_uis_.end());
   tracing_uis_.erase(it);
 }

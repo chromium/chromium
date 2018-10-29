@@ -117,6 +117,13 @@ policies](https://www.chromium.org/for-testers/bug-reporting-guidelines/triage-b
 *Priority-3* are bugs not time sensitive.  There is an even-lower-priority
 state; see the *NextAction=01/08/2019* below.
 
+If you aren't sure of the scope, severity, or implications of an issue, prefer
+to assign it a higher priority (*1* or *2*) and try to assign it to someone
+appropriate to look into further or at least identify the scope / true priority.
+If you cannot identify a person to assign it to, it would be better to leave it
+*Untriaged* for the next triage engineer than mark it *Available* just to try to
+clear the queue.
+
 ### Owners
 
 Generally only assign someone else to own a bug if the bug is *Priority-2* or

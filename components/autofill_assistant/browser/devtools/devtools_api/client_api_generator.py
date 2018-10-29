@@ -269,6 +269,8 @@ type_definitions['number'] = CreatePrimitiveTypeDefinition('number')
 type_definitions['integer'] = CreatePrimitiveTypeDefinition('integer')
 type_definitions['boolean'] = CreatePrimitiveTypeDefinition('boolean')
 type_definitions['string'] = CreateStringTypeDefinition()
+# TODO(johannes): Support protocol::Binary (http://crbug.com/896940).
+type_definitions['binary'] = CreateStringTypeDefinition()
 type_definitions['object'] = CreateObjectTypeDefinition()
 type_definitions['any'] = CreateAnyTypeDefinition()
 
@@ -311,6 +313,9 @@ def CreateTypeDefinitions(json_api):
         type_definitions[domain['domain'] + '.' + type['id']] = (
             CreateAnyTypeDefinition())
       elif type['type'] == 'string':
+        type_definitions[domain['domain'] + '.' + type['id']] = (
+            CreateStringTypeDefinition())
+      elif type['type'] == 'binary':
         type_definitions[domain['domain'] + '.' + type['id']] = (
             CreateStringTypeDefinition())
       else:

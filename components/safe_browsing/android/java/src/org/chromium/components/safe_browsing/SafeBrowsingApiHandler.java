@@ -37,9 +37,24 @@ public interface SafeBrowsingApiHandler {
      * Verifies that SafeBrowsingApiHandler can operate and initializes if feasible.
      * Should be called on the same sequence as |startUriLookup|.
      *
-     * @return the handler if it's usable, or null if the API is not supported.
+     * @param observer The object on which to call the callback functions when URL checking
+     * is complete.
+     *
+     * @return whether Safe Browsing is supported for this installation.
      */
     public boolean init(Observer result);
+
+    /**
+     * Verifies that SafeBrowsingApiHandler can operate and initializes if feasible.
+     * Should be called on the same sequence as |startUriLookup|.
+     *
+     * @param observer The object on which to call the callback functions when URL checking
+     * is complete.
+     * @param enableLocalBlacklists specifies if the feature to use local blacklists is enabled.
+     *
+     * @return whether Safe Browsing is supported for this installation.
+     */
+    public boolean init(Observer result, boolean enableLocalBlacklists);
 
     /**
      * Start a URI-lookup to determine if it matches one of the specified threats.
