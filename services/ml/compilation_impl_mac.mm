@@ -129,7 +129,12 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
         success = CompileArithmetic(operation, constants_, values_, memory_);
       }
     } else if (type == mojom::FULLY_CONNECTED) {
-      success = CompileFullyConnected(operation, operands_, values_, memory_);
+      if (is_bnns_) {
+        success =
+            CompileFullyConnectedBNNS(operation, values_, memory_, operands_);
+      } else {
+        success = CompileFullyConnected(operation, operands_, values_, memory_);
+      }
     } else {
       DLOG(ERROR) << "Operation is not supported";
       success = false;

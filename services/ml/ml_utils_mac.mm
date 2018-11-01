@@ -24,6 +24,7 @@ bool ParameterExtracterForConv(const OperationMac& operation,
                                const std::map<uint32_t, ValueInfo>& values,
                                const std::unique_ptr<int8_t[]>& memory,
                                const std::vector<OperandMac>& operands,
+                               int32_t& input_batch_size,
                                int32_t& input_width,
                                int32_t& input_height,
                                int32_t& output_width,
@@ -52,6 +53,7 @@ bool ParameterExtracterForConv(const OperationMac& operation,
   const OperandMac& input = operands[input_idx];
   // depth_in is the fourth dimension of input that shape is
   // [batches, height, width, depth_in].
+  input_batch_size = input.dimensions[0];
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
   depth_in = input.dimensions[3];

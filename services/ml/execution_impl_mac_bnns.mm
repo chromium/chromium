@@ -184,7 +184,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
             }
 
             if (operation.local_operation == KBNNSFilter) {
-              const int32_t input_batch_size = operation_input.dimensions[0];
+              const int32_t input_batch_size = operation.input_batch_size;
               int result;
               if (input_batch_size == 1) {
                 result = BNNSFilterApply(operation.filter, src, des);

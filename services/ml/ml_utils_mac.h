@@ -46,6 +46,7 @@ struct OperationMac : public Operation {
   LocalOperation local_operation;
 
   int fuse_code;
+  int input_batch_size;
   uint32_t offset_x;
   uint32_t offset_y;
   std::vector<float*> concatenations;
@@ -57,6 +58,7 @@ bool ParameterExtracterForConv(const OperationMac&,
                                const std::map<uint32_t, ValueInfo>& values,
                                const std::unique_ptr<int8_t[]>& memory,
                                const std::vector<OperandMac>& operands,
+                               int32_t&,
                                int32_t&,
                                int32_t&,
                                int32_t&,

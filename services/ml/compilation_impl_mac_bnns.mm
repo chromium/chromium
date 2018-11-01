@@ -53,7 +53,8 @@ bool CompileConv2DBNNS(OperationMac& operation,
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
                      operation.type != mojom::DEPTHWISE_CONV_2D);
-  int32_t input_width, input_height, output_width, output_height;
+  int32_t input_batch_size, input_width, input_height, output_width,
+      output_height;
   bool implicit_padding = false;
   int32_t padding_left, padding_right, padding_top, padding_bottom;
   int32_t stride_width, stride_height;
@@ -64,11 +65,11 @@ bool CompileConv2DBNNS(OperationMac& operation,
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   ParameterExtracterForConv(
-      operation, inputs, outputs, values, memory, operands, input_width,
-      input_height, output_width, output_height, implicit_padding, padding_left,
-      padding_right, padding_top, padding_bottom, stride_width, stride_height,
-      padding_code, fuse_code, depth_out, filter_height, filter_width, depth_in,
-      depthwise_multiplier);
+      operation, inputs, outputs, values, memory, operands, input_batch_size,
+      input_width, input_height, output_width, output_height, implicit_padding,
+      padding_left, padding_right, padding_top, padding_bottom, stride_width,
+      stride_height, padding_code, fuse_code, depth_out, filter_height,
+      filter_width, depth_in, depthwise_multiplier);
 
   DLOG(INFO) << "FILTER_HEIGHT: " << filter_height;
   DLOG(INFO) << "FILTER_WIDTH: " << filter_width;
@@ -92,6 +93,7 @@ bool CompileConv2DBNNS(OperationMac& operation,
   DLOG(INFO) << "  fuse_code: " << fuse_code;
 
   if (@available(macOS 10.13, *)) {
+    operation.input_batch_size = input_batch_size;
     operation.fuse_code = fuse_code;
 
     // build conv weights BNNSLayerData structure
@@ -221,9 +223,11 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
   int32_t i = 0;
   int32_t input_idx = inputs[i++];
   const OperandMac& input = operands[input_idx];
+  const int32_t input_batch_size = input.dimensions[0];
   const int32_t input_height = input.dimensions[1];
   const int32_t input_width = input.dimensions[2];
   const int32_t depth_in = input.dimensions[3];
+  operation.input_batch_size = input_batch_size;
 
   DLOG(INFO) << "  input_height: " << input_height
              << " input_width: " << input_width;
@@ -373,6 +377,8 @@ bool CompileSoftmaxBNNS(OperationMac& operation,
   operation.offset_x = 0;
   operation.offset_y = 0;
 
+  operation.input_batch_size = input.dimensions[0];
+
   if (@available(macOS 10.13, *)) {
     BNNSVectorDescriptor in_desc, out_desc;
     int32_t size = 1;
@@ -444,4 +450,115 @@ bool CompileConcatenationBNNS(OperationMac& concat,
   return true;
 }
 
+bool CompileFullyConnectedBNNS(OperationMac& operation,
+                               const std::map<uint32_t, ValueInfo>& values,
+                               const std::unique_ptr<int8_t[]>& memory,
+                               const std::vector<OperandMac>& operands) {
+  DLOG(INFO) << "CompilationImplMac::CompileFullyConnectedBNNS";
+  DLOG_IF(FATAL, operation.type != mojom::FULLY_CONNECTED);
+  int32_t in_size, out_size;
+  const std::vector<uint32_t> inputs = operation.inputs;
+  const std::vector<uint32_t> outputs = operation.outputs;
+  const OperandMac& output = operands[outputs[0]];
+  const int32_t output_size = output.dimensions[1];
+
+  int32_t i = 0;
+  const OperandMac& input = operands[inputs[i++]];
+  if (input.dimensions.size() < 2 || input.dimensions.size() > 4) {
+    DLOG(ERROR) << "A tensor of least rank 2 and up to 4";
+    return false;
+  }
+  const uint32_t weights_idx = inputs[i++];
+  const Operand& weights = operands[weights_idx];
+  const int32_t num_unit = weights.dimensions[0];
+  const int32_t input_size = weights.dimensions[1];
+
+  int32_t input_batch_size = 1;
+  if (input.dimensions.size() > 2) {
+    input_batch_size = product(input.dimensions) / input_size;
+  } else {
+    input_batch_size = input.dimensions[0];
+  }
+  operation.input_batch_size = input_batch_size;
+
+  operation.offset_x = 0;
+  operation.offset_y = 0;
+  DLOG(INFO) << "  num_unit: " << num_unit;
+  DLOG(INFO) << "  input_batch_size: " << input_batch_size;
+  DLOG(INFO) << "  input_size: " << in_size;
+  DLOG(INFO) << "  output_size: " << out_size;
+
+  if (@available(macOS 10.13, *)) {
+    BNNSFilterParameters filter_params;
+    bzero(&filter_params, sizeof(filter_params));
+
+    ValueInfo weights_value_info = values.at(weights_idx);
+    const float* source_weights = reinterpret_cast<const float*>(
+        memory.get() + weights_value_info.offset);
+    ValueInfo bias_value_info = values.at(inputs[i++]);
+    const float* source_bias =
+        reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
+
+    int32_t fuse_code;
+    fuse_code = getScalarInt32(values, inputs[i++], memory.get());
+    DLOG(INFO) << "  Fuse_code: " << fuse_code;
+    BNNSActivation activation;
+    bzero(&activation, sizeof(activation));
+    if (fuse_code == mojom::FUSED_RELU) {
+      activation.function = BNNSActivationFunctionRectifiedLinear;
+    } else if (fuse_code == mojom::FUSED_RELU1) {
+      activation.function = BNNSActivationFunctionClamp;
+      activation.alpha = -1;
+      activation.beta = 1;
+    } else if (fuse_code == mojom::FUSED_RELU6) {
+      activation.function = BNNSActivationFunctionClamp;
+      activation.alpha = 0;
+      activation.beta = 6;
+    }
+
+    BNNSLayerData connected_weights;
+    connected_weights.data = source_weights;
+    connected_weights.data_type = BNNSDataTypeFloat32;
+    // we can just ignore data_scale, data_bias and data_table
+    // for the data type in float32
+    connected_weights.data_scale = 0.0;
+    connected_weights.data_bias = 0.0;
+    connected_weights.data_table = nullptr;
+
+    BNNSLayerData connected_bias;
+    connected_bias.data = source_bias;
+    connected_bias.data_type = BNNSDataTypeFloat32;
+    // we can just ignore data_scale, data_bias and data_table
+    // for the data type in float32
+    connected_bias.data_scale = 0.0;
+    connected_bias.data_bias = 0.0;
+    connected_bias.data_table = nullptr;
+
+    BNNSFullyConnectedLayerParameters connected_params;
+    connected_params.in_size = input_size;
+    connected_params.out_size = output_size;
+    connected_params.weights = connected_weights;
+    connected_params.bias = connected_bias;
+    connected_params.activation = activation;
+
+    BNNSVectorDescriptor in_desc, out_desc;
+    in_desc.size = input_size;
+    in_desc.data_type = BNNSDataTypeFloat32;
+    in_desc.data_scale = 0;
+    in_desc.data_bias = 0;
+
+    out_desc.size = output_size;
+    out_desc.data_type = BNNSDataTypeFloat32;
+    out_desc.data_scale = 0;
+    out_desc.data_bias = 0;
+
+    operation.filter = BNNSFilterCreateFullyConnectedLayer(
+        &in_desc, &out_desc, &connected_params, &filter_params);
+    if (operation.filter == nullptr) {
+      LOG(ERROR) << "BNNS Fail to Create FullyConnctedLayer";
+      return false;
+    }
+  }
+  return true;
+}
 }  // namespace ml

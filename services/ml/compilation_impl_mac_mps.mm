@@ -166,7 +166,8 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
                      operation.type != mojom::DEPTHWISE_CONV_2D);
-  int32_t input_width, input_height, output_width, output_height;
+  int32_t input_batch_size, input_width, input_height, output_width,
+      output_height;
   bool implicit_padding;
   int32_t padding_left, padding_right, padding_top, padding_bottom;
   int32_t stride_width, stride_height;
@@ -178,12 +179,12 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   if (!ParameterExtracterForConv(
-          operation, inputs, outputs, values, memory, operands, input_width,
-          input_height, output_width, output_height, implicit_padding,
-          padding_left, padding_right, padding_top, padding_bottom,
-          stride_width, stride_height, padding_code, fuse_code, depth_out,
-          filter_height, filter_width, depth_in, depthwise_multiplier,
-          depthwise))
+          operation, inputs, outputs, values, memory, operands,
+          input_batch_size, input_width, input_height, output_width,
+          output_height, implicit_padding, padding_left, padding_right,
+          padding_top, padding_bottom, stride_width, stride_height,
+          padding_code, fuse_code, depth_out, filter_height, filter_width,
+          depth_in, depthwise_multiplier, depthwise))
     return false;
 
   DLOG(INFO) << "  implicit_padding: " << implicit_padding;

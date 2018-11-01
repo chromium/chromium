@@ -36,6 +36,10 @@ bool CompileConcatenationBNNS(OperationMac& operation,
                               const std::unique_ptr<int8_t[]>& memory,
                               bool is_concatenation_first);
 
+bool CompileFullyConnectedBNNS(OperationMac&,
+                               const std::map<uint32_t, ValueInfo>& values,
+                               const std::unique_ptr<int8_t[]>& memory,
+                               const std::vector<OperandMac>& operands);
 }  // namespace ml
 
 #endif  // SERVICES_ML_COMPILATION_IMPL_MAC_BNNS_H_
