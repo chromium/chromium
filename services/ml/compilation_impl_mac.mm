@@ -780,7 +780,7 @@ namespace ml {
       activation.function = BNNSActivationFunctionRectifiedLinear;
     } else if (fuse_code == mojom::FUSED_RELU1) {
       activation.function = BNNSActivationFunctionClamp;
-      activation.alpha = 0;
+      activation.alpha = -1;
       activation.beta = 1;
     }
 
@@ -995,7 +995,7 @@ namespace ml {
         activation.function = BNNSActivationFunctionRectifiedLinear;
       } else if (fuse_code == mojom::FUSED_RELU1) {
         activation.function = BNNSActivationFunctionClamp;
-        activation.alpha = 0;
+        activation.alpha = -1;
         activation.beta = 1;
       }
       pool.x_stride = stride_width;
