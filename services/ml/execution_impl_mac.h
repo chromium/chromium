@@ -13,11 +13,12 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/common.h"
 #include "services/ml/compilation_impl_mac.h"
+#include "services/ml/ml_utils_mac.h"
 #include "services/ml/model_impl_mac.h"
+#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/interfaces/execution.mojom.h"
 
 @class MPSImage;
 @class MPSTemporaryImage;

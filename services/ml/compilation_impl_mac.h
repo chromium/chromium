@@ -5,55 +5,21 @@
 #ifndef SERVICES_ML_COMPILATION_IMPL_MAC_H_
 #define SERVICES_ML_COMPILATION_IMPL_MAC_H_
 
-#import <Accelerate/Accelerate.h>
 #include <map>
 #include <memory>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/common.h"
+#include "services/ml/ml_utils_mac.h"
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/public/interfaces/compilation.mojom.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
-@class MPSCNNKernel;
-@class MPSCNNBinaryKernel;
-
 namespace ml {
 
 class ExecutionImplMac;
-
-typedef enum LocalOperation {
-  KBNNSFilter = 1,
-  KReshape = 2,
-  KConcatenation = 3,
-} LocalOperation;
-
-struct OperandMac : public Operand {
-  OperandMac();
-  explicit OperandMac(const OperandMac&);
-  explicit OperandMac(const Operand&);
-  ~OperandMac();
-  uint32_t read_count;
-};
-
-struct OperationMac : public Operation {
-  OperationMac();
-  explicit OperationMac(const OperationMac&);
-  explicit OperationMac(const Operation&);
-  ~OperationMac();
-  base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
-  base::scoped_nsobject<MPSCNNBinaryKernel> mpscnn_binary_kernel;
-  ::BNNSFilter filter;
-  LocalOperation local_operation;
-
-  int fuse_code;
-  uint32_t offset_x;
-  uint32_t offset_y;
-  std::vector<float*> concatenations;
-};
 
 class CompilationImplMac : public mojom::Compilation {
  public:
@@ -62,43 +28,6 @@ class CompilationImplMac : public mojom::Compilation {
 
   void Finish(int32_t preference, FinishCallback callback) override;
   void CreateExecution(CreateExecutionCallback callback) override;
-
- private:
-  bool ParameterExtracterForConv(const OperationMac&,
-                                 const std::vector<uint32_t>&,
-                                 const std::vector<uint32_t>&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 bool&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 int32_t&,
-                                 bool depthwise = false);
-  bool CompileConv2DOrDepthwiseConv2D(OperationMac&);
-  bool CompileAverageOrMaxPool2D(OperationMac&);
-  bool CompileSoftmax(OperationMac&);
-  bool CompileReshape(OperationMac&);
-  bool CompileConcatenation(OperationMac&);
-  bool CompileArithmetic(OperationMac&);
-  bool CompileConv2DBNNS(OperationMac&);
-  bool CompileAverageOrMaxPool2DBNNS(OperationMac&);
-  bool CompileSoftmaxBNNS(OperationMac&);
-  bool CompileReshapeBNNS(OperationMac&);
-  bool CompileConcatenationBNNS(OperationMac& operation,
-                                bool is_concatenation_first);
 
  private:
   friend class ExecutionImplMac;
