@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/common.h"
+#include "base/memory/weak_ptr.h"
 #include "services/ml/ml_utils_mac.h"
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/public/interfaces/compilation.mojom.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
 
 namespace ml {
 
@@ -30,7 +28,8 @@ class CompilationImplMac : public mojom::Compilation {
   void CreateExecution(CreateExecutionCallback callback) override;
 
  private:
-  friend class ExecutionImplMac;
+  friend class ExecutionImplMacBNNS;
+  friend class ExecutionImplMacMPS;
   std::vector<OperandMac> operands_;
   std::vector<OperationMac> operations_;
   std::map<uint32_t, ValueInfo> values_;
@@ -41,6 +40,7 @@ class CompilationImplMac : public mojom::Compilation {
   uint32_t memory_size_;
   bool is_bnns_;
   base::WeakPtrFactory<CompilationImplMac> compilation_factory_;
+
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);
 };
 

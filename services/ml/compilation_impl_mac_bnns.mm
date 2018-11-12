@@ -6,6 +6,7 @@
 
 #import <Accelerate/Accelerate.h>
 
+#include "base/logging.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
 namespace ml {

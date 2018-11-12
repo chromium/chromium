@@ -4,10 +4,13 @@
 
 #include "services/ml/compilation_impl_mac.h"
 
+#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_impl_mac_bnns.h"
 #include "services/ml/compilation_impl_mac_mps.h"
-#include "services/ml/execution_impl_mac.h"
+#include "services/ml/execution_impl_mac_bnns.h"
+#include "services/ml/execution_impl_mac_mps.h"
 #include "services/ml/mpscnn_context.h"
+#include "services/ml/public/interfaces/constants.mojom.h"
 
 namespace ml {
 
@@ -172,14 +175,24 @@ void CompilationImplMac::CreateExecution(CreateExecutionCallback callback) {
   init_params->memory =
       memory_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 
-  auto impl = std::make_unique<ExecutionImplMac>(
-      compilation_factory_.GetWeakPtr(), std::move(memory_handle));
-  if (!impl->IsValid()) {
-    std::move(callback).Run(mojom::BAD_DATA, nullptr);
-    return;
-  }
   mojom::ExecutionPtrInfo ptr_info;
-  mojo::MakeStrongBinding(std::move(impl), mojo::MakeRequest(&ptr_info));
+  if (is_bnns_) {
+    auto impl = std::make_unique<ExecutionImplMacBNNS>(
+        compilation_factory_.GetWeakPtr(), std::move(memory_handle));
+    if (!impl->IsValid()) {
+      std::move(callback).Run(mojom::BAD_DATA, nullptr);
+      return;
+    }
+    mojo::MakeStrongBinding(std::move(impl), mojo::MakeRequest(&ptr_info));
+  } else {
+    auto impl = std::make_unique<ExecutionImplMacMPS>(
+        compilation_factory_.GetWeakPtr(), std::move(memory_handle));
+    if (!impl->IsValid()) {
+      std::move(callback).Run(mojom::BAD_DATA, nullptr);
+      return;
+    }
+    mojo::MakeStrongBinding(std::move(impl), mojo::MakeRequest(&ptr_info));
+  }
   init_params->execution = std::move(ptr_info);
 
   std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));

@@ -78,6 +78,13 @@ bool ParameterExtracterForConv(const OperationMac&,
                                int32_t&,
                                bool depthwise = false);
 
+void SetupOperandInfoForOperands(
+    std::vector<std::unique_ptr<OperandInfo>>& opearnd_info_array,
+    std::vector<OperandMac>& operands,
+    const std::vector<uint32_t>& operands_index_array,
+    mojo::ScopedSharedBufferHandle& memory,
+    uint32_t& mapped_length);
+
 }  // namespace ml
 
 #endif  // SERVICES_ML_ML_UTILS_MAC_H_

@@ -6,6 +6,7 @@
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+#include "base/logging.h"
 #include "base/mac/availability.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "services/ml/mpscnn_context.h"

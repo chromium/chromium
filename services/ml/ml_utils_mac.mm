@@ -96,4 +96,21 @@ bool ParameterExtracterForConv(const OperationMac& operation,
   fuse_code = getScalarInt32(values[inputs[index++]], memory.get());
   return true;
 }
+
+void SetupOperandInfoForOperands(
+    std::vector<std::unique_ptr<OperandInfo>>& opearnd_info_array,
+    std::vector<OperandMac>& operands,
+    const std::vector<uint32_t>& operands_index_array,
+    mojo::ScopedSharedBufferHandle& memory,
+    uint32_t& mapped_length) {
+  for (size_t i = 0; i < operands_index_array.size(); ++i) {
+    const uint32_t length = operands[operands_index_array[i]].requiredSize();
+    mojo::ScopedSharedBufferMapping mapping =
+        memory->MapAtOffset(length, mapped_length);
+    std::unique_ptr<OperandInfo> info(
+        new OperandInfo(mapped_length, length, std::move(mapping)));
+    opearnd_info_array.push_back(std::move(info));
+    mapped_length += length;
+  }
+}
 }
