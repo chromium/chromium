@@ -86,30 +86,39 @@ bool InvalidOperandValue(size_t index,
   int32_t operand_type = operands[index]->type;
   WTF::ArrayBufferView::ViewType data_type = data->GetType();
 
+  bool invalid = false;
   switch (operand_type) {
     case NeuralNetworkContext::kFloat32:
+      if (data->byteLength() / data->TypeSize() > 1)
+        invalid = true;
+      FALLTHROUGH;
     case NeuralNetworkContext::kTensorFloat32:
       if (data_type != WTF::ArrayBufferView::kTypeFloat32)
-        return InvalidState("Data type is invalid.", exception_state);
+        invalid = true;
       break;
     case NeuralNetworkContext::kInt32:
+      if (data->byteLength() / data->TypeSize() > 1)
+        invalid = true;
+      FALLTHROUGH;
     case NeuralNetworkContext::kTensorInt32:
       if (data_type != WTF::ArrayBufferView::kTypeInt32)
-        return InvalidState("Data type is invalid.", exception_state);
+        invalid = true;
       break;
     case NeuralNetworkContext::kUint32:
-      if (data_type != WTF::ArrayBufferView::kTypeUint32)
-        return InvalidState("Data type is invalid.", exception_state);
+      if (data_type != WTF::ArrayBufferView::kTypeUint32 ||
+          data->byteLength() / data->TypeSize() > 1)
+        invalid = true;
       break;
     case NeuralNetworkContext::kTensorQuant8Asymm:
       if (data_type != WTF::ArrayBufferView::kTypeUint8)
-        return InvalidState("Data type is invalid.", exception_state);
+        invalid = true;
       break;
     default:
       NOTREACHED();
   }
 
-  return false;
+  return invalid ? InvalidState("Data type is invalid.", exception_state)
+                 : false;
 }
 
 }  // namespace
