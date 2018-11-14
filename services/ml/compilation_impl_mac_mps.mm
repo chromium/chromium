@@ -165,9 +165,9 @@ void API_AVAILABLE(macosx(10.13))
 }
 
 bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
-                                    std::map<uint32_t, ValueInfo>& values,
-                                    std::unique_ptr<int8_t[]>& memory,
-                                    std::vector<OperandMac>& operands) {
+                                    const std::map<uint32_t, ValueInfo>& values,
+                                    const std::unique_ptr<int8_t[]>& memory,
+                                    const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
                      operation.type != mojom::DEPTHWISE_CONV_2D);
@@ -280,9 +280,9 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
 }
 
 bool CompileAverageOrMaxPool2D(OperationMac& operation,
-                               std::map<uint32_t, ValueInfo>& values,
-                               std::unique_ptr<int8_t[]>& memory,
-                               std::vector<OperandMac>& operands) {
+                               const std::map<uint32_t, ValueInfo>& values,
+                               const std::unique_ptr<int8_t[]>& memory,
+                               const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileAverageOrMaxPool2D";
   DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D &&
                      operation.type != mojom::MAX_POOL_2D);
@@ -292,12 +292,12 @@ bool CompileAverageOrMaxPool2D(OperationMac& operation,
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   uint32_t output_idx = outputs[0];
-  OperandMac& output = operands[output_idx];
+  const OperandMac& output = operands[output_idx];
   const int32_t output_height = output.dimensions[1];
   const int32_t output_width = output.dimensions[2];
   int32_t i = 0;
   int32_t input_idx = inputs[i++];
-  OperandMac& input = operands[input_idx];
+  const OperandMac& input = operands[input_idx];
   const int32_t input_height = input.dimensions[1];
   const int32_t input_width = input.dimensions[2];
 
@@ -308,26 +308,26 @@ bool CompileAverageOrMaxPool2D(OperationMac& operation,
 
   if (inputs.size() == 10) {
     implicit_padding = false;
-    padding_left = getScalarInt32(values[inputs[i++]], memory.get());
-    padding_right = getScalarInt32(values[inputs[i++]], memory.get());
-    padding_top = getScalarInt32(values[inputs[i++]], memory.get());
-    padding_bottom = getScalarInt32(values[inputs[i++]], memory.get());
+    padding_left = getScalarInt32(values, inputs[i++], memory.get());
+    padding_right = getScalarInt32(values, inputs[i++], memory.get());
+    padding_top = getScalarInt32(values, inputs[i++], memory.get());
+    padding_bottom = getScalarInt32(values, inputs[i++], memory.get());
   } else if (inputs.size() == 7) {
     implicit_padding = true;
-    padding_code = getScalarInt32(values[inputs[i++]], memory.get());
+    padding_code = getScalarInt32(values, inputs[i++], memory.get());
   } else {
     DLOG(ERROR) << "  inputs size is incorrect";
     return false;
   }
   const int32_t stride_width =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t stride_height =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t filter_width =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t filter_height =
-      getScalarInt32(values[inputs[i++]], memory.get());
-  const int32_t fuse_code = getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
+  const int32_t fuse_code = getScalarInt32(values, inputs[i++], memory.get());
 
   DLOG(INFO) << "  implicit_padding: " << implicit_padding;
   if (implicit_padding) {
@@ -389,11 +389,11 @@ bool CompileAverageOrMaxPool2D(OperationMac& operation,
 }
 
 bool CompileSoftmax(OperationMac& operation,
-                    std::map<uint32_t, ValueInfo>& values,
-                    std::unique_ptr<int8_t[]>& memory) {
+                    const std::map<uint32_t, ValueInfo>& values,
+                    const std::unique_ptr<int8_t[]>& memory) {
   DLOG(INFO) << "CompilationImplMac::CompileSoftmax";
   DLOG_IF(FATAL, operation.type != mojom::SOFTMAX);
-  float beta = getScalarFloat(values[operation.inputs[1]], memory.get());
+  float beta = getScalarFloat(values, operation.inputs[1], memory.get());
   DLOG(INFO) << "  beta: " << beta;
   if (beta != 1.0) {
     DLOG(ERROR) << "  beta " << beta << " is not supported.";
@@ -408,8 +408,8 @@ bool CompileSoftmax(OperationMac& operation,
   return true;
 }
 
-bool CompileReshape(OperationMac& reshape,
-                    std::vector<OperationMac>& operations) {
+bool CompileReshape(std::vector<OperationMac>& operations,
+                    const OperationMac& reshape) {
   DLOG(INFO) << "CompilationImplMac::CompileReshape";
   DLOG_IF(FATAL, reshape.type != mojom::RESHAPE);
 
@@ -428,11 +428,11 @@ bool CompileReshape(OperationMac& reshape,
   return true;
 }
 
-bool CompileConcatenation(OperationMac& concat,
-                          std::map<uint32_t, ValueInfo>& values,
-                          std::unique_ptr<int8_t[]>& memory,
-                          std::vector<OperandMac>& operands,
-                          std::vector<OperationMac>& operations) {
+bool CompileConcatenation(std::vector<OperationMac>& operations,
+                          const OperationMac& concat,
+                          const std::map<uint32_t, ValueInfo>& values,
+                          const std::unique_ptr<int8_t[]>& memory,
+                          const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConcatenation";
   DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
 
@@ -440,7 +440,7 @@ bool CompileConcatenation(OperationMac& concat,
   std::vector<uint32_t> outputs = concat.outputs;
 
   uint32_t axis =
-      getScalarInt32(values[inputs[inputs.size() - 1]], memory.get());
+      getScalarInt32(values, inputs[inputs.size() - 1], memory.get());
   DLOG(INFO) << "axis: " << axis;
 
   if (axis != 3) {
@@ -454,7 +454,7 @@ bool CompileConcatenation(OperationMac& concat,
     uint32_t channelOffset = 0;
     for (size_t i = 0; i < inputs.size() - 1; ++i) {
       uint32_t concat_input_idx = inputs[i];
-      OperandMac& operand = operands[concat_input_idx];
+      const OperandMac& operand = operands[concat_input_idx];
       for (size_t j = 0; j < operations.size(); ++j) {
         OperationMac& operation = operations[j];
         if (operation.outputs[0] == concat_input_idx) {
@@ -499,8 +499,8 @@ bool CompileConcatenation(OperationMac& concat,
 }
 
 bool CompileArithmetic(OperationMac& operation,
-                       std::map<uint32_t, ValueInfo>& values,
-                       std::vector<uint32_t>& constants) {
+                       std::vector<uint32_t>& constants,
+                       const std::map<uint32_t, ValueInfo>& values) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 

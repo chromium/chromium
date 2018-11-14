@@ -47,9 +47,9 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
 }
 
 bool CompileConv2DBNNS(OperationMac& operation,
-                       std::map<uint32_t, ValueInfo>& values,
-                       std::unique_ptr<int8_t[]>& memory,
-                       std::vector<OperandMac>& operands) {
+                       const std::map<uint32_t, ValueInfo>& values,
+                       const std::unique_ptr<int8_t[]>& memory,
+                       const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
                      operation.type != mojom::DEPTHWISE_CONV_2D);
@@ -203,9 +203,9 @@ bool CompileConv2DBNNS(OperationMac& operation,
 }
 
 bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
-                                   std::map<uint32_t, ValueInfo>& values,
-                                   std::unique_ptr<int8_t[]>& memory,
-                                   std::vector<OperandMac>& operands) {
+                                   const std::map<uint32_t, ValueInfo>& values,
+                                   const std::unique_ptr<int8_t[]>& memory,
+                                   const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileAverageOrMaxPool2DBnns";
   DLOG_IF(FATAL, operation.type != mojom::AVERAGE_POOL_2D &&
                      operation.type != mojom::MAX_POOL_2D);
@@ -216,13 +216,13 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
   uint32_t output_idx = outputs[0];
-  OperandMac& output = operands[output_idx];
+  const OperandMac& output = operands[output_idx];
   const int32_t output_height = output.dimensions[1];
   const int32_t output_width = output.dimensions[2];
   const int32_t depth_out = output.dimensions[3];
   int32_t i = 0;
   int32_t input_idx = inputs[i++];
-  OperandMac& input = operands[input_idx];
+  const OperandMac& input = operands[input_idx];
   const int32_t input_height = input.dimensions[1];
   const int32_t input_width = input.dimensions[2];
   const int32_t depth_in = input.dimensions[3];
@@ -235,13 +235,13 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
   if (inputs.size() == 10) {
     implicit_padding = false;
     const int32_t padding_left =
-        getScalarInt32(values[inputs[i++]], memory.get());
+        getScalarInt32(values, inputs[i++], memory.get());
     const int32_t padding_right =
-        getScalarInt32(values[inputs[i++]], memory.get());
+        getScalarInt32(values, inputs[i++], memory.get());
     const int32_t padding_top =
-        getScalarInt32(values[inputs[i++]], memory.get());
+        getScalarInt32(values, inputs[i++], memory.get());
     const int32_t padding_bottom =
-        getScalarInt32(values[inputs[i++]], memory.get());
+        getScalarInt32(values, inputs[i++], memory.get());
 
     // bnns only accept x_padding and y_padding
     x_padding = padding_left;
@@ -252,21 +252,21 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
     DLOG(INFO) << "  padding_bottom: " << padding_bottom;
   } else if (inputs.size() == 7) {
     implicit_padding = true;
-    padding_code = getScalarInt32(values[inputs[i++]], memory.get());
+    padding_code = getScalarInt32(values, inputs[i++], memory.get());
   } else {
     DLOG(ERROR) << "  inputs size is incorrect";
     return false;
   }
 
   const int32_t stride_width =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t stride_height =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t filter_width =
-      getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
   const int32_t filter_height =
-      getScalarInt32(values[inputs[i++]], memory.get());
-  const int32_t fuse_code = getScalarInt32(values[inputs[i++]], memory.get());
+      getScalarInt32(values, inputs[i++], memory.get());
+  const int32_t fuse_code = getScalarInt32(values, inputs[i++], memory.get());
 
   operation.offset_x = 0;
   operation.offset_y = 0;
@@ -357,17 +357,17 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
 }
 
 bool CompileSoftmaxBNNS(OperationMac& operation,
-                        std::map<uint32_t, ValueInfo>& values,
-                        std::unique_ptr<int8_t[]>& memory,
-                        std::vector<OperandMac>& operands) {
+                        const std::map<uint32_t, ValueInfo>& values,
+                        const std::unique_ptr<int8_t[]>& memory,
+                        const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileSoftmaxBNNS";
   DLOG_IF(FATAL, operation.type != mojom::SOFTMAX);
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
-  OperandMac& input = operands[inputs[0]];
-  OperandMac& output = operands[outputs[0]];
-  const uint32_t beta = getScalarFloat(values[inputs[1]], memory.get());
+  const OperandMac& input = operands[inputs[0]];
+  const OperandMac& output = operands[outputs[0]];
+  const uint32_t beta = getScalarFloat(values, inputs[1], memory.get());
   if (beta != 1.0) {
     DLOG(ERROR) << "  beta " << beta << " is not supported.";
     return false;
@@ -417,8 +417,8 @@ bool CompileReshapeBNNS(OperationMac& reshape) {
 }
 
 bool CompileConcatenationBNNS(OperationMac& concat,
-                              std::map<uint32_t, ValueInfo>& values,
-                              std::unique_ptr<int8_t[]>& memory,
+                              const std::map<uint32_t, ValueInfo>& values,
+                              const std::unique_ptr<int8_t[]>& memory,
                               bool is_concatenation_first) {
   DLOG(INFO) << "CompilationImplMac::CompileConcatenationBNNS";
   DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
@@ -438,7 +438,7 @@ bool CompileConcatenationBNNS(OperationMac& concat,
   }
 
   uint32_t axis =
-      getScalarInt32(values[inputs[inputs.size() - 1]], memory.get());
+      getScalarInt32(values, inputs[inputs.size() - 1], memory.get());
   if (axis != 3) {
     DLOG(ERROR) << "Only axis == 3 is supported";
     return false;

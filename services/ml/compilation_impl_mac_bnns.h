@@ -15,25 +15,25 @@
 namespace ml {
 
 bool CompileConv2DBNNS(OperationMac&,
-                       std::map<uint32_t, ValueInfo>& values,
-                       std::unique_ptr<int8_t[]>& memory,
-                       std::vector<OperandMac>& operands);
+                       const std::map<uint32_t, ValueInfo>& values,
+                       const std::unique_ptr<int8_t[]>& memory,
+                       const std::vector<OperandMac>& operands);
 
 bool CompileAverageOrMaxPool2DBNNS(OperationMac&,
-                                   std::map<uint32_t, ValueInfo>& values,
-                                   std::unique_ptr<int8_t[]>& memory,
-                                   std::vector<OperandMac>& operands);
+                                   const std::map<uint32_t, ValueInfo>& values,
+                                   const std::unique_ptr<int8_t[]>& memory,
+                                   const std::vector<OperandMac>& operands);
 
 bool CompileSoftmaxBNNS(OperationMac&,
-                        std::map<uint32_t, ValueInfo>& values,
-                        std::unique_ptr<int8_t[]>& memory,
-                        std::vector<OperandMac>& operands);
+                        const std::map<uint32_t, ValueInfo>& values,
+                        const std::unique_ptr<int8_t[]>& memory,
+                        const std::vector<OperandMac>& operands);
 
 bool CompileReshapeBNNS(OperationMac&);
 
 bool CompileConcatenationBNNS(OperationMac& operation,
-                              std::map<uint32_t, ValueInfo>& values,
-                              std::unique_ptr<int8_t[]>& memory,
+                              const std::map<uint32_t, ValueInfo>& values,
+                              const std::unique_ptr<int8_t[]>& memory,
                               bool is_concatenation_first);
 
 }  // namespace ml

@@ -73,9 +73,34 @@ int32_t getScalarInt32(const ValueInfo& info, int8_t* memory) {
   return ptr[0];
 }
 
+// There are no viable overloaded operator[] for type
+// 'const std::map<uint32_t, ValueInfo>', so uses 'find' instead of it.
+int32_t getScalarInt32(const std::map<uint32_t, ValueInfo>& values,
+                       uint32_t key,
+                       int8_t* memory) {
+  auto iter = values.find(key);
+  if (iter == values.end()) {
+    assert(0);
+    return -1;
+  }
+
+  return getScalarInt32(iter->second, memory);
+}
+
 float getScalarFloat(const ValueInfo& info, int8_t* memory) {
   float* ptr = reinterpret_cast<float*>(memory + info.offset);
   return ptr[0];
 }
 
+float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
+                     uint32_t key,
+                     int8_t* memory) {
+  auto iter = values.find(key);
+  if (iter == values.end()) {
+    assert(0);
+    return -1.0;
+  }
+
+  return getScalarFloat(iter->second, memory);
+}
 }

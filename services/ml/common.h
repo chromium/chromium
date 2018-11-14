@@ -68,8 +68,13 @@ std::string VectorToString(const T* vect, size_t length) {
 void PrintOperand(const Operand& operand, const std::unique_ptr<OperandInfo>& info);
 
 int32_t getScalarInt32(const ValueInfo&, int8_t*);
+int32_t getScalarInt32(const std::map<uint32_t, ValueInfo>& values,
+                       uint32_t key,
+                       int8_t* memory);
 float getScalarFloat(const ValueInfo&, int8_t*);
-
+float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
+                     uint32_t key,
+                     int8_t*);
 }
 
 #endif  // SERVICES_ML_COMMON_H_

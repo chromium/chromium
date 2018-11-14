@@ -111,22 +111,22 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
       if (is_bnns_) {
         success = CompileReshapeBNNS(operation);
       } else {
-        success = CompileReshape(operation, operations_);
+        success = CompileReshape(operations_, operation);
       }
     } else if (type == mojom::CONCATENATION) {
       if (is_bnns_) {
         success = CompileConcatenationBNNS(operation, values_, memory_,
                                            i == 0 ? true : false);
       } else {
-        success = CompileConcatenation(operation, values_, memory_, operands_,
-                                       operations_);
+        success = CompileConcatenation(operations_, operation, values_, memory_,
+                                       operands_);
       }
     } else if (type == mojom::ADD || type == mojom::MUL) {
       if (is_bnns_) {
         DLOG(ERROR) << "Operation is not supported";
         success = false;
       } else {
-        success = CompileArithmetic(operation, values_, constants_);
+        success = CompileArithmetic(operation, constants_, values_);
       }
     } else {
       DLOG(ERROR) << "Operation is not supported";

@@ -17,31 +17,31 @@ class CompilationImplMac;
 namespace ml {
 
 bool CompileConv2DOrDepthwiseConv2D(OperationMac&,
-                                    std::map<uint32_t, ValueInfo>& values,
-                                    std::unique_ptr<int8_t[]>& memory,
-                                    std::vector<OperandMac>& operands);
+                                    const std::map<uint32_t, ValueInfo>& values,
+                                    const std::unique_ptr<int8_t[]>& memory,
+                                    const std::vector<OperandMac>& operands);
 
 bool CompileAverageOrMaxPool2D(OperationMac& operation,
-                               std::map<uint32_t, ValueInfo>& values,
-                               std::unique_ptr<int8_t[]>& memory,
-                               std::vector<OperandMac>& operands);
+                               const std::map<uint32_t, ValueInfo>& values,
+                               const std::unique_ptr<int8_t[]>& memory,
+                               const std::vector<OperandMac>& operands);
 
 bool CompileSoftmax(OperationMac& operation,
-                    std::map<uint32_t, ValueInfo>& values,
-                    std::unique_ptr<int8_t[]>& memory);
+                    const std::map<uint32_t, ValueInfo>& values,
+                    const std::unique_ptr<int8_t[]>& memory);
 
-bool CompileReshape(OperationMac& reshape,
-                    std::vector<OperationMac>& operations);
+bool CompileReshape(std::vector<OperationMac>& operations,
+                    const OperationMac& reshape);
 
-bool CompileConcatenation(OperationMac& concat,
-                          std::map<uint32_t, ValueInfo>& values,
-                          std::unique_ptr<int8_t[]>& memory,
-                          std::vector<OperandMac>& operands,
-                          std::vector<OperationMac>& operations);
+bool CompileConcatenation(std::vector<OperationMac>& operations,
+                          const OperationMac& concat,
+                          const std::map<uint32_t, ValueInfo>& values,
+                          const std::unique_ptr<int8_t[]>& memory,
+                          const std::vector<OperandMac>& operands);
 
 bool CompileArithmetic(OperationMac& operation,
-                       std::map<uint32_t, ValueInfo>& values,
-                       std::vector<uint32_t>& constants);
+                       std::vector<uint32_t>& constants,
+                       const std::map<uint32_t, ValueInfo>& values);
 
 }  // namespace ml
 
