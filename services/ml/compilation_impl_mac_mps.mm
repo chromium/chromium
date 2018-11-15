@@ -500,12 +500,13 @@ bool CompileConcatenation(std::vector<OperationMac>& operations,
 
 bool CompileArithmetic(OperationMac& operation,
                        std::vector<uint32_t>& constants,
-                       const std::map<uint32_t, ValueInfo>& values) {
+                       const std::map<uint32_t, ValueInfo>& values,
+                       const std::unique_ptr<int8_t[]>& memory) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
   if (@available(macOS 10.13.4, *)) {
-    MPSCNNBinaryKernel* arithmetic = nullptr;
+    MPSCNNArithmetic* arithmetic = nullptr;
     if (operation.type == mojom::ADD) {
       Class mpscnn_add_class = NSClassFromString(@"MPSCNNAdd");
       if (!mpscnn_add_class) {
@@ -526,6 +527,27 @@ bool CompileArithmetic(OperationMac& operation,
 
     if (!arithmetic)
       return false;
+
+    // TODO(junwei): the activation function must be configured in index 2.
+    int32_t fuse_code =
+        getScalarInt32(values, operation.inputs[2], memory.get());
+    switch (fuse_code) {
+      case mojom::FUSED_NONE:
+        break;
+      case mojom::FUSED_RELU:
+        [arithmetic setMinimumValue:0];
+        break;
+      case mojom::FUSED_RELU1:
+        [arithmetic setMinimumValue:-1];
+        [arithmetic setMaximumValue:1];
+        break;
+      case mojom::FUSED_RELU6:
+        [arithmetic setMinimumValue:0];
+        [arithmetic setMaximumValue:6];
+        break;
+      default:
+        NOTREACHED();
+    }
 
     operation.mpscnn_binary_kernel.reset(arithmetic);
 

@@ -126,7 +126,7 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
         DLOG(ERROR) << "Operation is not supported";
         success = false;
       } else {
-        success = CompileArithmetic(operation, constants_, values_);
+        success = CompileArithmetic(operation, constants_, values_, memory_);
       }
     } else {
       DLOG(ERROR) << "Operation is not supported";

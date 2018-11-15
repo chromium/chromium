@@ -41,7 +41,8 @@ bool CompileConcatenation(std::vector<OperationMac>& operations,
 
 bool CompileArithmetic(OperationMac& operation,
                        std::vector<uint32_t>& constants,
-                       const std::map<uint32_t, ValueInfo>& values);
+                       const std::map<uint32_t, ValueInfo>& values,
+                       const std::unique_ptr<int8_t[]>& memory);
 
 }  // namespace ml
 
