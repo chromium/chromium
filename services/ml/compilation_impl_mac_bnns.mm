@@ -63,14 +63,12 @@ bool CompileConv2DBNNS(OperationMac& operation,
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
-  int32_t i = 0;
-
   ParameterExtracterForConv(
       operation, inputs, outputs, values, memory, operands, input_width,
       input_height, output_width, output_height, implicit_padding, padding_left,
       padding_right, padding_top, padding_bottom, stride_width, stride_height,
       padding_code, fuse_code, depth_out, filter_height, filter_width, depth_in,
-      i, depthwise_multiplier);
+      depthwise_multiplier);
 
   DLOG(INFO) << "FILTER_HEIGHT: " << filter_height;
   DLOG(INFO) << "FILTER_WIDTH: " << filter_width;

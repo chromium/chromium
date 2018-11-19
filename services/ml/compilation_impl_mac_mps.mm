@@ -178,17 +178,18 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
   int32_t padding_code, fuse_code;
   int32_t depth_out, filter_height, filter_width, depth_in;
   bool depthwise = (operation.type == mojom::DEPTHWISE_CONV_2D);
-  int32_t depthwise_multiplier;
+  int32_t depthwise_multiplier = 1;
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
-  int i = 0;
-  ParameterExtracterForConv(
-      operation, inputs, outputs, values, memory, operands, input_width,
-      input_height, output_width, output_height, implicit_padding, padding_left,
-      padding_right, padding_top, padding_bottom, stride_width, stride_height,
-      padding_code, fuse_code, depth_out, filter_height, filter_width, depth_in,
-      i, depthwise_multiplier, depthwise);
+  if (!ParameterExtracterForConv(
+          operation, inputs, outputs, values, memory, operands, input_width,
+          input_height, output_width, output_height, implicit_padding,
+          padding_left, padding_right, padding_top, padding_bottom,
+          stride_width, stride_height, padding_code, fuse_code, depth_out,
+          filter_height, filter_width, depth_in, depthwise_multiplier,
+          depthwise))
+    return false;
 
   DLOG(INFO) << "  implicit_padding: " << implicit_padding;
   if (implicit_padding) {
@@ -219,9 +220,12 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
 
     MPSCNNConvolution* conv;
     if (depthwise) {
-      if (depth_in != depth_out) {
-        DLOG(ERROR) << @"for depth wise convolution, currently only channel"
-                        " multiplier of 1 is supported";
+      if (depth_out != depth_in * depthwise_multiplier) {
+        DLOG(ERROR)
+            << "Failed assertion: outputFeatureChannels " << depth_out
+            << " in MPS depthwise convolution descriptor must be multiplie of "
+               "inFeatureChannels "
+            << depth_in;
         return false;
       }
       // Convert from WebML weights shape [1, filter_height, filter_width,

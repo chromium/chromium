@@ -41,24 +41,26 @@ bool ParameterExtracterForConv(const OperationMac& operation,
                                int32_t& filter_height,
                                int32_t& filter_width,
                                int32_t& depth_in,
-                               int32_t& index,
                                int32_t& depthwise_multiplier,
                                bool depthwise) {
   uint32_t output_idx = outputs[0];
   const OperandMac& output = operands[output_idx];
   output_height = output.dimensions[1];
   output_width = output.dimensions[2];
+  int32_t index = 0;
   int32_t input_idx = inputs[index++];
   const OperandMac& input = operands[input_idx];
+  // depth_in is the fourth dimension of input that shape is
+  // [batches, height, width, depth_in].
   input_height = input.dimensions[1];
   input_width = input.dimensions[2];
+  depth_in = input.dimensions[3];
 
   const OperandMac& filter = operands[inputs[index++]];
   if (depthwise) {
     depth_out = filter.dimensions[3];
   } else {
     depth_out = filter.dimensions[0];
-    depth_in = filter.dimensions[3];
   }
   filter_height = filter.dimensions[1];
   filter_width = filter.dimensions[2];
@@ -91,7 +93,6 @@ bool ParameterExtracterForConv(const OperationMac& operation,
                   << " is not supported.";
       return false;
     }
-    depth_in = depth_out / depthwise_multiplier;
   }
   fuse_code = getScalarInt32(values, inputs[index++], memory.get());
   return true;

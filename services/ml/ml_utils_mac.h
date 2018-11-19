@@ -75,7 +75,6 @@ bool ParameterExtracterForConv(const OperationMac&,
                                int32_t&,
                                int32_t&,
                                int32_t&,
-                               int32_t&,
                                bool depthwise = false);
 
 void SetupOperandInfoForOperands(

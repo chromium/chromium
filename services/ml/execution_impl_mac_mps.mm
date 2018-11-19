@@ -286,13 +286,6 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
                                   secondaryImage:secondary_src_img
                                 destinationImage:dst_img];
           } else if (kernel) {
-            if (src_img.featureChannels == 3 && dst_img.featureChannels == 4) {
-              DLOG(ERROR) << @"Number of source feature channels needed by "
-                              "convolution 4 are not available in image with"
-                              " 3 feature channels";
-              success = false;
-              break;
-            }
             [kernel encodeToCommandBuffer:command_buffer
                               sourceImage:src_img
                          destinationImage:dst_img];
