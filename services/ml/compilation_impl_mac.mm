@@ -128,6 +128,8 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
       } else {
         success = CompileArithmetic(operation, constants_, values_, memory_);
       }
+    } else if (type == mojom::FULLY_CONNECTED) {
+      success = CompileFullyConnected(operation, operands_, values_, memory_);
     } else {
       DLOG(ERROR) << "Operation is not supported";
       success = false;

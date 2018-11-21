@@ -6,7 +6,7 @@
 
 namespace ml {
 
-static uint32_t product(const std::vector<uint32_t>& dims) {
+uint32_t product(const std::vector<uint32_t>& dims) {
   uint32_t prod = 1;
   for (size_t i = 0; i < dims.size(); ++i) prod *= dims[i];
   return prod;

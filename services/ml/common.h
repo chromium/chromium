@@ -13,6 +13,8 @@
 
 namespace ml {
 
+uint32_t product(const std::vector<uint32_t>& dims);
+
 struct Operand {
   Operand();
   ~Operand();
