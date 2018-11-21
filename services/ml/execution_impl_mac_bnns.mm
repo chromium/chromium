@@ -13,7 +13,7 @@ namespace ml {
 
 namespace {
 
-void TransposeForInput(const ml::OperationMac& operation,
+bool TransposeForInput(const ml::OperationMac& operation,
                        const ml::OperandMac& operation_input,
                        float*& src,
                        float*& raw_input,
@@ -33,6 +33,10 @@ void TransposeForInput(const ml::OperationMac& operation,
   const int32_t input_image_stride = input_width * input_height;
   float* bnns_input = (float*)malloc(sizeof(float) * input_batch *
                                      input_image_stride * input_depth);
+  if (bnns_input == nullptr) {
+    DLOG(ERROR) << "Fail to alloc memory!";
+    return false;
+  }
 
   for (int b = 0; b < input_batch; b++) {
     for (int h = 0; h < input_height; h++) {
@@ -60,6 +64,7 @@ void TransposeForInput(const ml::OperationMac& operation,
     }
   }
   src = bnns_input;
+  return true;
 }
 }
 
@@ -88,10 +93,13 @@ ExecutionImplMacBNNS::~ExecutionImplMacBNNS() {
 bool ExecutionImplMacBNNS::IsValid() const {
   return compilation_ != nil &&
          inputs_info_.size() == compilation_->inputs_.size() &&
-         outputs_info_.size() == compilation_->outputs_.size();
+         outputs_info_.size() == compilation_->outputs_.size() &&
+         bnns_operands_memory_map_.size() ==
+             (compilation_->operands_.size() - compilation_->inputs_.size() -
+              compilation_->outputs_.size());
 }
 
-void ExecutionImplMacBNNS::PrepareBnnsOperandsMemory() {
+bool ExecutionImplMacBNNS::PrepareBnnsOperandsMemory() {
   // std::map<size_t,float*> _bnns_operands_memory_map
   for (size_t i = 0; i < compilation_->operands_.size(); i++) {
     bool is_input = false;
@@ -102,7 +110,7 @@ void ExecutionImplMacBNNS::PrepareBnnsOperandsMemory() {
     }
     bool is_output = false;
     for (size_t j = 0; j < compilation_->outputs_.size(); j++) {
-      if (compilation_->inputs_[j] == i) {
+      if (compilation_->outputs_[j] == i) {
         is_output = true;
       }
     }
@@ -111,7 +119,19 @@ void ExecutionImplMacBNNS::PrepareBnnsOperandsMemory() {
     }
     OperandMac& operand = compilation_->operands_[i];
     bnns_operands_memory_map_[i] = (float*)malloc(operand.requiredSize());
+    if (bnns_operands_memory_map_[i] == nullptr) {
+      return false;
+    }
   }
+  LOG(ERROR) << "compilation_->operands_.size() : "
+             << compilation_->operands_.size();
+  LOG(ERROR) << "compilation_->inputs_.size(): "
+             << compilation_->inputs_.size();
+  LOG(ERROR) << "compilation_->outputs_.size(): "
+             << compilation_->outputs_.size();
+  LOG(ERROR) << "bnns_operands_memory_map_.size() : "
+             << bnns_operands_memory_map_.size();
+  return true;
 }
 
 void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
@@ -166,8 +186,10 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               }
               if (operation.local_operation == KBNNSFilter &&
                   operation_input.dimensions.size() == 4) {
-                TransposeForInput(operation, operation_input, src, raw_input,
-                                  is_outer_input);
+                if (!TransposeForInput(operation, operation_input, src,
+                                       raw_input, is_outer_input)) {
+                  success = false;
+                }
                 tmp_src_malloc = true;
               } else {
                 src = raw_input;
@@ -229,7 +251,10 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                   } else {
                     input = operation.concatenations[index - 1];
                   }
-                  TransposeForInput(operation, operand, src, input, true);
+                  if (!TransposeForInput(operation, operand, src, input,
+                                         true)) {
+                    success = false;
+                  }
                   tmp_src_malloc = true;
                 } else {
                   src = bnns_operands_memory_map_[concat_input_idx];
@@ -257,6 +282,10 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               const int32_t channels = operation_output.dimensions[3];
               float* output = (float*)malloc(sizeof(float) * batch * width *
                                              height * channels);
+              if (output == nullptr) {
+                DLOG(ERROR) << "Fail to alloc memory!";
+                success = false;
+              }
               memcpy(output, des,
                      batch * width * height * channels * sizeof(float));
               for (int b = 0; b < batch; b++) {

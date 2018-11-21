@@ -24,7 +24,7 @@ class ExecutionImplMacBNNS : public mojom::Execution {
                        mojo::ScopedSharedBufferHandle);
   ~ExecutionImplMacBNNS() override;
 
-  void PrepareBnnsOperandsMemory();
+  bool PrepareBnnsOperandsMemory();
   void StartCompute(StartComputeCallback callback) override;
 
   bool IsValid() const;

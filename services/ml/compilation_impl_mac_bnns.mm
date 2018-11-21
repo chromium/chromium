@@ -114,6 +114,10 @@ bool CompileConv2DBNNS(OperationMac& operation,
     // The weights will be destroyed by BNNSFilterDestroy
     float* new_filter_weights = (float*)malloc(
         sizeof(float) * depth_in * depth_out * filter_height * filter_width);
+    if (new_filter_weights == nullptr) {
+      DLOG(ERROR) << "Fail to alloc memory!";
+      return false;
+    }
 
     for (auto o = 0; o < depth_out; ++o) {
       for (auto h = 0; h < filter_height; ++h) {
@@ -318,6 +322,10 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
     // build pooling bias
     BNNSLayerData pooling_bias;
     float* pooling_bias_data = (float*)malloc(sizeof(float) * depth_out);
+    if (pooling_bias_data == nullptr) {
+      DLOG(ERROR) << "Fail to alloc memory!";
+      return false;
+    }
     bzero(pooling_bias_data, sizeof(float) * depth_out);
     pooling_bias.data = pooling_bias_data;
     pooling_bias.data_type = BNNSDataTypeFloat32;
