@@ -15,6 +15,7 @@
 #include "third_party/clDNN/api/C/convolution.h"
 #include "third_party/clDNN/api/C/data.h"
 #include "third_party/clDNN/api/C/eltwise.h"
+#include "third_party/clDNN/api/C/fully_connected.h"
 #include "third_party/clDNN/api/C/input_layout.h"
 #include "third_party/clDNN/api/C/pooling.h"
 #include "third_party/clDNN/api/C/reorder.h"
@@ -149,7 +150,8 @@ bool ModelImplClDnn::IsValid() {
 }
 
 ModelImplClDnn::~ModelImplClDnn() {
-  if (!IsValid()) return;
+  if (!IsValid())
+    return;
 
   cldnn_status status;
   for (size_t i = 0; i < memories_.size(); ++i) {
@@ -345,6 +347,8 @@ int32_t ModelImplClDnn::AddOperation(int32_t type,
     result = CldnnAddReshape(type, inputs, outputs);
   } else if (type == mojom::CONCATENATION) {
     result = CldnnAddConcatenation(type, inputs, outputs);
+  } else if (type == mojom::FULLY_CONNECTED) {
+    result = CldnnAddFullyConnected(type, inputs, outputs);
   } else {
     DLOG(ERROR) << "Operation type " << type << " is not supported.";
     return mojom::BAD_DATA;
@@ -373,7 +377,7 @@ int32_t ModelImplClDnn::IdentifyInputsAndOutputs(
     }
   }
   for (size_t i = 0; i < outputs_.size(); ++i) {
-    result = CldnnAddReorderForOutput(outputs_[i]);
+    result = CldnnAddReorderForOperand(outputs_[i], cldnn_format_byxf);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -450,7 +454,8 @@ int32_t ModelImplClDnn::CldnnAddInputLayout(uint32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplClDnn::CldnnAddReorderForOutput(int32_t index) {
+int32_t ModelImplClDnn::CldnnAddReorderForOperand(int32_t index,
+                                                  int32_t target_format) {
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_reorder_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -463,7 +468,7 @@ int32_t ModelImplClDnn::CldnnAddReorderForOutput(int32_t index) {
   cldnn_reorder_desc reorder_desc = {
       .type = type_id,
       .id = id_str.c_str(),
-      .output_format = cldnn_format_byxf,
+      .output_format = cldnn_format_type(target_format),
       .output_data_type = cldnn_f32,
   };
   // Setup inputs.
@@ -1388,6 +1393,239 @@ int32_t ModelImplClDnn::CldnnAddConcatenation(
   }
   DLOG(INFO) << "[clDNN] succeed to add concatenation primitive with id "
              << id_str;
+  return mojom::NOT_ERROR;
+}
+
+int32_t ModelImplClDnn::CldnnAddFullyConnected(
+    int32_t type,
+    const std::vector<uint32_t>& inputs,
+    const std::vector<uint32_t>& outputs) {
+  // The output tensor, of shape [batch_size, num_units]
+  const uint32_t output_index = outputs[0];
+  const Operand& output = operands_[output_index];
+  const int32_t output_batch_size = output.dimensions[0];
+  const int32_t output_num_units = output.dimensions[1];
+
+  uint32_t index = 0;
+  const uint32_t input_index = inputs[index++];
+  const Operand& input = operands_[input_index];
+  // A tensor of at least rank 2, specifying the input.
+  if (input.dimensions.size() < 2) {
+    DLOG(ERROR) << "A tenosr of least rank 2.";
+    return mojom::BAD_DATA;
+  }
+
+  const uint32_t weights_idx = inputs[index++];
+  const Operand& weights = operands_[weights_idx];
+  const int32_t num_units = weights.dimensions[0];
+  const int32_t input_size = weights.dimensions[1];
+
+  // According to Android NN API doc:
+  // If rank is greater than 2, then it gets flattened to a 2-D Tensor.
+  // The (flattened) 2-D Tensor is reshaped (if necessary) to
+  // [batch_size, input_size], where "input_size" corresponds to the number of
+  // inputs to the layer, matching the second dimension of weights, and
+  // "batch_size" is calculated by dividing the number of elements by
+  // "input_size".
+  uint32_t input_batch_size;
+  if (input.dimensions.size() > 2) {
+    input_batch_size = product(input.dimensions) / input_size;
+  } else {
+    if (input.dimensions[1] != input_size) {
+      DLOG(ERROR) << "input.dimensions[1] (" << input.dimensions[1] << ") "
+                  << "!= input_size (" << input_size << ")";
+      return mojom::BAD_DATA;
+    }
+    input_batch_size = input.dimensions[0];
+  }
+
+  // A 1-D tensor, of shape [num_units]
+  const uint32_t bias_idx = inputs[index++];
+  const Operand& bias = operands_[bias_idx];
+  const uint32_t bias_num_units = bias.dimensions[0];
+  if (bias_num_units != num_units) {
+    DLOG(ERROR) << "bias_num_units (" << bias_num_units << ") != "
+                << "num_units (" << num_units << ")";
+    return mojom::BAD_DATA;
+  }
+
+  const int32_t fuse_code =
+      getScalarInt32(values_[inputs[index++]], memory_.get());
+
+  DLOG(INFO) << "  input_batch_size: " << input_batch_size;
+  DLOG(INFO) << "  num_units: " << num_units;
+  DLOG(INFO) << "  input_size: " << input_size;
+  DLOG(INFO) << "  bias_num_units: " << bias_num_units;
+  DLOG(INFO) << "  output_batch_size: " << output_batch_size;
+  DLOG(INFO) << "  output_num_units: " << output_num_units;
+  DLOG(INFO) << "  fuse_code: " << fuse_code;
+
+  // Create fully_connected descriptor.
+  cldnn_status status;
+  cldnn_primitive_type_id type_id =
+      LATE(cldnn_fully_connected_type_id)(&status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  cldnn_fully_connected_desc fc_desc = {.type = type_id};
+
+  // Setup inputs.
+  // FC only accepts yxfb, bfyx, byxf_af32, so reorder to bfyx in case input
+  // is byxf.
+  CldnnAddReorderForOperand(input_index, cldnn_format_bfyx);
+  // Reshape to [input_batch_size, input_size]
+  type_id = LATE(cldnn_reshape_type_id)(&status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  cldnn_reshape_desc reshape_desc = {.type = type_id};
+  std::vector<cldnn_primitive_id> input_ids_array(1);
+  std::string reshape_input_str(base::NumberToString(input_index) +
+                                std::string("-reordered"));
+  input_ids_array[0] = reshape_input_str.c_str();
+  reshape_desc.input = {.data = input_ids_array.data(),
+                        .size = input_ids_array.size()};
+
+  // Setup output shape.
+  reshape_desc.output_shape = {
+      1, 1, 2, {input_batch_size, 1, input_size, 1, 1, 1, 1, 1}};
+
+  // Setup id and add into topology.
+  std::string reshape_id_str(base::NumberToString(input_index) +
+                             std::string("-reshaped"));
+  reshape_desc.id = reshape_id_str.c_str();
+  LATE(cldnn_add_primitive)
+  (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&reshape_desc),
+   &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[clDNN] succeed to add reshape primitive with id "
+             << reshape_id_str;
+
+  // Setup fc inputs.
+  input_ids_array.clear();
+  input_ids_array.resize(1);
+  input_ids_array[0] = reshape_id_str.c_str();
+  fc_desc.input = {.data = input_ids_array.data(),
+                   .size = input_ids_array.size()};
+
+  // Setup weights.
+  // b - stands for size of the output (num_units)
+  // x - stands for size of input (input_size)
+  // refer to cldnn test fully_connected_gpu_test.cpp
+  const cldnn_layout weights_layout = {
+      .data_type = cldnn_f32,
+      .format = cldnn_format_bfyx,
+      .size = {1, 1, 2, {num_units, 1, input_size, 1, 1, 1, 1, 1}},
+      .padding = {}};
+  cldnn_memory weights_memory =
+      LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to allocate memory " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+
+  float* weights_memory_ptr = reinterpret_cast<float*>(
+      LATE(cldnn_lock_memory)(weights_memory, &status));
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+
+  const ValueInfo& weights_info = values_.at(weights_idx);
+  const float* weights_value_ptr =
+      reinterpret_cast<const float*>(memory_.get() + weights_info.offset);
+  memcpy(weights_memory_ptr, weights_value_ptr, weights_info.length);
+
+  LATE(cldnn_unlock_memory)(weights_memory, &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+
+  type_id = LATE(cldnn_data_type_id)(&status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  const std::string weights_idx_str(base::NumberToString(weights_idx));
+  const cldnn_data_desc weights_data_desc = {
+      .type = type_id, .id = weights_idx_str.c_str(), .mem = weights_memory};
+  LATE(cldnn_add_primitive)
+  (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&weights_data_desc),
+   &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[clDNN] succeed to add data primitive with id "
+             << weights_idx_str;
+
+  fc_desc.weights = weights_idx_str.c_str();
+
+  // Setup bias.
+  CldnnAddData(bias_idx);
+  const std::string bias_idx_str(base::NumberToString(bias_idx));
+  fc_desc.bias = bias_idx_str.c_str();
+
+  std::string id_str(base::NumberToString(output_index));
+  // Setup activation.
+  fc_desc.activation_negative_slope = 0.0;
+  if (fuse_code == mojom::FUSED_NONE) {
+    fc_desc.with_activation = 0;
+  } else if (fuse_code == mojom::FUSED_RELU) {
+    fc_desc.with_activation = 1;
+  } else if (fuse_code == mojom::FUSED_RELU1 ||
+             fuse_code == mojom::FUSED_RELU6) {
+    fc_desc.with_activation = 0;
+    id_str = id_str + "-func";
+  } else {
+    DLOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    return mojom::BAD_DATA;
+  }
+
+  // Setup weights_quantization_factors and output_calibration_factors as empty
+  std::string empty("");
+  fc_desc.weights_quantization_factors = empty.c_str();
+  fc_desc.output_calibration_factors = empty.c_str();
+
+  // Setup input_quantization_factor and output_quantization_factor as zero
+  fc_desc.input_quantization_factor = 0.0;
+  fc_desc.output_quantization_factor = 0.0;
+
+  // Add primitive into topology.
+  fc_desc.id = id_str.c_str();
+  LATE(cldnn_add_primitive)
+  (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&fc_desc), &status);
+  if (status != CLDNN_SUCCESS) {
+    DLOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
+                << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[clDNN] succeed to add fc primitive with id " << id_str;
+
+  // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
+  if (fuse_code == mojom::FUSED_RELU1 || fuse_code == mojom::FUSED_RELU6) {
+    std::string fuse_id_str = base::NumberToString(output_index);
+    int32_t result =
+        CldnnAddActivationByFusedCode(id_str, fuse_id_str, fuse_code);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+  }
+
   return mojom::NOT_ERROR;
 }
 
