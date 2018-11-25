@@ -9,70 +9,14 @@
 #include "base/logging.h"
 #include "base/mac/availability.h"
 #include "base/mac/sdk_forward_declarations.h"
+#include "services/ml/mps_protocols_impl.h"
 #include "services/ml/mpscnn_context.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
-API_AVAILABLE(macosx(10.13))
-@interface ConvDataSource : NSObject<MPSCNNConvolutionDataSource> {
-}
-@property(nonatomic, assign) float* weights_;
-@property(nonatomic, assign) float* bias_;
-@property(nonatomic, assign) MPSCNNConvolutionDescriptor* desc_;
-@end
-
-@implementation ConvDataSource
-@synthesize weights_;
-@synthesize bias_;
-@synthesize desc_;
-- (id)initWithWeight:(float*)weights
-                bias:(float*)bias
-                desc:(MPSCNNConvolutionDescriptor*)desc {
-  self = [super init];
-  self.weights_ = weights;
-  self.bias_ = bias;
-  self.desc_ = desc;
-  return self;
-}
-- (float*)biasTerms {
-  return self.bias_;
-}
-- (MPSDataType)dataType {
-  return MPSDataTypeFloat32;
-}
-- (MPSCNNConvolutionDescriptor*)descriptor {
-  return self.desc_;
-}
-- (NSString*)label {
-  return nullptr;
-}
-- (BOOL)load {
-  return true;
-}
-- (float*)lookupTableForUInt8Kernel {
-  return nullptr;
-}
-- (void)purge {
-  return;
-}
-- (vector_float2*)rangesForUInt8Kernel {
-  return nullptr;
-}
-- (void*)weights {
-  return self.weights_;
-}
-- (id)copyWithZone:(struct _NSZone*)zone {
-  ConvDataSource* source = [[ConvDataSource allocWithZone:zone] init];
-  source.weights_ = self.weights_;
-  source.bias_ = self.bias_;
-  source.desc_ = self.desc_;
-  return source;
-}
-@end
-
 namespace ml {
 
-MPSCNNNeuron* API_AVAILABLE(macosx(10.13))
-    CreateMPSCNNNeuron(int32_t fuse_code) {
+API_AVAILABLE(macosx(10.13))
+MPSCNNNeuron* CreateMPSCNNNeuron(int32_t fuse_code) {
   MPSCNNNeuron* relu = nullptr;
   if (fuse_code == mojom::FUSED_NONE) {
     relu = nullptr;
@@ -94,17 +38,18 @@ MPSCNNNeuron* API_AVAILABLE(macosx(10.13))
   return relu;
 }
 
-MPSCNNConvolution* API_AVAILABLE(macosx(10.13))
-    CreateMPSCNNConvolution(int32_t filter_width,
-                            int32_t filter_height,
-                            int32_t depth_in,
-                            int32_t depth_out,
-                            int32_t stride_width,
-                            int32_t stride_height,
-                            const float* weights,
-                            const float* bias,
-                            MPSCNNNeuron* relu,
-                            int32_t type) {
+API_AVAILABLE(macosx(10.13))
+MPSCNNConvolutionNode* CreateMPSCNNConvolutionNode(MPSNNImageNode* image_node,
+                                                   int32_t filter_width,
+                                                   int32_t filter_height,
+                                                   int32_t depth_in,
+                                                   int32_t depth_out,
+                                                   int32_t stride_width,
+                                                   int32_t stride_height,
+                                                   const float* weights,
+                                                   const float* bias,
+                                                   MPSCNNNeuron* relu,
+                                                   int32_t type) {
   Class descriptor_class =
       type == mojom::DEPTHWISE_CONV_2D
           ? NSClassFromString(@"MPSCNNDepthWiseConvolutionDescriptor")
@@ -124,23 +69,23 @@ MPSCNNConvolution* API_AVAILABLE(macosx(10.13))
                 bias:(float*)bias
                 desc:(MPSCNNConvolutionDescriptor*)desc];
   Class convolution_class = type == mojom::FULLY_CONNECTED
-                                ? NSClassFromString(@"MPSCNNFullyConnected")
-                                : NSClassFromString(@"MPSCNNConvolution");
-  return [[convolution_class alloc] initWithDevice:GetMPSCNNContext().device
-                                           weights:data_source];
+                                ? NSClassFromString(@"MPSCNNFullyConnectedNode")
+                                : NSClassFromString(@"MPSCNNConvolutionNode");
+  return
+      [[convolution_class alloc] initWithSource:image_node weights:data_source];
 }
 
-void API_AVAILABLE(macosx(10.13))
-    ComputeMPSOffsetForImplictPadding(bool same_padding,
-                                      MPSOffset& offset,
-                                      int32_t input_height,
-                                      int32_t input_width,
-                                      int32_t output_height,
-                                      int32_t output_width,
-                                      int32_t filter_height,
-                                      int32_t filter_width,
-                                      int32_t stride_height,
-                                      int32_t stride_width) {
+API_AVAILABLE(macosx(10.13))
+void ComputeMPSOffsetForImplictPadding(bool same_padding,
+                                       MPSOffset& offset,
+                                       int32_t input_height,
+                                       int32_t input_width,
+                                       int32_t output_height,
+                                       int32_t output_width,
+                                       int32_t filter_height,
+                                       int32_t filter_width,
+                                       int32_t stride_height,
+                                       int32_t stride_width) {
   if (same_padding) {
     int pad_along_height =
         ((output_height - 1) * stride_height + filter_height - input_height);
@@ -159,10 +104,13 @@ void API_AVAILABLE(macosx(10.13))
   }
 }
 
-bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
-                                    const std::map<uint32_t, ValueInfo>& values,
-                                    const std::unique_ptr<int8_t[]>& memory,
-                                    const std::vector<OperandMac>& operands) {
+API_AVAILABLE(macosx(10.13))
+bool CompileConv2DOrDepthwiseConv2D(
+    std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+    const OperationMac& operation,
+    const std::map<uint32_t, ValueInfo>& values,
+    const std::unique_ptr<int8_t[]>& memory,
+    const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
                      operation.type != mojom::DEPTHWISE_CONV_2D);
@@ -178,6 +126,7 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
+  DCHECK(outputs.size() == 1);
   if (!ParameterExtracterForConv(
           operation, inputs, outputs, values, memory, operands,
           input_batch_size, input_width, input_height, output_width,
@@ -203,83 +152,87 @@ bool CompileConv2DOrDepthwiseConv2D(OperationMac& operation,
   }
   DLOG(INFO) << "  fuse_code: " << fuse_code;
 
-  if (@available(macOS 10.13, *)) {
-    MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
-    operation.fuse_code = fuse_code;
+  MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
 
-    ValueInfo weights_value_info = values.at(inputs[1]);
-    const float* weights = reinterpret_cast<const float*>(
-        memory.get() + weights_value_info.offset);
-    ValueInfo bias_value_info = values.at(inputs[2]);
-    const float* bias =
-        reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
+  ValueInfo weights_value_info = values.at(inputs[1]);
+  const float* weights =
+      reinterpret_cast<const float*>(memory.get() + weights_value_info.offset);
+  ValueInfo bias_value_info = values.at(inputs[2]);
+  const float* bias =
+      reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
 
-    MPSCNNConvolution* conv;
-    if (depthwise) {
-      if (depth_out != depth_in * depthwise_multiplier) {
-        DLOG(ERROR)
-            << "Failed assertion: outputFeatureChannels " << depth_out
-            << " in MPS depthwise convolution descriptor must be multiplie of "
-               "inFeatureChannels "
-            << depth_in;
-        return false;
-      }
-      // Convert from WebML weights shape [1, filter_height, filter_width,
-      // depth_out] to MPSCNNConvlution weight[ outputChannels ][ kernelHeight
-      // ][ kernelWidth ][ inputChannels / groups ]
-      const uint32_t depthwise_weights_length =
-          1 * filter_height * filter_width * depth_out;
-      std::vector<float> depthwise_weights(depthwise_weights_length);
-      DLOG_IF(FATAL, depthwise_weights.size() * sizeof(float) !=
-                         weights_value_info.length)
-          << "depthwise weigths length is incorrect";
-      for (auto h = 0; h < filter_height; ++h) {
-        for (auto w = 0; w < filter_width; ++w) {
-          for (auto c = 0; c < depth_out; ++c) {
-            depthwise_weights[c * filter_height * filter_width +
-                              h * filter_width + w] =
-                weights[h * filter_width * depth_out + w * depth_out + c];
-          }
+  MPSCNNConvolutionNode* conv_node;
+  MPSNNImageNode* input_image = image_nodes[inputs[0]];
+  if (depthwise) {
+    if (depth_out != depth_in * depthwise_multiplier) {
+      DLOG(ERROR)
+          << "Failed assertion: outputFeatureChannels " << depth_out
+          << " in MPS depthwise convolution descriptor must be multiplie of "
+             "inFeatureChannels "
+          << depth_in;
+      return false;
+    }
+    // Convert from WebML weights shape [1, filter_height, filter_width,
+    // depth_out] to MPSCNNConvlution weight[ outputChannels ][ kernelHeight
+    // ][ kernelWidth ][ inputChannels / groups ]
+    const uint32_t depthwise_weights_length =
+        1 * filter_height * filter_width * depth_out;
+    std::vector<float> depthwise_weights(depthwise_weights_length);
+    DLOG_IF(FATAL, depthwise_weights.size() * sizeof(float) !=
+                       weights_value_info.length)
+        << "depthwise weigths length is incorrect";
+    for (auto h = 0; h < filter_height; ++h) {
+      for (auto w = 0; w < filter_width; ++w) {
+        for (auto c = 0; c < depth_out; ++c) {
+          depthwise_weights[c * filter_height * filter_width +
+                            h * filter_width + w] =
+              weights[h * filter_width * depth_out + w * depth_out + c];
         }
       }
-      conv = CreateMPSCNNConvolution(
-          filter_width, filter_height, depth_in, depth_out, stride_width,
-          stride_height, depthwise_weights.data(), bias, relu, operation.type);
-    } else {
-      conv = CreateMPSCNNConvolution(filter_width, filter_height, depth_in,
-                                     depth_out, stride_width, stride_height,
-                                     weights, bias, relu, operation.type);
     }
-
-    MPSOffset offset;
-    if (implicit_padding) {
-      ComputeMPSOffsetForImplictPadding(
-          padding_code == mojom::PADDING_SAME, offset, input_height,
-          input_width, output_height, output_width, filter_height, filter_width,
-          stride_height, stride_width);
-    } else {
-      offset.x = (int)(filter_width / 2) - padding_left;
-      offset.y = (int)(filter_height / 2) - padding_top;
-      offset.z = 0;
-    }
-    [conv setOffset:offset];
-    [conv setEdgeMode:MPSImageEdgeModeZero];
-    DLOG(INFO) << "  Create MPSCNNConvolution: " << conv;
-    DLOG(INFO) << "    strideInPixelsY: " << conv.strideInPixelsY;
-    DLOG(INFO) << "    strideInPixelsX: " << conv.strideInPixelsX;
-    DLOG(INFO) << "    inputFeatureChannels: " << conv.inputFeatureChannels;
-    DLOG(INFO) << "    outputFeatureChannels: " << conv.outputFeatureChannels;
-    DLOG(INFO) << "    kernelWidth: " << conv.kernelWidth;
-    DLOG(INFO) << "    kernelHeight: " << conv.kernelHeight;
-    DLOG(INFO) << "    offset MPSOffset(x: " << offset.x << " y: " << offset.y
-               << ")";
-    operation.mpscnn_kernel.reset(conv);
+    conv_node = CreateMPSCNNConvolutionNode(
+        input_image, filter_width, filter_height, depth_in, depth_out,
+        stride_width, stride_height, depthwise_weights.data(), bias, relu,
+        operation.type);
+  } else {
+    conv_node = CreateMPSCNNConvolutionNode(
+        input_image, filter_width, filter_height, depth_in, depth_out,
+        stride_width, stride_height, weights, bias, relu, operation.type);
   }
+
+  MPSOffset offset;
+  if (implicit_padding) {
+    ComputeMPSOffsetForImplictPadding(
+        padding_code == mojom::PADDING_SAME, offset, input_height, input_width,
+        output_height, output_width, filter_height, filter_width, stride_height,
+        stride_width);
+  } else {
+    offset.x = (int)(filter_width / 2) - padding_left;
+    offset.y = (int)(filter_height / 2) - padding_top;
+    offset.z = 0;
+  }
+  DLOG(INFO) << "    offset MPSOffset(x: " << offset.x << " y: " << offset.y
+             << ")";
+
+  uint32_t n, width, height, channels;
+  // operands[outputs[0]] is output operand.
+  if (!GetMPSImageInfo(operands[outputs[0]], n, width, height, channels))
+    return false;
+  [conv_node setPaddingPolicy:[[CustomPadding alloc]
+                                  initWithOffset:offset
+                                        edgeMode:MPSImageEdgeModeZero
+                                             num:n
+                                           width:width
+                                          height:height
+                                        channels:channels]];
+  image_nodes[outputs[0]] = conv_node.resultImage;
 
   return true;
 }
 
-bool CompileAverageOrMaxPool2D(OperationMac& operation,
+API_AVAILABLE(macosx(10.13))
+bool CompileAverageOrMaxPool2D(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                               const OperationMac& operation,
                                const std::map<uint32_t, ValueInfo>& values,
                                const std::unique_ptr<int8_t[]>& memory,
                                const std::vector<OperandMac>& operands) {
@@ -349,46 +302,55 @@ bool CompileAverageOrMaxPool2D(OperationMac& operation,
     return false;
   }
 
-  if (@available(macOS 10.13, *)) {
-    MPSCNNPooling* pool;
-    if (operation.type == mojom::AVERAGE_POOL_2D) {
-      pool =
-          [[MPSCNNPoolingAverage alloc] initWithDevice:GetMPSCNNContext().device
-                                           kernelWidth:filter_width
-                                          kernelHeight:filter_height
-                                       strideInPixelsX:stride_width
-                                       strideInPixelsY:stride_height];
-    } else if (operation.type == mojom::MAX_POOL_2D) {
-      pool = [[MPSCNNPoolingMax alloc] initWithDevice:GetMPSCNNContext().device
-                                          kernelWidth:filter_width
-                                         kernelHeight:filter_height
-                                      strideInPixelsX:stride_width
-                                      strideInPixelsY:stride_height];
-    } else {
-      DLOG(ERROR) << "Operation " << operation.type << " is not supported";
-      return false;
-    }
-    MPSOffset offset;
-    if (implicit_padding) {
-      ComputeMPSOffsetForImplictPadding(
-          padding_code == mojom::PADDING_SAME, offset, input_height,
-          input_width, output_height, output_width, filter_height, filter_width,
-          stride_height, stride_width);
-    } else {
-      offset.x = (int)(filter_width / 2) - padding_left;
-      offset.y = (int)(filter_height / 2) - padding_top;
-      offset.z = 0;
-    }
-    DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-    [pool setOffset:offset];
-    [pool setEdgeMode:MPSImageEdgeModeClamp];
-    DLOG(INFO) << "  Create MPSCNNPoolingAverage: " << pool;
-    operation.mpscnn_kernel.reset(pool);
+  MPSCNNPoolingNode* pool_node;
+  MPSNNImageNode* input_image = image_nodes[inputs[0]];
+  if (operation.type == mojom::AVERAGE_POOL_2D) {
+    pool_node = [[MPSCNNPoolingAverageNode alloc] initWithSource:input_image
+                                                     kernelWidth:filter_width
+                                                    kernelHeight:filter_height
+                                                 strideInPixelsX:stride_width
+                                                 strideInPixelsY:stride_height];
+  } else if (operation.type == mojom::MAX_POOL_2D) {
+    pool_node = [[MPSCNNPoolingMaxNode alloc] initWithSource:input_image
+                                                 kernelWidth:filter_width
+                                                kernelHeight:filter_height
+                                             strideInPixelsX:stride_width
+                                             strideInPixelsY:stride_height];
+  } else {
+    DLOG(ERROR) << "Operation " << operation.type << " is not supported";
+    return false;
   }
+  MPSOffset offset;
+  if (implicit_padding) {
+    ComputeMPSOffsetForImplictPadding(
+        padding_code == mojom::PADDING_SAME, offset, input_height, input_width,
+        output_height, output_width, filter_height, filter_width, stride_height,
+        stride_width);
+  } else {
+    offset.x = (int)(filter_width / 2) - padding_left;
+    offset.y = (int)(filter_height / 2) - padding_top;
+    offset.z = 0;
+  }
+  DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
+
+  uint32_t n, width, height, channels;
+  if (!GetMPSImageInfo(output, n, width, height, channels))
+    return false;
+  [pool_node setPaddingPolicy:[[CustomPadding alloc]
+                                  initWithOffset:offset
+                                        edgeMode:MPSImageEdgeModeClamp
+                                             num:n
+                                           width:width
+                                          height:height
+                                        channels:channels]];
+  image_nodes[outputs[0]] = pool_node.resultImage;
+
   return true;
 }
 
-bool CompileSoftmax(OperationMac& operation,
+API_AVAILABLE(macosx(10.13))
+bool CompileSoftmax(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                    const OperationMac& operation,
                     const std::map<uint32_t, ValueInfo>& values,
                     const std::unique_ptr<int8_t[]>& memory) {
   DLOG(INFO) << "CompilationImplMac::CompileSoftmax";
@@ -399,12 +361,11 @@ bool CompileSoftmax(OperationMac& operation,
     DLOG(ERROR) << "  beta " << beta << " is not supported.";
     return false;
   }
-  if (@available(macOS 10.13, *)) {
-    MPSCNNSoftMax* softmax =
-        [[MPSCNNSoftMax alloc] initWithDevice:GetMPSCNNContext().device];
-    DLOG(INFO) << "  Create MPSCNNSoftMax: " << softmax;
-    operation.mpscnn_kernel.reset(softmax);
-  }
+
+  MPSCNNSoftMaxNode* softmax_node = [[MPSCNNSoftMaxNode alloc]
+      initWithSource:image_nodes[operation.inputs[0]]];
+  image_nodes[operation.outputs[0]] = softmax_node.resultImage;
+
   return true;
 }
 
@@ -425,10 +386,13 @@ bool CompileReshape(std::vector<OperationMac>& operations,
       operation.inputs[0] = reshape_input_idx;
     }
   }
+
   return true;
 }
 
-bool CompileConcatenation(std::vector<OperationMac>& operations,
+API_AVAILABLE(macosx(10.13))
+bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                          std::vector<OperationMac>& operations,
                           const OperationMac& concat,
                           const std::map<uint32_t, ValueInfo>& values,
                           const std::unique_ptr<int8_t[]>& memory,
@@ -448,121 +412,125 @@ bool CompileConcatenation(std::vector<OperationMac>& operations,
     return false;
   }
 
-  if (@available(macOS 10.13, *)) {
-    DLOG(INFO) << "  Concatenation is compiled to no-op";
-    uint32_t concat_output_idx = concat.outputs[0];
-    uint32_t channelOffset = 0;
-    for (size_t i = 0; i < inputs.size() - 1; ++i) {
-      uint32_t concat_input_idx = inputs[i];
-      const OperandMac& operand = operands[concat_input_idx];
-      for (size_t j = 0; j < operations.size(); ++j) {
-        OperationMac& operation = operations[j];
-        if (operation.outputs[0] == concat_input_idx) {
-          DLOG(INFO) << "  Rewrite op " << j << " type " << operation.type
-                     << " output from " << operation.outputs[0] << " to "
-                     << concat_output_idx;
-          operation.outputs[0] = concat_output_idx;
-          MPSCNNKernel* kernel = operation.mpscnn_kernel.get();
-          if (!kernel) {
-            DLOG(INFO) << "MPSKernel of operation " << j << " type "
-                       << operation.type << " is not found";
-            // Concatenation op has no kernel, continue to search
-            continue;
-          }
-          if (channelOffset % 4 != 0) {
-            DLOG(ERROR) << "Invalid channelOffset " << channelOffset
-                        << ". It must be multiple of 4";
-            return false;
-          }
-          // Accumulate the previous offset
-          const uint32_t offset =
-              [kernel destinationFeatureChannelOffset] + channelOffset;
-          DLOG(INFO) << "  Set destinationFeatureChannelOffset to " << offset;
-          [kernel setDestinationFeatureChannelOffset:offset];
-          DLOG(INFO) << "OPERATION.DIMENSIONS.SIZE: "
-                     << operand.dimensions.size();
-          for (size_t i = 0; i < operand.dimensions.size(); ++i) {
-            DLOG(INFO) << "OPERAND[" << i << "]: " << operand.dimensions[i];
-          }
-          if (operand.dimensions.size() < 4) {
-            DLOG(ERROR) << "Invalid dimensions of operand " << concat_input_idx
-                        << " length is " << operand.dimensions.size();
-            return false;
-          }
+  DLOG(INFO) << "  Concatenation is compiled to no-op";
+  uint32_t concat_output_idx = concat.outputs[0];
+
+  NSMutableArray<MPSNNImageNode*>* image_array =
+      [NSMutableArray arrayWithCapacity:1];
+  for (size_t i = 0; i < inputs.size() - 1; ++i) {
+    uint32_t concat_input_idx = inputs[i];
+    const OperandMac& operand = operands[concat_input_idx];
+    for (size_t j = 0; j < operations.size(); ++j) {
+      OperationMac& operation = operations[j];
+      if (operation.outputs[0] == concat_input_idx) {
+        DLOG(INFO) << "  Rewrite op " << j << " type " << operation.type
+                   << " output from " << operation.outputs[0] << " to "
+                   << concat_output_idx;
+        operation.outputs[0] = concat_output_idx;
+        if (operand.dimensions.size() < 4) {
+          DLOG(ERROR) << "Invalid dimensions of operand " << concat_input_idx
+                      << " length is " << operand.dimensions.size();
+          return false;
         }
       }
-      channelOffset += operand.dimensions[axis];
     }
+
+    [image_array addObject:image_nodes[concat_input_idx]];
   }
+
+  MPSNNConcatenationNode* concat_node =
+      [[MPSNNConcatenationNode alloc] initWithSources:image_array];
+  image_nodes[concat_output_idx] = concat_node.resultImage;
 
   return true;
 }
 
-bool CompileArithmetic(OperationMac& operation,
+API_AVAILABLE(macosx(10.13))
+bool CompileArithmetic(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                       const OperationMac& operation,
                        std::vector<uint32_t>& constants,
                        const std::map<uint32_t, ValueInfo>& values,
                        const std::unique_ptr<int8_t[]>& memory) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
-  if (@available(macOS 10.13.4, *)) {
-    MPSCNNArithmetic* arithmetic = nullptr;
-    if (operation.type == mojom::ADD) {
-      Class mpscnn_add_class = NSClassFromString(@"MPSCNNAdd");
-      if (!mpscnn_add_class) {
-        DLOG(ERROR) << "Failed to load MPSCNNAdd class";
-        return false;
-      }
-      arithmetic =
-          [[mpscnn_add_class alloc] initWithDevice:GetMPSCNNContext().device];
-    } else if (operation.type == mojom::MUL) {
-      Class mpscnn_multiply_class = NSClassFromString(@"MPSCNNMultiply");
-      if (!mpscnn_multiply_class) {
-        DLOG(ERROR) << "Failed to load MPSCNNMultiply class";
-        return false;
-      }
-      arithmetic = [[mpscnn_multiply_class alloc]
-          initWithDevice:GetMPSCNNContext().device];
-    }
+  // Check constants for input 0 and 1
+  NSMutableArray<MPSNNImageNode*>* image_array =
+      [NSMutableArray arrayWithCapacity:1];
+  for (size_t i = 0; i < 2; ++i) {
+    if (values.find(operation.inputs[i]) != values.end()) {
+      constants.push_back(operation.inputs[i]);
 
-    if (!arithmetic)
-      return false;
-
-    // TODO(junwei): the activation function must be configured in index 2.
-    int32_t fuse_code =
-        getScalarInt32(values, operation.inputs[2], memory.get());
-    switch (fuse_code) {
-      case mojom::FUSED_NONE:
-        break;
-      case mojom::FUSED_RELU:
-        [arithmetic setMinimumValue:0];
-        break;
-      case mojom::FUSED_RELU1:
-        [arithmetic setMinimumValue:-1];
-        [arithmetic setMaximumValue:1];
-        break;
-      case mojom::FUSED_RELU6:
-        [arithmetic setMinimumValue:0];
-        [arithmetic setMaximumValue:6];
-        break;
-      default:
-        NOTREACHED();
-    }
-
-    operation.mpscnn_binary_kernel.reset(arithmetic);
-
-    // Check constants for input 0 and 1
-    for (size_t i = 0; i < operation.inputs.size() - 1; ++i) {
-      if (values.find(operation.inputs[i]) != values.end()) {
-        constants.push_back(operation.inputs[i]);
-      }
+      // Create a placeholder for input constant image.
+      MPSNNImageNode* image_node =
+          [[MPSNNImageNode alloc] initWithHandle:nullptr];
+      [image_array addObject:image_node];
+    } else {
+      [image_array addObject:image_nodes[operation.inputs[i]]];
     }
   }
+
+  MPSNNBinaryArithmeticNode* arithmetic_node = nullptr;
+  if (operation.type == mojom::ADD) {
+    Class mpscnn_add_class = NSClassFromString(@"MPSNNAdditionNode");
+    if (!mpscnn_add_class) {
+      DLOG(ERROR) << "Failed to load MPSNNAdditionNode class";
+      return false;
+    }
+    arithmetic_node = [[mpscnn_add_class alloc] initWithSources:image_array];
+  } else if (operation.type == mojom::MUL) {
+    Class mpscnn_multiply_class = NSClassFromString(@"MPSNNMultiplicationNode");
+    if (!mpscnn_multiply_class) {
+      DLOG(ERROR) << "Failed to load MPSCNNMultiply class";
+      return false;
+    }
+    arithmetic_node =
+        [[mpscnn_multiply_class alloc] initWithSources:image_array];
+  }
+  if (!arithmetic_node)
+    return false;
+
+  // TODO(junwei): the activation function must be configured in index 2.
+  int32_t fuse_code = getScalarInt32(values, operation.inputs[2], memory.get());
+  MPSCNNNeuronNode* relu_node = nullptr;
+  switch (fuse_code) {
+    case mojom::FUSED_NONE:
+      break;
+    case mojom::FUSED_RELU:
+      [arithmetic_node setMinimumValue:0];
+      relu_node = [[MPSCNNNeuronReLUNode alloc]
+          initWithSource:arithmetic_node.resultImage
+                       a:0];
+      break;
+    case mojom::FUSED_RELU1:
+      [arithmetic_node setMinimumValue:-1];
+      [arithmetic_node setMaximumValue:1];
+      relu_node = [[MPSCNNNeuronReLUNNode alloc]
+          initWithSource:arithmetic_node.resultImage
+                       a:0
+                       b:1];
+      break;
+    case mojom::FUSED_RELU6:
+      [arithmetic_node setMinimumValue:0];
+      [arithmetic_node setMaximumValue:6];
+      relu_node = [[MPSCNNNeuronReLUNNode alloc]
+          initWithSource:arithmetic_node.resultImage
+                       a:0
+                       b:6];
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  image_nodes[operation.outputs[0]] =
+      relu_node ? relu_node.resultImage : arithmetic_node.resultImage;
 
   return true;
 }
 
-bool CompileFullyConnected(OperationMac& operation,
+API_AVAILABLE(macosx(10.13))
+bool CompileFullyConnected(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                           OperationMac& operation,
                            std::vector<OperandMac>& operands,
                            const std::map<uint32_t, ValueInfo>& values,
                            const std::unique_ptr<int8_t[]>& memory) {
@@ -585,26 +553,24 @@ bool CompileFullyConnected(OperationMac& operation,
   input.dimensions = std::vector<uint32_t>(
       {product(input.dimensions) / input_size, input_size});
 
-  if (@available(macOS 10.13, *)) {
-    operation.fuse_code = getScalarInt32(values, inputs[3], memory.get());
-    MPSCNNNeuron* relu = CreateMPSCNNNeuron(operation.fuse_code);
+  MPSCNNNeuron* relu = CreateMPSCNNNeuron(operation.fuse_code);
 
-    // inputs[1] is index of weights, values_.at(inputs[1]) is value info of
-    // weights.
-    const float* source_weights = reinterpret_cast<const float*>(
-        memory.get() + values.at(inputs[1]).offset);
-    // inputs[2] is index of bias, values_.at(inputs[2]) is value info of
-    // bias.
-    const float* source_bias = reinterpret_cast<const float*>(
-        memory.get() + values.at(inputs[2]).offset);
+  // inputs[1] is index of weights, values_.at(inputs[1]) is value info
+  // of weights.
+  const float* source_weights = reinterpret_cast<const float*>(
+      memory.get() + values.at(inputs[1]).offset);
+  // inputs[2] is index of bias, values_.at(inputs[2]) is value info of
+  // bias.
+  const float* source_bias = reinterpret_cast<const float*>(
+      memory.get() + values.at(inputs[2]).offset);
 
-    // the output_size is the same as first dimension of weights.
-    int32_t output_size = operands[operation.outputs[0]].dimensions[1];
-    operation.mpscnn_kernel.reset(CreateMPSCNNConvolution(
-        1, 1, input_size, output_size, 1, 1, source_weights, source_bias, relu,
-        operation.type));
-  }
+  // the output_size is the same as first dimension of weights.
+  int32_t output_size = operands[operation.outputs[0]].dimensions[1];
+  MPSCNNConvolutionNode* fully_connected_node = CreateMPSCNNConvolutionNode(
+      image_nodes[inputs[0]], 1, 1, input_size, output_size, 1, 1,
+      source_weights, source_bias, relu, operation.type);
 
+  image_nodes[operation.outputs[0]] = fully_connected_node.resultImage;
   return true;
 }
 

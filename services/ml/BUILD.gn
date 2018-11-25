@@ -80,6 +80,8 @@ source_set("lib") {
       "ml_utils_mac.mm",
       "model_impl_mac.h",
       "model_impl_mac.mm",
+      "mps_protocols_impl.h",
+      "mps_protocols_impl.mm",
       "mpscnn_context.h",
       "mpscnn_context.mm",
       "neural_network_impl_mac.h",

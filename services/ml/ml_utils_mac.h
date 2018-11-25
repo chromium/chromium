@@ -40,8 +40,6 @@ struct OperationMac : public Operation {
   explicit OperationMac(const OperationMac&);
   explicit OperationMac(const Operation&);
   ~OperationMac();
-  base::scoped_nsobject<MPSCNNKernel> mpscnn_kernel;
-  base::scoped_nsobject<MPSCNNBinaryKernel> mpscnn_binary_kernel;
   ::BNNSFilter filter;
   LocalOperation local_operation;
 

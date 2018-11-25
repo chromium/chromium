@@ -15,6 +15,9 @@
 #include "services/ml/model_impl_mac.h"
 #include "services/ml/public/interfaces/compilation.mojom.h"
 
+@class MPSNNGraph;
+@class MPSNNImageNode;
+
 namespace ml {
 
 class ExecutionImplMac;
@@ -28,8 +31,12 @@ class CompilationImplMac : public mojom::Compilation {
   void CreateExecution(CreateExecutionCallback callback) override;
 
  private:
+  void CompileModelWithBNNS(FinishCallback callback);
+  void CompileModelWithMPS(FinishCallback callback);
   friend class ExecutionImplMacBNNS;
   friend class ExecutionImplMacMPS;
+  base::scoped_nsobject<MPSNNGraph> graph_;
+  std::map<uint32_t, MPSNNImageNode*> mps_image_nodes_;
   std::vector<OperandMac> operands_;
   std::vector<OperationMac> operations_;
   std::map<uint32_t, ValueInfo> values_;
