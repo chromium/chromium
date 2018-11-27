@@ -1417,8 +1417,8 @@ int32_t ModelImplClDnn::CldnnAddFullyConnected(
 
   const uint32_t weights_idx = inputs[index++];
   const Operand& weights = operands_[weights_idx];
-  const int32_t num_units = weights.dimensions[0];
-  const int32_t input_size = weights.dimensions[1];
+  const uint32_t num_units = weights.dimensions[0];
+  const uint32_t input_size = weights.dimensions[1];
 
   // According to Android NN API doc:
   // If rank is greater than 2, then it gets flattened to a 2-D Tensor.

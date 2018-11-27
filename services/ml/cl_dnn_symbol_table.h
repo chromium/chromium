@@ -36,6 +36,7 @@ namespace ml {
   X(cldnn_pooling_type_id)        \
   X(cldnn_softmax_type_id)        \
   X(cldnn_reshape_type_id)        \
+  X(cldnn_fully_connected_type_id)\
   X(cldnn_concatenation_type_id)  \
   X(cldnn_release_program)        \
   X(cldnn_build_program)          \
