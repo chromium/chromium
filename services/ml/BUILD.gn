@@ -16,6 +16,8 @@ source_set("lib") {
 
   if (is_linux) {
     sources += [
+      "cl_dnn_custom_kernels.cc",
+      "cl_dnn_custom_kernels.h",
       "cl_dnn_symbol_table.cc",
       "cl_dnn_symbol_table.h",
       "compilation_impl_cl_dnn.cc",
@@ -91,6 +93,8 @@ source_set("lib") {
     ]
   } else if (is_win) {
     sources += [
+      "cl_dnn_custom_kernels.cc",
+      "cl_dnn_custom_kernels.h",
       "compilation_impl_cl_dnn.cc",
       "compilation_impl_cl_dnn.h",
       "execution_impl_cl_dnn.cc",

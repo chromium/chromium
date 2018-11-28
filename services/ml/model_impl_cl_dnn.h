@@ -85,6 +85,9 @@ class ModelImplClDnn : public mojom::Model {
   int32_t CldnnAddFullyConnected(int32_t type,
                                  const std::vector<uint32_t>& inputs,
                                  const std::vector<uint32_t>& outputs);
+  int32_t CldnnAddResizeBilinear(int32_t type,
+                                 const std::vector<uint32_t>& inputs,
+                                 const std::vector<uint32_t>& outputs);
 
  private:
   friend class CompilationImplClDnn;
