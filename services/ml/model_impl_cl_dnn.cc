@@ -381,7 +381,9 @@ int32_t ModelImplClDnn::IdentifyInputsAndOutputs(
     }
   }
   for (size_t i = 0; i < outputs_.size(); ++i) {
-    result = CldnnAddReorderForOperand(outputs_[i], cldnn_format_byxf);
+    const std::string reorder_input(base::NumberToString(outputs_[i]));
+    const std::string reorder_output(reorder_input + std::string("-reordered"));
+    result = CldnnAddReorder(reorder_input, reorder_output, cldnn_format_byxf);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -458,8 +460,9 @@ int32_t ModelImplClDnn::CldnnAddInputLayout(uint32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t ModelImplClDnn::CldnnAddReorderForOperand(int32_t index,
-                                                  int32_t target_format) {
+int32_t ModelImplClDnn::CldnnAddReorder(const std::string& input_name,
+                                        const std::string& output_name,
+                                        int32_t target_format) {
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_reorder_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -467,17 +470,15 @@ int32_t ModelImplClDnn::CldnnAddReorderForOperand(int32_t index,
                 << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
-  const std::string output_id_str = base::NumberToString(index);
-  const std::string id_str = output_id_str + std::string("-reordered");
   cldnn_reorder_desc reorder_desc = {
       .type = type_id,
-      .id = id_str.c_str(),
+      .id = output_name.c_str(),
       .output_format = cldnn_format_type(target_format),
       .output_data_type = cldnn_f32,
   };
   // Setup inputs.
   std::vector<cldnn_primitive_id> input_ids_array(1);
-  input_ids_array[0] = output_id_str.c_str();
+  input_ids_array[0] = input_name.c_str();
   reorder_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
   // Setup mean mode.
@@ -495,7 +496,7 @@ int32_t ModelImplClDnn::CldnnAddReorderForOperand(int32_t index,
                 << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
-  DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id " << id_str;
+  DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id " << output_name;
   return mojom::NOT_ERROR;
 }
 
@@ -1478,7 +1479,9 @@ int32_t ModelImplClDnn::CldnnAddFullyConnected(
   // Setup inputs.
   // FC only accepts yxfb, bfyx, byxf_af32, so reorder to bfyx in case input
   // is byxf.
-  CldnnAddReorderForOperand(input_index, cldnn_format_bfyx);
+  const std::string reorder_input_name(base::NumberToString(input_index));
+  const std::string reorder_output_name(reorder_input_name + std::string("-reordered"));
+  CldnnAddReorder(reorder_input_name, reorder_output_name, cldnn_format_bfyx);
   // Reshape to [input_batch_size, input_size]
   type_id = LATE(cldnn_reshape_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -1488,8 +1491,7 @@ int32_t ModelImplClDnn::CldnnAddFullyConnected(
   }
   cldnn_reshape_desc reshape_desc = {.type = type_id};
   std::vector<cldnn_primitive_id> input_ids_array(1);
-  std::string reshape_input_str(base::NumberToString(input_index) +
-                                std::string("-reordered"));
+  std::string reshape_input_str(reorder_output_name);
   input_ids_array[0] = reshape_input_str.c_str();
   reshape_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
@@ -1671,10 +1673,12 @@ int32_t ModelImplClDnn::CldnnAddResizeBilinear(
   cldnn_custom_gpu_primitive_desc custom_desc = {.type = type_id};
 
   // Setup inputs.
-  std::vector<std::string> input_ids(1);
-  std::vector<cldnn_primitive_id> input_ids_array(1);
-  input_ids[0] = base::NumberToString(inputs[0]);
-  input_ids_array[0] = input_ids[0].c_str();
+  // interp kernel optimizes for yxfb foramt, reorder to yxfb.
+  std::string reorder_input(base::NumberToString(inputs[0]));
+  std::string reorder_output(reorder_input + std::string("-reordered"));
+  CldnnAddReorder(reorder_input, reorder_output, cldnn_format_yxfb);
+
+  std::vector<cldnn_primitive_id> input_ids_array = {reorder_output.c_str()};
   custom_desc.input = {.data = input_ids_array.data(),
                        .size = input_ids_array.size()};
 
@@ -1698,22 +1702,23 @@ int32_t ModelImplClDnn::CldnnAddResizeBilinear(
 
   // Setup output layout
   cldnn_layout output_layout;
-  int32_t result = CldnnGetLayout(operands_[outputs[0]], output_layout);
+  int32_t result = CldnnGetLayout(
+      operands_[outputs[0]], output_layout, cldnn_format_yxfb);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
   custom_desc.output_layout = output_layout;
 
   // Setup work group size
-  std::vector<size_t> gws = {new_height, ((new_width + 31) / 32) * 32};
+  std::vector<size_t> gws = {new_height, new_width};
   custom_desc.gws = gws.data();
   custom_desc.gws_num = gws.size();
-  std::vector<size_t> lws = {1, 32};
+  std::vector<size_t> lws = {};
   custom_desc.lws = lws.data();
   custom_desc.lws_num = lws.size();
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(outputs[0]));
+  std::string id_str(base::NumberToString(outputs[0]) + std::string("-yxfb"));
   custom_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&custom_desc),
@@ -1725,6 +1730,9 @@ int32_t ModelImplClDnn::CldnnAddResizeBilinear(
   }
   DLOG(INFO) << "[clDNN] succeed to add custom_gpu primitive with id "
              << id_str;
+  
+  // insert a reorder back to bfyx
+  CldnnAddReorder(id_str, base::NumberToString(outputs[0]), cldnn_format_bfyx);
   return mojom::NOT_ERROR;
 }
 

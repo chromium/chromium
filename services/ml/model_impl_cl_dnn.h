@@ -59,7 +59,9 @@ class ModelImplClDnn : public mojom::Model {
                          cldnn_layout& layout,
                          int32_t format = cldnn_format_bfyx);
   int32_t CldnnAddInputLayout(uint32_t index);
-  int32_t CldnnAddReorderForOperand(int32_t index, int32_t target_format);
+  int32_t CldnnAddReorder(const std::string& input_name,
+                          const std::string& output_name,
+                          int32_t target_format);
   int32_t CldnnAddData(uint32_t index);
   int32_t CldnnAddActivationByFusedCode(const std::string& input,
                                         const std::string& id,
