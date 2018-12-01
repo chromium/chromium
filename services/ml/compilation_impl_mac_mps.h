@@ -23,7 +23,7 @@ bool CompileConv2DOrDepthwiseConv2D(
     std::map<uint32_t, MPSNNImageNode*>& image_nodes,
     const OperationMac&,
     const std::map<uint32_t, ValueInfo>& values,
-    const std::unique_ptr<int8_t[]>& memory,
+    std::unique_ptr<int8_t[]>& memory,
     const std::vector<OperandMac>& operands);
 
 API_AVAILABLE(macosx(10.13))

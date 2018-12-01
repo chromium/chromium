@@ -109,7 +109,7 @@ bool CompileConv2DOrDepthwiseConv2D(
     std::map<uint32_t, MPSNNImageNode*>& image_nodes,
     const OperationMac& operation,
     const std::map<uint32_t, ValueInfo>& values,
-    const std::unique_ptr<int8_t[]>& memory,
+    std::unique_ptr<int8_t[]>& memory,
     const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
   DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
@@ -155,8 +155,7 @@ bool CompileConv2DOrDepthwiseConv2D(
   MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
 
   ValueInfo weights_value_info = values.at(inputs[1]);
-  const float* weights =
-      reinterpret_cast<const float*>(memory.get() + weights_value_info.offset);
+  float* weights = (float*)(memory.get() + weights_value_info.offset);
   ValueInfo bias_value_info = values.at(inputs[2]);
   const float* bias =
       reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
@@ -190,10 +189,10 @@ bool CompileConv2DOrDepthwiseConv2D(
         }
       }
     }
+    memcpy(weights, depthwise_weights.data(), weights_value_info.length);
     conv_node = CreateMPSCNNConvolutionNode(
         input_image, filter_width, filter_height, depth_in, depth_out,
-        stride_width, stride_height, depthwise_weights.data(), bias, relu,
-        operation.type);
+        stride_width, stride_height, weights, bias, relu, operation.type);
   } else {
     conv_node = CreateMPSCNNConvolutionNode(
         input_image, filter_width, filter_height, depth_in, depth_out,
