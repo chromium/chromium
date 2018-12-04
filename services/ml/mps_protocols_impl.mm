@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "services/ml/mpscnn_context.h"
 
 @implementation ConvDataSource
 
@@ -138,6 +139,67 @@ destinationImageDescriptorForSourceImages:(NSArray<MPSImage*>*)sourceImages
       setUsage:MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite];
 
   return inDescriptor;
+}
+
+@end
+
+@implementation OutputImageAllocator
+
+@synthesize image = _image;
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (id)initWithCoder:(NSCoder*)coder {
+  self = [super init];
+  return self;
+}
+
+- (void)encodeWithCoder:(NSCoder*)aCoder {
+}
+
+- (MPSImage*)imageForCommandBuffer:(id<MTLCommandBuffer>)cmdBuf
+                   imageDescriptor:(MPSImageDescriptor*)descriptor
+                            kernel:(MPSKernel*)kernel {
+  if (self.image)
+    return self.image;
+
+  self.image = [[MPSImage alloc] initWithDevice:ml::GetMPSCNNContext().device
+                                imageDescriptor:descriptor];
+
+  return self.image;
+}
+
+@end
+
+@implementation TemporaryImageHandle
+
+@synthesize label_ = _label;
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (id)initWithCoder:(NSCoder*)coder {
+  self = [super init];
+  return self;
+}
+
+- (void)encodeWithCoder:(NSCoder*)aCoder {
+}
+
+- (id)initWithLabel:(NSString*)label {
+  self = [super init];
+  self.label_ = label;
+  return self;
+}
+
+/*! @abstract   A label to be attached to associated MTLResources for this node
+ *  @return     A human readable string for debugging purposes
+ */
+- (NSString*)label {
+  return self.label_;
 }
 
 @end

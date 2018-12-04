@@ -6,12 +6,14 @@
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+#include "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_impl_mac_bnns.h"
 #include "services/ml/compilation_impl_mac_mps.h"
 #include "services/ml/execution_impl_mac_bnns.h"
 #include "services/ml/execution_impl_mac_mps.h"
+#include "services/ml/mps_protocols_impl.h"
 #include "services/ml/mpscnn_context.h"
 #include "services/ml/public/interfaces/constants.mojom.h"
 
@@ -39,7 +41,6 @@ CompilationImplMac::CompilationImplMac(ModelImplMac* model)
   is_bnns_ = true;
 
   DCHECK(inputs_.size() == 1);
-  DCHECK(outputs_.size() == 1);
 }
 
 CompilationImplMac::~CompilationImplMac() {
@@ -184,12 +185,17 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     return;
   }
 
+  // Reset intermediate variable.
+  graphs_.clear();
+  mps_image_nodes_.clear();
+  temporary_inputs_.clear();
+  graph_outputs_.clear();
+
   // Create a placeholder for input 0 image.
   MPSNNImageNode* image_node = [[MPSNNImageNode alloc] initWithHandle:nullptr];
   mps_image_nodes_[inputs_[0]] = image_node;
 
-  bool success = true;
-  uint32_t last_outpu_index;
+  bool success = true, next_graph = false;
   for (size_t i = 0; i < operations_.size(); ++i) {
     OperationMac& operation = operations_[i];
     uint32_t type = operation.type;
@@ -203,6 +209,25 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     for (size_t j = 0; j < inputs.size(); ++j) {
       OperandMac& operand = operands_[inputs[j]];
       operand.read_count += 1;
+    }
+
+    // Save temporary MPSNNImageNode that will be recover.
+    MPSNNImageNode* temporary_image;
+    if (next_graph) {
+      mps_image_nodes_[inputs[0]].exportFromGraph = true;
+      // The index of input image.
+      NSString* input_index = [NSString stringWithFormat:@"%d", inputs[0]];
+      mps_image_nodes_[inputs[0]].handle =
+          [[TemporaryImageHandle alloc] initWithLabel:input_index];
+      temporary_image = mps_image_nodes_[inputs[0]];
+      // The 'mps_image_nodes_' need reuse in new graph, and the first node in
+      // graph need a new placeholder , so temporary reset
+      // mps_image_nodes_[inputs[0]] input 0 image, and recover it later as soon
+      // as possible.
+      mps_image_nodes_[inputs[0]] =
+          [[MPSNNImageNode alloc] initWithHandle:nullptr];
+      // TODO(junwei):temporary_inputs_ need to be replaced with initWithHandle.
+      temporary_inputs_.push_back(inputs[0]);
     }
 
     DCHECK(outputs.size() == 1);
@@ -230,21 +255,46 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
       DLOG(ERROR) << "Operation is not supported";
     }
 
-    last_outpu_index = outputs[0];
+    if (next_graph) {
+      // TODO(junwei) Recover the export image node and set temporary image
+      // read count.
+      // mps_image_nodes_[inputs[0]] = temporary_image;
+      next_graph = false;
+    }
+
     if (!success)
       break;
+
+    for (size_t i = 0; i < outputs_.size(); i++) {
+      if (outputs[0] == outputs_[i]) {
+        next_graph = true;
+        // The order of graph is not the same as outputs_.
+        graph_outputs_.push_back(outputs[0]);
+      }
+    }
   }
 
-  DCHECK(outputs_[0] == last_outpu_index);
   if (success) {
-    // The graph itself is an MPSNNGraph object and is connected to the output
-    // of the very last layer in the network
-    graph_.reset([[MPSNNGraph alloc]
-             initWithDevice:GetMPSCNNContext().device
-                resultImage:mps_image_nodes_[outputs_[0]]
-        resultImageIsNeeded:true]);
+    // The output image need to return result with MPSImage.
+    for (size_t i = 0; i < graph_outputs_.size(); i++) {
+      // OutputImageAllocator* image_allocator = [[OutputImageAllocator alloc]
+      // init]; mps_image_nodes_[outputs[0]].imageAllocator = image_allocator;
+      // mps_image_nodes_[outputs[0]].exportFromGraph = true;
 
-    DLOG(ERROR) << base::SysNSStringToUTF8([graph_ debugDescription]);
+      if (@available(macOS 10.13.4, *)) {
+        // The graph itself is an MPSNNGraph object and is connected to the
+        // output of the very last layer in the network
+        graphs_.push_back(base::scoped_nsobject<MPSNNGraph>([[MPSNNGraph alloc]
+                 initWithDevice:GetMPSCNNContext().device
+                    resultImage:mps_image_nodes_[graph_outputs_[i]]
+            resultImageIsNeeded:true]));
+      } else if (@available(macOS 10.13, *)) {
+        graphs_.push_back(base::scoped_nsobject<MPSNNGraph>([[MPSNNGraph alloc]
+            initWithDevice:GetMPSCNNContext().device
+               resultImage:mps_image_nodes_[graph_outputs_[i]]]));
+      }
+      // DLOG(ERROR) << base::SysNSStringToUTF8([graph_ debugDescription]);
+    }
     std::move(callback).Run(mojom::NOT_ERROR);
   } else {
     std::move(callback).Run(mojom::BAD_DATA);

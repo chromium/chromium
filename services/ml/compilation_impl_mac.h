@@ -35,8 +35,7 @@ class CompilationImplMac : public mojom::Compilation {
   void CompileModelWithMPS(FinishCallback callback);
   friend class ExecutionImplMacBNNS;
   friend class ExecutionImplMacMPS;
-  base::scoped_nsobject<MPSNNGraph> graph_;
-  std::map<uint32_t, MPSNNImageNode*> mps_image_nodes_;
+
   std::vector<OperandMac> operands_;
   std::vector<OperationMac> operations_;
   std::map<uint32_t, ValueInfo> values_;
@@ -46,6 +45,15 @@ class CompilationImplMac : public mojom::Compilation {
   std::unique_ptr<int8_t[]> memory_;
   uint32_t memory_size_;
   bool is_bnns_;
+
+  // Used for MPSNNGraph
+  std::vector<base::scoped_nsobject<MPSNNGraph>> graphs_;
+  std::map<uint32_t, MPSNNImageNode*> mps_image_nodes_;
+  std::vector<uint32_t> temporary_inputs_;
+  // TODO(junwei):graph_outputs_ need to be local variable with
+  // output image initWithHandle.
+  std::vector<uint32_t> graph_outputs_;
+
   base::WeakPtrFactory<CompilationImplMac> compilation_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(CompilationImplMac);

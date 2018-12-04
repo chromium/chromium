@@ -47,6 +47,21 @@ API_AVAILABLE(macosx(10.13))
 
 @end
 
+API_AVAILABLE(macosx(10.13))
+@interface OutputImageAllocator : NSObject<MPSImageAllocator>
+
+@property(nonatomic, retain) MPSImage* image;
+
+@end
+
+@interface TemporaryImageHandle : NSObject<MPSHandle>
+
+@property(nonatomic, copy) NSString* label_;
+
+- (id)initWithLabel:(NSString*)label;
+
+@end
+
 namespace ml {
 
 bool GetMPSImageInfo(const OperandMac& operand,

@@ -22,16 +22,15 @@
 #if !defined(MAC_OS_X_VERSION_10_13_4) || \
     MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13_4
 
-API_AVAILABLE(macos(10.13.4))
-@interface MPSCNNArithmetic : MPSCNNBinaryKernel
+@interface MPSNNBinaryArithmeticNode (HighSierraSDK)
 @property (readwrite, nonatomic) float minimumValue;
 @property (readwrite, nonatomic) float maximumValue;
 @end
-API_AVAILABLE(macos(10.13.4))
-@interface MPSCNNAdd : MPSCNNArithmetic
-@end
-API_AVAILABLE(macos(10.13.4))
-@interface MPSCNNMultiply : MPSCNNArithmetic
+
+@interface MPSNNGraph (HighSierraSDK)
+- (instancetype)initWithDevice:(id<MTLDevice>)device
+                   resultImage:(MPSNNImageNode*)resultImage
+           resultImageIsNeeded:(BOOL)resultIsNeeded;
 @end
 
 #endif  // MAC_OS_X_VERSION_10_13_4

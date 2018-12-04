@@ -552,7 +552,8 @@ bool CompileFullyConnected(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
   input.dimensions = std::vector<uint32_t>(
       {product(input.dimensions) / input_size, input_size});
 
-  MPSCNNNeuron* relu = CreateMPSCNNNeuron(operation.fuse_code);
+  int32_t fuse_code = getScalarInt32(values, inputs[3], memory.get());
+  MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
 
   // inputs[1] is index of weights, values_.at(inputs[1]) is value info
   // of weights.

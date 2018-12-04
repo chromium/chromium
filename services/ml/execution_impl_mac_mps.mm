@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/strings/sys_string_conversions.h"
 #include "services/ml/ml_utils_mac.h"
 #include "services/ml/mps_protocols_impl.h"
 #include "services/ml/mpscnn_context.h"
@@ -79,6 +80,15 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
   return mpsimage_desc;
 }
 
+API_AVAILABLE(macosx(10.13))
+void SaveTemporaryImages(std::map<uint32_t, MPSImage*>& temporary_images,
+                         const NSMutableArray<MPSImage*>* intermediate_images) {
+  for (MPSImage* image in intermediate_images) {
+    uint32_t input_index = [image.label intValue];
+    temporary_images[input_index] = image;
+  }
+}
+
 }  // namespace
 
 ExecutionImplMacMPS::ExecutionImplMacMPS(
@@ -96,6 +106,7 @@ ExecutionImplMacMPS::ExecutionImplMacMPS(
                              compilation_->inputs_);
     SetupMPSImageForOperands(constant_mpsimages_, constant_mtlbuffers_,
                              compilation_->constants_);
+    CreateOutputMTLBuffer();
   }
 }
 
@@ -133,6 +144,19 @@ void API_AVAILABLE(macosx(10.13)) ExecutionImplMacMPS::SetupMPSImageForOperands(
           newBufferWithLength:operand.requiredSize()
                       options:MTLResourceOptionCPUCacheModeWriteCombined]);
     }
+  }
+}
+
+API_AVAILABLE(macosx(10.13))
+void ExecutionImplMacMPS::CreateOutputMTLBuffer() {
+  for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
+    const OperandMac& operand =
+        compilation_->operands_[compilation_->outputs_[i]];
+    // TODO(junwei), the output_mtlbuffers_ need to be removed instead of output
+    // image size.
+    output_mtlbuffers_.push_back([GetMPSCNNContext().device
+        newBufferWithLength:operand.requiredSize()
+                    options:MTLResourceOptionCPUCacheModeWriteCombined]);
   }
 }
 
@@ -175,17 +199,42 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           [image_array addObject:mps_img];
         }
 
-        MPSImage* output_image_graph =
-            [compilation_->graph_ encodeToCommandBuffer:command_buffer
-                                           sourceImages:image_array];
-        const OperandMac& operand =
-            compilation_->operands_[compilation_->outputs_[0]];
-        id<MTLBuffer> output_buffer = [GetMPSCNNContext().device
-            newBufferWithLength:operand.requiredSize()
-                        options:MTLResourceOptionCPUCacheModeWriteCombined];
-        DCHECK(compilation_->outputs_.size() == 1);
+        std::map<uint32_t, MPSImage*> output_mps_images;
+        std::map<uint32_t, MPSImage*> temporary_mps_images;
+        for (size_t i = 0; i < compilation_->graphs_.size(); i++) {
+          // temporary_inputs_[i -1] is the temporary input image index.
+          // temporary_mps_images[temporary_inputs_[i -1]] is temporary input
+          // image.
+          NSMutableArray<MPSImage*>* source_images;
+          if (i == 0) {
+            // image_array is First graph
+            source_images = image_array;
+          } else {
+            source_images = [NSMutableArray arrayWithCapacity:1];
+            // Find temporary input images of next graph.
+            [source_images
+                addObject:temporary_mps_images[compilation_
+                                                   ->temporary_inputs_[i - 1]]];
+          }
+          NSMutableArray<MPSImage*>* intermediate_images =
+              [NSMutableArray arrayWithCapacity:1];
+
+          MPSImage* output_image_graph = [compilation_->graphs_[i]
+              encodeToCommandBuffer:command_buffer
+                       sourceImages:source_images
+                       sourceStates:nullptr
+                 intermediateImages:intermediate_images
+                  destinationStates:nullptr];
+
+          SaveTemporaryImages(temporary_mps_images, intermediate_images);
+          // The order of graph is not the same as compilation_->output_.
+          output_mps_images[compilation_->graph_outputs_[i]] =
+              output_image_graph;
+        }
+
         for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
-          MPSImage* output_img = output_image_graph;
+          MPSImage* output_img = output_mps_images[compilation_->outputs_[i]];
+          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
 
           id<MTLComputeCommandEncoder> encoder =
               [command_buffer computeCommandEncoder];
@@ -213,6 +262,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
 
         for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
           std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
+          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
           memcpy(output_data->mapping.get(), [output_buffer contents],
                  output_data->length);
         }

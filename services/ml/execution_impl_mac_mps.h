@@ -40,6 +40,7 @@ class ExecutionImplMacMPS : public mojom::Execution {
       SetupMPSImageForOperands(std::vector<base::scoped_nsobject<MPSImage>>&,
                                std::vector<id<MTLBuffer>>&,
                                const std::vector<uint32_t>&);
+  void CreateOutputMTLBuffer();
 
   void API_AVAILABLE(macos(10_13)) UploadToMPSImage(const MPSImage*,
                                                     const id<MTLBuffer>&,
@@ -55,6 +56,7 @@ class ExecutionImplMacMPS : public mojom::Execution {
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
+  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> constant_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> constant_mtlbuffers_;

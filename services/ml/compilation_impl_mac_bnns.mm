@@ -464,7 +464,6 @@ bool CompileFullyConnectedBNNS(OperationMac& operation,
                                const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileFullyConnectedBNNS";
   DLOG_IF(FATAL, operation.type != mojom::FULLY_CONNECTED);
-  int32_t in_size, out_size;
   const std::vector<uint32_t> inputs = operation.inputs;
   const std::vector<uint32_t> outputs = operation.outputs;
   const OperandMac& output = operands[outputs[0]];
@@ -493,8 +492,6 @@ bool CompileFullyConnectedBNNS(OperationMac& operation,
   operation.offset_y = 0;
   DLOG(INFO) << "  num_unit: " << num_unit;
   DLOG(INFO) << "  input_batch_size: " << input_batch_size;
-  DLOG(INFO) << "  input_size: " << in_size;
-  DLOG(INFO) << "  output_size: " << out_size;
 
   if (@available(macOS 10.13, *)) {
     BNNSFilterParameters filter_params;
