@@ -123,14 +123,6 @@ bool ExecutionImplMacBNNS::PrepareBnnsOperandsMemory() {
       return false;
     }
   }
-  LOG(ERROR) << "compilation_->operands_.size() : "
-             << compilation_->operands_.size();
-  LOG(ERROR) << "compilation_->inputs_.size(): "
-             << compilation_->inputs_.size();
-  LOG(ERROR) << "compilation_->outputs_.size(): "
-             << compilation_->outputs_.size();
-  LOG(ERROR) << "bnns_operands_memory_map_.size() : "
-             << bnns_operands_memory_map_.size();
   return true;
 }
 
@@ -249,7 +241,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                     input = (float*)inputs_info_[0]->mapping.get();
                     is_outer_input = false;
                   } else {
-                    input = operation.concatenations[index - 1];
+                    input = operation.extend_input[index - 1];
                   }
                   if (!TransposeForInput(operation, operand, src, input,
                                          true)) {
@@ -270,6 +262,33 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                   }
                 }
               }
+            } else if (operation.local_operation == KAdd) {
+              float* input_a_values = src;
+              float* input_b_values =
+                  (i == 0 ? operation.extend_input[0]
+                          : bnns_operands_memory_map_[operation.inputs[1]]);
+              const OperandMac& output =
+                  compilation_->operands_[operation.outputs[0]];
+              int32_t output_length = product(output.dimensions);
+              float* output_vector =
+                  (float*)malloc(output_length * sizeof(float));
+              if (output_vector == nullptr) {
+                DLOG(ERROR) << "Fail to alloc memory!";
+                success = false;
+              }
+              vDSP_vadd(input_a_values, 1, input_b_values, 1, output_vector, 1,
+                        output_length);
+              if (operation.filter != nullptr) {
+                int result =
+                    BNNSFilterApply(operation.filter, output_vector, des);
+                if (result == -1) {
+                  success = false;
+                  DLOG(ERROR) << "Fail to apply a activity function after add!";
+                }
+              } else {
+                memcpy(des, output_vector, output_length);
+              }
+              free(output_vector);
             }
 
             if (is_outer_input && src != nullptr && tmp_src_malloc) {

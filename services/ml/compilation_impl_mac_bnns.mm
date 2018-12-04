@@ -11,6 +11,7 @@
 
 namespace ml {
 
+API_AVAILABLE(macosx(10.13))
 void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
                                          OperationMac& operation,
                                          int32_t& padding_top,
@@ -46,6 +47,65 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
   }
 }
 
+API_AVAILABLE(macosx(10.13))
+bool CompileAdd(OperationMac& operation,
+                const std::map<uint32_t, ValueInfo>& values,
+                const std::unique_ptr<int8_t[]>& memory,
+                const std::vector<OperandMac>& operands,
+                bool is_add_first) {
+  DLOG(INFO) << "CompilationImplMac::CompileAdd";
+  DLOG_IF(FATAL, operation.type != mojom::ADD);
+
+  operation.local_operation = KAdd;
+  operation.offset_x = 0;
+  operation.offset_y = 0;
+
+  const std::vector<uint32_t> inputs = operation.inputs;
+  if (is_add_first) {
+    operation.extend_input.push_back(
+        reinterpret_cast<float*>(memory.get() + values.at(inputs[1]).offset));
+  }
+  const int32_t fuse_code = getScalarInt32(values, inputs[2], memory.get());
+  DLOG(INFO) << "FUSE_CODE:  " << fuse_code;
+
+  BNNSVectorDescriptor in_desc, out_desc;
+  const OperandMac& output = operands[operation.outputs[0]];
+  int32_t size = product(output.dimensions);
+  in_desc.size = size;
+  in_desc.data_type = BNNSDataTypeFloat32;
+  in_desc.data_scale = 0;
+  in_desc.data_bias = 0;
+
+  out_desc.size = size;
+  out_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.data_scale = 0;
+  out_desc.data_bias = 0;
+  BNNSActivation activation;
+  bzero(&activation, sizeof(activation));
+  if (fuse_code == mojom::FUSED_RELU) {
+    activation.function = BNNSActivationFunctionRectifiedLinear;
+  } else if (fuse_code == mojom::FUSED_RELU1) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = -1;
+    activation.beta = 1;
+  } else if (fuse_code == mojom::FUSED_RELU6) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = 0;
+    activation.beta = 6;
+  }
+  BNNSFilterParameters filter_params;
+  bzero(&filter_params, sizeof(filter_params));
+  operation.filter = BNNSFilterCreateVectorActivationLayer(
+      &in_desc, &out_desc, &activation, &filter_params);
+  if (operation.filter == nullptr) {
+    DLOG(ERROR) << "BNNS Fail to Create activation function!";
+    return false;
+  }
+
+  return true;
+}
+
+API_AVAILABLE(macosx(10.13))
 bool CompileConv2DBNNS(OperationMac& operation,
                        const std::map<uint32_t, ValueInfo>& values,
                        const std::unique_ptr<int8_t[]>& memory,
@@ -92,120 +152,120 @@ bool CompileConv2DBNNS(OperationMac& operation,
   DLOG(INFO) << "  stride_height: " << stride_height;
   DLOG(INFO) << "  fuse_code: " << fuse_code;
 
-  if (@available(macOS 10.13, *)) {
-    operation.input_batch_size = input_batch_size;
-    operation.fuse_code = fuse_code;
+  operation.input_batch_size = input_batch_size;
+  operation.fuse_code = fuse_code;
 
-    // build conv weights BNNSLayerData structure
-    BNNSConvolutionLayerParameters conv_params;
-    BNNSFilterParameters filter_params;
-    bzero(&filter_params, sizeof(filter_params));
-    BNNSImageStackDescriptor in_desc, out_desc;
+  // build conv weights BNNSLayerData structure
+  BNNSConvolutionLayerParameters conv_params;
+  BNNSFilterParameters filter_params;
+  bzero(&filter_params, sizeof(filter_params));
+  BNNSImageStackDescriptor in_desc, out_desc;
 
-    ValueInfo weights_value_info = values.at(inputs[1]);
-    const float* source_weights = reinterpret_cast<const float*>(
-        memory.get() + weights_value_info.offset);
-    ValueInfo bias_value_info = values.at(inputs[2]);
-    const float* source_bias =
-        reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
+  ValueInfo weights_value_info = values.at(inputs[1]);
+  const float* source_weights =
+      reinterpret_cast<const float*>(memory.get() + weights_value_info.offset);
+  ValueInfo bias_value_info = values.at(inputs[2]);
+  const float* source_bias =
+      reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
 
-    // build conv_weights
-    BNNSLayerData conv_weights;
-    // The weights will be destroyed by BNNSFilterDestroy
-    float* new_filter_weights = (float*)malloc(
-        sizeof(float) * depth_in * depth_out * filter_height * filter_width);
-    if (new_filter_weights == nullptr) {
-      DLOG(ERROR) << "Fail to alloc memory!";
-      return false;
-    }
+  // build conv_weights
+  BNNSLayerData conv_weights;
+  // The weights will be destroyed by BNNSFilterDestroy
+  float* new_filter_weights = (float*)malloc(
+      sizeof(float) * depth_in * depth_out * filter_height * filter_width);
+  if (new_filter_weights == nullptr) {
+    DLOG(ERROR) << "Fail to alloc memory!";
+    return false;
+  }
 
-    for (auto o = 0; o < depth_out; ++o) {
-      for (auto h = 0; h < filter_height; ++h) {
-        for (auto w = 0; w < filter_width; ++w) {
-          for (auto i = 0; i < depth_in; ++i) {
-            auto old_idx = o * filter_height * filter_width * depth_in +
-                           h * filter_width * depth_in + w * depth_in + i;
-            auto new_idx =
-                w + filter_width * (h + filter_height * (i + depth_in * o));
-            new_filter_weights[new_idx] = source_weights[old_idx];
-          }
+  for (auto o = 0; o < depth_out; ++o) {
+    for (auto h = 0; h < filter_height; ++h) {
+      for (auto w = 0; w < filter_width; ++w) {
+        for (auto i = 0; i < depth_in; ++i) {
+          auto old_idx = o * filter_height * filter_width * depth_in +
+                         h * filter_width * depth_in + w * depth_in + i;
+          auto new_idx =
+              w + filter_width * (h + filter_height * (i + depth_in * o));
+          new_filter_weights[new_idx] = source_weights[old_idx];
         }
       }
     }
-
-    conv_weights.data = new_filter_weights;
-    conv_weights.data_type = BNNSDataTypeFloat32;
-    // we can just ignore data_scale, data_bias and data_table
-    // for the data type in float32
-    conv_weights.data_scale = 0.0;
-    conv_weights.data_bias = 0.0;
-    conv_weights.data_table = nullptr;
-
-    // build conv bias
-    BNNSLayerData conv_bias;
-    conv_bias.data = source_bias;
-    conv_bias.data_type = BNNSDataTypeFloat32;
-    // we can just ignore data_scale, data_bias and data_table
-    // for the data type in float32
-    conv_bias.data_scale = 0.0;
-    conv_bias.data_bias = 0.0;
-    conv_bias.data_table = nullptr;
-
-    operation.offset_x = 0;
-    operation.offset_y = 0;
-
-    if (implicit_padding) {
-      ComputeBNNSOffsetForImplicitPadding(
-          padding_code == mojom::PADDING_SAME, operation, padding_top,
-          padding_left, output_height, stride_height, filter_height,
-          input_height, output_width, stride_width, filter_width, input_width);
-    }
-    DLOG(INFO) << "PADDING_LEFT: " << padding_left;
-    DLOG(INFO) << "PADDING_TOP:" << padding_top;
-
-    conv_params.x_stride = stride_width;
-    conv_params.y_stride = stride_height;
-    conv_params.x_padding = padding_left;
-    conv_params.y_padding = padding_top;
-    conv_params.k_width = filter_width;
-    conv_params.k_height = filter_height;
-    conv_params.in_channels = depth_in;
-    conv_params.out_channels = depth_out;
-    conv_params.weights = conv_weights;
-    conv_params.bias = conv_bias;
-    conv_params.activation = activation;
-    // If 0, use the best number of threads for the current machine.
-    // https://developer.apple.com/documentation/accelerate/bnnsfilterparameters/1642345-n_threads?language=objc
-    filter_params.n_threads = 0;
-    filter_params.alloc_memory = nullptr;
-    filter_params.free_memory = nullptr;
-
-    size_t fix_input_width = input_width + operation.offset_x;
-    size_t fix_input_height = input_height + operation.offset_y;
-    DLOG(INFO) << "FIX_INPUT_WIDTH: " << fix_input_width;
-    DLOG(INFO) << "FIX_INPUT_HEIGHT: " << fix_input_height;
-    in_desc.width = fix_input_width;
-    in_desc.height = fix_input_height;
-    in_desc.channels = depth_in;
-    in_desc.row_stride = fix_input_width;
-    in_desc.image_stride = fix_input_width * fix_input_height;
-    in_desc.data_type = BNNSDataTypeFloat32;
-    out_desc.width = output_width;
-    out_desc.height = output_height;
-    out_desc.channels = depth_out;
-    out_desc.row_stride = output_width;
-    out_desc.image_stride = output_width * output_height;
-    out_desc.data_type = BNNSDataTypeFloat32;
-    operation.filter = BNNSFilterCreateConvolutionLayer(
-        &in_desc, &out_desc, &conv_params, &filter_params);
-    if (operation.filter == nullptr) {
-      DLOG(ERROR) << "BNNS Fail to Create ConvolutionLayer";
-      return false;
-    }
   }
+
+  conv_weights.data = new_filter_weights;
+  conv_weights.data_type = BNNSDataTypeFloat32;
+  // we can just ignore data_scale, data_bias and data_table
+  // for the data type in float32
+  conv_weights.data_scale = 0.0;
+  conv_weights.data_bias = 0.0;
+  conv_weights.data_table = nullptr;
+
+  // build conv bias
+  BNNSLayerData conv_bias;
+  conv_bias.data = source_bias;
+  conv_bias.data_type = BNNSDataTypeFloat32;
+  // we can just ignore data_scale, data_bias and data_table
+  // for the data type in float32
+  conv_bias.data_scale = 0.0;
+  conv_bias.data_bias = 0.0;
+  conv_bias.data_table = nullptr;
+
+  operation.offset_x = 0;
+  operation.offset_y = 0;
+
+  if (implicit_padding) {
+    ComputeBNNSOffsetForImplicitPadding(
+        padding_code == mojom::PADDING_SAME, operation, padding_top,
+        padding_left, output_height, stride_height, filter_height, input_height,
+        output_width, stride_width, filter_width, input_width);
+  }
+  DLOG(INFO) << "PADDING_LEFT: " << padding_left;
+  DLOG(INFO) << "PADDING_TOP:" << padding_top;
+
+  conv_params.x_stride = stride_width;
+  conv_params.y_stride = stride_height;
+  conv_params.x_padding = padding_left;
+  conv_params.y_padding = padding_top;
+  conv_params.k_width = filter_width;
+  conv_params.k_height = filter_height;
+  conv_params.in_channels = depth_in;
+  conv_params.out_channels = depth_out;
+  conv_params.weights = conv_weights;
+  conv_params.bias = conv_bias;
+  conv_params.activation = activation;
+  // If 0, use the best number of threads for the current machine.
+  // https://developer.apple.com/documentation/accelerate/bnnsfilterparameters/1642345-n_threads?language=objc
+  filter_params.n_threads = 0;
+  filter_params.alloc_memory = nullptr;
+  filter_params.free_memory = nullptr;
+
+  size_t fix_input_width = input_width + operation.offset_x;
+  size_t fix_input_height = input_height + operation.offset_y;
+  DLOG(INFO) << "FIX_INPUT_WIDTH: " << fix_input_width;
+  DLOG(INFO) << "FIX_INPUT_HEIGHT: " << fix_input_height;
+  in_desc.width = fix_input_width;
+  in_desc.height = fix_input_height;
+  in_desc.channels = depth_in;
+  in_desc.row_stride = fix_input_width;
+  in_desc.image_stride = fix_input_width * fix_input_height;
+  in_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.width = output_width;
+  out_desc.height = output_height;
+  out_desc.channels = depth_out;
+  out_desc.row_stride = output_width;
+  out_desc.image_stride = output_width * output_height;
+  out_desc.data_type = BNNSDataTypeFloat32;
+  operation.filter = BNNSFilterCreateConvolutionLayer(
+      &in_desc, &out_desc, &conv_params, &filter_params);
+  if (operation.filter == nullptr) {
+    DLOG(ERROR) << "BNNS Fail to Create ConvolutionLayer";
+    return false;
+  }
+
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
 bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
                                    const std::map<uint32_t, ValueInfo>& values,
                                    const std::unique_ptr<int8_t[]>& memory,
@@ -284,88 +344,87 @@ bool CompileAverageOrMaxPool2DBNNS(OperationMac& operation,
         stride_width, filter_width, input_width);
   }
 
-  if (@available(macOS 10.13, *)) {
-    BNNSLayerData layer_data;
-    BNNSFilterParameters filter_params;
-    BNNSPoolingLayerParameters pool;
-    BNNSImageStackDescriptor in_desc, out_desc;
-    BNNSActivation activation;
+  BNNSLayerData layer_data;
+  BNNSFilterParameters filter_params;
+  BNNSPoolingLayerParameters pool;
+  BNNSImageStackDescriptor in_desc, out_desc;
+  BNNSActivation activation;
 
-    layer_data.data_type = BNNSDataTypeFloat32;
-    bzero(&filter_params, sizeof(filter_params));
-    bzero(&activation, sizeof(activation));
-    filter_params.n_threads = 0;
-    filter_params.alloc_memory = nullptr;
-    filter_params.free_memory = nullptr;
+  layer_data.data_type = BNNSDataTypeFloat32;
+  bzero(&filter_params, sizeof(filter_params));
+  bzero(&activation, sizeof(activation));
+  filter_params.n_threads = 0;
+  filter_params.alloc_memory = nullptr;
+  filter_params.free_memory = nullptr;
 
-    if (fuse_code == mojom::FUSED_RELU6) {
-      activation.function = BNNSActivationFunctionClamp;
-      activation.alpha = 0;
-      activation.beta = 6;
-    } else if (fuse_code == mojom::FUSED_RELU) {
-      activation.function = BNNSActivationFunctionRectifiedLinear;
-    } else if (fuse_code == mojom::FUSED_RELU1) {
-      activation.function = BNNSActivationFunctionClamp;
-      activation.alpha = -1;
-      activation.beta = 1;
-    }
-    pool.x_stride = stride_width;
-    pool.y_stride = stride_height;
-    pool.x_padding = x_padding;
-    pool.y_padding = y_padding;
-    pool.k_width = filter_width;
-    pool.k_height = filter_height;
-    pool.in_channels = depth_in;
-    pool.out_channels = depth_out;
-    pool.activation = activation;
+  if (fuse_code == mojom::FUSED_RELU6) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = 0;
+    activation.beta = 6;
+  } else if (fuse_code == mojom::FUSED_RELU) {
+    activation.function = BNNSActivationFunctionRectifiedLinear;
+  } else if (fuse_code == mojom::FUSED_RELU1) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = -1;
+    activation.beta = 1;
+  }
+  pool.x_stride = stride_width;
+  pool.y_stride = stride_height;
+  pool.x_padding = x_padding;
+  pool.y_padding = y_padding;
+  pool.k_width = filter_width;
+  pool.k_height = filter_height;
+  pool.in_channels = depth_in;
+  pool.out_channels = depth_out;
+  pool.activation = activation;
 
-    // build pooling bias
-    BNNSLayerData pooling_bias;
-    float* pooling_bias_data = (float*)malloc(sizeof(float) * depth_out);
-    if (pooling_bias_data == nullptr) {
-      DLOG(ERROR) << "Fail to alloc memory!";
-      return false;
-    }
-    bzero(pooling_bias_data, sizeof(float) * depth_out);
-    pooling_bias.data = pooling_bias_data;
-    pooling_bias.data_type = BNNSDataTypeFloat32;
-    pooling_bias.data_scale = 0.0;
-    pooling_bias.data_bias = 0.0;
-    pooling_bias.data_table = nullptr;
-    pool.bias = pooling_bias;
+  // build pooling bias
+  BNNSLayerData pooling_bias;
+  float* pooling_bias_data = (float*)malloc(sizeof(float) * depth_out);
+  if (pooling_bias_data == nullptr) {
+    DLOG(ERROR) << "Fail to alloc memory!";
+    return false;
+  }
+  bzero(pooling_bias_data, sizeof(float) * depth_out);
+  pooling_bias.data = pooling_bias_data;
+  pooling_bias.data_type = BNNSDataTypeFloat32;
+  pooling_bias.data_scale = 0.0;
+  pooling_bias.data_bias = 0.0;
+  pooling_bias.data_table = nullptr;
+  pool.bias = pooling_bias;
 
-    if (operation.type == mojom::AVERAGE_POOL_2D) {
-      pool.pooling_function = BNNSPoolingFunctionAverage;
-    } else if (operation.type == mojom::MAX_POOL_2D) {
-      pool.pooling_function = BNNSPoolingFunctionMax;
-    } else {
-      DLOG(ERROR) << "Operation " << operation.type << " is not supported";
-      return false;
-    }
+  if (operation.type == mojom::AVERAGE_POOL_2D) {
+    pool.pooling_function = BNNSPoolingFunctionAverage;
+  } else if (operation.type == mojom::MAX_POOL_2D) {
+    pool.pooling_function = BNNSPoolingFunctionMax;
+  } else {
+    DLOG(ERROR) << "Operation " << operation.type << " is not supported";
+    return false;
+  }
 
-    in_desc.width = input_width;
-    in_desc.height = input_height;
-    in_desc.channels = depth_in;
-    in_desc.row_stride = input_width;
-    in_desc.image_stride = input_width * input_height;
-    in_desc.data_type = BNNSDataTypeFloat32;
-    out_desc.width = output_width;
-    out_desc.height = output_height;
-    out_desc.channels = depth_out;
-    out_desc.row_stride = output_width;
-    out_desc.image_stride = output_width * output_height;
-    out_desc.data_type = BNNSDataTypeFloat32;
+  in_desc.width = input_width;
+  in_desc.height = input_height;
+  in_desc.channels = depth_in;
+  in_desc.row_stride = input_width;
+  in_desc.image_stride = input_width * input_height;
+  in_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.width = output_width;
+  out_desc.height = output_height;
+  out_desc.channels = depth_out;
+  out_desc.row_stride = output_width;
+  out_desc.image_stride = output_width * output_height;
+  out_desc.data_type = BNNSDataTypeFloat32;
 
-    operation.filter = BNNSFilterCreatePoolingLayer(&in_desc, &out_desc, &pool,
-                                                    &filter_params);
-    if (operation.filter == nullptr) {
-      DLOG(ERROR) << "BNNS Fail to Create PoolingLayer";
-      return false;
-    }
+  operation.filter =
+      BNNSFilterCreatePoolingLayer(&in_desc, &out_desc, &pool, &filter_params);
+  if (operation.filter == nullptr) {
+    DLOG(ERROR) << "BNNS Fail to Create PoolingLayer";
+    return false;
   }
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
 bool CompileSoftmaxBNNS(OperationMac& operation,
                         const std::map<uint32_t, ValueInfo>& values,
                         const std::unique_ptr<int8_t[]>& memory,
@@ -386,40 +445,38 @@ bool CompileSoftmaxBNNS(OperationMac& operation,
   operation.offset_y = 0;
 
   operation.input_batch_size = input.dimensions[0];
-
-  if (@available(macOS 10.13, *)) {
-    BNNSVectorDescriptor in_desc, out_desc;
-    int32_t size = 1;
-    for (size_t i = 1; i < input.dimensions.size(); i++) {
-      size = size * input.dimensions[i];
-    }
-    in_desc.size = size;
-    in_desc.data_type = BNNSDataTypeFloat32;
-    in_desc.data_scale = 0;
-    in_desc.data_bias = 0;
-    size = 1;
-    for (size_t i = 1; i < output.dimensions.size(); i++) {
-      size = size * output.dimensions[i];
-    }
-    out_desc.size = size;
-    out_desc.data_type = BNNSDataTypeFloat32;
-    out_desc.data_scale = 0;
-    out_desc.data_bias = 0;
-    BNNSActivation activation;
-    bzero(&activation, sizeof(activation));
-    activation.function = BNNSActivationFunctionSoftmax;
-    BNNSFilterParameters filter_params;
-    bzero(&filter_params, sizeof(filter_params));
-    operation.filter = BNNSFilterCreateVectorActivationLayer(
-        &in_desc, &out_desc, &activation, &filter_params);
-    if (operation.filter == nullptr) {
-      DLOG(ERROR) << "BNNS Fail to Create SoftmaxLayer";
-      return false;
-    }
+  BNNSVectorDescriptor in_desc, out_desc;
+  int32_t size = 1;
+  for (size_t i = 1; i < input.dimensions.size(); i++) {
+    size = size * input.dimensions[i];
+  }
+  in_desc.size = size;
+  in_desc.data_type = BNNSDataTypeFloat32;
+  in_desc.data_scale = 0;
+  in_desc.data_bias = 0;
+  size = 1;
+  for (size_t i = 1; i < output.dimensions.size(); i++) {
+    size = size * output.dimensions[i];
+  }
+  out_desc.size = size;
+  out_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.data_scale = 0;
+  out_desc.data_bias = 0;
+  BNNSActivation activation;
+  bzero(&activation, sizeof(activation));
+  activation.function = BNNSActivationFunctionSoftmax;
+  BNNSFilterParameters filter_params;
+  bzero(&filter_params, sizeof(filter_params));
+  operation.filter = BNNSFilterCreateVectorActivationLayer(
+      &in_desc, &out_desc, &activation, &filter_params);
+  if (operation.filter == nullptr) {
+    DLOG(ERROR) << "BNNS Fail to Create SoftmaxLayer";
+    return false;
   }
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
 bool CompileReshapeBNNS(OperationMac& reshape) {
   DLOG(INFO) << "CompilationImplMac::CompileReshapeBNNS";
   DLOG_IF(FATAL, reshape.type != mojom::RESHAPE);
@@ -428,6 +485,7 @@ bool CompileReshapeBNNS(OperationMac& reshape) {
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
 bool CompileConcatenationBNNS(OperationMac& concat,
                               const std::map<uint32_t, ValueInfo>& values,
                               const std::unique_ptr<int8_t[]>& memory,
@@ -445,7 +503,7 @@ bool CompileConcatenationBNNS(OperationMac& concat,
     for (size_t i = 1; i < inputs.size() - 1; ++i) {
       float* input_value =
           reinterpret_cast<float*>(memory.get() + values.at(inputs[i]).offset);
-      concat.concatenations.push_back(input_value);
+      concat.extend_input.push_back(input_value);
     }
   }
 
@@ -458,6 +516,7 @@ bool CompileConcatenationBNNS(OperationMac& concat,
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
 bool CompileFullyConnectedBNNS(OperationMac& operation,
                                const std::map<uint32_t, ValueInfo>& values,
                                const std::unique_ptr<int8_t[]>& memory,
@@ -493,76 +552,74 @@ bool CompileFullyConnectedBNNS(OperationMac& operation,
   DLOG(INFO) << "  num_unit: " << num_unit;
   DLOG(INFO) << "  input_batch_size: " << input_batch_size;
 
-  if (@available(macOS 10.13, *)) {
-    BNNSFilterParameters filter_params;
-    bzero(&filter_params, sizeof(filter_params));
+  BNNSFilterParameters filter_params;
+  bzero(&filter_params, sizeof(filter_params));
 
-    ValueInfo weights_value_info = values.at(weights_idx);
-    const float* source_weights = reinterpret_cast<const float*>(
-        memory.get() + weights_value_info.offset);
-    ValueInfo bias_value_info = values.at(inputs[i++]);
-    const float* source_bias =
-        reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
+  ValueInfo weights_value_info = values.at(weights_idx);
+  const float* source_weights =
+      reinterpret_cast<const float*>(memory.get() + weights_value_info.offset);
+  ValueInfo bias_value_info = values.at(inputs[i++]);
+  const float* source_bias =
+      reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
 
-    int32_t fuse_code;
-    fuse_code = getScalarInt32(values, inputs[i++], memory.get());
-    DLOG(INFO) << "  Fuse_code: " << fuse_code;
-    BNNSActivation activation;
-    bzero(&activation, sizeof(activation));
-    if (fuse_code == mojom::FUSED_RELU) {
-      activation.function = BNNSActivationFunctionRectifiedLinear;
-    } else if (fuse_code == mojom::FUSED_RELU1) {
-      activation.function = BNNSActivationFunctionClamp;
-      activation.alpha = -1;
-      activation.beta = 1;
-    } else if (fuse_code == mojom::FUSED_RELU6) {
-      activation.function = BNNSActivationFunctionClamp;
-      activation.alpha = 0;
-      activation.beta = 6;
-    }
+  int32_t fuse_code;
+  fuse_code = getScalarInt32(values, inputs[i++], memory.get());
+  DLOG(INFO) << "  Fuse_code: " << fuse_code;
+  BNNSActivation activation;
+  bzero(&activation, sizeof(activation));
+  if (fuse_code == mojom::FUSED_RELU) {
+    activation.function = BNNSActivationFunctionRectifiedLinear;
+  } else if (fuse_code == mojom::FUSED_RELU1) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = -1;
+    activation.beta = 1;
+  } else if (fuse_code == mojom::FUSED_RELU6) {
+    activation.function = BNNSActivationFunctionClamp;
+    activation.alpha = 0;
+    activation.beta = 6;
+  }
 
-    BNNSLayerData connected_weights;
-    connected_weights.data = source_weights;
-    connected_weights.data_type = BNNSDataTypeFloat32;
-    // we can just ignore data_scale, data_bias and data_table
-    // for the data type in float32
-    connected_weights.data_scale = 0.0;
-    connected_weights.data_bias = 0.0;
-    connected_weights.data_table = nullptr;
+  BNNSLayerData connected_weights;
+  connected_weights.data = source_weights;
+  connected_weights.data_type = BNNSDataTypeFloat32;
+  // we can just ignore data_scale, data_bias and data_table
+  // for the data type in float32
+  connected_weights.data_scale = 0.0;
+  connected_weights.data_bias = 0.0;
+  connected_weights.data_table = nullptr;
 
-    BNNSLayerData connected_bias;
-    connected_bias.data = source_bias;
-    connected_bias.data_type = BNNSDataTypeFloat32;
-    // we can just ignore data_scale, data_bias and data_table
-    // for the data type in float32
-    connected_bias.data_scale = 0.0;
-    connected_bias.data_bias = 0.0;
-    connected_bias.data_table = nullptr;
+  BNNSLayerData connected_bias;
+  connected_bias.data = source_bias;
+  connected_bias.data_type = BNNSDataTypeFloat32;
+  // we can just ignore data_scale, data_bias and data_table
+  // for the data type in float32
+  connected_bias.data_scale = 0.0;
+  connected_bias.data_bias = 0.0;
+  connected_bias.data_table = nullptr;
 
-    BNNSFullyConnectedLayerParameters connected_params;
-    connected_params.in_size = input_size;
-    connected_params.out_size = output_size;
-    connected_params.weights = connected_weights;
-    connected_params.bias = connected_bias;
-    connected_params.activation = activation;
+  BNNSFullyConnectedLayerParameters connected_params;
+  connected_params.in_size = input_size;
+  connected_params.out_size = output_size;
+  connected_params.weights = connected_weights;
+  connected_params.bias = connected_bias;
+  connected_params.activation = activation;
 
-    BNNSVectorDescriptor in_desc, out_desc;
-    in_desc.size = input_size;
-    in_desc.data_type = BNNSDataTypeFloat32;
-    in_desc.data_scale = 0;
-    in_desc.data_bias = 0;
+  BNNSVectorDescriptor in_desc, out_desc;
+  in_desc.size = input_size;
+  in_desc.data_type = BNNSDataTypeFloat32;
+  in_desc.data_scale = 0;
+  in_desc.data_bias = 0;
 
-    out_desc.size = output_size;
-    out_desc.data_type = BNNSDataTypeFloat32;
-    out_desc.data_scale = 0;
-    out_desc.data_bias = 0;
+  out_desc.size = output_size;
+  out_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.data_scale = 0;
+  out_desc.data_bias = 0;
 
-    operation.filter = BNNSFilterCreateFullyConnectedLayer(
-        &in_desc, &out_desc, &connected_params, &filter_params);
-    if (operation.filter == nullptr) {
-      LOG(ERROR) << "BNNS Fail to Create FullyConnctedLayer";
-      return false;
-    }
+  operation.filter = BNNSFilterCreateFullyConnectedLayer(
+      &in_desc, &out_desc, &connected_params, &filter_params);
+  if (operation.filter == nullptr) {
+    LOG(ERROR) << "BNNS Fail to Create FullyConnctedLayer";
+    return false;
   }
   return true;
 }

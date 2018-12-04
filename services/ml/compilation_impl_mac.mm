@@ -61,11 +61,12 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
   DLOG(INFO) << "CompilationImplMac::Finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
-  if ((is_bnns_ =
-           (preference == mojom::PREFER_FAST_SINGLE_ANSWER) ? true : false)) {
-    CompileModelWithBNNS(std::move(callback));
-  } else if (@available(macOS 10.13, *)) {
-    CompileModelWithMPS(std::move(callback));
+  if (@available(macOS 10.13, *)) {
+    if ((is_bnns_ = (preference == mojom::PREFER_FAST_SINGLE_ANSWER))) {
+      CompileModelWithBNNS(std::move(callback));
+    } else {
+      CompileModelWithMPS(std::move(callback));
+    }
   } else {
     std::move(callback).Run(mojom::BAD_STATE);
   }
@@ -124,6 +125,7 @@ void CompilationImplMac::CreateExecution(CreateExecutionCallback callback) {
   std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
+API_AVAILABLE(macosx(10.13))
 void CompilationImplMac::CompileModelWithBNNS(FinishCallback callback) {
   bool success = true;
   for (size_t i = 0; i < operations_.size(); ++i) {
@@ -156,7 +158,10 @@ void CompilationImplMac::CompileModelWithBNNS(FinishCallback callback) {
     } else if (type == mojom::CONCATENATION) {
       success = CompileConcatenationBNNS(operation, values_, memory_,
                                          i == 0 ? true : false);
-    } else if (type == mojom::ADD || type == mojom::MUL) {
+    } else if (type == mojom::ADD) {
+      success = CompileAdd(operation, values_, memory_, operands_,
+                           i == 0 ? true : false);
+    } else if (type == mojom::MUL) {
       DLOG(ERROR) << "Operation is not supported";
       success = false;
     } else if (type == mojom::FULLY_CONNECTED) {

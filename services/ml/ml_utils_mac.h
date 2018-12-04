@@ -23,6 +23,7 @@ typedef enum LocalOperation {
   KBNNSFilter = 1,
   KReshape = 2,
   KConcatenation = 3,
+  KAdd = 4,
 } LocalOperation;
 
 namespace ml {
@@ -47,7 +48,7 @@ struct OperationMac : public Operation {
   int input_batch_size;
   uint32_t offset_x;
   uint32_t offset_y;
-  std::vector<float*> concatenations;
+  std::vector<float*> extend_input;
 };
 
 bool ParameterExtracterForConv(const OperationMac&,
