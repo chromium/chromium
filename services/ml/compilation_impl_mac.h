@@ -49,10 +49,6 @@ class CompilationImplMac : public mojom::Compilation {
   // Used for MPSNNGraph
   std::vector<base::scoped_nsobject<MPSNNGraph>> graphs_;
   std::map<uint32_t, MPSNNImageNode*> mps_image_nodes_;
-  std::vector<uint32_t> temporary_inputs_;
-  // TODO(junwei):graph_outputs_ need to be local variable with
-  // output image initWithHandle.
-  std::vector<uint32_t> graph_outputs_;
 
   base::WeakPtrFactory<CompilationImplMac> compilation_factory_;
 
@@ -62,4 +58,3 @@ class CompilationImplMac : public mojom::Compilation {
 }  // namespace ml
 
 #endif  // SERVICES_ML_COMPILATION_IMPL_MAC_H_
-

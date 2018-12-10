@@ -411,27 +411,15 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
     return false;
   }
 
-  DLOG(INFO) << "  Concatenation is compiled to no-op";
-  uint32_t concat_output_idx = concat.outputs[0];
-
   NSMutableArray<MPSNNImageNode*>* image_array =
       [NSMutableArray arrayWithCapacity:1];
   for (size_t i = 0; i < inputs.size() - 1; ++i) {
     uint32_t concat_input_idx = inputs[i];
     const OperandMac& operand = operands[concat_input_idx];
-    for (size_t j = 0; j < operations.size(); ++j) {
-      OperationMac& operation = operations[j];
-      if (operation.outputs[0] == concat_input_idx) {
-        DLOG(INFO) << "  Rewrite op " << j << " type " << operation.type
-                   << " output from " << operation.outputs[0] << " to "
-                   << concat_output_idx;
-        operation.outputs[0] = concat_output_idx;
-        if (operand.dimensions.size() < 4) {
-          DLOG(ERROR) << "Invalid dimensions of operand " << concat_input_idx
-                      << " length is " << operand.dimensions.size();
-          return false;
-        }
-      }
+    if (operand.dimensions.size() < 4) {
+      DLOG(ERROR) << "Invalid dimensions of operand " << concat_input_idx
+                  << " length is " << operand.dimensions.size();
+      return false;
     }
 
     [image_array addObject:image_nodes[concat_input_idx]];
@@ -439,7 +427,8 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
 
   MPSNNConcatenationNode* concat_node =
       [[MPSNNConcatenationNode alloc] initWithSources:image_array];
-  image_nodes[concat_output_idx] = concat_node.resultImage;
+  // concat.outputs[0] is index of output.
+  image_nodes[concat.outputs[0]] = concat_node.resultImage;
 
   return true;
 }

@@ -152,8 +152,6 @@ void ExecutionImplMacMPS::CreateOutputMTLBuffer() {
   for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
     const OperandMac& operand =
         compilation_->operands_[compilation_->outputs_[i]];
-    // TODO(junwei), the output_mtlbuffers_ need to be removed instead of output
-    // image size.
     output_mtlbuffers_.push_back([GetMPSCNNContext().device
         newBufferWithLength:operand.requiredSize()
                     options:MTLResourceOptionCPUCacheModeWriteCombined]);
@@ -211,15 +209,20 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
             source_images = image_array;
           } else {
             source_images = [NSMutableArray arrayWithCapacity:1];
-            // Find temporary input images of next graph.
-            [source_images
-                addObject:temporary_mps_images[compilation_
-                                                   ->temporary_inputs_[i - 1]]];
+            NSArray<id<MPSHandle>>* source_image_handles =
+                compilation_->graphs_[i].get().sourceImageHandles;
+            if (source_image_handles.count) {
+              // There are only one paramters for new graph.
+              DCHECK(source_image_handles.count == 1);
+              uint32_t input_index = [source_image_handles[0].label intValue];
+              // Find temporary input images of next graph.
+              [source_images addObject:temporary_mps_images[input_index]];
+            }
           }
           NSMutableArray<MPSImage*>* intermediate_images =
               [NSMutableArray arrayWithCapacity:1];
 
-          MPSImage* output_image_graph = [compilation_->graphs_[i]
+          MPSImage* graph_output_image = [compilation_->graphs_[i]
               encodeToCommandBuffer:command_buffer
                        sourceImages:source_images
                        sourceStates:nullptr
@@ -228,8 +231,8 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
 
           SaveTemporaryImages(temporary_mps_images, intermediate_images);
           // The order of graph is not the same as compilation_->output_.
-          output_mps_images[compilation_->graph_outputs_[i]] =
-              output_image_graph;
+          uint32_t output_index = [graph_output_image.label intValue];
+          output_mps_images[output_index] = graph_output_image;
         }
 
         for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
