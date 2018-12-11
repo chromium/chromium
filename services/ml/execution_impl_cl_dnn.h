@@ -16,11 +16,15 @@
 
 namespace ml {
 
-class CompilationImplClDnn;
+class CompilationDelegateClDnn;
 
 class ExecutionImplClDnn : public mojom::Execution {
  public:
-  ExecutionImplClDnn(const CompilationImplClDnn*,
+  ExecutionImplClDnn(const CompilationDelegateClDnn*,
+                     const std::vector<Operand>&,
+                     const std::vector<Operation>&,
+                     std::vector<uint32_t>&,
+                     std::vector<uint32_t>&,
                      mojo::ScopedSharedBufferHandle);
   ~ExecutionImplClDnn() override;
 

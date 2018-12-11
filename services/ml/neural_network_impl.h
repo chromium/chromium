@@ -5,16 +5,25 @@
 #ifndef SERVICES_ML_NEURAL_NETWORK_IMPL_H_
 #define SERVICES_ML_NEURAL_NETWORK_IMPL_H_
 
+#include "base/macros.h"
+#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/public/interfaces/neuralnetwork.mojom.h"
 
 namespace ml {
 
-class NeuralNetworkImpl {
+class NeuralNetworkImpl : public mojom::NeuralNetwork {
  public:
-  static void Create(ml::mojom::NeuralNetworkRequest request);
+  NeuralNetworkImpl();
+  ~NeuralNetworkImpl() override;
+
+  void CreateModel(CreateModelCallback callback) override;
+
+  static void Create(mojom::NeuralNetworkRequest request);
 
  private:
-  ~NeuralNetworkImpl() = default;
+  friend class ModelImpl;
+
+  mojo::StrongBindingPtr<mojom::NeuralNetwork> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImpl);
 };

@@ -7,18 +7,21 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "services/ml/compilation_impl_cl_dnn.h"
-#include "services/ml/model_impl_cl_dnn.h"
+#include "services/ml/compilation_delegate_cl_dnn.h"
 
 namespace ml {
 
-ExecutionImplClDnn::ExecutionImplClDnn(const CompilationImplClDnn* compilation,
+ExecutionImplClDnn::ExecutionImplClDnn(const CompilationDelegateClDnn* compilation,
+                                       const std::vector<Operand>& operands,
+                                       const std::vector<Operation>& operations,
+                                       std::vector<uint32_t>& inputs,
+                                       std::vector<uint32_t>& outputs,
                                        mojo::ScopedSharedBufferHandle memory)
     : network_(nullptr) {
-  operands_ = compilation->operands_;
-  operations_ = compilation->operations_;
-  inputs_ = compilation->inputs_;
-  outputs_ = compilation->outputs_;
+  operands_ = operands;
+  operations_ = operations;
+  inputs_ = inputs;
+  outputs_ = outputs;
   memory_ = std::move(memory);
   uint32_t total_length = 0;
   inputs_info_.reserve(inputs_.size());

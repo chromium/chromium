@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_MODEL_IMPL_CL_DNN_H_
-#define SERVICES_ML_MODEL_IMPL_CL_DNN_H_
+#ifndef SERVICES_ML_COMPILATION_DELEGATE_CL_DNN_H_
+#define SERVICES_ML_COMPILATION_DELEGATE_CL_DNN_H_
 
 #include <map>
 #include <memory>
@@ -15,6 +15,7 @@
 #include "services/ml/cl_dnn_symbol_table.h"
 #endif
 #include "services/ml/common.h"
+#include "services/ml/compilation_impl.h"
 #include "services/ml/public/interfaces/model.mojom.h"
 #include "third_party/clDNN/api/C/cldnn.h"
 
@@ -30,31 +31,23 @@ extern ml::ClDnnSymbolTable* GetClDnnSymbolTable();
 
 namespace ml {
 
-class CompilationImplClDnn;
-
-class ModelImplClDnn : public mojom::Model {
+class CompilationDelegateClDnn : public CompilationDelegate {
  public:
-  ModelImplClDnn();
-  ~ModelImplClDnn() override;
+  CompilationDelegateClDnn();
+  ~CompilationDelegateClDnn() override;
 
-  bool IsValid();
-
-  void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
-
-  void CreateCompilation(CreateCompilationCallback callback) override;
+  int32_t Init(CompilationImpl*) override;
+  int32_t Compile() override;
+  std::unique_ptr<mojom::Execution> CreateExecution(mojo::ScopedSharedBufferHandle) override;
 
  private:
-  int32_t AddOperand(int32_t type,
-                     const std::vector<uint32_t>& dimensions,
-                     float scale,
-                     int32_t zeroPoint);
-  int32_t SetOperandValue(uint32_t index, const void* buffer, uint32_t length);
+  friend class ExecutionImplClDnn;
+  int32_t CreateProgram();
   int32_t AddOperation(int32_t type,
                        const std::vector<uint32_t>& inputs,
                        const std::vector<uint32_t>& outputs);
   int32_t IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs,
                                    const std::vector<uint32_t>& outputs);
-
   int32_t CldnnGetLayout(const Operand& operand,
                          cldnn_layout& layout,
                          int32_t format = cldnn_format_bfyx);
@@ -92,23 +85,16 @@ class ModelImplClDnn : public mojom::Model {
                                  const std::vector<uint32_t>& outputs);
 
  private:
-  friend class CompilationImplClDnn;
-
-  std::vector<Operand> operands_;
-  std::vector<Operation> operations_;
-  std::map<uint32_t, ValueInfo> values_;
-  std::vector<uint32_t> inputs_;
-  std::vector<uint32_t> outputs_;
-  std::unique_ptr<int8_t[]> memory_;
-  uint32_t memory_size_;
+  CompilationImpl* compilation_;
 
   cldnn_engine engine_;
   cldnn_topology topology_;
+  cldnn_program program_;
   std::vector<cldnn_memory> memories_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModelImplClDnn);
+  DISALLOW_COPY_AND_ASSIGN(CompilationDelegateClDnn);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_MODEL_IMPL_CL_DNN_H_
+#endif  // SERVICES_ML_COMPILATION_DELEGATE_CL_DNN_H_
