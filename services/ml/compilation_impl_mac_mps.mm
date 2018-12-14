@@ -49,9 +49,12 @@ MPSCNNConvolutionNode* CreateMPSCNNConvolutionNode(MPSNNImageNode* image_node,
                                                    const float* weights,
                                                    const float* bias,
                                                    MPSCNNNeuron* relu,
-                                                   int32_t type) {
+                                                   int32_t type,
+                                                   int32_t dilation_x = 1,
+                                                   int32_t dilation_y = 1) {
   Class descriptor_class =
-      type == mojom::DEPTHWISE_CONV_2D
+      (type == mojom::DEPTHWISE_CONV_2D ||
+       type == mojom::ATROUS_DEPTHWISE_CONV_2D)
           ? NSClassFromString(@"MPSCNNDepthWiseConvolutionDescriptor")
           : NSClassFromString(@"MPSCNNConvolutionDescriptor");
   const MPSCNNConvolutionDescriptor* desc =
@@ -62,6 +65,8 @@ MPSCNNConvolutionNode* CreateMPSCNNConvolutionNode(MPSNNImageNode* image_node,
                                                    neuronFilter:relu];
   desc.strideInPixelsX = stride_width;
   desc.strideInPixelsY = stride_height;
+  desc.dilationRateX = dilation_x;
+  desc.dilationRateY = dilation_y;
   desc.groups = 1;
 
   auto data_source = [[ConvDataSource alloc]
@@ -111,9 +116,8 @@ bool CompileConv2DOrDepthwiseConv2D(
     const std::map<uint32_t, ValueInfo>& values,
     std::unique_ptr<int8_t[]>& memory,
     const std::vector<OperandMac>& operands) {
-  DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
-  DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
-                     operation.type != mojom::DEPTHWISE_CONV_2D);
+  DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D "
+             << operation.type;
   int32_t input_batch_size, input_width, input_height, output_width,
       output_height;
   bool implicit_padding;
@@ -121,7 +125,8 @@ bool CompileConv2DOrDepthwiseConv2D(
   int32_t stride_width, stride_height;
   int32_t padding_code, fuse_code;
   int32_t depth_out, filter_height, filter_width, depth_in;
-  bool depthwise = (operation.type == mojom::DEPTHWISE_CONV_2D);
+  bool depthwise = (operation.type == mojom::DEPTHWISE_CONV_2D ||
+                    operation.type == mojom::ATROUS_DEPTHWISE_CONV_2D);
   int32_t depthwise_multiplier = 1;
 
   std::vector<uint32_t> inputs = operation.inputs;
@@ -136,21 +141,15 @@ bool CompileConv2DOrDepthwiseConv2D(
           depth_in, depthwise_multiplier, depthwise))
     return false;
 
-  DLOG(INFO) << "  implicit_padding: " << implicit_padding;
-  if (implicit_padding) {
-    DLOG(INFO) << "  padding_code: " << padding_code;
-  } else {
-    DLOG(INFO) << "  padding_left: " << padding_left;
-    DLOG(INFO) << "  padding_right: " << padding_right;
-    DLOG(INFO) << "  padding_top: " << padding_top;
-    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
+  // TODO(junwei.fu):Use ConvParams to refactor code.
+  uint32_t dilation_x = 1, dilation_y = 1;
+  if (operation.type == mojom::ATROUS_DEPTHWISE_CONV_2D ||
+      operation.type == mojom::ATROUS_CONV_2D) {
+    dilation_x = stride_width;
+    dilation_y = stride_height;
+    stride_width = 1;
+    stride_height = 1;
   }
-  DLOG(INFO) << "  stride_width: " << stride_width;
-  DLOG(INFO) << "  stride_height: " << stride_height;
-  if (depthwise) {
-    DLOG(INFO) << "  depthwise_multiplier: " << depthwise_multiplier;
-  }
-  DLOG(INFO) << "  fuse_code: " << fuse_code;
 
   MPSCNNNeuron* relu = CreateMPSCNNNeuron(fuse_code);
 
@@ -160,7 +159,6 @@ bool CompileConv2DOrDepthwiseConv2D(
   const float* bias =
       reinterpret_cast<const float*>(memory.get() + bias_value_info.offset);
 
-  MPSCNNConvolutionNode* conv_node;
   MPSNNImageNode* input_image = image_nodes[inputs[0]];
   if (depthwise) {
     if (depth_out != depth_in * depthwise_multiplier) {
@@ -190,14 +188,11 @@ bool CompileConv2DOrDepthwiseConv2D(
       }
     }
     memcpy(weights, depthwise_weights.data(), weights_value_info.length);
-    conv_node = CreateMPSCNNConvolutionNode(
-        input_image, filter_width, filter_height, depth_in, depth_out,
-        stride_width, stride_height, weights, bias, relu, operation.type);
-  } else {
-    conv_node = CreateMPSCNNConvolutionNode(
-        input_image, filter_width, filter_height, depth_in, depth_out,
-        stride_width, stride_height, weights, bias, relu, operation.type);
   }
+  MPSCNNConvolutionNode* conv_node = CreateMPSCNNConvolutionNode(
+      input_image, filter_width, filter_height, depth_in, depth_out,
+      stride_width, stride_height, weights, bias, relu, operation.type,
+      dilation_x, dilation_y);
 
   MPSOffset offset;
   if (implicit_padding) {
@@ -569,7 +564,13 @@ bool CompileBilinearScale(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                           const std::vector<OperandMac>& operands,
                           const std::map<uint32_t, ValueInfo>& values,
                           const std::unique_ptr<int8_t[]>& memory) {
-  DLOG(INFO) << "CompileBilinearScale.";
+  if (@available(macOS 10.14, *)) {
+    DLOG(INFO) << "Compile resize bilinear operation.";
+  } else {
+    LOG(ERROR) << "Align corners is true only support above 10.14.";
+    return false;
+  }
+
   const OperandMac& output_operand = operands[operation.outputs[0]];
   if (output_operand.dimensions.size() != 4) {
     LOG(ERROR) << "Input and output must be 4-D tensor.";

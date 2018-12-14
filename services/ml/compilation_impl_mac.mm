@@ -39,8 +39,6 @@ CompilationImplMac::CompilationImplMac(ModelImplMac* model)
   memory_.reset(new int8_t[memory_size_]);
   memcpy(memory_.get(), model->memory_.get(), memory_size_);
   is_bnns_ = true;
-
-  DCHECK(inputs_.size() == 1);
 }
 
 CompilationImplMac::~CompilationImplMac() {
@@ -194,9 +192,10 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
   graphs_.clear();
   mps_image_nodes_.clear();
 
-  // Create a placeholder for input 0 image.
-  MPSNNImageNode* image_node = [[MPSNNImageNode alloc] initWithHandle:nullptr];
-  mps_image_nodes_[inputs_[0]] = image_node;
+  // Create a placeholder for inputs image.
+  for (auto index : inputs_) {
+    mps_image_nodes_[index] = [[MPSNNImageNode alloc] initWithHandle:nullptr];
+  }
 
   bool success = true, new_graph = false;
   std::vector<uint32_t> graph_outputs;
@@ -230,7 +229,10 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     }
 
     DCHECK(outputs.size() == 1);
-    if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D) {
+    if (type == mojom::CONV_2D ||
+        type == mojom::DEPTHWISE_CONV_2D ||
+        type == mojom::ATROUS_CONV_2D ||
+        type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
       success = CompileConv2DOrDepthwiseConv2D(mps_image_nodes_, operation,
                                                values_, memory_, operands_);
     } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
