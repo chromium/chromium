@@ -66,6 +66,8 @@ class NeuralNetworkContext final
   static const unsigned long kSpaceToDepth = 26;
   static const unsigned long kSvdf = 27;
   static const unsigned long kTanh = 28;
+  static const unsigned long kAtrousConv2D = 10003;
+  static const unsigned long kAtrousDepthwiseConv2D = 10004;
 
   // Fused activation function types.
   static const unsigned long kFusedNone = 0;

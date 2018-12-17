@@ -44,6 +44,8 @@ const int32 SOFTMAX = 25;
 const int32 SPACE_TO_DEPTH = 26;
 const int32 SVDF = 27;
 const int32 TANH = 28;
+const int32 ATROUS_CONV_2D = 10003;
+const int32 ATROUS_DEPTHWISE_CONV_2D = 10004;
 
 // Fused activation function types.
 const int32 FUSED_NONE = 0;

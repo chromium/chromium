@@ -41,6 +41,8 @@ interface NeuralNetworkContext {
     const long SPACE_TO_DEPTH = 26;
     const long SVDF = 27;
     const long TANH = 28;
+    const long ATROUS_CONV_2D = 10003;
+    const long ATROUS_DEPTHWISE_CONV_2D = 10004;
 
     // Fused activation function types.
     const long FUSED_NONE = 0;

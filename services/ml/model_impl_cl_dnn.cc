@@ -42,7 +42,8 @@ inline void CalculateExplicitPadding(bool padding_same,
                                      int32_t stride,
                                      int32_t filter_size,
                                      int32_t& padding_head,
-                                     int32_t& padding_tail) {
+                                     int32_t& padding_tail,
+                                     int32_t dilation = 1) {
   padding_head = 0;
   padding_tail = 0;
 
@@ -50,8 +51,8 @@ inline void CalculateExplicitPadding(bool padding_same,
     int32_t out_size = (in_size + stride - 1) / stride;
     int32_t tmp = (out_size - 1) * stride + filter_size;
     if (tmp > in_size) {
-      padding_head = (tmp - in_size) / 2;
-      padding_tail = (tmp - in_size) - padding_head;
+      padding_head = ((tmp - in_size) / 2) * dilation;
+      padding_tail = ((tmp - in_size) - padding_head) * dilation;
     }
   }
 }
@@ -339,7 +340,9 @@ int32_t ModelImplClDnn::AddOperation(int32_t type,
   int32_t result = mojom::NOT_ERROR;
   if (type == mojom::ADD || type == mojom::MUL) {
     result = CldnnAddElementwise(type, inputs, outputs);
-  } else if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D) {
+  } else if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D ||
+             type == mojom::ATROUS_CONV_2D ||
+             type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
     result = CldnnAddConvolution(type, inputs, outputs);
   } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
     result = CldnnAddPooling(type, inputs, outputs);
@@ -496,7 +499,8 @@ int32_t ModelImplClDnn::CldnnAddReorder(const std::string& input_name,
                 << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
-  DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id " << output_name;
+  DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id "
+             << output_name;
   return mojom::NOT_ERROR;
 }
 
@@ -731,7 +735,14 @@ int32_t ModelImplClDnn::CldnnAddConvolution(
     int32_t type,
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
-  const bool depthwise = type == mojom::DEPTHWISE_CONV_2D ? true : false;
+  const bool depthwise = (type == mojom::DEPTHWISE_CONV_2D ||
+                          type == mojom::ATROUS_DEPTHWISE_CONV_2D)
+                             ? true
+                             : false;
+  const bool atrous =
+      (type == mojom::ATROUS_CONV_2D || type == mojom::ATROUS_DEPTHWISE_CONV_2D)
+          ? true
+          : false;
   const uint32_t output_index = outputs[0];
   const Operand& output = operands_[output_index];
   const int32_t output_batch = output.dimensions[0];
@@ -776,10 +787,19 @@ int32_t ModelImplClDnn::CldnnAddConvolution(
     DLOG(ERROR) << "Inputs size is incorrect";
     return mojom::BAD_DATA;
   }
-  const int32_t stride_width =
-      getScalarInt32(values_[inputs[index++]], memory_.get());
-  const int32_t stride_height =
-      getScalarInt32(values_[inputs[index++]], memory_.get());
+  int32_t stride_width, stride_height;
+  int32_t dilation_width, dilation_height;
+  if (!atrous) {
+    stride_width = getScalarInt32(values_[inputs[index++]], memory_.get());
+    stride_height = getScalarInt32(values_[inputs[index++]], memory_.get());
+    dilation_width = 1;
+    dilation_height = 1;
+  } else {
+    dilation_width = getScalarInt32(values_[inputs[index++]], memory_.get());
+    dilation_height = getScalarInt32(values_[inputs[index++]], memory_.get());
+    stride_width = 1;
+    stride_height = 1;
+  }
   int32_t depthwise_multiplier;
   if (depthwise) {
     depthwise_multiplier =
@@ -815,6 +835,8 @@ int32_t ModelImplClDnn::CldnnAddConvolution(
   }
   DLOG(INFO) << "  stride_width: " << stride_width;
   DLOG(INFO) << "  stride_height: " << stride_height;
+  DLOG(INFO) << "  dilation_width: " << dilation_width;
+  DLOG(INFO) << "  dilation_height: " << dilation_height;
   if (depthwise) {
     DLOG(INFO) << "  depthwise_multiplier: " << depthwise_multiplier;
   }
@@ -990,10 +1012,10 @@ int32_t ModelImplClDnn::CldnnAddConvolution(
   if (implicit_padding) {
     CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_width,
                              stride_width, filter_width, padding_left,
-                             padding_right);
+                             padding_right, dilation_width);
     CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_height,
                              stride_height, filter_height, padding_top,
-                             padding_bottom);
+                             padding_bottom, dilation_height);
     DLOG(INFO) << "  padding_left: " << padding_left;
     DLOG(INFO) << "  padding_right: " << padding_right;
     DLOG(INFO) << "  padding_top: " << padding_top;
@@ -1023,7 +1045,8 @@ int32_t ModelImplClDnn::CldnnAddConvolution(
   }
 
   // Setup dilation.
-  conv_desc.dilation = {1, 1, 2, {1, 1, 1, 1, 1, 1, 1, 1}};
+  conv_desc.dilation = {
+      1, 1, 2, {1, 1, dilation_width, dilation_height, 1, 1, 1, 1}};
 
   // Setup output.
   conv_desc.with_output_size = 1;
@@ -1480,7 +1503,8 @@ int32_t ModelImplClDnn::CldnnAddFullyConnected(
   // FC only accepts yxfb, bfyx, byxf_af32, so reorder to bfyx in case input
   // is byxf.
   const std::string reorder_input_name(base::NumberToString(input_index));
-  const std::string reorder_output_name(reorder_input_name + std::string("-reordered"));
+  const std::string reorder_output_name(reorder_input_name +
+                                        std::string("-reordered"));
   CldnnAddReorder(reorder_input_name, reorder_output_name, cldnn_format_bfyx);
   // Reshape to [input_batch_size, input_size]
   type_id = LATE(cldnn_reshape_type_id)(&status);
@@ -1702,8 +1726,8 @@ int32_t ModelImplClDnn::CldnnAddResizeBilinear(
 
   // Setup output layout
   cldnn_layout output_layout;
-  int32_t result = CldnnGetLayout(
-      operands_[outputs[0]], output_layout, cldnn_format_yxfb);
+  int32_t result =
+      CldnnGetLayout(operands_[outputs[0]], output_layout, cldnn_format_yxfb);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
@@ -1730,7 +1754,7 @@ int32_t ModelImplClDnn::CldnnAddResizeBilinear(
   }
   DLOG(INFO) << "[clDNN] succeed to add custom_gpu primitive with id "
              << id_str;
-  
+
   // insert a reorder back to bfyx
   CldnnAddReorder(id_str, base::NumberToString(outputs[0]), cldnn_format_bfyx);
   return mojom::NOT_ERROR;
