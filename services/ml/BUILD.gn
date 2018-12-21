@@ -6,6 +6,16 @@ import("//services/service_manager/public/cpp/service.gni")
 import("//services/service_manager/public/service_manifest.gni")
 import("//testing/test.gni")
 
+cldnn_dll = ""
+cldnn_os = ""
+if (is_win) {
+  cldnn_dll = "clDNN64.dll"
+  cldnn_os = "Windows64"
+} else if (is_linux) {
+  cldnn_dll = "libclDNN64.so"
+  cldnn_os = "Linux64"
+}
+
 source_set("lib") {
   sources = [
     "common.cc",
@@ -109,7 +119,7 @@ source_set("lib") {
       "neural_network_impl_cl_dnn.h",
     ]
 
-    lib_dirs = [ "//third_party/clDNN/build/out/Windows64/Release" ]
+    lib_dirs = [ "//third_party/clDNN/build/out/${cldnn_os}/Release" ]
 
     libs = [ "clDNN64.lib" ]
   } else {
@@ -123,7 +133,7 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
   ]
 
-  if (is_win) {
+  if (is_win || is_linux) {
     deps += [ ":copy_cldnn_dll" ]
   }
 
@@ -134,11 +144,11 @@ source_set("lib") {
   ]
 }
 
-if (is_win) {
-  dll_path = "//third_party/clDNN/build/out/Windows64/Release"
+if (is_win || is_linux) {
+  dll_path = "//third_party/clDNN/build/out/${cldnn_os}/Release"
   copy("copy_cldnn_dll") {
     sources = [
-      "$dll_path/clDNN64.dll",
+      "${dll_path}/${cldnn_dll}",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",

@@ -7,8 +7,6 @@
 namespace ml {
 
 LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(ClDnnSymbolTable,
-                                       "/opt/intel/computer_vision_sdk/"
-                                       "inference_engine/external/cldnn/lib/"
                                        "libclDNN64.so")
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DEFINE_ENTRY(ClDnnSymbolTable, sym)
 CL_DNN_SYMBOLS_LIST

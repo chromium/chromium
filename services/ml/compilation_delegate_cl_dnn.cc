@@ -25,7 +25,7 @@
 #include "third_party/clDNN/api/C/softmax.h"
 
 #if defined(OS_LINUX)
-constexpr char kClDnnVersion[] = "9.1";
+constexpr char kClDnnVersion[] = "12.1";
 
 ml::ClDnnSymbolTable* GetClDnnSymbolTable() {
   static ml::ClDnnSymbolTable* cl_dnn_symbol_table = new ml::ClDnnSymbolTable();
@@ -66,6 +66,30 @@ CompilationDelegateClDnn::CompilationDelegateClDnn() :
 int32_t CompilationDelegateClDnn::Init(CompilationImpl* compilation) {
   compilation_ = compilation;
 
+  int32_t result = CldnnInit();
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
+  result = CldnnCreateTopology();
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
+  result = CldnnCreateProgram();
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
+  return mojom::NOT_ERROR;
+}
+
+std::unique_ptr<mojom::Execution>
+CompilationDelegateClDnn::CreateExecution(mojom::ExecutionInitParamsPtr params) {
+  return std::make_unique<ExecutionImplClDnn>(this, std::move(params));
+}
+
+int32_t CompilationDelegateClDnn::CldnnInit() {
 #if defined(OS_LINUX)
   if (!GetClDnnSymbolTable()->Load()) {
     LOG(ERROR) << "[clDNN] failed to load clDNN library";
@@ -86,11 +110,11 @@ int32_t CompilationDelegateClDnn::Init(CompilationImpl* compilation) {
                                      std::to_string(version.minor) + "." +
                                      std::to_string(version.revision);
   DLOG(INFO) << "[clDNN] version: " << cl_dnn_version;
+
 #if defined(OS_LINUX)
   if (major_version != kClDnnVersion) {
-    LOG(ERROR) << "[clDNN] current clDNN version" << cl_dnn_version
-               << " isn't supported, please install OpenVINO 2018 R3 that "
-                  "inlucdes verified version "
+    LOG(ERROR) << "[clDNN] current clDNN version " << cl_dnn_version
+               << " isn't supported, please use verified version "
                << kClDnnVersion;
     return mojom::OP_FAILED;
   }

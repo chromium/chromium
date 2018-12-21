@@ -12,7 +12,9 @@
 
 #include <dlfcn.h>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 
 namespace ml {
 
@@ -26,9 +28,16 @@ inline static const char* GetDllError() {
 }
 
 DllHandle InternalLoadDll(const char dll_name[]) {
-  DllHandle handle = dlopen(dll_name, RTLD_NOW);
+  base::FilePath module_path;
+  if (!base::PathService::Get(base::DIR_MODULE, &module_path)) {
+    LOG(ERROR) << "Can't get module path";
+    return nullptr;
+  }
+
+  base::FilePath dll_path = module_path.Append(dll_name);
+  DllHandle handle = dlopen(dll_path.MaybeAsASCII().c_str(), RTLD_NOW);
   if (handle == kInvalidDllHandle) {
-    DLOG(ERROR) << "Can't load " << dll_name << " : " << GetDllError();
+    LOG(ERROR) << "Can't load " << dll_name << " : " << GetDllError();
   }
   return handle;
 }
