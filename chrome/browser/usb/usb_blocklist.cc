@@ -93,6 +93,7 @@ const UsbBlocklist::Entry kStaticEntries[] = {
     {0x1050, 0x0407, kMaxVersion},
     {0x1050, 0x0410, kMaxVersion},
 
+    {0x1d50, 0x60fc, kMaxVersion},  // OnlyKey
     {0x10c4, 0x8acf, kMaxVersion},  // U2F Zero
     {0x18d1, 0x5026, kMaxVersion},  // Titan
     {0x1a44, 0x00bb, kMaxVersion},  // VASCO
