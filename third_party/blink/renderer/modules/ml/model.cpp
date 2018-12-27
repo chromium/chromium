@@ -153,9 +153,11 @@ void Model::setOperandValue(uint32_t index,
                              data.View(), exception_state))
       return;
 
-  model_info_->values.push_back(
+  WTF::String index_str = WTF::String::Number(index);
+  model_info_->values.insert(
+      index_str,
       ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
-  buffer_views_.push_back(data.View());
+  buffer_views_.insert(index_str, data.View());
 }
 
 void Model::addOperation(int32_t type,
@@ -200,18 +202,21 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   requests_.insert(resolver);
 
   uint32_t total_byte_length = 0;
-  for (size_t i = 0; i < model_info_->values.size(); ++i)
-    total_byte_length += buffer_views_[i]->byteLength();
+  for (HeapHashMap<WTF::String, Member<DOMArrayBufferView>>::const_iterator itr = buffer_views_.begin();
+       itr != buffer_views_.end(); ++itr)
+    total_byte_length += itr->value->byteLength();
 
-  mojo::ScopedSharedBufferHandle memory =
+  memory_ =
       mojo::SharedBufferHandle::Create(total_byte_length);
-  mojo::ScopedSharedBufferMapping mapping = memory->Map(total_byte_length);
+  mojo::ScopedSharedBufferMapping mapping = memory_->Map(total_byte_length);
 
   uint32_t offset = 0;
-  for (size_t i = 0; i < model_info_->values.size(); ++i) {
+  
+  for (WTF::HashMap<WTF::String, ml::mojom::blink::OperandValueInfoPtr>::const_iterator itr = model_info_->values.begin();
+       itr != model_info_->values.end(); ++itr) {
     const ml::mojom::blink::OperandValueInfoPtr& value_info =
-        model_info_->values[i];
-    DOMArrayBufferView* view = buffer_views_[i];
+        itr->value;
+    DOMArrayBufferView* view = buffer_views_.at(WTF::String::Number(value_info->index));
     uint32_t length = view->byteLength();
     value_info->offset = offset;
     value_info->length = length;
@@ -221,7 +226,7 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   }
 
   model_info_->memory =
-      memory->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+      memory_->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
   model_info_->memory_size = total_byte_length;
   model_->Finish(std::move(model_info_),
                  WTF::Bind(&Model::OnResultCode, WrapPersistent(this),

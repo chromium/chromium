@@ -50,8 +50,9 @@ class Model final : public ScriptWrappable {
   bool is_finished_;
   ml::mojom::blink::ModelPtr model_;
   ml::mojom::blink::ModelInfoPtr model_info_;
+  mojo::ScopedSharedBufferHandle memory_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
-  HeapVector<Member<DOMArrayBufferView>> buffer_views_;
+  HeapHashMap<WTF::String, Member<DOMArrayBufferView>> buffer_views_;
 };
 
 }  // namespace blink

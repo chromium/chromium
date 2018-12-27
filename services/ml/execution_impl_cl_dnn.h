@@ -21,24 +21,13 @@ class CompilationDelegateClDnn;
 class ExecutionImplClDnn : public mojom::Execution {
  public:
   ExecutionImplClDnn(const CompilationDelegateClDnn*,
-                     const std::vector<Operand>&,
-                     const std::vector<Operation>&,
-                     std::vector<uint32_t>&,
-                     std::vector<uint32_t>&,
-                     mojo::ScopedSharedBufferHandle);
+                     mojom::ExecutionInitParamsPtr params);
   ~ExecutionImplClDnn() override;
 
   void StartCompute(StartComputeCallback callback) override;
 
  private:
-  std::vector<Operand> operands_;
-  std::vector<Operation> operations_;
-  std::vector<uint32_t> inputs_;
-  std::vector<uint32_t> outputs_;
-
-  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
-  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
-  mojo::ScopedSharedBufferHandle memory_;
+  mojom::ExecutionInitParamsPtr params_;
 
   std::vector<cldnn_memory> input_memories_;
   cldnn_network network_;

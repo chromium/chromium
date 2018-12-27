@@ -13,15 +13,8 @@
 
 namespace ml {
 
-CompilationImpl::CompilationImpl(const ModelImpl* model) {
-  operands_ = model->operands_;
-  operations_ = model->operations_;
-  values_ = model->values_;
-  inputs_ = model->inputs_;
-  outputs_ = model->outputs_;
-  memory_size_ = model->memory_size_;
-  memory_.reset(new int8_t[memory_size_]);
-  memcpy(memory_.get(), model->memory_.get(), memory_size_);
+CompilationImpl::CompilationImpl(mojom::ModelInfoPtr model_info) {
+  model_info_ = std::move(model_info);
 }
 
 CompilationImpl::~CompilationImpl() {}
@@ -31,54 +24,73 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   DLOG(INFO) << "  "
              << "preference: " << preference;
 
-  delegate_ = std::make_unique<CompilationDelegateClDnn>();
-
-  int32_t result = delegate_->Init(this);
-  if (result != mojom::NOT_ERROR) {
-    std::move(callback).Run(result);
-    return;
-  }
-
-  result = delegate_->Compile();
-  std::move(callback).Run(mojom::NOT_ERROR);
+  delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+  int32_t result = delegate_->Compile();
+  std::move(callback).Run(result);
 }
 
 void CompilationImpl::CreateExecution(CreateExecutionCallback callback) {
   DLOG(INFO) << "CompilationImpl::CreateExecution";
   auto init_params = mojom::ExecutionInitParams::New();
+  auto remote_init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;
-  for (size_t i = 0; i < inputs_.size(); ++i) {
-    Operand operand = operands_[inputs_[i]];
-    input_memory_size += operand.requiredSize();
-    init_params->inputs.push_back(
-        mojom::OperandInfo::New(operand.type, operand.dimensions));
+  for (size_t i = 0; i < model_info_->inputs.size(); ++i) {
+    const mojom::OperandPtr& operand =
+        model_info_->operands[model_info_->inputs[i]];
+    input_memory_size += GetRequiredSize(operand);
+    init_params->inputs.push_back(mojom::OperandInfo::New(
+        model_info_->inputs[i], operand->type, operand->dimensions));
+    remote_init_params->inputs.push_back(mojom::OperandInfo::New(
+        model_info_->inputs[i], operand->type, operand->dimensions));
   }
   DLOG(INFO) << "Required input memory size: " << input_memory_size;
 
   uint32_t output_memory_size = 0;
-  for (size_t i = 0; i < outputs_.size(); ++i) {
-    Operand operand = operands_[outputs_[i]];
-    output_memory_size += operand.requiredSize();
-    init_params->outputs.push_back(
-        mojom::OperandInfo::New(operand.type, operand.dimensions));
+  for (size_t i = 0; i < model_info_->outputs.size(); ++i) {
+    const mojom::OperandPtr& operand =
+        model_info_->operands[model_info_->outputs[i]];
+    output_memory_size += GetRequiredSize(operand);
+    init_params->outputs.push_back(mojom::OperandInfo::New(
+        model_info_->outputs[i], operand->type, operand->dimensions));
+    remote_init_params->outputs.push_back(mojom::OperandInfo::New(
+        model_info_->outputs[i], operand->type, operand->dimensions));
   }
   DLOG(INFO) << "Required output memory size: " << output_memory_size;
 
   uint32_t total_memory_size = input_memory_size + output_memory_size;
-  mojo::ScopedSharedBufferHandle memory_handle =
-      mojo::SharedBufferHandle::Create(total_memory_size);
+  init_params->memory = mojo::SharedBufferHandle::Create(total_memory_size);
 
-  init_params->memory =
-      memory_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+  remote_init_params->memory = init_params->memory->Clone(
+      mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 
   mojom::ExecutionPtrInfo ptr_info;
-  mojo::MakeStrongBinding(
-      delegate_->CreateExecution(std::move(memory_handle)),
-      mojo::MakeRequest(&ptr_info));
-  init_params->execution = std::move(ptr_info);
+  mojo::MakeStrongBinding(delegate_->CreateExecution(std::move(init_params)),
+                          mojo::MakeRequest(&ptr_info));
+  remote_init_params->execution = std::move(ptr_info);
 
-  std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
+  std::move(callback).Run(mojom::NOT_ERROR, std::move(remote_init_params));
+}
+
+int32_t CompilationImpl::GetScalarInt32(uint32_t index) const {
+  const mojom::OperandValueInfoPtr& info =
+      model_info_->values[base::NumberToString(index)];
+  auto mapping = model_info_->memory->MapAtOffset(info->length, info->offset);
+  return reinterpret_cast<int32_t*>(mapping.get())[0];
+}
+
+float CompilationImpl::GetScalarFloat(uint32_t index) const {
+  const mojom::OperandValueInfoPtr& info =
+      model_info_->values[base::NumberToString(index)];
+  auto mapping = model_info_->memory->MapAtOffset(info->length, info->offset);
+  return reinterpret_cast<float*>(mapping.get())[0];
+}
+
+mojo::ScopedSharedBufferMapping CompilationImpl::MapMemory(
+    uint32_t index) const {
+  const mojom::OperandValueInfoPtr& info =
+      model_info_->values[base::NumberToString(index)];
+  return model_info_->memory->MapAtOffset(info->length, info->offset);
 }
 
 }  // namespace ml

@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "services/ml/common.h"
 #include "services/ml/public/interfaces/compilation.mojom.h"
+#include "services/ml/public/interfaces/model.mojom.h"
 
 namespace ml {
 
@@ -18,33 +19,29 @@ class ModelImpl;
 
 class CompilationDelegate {
  public:
-  CompilationDelegate() = default;
+  explicit CompilationDelegate() = default;
   virtual ~CompilationDelegate() = default;
 
-  virtual int32_t Init(CompilationImpl*) = 0;
   virtual int32_t Compile() = 0;
-  virtual std::unique_ptr<mojom::Execution>
-  CreateExecution(mojo::ScopedSharedBufferHandle) = 0;
+  virtual std::unique_ptr<mojom::Execution> CreateExecution(
+      mojom::ExecutionInitParamsPtr params) = 0;
 };
 
 class CompilationImpl : public mojom::Compilation {
  public:
-  explicit CompilationImpl(const ModelImpl*);
+  explicit CompilationImpl(mojom::ModelInfoPtr model_info);
   ~CompilationImpl() override;
 
   void Finish(int32_t preference, FinishCallback callback) override;
   void CreateExecution(CreateExecutionCallback callback) override;
 
+  const mojom::ModelInfoPtr& GetModel() const { return model_info_; }
+  int32_t GetScalarInt32(uint32_t index) const;
+  float GetScalarFloat(uint32_t index) const;
+  mojo::ScopedSharedBufferMapping MapMemory(uint32_t index) const;
+
  private:
-  friend class CompilationDelegateClDnn;
-  std::vector<Operand> operands_;
-  std::vector<Operation> operations_;
-  std::map<uint32_t, ValueInfo> values_;
-  std::vector<uint32_t> inputs_;
-  std::vector<uint32_t> outputs_;
-  std::vector<uint32_t> constants_;
-  std::unique_ptr<int8_t[]> memory_;
-  uint32_t memory_size_;
+  mojom::ModelInfoPtr model_info_;
 
   std::unique_ptr<CompilationDelegate> delegate_;
 

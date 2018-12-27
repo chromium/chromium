@@ -33,24 +33,23 @@ namespace ml {
 
 class CompilationDelegateClDnn : public CompilationDelegate {
  public:
-  CompilationDelegateClDnn();
+  explicit CompilationDelegateClDnn(const CompilationImpl*);
   ~CompilationDelegateClDnn() override;
 
-  int32_t Init(CompilationImpl*) override;
   int32_t Compile() override;
-  std::unique_ptr<mojom::Execution> CreateExecution(mojo::ScopedSharedBufferHandle) override;
+  std::unique_ptr<mojom::Execution> CreateExecution(
+      mojom::ExecutionInitParamsPtr params) override;
+
+  static int32_t CldnnGetLayout(int32_t type,
+                                const std::vector<uint32_t>& dimensions,
+                                cldnn_layout& layout,
+                                int32_t format = cldnn_format_bfyx);
 
  private:
   friend class ExecutionImplClDnn;
-  int32_t CreateProgram();
-  int32_t AddOperation(int32_t type,
-                       const std::vector<uint32_t>& inputs,
-                       const std::vector<uint32_t>& outputs);
-  int32_t IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs,
-                                   const std::vector<uint32_t>& outputs);
-  int32_t CldnnGetLayout(const Operand& operand,
-                         cldnn_layout& layout,
-                         int32_t format = cldnn_format_bfyx);
+  int32_t CldnnInit();
+  int32_t CldnnCreateTopology();
+  int32_t CldnnCreateProgram();
   int32_t CldnnAddInputLayout(uint32_t index);
   int32_t CldnnAddReorder(const std::string& input_name,
                           const std::string& output_name,
@@ -85,7 +84,7 @@ class CompilationDelegateClDnn : public CompilationDelegate {
                                  const std::vector<uint32_t>& outputs);
 
  private:
-  CompilationImpl* compilation_;
+  const CompilationImpl* compilation_;
 
   cldnn_engine engine_;
   cldnn_topology topology_;

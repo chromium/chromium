@@ -11,88 +11,13 @@
 
 namespace ml {
 
-ExecutionImplClDnn::ExecutionImplClDnn(const CompilationDelegateClDnn* compilation,
-                                       const std::vector<Operand>& operands,
-                                       const std::vector<Operation>& operations,
-                                       std::vector<uint32_t>& inputs,
-                                       std::vector<uint32_t>& outputs,
-                                       mojo::ScopedSharedBufferHandle memory)
+ExecutionImplClDnn::ExecutionImplClDnn(
+    const CompilationDelegateClDnn* compilation,
+    mojom::ExecutionInitParamsPtr params)
     : network_(nullptr) {
-  operands_ = operands;
-  operations_ = operations;
-  inputs_ = inputs;
-  outputs_ = outputs;
-  memory_ = std::move(memory);
-  uint32_t total_length = 0;
-  inputs_info_.reserve(inputs_.size());
-  for (size_t i = 0; i < inputs_.size(); ++i) {
-    const uint32_t offset = total_length;
-    const uint32_t length = operands_[inputs_[i]].requiredSize();
-    inputs_info_.push_back(std::make_unique<OperandInfo>(
-        offset, length, memory_->MapAtOffset(length, offset)));
-    total_length += length;
-  }
-  outputs_info_.reserve(outputs_.size());
-  for (size_t i = 0; i < outputs_.size(); ++i) {
-    const uint32_t offset = total_length;
-    const uint32_t length = operands_[outputs_[i]].requiredSize();
-    outputs_info_.push_back(std::make_unique<OperandInfo>(
-        offset, length, memory_->MapAtOffset(length, offset)));
-    total_length += length;
-  }
+  params_ = std::move(params);
 
   cldnn_status status;
-  input_memories_.resize(inputs_.size());
-  for (size_t i = 0; i < inputs_.size(); ++i) {
-    const Operand& operand = operands_[inputs_[i]];
-    std::unique_ptr<OperandInfo>& info = inputs_info_[i];
-    if (operand.type != mojom::TENSOR_FLOAT32) {
-      DLOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
-      return;
-    }
-    cldnn_layout layout = {
-        .data_type = cldnn_f32, .format = cldnn_format_byxf, .padding = {}};
-    if (operand.dimensions.size() == 1) {
-      layout.size = {1, 1, 2, {1, 1, operand.dimensions[0], 1, 1, 1, 1, 1}};
-    } else if (operand.dimensions.size() == 2) {
-      // HW -> {batch, feature, width, height}
-      layout.size = {
-          1,
-          1,
-          2,
-          {1, 1, operand.dimensions[1], operand.dimensions[0], 1, 1, 1, 1}};
-    } else if (operand.dimensions.size() == 3) {
-      // HWC -> {batch, feature, width, height}
-      layout.size = {1,
-                     1,
-                     2,
-                     {1, operand.dimensions[2], operand.dimensions[1],
-                      operand.dimensions[0], 1, 1, 1, 1}};
-    } else if (operand.dimensions.size() == 4) {
-      // NHWC -> {batch, feature, width, height}
-      layout.size = {
-          1,
-          1,
-          2,
-          {operand.dimensions[0], operand.dimensions[3], operand.dimensions[2],
-           operand.dimensions[1], 1, 1, 1, 1}};
-    } else {
-      DLOG(ERROR) << "Operand dimensions size " << operand.dimensions.size()
-                  << " is not supported.";
-      return;
-    }
-
-    cldnn_memory memory = LATE(cldnn_attach_memory)(
-        layout, static_cast<void*>(info->mapping.get()), info->length, &status);
-    if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
-      return;
-    }
-    DLOG(INFO) << "[clDNN] succeed to attach memory for input " << i;
-    input_memories_[i] = memory;
-  }
-
   network_ = LATE(cldnn_allocate_network)(compilation->program_, &status);
   if (status != CLDNN_SUCCESS) {
     DLOG(ERROR) << "[clDNN] failed to allocate network " << status << " "
@@ -135,21 +60,43 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     return;
   }
 
-  for (size_t i = 0; i < inputs_.size(); ++i) {
-    DLOG(INFO) << "inputs[" << i << "]:";
-    PrintOperand(operands_[inputs_[i]], inputs_info_[i]);
-  }
-
   cldnn_status status;
   if (!network_) {
     std::move(callback).Run(mojom::BAD_STATE);
     return;
   }
 
-  for (size_t i = 0; i < inputs_.size(); ++i) {
-    std::string input_id_str = base::NumberToString(inputs_[i]);
+  uint32_t total_length = 0;
+  for (size_t i = 0; i < params_->inputs.size(); ++i) {
+    const mojom::OperandInfoPtr& operand = params_->inputs[i];
+    const uint32_t offset = total_length;
+    const uint32_t length = GetRequiredSize(operand);
+    total_length += length;
+    if (operand->type != mojom::TENSOR_FLOAT32) {
+      DLOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
+      std::move(callback).Run(mojom::BAD_DATA);
+      return;
+    }
+    cldnn_layout layout;
+    int32_t result = CompilationDelegateClDnn::CldnnGetLayout(
+        operand->type, operand->dimensions, layout, cldnn_format_byxf);
+    if (result != mojom::NOT_ERROR) {
+      std::move(callback).Run(mojom::BAD_DATA);
+      return;
+    }
+    auto mapping = params_->memory->MapAtOffset(length, offset);
+    DLOG(INFO) << "Mapping " << mapping.get() << " for input " << i
+               << " offset " << offset << " length " << length;
+    cldnn_memory memory = LATE(cldnn_attach_memory)(
+        layout, static_cast<void*>(mapping.get()), length, &status);
+    if (status != CLDNN_SUCCESS) {
+      DLOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
+                  << std::string(LATE(cldnn_get_last_error_message)());
+      return;
+    }
+    std::string input_id_str = base::NumberToString(operand->index);
     LATE(cldnn_set_network_input)
-    (network_, input_id_str.c_str(), input_memories_[i], &status);
+    (network_, input_id_str.c_str(), memory, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to set network input " << i << " "
                   << status << " "
@@ -169,10 +116,14 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
   }
   DLOG(INFO) << "[clDNN] succeed to execute network";
 
-  for (size_t i = 0; i < outputs_.size(); ++i) {
+  for (size_t i = 0; i < params_->outputs.size(); ++i) {
     // Use the reordered outputs (byxf).
+    const mojom::OperandInfoPtr& operand = params_->outputs[i];
+    const uint32_t offset = total_length;
+    const uint32_t length = GetRequiredSize(operand);
+    total_length += length;
     std::string output_id_str =
-        base::NumberToString(outputs_[i]) + std::string("-reordered");
+        base::NumberToString(operand->index) + std::string("-reordered");
     cldnn_memory memory = LATE(cldnn_get_network_output_memory)(
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {
@@ -189,8 +140,8 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
-    std::unique_ptr<OperandInfo>& info = outputs_info_[i];
-    memcpy(static_cast<void*>(info->mapping.get()), output_ptr, info->length);
+    auto mapping = params_->memory->MapAtOffset(length, offset);
+    memcpy(static_cast<void*>(mapping.get()), output_ptr, length);
     LATE(cldnn_unlock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
       DLOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
@@ -199,11 +150,6 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to get network output " << i;
-  }
-
-  for (size_t i = 0; i < outputs_.size(); ++i) {
-    DLOG(INFO) << "outputs[" << i << "]:";
-    PrintOperand(operands_[outputs_[i]], outputs_info_[i]);
   }
 
   std::move(callback).Run(mojom::NOT_ERROR);

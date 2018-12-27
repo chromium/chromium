@@ -34,7 +34,7 @@ struct ModelInfo {
   array<Operation> operations;
   array<uint32> inputs;
   array<uint32> outputs;
-  array<OperandValueInfo> values;
+  map<string, OperandValueInfo> values;
   handle<shared_buffer> memory;
   uint32 memory_size;
 };

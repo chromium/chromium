@@ -7,6 +7,7 @@ module ml.mojom;
 import "services/ml/public/interfaces/execution.mojom";
 
 struct OperandInfo {
+  uint32 index;
   int32 type;
   array<uint32> dimensions;
 };

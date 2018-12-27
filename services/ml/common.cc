@@ -12,10 +12,7 @@ uint32_t product(const std::vector<uint32_t>& dims) {
   return prod;
 }
 
-Operand::Operand() = default;
-Operand::~Operand() = default;
-Operand::Operand(const Operand&) = default;
-uint32_t Operand::requiredSize() const {
+uint32_t GetRequiredSize(int32_t type, const std::vector<uint32_t>& dimensions) {
   if (type == mojom::FLOAT32) {
     return sizeof(float);
   } else if (type == mojom::INT32) {
@@ -32,6 +29,22 @@ uint32_t Operand::requiredSize() const {
     NOTREACHED();
   }
   return 0;
+}
+
+uint32_t GetRequiredSize(const mojom::OperandPtr& operand) {
+  return GetRequiredSize(operand->type, operand->dimensions);
+}
+
+uint32_t GetRequiredSize(const mojom::OperandInfoPtr& operand) {
+  return GetRequiredSize(operand->type, operand->dimensions);
+}
+
+
+Operand::Operand() = default;
+Operand::~Operand() = default;
+Operand::Operand(const Operand&) = default;
+uint32_t Operand::requiredSize() const {
+  return GetRequiredSize(type, dimensions);
 }
 
 Operation::Operation() = default;
@@ -103,4 +116,5 @@ float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
 
   return getScalarFloat(iter->second, memory);
 }
+
 }

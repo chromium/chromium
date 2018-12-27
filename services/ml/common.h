@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/interfaces/model.mojom.h"
+#include "services/ml/public/interfaces/execution.mojom.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace ml {
@@ -77,6 +79,10 @@ float getScalarFloat(const ValueInfo&, int8_t*);
 float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
                      uint32_t key,
                      int8_t*);
+
+uint32_t GetRequiredSize(const mojom::OperandPtr& operand);
+uint32_t GetRequiredSize(const mojom::OperandInfoPtr& operand);
+
 }
 
 #endif  // SERVICES_ML_COMMON_H_
