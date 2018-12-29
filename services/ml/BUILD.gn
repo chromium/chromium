@@ -109,14 +109,16 @@ source_set("lib") {
     sources += [
       "cl_dnn_custom_kernels.cc",
       "cl_dnn_custom_kernels.h",
-      "compilation_impl_cl_dnn.cc",
-      "compilation_impl_cl_dnn.h",
+      "compilation_impl.cc",
+      "compilation_impl.h",
+      "compilation_delegate_cl_dnn.cc",
+      "compilation_delegate_cl_dnn.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
-      "model_impl_cl_dnn.cc",
-      "model_impl_cl_dnn.h",
-      "neural_network_impl_cl_dnn.cc",
-      "neural_network_impl_cl_dnn.h",
+      "model_impl.cc",
+      "model_impl.h",
+      "neural_network_impl.cc",
+      "neural_network_impl.h",
     ]
 
     lib_dirs = [ "//third_party/clDNN/build/out/${cldnn_os}/Release" ]

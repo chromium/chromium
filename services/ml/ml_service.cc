@@ -7,16 +7,12 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/service_context.h"
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
 #include "services/ml/neural_network_impl.h"
 #elif defined(OS_ANDROID)
 #include "services/ml/neural_network_impl_android.h"
 #elif defined(OS_MACOSX)
 #include "services/ml/neural_network_impl_mac.h"
-#elif defined(OS_WIN)
-#include "services/ml/neural_network_impl.h"
-#else
-#include "services/ml/neural_network_impl.h"
 #endif
 
 namespace ml {
@@ -33,16 +29,12 @@ void MLService::OnStart() {
   ref_factory_.reset(new service_manager::ServiceContextRefFactory(
       context()->CreateQuitClosure()));
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #elif defined(OS_ANDROID)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));
 #elif defined(OS_MACOSX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
-#elif defined(OS_WIN)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplClDnn::Create));
-#else
-  registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #endif
 }
 
