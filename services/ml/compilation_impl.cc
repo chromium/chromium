@@ -9,13 +9,13 @@
 
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_delegate_cl_dnn.h"
+#include "services/ml/compilation_delegate_mkl_dnn.h"
 #include "services/ml/model_impl.h"
 
 namespace ml {
 
-CompilationImpl::CompilationImpl(mojom::ModelInfoPtr model_info) {
-  model_info_ = std::move(model_info);
-}
+CompilationImpl::CompilationImpl(mojom::ModelInfoPtr model_info) :
+    model_info_(std::move(model_info)) {}
 
 CompilationImpl::~CompilationImpl() {}
 
@@ -23,8 +23,14 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   DLOG(INFO) << "CompilationImpl::Finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
-
-  delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+  if (preference == mojom::PREFER_SUSTAINED_SPEED) {
+    delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+  } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
+    delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+  } else {
+    DLOG(ERROR) << "Preference: " << preference << " is not suppoted.";
+    std::move(callback).Run(mojom::BAD_DATA);
+  }
   int32_t result = delegate_->Compile();
   std::move(callback).Run(result);
 }
