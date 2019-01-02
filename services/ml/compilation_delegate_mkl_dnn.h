@@ -32,10 +32,8 @@ struct CompiledModelMklDnn {
   CompiledModelMklDnn();
   ~CompiledModelMklDnn();
 
-  std::map<uint32_t, void*> value_memories;
-  std::map<std::string, mkldnn_primitive_t> operands;
+  std::map<std::string, std::pair<mkldnn_primitive_t, void*> > memories;
   std::vector<mkldnn_primitive_t> operations;
-
   mkldnn_engine_t engine;
 };
 
@@ -52,12 +50,14 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
   friend class ExecutionImplMklDnn;
   int32_t MkldnnInit();
   int32_t MkldnnCreateTopology();
-  int32_t MkldnnCreateProgram();
+  int32_t MkldnnGetMemoryFormat(const std::vector<uint32_t>&, mkldnn_memory_format_t*);
+  int32_t MkldnnGetDataType(int32_t, mkldnn_data_type_t*);
+  int32_t MkldnnAddMemory(uint32_t index, mkldnn_memory_format_t* format = nullptr);
   int32_t MkldnnAddInput(uint32_t index);
+  int32_t MkldnnAddOutput(uint32_t index);
   int32_t MkldnnAddReorder(const std::string& input_name,
-                          const std::string& output_name,
-                          int32_t target_format);
-  int32_t MkldnnAddData(uint32_t index);
+                           const std::string& output_name,
+                           int32_t target_format);
   int32_t MkldnnAddActivationByFusedCode(const std::string& input,
                                         const std::string& id,
                                         int32_t fuse_code);
@@ -90,6 +90,8 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
   const CompilationImpl* compilation_;
 
   std::shared_ptr<CompiledModelMklDnn> compiled_model_;
+
+  std::vector<mkldnn_primitive_t> weights_reorders_;
 
   DISALLOW_COPY_AND_ASSIGN(CompilationDelegateMklDnn);
 };
