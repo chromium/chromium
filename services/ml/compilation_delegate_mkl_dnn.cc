@@ -38,13 +38,24 @@ inline void CalculateExplicitPadding(bool padding_same,
 
 }  // namespace
 
+CompiledModelMklDnn::CompiledModelMklDnn() {}
+CompiledModelMklDnn::~CompiledModelMklDnn() {
+  mkldnn_status_t status;
+  if (engine) {
+    status = mkldnn_engine_destroy(engine);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to destory engine " << status;
+    }
+    DLOG(INFO) << "[MKLDNN] succeed to destory engine";
+  }
+}
+
 CompilationDelegateMklDnn::CompilationDelegateMklDnn(
     const CompilationImpl* compilation)
     : CompilationDelegate(),
       compilation_(compilation) {}
 
-CompilationDelegateMklDnn::~CompilationDelegateMklDnn() {
-}
+CompilationDelegateMklDnn::~CompilationDelegateMklDnn() {}
 
 int32_t CompilationDelegateMklDnn::Compile() {
   DLOG(INFO) << "CompilationDelegateMklDnn::Compile";
@@ -54,12 +65,19 @@ int32_t CompilationDelegateMklDnn::Compile() {
     return result;
   }
 
+  result = MkldnnCreateTopology();
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
   return mojom::NOT_ERROR;
 }
 
 std::unique_ptr<mojom::Execution> CompilationDelegateMklDnn::CreateExecution(
     mojom::ExecutionInitParamsPtr params) {
-  return std::make_unique<ExecutionImplMklDnn>(this, std::move(params));
+  return std::make_unique<ExecutionImplMklDnn>(
+      std::move(compiled_model_),
+      std::move(params));
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnInit() {
@@ -70,6 +88,16 @@ int32_t CompilationDelegateMklDnn::MkldnnInit() {
   }
 #endif
 
+  compiled_model_.reset(new CompiledModelMklDnn());
+
+  mkldnn_status_t status;
+  status = LATE(mkldnn_engine_create)
+      (&compiled_model_->engine, mkldnn_cpu, 0);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create engine " << status;
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[MKLDNN] succeed to create engine " << compiled_model_->engine;
   return mojom::NOT_ERROR;
 }
 
@@ -287,6 +315,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
     DLOG(INFO) << "  padding_top: " << padding_top;
     DLOG(INFO) << "  padding_bottom: " << padding_bottom;
   }
+
+
 
   return mojom::NOT_ERROR;
 }

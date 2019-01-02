@@ -17,10 +17,11 @@
 namespace ml {
 
 class CompilationDelegateMklDnn;
+struct CompiledModelMklDnn;
 
 class ExecutionImplMklDnn : public mojom::Execution {
  public:
-  ExecutionImplMklDnn(const CompilationDelegateMklDnn*,
+  ExecutionImplMklDnn(std::shared_ptr<CompiledModelMklDnn> compiled_model,
                       mojom::ExecutionInitParamsPtr params);
   ~ExecutionImplMklDnn() override;
 
@@ -28,6 +29,8 @@ class ExecutionImplMklDnn : public mojom::Execution {
 
  private:
   mojom::ExecutionInitParamsPtr params_;
+
+  std::shared_ptr<CompiledModelMklDnn> compiled_model_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMklDnn);
 };

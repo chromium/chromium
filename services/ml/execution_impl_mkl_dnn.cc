@@ -7,14 +7,15 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "services/ml/compilation_delegate_cl_dnn.h"
+#include "services/ml/compilation_delegate_mkl_dnn.h"
 
 namespace ml {
 
 ExecutionImplMklDnn::ExecutionImplMklDnn(
-    const CompilationDelegateMklDnn* compilation,
+    std::shared_ptr<CompiledModelMklDnn> compiled_model,
     mojom::ExecutionInitParamsPtr params)
-    : params_(std::move(params)) {
+    : params_(std::move(params)),
+      compiled_model_(std::move(compiled_model)) {
 }
 
 ExecutionImplMklDnn::~ExecutionImplMklDnn() {

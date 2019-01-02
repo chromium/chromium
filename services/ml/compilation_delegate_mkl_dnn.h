@@ -28,6 +28,17 @@ extern ml::MklDnnSymbolTable* GetMklDnnSymbolTable();
 
 namespace ml {
 
+struct CompiledModelMklDnn {
+  CompiledModelMklDnn();
+  ~CompiledModelMklDnn();
+
+  std::map<uint32_t, void*> value_memories;
+  std::map<std::string, mkldnn_primitive_t> operands;
+  std::vector<mkldnn_primitive_t> operations;
+
+  mkldnn_engine_t engine;
+};
+
 class CompilationDelegateMklDnn : public CompilationDelegate {
  public:
   explicit CompilationDelegateMklDnn(const CompilationImpl*);
@@ -77,6 +88,8 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
 
  private:
   const CompilationImpl* compilation_;
+
+  std::shared_ptr<CompiledModelMklDnn> compiled_model_;
 
   DISALLOW_COPY_AND_ASSIGN(CompilationDelegateMklDnn);
 };

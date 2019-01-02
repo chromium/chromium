@@ -8,10 +8,12 @@ import("//testing/test.gni")
 
 if (is_win) {
   cldnn_dll = "clDNN64.dll"
-  cldnn_os = "Windows64"
+  mkldnn_dll = "mkldnn.dll"
+  os_folder = "Windows64"
 } else if (is_linux) {
   cldnn_dll = "libclDNN64.so"
-  cldnn_os = "Linux64"
+  mkldnn_dll = "mkldnn.so"
+  os_folder = "Linux64"
 }
 
 source_set("lib") {
@@ -123,9 +125,15 @@ source_set("lib") {
       "neural_network_impl.h",
     ]
 
-    lib_dirs = [ "//third_party/clDNN/build/out/${cldnn_os}/Release" ]
+    lib_dirs = [
+      "//third_party/clDNN/build/out/${os_folder}/Release",
+      "//third_party/mkl-dnn/lib/${os_folder}/Release",
+    ]
 
-    libs = [ "clDNN64.lib" ]
+    libs = [
+      "clDNN64.lib",
+      "mkldnn.lib",
+    ]
   } else {
     sources += [
       "neural_network_impl.cc",
@@ -138,7 +146,10 @@ source_set("lib") {
   ]
 
   if (is_win || is_linux) {
-    deps += [ ":copy_cldnn_dll" ]
+    deps += [
+      ":copy_cldnn_dll",
+      ":copy_mkldnn_dll",
+    ]
   }
 
   public_deps = [
@@ -149,10 +160,19 @@ source_set("lib") {
 }
 
 if (is_win || is_linux) {
-  dll_path = "//third_party/clDNN/build/out/${cldnn_os}/Release"
+  cldnn_dll_path = "//third_party/clDNN/build/out/${os_folder}/Release"
   copy("copy_cldnn_dll") {
     sources = [
-      "${dll_path}/${cldnn_dll}",
+      "${cldnn_dll_path}/${cldnn_dll}",
+    ]
+    outputs = [
+      "$root_out_dir/{{source_file_part}}",
+    ]
+  }
+  mkldnn_dll_path = "//third_party/mkl-dnn/lib/${os_folder}/Release"
+  copy("copy_mkldnn_dll") {
+    sources = [
+      "${mkldnn_dll_path}/${mkldnn_dll}",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",
