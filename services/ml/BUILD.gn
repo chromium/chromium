@@ -6,8 +6,6 @@ import("//services/service_manager/public/cpp/service.gni")
 import("//services/service_manager/public/service_manifest.gni")
 import("//testing/test.gni")
 
-cldnn_dll = ""
-cldnn_os = ""
 if (is_win) {
   cldnn_dll = "clDNN64.dll"
   cldnn_os = "Windows64"

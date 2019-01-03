@@ -82,7 +82,7 @@ void CompilationImplMac::CreateExecution(CreateExecutionCallback callback) {
     OperandMac& operand = operands_[inputs_[i]];
     input_memory_size += operand.requiredSize();
     init_params->inputs.push_back(
-        mojom::OperandInfo::New(operand.type, operand.dimensions));
+        mojom::OperandInfo::New(inputs_[i], operand.type, operand.dimensions));
   }
   DLOG(INFO) << "Required input memory size: " << input_memory_size;
 
@@ -92,7 +92,7 @@ void CompilationImplMac::CreateExecution(CreateExecutionCallback callback) {
     OperandMac& operand = operands_[outputs_[i]];
     output_memory_size += operand.requiredSize();
     init_params->outputs.push_back(
-        mojom::OperandInfo::New(operand.type, operand.dimensions));
+        mojom::OperandInfo::New(outputs_[i], operand.type, operand.dimensions));
   }
   DLOG(INFO) << "Required output memory size: " << output_memory_size;
 

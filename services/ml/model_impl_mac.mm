@@ -102,9 +102,9 @@ void ModelImplMac::Finish(mojom::ModelInfoPtr model_info,
   const int8_t* base = static_cast<const int8_t*>(mapping.get());
   memory_.reset(new int8_t[memory_size_]);
   memcpy(memory_.get(), base, memory_size_);
-  for (size_t i = 0; i < model_info->values.size(); ++i ) {
-    DLOG(INFO) << "  values[" << i << "]";
-    const mojom::OperandValueInfoPtr& value_info = model_info->values[i];
+  for (auto itr = model_info->values.begin(); itr != model_info->values.end();
+       ++itr) {
+    const mojom::OperandValueInfoPtr& value_info = itr->second;
     int32_t result = SetOperandValue(value_info->index,
                                      static_cast<const void*>(memory_.get() + value_info->offset),
                                      value_info->length);
