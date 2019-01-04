@@ -78,19 +78,23 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
   }
   DLOG(INFO) << "[clDNN] succeed to release memories";
 
-  LATE(cldnn_release_topology)(topology_, &status);
-  if (status != CLDNN_SUCCESS) {
-    DLOG(ERROR) << "[clDNN] failed to release cldnn topology " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+  if (topology_) {
+    LATE(cldnn_release_topology)(topology_, &status);
+    if (status != CLDNN_SUCCESS) {
+      DLOG(ERROR) << "[clDNN] failed to release cldnn topology " << status << " "
+                  << std::string(LATE(cldnn_get_last_error_message)());
+    }
+    DLOG(INFO) << "[clDNN] succeed to release topology";
   }
-  DLOG(INFO) << "[clDNN] succeed to release topology";
 
-  LATE(cldnn_release_engine)(engine_, &status);
-  if (status != CLDNN_SUCCESS) {
-    DLOG(ERROR) << "[clDNN] failed to release cldnn engine " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+  if (engine_) {
+    LATE(cldnn_release_engine)(engine_, &status);
+    if (status != CLDNN_SUCCESS) {
+      DLOG(ERROR) << "[clDNN] failed to release cldnn engine " << status << " "
+                  << std::string(LATE(cldnn_get_last_error_message)());
+    }
+    DLOG(INFO) << "[clDNN] succeed to release engine";
   }
-  DLOG(INFO) << "[clDNN] succeed to release engine";
 
   if (program_) {
     LATE(cldnn_release_program)(program_, &status);
@@ -98,8 +102,8 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
       DLOG(ERROR) << "[clDNN] failed to release program " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
     }
+    DLOG(INFO) << "[clDNN] succeed to release program";
   }
-  DLOG(INFO) << "[clDNN] succeed to release program";
 }
 
 int32_t CompilationDelegateClDnn::Compile() {
