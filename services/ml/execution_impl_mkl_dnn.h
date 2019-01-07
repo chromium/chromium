@@ -29,7 +29,6 @@ class ExecutionImplMklDnn : public mojom::Execution {
 
  private:
   mojom::ExecutionInitParamsPtr params_;
-
   std::shared_ptr<CompiledModelMklDnn> compiled_model_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMklDnn);
