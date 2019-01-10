@@ -63,6 +63,13 @@ bool CompileFullyConnected(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                            std::vector<OperandMac>& operands,
                            const std::map<uint32_t, ValueInfo>& values,
                            const std::unique_ptr<int8_t[]>& memory);
+
+API_AVAILABLE(macosx(10.13))
+bool CompileBilinearScale(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                          OperationMac&,
+                          const std::vector<OperandMac>& operands,
+                          const std::map<uint32_t, ValueInfo>& values,
+                          const std::unique_ptr<int8_t[]>& memory);
 }  // namespace ml
 
 #endif  // SERVICES_ML_COMPILATION_IMPL_MAC_MPS_H_

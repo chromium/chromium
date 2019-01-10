@@ -563,4 +563,41 @@ bool CompileFullyConnected(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
   return true;
 }
 
+API_AVAILABLE(macosx(10.13))
+bool CompileBilinearScale(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                          OperationMac& operation,
+                          const std::vector<OperandMac>& operands,
+                          const std::map<uint32_t, ValueInfo>& values,
+                          const std::unique_ptr<int8_t[]>& memory) {
+  DLOG(INFO) << "CompileBilinearScale.";
+  const OperandMac& output_operand = operands[operation.outputs[0]];
+  if (output_operand.dimensions.size() != 4) {
+    LOG(ERROR) << "Input and output must be 4-D tensor.";
+    return false;
+  }
+
+  const OperandMac& input_operand = operands[operation.inputs[0]];
+  if (output_operand.dimensions[2] % input_operand.dimensions[2] != 0 ||
+      output_operand.dimensions[1] % input_operand.dimensions[1] != 0) {
+    LOG(ERROR) << "The upsampling factor for the x/y must be integer.";
+    return false;
+  }
+
+  // output_operand.dimensions[2] is width for "NHWC" data layout.
+  NSUInteger scale_factorX =
+      output_operand.dimensions[2] / input_operand.dimensions[2];
+  NSUInteger scale_factorY =
+      output_operand.dimensions[1] / input_operand.dimensions[1];
+
+  MPSCNNUpsamplingBilinearNode* bilinear_scale_node =
+      [[MPSCNNUpsamplingBilinearNode alloc]
+               initWithSource:image_nodes[operation.inputs[0]]
+          integerScaleFactorX:scale_factorX
+          integerScaleFactorY:scale_factorY
+                 alignCorners:true];
+  image_nodes[operation.outputs[0]] = bilinear_scale_node.resultImage;
+
+  return true;
+}
+
 }  // namespace ml

@@ -250,8 +250,12 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     } else if (type == mojom::FULLY_CONNECTED) {
       success = CompileFullyConnected(mps_image_nodes_, operation, operands_,
                                       values_, memory_);
+    } else if (type == mojom::RESIZE_BILINEAR) {
+      success = CompileBilinearScale(mps_image_nodes_, operation, operands_,
+                                     values_, memory_);
     } else {
-      DLOG(ERROR) << "Operation is not supported";
+      LOG(ERROR) << "Operation is not supported";
+      success = false;
     }
 
     if (!success)
