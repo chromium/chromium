@@ -54,6 +54,17 @@ CL_DNN_SYMBOLS_LIST
 #undef X
 LATE_BINDING_SYMBOL_TABLE_DECLARE_END(ClDnnSymbolTable)
 
+ClDnnSymbolTable* GetClDnnSymbolTable();
+
+// Accesses clDNN functions through our late-binding symbol table instead of
+// directly. This way we don't have to link to libclDNN, which means our binary
+// will work on systems that don't have it.
+#if defined(OS_LINUX)
+#define LATE(sym) LATESYM_GET(ClDnnSymbolTable, GetClDnnSymbolTable(), sym)
+#else
+#define LATE(sym) sym
+#endif
+
 }  // namespace ml
 
 #endif  // SERVICES_ML_CL_DNN_SYMBOL_TABLE_H_

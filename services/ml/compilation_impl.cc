@@ -30,6 +30,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   } else {
     DLOG(ERROR) << "Preference: " << preference << " is not suppoted.";
     std::move(callback).Run(mojom::BAD_DATA);
+    return;
   }
   int32_t result = delegate_->Compile();
   std::move(callback).Run(result);

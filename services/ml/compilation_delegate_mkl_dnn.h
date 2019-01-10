@@ -11,20 +11,10 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#if defined(OS_LINUX)
-#include "services/ml/mkl_dnn_symbol_table.h"
-#endif
 #include "services/ml/common.h"
 #include "services/ml/compilation_impl.h"
 #include "services/ml/public/interfaces/model.mojom.h"
 #include "third_party/mkl-dnn/include/mkldnn.h"
-
-#if defined(OS_LINUX)
-extern ml::MklDnnSymbolTable* GetMklDnnSymbolTable();
-#define LATE(sym) LATESYM_GET(ml::MklDnnSymbolTable, GetMklDnnSymbolTable(), sym)
-#else
-#define LATE(sym) sym
-#endif
 
 namespace ml {
 

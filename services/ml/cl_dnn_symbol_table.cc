@@ -13,4 +13,9 @@ CL_DNN_SYMBOLS_LIST
 #undef X
 LATE_BINDING_SYMBOL_TABLE_DEFINE_END(ClDnnSymbolTable)
 
+ClDnnSymbolTable* GetClDnnSymbolTable() {
+  static ClDnnSymbolTable* cl_dnn_symbol_table = new ClDnnSymbolTable();
+  return cl_dnn_symbol_table;
+}
+
 }  // namespace ml

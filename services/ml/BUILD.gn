@@ -12,7 +12,7 @@ if (is_win) {
   os_folder = "Windows64"
 } else if (is_linux) {
   cldnn_dll = "libclDNN64.so"
-  mkldnn_dll = "mkldnn.so"
+  mkldnn_dll = "libmkldnn.so"
   os_folder = "Linux64"
 }
 
@@ -34,10 +34,16 @@ source_set("lib") {
       "compilation_impl.h",
       "compilation_delegate_cl_dnn.cc",
       "compilation_delegate_cl_dnn.h",
+      "compilation_delegate_mkl_dnn.cc",
+      "compilation_delegate_mkl_dnn.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
+      "execution_impl_mkl_dnn.cc",
+      "execution_impl_mkl_dnn.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
+      "mkl_dnn_symbol_table.cc",
+      "mkl_dnn_symbol_table.h",
       "model_impl.cc",
       "model_impl.h",
       "neural_network_impl.cc",

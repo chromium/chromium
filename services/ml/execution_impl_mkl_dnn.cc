@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "services/ml/compilation_delegate_mkl_dnn.h"
+#include "services/ml/mkl_dnn_symbol_table.h"
 
 namespace ml {
 

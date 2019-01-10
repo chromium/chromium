@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "services/ml/cl_dnn_symbol_table.h"
 #include "services/ml/compilation_delegate_cl_dnn.h"
 
 namespace ml {
