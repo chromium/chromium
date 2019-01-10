@@ -716,13 +716,64 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   DLOG(INFO) << "[MKLDNN] succeed to init convolution descriptor";
 
   mkldnn_primitive_desc_t conv_pd;
-  status = LATE(mkldnn_primitive_desc_create)
-      (&conv_pd, &conv_desc, compiled_model_->engine, NULL);
-  if (status != mkldnn_success) {
-    LOG(ERROR) << "[MKLDNN] failed to create convolution primitive descriptor "
-               << status;
-    return mojom::OP_FAILED;
+  if (fuse_code == mojom::FUSED_NONE) {
+    status = LATE(mkldnn_primitive_desc_create)
+        (&conv_pd, &conv_desc, compiled_model_->engine, NULL);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to create convolution primitive descriptor "
+                << status;
+      return mojom::OP_FAILED;
+    }
+  } else {
+    mkldnn_primitive_attr_t attr;
+    status = LATE(mkldnn_primitive_attr_create)(&attr);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to create primitive attribute " << status;
+      return mojom::OP_FAILED;
+    }
+    mkldnn_post_ops_t post_ops;
+    status = LATE(mkldnn_post_ops_create)(&post_ops);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to create post ops " << status;
+      return mojom::OP_FAILED;
+    }
+    if (fuse_code == mojom::FUSED_RELU) {
+      status = LATE(mkldnn_post_ops_append_eltwise)
+          (post_ops, 1.0, mkldnn_eltwise_relu, 0, 0);
+    } else if (fuse_code == mojom::FUSED_RELU1 ||
+        fuse_code == mojom::FUSED_RELU6) {
+      float uppper_bound = fuse_code == mojom::FUSED_RELU1 ? 1.0 : 6.0;
+      status = LATE(mkldnn_post_ops_append_eltwise)
+          (post_ops, 1.0, mkldnn_eltwise_bounded_relu, uppper_bound, 0);
+    } else {
+      LOG(ERROR) << "[MKLDNN] fuse code " << fuse_code << " is not supproted.";
+      LATE(mkldnn_post_ops_destroy)(post_ops);
+      LATE(mkldnn_primitive_attr_destroy)(attr);
+      return mojom::BAD_DATA;
+    }
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to append eltwise to post ops " << status;
+      LATE(mkldnn_post_ops_destroy)(post_ops);
+      LATE(mkldnn_primitive_attr_destroy);
+      return mojom::OP_FAILED;
+    }
+    status = LATE(mkldnn_primitive_attr_set_post_ops)(attr, post_ops);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to set post ops to primitive attribute "
+                 << status;
+      return mojom::OP_FAILED;
+    }
+    status = LATE(mkldnn_primitive_desc_create_v2)
+        (&conv_pd, &conv_desc, attr, compiled_model_->engine, NULL);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to create convolution primitive descriptor "
+                << status;
+      return mojom::OP_FAILED;
+    }
+    LATE(mkldnn_post_ops_destroy)(post_ops);
+    LATE(mkldnn_primitive_attr_destroy)(attr);
   }
+  
   DLOG(INFO) << "[MKLDNN] succeed to create convolution primitive descriptor";
 
   DLOG(INFO) << "Add input memory";

@@ -22,6 +22,7 @@ namespace ml {
   X(mkldnn_memory_primitive_desc_get_size)  \
   X(mkldnn_memory_set_data_handle)          \
   X(mkldnn_primitive_desc_create)           \
+  X(mkldnn_primitive_desc_create_v2)        \
   X(mkldnn_primitive_desc_destroy)          \
   X(mkldnn_primitive_desc_query_pd)         \
   X(mkldnn_convolution_forward_desc_init)   \
@@ -33,7 +34,14 @@ namespace ml {
   X(mkldnn_stream_create)                   \
   X(mkldnn_stream_submit)                   \
   X(mkldnn_stream_wait)                     \
-  X(mkldnn_stream_destroy)
+  X(mkldnn_stream_destroy)                  \
+  X(mkldnn_post_ops_create)                 \
+  X(mkldnn_post_ops_destroy)                \
+  X(mkldnn_post_ops_append_eltwise)         \
+  X(mkldnn_primitive_attr_create)           \
+  X(mkldnn_primitive_attr_destroy)          \
+  X(mkldnn_primitive_attr_set_post_ops)
+  
 
 LATE_BINDING_SYMBOL_TABLE_DECLARE_BEGIN(MklDnnSymbolTable)
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DECLARE_ENTRY(MklDnnSymbolTable, sym)
