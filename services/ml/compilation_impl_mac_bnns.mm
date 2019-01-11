@@ -61,7 +61,7 @@ bool CompileAdd(OperationMac& operation,
   operation.offset_y = 0;
 
   const std::vector<uint32_t> inputs = operation.inputs;
-  if (operands[0].dimensions != operands[1].dimensions) {
+  if (operands[inputs[0]].dimensions != operands[inputs[1]].dimensions) {
     DLOG(ERROR) << "Broadcasting is not supported by now!";
     return false;
   }
