@@ -225,6 +225,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 des[j] = src[j];
               }
             } else if (operation.local_operation == KConcatenation) {
+              int32_t batch_offset_sum = 0;
               for (size_t index = 0; index < operation.inputs.size() - 1;
                    ++index) {
                 uint32_t concat_input_idx = operation.inputs[index];
@@ -255,12 +256,13 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                   for (int c = 0; c < channels; c++) {
                     float* temp_des = des + c * channel_offset +
                                       b * batch_offset * batch +
-                                      index * batch_offset;
+                                      batch_offset_sum;
                     float* temp_src =
                         src + c * channel_offset + b * batch_offset;
                     memcpy(temp_des, temp_src, channel_offset * sizeof(float));
                   }
                 }
+                batch_offset_sum += batch_offset;
               }
             } else if (operation.local_operation == KAdd) {
               float* input_a_values = src;
