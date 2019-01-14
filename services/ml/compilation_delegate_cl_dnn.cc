@@ -27,38 +27,9 @@
 
 #if defined(OS_LINUX)
 constexpr char kClDnnVersion[] = "12.1";
-
-ml::ClDnnSymbolTable* GetClDnnSymbolTable() {
-  static ml::ClDnnSymbolTable* cl_dnn_symbol_table = new ml::ClDnnSymbolTable();
-  return cl_dnn_symbol_table;
-}
 #endif
 
 namespace ml {
-
-namespace {
-
-inline void CalculateExplicitPadding(bool padding_same,
-                                     int32_t in_size,
-                                     int32_t stride,
-                                     int32_t filter_size,
-                                     int32_t& padding_head,
-                                     int32_t& padding_tail,
-                                     int32_t dilation = 1) {
-  padding_head = 0;
-  padding_tail = 0;
-
-  if (padding_same) {
-    int32_t out_size = (in_size + stride - 1) / stride;
-    int32_t tmp = (out_size - 1) * stride + filter_size;
-    if (tmp > in_size) {
-      padding_head = ((tmp - in_size) / 2) * dilation;
-      padding_tail = ((tmp - in_size) - padding_head) * dilation;
-    }
-  }
-}
-
-}  // namespace
 
 CompilationDelegateClDnn::CompilationDelegateClDnn(
     const CompilationImpl* compilation)
@@ -245,34 +216,30 @@ int32_t CompilationDelegateClDnn::CldnnCreateTopology() {
 
   for (size_t i = 0; i < model->operations.size(); ++i) {
     const mojom::OperationPtr& operation = model->operations[i];
-    const int32_t type = operation->type;
-    const std::vector<uint32_t>& inputs = operation->inputs;
-    const std::vector<uint32_t>& outputs = operation->outputs;
-
-    if (outputs.size() != 1) {
+    if (operation->outputs.size() != 1) {
       DLOG(ERROR) << "Only 1 output is supported";
       return mojom::BAD_DATA;
     }
-
+    const int32_t type = operation->type;
     int32_t result = mojom::NOT_ERROR;
     if (type == mojom::ADD || type == mojom::MUL) {
-      result = CldnnAddElementwise(type, inputs, outputs);
+      result = CldnnAddElementwise(operation);
     } else if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D ||
                type == mojom::ATROUS_CONV_2D ||
                type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
-      result = CldnnAddConvolution(type, inputs, outputs);
+      result = CldnnAddConvolution(operation);
     } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
-      result = CldnnAddPooling(type, inputs, outputs);
+      result = CldnnAddPooling(operation);
     } else if (type == mojom::SOFTMAX) {
-      result = CldnnAddSoftmax(type, inputs, outputs);
+      result = CldnnAddSoftmax(operation);
     } else if (type == mojom::RESHAPE) {
-      result = CldnnAddReshape(type, inputs, outputs);
+      result = CldnnAddReshape(operation);
     } else if (type == mojom::CONCATENATION) {
-      result = CldnnAddConcatenation(type, inputs, outputs);
+      result = CldnnAddConcatenation(operation);
     } else if (type == mojom::FULLY_CONNECTED) {
-      result = CldnnAddFullyConnected(type, inputs, outputs);
+      result = CldnnAddFullyConnected(operation);
     } else if (type == mojom::RESIZE_BILINEAR) {
-      result = CldnnAddResizeBilinear(type, inputs, outputs);
+      result = CldnnAddResizeBilinear(operation);
     } else {
       DLOG(ERROR) << "Operation type " << type << " is not supported.";
       return mojom::BAD_DATA;
@@ -551,9 +518,16 @@ int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddElementwise(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
+    const mojom::OperationPtr& operation) {
+  // Setup element-wise parameters.
+  ElementWiseParams params;
+  int32_t result = compilation_->GetElementWiseParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const std::vector<uint32_t>& inputs = operation->inputs;
+  const uint32_t output_index = operation->outputs[0];
+
+  // Create element-wise descriptor.
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_eltwise_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -574,7 +548,7 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
     const mojom::ModelInfoPtr& model = compilation_->GetModel();
     if (model->values.find(base::NumberToString(inputs[i])) !=
         model->values.end()) {
-      int32_t result = CldnnAddData(inputs[i]);
+      result = CldnnAddData(inputs[i]);
       if (result != mojom::NOT_ERROR) {
         return result;
       }
@@ -584,29 +558,27 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
                         .size = input_ids_array.size()};
 
   // Setup mode.
-  if (type == mojom::ADD) {
+  if (operation->type == mojom::ADD) {
     eltwise_desc.mode = cldnn_eltwise_sum;
-  } else if (type == mojom::MUL) {
+  } else if (operation->type == mojom::MUL) {
     eltwise_desc.mode = cldnn_eltwise_prod;
   }
 
   // Use output index as primitive id.
-  uint32_t output_index = outputs[0];
   std::string id_str(base::NumberToString(output_index));
 
   // Setup activiation.
-  int32_t fuse_code = compilation_->GetScalarInt32(inputs[2]);
-  if (fuse_code == mojom::FUSED_NONE) {
+  if (params.fuse_code == mojom::FUSED_NONE) {
     eltwise_desc.with_activation = 0;
-  } else if (fuse_code == mojom::FUSED_RELU) {
+  } else if (params.fuse_code == mojom::FUSED_RELU) {
     eltwise_desc.with_activation = 1;
     eltwise_desc.activation_negative_slope = 0.0;
-  } else if (fuse_code == mojom::FUSED_RELU1 ||
-             fuse_code == mojom::FUSED_RELU6) {
+  } else if (params.fuse_code == mojom::FUSED_RELU1 ||
+             params.fuse_code == mojom::FUSED_RELU6) {
     eltwise_desc.with_activation = 0;
     id_str = id_str + "-func";
   } else {
-    DLOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    DLOG(ERROR) << "Fuse code " << params.fuse_code << " is not supported";
     return mojom::BAD_DATA;
   }
 
@@ -632,10 +604,10 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
   DLOG(INFO) << "[clDNN] succeed to add eltwise primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (fuse_code == mojom::FUSED_RELU1 || fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
     int32_t result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, fuse_code);
+        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -644,114 +616,16 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddConvolution(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
-  const bool depthwise = (type == mojom::DEPTHWISE_CONV_2D ||
-                          type == mojom::ATROUS_DEPTHWISE_CONV_2D)
-                             ? true
-                             : false;
-  const bool atrous =
-      (type == mojom::ATROUS_CONV_2D || type == mojom::ATROUS_DEPTHWISE_CONV_2D)
-          ? true
-          : false;
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  const uint32_t output_index = outputs[0];
-  const mojom::OperandPtr& output = model->operands[output_index];
-  const int32_t output_batch = output->dimensions[0];
-  const int32_t output_height = output->dimensions[1];
-  const int32_t output_width = output->dimensions[2];
-  const int32_t output_channel = output->dimensions[3];
-  uint32_t index = 0;
-  const uint32_t input_index = inputs[index++];
-  const mojom::OperandPtr& input = model->operands[input_index];
-  const int32_t input_height = input->dimensions[1];
-  const int32_t input_width = input->dimensions[2];
-
-  const uint32_t filter_idx = inputs[index++];
-  mojom::OperandPtr& filter = model->operands[filter_idx];
-  int32_t depth_out, depth_in;
-  if (depthwise) {
-    depth_out = filter->dimensions[3];
-  } else {
-    depth_out = filter->dimensions[0];
-    depth_in = filter->dimensions[3];
-  }
-  const int32_t filter_height = filter->dimensions[1];
-  const int32_t filter_width = filter->dimensions[2];
-
-  const uint32_t bias_idx = inputs[index++];
-
-  bool implicit_padding;
-  int32_t padding_left, padding_right, padding_top, padding_bottom,
-      padding_code;
-  if ((!depthwise && inputs.size() == 10) ||
-      (depthwise && inputs.size() == 11)) {
-    implicit_padding = false;
-    padding_left = compilation_->GetScalarInt32(inputs[index++]);
-    padding_right = compilation_->GetScalarInt32(inputs[index++]);
-    padding_top = compilation_->GetScalarInt32(inputs[index++]);
-    padding_bottom = compilation_->GetScalarInt32(inputs[index++]);
-  } else if ((!depthwise && inputs.size() == 7) ||
-             (depthwise && inputs.size() == 8)) {
-    implicit_padding = true;
-    padding_code = compilation_->GetScalarInt32(inputs[index++]);
-  } else {
-    DLOG(ERROR) << "Inputs size is incorrect";
-    return mojom::BAD_DATA;
-  }
-  int32_t stride_width, stride_height;
-  int32_t dilation_width, dilation_height;
-  if (!atrous) {
-    stride_width = compilation_->GetScalarInt32(inputs[index++]);
-    stride_height = compilation_->GetScalarInt32(inputs[index++]);
-    dilation_width = 1;
-    dilation_height = 1;
-  } else {
-    dilation_width = compilation_->GetScalarInt32(inputs[index++]);
-    dilation_height = compilation_->GetScalarInt32(inputs[index++]);
-    stride_width = 1;
-    stride_height = 1;
-  }
-  int32_t depthwise_multiplier;
-  if (depthwise) {
-    depthwise_multiplier = compilation_->GetScalarInt32(inputs[index++]);
-    if (depthwise_multiplier != 1) {
-      DLOG(ERROR) << "  depthwise_multiplier " << depthwise_multiplier
-                  << " is not supported.";
-      return mojom::BAD_DATA;
-    }
-    depth_in = depth_out / depthwise_multiplier;
-  }
-  const int32_t fuse_code = compilation_->GetScalarInt32(inputs[index++]);
-
-  DLOG(INFO) << "  input_height: " << input_height;
-  DLOG(INFO) << "  input_width: " << input_width;
-  DLOG(INFO) << "  output_batch: " << output_batch;
-  DLOG(INFO) << "  output_height: " << output_height;
-  DLOG(INFO) << "  output_width: " << output_width;
-  DLOG(INFO) << "  output_channel: " << output_channel;
-  DLOG(INFO) << "  filter_height: " << filter_height;
-  DLOG(INFO) << "  filter_width: " << filter_width;
-  DLOG(INFO) << "  depth_in: " << depth_in;
-  DLOG(INFO) << "  depth_out: " << depth_out;
-  DLOG(INFO) << "  implicit_padding: " << implicit_padding;
-  if (implicit_padding) {
-    DLOG(INFO) << "  padding_code: " << padding_code;
-  } else {
-    DLOG(INFO) << "  padding_left: " << padding_left;
-    DLOG(INFO) << "  padding_right: " << padding_right;
-    DLOG(INFO) << "  padding_top: " << padding_top;
-    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
-  }
-  DLOG(INFO) << "  stride_width: " << stride_width;
-  DLOG(INFO) << "  stride_height: " << stride_height;
-  DLOG(INFO) << "  dilation_width: " << dilation_width;
-  DLOG(INFO) << "  dilation_height: " << dilation_height;
-  if (depthwise) {
-    DLOG(INFO) << "  depthwise_multiplier: " << depthwise_multiplier;
-  }
-  DLOG(INFO) << "  fuse_code: " << fuse_code;
+    const mojom::OperationPtr& operation) {
+  // Setup convolution params.
+  ConvParams params;
+  int32_t result = compilation_->GetConvParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t weights_index = operation->inputs[1];
+  const uint32_t bias_index = operation->inputs[2];
+  const uint32_t output_index = operation->outputs[0];
 
   // Create convolution descriptor.
   cldnn_status status;
@@ -775,19 +649,19 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   std::vector<std::string> weight_ids;
   std::vector<cldnn_primitive_id> bias_ids_array;
   std::vector<std::string> bias_ids;
-  if (depthwise) {
-    auto weights_mapping = compilation_->MapMemory(filter_idx);
+  if (params.depthwise) {
+    auto weights_mapping = compilation_->MapMemory(weights_index);
     const float* weights_value_ptr =
         reinterpret_cast<const float*>(weights_mapping.get());
     const cldnn_layout weights_layout = {
         .data_type = cldnn_f32,
         .format = cldnn_format_bfyx,
-        .size = {1, 1, 2, {1, 1, filter_width, filter_height, 1, 1, 1, 1}},
+        .size = {1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}},
         .padding = {}};
-    weight_ids_array.resize(depth_out);
-    weight_ids.resize(depth_out);
+    weight_ids_array.resize(params.depth_out);
+    weight_ids.resize(params.depth_out);
 
-    auto bias_mapping = compilation_->MapMemory(bias_idx);
+    auto bias_mapping = compilation_->MapMemory(bias_index);
     const float* bias_value_ptr =
         reinterpret_cast<const float*>(bias_mapping.get());
     const cldnn_layout bias_layout = {
@@ -795,9 +669,9 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
         .format = cldnn_format_bfyx,
         .size = {1, 1, 2, {1, 1, 1, 1, 1, 1, 1, 1}},
         .padding = {}};
-    bias_ids_array.resize(depth_out);
-    bias_ids.resize(depth_out);
-    for (int32_t c = 0; c < depth_out; ++c) {
+    bias_ids_array.resize(params.depth_out);
+    bias_ids.resize(params.depth_out);
+    for (size_t c = 0; c < params.depth_out; ++c) {
       cldnn_memory weights_memory =
           LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
       if (status != CLDNN_SUCCESS) {
@@ -815,10 +689,10 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
         return mojom::OP_FAILED;
       }
 
-      for (int32_t y = 0; y < filter_height; ++y) {
-        for (int32_t x = 0; x < filter_width; ++x) {
-          filter_ptr[y * filter_width + x] =
-              weights_value_ptr[y * filter_width * depth_out + x * depth_out +
+      for (size_t y = 0; y < params.filter_height; ++y) {
+        for (size_t x = 0; x < params.filter_width; ++x) {
+          filter_ptr[y * params.filter_width + x] =
+              weights_value_ptr[y * params.filter_width *params. depth_out + x * params.depth_out +
                                 c];
         }
       }
@@ -835,7 +709,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
                     << " " << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
-      std::string id_str = base::NumberToString(filter_idx) + std::string("-") +
+      std::string id_str = base::NumberToString(weights_index) + std::string("-") +
                            base::NumberToString(c);
       weight_ids[c] = id_str;
       weight_ids_array[c] = weight_ids[c].c_str();
@@ -868,7 +742,6 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
                     << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
-
       *bias_ptr = *(bias_value_ptr + c);
 
       LATE(cldnn_unlock_memory)(bias_memory, &status);
@@ -878,7 +751,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
         return mojom::OP_FAILED;
       }
 
-      id_str = base::NumberToString(bias_idx) + std::string("-") +
+      id_str = base::NumberToString(bias_index) + std::string("-") +
                base::NumberToString(c);
       bias_ids[c] = id_str;
       bias_ids_array[c] = bias_ids[c].c_str();
@@ -898,20 +771,20 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
                          .size = weight_ids_array.size()};
     conv_desc.bias = {.data = bias_ids_array.data(),
                       .size = bias_ids_array.size()};
-    conv_desc.split = depth_out;
+    conv_desc.split = params.depth_out;
   } else {
-    CldnnAddData(filter_idx);
+    CldnnAddData(weights_index);
     weight_ids_array.resize(1);
     weight_ids.resize(1);
-    weight_ids[0] = base::NumberToString(filter_idx);
+    weight_ids[0] = base::NumberToString(weights_index);
     weight_ids_array[0] = weight_ids[0].c_str();
     conv_desc.weights = {.data = weight_ids_array.data(),
                          .size = weight_ids_array.size()};
 
-    CldnnAddData(bias_idx);
+    CldnnAddData(bias_index);
     bias_ids_array.resize(1);
     bias_ids.resize(1);
-    bias_ids[0] = base::NumberToString(bias_idx);
+    bias_ids[0] = base::NumberToString(bias_index);
     bias_ids_array[0] = bias_ids[0].c_str();
     conv_desc.bias = {.data = bias_ids_array.data(),
                       .size = bias_ids_array.size()};
@@ -919,45 +792,31 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
     conv_desc.split = 1;
   }
 
-  // Setup paddings.
-  if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_width,
-                             stride_width, filter_width, padding_left,
-                             padding_right, dilation_width);
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_height,
-                             stride_height, filter_height, padding_top,
-                             padding_bottom, dilation_height);
-    DLOG(INFO) << "  padding_left: " << padding_left;
-    DLOG(INFO) << "  padding_right: " << padding_right;
-    DLOG(INFO) << "  padding_top: " << padding_top;
-    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
-  }
-
   conv_desc.input_offset = {
-      1, 1, 2, {0, 0, -padding_left, -padding_top, 0, 0, 0, 0}};
+      1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
-  conv_desc.stride = {1, 1, 2, {1, 1, stride_width, stride_height, 1, 1, 1, 1}};
+  conv_desc.stride = {1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   std::string id_str = base::NumberToString(output_index);
   // Setup activation.
   conv_desc.activation_negative_slope = 0.0;
-  if (fuse_code == mojom::FUSED_NONE) {
+  if (params.fuse_code == mojom::FUSED_NONE) {
     conv_desc.with_activation = 0;
-  } else if (fuse_code == mojom::FUSED_RELU) {
+  } else if (params.fuse_code == mojom::FUSED_RELU) {
     conv_desc.with_activation = 1;
-  } else if (fuse_code == mojom::FUSED_RELU1 ||
-             fuse_code == mojom::FUSED_RELU6) {
+  } else if (params.fuse_code == mojom::FUSED_RELU1 ||
+             params.fuse_code == mojom::FUSED_RELU6) {
     conv_desc.with_activation = 0;
     id_str = id_str + "-func";
   } else {
-    DLOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    DLOG(ERROR) << "Fuse code " << params.fuse_code << " is not supported";
     return mojom::BAD_DATA;
   }
 
   // Setup dilation.
   conv_desc.dilation = {
-      1, 1, 2, {1, 1, dilation_width, dilation_height, 1, 1, 1, 1}};
+      1, 1, 2, {1, 1, params.dilation_width, params.dilation_height, 1, 1, 1, 1}};
 
   // Setup output.
   conv_desc.with_output_size = 1;
@@ -965,7 +824,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       1,
       1,
       2,
-      {output_batch, output_channel, output_width, output_height, 1, 1, 1, 1}};
+      {params.output_batch, params.output_channel, params.output_width, params.output_height, 1, 1, 1, 1}};
 
   // Add primitive into topology.
   conv_desc.id = id_str.c_str();
@@ -980,10 +839,10 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   DLOG(INFO) << "[clDNN] succeed to add conv primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (fuse_code == mojom::FUSED_RELU1 || fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    int32_t result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, fuse_code);
+    result =
+        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -993,65 +852,14 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddPooling(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  const uint32_t output_index = outputs[0];
-  const mojom::OperandPtr& output = model->operands[output_index];
-  const int32_t output_batch = output->dimensions[0];
-  const int32_t output_height = output->dimensions[1];
-  const int32_t output_width = output->dimensions[2];
-  const int32_t output_channel = output->dimensions[3];
-  int32_t i = 0;
-  const int32_t input_index = inputs[i++];
-  const mojom::OperandPtr& input = model->operands[input_index];
-  const int32_t input_height = input->dimensions[1];
-  const int32_t input_width = input->dimensions[2];
-
-  DLOG(INFO) << "  input_height: " << input_height
-             << "  input_width: " << input_width;
-  DLOG(INFO) << "  output_batch: " << output_batch
-             << "  output_height: " << output_height
-             << "  output_width: " << output_width
-             << "  output_channel: " << output_channel;
-
-  bool implicit_padding;
-  int32_t padding_left, padding_right, padding_top, padding_bottom,
-      padding_code;
-  if (inputs.size() == 10) {
-    implicit_padding = false;
-    padding_left = compilation_->GetScalarInt32(inputs[i++]);
-    padding_right = compilation_->GetScalarInt32(inputs[i++]);
-    padding_top = compilation_->GetScalarInt32(inputs[i++]);
-    padding_bottom = compilation_->GetScalarInt32(inputs[i++]);
-  } else if (inputs.size() == 7) {
-    implicit_padding = true;
-    padding_code = compilation_->GetScalarInt32(inputs[i++]);
-  } else {
-    DLOG(ERROR) << "  inputs size is incorrect";
-    return mojom::BAD_DATA;
-  }
-  const int32_t stride_width = compilation_->GetScalarInt32(inputs[i++]);
-  const int32_t stride_height = compilation_->GetScalarInt32(inputs[i++]);
-  const int32_t filter_width = compilation_->GetScalarInt32(inputs[i++]);
-  const int32_t filter_height = compilation_->GetScalarInt32(inputs[i++]);
-  const int32_t fuse_code = compilation_->GetScalarInt32(inputs[i++]);
-
-  DLOG(INFO) << "  implicit_padding: " << implicit_padding;
-  if (implicit_padding) {
-    DLOG(INFO) << "  padding_code: " << padding_code;
-  } else {
-    DLOG(INFO) << "  padding_left: " << padding_left;
-    DLOG(INFO) << "  padding_right: " << padding_right;
-    DLOG(INFO) << "  padding_top: " << padding_top;
-    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
-  }
-  DLOG(INFO) << "  stride_width: " << stride_width;
-  DLOG(INFO) << "  stride_height: " << stride_height;
-  DLOG(INFO) << "  filter_height: " << filter_height;
-  DLOG(INFO) << "  filter_width: " << filter_width;
-  DLOG(INFO) << "  fuse_code: " << fuse_code;
+    const mojom::OperationPtr& operation) {
+  // Setup pooling params.
+  PoolingParams params;
+  int32_t result = compilation_->GetPoolingParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t output_index = operation->outputs[0];
 
   // Create pooling descriptor.
   cldnn_status status;
@@ -1071,36 +879,23 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
                      .size = input_ids_array.size()};
 
   // Setup mode.
-  if (type == mojom::MAX_POOL_2D) {
+  if (operation->type == mojom::MAX_POOL_2D) {
     pool_desc.mode = cldnn_pooling_max;
-  } else if (type == mojom::AVERAGE_POOL_2D) {
+  } else if (operation->type == mojom::AVERAGE_POOL_2D) {
     pool_desc.mode = cldnn_pooling_average;
   } else {
-    DLOG(ERROR) << "Pooling mode " << type << " is not supported";
+    DLOG(ERROR) << "Pooling mode " << operation->type << " is not supported";
     return mojom::BAD_DATA;
   }
 
   // Setup kernel size.
-  pool_desc.size = {1, 1, 2, {1, 1, filter_width, filter_height, 1, 1, 1, 1}};
+  pool_desc.size = {1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
 
-  // Setup paddings.
-  if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_width,
-                             stride_width, filter_width, padding_left,
-                             padding_right);
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, input_height,
-                             stride_height, filter_height, padding_top,
-                             padding_bottom);
-    DLOG(INFO) << "  padding_left: " << padding_left;
-    DLOG(INFO) << "  padding_right: " << padding_right;
-    DLOG(INFO) << "  padding_top: " << padding_top;
-    DLOG(INFO) << "  padding_bottom: " << padding_bottom;
-  }
   pool_desc.input_offset = {
-      1, 1, 2, {0, 0, -padding_left, -padding_top, 0, 0, 0, 0}};
+      1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
-  pool_desc.stride = {1, 1, 2, {1, 1, stride_width, stride_height, 1, 1, 1, 1}};
+  pool_desc.stride = {1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   // Setup output.
   pool_desc.with_output_size = 1;
@@ -1108,15 +903,15 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
       1,
       1,
       2,
-      {output_batch, output_channel, output_width, output_height, 1, 1, 1, 1}};
+      {params.output_batch, params.output_channel, params.output_width, params.output_height, 1, 1, 1, 1}};
 
   // Setup argmax.
   std::string empty;
   pool_desc.argmax = empty.c_str();
 
-  // Setup fuse code.
+  // Setup fuse code (with a dedicated activation primitive).
   std::string id_str = base::NumberToString(output_index);
-  if (fuse_code != mojom::FUSED_NONE) {
+  if (params.fuse_code != mojom::FUSED_NONE) {
     id_str = id_str + "-func";
   }
 
@@ -1133,10 +928,10 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
   DLOG(INFO) << "[clDNN] succeed to add pooling primitive with id " << id_str;
 
   // Handle fused code as dedicated activation primitive.
-  if (fuse_code != mojom::FUSED_NONE) {
+  if (params.fuse_code != mojom::FUSED_NONE) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    int32_t result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, fuse_code);
+    result =
+        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -1146,9 +941,16 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
+    const mojom::OperationPtr& operation) {
+  // Setup softmax params.
+  SoftmaxParams params;
+  int32_t result = compilation_->GetSoftmaxParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t output_index = operation->outputs[0];
+
+  // Create softmax descriptor.
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_softmax_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -1161,16 +963,14 @@ int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
   // Setup inputs.
   std::vector<std::string> input_ids(1);
   std::vector<cldnn_primitive_id> input_ids_array(1);
-  input_ids[0] = base::NumberToString(inputs[0]);
+  input_ids[0] = base::NumberToString(input_index);
   input_ids_array[0] = input_ids[0].c_str();
   softmax_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
 
   // Check beta.
-  const float beta = compilation_->GetScalarFloat(inputs[1]);
-  DLOG(INFO) << "  beta: " << beta;
-  if (beta != 1.0) {
-    DLOG(ERROR) << "beta " << beta << " is not supported.";
+  if (params.beta != 1.0) {
+    DLOG(ERROR) << "beta " << params.beta << " is not supported.";
     return mojom::BAD_DATA;
   }
 
@@ -1178,7 +978,7 @@ int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
   softmax_desc.dimension = cldnn_softmax_normalize_fyx;
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(outputs[0]));
+  std::string id_str(base::NumberToString(output_index));
   softmax_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&softmax_desc),
@@ -1193,9 +993,11 @@ int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddReshape(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
+    const mojom::OperationPtr& operation) {
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t output_index = operation->outputs[0];
+
+  // Create reshape descriptor.
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_reshape_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -1208,7 +1010,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
   // Setup inputs.
   std::vector<std::string> input_ids(1);
   std::vector<cldnn_primitive_id> input_ids_array(1);
-  input_ids[0] = base::NumberToString(inputs[0]);
+  input_ids[0] = base::NumberToString(input_index);
   input_ids_array[0] = input_ids[0].c_str();
   reshape_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
@@ -1216,7 +1018,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
   // Setup output shape.
   cldnn_layout layout;
   const mojom::OperandPtr& operand =
-      compilation_->GetModel()->operands[outputs[0]];
+      compilation_->GetModel()->operands[output_index];
   int32_t result = CldnnGetLayout(operand->type, operand->dimensions, layout);
   if (result != mojom::NOT_ERROR) {
     return result;
@@ -1224,7 +1026,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
   reshape_desc.output_shape = layout.size;
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(outputs[0]));
+  std::string id_str(base::NumberToString(output_index));
   reshape_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&reshape_desc),
@@ -1239,9 +1041,16 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
+    const mojom::OperationPtr& operation) {
+  // Setup concatenation params.
+  ConcatParams params;
+  int32_t result = compilation_->GetConcatParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const std::vector<uint32_t>& inputs = operation->inputs;
+  const uint32_t output_index = operation->outputs[0];
+
+  // Create concatenation descriptor.
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_concatenation_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -1273,48 +1082,47 @@ int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
 
   // Setup axis
   const uint32_t rank = model->operands[inputs[0]]->dimensions.size();
-  const int32_t axis = compilation_->GetScalarInt32(inputs[inputs.size() - 1]);
   if (rank == 1) {
-    if (axis == 0) {
+    if (params.axis == 0) {
       concat_desc.axis = cldnn_concatenation_along_x;
     } else {
-      DLOG(ERROR) << "axis " << axis << " is not supported.";
+      DLOG(ERROR) << "axis " << params.axis << " is not supported.";
       return mojom::BAD_DATA;
     }
   } else if (rank == 2) {
     // HW -> yx
-    if (axis == 0) {
+    if (params.axis == 0) {
       concat_desc.axis = cldnn_concatenation_along_y;
-    } else if (axis == 1) {
+    } else if (params.axis == 1) {
       concat_desc.axis = cldnn_concatenation_along_x;
     } else {
-      DLOG(ERROR) << "axis " << axis << " is not supported.";
+      DLOG(ERROR) << "axis " << params.axis << " is not supported.";
       return mojom::BAD_DATA;
     }
   } else if (rank == 3) {
     // HWC -> yxf
-    if (axis == 0) {
+    if (params.axis == 0) {
       concat_desc.axis = cldnn_concatenation_along_y;
-    } else if (axis == 1) {
+    } else if (params.axis == 1) {
       concat_desc.axis = cldnn_concatenation_along_x;
-    } else if (axis == 2) {
+    } else if (params.axis == 2) {
       concat_desc.axis = cldnn_concatenation_along_f;
     } else {
-      DLOG(ERROR) << "axis " << axis << " is not supported.";
+      DLOG(ERROR) << "axis " << params.axis << " is not supported.";
       return mojom::BAD_DATA;
     }
   } else if (rank == 4) {
     // NHWC -> byxf
-    if (axis == 0) {
+    if (params.axis == 0) {
       concat_desc.axis = cldnn_concatenation_along_b;
-    } else if (axis == 1) {
+    } else if (params.axis == 1) {
       concat_desc.axis = cldnn_concatenation_along_y;
-    } else if (axis == 2) {
+    } else if (params.axis == 2) {
       concat_desc.axis = cldnn_concatenation_along_x;
-    } else if (axis == 3) {
+    } else if (params.axis == 3) {
       concat_desc.axis = cldnn_concatenation_along_f;
     } else {
-      DLOG(ERROR) << "axis " << axis << " is not supported.";
+      DLOG(ERROR) << "axis " << params.axis << " is not supported.";
       return mojom::BAD_DATA;
     }
   } else {
@@ -1323,7 +1131,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
   }
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(outputs[0]));
+  std::string id_str(base::NumberToString(output_index));
   concat_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&concat_desc),
@@ -1339,68 +1147,16 @@ int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
-  // The output tensor, of shape [batch_size, num_units]
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  const uint32_t output_index = outputs[0];
-  const mojom::OperandPtr& output = model->operands[output_index];
-  const int32_t output_batch_size = output->dimensions[0];
-  const int32_t output_num_units = output->dimensions[1];
-
-  uint32_t index = 0;
-  const uint32_t input_index = inputs[index++];
-  const mojom::OperandPtr& input = model->operands[input_index];
-  // A tensor of at least rank 2, specifying the input.
-  if (input->dimensions.size() < 2) {
-    DLOG(ERROR) << "A tenosr of least rank 2.";
-    return mojom::BAD_DATA;
-  }
-
-  const uint32_t weights_idx = inputs[index++];
-  const mojom::OperandPtr& weights = model->operands[weights_idx];
-  const uint32_t num_units = weights->dimensions[0];
-  const uint32_t input_size = weights->dimensions[1];
-
-  // According to Android NN API doc:
-  // If rank is greater than 2, then it gets flattened to a 2-D Tensor.
-  // The (flattened) 2-D Tensor is reshaped (if necessary) to
-  // [batch_size, input_size], where "input_size" corresponds to the number of
-  // inputs to the layer, matching the second dimension of weights, and
-  // "batch_size" is calculated by dividing the number of elements by
-  // "input_size".
-  uint32_t input_batch_size;
-  if (input->dimensions.size() > 2) {
-    input_batch_size = product(input->dimensions) / input_size;
-  } else {
-    if (input->dimensions[1] != input_size) {
-      DLOG(ERROR) << "input.dimensions[1] (" << input->dimensions[1] << ") "
-                  << "!= input_size (" << input_size << ")";
-      return mojom::BAD_DATA;
-    }
-    input_batch_size = input->dimensions[0];
-  }
-
-  // A 1-D tensor, of shape [num_units]
-  const uint32_t bias_idx = inputs[index++];
-  const mojom::OperandPtr& bias = model->operands[bias_idx];
-  const uint32_t bias_num_units = bias->dimensions[0];
-  if (bias_num_units != num_units) {
-    DLOG(ERROR) << "bias_num_units (" << bias_num_units << ") != "
-                << "num_units (" << num_units << ")";
-    return mojom::BAD_DATA;
-  }
-
-  const int32_t fuse_code = compilation_->GetScalarInt32(inputs[index++]);
-
-  DLOG(INFO) << "  input_batch_size: " << input_batch_size;
-  DLOG(INFO) << "  num_units: " << num_units;
-  DLOG(INFO) << "  input_size: " << input_size;
-  DLOG(INFO) << "  bias_num_units: " << bias_num_units;
-  DLOG(INFO) << "  output_batch_size: " << output_batch_size;
-  DLOG(INFO) << "  output_num_units: " << output_num_units;
-  DLOG(INFO) << "  fuse_code: " << fuse_code;
+    const mojom::OperationPtr& operation) {
+  // Setup fully connected params.
+  FullyConnectedParams params;
+  int32_t result = compilation_->GetFullyConnectedParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t weights_index = operation->inputs[1];
+  const uint32_t bias_index = operation->inputs[2];
+  const uint32_t output_index = operation->outputs[0];
 
   // Create fully_connected descriptor.
   cldnn_status status;
@@ -1436,7 +1192,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
 
   // Setup output shape.
   reshape_desc.output_shape = {
-      1, 1, 2, {input_batch_size, 1, input_size, 1, 1, 1, 1, 1}};
+      1, 1, 2, {params.input_batch_size, 1, params.input_size, 1, 1, 1, 1, 1}};
 
   // Setup id and add into topology.
   std::string reshape_id_str(base::NumberToString(input_index) +
@@ -1467,7 +1223,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   const cldnn_layout weights_layout = {
       .data_type = cldnn_f32,
       .format = cldnn_format_bfyx,
-      .size = {1, 1, 2, {num_units, 1, input_size, 1, 1, 1, 1, 1}},
+      .size = {1, 1, 2, {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
       .padding = {}};
   cldnn_memory weights_memory =
       LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
@@ -1485,9 +1241,10 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
     return mojom::OP_FAILED;
   }
 
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
   const mojom::OperandValueInfoPtr& weights_info =
-      model->values[base::NumberToString(weights_idx)];
-  auto mapping = compilation_->MapMemory(weights_idx);
+      model->values[base::NumberToString(weights_index)];
+  auto mapping = compilation_->MapMemory(weights_index);
   memcpy(weights_memory_ptr, mapping.get(), weights_info->length);
 
   LATE(cldnn_unlock_memory)(weights_memory, &status);
@@ -1503,9 +1260,9 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
                 << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
-  const std::string weights_idx_str(base::NumberToString(weights_idx));
+  const std::string weights_index_str(base::NumberToString(weights_index));
   const cldnn_data_desc weights_data_desc = {
-      .type = type_id, .id = weights_idx_str.c_str(), .mem = weights_memory};
+      .type = type_id, .id = weights_index_str.c_str(), .mem = weights_memory};
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&weights_data_desc),
    &status);
@@ -1515,28 +1272,28 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add data primitive with id "
-             << weights_idx_str;
+             << weights_index_str;
 
-  fc_desc.weights = weights_idx_str.c_str();
+  fc_desc.weights = weights_index_str.c_str();
 
   // Setup bias.
-  CldnnAddData(bias_idx);
-  const std::string bias_idx_str(base::NumberToString(bias_idx));
-  fc_desc.bias = bias_idx_str.c_str();
+  CldnnAddData(bias_index);
+  const std::string bias_index_str(base::NumberToString(bias_index));
+  fc_desc.bias = bias_index_str.c_str();
 
   std::string id_str(base::NumberToString(output_index));
   // Setup activation.
   fc_desc.activation_negative_slope = 0.0;
-  if (fuse_code == mojom::FUSED_NONE) {
+  if (params.fuse_code == mojom::FUSED_NONE) {
     fc_desc.with_activation = 0;
-  } else if (fuse_code == mojom::FUSED_RELU) {
+  } else if (params.fuse_code == mojom::FUSED_RELU) {
     fc_desc.with_activation = 1;
-  } else if (fuse_code == mojom::FUSED_RELU1 ||
-             fuse_code == mojom::FUSED_RELU6) {
+  } else if (params.fuse_code == mojom::FUSED_RELU1 ||
+             params.fuse_code == mojom::FUSED_RELU6) {
     fc_desc.with_activation = 0;
     id_str = id_str + "-func";
   } else {
-    DLOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    DLOG(ERROR) << "Fuse code " << params.fuse_code << " is not supported";
     return mojom::BAD_DATA;
   }
 
@@ -1561,10 +1318,9 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   DLOG(INFO) << "[clDNN] succeed to add fc primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (fuse_code == mojom::FUSED_RELU1 || fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    int32_t result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, fuse_code);
+    result = CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -1574,33 +1330,16 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
-    int32_t type,
-    const std::vector<uint32_t>& inputs,
-    const std::vector<uint32_t>& outputs) {
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  const mojom::OperandPtr& input = model->operands[inputs[0]];
-  if (input->dimensions.size() != 4) {
-    DLOG(ERROR) << "Input must be a 4-D tensor";
-    return mojom::BAD_DATA;
-  }
-  const uint32_t height = input->dimensions[1];
-  const uint32_t width = input->dimensions[2];
-  const uint32_t channel = input->dimensions[3];
-  const uint32_t new_height = compilation_->GetScalarInt32(inputs[1]);
-  const uint32_t new_width = compilation_->GetScalarInt32(inputs[2]);
-  const float y_scale = new_height / height;
-  const float x_scale = new_width / width;
-  const uint32_t scale = std::floor(x_scale);
+    const mojom::OperationPtr& operation) {
+  // Setup resize bilinear params.
+  ResizeBilinearParams params;
+  int32_t result = compilation_->GetResizeBilinearParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const uint32_t input_index = operation->inputs[0];
+  const uint32_t output_index = operation->outputs[0];
 
-  DLOG(INFO) << "  height: " << height;
-  DLOG(INFO) << "  width: " << width;
-  DLOG(INFO) << "  channel: " << channel;
-  DLOG(INFO) << "  new_height: " << new_height;
-  DLOG(INFO) << "  new_width: " << new_width;
-  DLOG(INFO) << "  y_scale: " << y_scale;
-  DLOG(INFO) << "  x_scale: " << x_scale;
-  DLOG(INFO) << "  scale: " << scale;
-
+  // Create custom gpu primitive descriptor.
   cldnn_status status;
   cldnn_primitive_type_id type_id =
       LATE(cldnn_custom_gpu_primitive_type_id)(&status);
@@ -1613,7 +1352,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
 
   // Setup inputs.
   // interp kernel optimizes for yxfb foramt, reorder to yxfb.
-  std::string reorder_input(base::NumberToString(inputs[0]));
+  std::string reorder_input(base::NumberToString(input_index));
   std::string reorder_output(reorder_input + std::string("-reordered"));
   CldnnAddReorder(reorder_input, reorder_output, cldnn_format_yxfb);
 
@@ -1642,16 +1381,16 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   // Setup output layout
   cldnn_layout output_layout;
   const mojom::OperandPtr& operand =
-      compilation_->GetModel()->operands[outputs[0]];
-  int32_t result = CldnnGetLayout(operand->type, operand->dimensions,
-                                  output_layout, cldnn_format_yxfb);
+      compilation_->GetModel()->operands[output_index];
+  result = CldnnGetLayout(operand->type, operand->dimensions,
+                          output_layout, cldnn_format_yxfb);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
   custom_desc.output_layout = output_layout;
 
   // Setup work group size
-  std::vector<size_t> gws = {new_height, new_width};
+  std::vector<size_t> gws = {params.new_height, params.new_width};
   custom_desc.gws = gws.data();
   custom_desc.gws_num = gws.size();
   std::vector<size_t> lws = {};
@@ -1659,7 +1398,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   custom_desc.lws_num = lws.size();
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(outputs[0]) + std::string("-yxfb"));
+  std::string id_str(base::NumberToString(output_index) + std::string("-yxfb"));
   custom_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&custom_desc),
@@ -1673,7 +1412,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
              << id_str;
 
   // insert a reorder back to bfyx
-  CldnnAddReorder(id_str, base::NumberToString(outputs[0]), cldnn_format_bfyx);
+  CldnnAddReorder(id_str, base::NumberToString(output_index), cldnn_format_bfyx);
   return mojom::NOT_ERROR;
 }
 

@@ -45,30 +45,14 @@ class CompilationDelegateClDnn : public CompilationDelegate {
   int32_t CldnnAddActivationByFusedCode(const std::string& input,
                                         const std::string& id,
                                         int32_t fuse_code);
-  int32_t CldnnAddElementwise(int32_t type,
-                              const std::vector<uint32_t>& inputs,
-                              const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddConvolution(int32_t type,
-                              const std::vector<uint32_t>& inputs,
-                              const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddPooling(int32_t type,
-                          const std::vector<uint32_t>& inputs,
-                          const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddSoftmax(int32_t type,
-                          const std::vector<uint32_t>& inputs,
-                          const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddReshape(int32_t type,
-                          const std::vector<uint32_t>& inputs,
-                          const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddConcatenation(int32_t type,
-                                const std::vector<uint32_t>& inputs,
-                                const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddFullyConnected(int32_t type,
-                                 const std::vector<uint32_t>& inputs,
-                                 const std::vector<uint32_t>& outputs);
-  int32_t CldnnAddResizeBilinear(int32_t type,
-                                 const std::vector<uint32_t>& inputs,
-                                 const std::vector<uint32_t>& outputs);
+  int32_t CldnnAddElementwise(const mojom::OperationPtr& operation);
+  int32_t CldnnAddConvolution(const mojom::OperationPtr& operation);
+  int32_t CldnnAddPooling(const mojom::OperationPtr& operation);
+  int32_t CldnnAddSoftmax(const mojom::OperationPtr& operation);
+  int32_t CldnnAddReshape(const mojom::OperationPtr& operation);
+  int32_t CldnnAddConcatenation(const mojom::OperationPtr& operation);
+  int32_t CldnnAddFullyConnected(const mojom::OperationPtr& operation);
+  int32_t CldnnAddResizeBilinear(const mojom::OperationPtr& operation);
 
  private:
   const CompilationImpl* compilation_;

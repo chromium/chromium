@@ -27,6 +27,85 @@ class CompilationDelegate {
       mojom::ExecutionInitParamsPtr params) = 0;
 };
 
+struct ElementWiseParams {
+  int32_t fuse_code;
+};
+
+struct ConvParams {
+  bool depthwise;
+  bool atrous;
+  uint32_t input_batch;
+  uint32_t input_height;
+  uint32_t input_width;
+  uint32_t input_channel;
+  uint32_t output_batch;
+  uint32_t output_height;
+  uint32_t output_width;
+  uint32_t output_channel;
+  uint32_t filter_height;
+  uint32_t filter_width;
+  uint32_t bias_length;
+  uint32_t depth_in;
+  uint32_t depth_out;
+  uint32_t padding_left;
+  uint32_t padding_right;
+  uint32_t padding_top;
+  uint32_t padding_bottom;
+  uint32_t stride_width;
+  uint32_t stride_height;
+  uint32_t dilation_width;
+  uint32_t dilation_height;
+  uint32_t depthwise_multiplier;
+  int32_t fuse_code;
+};
+
+struct PoolingParams {
+  uint32_t input_batch;
+  uint32_t input_height;
+  uint32_t input_width;
+  uint32_t input_channel;
+  uint32_t output_batch;
+  uint32_t output_height;
+  uint32_t output_width;
+  uint32_t output_channel;
+  uint32_t filter_height;
+  uint32_t filter_width;
+  uint32_t padding_left;
+  uint32_t padding_right;
+  uint32_t padding_top;
+  uint32_t padding_bottom;
+  uint32_t stride_width;
+  uint32_t stride_height;
+  int32_t fuse_code;
+};
+
+struct SoftmaxParams {
+  float beta;
+};
+
+struct ConcatParams {
+  int32_t axis;
+};
+
+struct FullyConnectedParams {
+  uint32_t input_batch_size;
+  uint32_t num_units;
+  uint32_t input_size;
+  uint32_t bias_num_units;
+  uint32_t output_batch_size;
+  uint32_t output_num_units;
+  int32_t fuse_code;
+};
+
+struct ResizeBilinearParams {
+  uint32_t height;
+  uint32_t width;
+  uint32_t new_height;
+  uint32_t new_width;
+  float y_scale;
+  float x_scale;
+};
+
 class CompilationImpl : public mojom::Compilation {
  public:
   explicit CompilationImpl(mojom::ModelInfoPtr model_info);
@@ -39,6 +118,13 @@ class CompilationImpl : public mojom::Compilation {
   int32_t GetScalarInt32(uint32_t index) const;
   float GetScalarFloat(uint32_t index) const;
   mojo::ScopedSharedBufferMapping MapMemory(uint32_t index) const;
+  int32_t GetElementWiseParams(const mojom::OperationPtr&, ElementWiseParams&) const;
+  int32_t GetConvParams(const mojom::OperationPtr&, ConvParams&) const;
+  int32_t GetPoolingParams(const mojom::OperationPtr&, PoolingParams&) const;
+  int32_t GetSoftmaxParams(const mojom::OperationPtr&, SoftmaxParams&) const;
+  int32_t GetConcatParams(const mojom::OperationPtr&, ConcatParams&) const;
+  int32_t GetFullyConnectedParams(const mojom::OperationPtr&, FullyConnectedParams&) const;
+  int32_t GetResizeBilinearParams(const mojom::OperationPtr&, ResizeBilinearParams&) const;
 
  private:
   mojom::ModelInfoPtr model_info_;
