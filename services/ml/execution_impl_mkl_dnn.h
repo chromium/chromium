@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/ml/common.h"
+#include "services/ml/compilation_delegate_mkl_dnn.h"
 #include "services/ml/public/interfaces/execution.mojom.h"
 #include "third_party/mkl-dnn/include/mkldnn.h"
 
@@ -28,6 +29,8 @@ class ExecutionImplMklDnn : public mojom::Execution {
   void StartCompute(StartComputeCallback callback) override;
 
  private:
+  int32_t MkldnnExecuteNet(std::vector<mkldnn_primitive_t>&);
+  int32_t MkldnnExecuteCustomOperation(const OperationMklDnn&);
   mojom::ExecutionInitParamsPtr params_;
   std::shared_ptr<CompiledModelMklDnn> compiled_model_;
 

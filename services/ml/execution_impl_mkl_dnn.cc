@@ -50,33 +50,33 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     DLOG(INFO) << "Copy data to input memory primitive buffer for " << input_id;
   }
 
+  int32_t result;
+  std::vector<mkldnn_primitive_t> net;
   for (size_t i = 0; i < compiled_model_->operations.size(); ++i) {
     const OperationMklDnn& operation = compiled_model_->operations[i];
     if (operation.primitive) {
-      mkldnn_stream_t stream;
-      status = LATE(mkldnn_stream_create)(&stream, mkldnn_eager);
-      if (status != mkldnn_success) {
-        LOG(ERROR) << "[MKLDNN] failed to create stream " << status;
-        std::move(callback).Run(mojom::OP_FAILED);
-        return;
-      }
-      mkldnn_primitive_t net[1] = {operation.primitive};
-      status = LATE(mkldnn_stream_submit)(stream, 1, net, NULL);
-      if (status != mkldnn_success) {
-        LOG(ERROR) << "[MKLDNN] failed to submit stream " << status;
-        std::move(callback).Run(mojom::OP_FAILED);
-        return;
-      }
-      status = LATE(mkldnn_stream_wait)(stream, 1, NULL);
-      if (status != mkldnn_success) {
-        LOG(ERROR) << "[MKLDNN] failed to wait stream " << status;
-        std::move(callback).Run(mojom::OP_FAILED);
-        return;
-      }
-      DLOG(INFO) << "[MKLDNN] succeed to execute primitive for " << i;
-      LATE(mkldnn_stream_destroy)(stream);
+      net.push_back(operation.primitive);
     } else {
-      LOG(ERROR) << "Operation type " << operation.type << " is not supported";
+      // Execute previous net first
+      if (net.size() > 0) {
+        result = MkldnnExecuteNet(net);
+        if (result != mojom::NOT_ERROR) {
+          std::move(callback).Run(mojom::BAD_DATA);
+          return;
+        }
+      }
+
+      // Execute the custom operation
+      result = MkldnnExecuteCustomOperation(operation);
+      if (result != mojom::NOT_ERROR) {
+        std::move(callback).Run(mojom::BAD_DATA);
+        return;
+      }
+    }
+  }
+  if (net.size() > 0) {
+    result = MkldnnExecuteNet(net);
+    if (result != mojom::NOT_ERROR) {
       std::move(callback).Run(mojom::BAD_DATA);
       return;
     }
@@ -107,6 +107,34 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
 
   DLOG(INFO) << "ExecutionImplMklDnn::StartCompute succeeds";
   std::move(callback).Run(mojom::NOT_ERROR);
+}
+
+int32_t ExecutionImplMklDnn::MkldnnExecuteNet(std::vector<mkldnn_primitive_t>& net) {
+  mkldnn_stream_t stream;
+  mkldnn_status_t status = LATE(mkldnn_stream_create)(&stream, mkldnn_eager);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create stream " << status;
+    return mojom::OP_FAILED;
+  }
+  status = LATE(mkldnn_stream_submit)(stream, net.size(), net.data(), NULL);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to submit stream " << status;
+    return mojom::OP_FAILED;
+  }
+  status = LATE(mkldnn_stream_wait)(stream, net.size(), NULL);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to wait stream " << status;
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[MKLDNN] succeed to execute " << net.size() << " primitives";
+  LATE(mkldnn_stream_destroy)(stream);
+  net.clear();
+  return mojom::NOT_ERROR;
+}
+
+int32_t ExecutionImplMklDnn::MkldnnExecuteCustomOperation(const OperationMklDnn& operation) {
+  LOG(ERROR) << "Operation type " << operation.type << " is not supported";
+  return mojom::BAD_DATA;
 }
 
 }  // namespace ml
