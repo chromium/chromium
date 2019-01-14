@@ -22,7 +22,7 @@ ExecutionImplMklDnn::~ExecutionImplMklDnn() {}
 
 void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
   DLOG(INFO) << "ExecutionImplMklDnn::StartCompute";
-
+  mkldnn_status_t status;
   uint32_t total_length = 0;
   for (size_t i = 0; i < params_->inputs.size(); ++i) {
     const mojom::OperandInfoPtr& operand = params_->inputs[i];
@@ -38,7 +38,14 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     DLOG(INFO) << "Mapping " << mapping.get() << " for input " << i
                << " offset " << offset << " length " << length;
     std::string input_id = base::NumberToString(operand->index);
-    void* buffer = compiled_model_->memories[input_id].buffer;
+    mkldnn_primitive_t memory = compiled_model_->memories[input_id];
+    void* buffer;
+    status = LATE(mkldnn_memory_get_data_handle)(memory, &buffer);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to get memory handle " << status;
+      std::move(callback).Run(mojom::OP_FAILED);
+      return;
+    }
     memcpy(buffer, mapping.get(), length);
     DLOG(INFO) << "Copy data to input memory primitive buffer for " << input_id;
   }
@@ -47,7 +54,7 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     const OperationMklDnn& operation = compiled_model_->operations[i];
     if (operation.primitive) {
       mkldnn_stream_t stream;
-      mkldnn_status_t status = LATE(mkldnn_stream_create)(&stream, mkldnn_eager);
+      status = LATE(mkldnn_stream_create)(&stream, mkldnn_eager);
       if (status != mkldnn_success) {
         LOG(ERROR) << "[MKLDNN] failed to create stream " << status;
         std::move(callback).Run(mojom::OP_FAILED);
@@ -86,7 +93,14 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     // Use the reordered outputs.    
     std::string output_id =
         base::NumberToString(operand->index) + std::string("-reordered");
-    void* buffer = compiled_model_->memories[output_id].buffer;
+    mkldnn_primitive_t memory = compiled_model_->memories[output_id];
+    void* buffer;
+    status = LATE(mkldnn_memory_get_data_handle)(memory, &buffer);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to get memory handle " << status;
+      std::move(callback).Run(mojom::OP_FAILED);
+      return;
+    }
     memcpy(mapping.get(), buffer, length);
     DLOG(INFO) << "Copy data from output memory primitive buffer for " << output_id;
   }

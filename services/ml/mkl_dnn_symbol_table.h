@@ -20,6 +20,7 @@ namespace ml {
   X(mkldnn_memory_primitive_desc_create)    \
   X(mkldnn_memory_primitive_desc_equal)     \
   X(mkldnn_memory_primitive_desc_get_size)  \
+  X(mkldnn_memory_get_data_handle)          \
   X(mkldnn_memory_set_data_handle)          \
   X(mkldnn_primitive_desc_create)           \
   X(mkldnn_primitive_desc_create_v2)        \

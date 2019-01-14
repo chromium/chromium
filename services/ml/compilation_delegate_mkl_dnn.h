@@ -18,17 +18,14 @@
 
 namespace ml {
 
-struct MemoryMklDnn {
-  mkldnn_primitive_t primitive;
-  void* buffer;
-};
-
 struct OperationMklDnn {
   explicit OperationMklDnn(mkldnn_primitive_t);
   ~OperationMklDnn();
   OperationMklDnn(const OperationMklDnn&);
 
   mkldnn_primitive_t primitive;
+
+  // For custom kernels
   int32_t type;
   std::vector<std::string> inputs;
   std::vector<std::string> outputs; 
@@ -38,7 +35,7 @@ struct CompiledModelMklDnn {
   CompiledModelMklDnn();
   ~CompiledModelMklDnn();
 
-  std::map<std::string, MemoryMklDnn> memories;
+  std::map<std::string, mkldnn_primitive_t> memories;
   std::vector<OperationMklDnn> operations;
   mkldnn_engine_t engine;
 };
