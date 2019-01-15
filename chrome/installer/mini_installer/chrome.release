@@ -24,6 +24,7 @@ chrome_child.dll: %(VersionDir)s\
 chrome_elf.dll: %(VersionDir)s\
 chrome_pwa_launcher.exe: %(VersionDir)s\
 clDNN64.dll: %(VersionDir)s\
+mkldnn.dll: %(VersionDir)s\
 d3dcompiler_47.dll: %(VersionDir)s\
 eventlog_provider.dll: %(VersionDir)s\
 icudtl.dat: %(VersionDir)s\
