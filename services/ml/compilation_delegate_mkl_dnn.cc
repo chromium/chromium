@@ -528,8 +528,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   mkldnn_status_t status;
   mkldnn_memory_desc_t input_desc;
   // Input logical order is nchw
-  int input_dims[4] =
-      {params.input_batch, params.input_channel, params.input_height, params.input_width};
+  int input_dims[4] = {params.input_batch, params.input_channel,
+                       params.input_height, params.input_width};
   status = LATE(mkldnn_memory_desc_init)
       (&input_desc, 4, input_dims, mkldnn_f32, mkldnn_any);
   if (status != mkldnn_success) {
@@ -538,8 +538,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   }
   mkldnn_memory_desc_t weights_desc;
   // Weights logical order is oihw
-  int weights_dims[4] =
-      {params.depth_out, params.depth_in, params.filter_height, params.filter_width};
+  int weights_dims[4] = {params.depth_out, params.depth_in,
+                         params.filter_height, params.filter_width};
   status = LATE(mkldnn_memory_desc_init)
       (&weights_desc, 4, weights_dims, mkldnn_f32, mkldnn_any);
   if (status != mkldnn_success) {
@@ -547,7 +547,7 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
     return mojom::OP_FAILED;
   }
   mkldnn_memory_desc_t bias_desc;
-  int bias_dims[1] ={ params.bias_length };
+  int bias_dims[1] = {params.bias_length};
   status = LATE(mkldnn_memory_desc_init)
       (&bias_desc, 1, bias_dims, mkldnn_f32, mkldnn_x);
   if (status != mkldnn_success) {
@@ -556,8 +556,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   }
   mkldnn_memory_desc_t output_desc;
   // Output logical order is nchw
-  int output_dims[4] =
-      {params.output_batch, params.output_channel, params.output_height, params.output_width};
+  int output_dims[4] = {params.output_batch, params.output_channel,
+                        params.output_height, params.output_width};
   status = LATE(mkldnn_memory_desc_init)
       (&output_desc, 4, output_dims, mkldnn_f32, mkldnn_any);
   if (status != mkldnn_success) {
@@ -566,9 +566,9 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   }
 
   mkldnn_convolution_desc_t conv_desc;
-  int strides[2] = { params.stride_width, params.stride_height };
-  int pad_left[2] = { params.padding_top, params.padding_left };
-  int pad_right[2] = { params.padding_bottom, params.padding_right };
+  int strides[2] = {params.stride_width, params.stride_height};
+  int pad_left[2] = {params.padding_top, params.padding_left};
+  int pad_right[2] = {params.padding_bottom, params.padding_right};
   status = LATE(mkldnn_convolution_forward_desc_init)
       (&conv_desc, mkldnn_forward, mkldnn_convolution_direct, 
        &input_desc, &weights_desc, &bias_desc, &output_desc,
@@ -605,12 +605,13 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
       status = LATE(mkldnn_post_ops_append_eltwise)
           (post_ops, 1.0, mkldnn_eltwise_relu, 0, 0);
     } else if (params.fuse_code == mojom::FUSED_RELU1 ||
-        params.fuse_code == mojom::FUSED_RELU6) {
+               params.fuse_code == mojom::FUSED_RELU6) {
       float uppper_bound = params.fuse_code == mojom::FUSED_RELU1 ? 1.0 : 6.0;
       status = LATE(mkldnn_post_ops_append_eltwise)
           (post_ops, 1.0, mkldnn_eltwise_bounded_relu, uppper_bound, 0);
     } else {
-      LOG(ERROR) << "[MKLDNN] fuse code " << params.fuse_code << " is not supproted.";
+      LOG(ERROR) << "[MKLDNN] fuse code " << params.fuse_code
+                 << " is not supproted.";
       LATE(mkldnn_post_ops_destroy)(post_ops);
       LATE(mkldnn_primitive_attr_destroy)(attr);
       return mojom::BAD_DATA;

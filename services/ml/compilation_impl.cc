@@ -124,7 +124,9 @@ mojo::ScopedSharedBufferMapping CompilationImpl::MapMemory(
   return model_info_->memory->MapAtOffset(info->length, info->offset);
 }
 
-int32_t CompilationImpl::GetElementWiseParams(const mojom::OperationPtr& operation, ElementWiseParams& params) const {
+int32_t CompilationImpl::GetElementWiseParams(
+    const mojom::OperationPtr& operation,
+    ElementWiseParams& params) const {
   const int32_t type = operation->type;
   if (!(type == mojom::ADD || type == mojom::MUL)) {
     LOG(ERROR) << "Operation type " << type << " is not element-wise";
@@ -134,7 +136,8 @@ int32_t CompilationImpl::GetElementWiseParams(const mojom::OperationPtr& operati
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation, ConvParams& params)  const {
+int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation,
+                                       ConvParams& params) const {
   const int32_t type = operation->type;
   if (!(type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D ||
         type == mojom::ATROUS_CONV_2D ||
@@ -145,9 +148,9 @@ int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation, Con
   const std::vector<uint32_t>& inputs = operation->inputs;
   const std::vector<uint32_t>& outputs = operation->outputs;
   params.depthwise = (type == mojom::DEPTHWISE_CONV_2D ||
-                           type == mojom::ATROUS_DEPTHWISE_CONV_2D)
-                              ? true
-                              : false;
+                      type == mojom::ATROUS_DEPTHWISE_CONV_2D)
+                         ? true
+                         : false;
   params.atrous =
       (type == mojom::ATROUS_CONV_2D || type == mojom::ATROUS_DEPTHWISE_CONV_2D)
           ? true
@@ -247,11 +250,13 @@ int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation, Con
   DLOG(INFO) << "  fuse_code: " << params.fuse_code;
 
   if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, params.input_width,
-                             params.stride_width, params.filter_width, params.padding_left,
+    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME,
+                             params.input_width, params.stride_width,
+                             params.filter_width, params.padding_left,
                              params.padding_right, params.dilation_width);
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, params.input_height,
-                             params.stride_height, params.filter_height, params.padding_top,
+    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME,
+                             params.input_height, params.stride_height,
+                             params.filter_height, params.padding_top,
                              params.padding_bottom, params.dilation_height);
     DLOG(INFO) << "  padding_left: " << params.padding_left;
     DLOG(INFO) << "  padding_right: " << params.padding_right;
@@ -262,7 +267,8 @@ int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation, Con
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetPoolingParams(const mojom::OperationPtr& operation, PoolingParams& params) const {
+int32_t CompilationImpl::GetPoolingParams(const mojom::OperationPtr& operation,
+                                          PoolingParams& params) const {
   const int32_t type = operation->type;
   if (!(type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D)) {
     LOG(ERROR) << "Operation type " << type << " is not pooling";
@@ -331,11 +337,13 @@ int32_t CompilationImpl::GetPoolingParams(const mojom::OperationPtr& operation, 
 
   // Setup paddings.
   if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, params.input_width,
-                             params.stride_width, params.filter_width, params.padding_left,
+    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME,
+                             params.input_width, params.stride_width,
+                             params.filter_width, params.padding_left,
                              params.padding_right);
-    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME, params.input_height,
-                             params.stride_height, params.filter_height, params.padding_top,
+    CalculateExplicitPadding(padding_code == mojom::PADDING_SAME,
+                             params.input_height, params.stride_height,
+                             params.filter_height, params.padding_top,
                              params.padding_bottom);
     DLOG(INFO) << "  padding_left: " << params.padding_left;
     DLOG(INFO) << "  padding_right: " << params.padding_right;
@@ -345,7 +353,8 @@ int32_t CompilationImpl::GetPoolingParams(const mojom::OperationPtr& operation, 
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetSoftmaxParams(const mojom::OperationPtr& operation, SoftmaxParams& params) const {
+int32_t CompilationImpl::GetSoftmaxParams(const mojom::OperationPtr& operation,
+                                          SoftmaxParams& params) const {
   const int32_t type = operation->type;
   if (type != mojom::SOFTMAX) {
     LOG(ERROR) << "Operation type " << type << " is not softmax";
@@ -355,7 +364,8 @@ int32_t CompilationImpl::GetSoftmaxParams(const mojom::OperationPtr& operation, 
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetConcatParams(const mojom::OperationPtr& operation, ConcatParams& params) const {
+int32_t CompilationImpl::GetConcatParams(const mojom::OperationPtr& operation,
+                                         ConcatParams& params) const {
   const int32_t type = operation->type;
   if (type != mojom::CONCATENATION) {
     LOG(ERROR) << "Operation type " << type << " is not concatenation";
@@ -366,7 +376,9 @@ int32_t CompilationImpl::GetConcatParams(const mojom::OperationPtr& operation, C
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetFullyConnectedParams(const mojom::OperationPtr& operation, FullyConnectedParams& params) const {
+int32_t CompilationImpl::GetFullyConnectedParams(
+    const mojom::OperationPtr& operation,
+    FullyConnectedParams& params) const {
   const int32_t type = operation->type;
   if (type != mojom::FULLY_CONNECTED) {
     LOG(ERROR) << "Operation type " << type << " is not fully connected";
@@ -435,7 +447,9 @@ int32_t CompilationImpl::GetFullyConnectedParams(const mojom::OperationPtr& oper
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationImpl::GetResizeBilinearParams(const mojom::OperationPtr& operation, ResizeBilinearParams& params) const {
+int32_t CompilationImpl::GetResizeBilinearParams(
+    const mojom::OperationPtr& operation,
+    ResizeBilinearParams& params) const {
   const int32_t type = operation->type;
   if (operation->type != mojom::RESIZE_BILINEAR) {
     LOG(ERROR) << "Operation type " << type << " is not resize bilinear";

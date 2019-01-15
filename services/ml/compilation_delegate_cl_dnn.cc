@@ -604,7 +604,8 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
   DLOG(INFO) << "[clDNN] succeed to add eltwise primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 ||
+      params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
     int32_t result =
         CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
@@ -656,7 +657,10 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
     const cldnn_layout weights_layout = {
         .data_type = cldnn_f32,
         .format = cldnn_format_bfyx,
-        .size = {1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}},
+        .size = {1,
+                 1,
+                 2,
+                 {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}},
         .padding = {}};
     weight_ids_array.resize(params.depth_out);
     weight_ids.resize(params.depth_out);
@@ -692,8 +696,8 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       for (size_t y = 0; y < params.filter_height; ++y) {
         for (size_t x = 0; x < params.filter_width; ++x) {
           filter_ptr[y * params.filter_width + x] =
-              weights_value_ptr[y * params.filter_width *params. depth_out + x * params.depth_out +
-                                c];
+              weights_value_ptr[y * params.filter_width * params.depth_out +
+                                x * params.depth_out + c];
         }
       }
       LATE(cldnn_unlock_memory)(weights_memory, &status);
@@ -709,8 +713,8 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
                     << " " << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
-      std::string id_str = base::NumberToString(weights_index) + std::string("-") +
-                           base::NumberToString(c);
+      std::string id_str = base::NumberToString(weights_index) +
+                           std::string("-") + base::NumberToString(c);
       weight_ids[c] = id_str;
       weight_ids_array[c] = weight_ids[c].c_str();
       const cldnn_data_desc weights_data_desc = {
@@ -796,7 +800,8 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
-  conv_desc.stride = {1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+  conv_desc.stride = {
+      1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   std::string id_str = base::NumberToString(output_index);
   // Setup activation.
@@ -816,7 +821,10 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
 
   // Setup dilation.
   conv_desc.dilation = {
-      1, 1, 2, {1, 1, params.dilation_width, params.dilation_height, 1, 1, 1, 1}};
+      1,
+      1,
+      2,
+      {1, 1, params.dilation_width, params.dilation_height, 1, 1, 1, 1}};
 
   // Setup output.
   conv_desc.with_output_size = 1;
@@ -824,7 +832,8 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       1,
       1,
       2,
-      {params.output_batch, params.output_channel, params.output_width, params.output_height, 1, 1, 1, 1}};
+      {params.output_batch, params.output_channel, params.output_width,
+       params.output_height, 1, 1, 1, 1}};
 
   // Add primitive into topology.
   conv_desc.id = id_str.c_str();
@@ -839,7 +848,8 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   DLOG(INFO) << "[clDNN] succeed to add conv primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 ||
+      params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
     result =
         CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
@@ -889,13 +899,15 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
   }
 
   // Setup kernel size.
-  pool_desc.size = {1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
+  pool_desc.size = {
+      1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
 
   pool_desc.input_offset = {
       1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
-  pool_desc.stride = {1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+  pool_desc.stride = {
+      1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   // Setup output.
   pool_desc.with_output_size = 1;
@@ -903,7 +915,8 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
       1,
       1,
       2,
-      {params.output_batch, params.output_channel, params.output_width, params.output_height, 1, 1, 1, 1}};
+      {params.output_batch, params.output_channel, params.output_width,
+       params.output_height, 1, 1, 1, 1}};
 
   // Setup argmax.
   std::string empty;
@@ -1223,7 +1236,10 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   const cldnn_layout weights_layout = {
       .data_type = cldnn_f32,
       .format = cldnn_format_bfyx,
-      .size = {1, 1, 2, {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
+      .size = {1,
+               1,
+               2,
+               {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
       .padding = {}};
   cldnn_memory weights_memory =
       LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
@@ -1318,9 +1334,11 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   DLOG(INFO) << "[clDNN] succeed to add fc primitive with id " << id_str;
 
   // Handle RELU1 and RELU6 fused code as dedicated activation primitive.
-  if (params.fuse_code == mojom::FUSED_RELU1 || params.fuse_code == mojom::FUSED_RELU6) {
+  if (params.fuse_code == mojom::FUSED_RELU1 ||
+      params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    result = CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
+    result =
+        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -1382,8 +1400,8 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   cldnn_layout output_layout;
   const mojom::OperandPtr& operand =
       compilation_->GetModel()->operands[output_index];
-  result = CldnnGetLayout(operand->type, operand->dimensions,
-                          output_layout, cldnn_format_yxfb);
+  result = CldnnGetLayout(operand->type, operand->dimensions, output_layout,
+                          cldnn_format_yxfb);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
@@ -1412,7 +1430,8 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
              << id_str;
 
   // insert a reorder back to bfyx
-  CldnnAddReorder(id_str, base::NumberToString(output_index), cldnn_format_bfyx);
+  CldnnAddReorder(id_str, base::NumberToString(output_index),
+                  cldnn_format_bfyx);
   return mojom::NOT_ERROR;
 }
 

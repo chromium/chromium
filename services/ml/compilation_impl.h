@@ -118,13 +118,16 @@ class CompilationImpl : public mojom::Compilation {
   int32_t GetScalarInt32(uint32_t index) const;
   float GetScalarFloat(uint32_t index) const;
   mojo::ScopedSharedBufferMapping MapMemory(uint32_t index) const;
-  int32_t GetElementWiseParams(const mojom::OperationPtr&, ElementWiseParams&) const;
+  int32_t GetElementWiseParams(const mojom::OperationPtr&,
+                               ElementWiseParams&) const;
   int32_t GetConvParams(const mojom::OperationPtr&, ConvParams&) const;
   int32_t GetPoolingParams(const mojom::OperationPtr&, PoolingParams&) const;
   int32_t GetSoftmaxParams(const mojom::OperationPtr&, SoftmaxParams&) const;
   int32_t GetConcatParams(const mojom::OperationPtr&, ConcatParams&) const;
-  int32_t GetFullyConnectedParams(const mojom::OperationPtr&, FullyConnectedParams&) const;
-  int32_t GetResizeBilinearParams(const mojom::OperationPtr&, ResizeBilinearParams&) const;
+  int32_t GetFullyConnectedParams(const mojom::OperationPtr&,
+                                  FullyConnectedParams&) const;
+  int32_t GetResizeBilinearParams(const mojom::OperationPtr&,
+                                  ResizeBilinearParams&) const;
 
  private:
   mojom::ModelInfoPtr model_info_;
