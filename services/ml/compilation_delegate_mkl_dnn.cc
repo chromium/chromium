@@ -619,7 +619,7 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
     if (status != mkldnn_success) {
       LOG(ERROR) << "[MKLDNN] failed to append eltwise to post ops " << status;
       LATE(mkldnn_post_ops_destroy)(post_ops);
-      LATE(mkldnn_primitive_attr_destroy);
+      LATE(mkldnn_primitive_attr_destroy)(attr);
       return mojom::OP_FAILED;
     }
     status = LATE(mkldnn_primitive_attr_set_post_ops)(attr, post_ops);
