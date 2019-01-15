@@ -48,15 +48,19 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
 }
 
 API_AVAILABLE(macosx(10.13))
-bool CompileAdd(OperationMac& operation,
-                const std::map<uint32_t, ValueInfo>& values,
-                const std::unique_ptr<int8_t[]>& memory,
-                const std::vector<OperandMac>& operands,
-                bool is_add_first) {
-  DLOG(INFO) << "CompilationImplMac::CompileAdd";
-  DLOG_IF(FATAL, operation.type != mojom::ADD);
+bool CompileCompileArithmetic(OperationMac& operation,
+                              const std::map<uint32_t, ValueInfo>& values,
+                              const std::unique_ptr<int8_t[]>& memory,
+                              const std::vector<OperandMac>& operands,
+                              bool is_first_operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
+  DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
-  operation.local_operation = KAdd;
+  if (operation.type == mojom::ADD) {
+    operation.local_operation = KAdd;
+  } else if (operation.type == mojom::MUL) {
+    operation.local_operation = KMul;
+  }
   operation.offset_x = 0;
   operation.offset_y = 0;
 
@@ -65,8 +69,8 @@ bool CompileAdd(OperationMac& operation,
     DLOG(ERROR) << "Broadcasting is not supported by now!";
     return false;
   }
-  
-  if (is_add_first) {
+
+  if (is_first_operation) {
     operation.extend_input.push_back(
         reinterpret_cast<float*>(memory.get() + values.at(inputs[1]).offset));
   }
@@ -494,7 +498,7 @@ API_AVAILABLE(macosx(10.13))
 bool CompileConcatenationBNNS(OperationMac& concat,
                               const std::map<uint32_t, ValueInfo>& values,
                               const std::unique_ptr<int8_t[]>& memory,
-                              bool is_concatenation_first) {
+                              bool is_first_operation) {
   DLOG(INFO) << "CompilationImplMac::CompileConcatenationBNNS";
   DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
   concat.local_operation = KConcatenation;
@@ -504,7 +508,7 @@ bool CompileConcatenationBNNS(OperationMac& concat,
   std::vector<uint32_t> inputs = concat.inputs;
   std::vector<uint32_t> outputs = concat.outputs;
 
-  if (inputs.size() > 2 && is_concatenation_first) {
+  if (inputs.size() > 2 && is_first_operation) {
     for (size_t i = 1; i < inputs.size() - 1; ++i) {
       float* input_value =
           reinterpret_cast<float*>(memory.get() + values.at(inputs[i]).offset);

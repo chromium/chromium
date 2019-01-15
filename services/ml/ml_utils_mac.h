@@ -24,6 +24,7 @@ typedef enum LocalOperation {
   KReshape = 2,
   KConcatenation = 3,
   KAdd = 4,
+  KMul = 5,
 } LocalOperation;
 
 namespace ml {

@@ -156,12 +156,9 @@ void CompilationImplMac::CompileModelWithBNNS(FinishCallback callback) {
     } else if (type == mojom::CONCATENATION) {
       success = CompileConcatenationBNNS(operation, values_, memory_,
                                          i == 0 ? true : false);
-    } else if (type == mojom::ADD) {
-      success = CompileAdd(operation, values_, memory_, operands_,
-                           i == 0 ? true : false);
-    } else if (type == mojom::MUL) {
-      DLOG(ERROR) << "Operation is not supported";
-      success = false;
+    } else if (type == mojom::ADD || type == mojom::MUL) {
+      success = CompileCompileArithmetic(operation, values_, memory_, operands_,
+                                         i == 0 ? true : false);
     } else if (type == mojom::FULLY_CONNECTED) {
       success =
           CompileFullyConnectedBNNS(operation, values_, memory_, operands_);

@@ -264,7 +264,8 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 }
                 batch_offset_sum += batch_offset;
               }
-            } else if (operation.local_operation == KAdd) {
+            } else if (operation.local_operation == KAdd ||
+                       operation.local_operation == KMul) {
               float* input_a_values = src;
               float* input_b_values =
                   (i == 0 ? operation.extend_input[0]
@@ -278,8 +279,14 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 DLOG(ERROR) << "Fail to alloc memory!";
                 success = false;
               }
-              vDSP_vadd(input_a_values, 1, input_b_values, 1, output_vector, 1,
-                        output_length);
+              if (operation.local_operation == KAdd) {
+                vDSP_vadd(input_a_values, 1, input_b_values, 1, output_vector,
+                          1, output_length);
+              } else {
+                vDSP_vmul(input_a_values, 1, input_b_values, 1, output_vector,
+                          1, output_length);
+              }
+
               if (operation.filter != nullptr) {
                 int result =
                     BNNSFilterApply(operation.filter, output_vector, des);
