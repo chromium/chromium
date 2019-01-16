@@ -48,11 +48,10 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
 }
 
 API_AVAILABLE(macosx(10.13))
-bool CompileCompileArithmetic(OperationMac& operation,
-                              const std::map<uint32_t, ValueInfo>& values,
-                              const std::unique_ptr<int8_t[]>& memory,
-                              const std::vector<OperandMac>& operands,
-                              bool is_first_operation) {
+bool CompileCompileArithmeticBNNS(OperationMac& operation,
+                                  const std::map<uint32_t, ValueInfo>& values,
+                                  const std::unique_ptr<int8_t[]>& memory,
+                                  const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
@@ -70,10 +69,11 @@ bool CompileCompileArithmetic(OperationMac& operation,
     return false;
   }
 
-  if (is_first_operation) {
-    operation.extend_input.push_back(
-        reinterpret_cast<float*>(memory.get() + values.at(inputs[1]).offset));
-  }
+  uint32_t extend_input_idx =
+      values.find(inputs[0]) == values.end() ? inputs[1] : inputs[0];
+  operation.extend_input.push_back(reinterpret_cast<float*>(
+      memory.get() + values.at(extend_input_idx).offset));
+
   const int32_t fuse_code = getScalarInt32(values, inputs[2], memory.get());
   DLOG(INFO) << "FUSE_CODE:  " << fuse_code;
 
@@ -107,7 +107,7 @@ bool CompileCompileArithmetic(OperationMac& operation,
   operation.filter = BNNSFilterCreateVectorActivationLayer(
       &in_desc, &out_desc, &activation, &filter_params);
   if (operation.filter == nullptr) {
-    DLOG(ERROR) << "BNNS Fail to Create activation function!";
+    LOG(ERROR) << "BNNS Fail to Create activation function!";
     return false;
   }
 

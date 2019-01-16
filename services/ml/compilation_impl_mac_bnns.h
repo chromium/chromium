@@ -15,11 +15,10 @@
 namespace ml {
 
 API_AVAILABLE(macosx(10.13))
-bool CompileCompileArithmetic(OperationMac&,
-                              const std::map<uint32_t, ValueInfo>& values,
-                              const std::unique_ptr<int8_t[]>& memory,
-                              const std::vector<OperandMac>& operands,
-                              bool is_first_operation);
+bool CompileCompileArithmeticBNNS(OperationMac&,
+                                  const std::map<uint32_t, ValueInfo>& values,
+                                  const std::unique_ptr<int8_t[]>& memory,
+                                  const std::vector<OperandMac>& operands);
 
 API_AVAILABLE(macosx(10.13))
 bool CompileConv2DBNNS(OperationMac&,
