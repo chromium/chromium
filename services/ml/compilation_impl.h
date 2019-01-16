@@ -104,6 +104,7 @@ struct ResizeBilinearParams {
   uint32_t new_width;
   float y_scale;
   float x_scale;
+  bool align_corners;
 };
 
 class CompilationImpl : public mojom::Compilation {

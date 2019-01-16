@@ -456,6 +456,10 @@ int32_t CompilationImpl::GetResizeBilinearParams(
     return mojom::BAD_DATA;
   }
   const std::vector<uint32_t>& inputs = operation->inputs;
+  if (inputs.size() != 3 && inputs.size() != 4) {
+    LOG(ERROR) << "Inputs size is wrong " << inputs.size();
+    return mojom::BAD_DATA;
+  }
   const mojom::OperandPtr& input = model_info_->operands[inputs[0]];
   if (input->dimensions.size() != 4) {
     DLOG(ERROR) << "Input must be a 4-D tensor";
@@ -468,12 +472,19 @@ int32_t CompilationImpl::GetResizeBilinearParams(
   params.y_scale = params.new_height / params.height;
   params.x_scale = params.new_width / params.width;
 
+  params.align_corners = false;
+  if (inputs.size() == 4) {
+    params.align_corners =
+        GetScalarInt32(inputs[3]) == 0 ? false : true;
+  }
+
   DLOG(INFO) << "  height: " << params.height;
   DLOG(INFO) << "  width: " << params.width;
   DLOG(INFO) << "  new_height: " << params.new_height;
   DLOG(INFO) << "  new_width: " << params.new_width;
   DLOG(INFO) << "  y_scale: " << params.y_scale;
   DLOG(INFO) << "  x_scale: " << params.x_scale;
+  DLOG(INFO) << "  align_corners: " << params.align_corners;
   return mojom::NOT_ERROR;
 }
 

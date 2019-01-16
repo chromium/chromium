@@ -1393,7 +1393,10 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
 
   // Setup build options
   std::string build_options("-cl-mad-enable ");
-  build_options += std::string("-Dpad_beg_=0 -Dpad_end_=0");
+  build_options += std::string("-Dpad_beg_=0 -Dpad_end_=0 ");
+  if (params.align_corners) {
+    build_options += std::string("-DALIGN_CORNERS");
+  }
   custom_desc.build_options = build_options.c_str();
 
   // Setup output layout
