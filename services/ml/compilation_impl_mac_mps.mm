@@ -564,11 +564,19 @@ bool CompileBilinearScale(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                           const std::vector<OperandMac>& operands,
                           const std::map<uint32_t, ValueInfo>& values,
                           const std::unique_ptr<int8_t[]>& memory) {
-  if (@available(macOS 10.14, *)) {
-    DLOG(INFO) << "Compile resize bilinear operation.";
-  } else {
-    LOG(ERROR) << "Align corners is true only support above 10.14.";
-    return false;
+  DLOG(INFO) << "Compile resize bilinear operation.";
+  bool align_corners = false;
+  switch (operation.inputs.size()) {
+    case 3:
+      break;
+    case 4:
+      align_corners =
+          getScalarInt32(values, operation.inputs[3], memory.get()) == 0 ? false
+                                                                         : true;
+      break;
+    default:
+      LOG(ERROR) << "Inputs size is wrong " << operation.inputs.size();
+      return false;
   }
 
   const OperandMac& output_operand = operands[operation.outputs[0]];
@@ -590,13 +598,25 @@ bool CompileBilinearScale(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
   NSUInteger scale_factorY =
       output_operand.dimensions[1] / input_operand.dimensions[1];
 
-  MPSCNNUpsamplingBilinearNode* bilinear_scale_node =
-      [[MPSCNNUpsamplingBilinearNode alloc]
-               initWithSource:image_nodes[operation.inputs[0]]
-          integerScaleFactorX:scale_factorX
-          integerScaleFactorY:scale_factorY
-                 alignCorners:true];
-  image_nodes[operation.outputs[0]] = bilinear_scale_node.resultImage;
+  MPSCNNUpsamplingBilinearNode* bilinear_scale_node;
+  if (@available(macOS 10.14, *)) {
+    bilinear_scale_node = [[MPSCNNUpsamplingBilinearNode alloc]
+             initWithSource:image_nodes[operation.inputs[0]]
+        integerScaleFactorX:scale_factorX
+        integerScaleFactorY:scale_factorY
+               alignCorners:align_corners];
+    image_nodes[operation.outputs[0]] = bilinear_scale_node.resultImage;
+    return true;
+  }
+
+  if (@available(macOS 10.13, *)) {
+    LOG(WARNING) << "Only support false alignCorners on 10.13.";
+    bilinear_scale_node = [[MPSCNNUpsamplingBilinearNode alloc]
+             initWithSource:image_nodes[operation.inputs[0]]
+        integerScaleFactorX:scale_factorX
+        integerScaleFactorY:scale_factorY];
+    image_nodes[operation.outputs[0]] = bilinear_scale_node.resultImage;
+  }
 
   return true;
 }
