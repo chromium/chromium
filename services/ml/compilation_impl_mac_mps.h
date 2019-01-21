@@ -45,6 +45,7 @@ bool CompileReshape(std::vector<OperationMac>& operations,
 API_AVAILABLE(macosx(10.13))
 bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                           std::vector<OperationMac>& operations,
+                          std::vector<uint32_t>& constants,
                           const OperationMac& concat,
                           const std::map<uint32_t, ValueInfo>& values,
                           const std::unique_ptr<int8_t[]>& memory,

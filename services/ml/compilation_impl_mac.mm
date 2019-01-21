@@ -240,8 +240,8 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     } else if (type == mojom::RESHAPE) {
       success = CompileReshape(operations_, operation);
     } else if (type == mojom::CONCATENATION) {
-      success = CompileConcatenation(mps_image_nodes_, operations_, operation,
-                                     values_, memory_, operands_);
+      success = CompileConcatenation(mps_image_nodes_, operations_, constants_,
+                                     operation, values_, memory_, operands_);
       DLOG(ERROR) << "CONCATENATION is not supported";
     } else if (type == mojom::ADD || type == mojom::MUL) {
       success = CompileArithmetic(mps_image_nodes_, operation, operands_,

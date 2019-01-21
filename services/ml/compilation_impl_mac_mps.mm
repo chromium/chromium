@@ -387,6 +387,7 @@ bool CompileReshape(std::vector<OperationMac>& operations,
 API_AVAILABLE(macosx(10.13))
 bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                           std::vector<OperationMac>& operations,
+                          std::vector<uint32_t>& constants,
                           const OperationMac& concat,
                           const std::map<uint32_t, ValueInfo>& values,
                           const std::unique_ptr<int8_t[]>& memory,
@@ -402,7 +403,7 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
   DLOG(INFO) << "axis: " << axis;
 
   if (axis != 3) {
-    DLOG(ERROR) << "Only axis == 3 is supported";
+    DLOG(ERROR) << "Only axis == 3 is supported.";
     return false;
   }
 
@@ -417,7 +418,16 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
       return false;
     }
 
-    [image_array addObject:image_nodes[concat_input_idx]];
+    MPSNNImageNode* input_node;
+    if (values.find(inputs[i]) != values.end()) {
+      constants.push_back(inputs[i]);
+
+      // Create a placeholder for input constant image.
+      input_node = [[MPSNNImageNode alloc] initWithHandle:nullptr];
+    } else {
+      input_node = image_nodes[concat_input_idx];
+    }
+    [image_array addObject:input_node];
   }
 
   MPSNNConcatenationNode* concat_node =
