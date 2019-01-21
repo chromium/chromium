@@ -750,7 +750,7 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
       (settings_.main_frame_before_activation_enabled ||
        current_pending_tree_is_impl_side_);
   DCHECK(!has_pending_tree_ || can_have_pending_tree);
-  commit_count_++;
+  ++commit_count_;
   last_commit_had_no_updates_ = commit_has_no_updates;
   begin_main_frame_state_ = BeginMainFrameState::IDLE;
   did_commit_during_frame_ = true;
@@ -847,7 +847,7 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       DCHECK(!did_submit_in_last_frame_);
       needs_begin_main_frame_ = true;
       needs_redraw_ = true;
-      consecutive_checkerboard_animations_++;
+      ++consecutive_checkerboard_animations_;
 
       if (consecutive_checkerboard_animations_ >=
               settings_.maximum_number_of_failed_draws_before_draw_is_forced &&
@@ -1030,7 +1030,7 @@ void SchedulerStateMachine::OnBeginImplFrame(uint64_t source_id,
                                              uint64_t sequence_number,
                                              bool animate_only) {
   begin_impl_frame_state_ = BeginImplFrameState::INSIDE_BEGIN_FRAME;
-  current_frame_number_++;
+  ++current_frame_number_;
   begin_frame_is_animate_only_ = animate_only;
 
   // Cache the values from the previous impl frame before reseting them for this
@@ -1247,8 +1247,8 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
                            "pending_frames", pending_submit_frames_);
   DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
 
-  pending_submit_frames_++;
-  submit_frames_with_current_layer_tree_frame_sink_++;
+  ++pending_submit_frames_;
+  ++submit_frames_with_current_layer_tree_frame_sink_;
 
   did_submit_in_last_frame_ = true;
   last_frame_number_submit_performed_ = current_frame_number_;
@@ -1257,7 +1257,7 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
 void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
   TRACE_EVENT_ASYNC_END1("cc", "Scheduler:pending_submit_frames", this,
                          "pending_frames", pending_submit_frames_);
-  pending_submit_frames_--;
+  --pending_submit_frames_;
 }
 
 void SchedulerStateMachine::SetTreePrioritiesAndScrollState(
