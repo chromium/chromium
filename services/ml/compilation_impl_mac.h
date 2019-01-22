@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "services/ml/ml_utils_mac.h"
 #include "services/ml/model_impl_mac.h"
-#include "services/ml/public/interfaces/compilation.mojom.h"
+#include "services/ml/public/mojom/compilation.mojom.h"
 
 @class MPSNNGraph;
 @class MPSNNImageNode;

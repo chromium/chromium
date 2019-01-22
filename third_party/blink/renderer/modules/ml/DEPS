@@ -2,6 +2,6 @@ include_rules = [
     "-modules",
     "+modules/ModulesExport.h",
     "+modules/ml",
-    "+services/ml/public/interfaces",
+    "+services/ml/public/mojom",
     "+services/service_manager/public/cpp",
 ]

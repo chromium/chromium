@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/common.h"
 #include "services/ml/compilation_impl.h"
-#include "services/ml/public/interfaces/model.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 #include "third_party/mkl-dnn/include/mkldnn.h"
 
 namespace ml {

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_COMPILATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_COMPILATION_H_
 
-#include "services/ml/public/interfaces/compilation.mojom-blink.h"
+#include "services/ml/public/mojom/compilation.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

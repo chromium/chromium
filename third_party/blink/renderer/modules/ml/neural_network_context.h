@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NEURAL_NETWORK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_NEURAL_NETWORK_CONTEXT_H_
 
-#include "services/ml/public/interfaces/neuralnetwork.mojom-blink.h"
+#include "services/ml/public/mojom/neuralnetwork.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"

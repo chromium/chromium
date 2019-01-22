@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/common.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
-#include "services/ml/public/interfaces/model.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 
 namespace ml {
 

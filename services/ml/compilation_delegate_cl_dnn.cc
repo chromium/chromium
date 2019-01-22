@@ -11,7 +11,7 @@
 #include "services/ml/cl_dnn_custom_kernels.h"
 #include "services/ml/cl_dnn_symbol_table.h"
 #include "services/ml/execution_impl_cl_dnn.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 #include "third_party/clDNN/api/C/activation.h"
 #include "third_party/clDNN/api/C/concatenation.h"
 #include "third_party/clDNN/api/C/convolution.h"

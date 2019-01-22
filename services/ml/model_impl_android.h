@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "services/ml/public/interfaces/model.mojom.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
 #include "services/ml/common.h"
+#include "services/ml/public/mojom/constants.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 
 #ifdef __ANDROID_API__
 #undef __ANDROID_API__

@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "services/ml/ml_utils_mac.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 
 namespace ml {
 

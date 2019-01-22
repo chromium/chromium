@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/neuralnetwork.mojom.h"
+#include "services/ml/public/mojom/neuralnetwork.mojom.h"
 
 namespace ml {
 

@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/ml/common.h"
 #include "services/ml/compilation_impl_mac.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
+#include "services/ml/public/mojom/execution.mojom.h"
 
 namespace ml {
 

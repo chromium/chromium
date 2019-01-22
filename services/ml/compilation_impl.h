@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "services/ml/common.h"
-#include "services/ml/public/interfaces/compilation.mojom.h"
-#include "services/ml/public/interfaces/model.mojom.h"
+#include "services/ml/public/mojom/compilation.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 
 namespace ml {
 

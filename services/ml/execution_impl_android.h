@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
 #include "services/ml/common.h"
-#include "services/ml/model_impl_android.h"
 #include "services/ml/compilation_impl_android.h"
+#include "services/ml/model_impl_android.h"
+#include "services/ml/public/mojom/execution.mojom.h"
 
 #ifdef __ANDROID_API__
 #undef __ANDROID_API__

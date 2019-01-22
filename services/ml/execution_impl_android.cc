@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 
 namespace ml {
 

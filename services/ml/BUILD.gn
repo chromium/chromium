@@ -31,12 +31,12 @@ source_set("lib") {
       "cl_dnn_custom_kernels.h",
       "cl_dnn_symbol_table.cc",
       "cl_dnn_symbol_table.h",
-      "compilation_impl.cc",
-      "compilation_impl.h",
       "compilation_delegate_cl_dnn.cc",
       "compilation_delegate_cl_dnn.h",
       "compilation_delegate_mkl_dnn.cc",
       "compilation_delegate_mkl_dnn.h",
+      "compilation_impl.cc",
+      "compilation_impl.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
       "execution_impl_mkl_dnn.cc",
@@ -116,12 +116,12 @@ source_set("lib") {
     sources += [
       "cl_dnn_custom_kernels.cc",
       "cl_dnn_custom_kernels.h",
-      "compilation_impl.cc",
-      "compilation_impl.h",
       "compilation_delegate_cl_dnn.cc",
       "compilation_delegate_cl_dnn.h",
       "compilation_delegate_mkl_dnn.cc",
       "compilation_delegate_mkl_dnn.h",
+      "compilation_impl.cc",
+      "compilation_impl.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
       "execution_impl_mkl_dnn.cc",
@@ -158,15 +158,13 @@ source_set("lib") {
       ":copy_mkldnn_dll",
     ]
     if (is_win) {
-      deps += [
-        ":copy_omp_dll"
-      ]
+      deps += [ ":copy_omp_dll" ]
     }
   }
 
   public_deps = [
     "//base",
-    "//services/ml/public/interfaces",
+    "//services/ml/public/mojom",
     "//services/service_manager/public/cpp",
   ]
 }

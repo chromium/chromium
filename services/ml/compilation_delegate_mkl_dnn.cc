@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "services/ml/execution_impl_mkl_dnn.h"
 #include "services/ml/mkl_dnn_symbol_table.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 
 static const uint32_t ALIGNMENT = 64;
 

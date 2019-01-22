@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <vector>
 
-#include "services/ml/public/interfaces/constants.mojom.h"
-#include "services/ml/public/interfaces/model.mojom.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
 #include "base/strings/string_number_conversions.h"
+#include "services/ml/public/mojom/constants.mojom.h"
+#include "services/ml/public/mojom/execution.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 
 namespace ml {
 

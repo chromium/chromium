@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "mojo/public/cpp/system/buffer.h"
-#include "services/ml/public/interfaces/compilation.mojom-blink.h"
-#include "services/ml/public/interfaces/execution.mojom-blink.h"
+#include "services/ml/public/mojom/compilation.mojom-blink.h"
+#include "services/ml/public/mojom/execution.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"

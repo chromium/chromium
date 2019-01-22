@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/ml/common.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
+#include "services/ml/public/mojom/execution.mojom.h"
 #include "third_party/clDNN/api/C/cldnn.h"
 
 namespace ml {

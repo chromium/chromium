@@ -6,7 +6,7 @@
 #define SERVICES_ML_NEURAL_NETWORK_IMPL_ANDROID_H_
 
 #include "base/macros.h"
-#include "services/ml/public/interfaces/neuralnetwork.mojom.h"
+#include "services/ml/public/mojom/neuralnetwork.mojom.h"
 
 namespace ml {
 

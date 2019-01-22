@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/ml/common.h"
 #include "services/ml/compilation_delegate_mkl_dnn.h"
-#include "services/ml/public/interfaces/execution.mojom.h"
+#include "services/ml/public/mojom/execution.mojom.h"
 #include "third_party/mkl-dnn/include/mkldnn.h"
 
 namespace ml {

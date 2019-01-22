@@ -21,7 +21,7 @@ blink_modules_sources("ml") {
   ]
 
   public_deps = [
-    "//services/ml/public/interfaces:interfaces_blink",
+    "//services/ml/public/mojom:mojom_blink",
     "//skia/public/interfaces:interfaces_blink",
   ]
 }

@@ -4,7 +4,7 @@
 
 module ml.mojom;
 
-import "services/ml/public/interfaces/model.mojom";
+import "services/ml/public/mojom/model.mojom";
 
 struct ModelInitParams {
   Model model;

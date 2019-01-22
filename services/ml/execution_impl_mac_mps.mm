@@ -12,7 +12,7 @@
 #include "services/ml/ml_utils_mac.h"
 #include "services/ml/mps_protocols_impl.h"
 #include "services/ml/mpscnn_context.h"
-#include "services/ml/public/interfaces/constants.mojom.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 
 namespace ml {
 
