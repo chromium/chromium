@@ -55,6 +55,7 @@ struct apply_adam : public primitive_base<apply_adam, CLDNN_PRIMITIVE_DESC(apply
     /// @param beta1 Beta1 parameter.
     /// @param beta2 Beta2 parameter.
     /// @param epsilon Epsilon.
+    /// @param dependency_id Optional primitive id that need to complete before execution of this primitive. Used only for synchronization.
     apply_adam(
         const primitive_id& id,
         const primitive_id& input,
@@ -66,6 +67,7 @@ struct apply_adam : public primitive_base<apply_adam, CLDNN_PRIMITIVE_DESC(apply
         float beta1,
         float beta2,
         float epsilon,
+        const primitive_id& dependency_id = "",
         const padding& output_padding = padding()
     )
         :primitive_base(id, {input}, output_padding)
@@ -77,6 +79,7 @@ struct apply_adam : public primitive_base<apply_adam, CLDNN_PRIMITIVE_DESC(apply
         , beta1(beta1)
         , beta2(beta2)
         , epsilon(epsilon)
+        , dependency_id(dependency_id)
     {
     }
 
@@ -91,6 +94,7 @@ struct apply_adam : public primitive_base<apply_adam, CLDNN_PRIMITIVE_DESC(apply
         , beta1(dto->beta1)
         , beta2(dto->beta2)
         , epsilon(dto->epsilon)
+        , dependency_id(dto->dependency_id)
     {
     }
 
@@ -110,9 +114,18 @@ struct apply_adam : public primitive_base<apply_adam, CLDNN_PRIMITIVE_DESC(apply
     float beta2;
     /// @brief Epsilon.
     float epsilon;
+    /// @brief Optional primitive id that need to complete before execution of this primitive. Used only for synchronization.
+    primitive_id dependency_id;
 
 protected:
-    std::vector<std::reference_wrapper<const primitive_id>> get_dependencies() const override { return{ m, v, beta1_power, beta2_power }; }
+    std::vector<std::reference_wrapper<const primitive_id>> get_dependencies() const override
+    {
+        std::vector<std::reference_wrapper<const primitive_id>> ret{ m, v, beta1_power, beta2_power };
+        ret.reserve(!dependency_id.empty());
+        if (!dependency_id.empty())
+            ret.push_back(dependency_id);
+        return ret;
+    }
 
     void update_dto(dto& dto) const override
     {
@@ -124,6 +137,7 @@ protected:
         dto.beta1 = beta1;
         dto.beta2 = beta2;
         dto.epsilon = epsilon;
+        dto.dependency_id = dependency_id.c_str();
     }
 };
 /// @}

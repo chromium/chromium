@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2016 Intel Corporation
+// Copyright (c) 2016-2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,8 +157,10 @@ typedef struct
     const char* engine_log;                             ///< Specifies a file to which engine log should be dumped. Null/empty values means no logging.
     const char* sources_dumps_dir;                      ///< Specifies a directory where sources of cldnn::program objects should be dumped. Null/empty values means no loggins.
     /*cldnn_priority_mode_type*/ int16_t priority_mode; ///< Priority mode (support of OpenCL priority hints in command queue).
-    /*cldnn_throttle_mode_type*/ int16_t throttle_mode; ///< Placeholder for throttle mode (support of throttle hints in command queue). It has no effect for now and should be set to cldnn_throttle_disabled.
+    /*cldnn_throttle_mode_type*/ int16_t throttle_mode; ///< Throttle mode (support of throttle hints in command queue).
     uint32_t enable_memory_pool;                        ///< Enables memory usage optimization. memory objects will be reused when possible. 
+    void* context;
+    const char* tuning_cache_path;                      ///< Enables defining other than default path to tuning cache json 
 }  cldnn_engine_configuration;
 
 /// @brief Information about the engine returned by cldnn_get_engine_info().
@@ -179,7 +181,10 @@ typedef struct
     uint8_t supports_fp16;             ///< Does engine support FP16.
     uint8_t supports_fp16_denorms;     ///< Does engine support denormalized FP16.
     uint8_t supports_subgroups_short;  ///< Does engine support cl_intel_subgroups_short.
-    uint8_t supports_image;           ///< Does engine support images (CL_DEVICE_IMAGE_SUPPORT cap).
+    uint8_t supports_image;            ///< Does engine support images (CL_DEVICE_IMAGE_SUPPORT cap).
+
+    uint8_t supports_imad;             ///< Does engine support int8 mad.
+    uint8_t supports_immad;            ///< Does engine support int8 multi mad.
 }  cldnn_engine_info;
 /// @}
 
@@ -205,11 +210,12 @@ typedef enum /*:int32_t*/
     cldnn_build_option_optimize_data,           ///< Enable implicit reordering for user input.
     cldnn_build_option_debug,                   ///< Enable debug mode.
     cldnn_build_option_outputs,                 ///< User selected list of network outputs.
-	cldnn_build_option_learning_config,         ///< User defined learning parameters.
     cldnn_build_option_tuning_config,           ///< Tuning config.
     cldnn_build_option_graph_dumps_dir,         ///< Specifies a directory to which stages of network compilation should be dumped.
     cldnn_build_option_serialization,           ///< Specifies a name of files to which serialization should be dumped.
-    cldnn_build_option_load_program             ///< Specifies a name of load_program process.
+    cldnn_build_option_load_program,            ///< Specifies a name of load_program process.
+    cldnn_build_option_learning_config,         ///< User defined learning parameters.
+    cldnn_build_option_detection_output_gpu     ///< Run detection output layer always on GPU, regardless performance
 } cldnn_build_option_type;
 
 /// @brief Tuning modes.
@@ -272,6 +278,8 @@ typedef enum /*:int32_t*/
     cldnn_format_fyxb,          ///< format not used inside clDNN, but supported in reorder as extension for user provided formats.
     cldnn_format_os_iyx_osv16,  ///< format used only for convolution weights: os - output feature maps slice, i - input feature maps, yx - spatials, sv16 - 16 values of single slice.
                                 ///< \n \image html os_iyx_osv16.jpg
+    cldnn_format_os_iyx_osv32,  ///< format used only for convolution weights: os - output feature maps slice, i - input feature maps, yx - spatials, sv32 - 32 values of single slice.
+    cldnn_format_os_iyx_osv64,  ///< format used only for convolution weights: os - output feature maps slice, i - input feature maps, yx - spatials, sv64 - 64 values of single slice.
     cldnn_format_bs_xs_xsv8_bsv8, ///< format used only for fully connected weights: bs - batch slice, xs - x slice, bsv8 - 8 values of single slice.
                                   ///< \n \image html bs_xs_xsv8_bsv8.jpg
     cldnn_format_bs_xs_xsv8_bsv16,///< format used only for fully connected weights: bs - batch slice, xs - x slice, bsv16 - 16 values of single slice.
@@ -284,8 +292,21 @@ typedef enum /*:int32_t*/
                                       ///< \n \image html image_2d_weights_c4_fyx_b.jpg
     cldnn_format_image_2d_weights_c1_b_fyx, ///< image format for weights, image 2d, single channel, width size is b, height is f*y*x
                                       ///< \n \image html image_2d_weights_c1_b_fyx.jpg
-    cldnn_format_byxf_af32,           /// < \n format for input for primitives using MMAD
+    cldnn_format_winograd_2x3_s1_data,       ///< format used for input for winograd convolution, F(2,3) -- filter 3x3 with stride 1
+    cldnn_format_winograd_2x3_s1_weights,    ///< format used for weights for winograd non-fused convolution, F(2,3) -- filter 3x3 with stride 1
+    cldnn_format_winograd_2x3_s1_fused_weights,    ///< format used for weights for winograd fused convolution, F(2,3) -- filter 3x3 with stride 1
+    cldnn_format_winograd_6x3_s1_fused_weights,    ///< format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
+    cldnn_format_image_2d_weights_winograd_6x3_s1_fbxyb, ///< image format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
+    cldnn_format_image_2d_weights_winograd_6x3_s1_xfbyb, ///< image format used for weights for winograd fused convolution, F(6,3) -- filter 3x3 with stride 1
+    cldnn_format_byxf_af32,               /// < \n format for input for primitives using MMAD
+    cldnn_format_byx8_f4,                 /// < \n format for input for MMAD convolutions
+    cldnn_format_fs_bs_yx_bs4_fs32,       /// < \n format for batched input for primitives using MMAD
     cldnn_format_os_is_yx_isa8_osv8_isv4, /// < \n format for weights for MMAD convolutions, stored as ((aligned_to_8(O)/8) * (aligned_to_32(I)/32) * Y * X * ( 8 ) * ( 8 ) * ( 4 )
+    cldnn_format_is_o_yx_isv32, /// < \n format for weights for 1x1 MMAD convolutions 
+    cldnn_format_os_is_y_x8_osv8_isv4, /// < n\ format for weights for MMAD convolutions
+    cldnn_bf_lyx_yx,                      /// < \n format for local convolution weights
+    cldnn_format_b_fs_yx_fsv4,            /// < \n format for input for IMAD convolutions
+    cldnn_format_os_is_yx_osv16_isv4,     /// < \n format for weights for IMAD convolutions
     cldnn_format_format_num,    ///< number of format types
     cldnn_format_any = -1
 } cldnn_format_type;
@@ -296,6 +317,7 @@ typedef enum /*:int32_t*/
 #define CLDNN_TENSOR_BATCH_DIM_MAX 1
 #define CLDNN_TENSOR_FEATURE_DIM_MAX 1
 #define CLDNN_TENSOR_SPATIAL_DIM_MAX 2
+#define CLDNN_TENSOR_LOCAL_DIM_MAX 2
 #define CLDNN_TENSOR_DIM_MAX 8
 
 /// @brief N-dimensional vector. Mostly used to represent memory size.
@@ -304,6 +326,7 @@ typedef struct
     size_t batch_num;
     size_t feature_num;
     size_t spatial_num;
+    size_t local_num;
     int32_t sizes[CLDNN_TENSOR_DIM_MAX];
 } cldnn_tensor;
 
@@ -323,7 +346,9 @@ typedef enum /*:size_t*/
 	cldnn_i8  = sizeof(int8_t),
     cldnn_f16 = sizeof(int16_t) | CLDNN_FLOAT_TYPE_MASK,
     cldnn_f32 = sizeof(float) | CLDNN_FLOAT_TYPE_MASK,
-    cldnn_u8  = sizeof(uint8_t) | CLDNN_UINT_TYPE_MASK // TODO: move to top of list and re-compile inference engine
+    cldnn_u8  = sizeof(uint8_t) | CLDNN_UINT_TYPE_MASK, // TODO: move to top of list and re-compile inference engine
+    cldnn_i32 = sizeof(int32_t),
+    cldnn_i64 = sizeof(int64_t)
 
 } cldnn_data_type;
 
@@ -420,6 +445,15 @@ typedef enum cldnn_activation_func_t
     activation_square,                  // val*val
     activation_sqrt,                    // sqrt(val)
     activation_elu,                     // max(0, val) + a * (exp(min(0, val) - 1) (a is additional param)
+    activation_sin,                     // sin(val)
+    activation_asin,                    // asin(val)
+    activation_sinh,                    // sinh(val)
+    activation_cos,                     // cos(val)
+    activation_acos,                    // acos(val)
+    activation_cosh,                    // cosh(val)
+    activation_log,                     // log(val)
+	activation_log2,					// log2(val)
+    activation_exp,                     // exp(val)
 } cldnn_activation_func;
 
 /// @brief activation gradient functions
@@ -436,6 +470,17 @@ typedef struct cldnn_activation_additional_params_t
     float a, b;
 } cldnn_activation_additional_params;
 
+/// @brief Axis which index_select primitive will index.
+typedef enum index_select_axis_name_t
+{
+    along_b,
+    along_f,
+    along_y,
+    along_x
+} index_select_axis_name;
+
+/// @brief  Axis which index_select primitive will index array
+typedef const index_select_axis_name* index_select_axis_name_arr;
 
 /// @brief reorder mean operation modes
 typedef enum cldnn_reorder_mean_mode_t

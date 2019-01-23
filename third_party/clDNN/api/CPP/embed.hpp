@@ -56,6 +56,19 @@ namespace cldnn
 			, bias(bias)
 		{}
 
+        /// @brief Constructs embed primitive.
+        /// @param id This primitive id.
+        /// @param input Input primitive id.
+        embed(
+            const primitive_id& id,
+            const primitive_id& input,
+            const primitive_id& weights
+        )
+            : primitive_base(id, { input })
+            , weights(weights)
+            , bias("")
+        {}
+
 		/// @brief Constructs a copy from C API @CLDNN_PRIMITIVE_DESC{embed}
 		embed(const dto* dto)
 			:primitive_base(dto)

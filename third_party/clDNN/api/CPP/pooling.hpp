@@ -38,7 +38,9 @@ enum class pooling_mode : int32_t
     /// @brief Average-pooling method without values which are outside of the input.
     average_no_padding = cldnn_pooling_average_no_padding,
     /// @brief Maximum-pooling method with additional buffer to store argmax indices.
-    max_with_argmax = cldnn_pooling_max_with_argmax
+    max_with_argmax = cldnn_pooling_max_with_argmax,
+    /// @brief Pooling with bilinear interpolation
+    bilinear = cldnn_pooling_bilinear
 };
 
 /// @brief Performs "pooling" operation which is a form of non-linear down-sampling.
@@ -66,6 +68,7 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
         : primitive_base(id, {input}, output_padding)
         , argmax("")
         , mode(static_cast<pooling_mode>(mode))
+        , global_pooling(false)
         , input_offset(input_offset)
         , stride(stride)
         , size(size)
@@ -93,6 +96,7 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
         : primitive_base(id, { input }, output_padding)
         , argmax(argmax)
         , mode(static_cast<pooling_mode>(mode))
+        , global_pooling(false)
         , input_offset(input_offset)
         , stride(stride)
         , size(size)
@@ -120,6 +124,7 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
         : primitive_base(id, {input}, output_padding)
         , argmax("")
         , mode(static_cast<pooling_mode>(mode))
+        , global_pooling(false)
         , input_offset(input_offset)
         , stride(stride)
         , size(size)
@@ -150,6 +155,7 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
         : primitive_base(id, { input }, output_padding)
         , argmax(argmax)
         , mode(static_cast<pooling_mode>(mode))
+        , global_pooling(false)
         , input_offset(input_offset)
         , stride(stride)
         , size(size)
@@ -157,11 +163,32 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
         , output_size(output_size)
     {}
 
+    /// @brief Constructs pooling primitive with kernel size equal to the spatial dimension of input tensor.
+    /// @param id This primitive id.
+    /// @param input Input primitive id.
+    /// @param mode Pooling mode.
+    pooling(
+        const primitive_id& id,
+        const primitive_id& input,
+        pooling_mode mode,
+        const padding& output_padding = padding()
+    )
+        : primitive_base(id, { input }, output_padding)
+        , argmax("")
+        , mode(static_cast<pooling_mode>(mode))
+        , global_pooling(true)
+        , input_offset(0, 0, 0, 0)
+        , stride(1, 1, 1, 1)
+        , size(0, 0, 0, 0)
+        , with_output_size(false)
+    {}
+
     /// @brief Constructs a copy from C API @CLDNN_PRIMITIVE_DESC{pooling}
     pooling(const dto* dto)
         : primitive_base(dto)
         , argmax(dto->argmax)
         , mode(static_cast<pooling_mode>(dto->mode))
+        , global_pooling(dto->global_pooling != 0)
         , input_offset(dto->input_offset)
         , stride(dto->stride)
         , size(dto->size)
@@ -221,6 +248,8 @@ struct pooling : public primitive_base<pooling, CLDNN_PRIMITIVE_DESC(pooling)>
     primitive_id argmax;
     /// @brief Pooling mode.
     pooling_mode mode;
+    /// @brief Global pooling (kernel size is equal to the spatial dimension of input tensor)
+    bool global_pooling;
     /// @brief Defines a shift, relative to (0,0) position of the input buffer, where (0,0) point of the pooling window should start calculations.
     tensor input_offset;
     /// @brief Defines shift in input buffer between adjacent calculations of output values.
@@ -249,6 +278,7 @@ protected:
         dto.size = size;
         dto.with_output_size = with_output_size;
         dto.output_size = output_size;
+        dto.global_pooling = global_pooling;
     }
 };
 /// @}

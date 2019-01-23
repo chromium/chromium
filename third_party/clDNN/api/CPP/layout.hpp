@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2016 Intel Corporation
+// Copyright (c) 2016-2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ enum class data_types : size_t
 {
     i8 = cldnn_i8,/// Not supported in current HW
     u8 = cldnn_u8,/// 
+    i32 = cldnn_i32,
+    i64 = cldnn_i64,
     f16 = cldnn_f16,
     f32 = cldnn_f32,
 };
@@ -40,16 +42,20 @@ enum class data_types : size_t
 /// Converts C++ type to @ref data_types .
 template <typename T> struct type_to_data_type;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-template<> struct type_to_data_type  <int8_t> { static const data_types value = data_types::i8; };
-template<> struct type_to_data_type <uint8_t> { static const data_types value = data_types::u8; };
-template<> struct type_to_data_type  <half_t> { static const data_types value = data_types::f16; };
-template<> struct type_to_data_type   <float> { static const data_types value = data_types::f32; };
+template<> struct type_to_data_type<int8_t>  { static const data_types value = data_types::i8; };
+template<> struct type_to_data_type<uint8_t> { static const data_types value = data_types::u8; };
+template<> struct type_to_data_type<int32_t> { static const data_types value = data_types::i32; };
+template<> struct type_to_data_type<int64_t> { static const data_types value = data_types::i64; };
+template<> struct type_to_data_type<half_t>  { static const data_types value = data_types::f16; };
+template<> struct type_to_data_type<float>   { static const data_types value = data_types::f32; };
 #endif
 
 /// Converts @ref data_types to C++ type.
 template<data_types Data_Type> struct data_type_to_type;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-template<> struct data_type_to_type <data_types::i8> { typedef int8_t type; };
+template<> struct data_type_to_type<data_types::i8>  { typedef int8_t type; };
+template<> struct data_type_to_type<data_types::i32> { typedef int32_t type; };
+template<> struct data_type_to_type<data_types::i64> { typedef int64_t type; };
 template<> struct data_type_to_type<data_types::f16> { typedef half_t type; };
 template<> struct data_type_to_type<data_types::f32> { typedef float type; };
 #endif
@@ -74,6 +80,10 @@ struct data_type_traits
         {
         case data_types::i8:
             return alignof(data_type_to_type<data_types::i8>::type);
+        case data_types::i32:
+            return alignof(data_type_to_type<data_types::i32>::type);
+        case data_types::i64:
+            return alignof(data_type_to_type<data_types::i64>::type);
         case data_types::f16:
             return alignof(data_type_to_type<data_types::f16>::type);
         case data_types::f32:
@@ -88,6 +98,12 @@ struct data_type_traits
         {
         case data_types::i8:
             return "i8";
+        case data_types::u8:
+            return "u8";
+        case data_types::i32:
+            return "i32";
+        case data_types::i64:
+            return "i64";
         case data_types::f16:
             return "f16";
         case data_types::f32:
@@ -297,6 +313,12 @@ struct layout
         {
             sizes[3] = align_to(sizes[3], 32);
         }
+
+        if (format == format::byx8_f4)
+        {
+            sizes[3] = align_to(sizes[3], 4);
+            sizes[2] = align_to(sizes[2], 8);
+        }
         std::vector<tensor::value_type> pitches(sizes.size(), tensor::value_type(1));
         std::partial_sum(sizes.rbegin(), sizes.rend() - 1, pitches.rbegin() + 1, std::multiplies<tensor::value_type>());
         return{ format, pitches };
@@ -337,6 +359,14 @@ struct layout
         {
             sizes[0] = align_to(sizes[0], 16);
         }
+        else if (this->format == cldnn::format::os_iyx_osv32 && !is_aligned_to(sizes[0], 32))
+        {
+            sizes[0] = align_to(sizes[0], 32);
+        }
+        else if (this->format == cldnn::format::os_iyx_osv64 && !is_aligned_to(sizes[0], 64))
+        {
+            sizes[0] = align_to(sizes[0], 64);
+        }
         else if (this->format == cldnn::format::bs_xs_xsv8_bsv8 && !(is_aligned_to(sizes[0], 8) && is_aligned_to(sizes[2], 8)))
         {
             sizes[0] = align_to(sizes[0], 8);
@@ -361,10 +391,34 @@ struct layout
         {
             sizes[1] = align_to(sizes[1], 32);
         }
+        else if (this->format == cldnn::format::byx8_f4 && (!is_aligned_to(sizes[1], 4) || !is_aligned_to(sizes[2], 8)))
+        {
+            // for this case we want to make sure, that with padding we're aligned to 8 in x
+            auto lp = data_padding.lower_size().spatial[0];
+            auto up = data_padding.upper_size().spatial[0];
+            sizes[1] = align_to(sizes[1], 4);
+            sizes[2] = align_to(lp + up + sizes[2], 8);
+            sizes[2] -= lp + up;
+        }
+        else if (this->format == cldnn::format::fs_bs_yx_bsv4_fsv32 && (!(is_aligned_to(sizes[1], 32)) || !(is_aligned_to(sizes[0], 4)) ) )
+        {
+            sizes[1] = align_to(sizes[1], 32);
+            sizes[0] = align_to(sizes[0], 4);
+        }
         else if (this->format == cldnn::format::os_is_yx_isa8_osv8_isv4 && !(is_aligned_to(sizes[0], 8)) && !(is_aligned_to(sizes[1], 32)))
         {
             sizes[0] = align_to(sizes[0], 8);
             sizes[1] = align_to(sizes[1], 32);
+        }
+        else if (this->format == cldnn::format::is_o_yx_isv32 && !(is_aligned_to(sizes[1], 32)))
+        {
+            sizes[1] = align_to(sizes[1], 32);
+        }
+        else if (this->format == cldnn::format::os_is_y_x8_osv8_isv4)
+        {
+            sizes[1] = align_to(sizes[1], 4);
+            sizes[0] = align_to(sizes[0], 8);
+            sizes[2] = align_to(sizes[2], 8);
         }
         return std::accumulate(
             sizes.begin(),

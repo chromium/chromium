@@ -34,6 +34,7 @@ extern "C" {
 typedef enum
 {
     zero,
+    one,
     xavier
 } cldnn_filler_type;
 

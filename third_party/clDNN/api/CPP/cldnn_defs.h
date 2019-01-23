@@ -96,8 +96,7 @@
 *  * priorbox is primitive that is executed during network compilation. Node is removed from a network execution.
 * * <B> Stage 2: Graph analysis:</B>
 *  * mark constatns
-*  * mark data flow 
-*  * mark dominators
+*  * mark data flow
 * * <B> Stage 3: Trimming:</B>
 *  * apply backward bfs on each output to find unnecessary nodes/branches, then remove those. 
 * * <B> Stage 4: Inputs and biases:</B>
@@ -373,6 +372,18 @@ inline cldnn_uint16_t_arr uint16_t_vector_to_arr(const std::vector<uint16_t>& st
 inline cldnn_tensor_arr tensor_vector_to_arr(const std::vector<cldnn_tensor>& stor)
 {
     return cldnn_tensor_arr{ stor.data(), stor.size() };
+}
+
+///
+/// \brief Converts C API tensor_array to std::vector of C API tensor
+///
+inline std::vector<cldnn_tensor> tensor_arr_to_cldnn_vector(const cldnn_tensor_arr& arr)
+{
+    std::vector<cldnn_tensor> result(arr.size);
+    for (size_t i = 0; i < arr.size; i++)
+        result[i] = arr.data[i];
+
+    return result;
 }
 
 /// @}

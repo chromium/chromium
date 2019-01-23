@@ -63,8 +63,11 @@ struct engine_configuration
     const std::string engine_log;               ///< Specifies a file to which engine log should be dumped. Empty by default (means no logging).
     const std::string sources_dumps_dir;        ///< Specifies a directory where sources of cldnn::program objects should be dumped. Empty by default (means no dumping).
     const priority_mode_types priority_mode;    ///< Priority mode (support of priority hints in command queue). If cl_khr_priority_hints extension is not supported by current OpenCL implementation, the value must be set to cldnn_priority_disabled.
-    const throttle_mode_types throttle_mode;    ///< Placeholder for throttle mode (support of throttle hints in command queue). It has no effect for now and should be set to cldnn_throttle_disabled.
-    bool enable_memory_pool;              ///< Enables memory usage optimization. memory objects will be reused when possible (switched off for older drivers then NEO).
+
+    const throttle_mode_types throttle_mode;    ///< Throttle mode (support of throttle hints in command queue). If cl_khr_throttle_hints extension is not supported by current OpenCL implementation, the value must be set to cldnn_throttle_disabled.
+    bool enable_memory_pool;                    ///< Enables memory usage optimization. memory objects will be reused when possible (switched off for older drivers then NEO).
+    void* context;              ///< Pointer to user context
+    const std::string tuning_cache_path;        ///< Path to tuning kernel cache 
 
     /// @brief Constructs engine configuration with specified options.
     /// @param profiling Enable per-primitive profiling.
@@ -83,7 +86,9 @@ struct engine_configuration
             const std::string& sources_dumps_dir = std::string(),
             priority_mode_types priority_mode = priority_mode_types::disabled,
             throttle_mode_types throttle_mode = throttle_mode_types::disabled,
-            bool memory_pool = true)
+            bool memory_pool = true,
+            void* context = nullptr,
+            const std::string& tuning_cache_path = "cache.json")
         : enable_profiling(profiling)
         , meaningful_kernels_names(decorate_kernel_names)
         , dump_custom_program(dump_custom_program)
@@ -95,6 +100,8 @@ struct engine_configuration
         , priority_mode(priority_mode)
         , throttle_mode(throttle_mode)
         , enable_memory_pool(memory_pool)
+        , context(context)
+        , tuning_cache_path(tuning_cache_path)
     {}
 
     engine_configuration(const cldnn_engine_configuration& c_conf)
@@ -109,6 +116,8 @@ struct engine_configuration
         , priority_mode(static_cast<priority_mode_types>(c_conf.priority_mode))
         , throttle_mode(static_cast<throttle_mode_types>(c_conf.throttle_mode))
         , enable_memory_pool(c_conf.enable_memory_pool != 0)
+        , context(c_conf.context)
+		, tuning_cache_path(c_conf.tuning_cache_path)
     {}
 
     /// @brief Implicit conversion to C API @ref ::cldnn_engine_configuration
@@ -125,7 +134,9 @@ struct engine_configuration
             sources_dumps_dir.c_str(),
             static_cast<int16_t>(priority_mode),
             static_cast<int16_t>(throttle_mode),
-            enable_memory_pool
+            enable_memory_pool,
+            context,
+            tuning_cache_path.c_str()
         };
     }
 };

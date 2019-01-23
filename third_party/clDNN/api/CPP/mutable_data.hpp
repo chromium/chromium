@@ -42,6 +42,7 @@ struct mutable_data : public primitive_base<mutable_data, CLDNN_PRIMITIVE_DESC(m
     {
         no_fill,
         zero,
+        one,
         xavier
     };
 

@@ -112,35 +112,6 @@ protected:
 
         return res;
     }
-
-    static std::vector<tensor> tensor_arr_to_vector(const cldnn_tensor_arr& arr)
-    {
-        std::vector<tensor> result(arr.size);
-        for (size_t i = 0; i < arr.size; i++)
-            result[i] = arr.data[i];
-
-        return result;
-    }
-
-    static std::vector<cldnn_tensor> tensor_arr_to_cldnn_vector(const cldnn_tensor_arr& arr)
-    {
-        std::vector<cldnn_tensor> result(arr.size);
-        for (size_t i = 0; i < arr.size; i++)
-            result[i] = arr.data[i];
-
-        return result;
-    }
-
-    static std::vector<cldnn_tensor> tensor_vector_to_cldnn_vector(const std::vector<tensor>& stor)
-    {
-        std::vector<cldnn_tensor> res;
-        res.resize(stor.size());
-        for (size_t i = 0; i < stor.size(); ++i)
-            res[i] = stor[i];
-
-        return res;
-    }
-
 };
 /// @}
 /// @}

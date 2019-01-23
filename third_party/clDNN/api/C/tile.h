@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2017 Intel Corporation
+// Copyright (c) 2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef PROPOSAL_H
-#define PROPOSAL_H
+#ifndef TILE_H
+#define TILE_H
 
 #include "cldnn.h"
 /// @addtogroup c_api C API
@@ -30,28 +30,22 @@
 extern "C" {
 #endif
 
-#define CLDNN_ROI_VECTOR_SIZE 5
+typedef enum
+{
+    cldnn_tile_along_b = 0,
+    cldnn_tile_along_f = CLDNN_TENSOR_BATCH_DIM_MAX,
+    cldnn_tile_along_x = CLDNN_TENSOR_BATCH_DIM_MAX + CLDNN_TENSOR_FEATURE_DIM_MAX,
+    cldnn_tile_along_y = cldnn_tile_along_x + 1
+} cldnn_tile_axis;
 
-CLDNN_BEGIN_PRIMITIVE_DESC(proposal)
-    int max_proposals;
-    float iou_threshold;
-    int base_bbox_size;
-    int min_bbox_size;
-    int feature_stride;
-    int pre_nms_topn;
-    int post_nms_topn;
-    cldnn_float_arr ratios;
-    cldnn_float_arr scales;
-    float coordinates_offset;
-    float box_coordinate_scale;
-    float box_size_scale;
-    uint32_t swap_xy;
-    uint32_t initial_clip;
-    uint32_t round_ratios;
-    uint32_t shift_anchors;
-CLDNN_END_PRIMITIVE_DESC(proposal)
+CLDNN_BEGIN_PRIMITIVE_DESC(tile)
+/// @brief Tiling axis
+cldnn_tile_axis axis;
+/// @brief Tiles number across an axis
+int tiles;
+CLDNN_END_PRIMITIVE_DESC(tile)
 
-CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
+CLDNN_DECLARE_PRIMITIVE_TYPE_ID(tile);
 
 #ifdef __cplusplus
 }
@@ -60,5 +54,5 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
 /// @}
 /// @}
 /// @}
-#endif /* PROPOSAL_H */
+#endif /* TILE_H */
 

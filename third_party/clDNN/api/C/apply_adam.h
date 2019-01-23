@@ -59,6 +59,8 @@ float beta1;
 float beta2;
 /// @brief Epsilon.
 float epsilon;
+/// @brief Optional primitive id that need to complete before execution of this primitive. Used only for synchronization.
+cldnn_primitive_id dependency_id;
 CLDNN_END_PRIMITIVE_DESC(apply_adam)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(apply_adam);

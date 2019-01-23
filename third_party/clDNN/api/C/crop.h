@@ -31,7 +31,8 @@ extern "C" {
 #endif
 
 /// @brief Performs crop operation on input.
-/// @details Crops the input to the shape of reference_input accross all dimensions taking into account specified input offsets.
+/// @details Crops the input to the shape of reference_input across all dimensions taking into account specified input offsets.
+/// @n       Borders variant calculated output shape from input shape minus the specified borders.
 /// @n
 /// @n\b Examples
 /// @n Crop without offset example:
@@ -39,17 +40,24 @@ extern "C" {
 /// @n Crop with offset example:
 /// \image html crop_w_offset.jpg
 /// @n
-/// @n\b Requirements 
-/// @n - Input, reference and offset layout (order) has to be the same
+/// @n\b Requirements (reference size variant)
 /// @n - Input size cannot be greater than reference size in any dimension
 /// @n - All sizes have to have positive numbers
 /// @n - Reference size plus offset cannot exceed input size
-/// @n Breaking any of this conditions will cause exeption throw.
-
+/// @n
+/// @n\b Requirements (borders variant)
+/// @n - Borders support batch, feature and spatial dimensions (rest of dimensions ignored).
+/// @n - Input size cannot be greater than reference size in any dimension
+/// @n - All sizes specified in borders have to have non-negative values (positive or @c 0).
+/// @n - Sum of sizes of opposite borders must be lower than input size (on all non-ignored dimensions).
+/// @n
+/// @n Breaking any of this conditions will cause exception throw.
 CLDNN_BEGIN_PRIMITIVE_DESC(crop)
-/// @brief Reference input tensor with the required dimensions.
+/// @brief Reference input tensor with the required dimensions (if positive) or
+///        negated value of right/bottom/upper border size (if non-positive).
 cldnn_tensor reference_input;
-/// @brief Input offsets.
+/// @brief Input offsets (reference_input is positive) or left/top/lower border
+///        size (reference_input is negative).
 cldnn_tensor offsets;
 CLDNN_END_PRIMITIVE_DESC(crop)
 

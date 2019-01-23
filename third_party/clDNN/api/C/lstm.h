@@ -31,20 +31,41 @@
 extern "C" {
 #endif
 
+/// @brief Weights orders
+/// @details Specifies the order in which the weights are concatenated.
+/// e.g. [i, o, f, z] : [input, output, forget, block]
+/// ONNX order: iofz
+/// Caffe order: ifoz
+/// pyTorch order: izof
 typedef enum /*:int32_t*/
 {
-    cldnn_lstm_offset_order_iofz = 0, // ONNX
-    cldnn_lstm_offset_order_ifoz  // Caffe
+    cldnn_lstm_offset_order_iofz = 0,
+    cldnn_lstm_offset_order_ifoz,
+    cldnn_lstm_offset_order_izof  
 } cldnn_lstm_offset_order;
 
+/// @brief LSTM Output selection
+/// @details The current implementation allows the use to select the output
+/// of an LSTM node by specifing any of the following options 
+typedef enum /*:int32_t*/
+{
+	/// output the entire hidden sequence
+	cldnn_lstm_output_sequence = 0,
+	/// output just the last hidden value
+	cldnn_lstm_output_hidden,
+	/// output the last hidden and last cell values
+	cldnn_lstm_output_hidden_cell,
+	/// output the hidden sequence concatenated with the last cell
+	cldnn_lstm_output_sequence_cell
+} cldnn_lstm_output;
 
 /// @brief Performs forward Long Short-Term Memory (LSTM) layer.
-/// @details The current implementation of LSTM supports Peepholes.
-///   it = f(Xt*(Wi^T) + Ht-1*Ri + Pi (.) Ct-1 + Wbi + Rbi)
-///   ft = f(Xt*(Wf^T) + Ht-1*Rf + Pf (.) Ct-1 + Wbf + Rbf)
-///   ct = g(Xt*(Wc^T) + Ht-1*Rc + Wbc + Rbc)
+/// @details The current implementation of LSTM is described the following equations.
+///   it = f(Xt*(Wi^T) + Ht-1*Ri + Wbi)
+///   ft = f(Xt*(Wf^T) + Ht-1*Rf + Wbf)
+///   ct = g(Xt*(Wc^T) + Ht-1*Rc + Wbc)
 ///   Ct = ft (.) Ct-1 + it (.) ct
-///   ot = f(Xt*(Wo^T) + Ht-1*Ro + Po (.) Ct + Wbo + Rbo)
+///   ot = f(Xt*(Wo^T) + Ht-1*Ro + Wbo)
 ///   Ht = ot (.) h(Ct)
 /// Where f = Sigmoid, g = Tanh, and h = Tanh.
 CLDNN_BEGIN_PRIMITIVE_DESC(lstm)
@@ -68,12 +89,11 @@ bool input_forget;
 cldnn_activation_func activations[3];
 /// @brief Optional scaling values used by some activation functions. The values are consumed in the order of activation functions.
 cldnn_activation_additional_params activation_params[3];
+/// @brief Output selection. Default the entire hidden sequence is returned
+cldnn_lstm_output output_selection;
 /// @brief Weights, recurrent weights, and biases order. [iofz] : ONNX, [ifoz] : Caffe
 cldnn_lstm_offset_order offset_order;
 // NOT SUPPORTED YET
-// /// @brief Number of directions default = 1, bidirectional = 2.
-// uint32_t num_directions;
-// /// @brief The sequence output for the hidden. This is not clearly specified in the ONNX definition.
 // uint32_t output_sequence;
 CLDNN_END_PRIMITIVE_DESC(lstm)
 
@@ -92,9 +112,8 @@ cldnn_primitive_id recurrent;
 cldnn_primitive_id bias;
 /// @brief Array of primitive ids containing the initial value of the hidden data (Ht-1).
 cldnn_primitive_id hidden;
-// NOT SUPPORTED YET
-// /// @brief Number of directions default = 1, bidirectional = 2.
-// uint32_t num_directions;
+/// @brief direction default = 0, bidirectional = 1.
+uint32_t direction;
 CLDNN_END_PRIMITIVE_DESC(lstm_gemm)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(lstm_gemm);
@@ -116,10 +135,9 @@ cldnn_activation_func activations[3];
 cldnn_activation_additional_params activation_params[3];
 /// @brief Weights, recurrent weights, and biases order. [iofz] : ONNX, [ifoz] : Caffe
 cldnn_lstm_offset_order offset_order;
+/// @brief direction default = 0, bidirectional = 1.
+uint32_t direction;
 // NOT SUPPORTED YET
-// /// @brief Number of directions default = 1, bidirectional = 2.
-// uint32_t num_directions;
-// /// @brief The sequence output for the hidden. This is not clearly specified in the ONNX definition.
 // uint32_t output_sequence;
 CLDNN_END_PRIMITIVE_DESC(lstm_elt)
 

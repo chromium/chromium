@@ -41,6 +41,9 @@ enum class build_option_type
     /// @brief Enable implicit reordering for user inputs (default: false).
     optimize_data = cldnn_build_option_optimize_data,
 
+    /// @brief Enable running detection output layer always on gpu, regardless performance
+    detection_output_gpu = cldnn_build_option_detection_output_gpu,
+
     /// @brief Enable debug mode (default: false).
     /// @details This option enforce all program primitives to be accessible as outputs.
     debug = cldnn_build_option_debug,
@@ -112,15 +115,15 @@ struct build_option
     /// @brief Enable implicit reordering for user inputs (default: false).
     static std::shared_ptr<const build_option> optimize_data(bool enable = false);
 
+    /// @brief Enable running detection output layer always on GPU, regardless performance (default: false).
+    static std::shared_ptr<const build_option> detection_output_gpu(bool enable = false);
+
     /// @brief Enable debug mode (default: false).
     /// @details This option enforce all program primitives to be accessible as outputs.
     static std::shared_ptr<const build_option> debug(bool enable = false);
 
     /// @brief User selected list of program outputs.
     static std::shared_ptr<const build_option> outputs(const std::vector<primitive_id>& outs);
-
-	/// @brief User defined learning parameters.
-	static std::shared_ptr<const build_option> learning_config(const learning_params& params = learning_params());
 
     /// @brief Tuning configuration (default: false).
     /// @details This option will automatically find the optimal kernel/config for each node in the graph,
@@ -138,6 +141,8 @@ struct build_option
     /// @brief Specifies a name of load_program process.
     static std::shared_ptr<const build_option> load_program(const std::string& network_name);
 
+    /// @brief User defined learning parameters.
+    static std::shared_ptr<const build_option> learning_config(const learning_params& params = learning_params());
 
     virtual ~build_option() = default;
 
@@ -463,6 +468,16 @@ namespace detail
             return std::make_shared<object_type>(option);
         }
     };
+    template<> struct build_option_traits<build_option_type::detection_output_gpu>
+    {
+        typedef build_option_bool<build_option_type::detection_output_gpu> object_type;
+        static std::shared_ptr<const build_option> make_default() { return build_option::detection_output_gpu(); }
+        static std::shared_ptr<const build_option> make_option(const cldnn_build_option& option)
+        {
+            assert(option.type == cldnn_build_option_detection_output_gpu);
+            return std::make_shared<object_type>(option);
+        }
+    };
     template<> struct build_option_traits<build_option_type::debug>
     {
         typedef build_option_bool<build_option_type::debug> object_type;
@@ -546,6 +561,11 @@ inline std::shared_ptr<const build_option> build_option::fusing(bool enable)
 inline std::shared_ptr<const build_option> build_option::optimize_data(bool enable)
 {
     return std::make_shared<build_option_bool<build_option_type::optimize_data>>(enable);
+}
+
+inline std::shared_ptr<const build_option> build_option::detection_output_gpu(bool enable)
+{
+    return std::make_shared<build_option_bool<build_option_type::detection_output_gpu>>(enable);
 }
 
 inline std::shared_ptr<const build_option> build_option::debug(bool enable)
@@ -665,10 +685,12 @@ private:
         {
         case cldnn_build_option_fusing:
             return detail::build_option_traits<build_option_type::fusing>::make_option(option);
-		case cldnn_build_option_learning_config:
-			return detail::build_option_traits<build_option_type::learning_config>::make_option(option);
+        case cldnn_build_option_learning_config:
+            return detail::build_option_traits<build_option_type::learning_config>::make_option(option);
         case cldnn_build_option_optimize_data:
             return detail::build_option_traits<build_option_type::optimize_data>::make_option(option);
+        case cldnn_build_option_detection_output_gpu:
+            return detail::build_option_traits<build_option_type::detection_output_gpu>::make_option(option);
         case cldnn_build_option_debug:
             return detail::build_option_traits<build_option_type::debug>::make_option(option);
         case cldnn_build_option_outputs:

@@ -28,8 +28,20 @@ namespace cldnn
 /// @addtogroup cpp_primitives Primitives
 /// @{
 
+
+/// @brief Marker type indicating that instead of reference input size left, top,
+///        right and bottom borders (to cut out) should be specified.
+///
+/// @details Used to differentiate constructors.
+struct crop_borders_t {};
+
+/// @brief Marker indicating that instead of reference input size left, top,
+///        right and bottom borders (to cut out) should be specified.
+constexpr auto crop_borders = crop_borders_t{};
+
 /// @brief Performs crop operation on input.
-/// @details Crops the input to the shape of reference_input accross all dimensions taking into account specified input offsets.
+/// @details Crops the input to the shape of reference_input across all dimensions taking into account specified input offsets.
+/// @n       Borders variant calculated output shape from input shape minus the specified borders.
 /// @n
 /// @n\b Examples
 /// @n Crop without offset example:
@@ -37,13 +49,18 @@ namespace cldnn
 /// @n Crop with offset example:
 /// \image html crop_w_offset.jpg
 /// @n
-/// @n\b Requirements 
-/// @n - Input and reference format has to be same
-/// @n - Input, reference and offset layout (order) has to be the same
+/// @n\b Requirements (reference size variant)
 /// @n - Input size cannot be greater than reference size in any dimension
 /// @n - All sizes have to have positive numbers
 /// @n - Reference size plus offset cannot exceed input size
-/// @n Breaking any of this conditions will cause exeption throw.
+/// @n
+/// @n\b Requirements (borders variant)
+/// @n - Borders support batch, feature and spatial dimensions (rest of dimensions ignored).
+/// @n - Input size cannot be greater than reference size in any dimension
+/// @n - All sizes specified in borders have to have non-negative values (positive or @c 0).
+/// @n - Sum of sizes of opposite borders must be lower than input size (on all non-ignored dimensions).
+/// @n
+/// @n Breaking any of this conditions will cause exception throw.
 struct crop : public primitive_base<crop, CLDNN_PRIMITIVE_DESC(crop)>
 {
     CLDNN_DECLARE_PRIMITIVE(crop)
@@ -63,6 +80,55 @@ struct crop : public primitive_base<crop, CLDNN_PRIMITIVE_DESC(crop)>
         :primitive_base(id, {input}, output_padding)
         , reference_input(reference_input)
         , offsets(offsets)
+    {
+    }
+
+    /// @brief Constructs crop primitive (borders variant).
+    ///
+    /// @details Allows to specify borders from each side that should be cut out
+    ///          by the primitive.
+    /// @n       NOTE: Borders variant supports only up to four dimensions.
+    ///
+    /// @param id         Identifier of newly created primitive.
+    /// @param input      Identifier of input primitive which dimensions will be cropped.
+    /// @param lt_borders Border sizes (spatial dimensions define left (X) and top (Y)
+    ///                   borders, non-spatial dimensions - lower borders)
+    /// @param rb_borders Border sizes (spatial dimensions define right (X) and bottom (Y)
+    ///                   borders, non-spatial dimensions - upper borders)
+    crop(
+        const primitive_id& id,
+        const primitive_id& input,
+        const tensor& lt_borders,
+        const tensor& rb_borders,
+        const crop_borders_t,
+        const padding& output_padding = padding()
+    )
+        :primitive_base(id, {input}, output_padding)
+        , reference_input(rb_borders.negate())
+        , offsets(lt_borders)
+    {
+    }
+
+    /// @brief Constructs crop primitive (symmetric borders variant).
+    ///
+    /// @details Allows to specify borders from each side that should be cut out
+    ///          by the primitive.
+    /// @n       NOTE: Borders variant supports only up to four dimensions.
+    ///
+    /// @param id         Identifier of newly created primitive.
+    /// @param input      Identifier of input primitive which dimensions will be cropped.
+    /// @param xy_borders Border sizes (symmetric; spatial dimensions define left/right (X)
+    ///                   and top/bottom (Y) borders, non-spatial dimensions - lower/upper borders).
+    crop(
+        const primitive_id& id,
+        const primitive_id& input,
+        const tensor& xy_borders,
+        const crop_borders_t,
+        const padding& output_padding = padding()
+    )
+        :primitive_base(id, {input}, output_padding)
+        , reference_input(xy_borders.negate())
+        , offsets(xy_borders)
     {
     }
 

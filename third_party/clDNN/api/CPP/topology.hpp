@@ -61,6 +61,13 @@ struct topology
         return *this;
     }
 
+    /// Construct C++ topology based on C API @p cldnn_topology
+    topology(const cldnn_topology& other) 
+        :_impl(other)
+    {
+        if (_impl == nullptr) throw std::invalid_argument("implementation pointer should not be null");
+    }
+
     /// @brief Releases wrapped C API @ref cldnn_topology.
     ~topology()
     {
@@ -123,11 +130,6 @@ private:
     friend struct engine;
     friend struct network;
     cldnn_topology _impl;
-
-    topology(cldnn_topology impl) :_impl(impl)
-    {
-        if (_impl == nullptr) throw std::invalid_argument("implementation pointer should not be null");
-    }
 
     void retain()
     {

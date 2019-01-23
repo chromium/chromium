@@ -40,7 +40,9 @@ typedef enum /*:int32_t*/
     /// @brief Average-pooling method without values which are outside of the input.
     cldnn_pooling_average_no_padding,
     /// @brief Maximum-pooling method with additional buffer to store argmax indices.
-    cldnn_pooling_max_with_argmax
+    cldnn_pooling_max_with_argmax,
+    /// @brief Pooling with bilinear interpolation
+    cldnn_pooling_bilinear
 } cldnn_pooling_mode;
 
 /// @brief Performs "pooling" operation which is a form of non-linear down-sampling.
@@ -50,6 +52,8 @@ CLDNN_BEGIN_PRIMITIVE_DESC(pooling)
 cldnn_primitive_id argmax;
 /// @brief Pooling method. See #cldnn_pooling_mode.
 int32_t mode;
+/// @brief Global pooling (kernel size is equal to the spatial dimension of input tensor)
+int8_t global_pooling;
 /// @brief Defines a shift, relative to (0,0) position of the input buffer, where (0,0) point of the pooling window should start calculations.
 cldnn_tensor input_offset;
 /// @brief Defines shift in input buffer between adjacent calculations of output values.

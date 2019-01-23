@@ -37,13 +37,17 @@ extern "C" {
 /// 
 /// <b>Algorithm:</b>
 /// @n global stats can be computed as:
-/// @n out[i] = in[i] - mean[b] / sqrt(variance[b] + epsilon)
+/// @n out[i] = ( (in[i] - mean[b]) / sqrt(variance[b] + epsilon) ) * scale[b] + shift[b]
 
 CLDNN_BEGIN_PRIMITIVE_DESC(batch_norm)
 /// @brief Primitive id containing mean data.
 cldnn_primitive_id mean;
 /// @brief Primitive id containing variance.
 cldnn_primitive_id variance;
+/// @brief Primitive id containing scale.
+cldnn_primitive_id scale;
+/// @brief Primitive id containing shift.
+cldnn_primitive_id shift;
 /// @brief Primitive id containing inverted variance used in future gradient computing.
 cldnn_primitive_id inv_variance;
 /// @brief Epsilon.

@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2017 Intel Corporation
+// Copyright (c) 2016 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
 */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#ifndef PROPOSAL_H
-#define PROPOSAL_H
+#ifndef GEMM_H
+#define GEMM_H
 
+#include <stdbool.h>
 #include "cldnn.h"
 /// @addtogroup c_api C API
 /// @{
@@ -30,28 +31,21 @@
 extern "C" {
 #endif
 
-#define CLDNN_ROI_VECTOR_SIZE 5
+/// @brief Performs forward attention layer.
 
-CLDNN_BEGIN_PRIMITIVE_DESC(proposal)
-    int max_proposals;
-    float iou_threshold;
-    int base_bbox_size;
-    int min_bbox_size;
-    int feature_stride;
-    int pre_nms_topn;
-    int post_nms_topn;
-    cldnn_float_arr ratios;
-    cldnn_float_arr scales;
-    float coordinates_offset;
-    float box_coordinate_scale;
-    float box_size_scale;
-    uint32_t swap_xy;
-    uint32_t initial_clip;
-    uint32_t round_ratios;
-    uint32_t shift_anchors;
-CLDNN_END_PRIMITIVE_DESC(proposal)
+CLDNN_BEGIN_PRIMITIVE_DESC(gemm)
+/// @brief Variable containing ALPHA parameter
+float alpha;
+/// @brief Variable containing BETA parameter
+float beta;
+/// @brief Flag for transposing first input matrix
+bool transpose_input1;
+/// @brief Flag for transposing second input matrix
+bool transpose_input2;
+CLDNN_END_PRIMITIVE_DESC(gemm)
 
-CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
+CLDNN_DECLARE_PRIMITIVE_TYPE_ID(gemm);
+
 
 #ifdef __cplusplus
 }
@@ -60,5 +54,5 @@ CLDNN_DECLARE_PRIMITIVE_TYPE_ID(proposal);
 /// @}
 /// @}
 /// @}
-#endif /* PROPOSAL_H */
+#endif /* GEMM_H */
 

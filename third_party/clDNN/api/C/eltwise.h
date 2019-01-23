@@ -56,6 +56,7 @@ typedef enum /*:int32_t*/
 /// @notes
 /// - both inputs have to have equal sizes in all dimensions
 /// - format of both inputs has to be the same
+/// - when using integer types, only following eltwise modes are supported: sum, sub, prod, div
 CLDNN_BEGIN_PRIMITIVE_DESC(eltwise)
 /// @brief Primitive id containing output quanitization factors per output feature map.
 cldnn_primitive_id output_calibration_factors;
@@ -69,6 +70,9 @@ cldnn_float_arr coefficients;
 uint32_t with_activation;
 /// @brief Relu activation slope.
 float activation_negative_slope;
+/// @brief Defines shift in input buffers between adjacent calculations of output values.
+cldnn_tensor_arr stride;
+
 CLDNN_END_PRIMITIVE_DESC(eltwise)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(eltwise);
