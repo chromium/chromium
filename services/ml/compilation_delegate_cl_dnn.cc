@@ -26,7 +26,7 @@
 #include "third_party/clDNN/api/C/softmax.h"
 
 #if defined(OS_LINUX)
-constexpr char kClDnnVersion[] = "12.1";
+constexpr char kClDnnVersion[] = "21.1";
 #endif
 
 namespace ml {
@@ -282,19 +282,20 @@ int32_t CompilationDelegateClDnn::CldnnGetLayout(
   }
   layout = {.data_type = cldnn_f32, .format = format, .padding = {}};
   if (dimensions.size() == 1) {
-    layout.size = {1, 1, 2, {1, 1, dimensions[0], 1, 1, 1, 1, 1}};
+    layout.size = {1, 1, 2, 0, {1, 1, dimensions[0], 1, 1, 1, 1, 1}};
   } else if (dimensions.size() == 2) {
     // HW -> {batch, feature, width, height}
-    layout.size = {1, 1, 2, {1, 1, dimensions[1], dimensions[0], 1, 1, 1, 1}};
+    layout.size = {1, 1, 2, 0, {1, 1, dimensions[1], dimensions[0], 1, 1, 1, 1}};
   } else if (dimensions.size() == 3) {
     // HWC -> {batch, feature, width, height}
     layout.size = {
-        1, 1, 2, {1, dimensions[2], dimensions[1], dimensions[0], 1, 1, 1, 1}};
+        1, 1, 2, 0, {1, dimensions[2], dimensions[1], dimensions[0], 1, 1, 1, 1}};
   } else if (dimensions.size() == 4) {
     // NHWC -> {batch, feature, width, height}
     layout.size = {1,
                    1,
                    2,
+                   0,
                    {dimensions[0], dimensions[3], dimensions[2], dimensions[1],
                     1, 1, 1, 1}};
   } else {
@@ -660,6 +661,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
         .size = {1,
                  1,
                  2,
+                 0,
                  {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}},
         .padding = {}};
     weight_ids_array.resize(params.depth_out);
@@ -671,7 +673,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
     const cldnn_layout bias_layout = {
         .data_type = cldnn_f32,
         .format = cldnn_format_bfyx,
-        .size = {1, 1, 2, {1, 1, 1, 1, 1, 1, 1, 1}},
+        .size = {1, 1, 2, 0, {1, 1, 1, 1, 1, 1, 1, 1}},
         .padding = {}};
     bias_ids_array.resize(params.depth_out);
     bias_ids.resize(params.depth_out);
@@ -797,11 +799,11 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   }
 
   conv_desc.input_offset = {
-      1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
+      1, 1, 2, 0, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
   conv_desc.stride = {
-      1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+      1, 1, 2, 0, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   std::string id_str = base::NumberToString(output_index);
   // Setup activation.
@@ -824,6 +826,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       1,
       1,
       2,
+      0,
       {1, 1, params.dilation_width, params.dilation_height, 1, 1, 1, 1}};
 
   // Setup output.
@@ -832,6 +835,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       1,
       1,
       2,
+      0,
       {params.output_batch, params.output_channel, params.output_width,
        params.output_height, 1, 1, 1, 1}};
 
@@ -900,14 +904,14 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
 
   // Setup kernel size.
   pool_desc.size = {
-      1, 1, 2, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
+      1, 1, 2, 0, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
 
   pool_desc.input_offset = {
-      1, 1, 2, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
+      1, 1, 2, 0, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
   pool_desc.stride = {
-      1, 1, 2, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+      1, 1, 2, 0, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   // Setup output.
   pool_desc.with_output_size = 1;
@@ -915,6 +919,7 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
       1,
       1,
       2,
+      0,
       {params.output_batch, params.output_channel, params.output_width,
        params.output_height, 1, 1, 1, 1}};
 
@@ -1205,7 +1210,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
 
   // Setup output shape.
   reshape_desc.output_shape = {
-      1, 1, 2, {params.input_batch_size, 1, params.input_size, 1, 1, 1, 1, 1}};
+      1, 1, 2, 0, {params.input_batch_size, 1, params.input_size, 1, 1, 1, 1, 1}};
 
   // Setup id and add into topology.
   std::string reshape_id_str(base::NumberToString(input_index) +
@@ -1239,6 +1244,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
       .size = {1,
                1,
                2,
+               0,
                {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
       .padding = {}};
   cldnn_memory weights_memory =
