@@ -13,6 +13,8 @@
 #include "services/ml/ml_utils_mac.h"
 
 namespace ml {
+API_AVAILABLE(macosx(10.13))
+bool CompileResizeBilinearBNNS(OperationMac& operation);
 
 API_AVAILABLE(macosx(10.13))
 bool CompileCompileArithmeticBNNS(OperationMac&,

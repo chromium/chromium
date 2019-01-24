@@ -25,6 +25,7 @@ typedef enum LocalOperation {
   KConcatenation = 3,
   KAdd = 4,
   KMul = 5,
+  KResize = 6,
 } LocalOperation;
 
 namespace ml {
@@ -50,6 +51,10 @@ struct OperationMac : public Operation {
   uint32_t offset_x;
   uint32_t offset_y;
   std::vector<float*> extend_input;
+  void (*kernelFunc)(const float* xArray,
+                     float* yArray,
+                     unsigned long count,
+                     void* userData);
 };
 
 bool ParameterExtracterForConv(const OperationMac&,

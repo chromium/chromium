@@ -12,6 +12,17 @@
 namespace ml {
 
 namespace {
+vImage_Error GetResamplingFilter(const float scale,
+                                 const float kernel_width,
+                                 const ml::OperationMac& operation,
+                                 ResamplingFilter& resampling_filter) {
+  resampling_filter = malloc(vImageGetResamplingFilterSize(
+      scale, operation.kernelFunc, kernel_width, kvImageEdgeExtend));
+  vImage_Error error = vImageNewResamplingFilterForFunctionUsingBuffer(
+      resampling_filter, scale, operation.kernelFunc, kernel_width, nullptr,
+      kvImageEdgeExtend);
+  return error;
+}
 
 bool TransposeForInput(const ml::OperationMac& operation,
                        const ml::OperandMac& operation_input,
@@ -298,6 +309,83 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 memcpy(des, output_vector, output_length);
               }
               free(output_vector);
+            } else if (operation.local_operation == KResize) {
+              const OperandMac& input =
+                  compilation_->operands_[operation.inputs[0]];
+              const int32_t input_batch = input.dimensions[0];
+              const int32_t input_width = input.dimensions[1];
+              const int32_t input_height = input.dimensions[2];
+              const int32_t input_depth = input.dimensions[3];
+              vImage_Buffer source_buffer;
+              source_buffer.data = src;
+              source_buffer.height = input_height;
+              source_buffer.width = input_width;
+              source_buffer.rowBytes = input_width * sizeof(float);
+
+              const OperandMac& output =
+                  compilation_->operands_[operation.outputs[0]];
+              const int32_t output_batch = output.dimensions[0];
+              const int32_t output_width = output.dimensions[1];
+              const int32_t output_height = output.dimensions[2];
+              const int32_t output_depth = output.dimensions[3];
+
+              float kernel_width = 1;
+              float scale = float(output_height * output_depth * output_batch) /
+                            (input_height * input_depth * input_batch);
+              ResamplingFilter resampling_filter_verticle;
+              vImage_Error error;
+              error = GetResamplingFilter(scale, kernel_width, operation,
+                                          resampling_filter_verticle);
+              if (error != kvImageNoError) {
+                success = false;
+                DLOG(ERROR) << "Fail to new resampling filter for function!";
+              }
+              vImage_Buffer intermediate_buffer;
+              intermediate_buffer.data =
+                  (float*)malloc(output_height * output_depth * output_batch *
+                                 input_width * sizeof(float));
+              intermediate_buffer.height = output_height;
+              intermediate_buffer.width = input_width;
+              intermediate_buffer.rowBytes = input_width * sizeof(float);
+
+              float yTranslate =
+                  -(output_height * output_depth * output_batch) /
+                  (scale * scale);
+              vImageVerticalShear_PlanarF(
+                  &source_buffer, &intermediate_buffer, 0, 0, yTranslate, 0,
+                  resampling_filter_verticle, 0, kvImageNoFlags);
+              if (error != kvImageNoError) {
+                success = false;
+                DLOG(ERROR) << "Fail to new vertical shear!";
+              }
+
+              vImage_Buffer des_buffer;
+              des_buffer.data = des;
+              des_buffer.height = output_height;
+              des_buffer.width = output_width;
+              des_buffer.rowBytes = output_width * sizeof(float);
+
+              scale = (float)output_width / input_width;
+              ResamplingFilter resampling_filter_horizontal;
+              error = GetResamplingFilter(scale, kernel_width, operation,
+                                          resampling_filter_horizontal);
+              if (error != kvImageNoError) {
+                success = false;
+                DLOG(ERROR) << "Fail to new resampling filter for function!";
+              }
+
+              float xTranslate = input_width - output_width;
+              error = vImageHorizontalShear_PlanarF(
+                  &intermediate_buffer, &des_buffer, 0, 0, xTranslate, 0,
+                  resampling_filter_horizontal, 0, kvImageNoFlags);
+              if (error != kvImageNoError) {
+                success = false;
+                DLOG(ERROR) << "Fail to new horizontal shear!";
+              }
+
+              free(intermediate_buffer.data);
+              free(resampling_filter_horizontal);
+              free(resampling_filter_verticle);
             }
 
             if (is_outer_input && src != nullptr && tmp_src_malloc) {

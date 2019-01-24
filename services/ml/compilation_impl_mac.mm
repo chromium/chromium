@@ -162,6 +162,8 @@ void CompilationImplMac::CompileModelWithBNNS(FinishCallback callback) {
     } else if (type == mojom::FULLY_CONNECTED) {
       success =
           CompileFullyConnectedBNNS(operation, values_, memory_, operands_);
+    } else if (type == mojom::RESIZE_BILINEAR) {
+      success = CompileResizeBilinearBNNS(operation);
     } else {
       DLOG(ERROR) << "Operation is not supported";
       success = false;

@@ -11,6 +11,22 @@
 
 namespace ml {
 
+void ResamplingkernelFunc(const float* xArray,
+                          float* yArray,
+                          unsigned long count,
+                          void* userData) {
+  float sum = 0;
+  for (size_t i = 0; i < count; ++i) {
+    yArray[i] = 1 - fabs(xArray[i]);
+    sum += yArray[i];
+  }
+
+  sum = float(1 / sum);
+  for (size_t i = 0; i < count; ++i) {
+    yArray[i] *= sum;
+  }
+}
+
 API_AVAILABLE(macosx(10.13))
 void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
                                          OperationMac& operation,
@@ -45,6 +61,18 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
     padding_top = 0;
     padding_left = 0;
   }
+}
+
+API_AVAILABLE(macosx(10.13))
+bool CompileResizeBilinearBNNS(OperationMac& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileResizeBilinearBNNS";
+  DLOG_IF(FATAL, operation.type != mojom::RESIZE_BILINEAR);
+
+  operation.local_operation = KResize;
+  operation.offset_x = 0;
+  operation.offset_y = 0;
+  operation.kernelFunc = ResamplingkernelFunc;
+  return true;
 }
 
 API_AVAILABLE(macosx(10.13))
