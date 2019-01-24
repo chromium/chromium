@@ -53,6 +53,7 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
 API_AVAILABLE(macosx(10.13))
 bool CompileArithmetic(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                        const OperationMac& operation,
+                       const std::vector<OperandMac>& operands,
                        std::vector<uint32_t>& constants,
                        const std::map<uint32_t, ValueInfo>& values,
                        const std::unique_ptr<int8_t[]>& memory);

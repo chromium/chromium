@@ -431,47 +431,48 @@ bool CompileConcatenation(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
 API_AVAILABLE(macosx(10.13))
 bool CompileArithmetic(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                        const OperationMac& operation,
+                       const std::vector<OperandMac>& operands,
                        std::vector<uint32_t>& constants,
                        const std::map<uint32_t, ValueInfo>& values,
                        const std::unique_ptr<int8_t[]>& memory) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
-  DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
+  const std::vector<uint32_t>& primary_dimension =
+      operands[operation.inputs[0]].dimensions;
+  const std::vector<uint32_t>& secondary_dimension =
+      operands[operation.inputs[1]].dimensions;
+  size_t primary_batch_size =
+      primary_dimension.size() == 4 ? primary_dimension[0] : 1;
+  size_t secondary_batch_size =
+      secondary_dimension.size() == 4 ? secondary_dimension[0] : 1;
+  if (primary_batch_size != secondary_batch_size) {
+    LOG(ERROR) << "Different batch size for arithmetic isn't supported.";
+    return false;
+  }
 
   // Check constants for input 0 and 1
   NSMutableArray<MPSNNImageNode*>* image_array =
       [NSMutableArray arrayWithCapacity:1];
   for (size_t i = 0; i < 2; ++i) {
-    if (values.find(operation.inputs[i]) != values.end()) {
-      constants.push_back(operation.inputs[i]);
+    size_t input_index = operation.inputs[i];
+    if (values.find(input_index) != values.end()) {
+      constants.push_back(input_index);
 
       // Create a placeholder for input constant image.
       MPSNNImageNode* image_node =
           [[MPSNNImageNode alloc] initWithHandle:nullptr];
       [image_array addObject:image_node];
     } else {
-      [image_array addObject:image_nodes[operation.inputs[i]]];
+      [image_array addObject:image_nodes[input_index]];
     }
   }
 
   MPSNNBinaryArithmeticNode* arithmetic_node = nullptr;
   if (operation.type == mojom::ADD) {
-    Class mpscnn_add_class = NSClassFromString(@"MPSNNAdditionNode");
-    if (!mpscnn_add_class) {
-      DLOG(ERROR) << "Failed to load MPSNNAdditionNode class";
-      return false;
-    }
-    arithmetic_node = [[mpscnn_add_class alloc] initWithSources:image_array];
+    arithmetic_node = [[MPSNNAdditionNode alloc] initWithSources:image_array];
   } else if (operation.type == mojom::MUL) {
-    Class mpscnn_multiply_class = NSClassFromString(@"MPSNNMultiplicationNode");
-    if (!mpscnn_multiply_class) {
-      DLOG(ERROR) << "Failed to load MPSCNNMultiply class";
-      return false;
-    }
     arithmetic_node =
-        [[mpscnn_multiply_class alloc] initWithSources:image_array];
+        [[MPSNNMultiplicationNode alloc] initWithSources:image_array];
   }
-  if (!arithmetic_node)
-    return false;
 
   // TODO(junwei): the activation function must be configured in index 2.
   int32_t fuse_code = getScalarInt32(values, operation.inputs[2], memory.get());
