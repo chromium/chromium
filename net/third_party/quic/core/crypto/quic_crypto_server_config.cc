@@ -518,7 +518,7 @@ void QuicCryptoServerConfig::ValidateClientHello(
       result->error_details = "No configurations loaded";
     } else {
       if (!next_config_promotion_time_.IsZero() &&
-          next_config_promotion_time_.IsAfter(now)) {
+          !next_config_promotion_time_.IsAfter(now)) {
         configs_lock_.ReaderUnlock();
         configs_lock_.WriterLock();
         SelectNewPrimaryConfig(now);
@@ -786,7 +786,7 @@ void QuicCryptoServerConfig::ProcessClientHello(
       no_primary_config = true;
     } else {
       if (!next_config_promotion_time_.IsZero() &&
-          next_config_promotion_time_.IsAfter(now)) {
+          !next_config_promotion_time_.IsAfter(now)) {
         configs_lock_.ReaderUnlock();
         configs_lock_.WriterLock();
         SelectNewPrimaryConfig(now);
