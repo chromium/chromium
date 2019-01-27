@@ -52,7 +52,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
     delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
   } else {
-    DLOG(ERROR) << "Preference: " << preference << " is not suppoted.";
+    LOG(ERROR) << "Preference: " << preference << " is not suppoted.";
     std::move(callback).Run(mojom::BAD_DATA);
     return;
   }
@@ -198,7 +198,7 @@ int32_t CompilationImpl::GetConvParams(const mojom::OperationPtr& operation,
     implicit_padding = true;
     padding_code = GetScalarInt32(inputs[index++]);
   } else {
-    DLOG(ERROR) << "Inputs size is incorrect";
+    LOG(ERROR) << "Inputs size is incorrect";
     return mojom::BAD_DATA;
   }
   if (!params.atrous) {
@@ -311,7 +311,7 @@ int32_t CompilationImpl::GetPoolingParams(const mojom::OperationPtr& operation,
     implicit_padding = true;
     padding_code = GetScalarInt32(inputs[i++]);
   } else {
-    DLOG(ERROR) << "  inputs size is incorrect";
+    LOG(ERROR) << "  inputs size is incorrect";
     return mojom::BAD_DATA;
   }
   params.stride_width = GetScalarInt32(inputs[i++]);
@@ -462,7 +462,7 @@ int32_t CompilationImpl::GetResizeBilinearParams(
   }
   const mojom::OperandPtr& input = model_info_->operands[inputs[0]];
   if (input->dimensions.size() != 4) {
-    DLOG(ERROR) << "Input must be a 4-D tensor";
+    LOG(ERROR) << "Input must be a 4-D tensor";
     return mojom::BAD_DATA;
   }
   params.height = input->dimensions[1];

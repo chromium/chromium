@@ -136,7 +136,7 @@ int32_t CompilationDelegateMklDnn::MkldnnCompile() {
     const int32_t type = operation->type;
 
     if (operation->outputs.size() != 1) {
-      DLOG(ERROR) << "Only 1 output is supported";
+      LOG(ERROR) << "Only 1 output is supported";
       return mojom::BAD_DATA;
     }
 
@@ -160,7 +160,7 @@ int32_t CompilationDelegateMklDnn::MkldnnCompile() {
     } else if (type == mojom::RESIZE_BILINEAR) {
       result = MkldnnAddResizeBilinear(operation);
     } else {
-      DLOG(ERROR) << "Operation type " << type << " is not supported.";
+      LOG(ERROR) << "Operation type " << type << " is not supported.";
       return mojom::BAD_DATA;
     }
 

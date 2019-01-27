@@ -30,7 +30,7 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     const uint32_t length = GetRequiredSize(operand);
     total_length += length;
     if (operand->type != mojom::TENSOR_FLOAT32) {
-      DLOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
+      LOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
       std::move(callback).Run(mojom::BAD_DATA);
       return;
     }

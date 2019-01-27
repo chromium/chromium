@@ -21,7 +21,7 @@ ExecutionImplClDnn::ExecutionImplClDnn(
   cldnn_status status;
   network_ = LATE(cldnn_allocate_network)(compilation->program_, &status);
   if (status != CLDNN_SUCCESS) {
-    DLOG(ERROR) << "[clDNN] failed to allocate network " << status << " "
+    LOG(ERROR) << "[clDNN] failed to allocate network " << status << " "
                 << std::string(LATE(cldnn_get_last_error_message)());
     network_ = nullptr;
     return;
@@ -35,7 +35,7 @@ ExecutionImplClDnn::~ExecutionImplClDnn() {
   if (network_) {
     LATE(cldnn_release_network)(network_, &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to release network " << status << " "
+      LOG(ERROR) << "[clDNN] failed to release network " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
@@ -44,7 +44,7 @@ ExecutionImplClDnn::~ExecutionImplClDnn() {
   for (size_t i = 0; i < input_memories_.size(); ++i) {
     LATE(cldnn_release_memory)(input_memories_[i], &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to release memory " << status << " "
+      LOG(ERROR) << "[clDNN] failed to release memory " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
@@ -56,7 +56,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
   DLOG(INFO) << "ExecutionImplClDnn::StartCompute";
 
   if (network_ == nullptr) {
-    DLOG(ERROR) << "Execution is not initialized successfully";
+    LOG(ERROR) << "Execution is not initialized successfully";
     std::move(callback).Run(mojom::BAD_STATE);
     return;
   }
@@ -74,7 +74,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     const uint32_t length = GetRequiredSize(operand);
     total_length += length;
     if (operand->type != mojom::TENSOR_FLOAT32) {
-      DLOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
+      LOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
       std::move(callback).Run(mojom::BAD_DATA);
       return;
     }
@@ -91,7 +91,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     cldnn_memory memory = LATE(cldnn_attach_memory)(
         layout, static_cast<void*>(mapping.get()), length, &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
+      LOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
@@ -99,7 +99,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     LATE(cldnn_set_network_input)
     (network_, input_id_str.c_str(), memory, &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to set network input " << i << " "
+      LOG(ERROR) << "[clDNN] failed to set network input " << i << " "
                   << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
@@ -110,7 +110,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
 
   LATE(cldnn_execute_network)(network_, nullptr, 0, &status);
   if (status != CLDNN_SUCCESS) {
-    DLOG(ERROR) << "[clDNN] failed to execute network " << status << " "
+    LOG(ERROR) << "[clDNN] failed to execute network " << status << " "
                 << std::string(LATE(cldnn_get_last_error_message)());
     std::move(callback).Run(mojom::OP_FAILED);
     return;
@@ -128,7 +128,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     cldnn_memory memory = LATE(cldnn_get_network_output_memory)(
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to get network output " << i << " "
+      LOG(ERROR) << "[clDNN] failed to get network output " << i << " "
                   << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
@@ -136,7 +136,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     }
     void* output_ptr = LATE(cldnn_lock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
+      LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
@@ -145,7 +145,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     memcpy(static_cast<void*>(mapping.get()), output_ptr, length);
     LATE(cldnn_unlock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
-      DLOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
+      LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
                   << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
