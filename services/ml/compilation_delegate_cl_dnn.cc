@@ -1375,12 +1375,8 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   cldnn_custom_gpu_primitive_desc custom_desc = {.type = type_id};
 
   // Setup inputs.
-  // interp kernel optimizes for yxfb foramt, reorder to yxfb.
-  std::string reorder_input(base::NumberToString(input_index));
-  std::string reorder_output(reorder_input + std::string("-reordered"));
-  CldnnAddReorder(reorder_input, reorder_output, cldnn_format_yxfb);
-
-  std::vector<cldnn_primitive_id> input_ids_array = {reorder_output.c_str()};
+  std::string input(base::NumberToString(input_index));
+  std::vector<cldnn_primitive_id> input_ids_array = {input.c_str()};
   custom_desc.input = {.data = input_ids_array.data(),
                        .size = input_ids_array.size()};
 
@@ -1410,7 +1406,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   const mojom::OperandPtr& operand =
       compilation_->GetModel()->operands[output_index];
   result = CldnnGetLayout(operand->type, operand->dimensions, output_layout,
-                          cldnn_format_yxfb);
+                          cldnn_format_bfyx);
   if (result != mojom::NOT_ERROR) {
     return result;
   }
@@ -1425,7 +1421,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   custom_desc.lws_num = lws.size();
 
   // Setup id and add into topology.
-  std::string id_str(base::NumberToString(output_index) + std::string("-yxfb"));
+  std::string id_str(base::NumberToString(output_index));
   custom_desc.id = id_str.c_str();
   LATE(cldnn_add_primitive)
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&custom_desc),
@@ -1438,9 +1434,6 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   DLOG(INFO) << "[clDNN] succeed to add custom_gpu primitive with id "
              << id_str;
 
-  // insert a reorder back to bfyx
-  CldnnAddReorder(id_str, base::NumberToString(output_index),
-                  cldnn_format_bfyx);
   return mojom::NOT_ERROR;
 }
 

@@ -67,32 +67,9 @@ inline void interpolate(const int N, const int C,
 
     __global OUTPUT0_TYPE* pdst = dst + (y2 + h)*OUTPUT0_PITCHES[2] + (x2 + w)*OUTPUT0_PITCHES[3];
 
-#if defined(INPUT0_FORMAT_YXFB) && defined(OUTPUT0_FORMAT_YXFB)
-    typedef CAT(INPUT0_TYPE, VEC_SIZE) vec16_t;
-
-    const __global vec16_t* pvsrc00 = (const __global vec16_t*)psrc00;
-    const __global vec16_t* pvsrc01 = (const __global vec16_t*)psrc01;
-    const __global vec16_t* pvsrc10 = (const __global vec16_t*)psrc10;
-    const __global vec16_t* pvsrc11 = (const __global vec16_t*)psrc11;
-
-    __global vec16_t* pvdst = (__global vec16_t*)pdst;
-#endif
-
     for (int n = 0; n < N; n++)
     {
         int c = 0;
-#if defined(INPUT0_FORMAT_YXFB) && defined(OUTPUT0_FORMAT_YXFB)
-        __attribute__((opencl_unroll_hint))
-        for (int vc = 0; c <= C - VEC_SIZE; c += VEC_SIZE, vc++)
-        {
-            int in_idx = (n*INPUT0_PITCHES[0] + vc*INPUT0_PITCHES[1]);
-            int out_idx = (n*OUTPUT0_PITCHES[0] + vc*OUTPUT0_PITCHES[1]);
-            pvdst[out_idx] = (vec16_t)(h_lambda1 * (w_lambda1 * pvsrc00[in_idx] +
-                                                    w_lambda0 * pvsrc01[in_idx]) +
-                                       h_lambda0 * (w_lambda1 * pvsrc10[in_idx] +
-                                                    w_lambda0 * pvsrc11[in_idx]));
-        }
-#endif
         __attribute__((opencl_unroll_hint))
         for (; c < C; c++)
         {
