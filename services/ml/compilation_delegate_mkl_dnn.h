@@ -28,7 +28,7 @@ struct OperationMklDnn {
   // For custom kernels
   int32_t type;
   std::vector<std::string> inputs;
-  std::vector<std::string> outputs; 
+  std::vector<std::string> outputs;
 };
 
 struct CompiledModelMklDnn {
@@ -53,15 +53,22 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
   friend class ExecutionImplMklDnn;
   int32_t MkldnnInit();
   int32_t MkldnnCompile();
-  int32_t MkldnnGetMemoryFormat(const std::vector<uint32_t>&, mkldnn_memory_format_t*);
+  int32_t MkldnnGetMemoryFormat(const std::vector<uint32_t>&,
+                                mkldnn_memory_format_t*);
   int32_t MkldnnGetDataType(int32_t, mkldnn_data_type_t*);
-  int32_t MkldnnGetDims(const std::vector<uint32_t>&, std::vector<int32_t>&);
-  int32_t MkldnnAddMemory(uint32_t index, mkldnn_memory_format_t* format = nullptr);
+  int32_t MkldnnGetDims(const std::vector<uint32_t>&,
+                        std::vector<int32_t>&,
+                        mkldnn_memory_format_t);
+  int32_t MkldnnAddMemory(uint32_t index,
+                          mkldnn_memory_format_t* format = nullptr);
   int32_t MkldnnAddInput(uint32_t index);
   int32_t MkldnnAddOutput(uint32_t index);
   int32_t MkldnnAddReorder(const std::string& input_name,
                            const std::string& output_name,
                            bool run = false);
+  int32_t MkldnnAddFusedActivation(const std::string&,
+                                   const std::string&,
+                                   int32_t);
   int32_t MkldnnAddElementwise(const mojom::OperationPtr&);
   int32_t MkldnnAddConvolution(const mojom::OperationPtr&);
   int32_t MkldnnAddPooling(const mojom::OperationPtr&);
