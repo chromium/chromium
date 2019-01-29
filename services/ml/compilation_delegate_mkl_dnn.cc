@@ -625,10 +625,6 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   int32_t result = compilation_->GetConvParams(operation, params);
   if (result != mojom::NOT_ERROR)
     return result;
-  if (params.atrous) {
-    LOG(ERROR) << "Operation type " << operation->type << " is not supported";
-    return mojom::BAD_DATA;
-  }
   if (params.depthwise && params.depthwise_multiplier != 1) {
     LOG(ERROR) << "depthwise_multiplier " << params.depthwise_multiplier
                << " is not supported";
@@ -683,13 +679,25 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
   }
 
   mkldnn_convolution_desc_t conv_desc;
-  int strides[2] = {params.stride_width, params.stride_height};
+  int strides[2], dilates[2];
+  if (params.atrous) {
+    // MKLDNN dilation starts from 0.
+    dilates[0] = params.dilation_width - 1;
+    dilates[1] = params.dilation_height - 1;
+    strides[0] = 1;
+    strides[1] = 1;
+  } else {
+    dilates[0] = 0;
+    dilates[1] = 0;
+    strides[0] = params.stride_width;
+    strides[1] = params.stride_height;
+  }
   int pad_left[2] = {params.padding_top, params.padding_left};
   int pad_right[2] = {params.padding_bottom, params.padding_right};
-  status = LATE(mkldnn_convolution_forward_desc_init)(
+  status = LATE(mkldnn_dilated_convolution_forward_desc_init)(
       &conv_desc, mkldnn_forward, mkldnn_convolution_direct, &input_desc,
-      &weights_desc, &bias_desc, &output_desc, strides, pad_left, pad_right,
-      mkldnn_padding_zero);
+      &weights_desc, &bias_desc, &output_desc, strides, dilates, pad_left,
+      pad_right, mkldnn_padding_zero);
   if (status != mkldnn_success) {
     LOG(ERROR) << "[MKLDNN] failed to init convolution descriptor " << status;
     return mojom::OP_FAILED;
