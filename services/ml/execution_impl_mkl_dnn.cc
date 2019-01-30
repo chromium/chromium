@@ -90,9 +90,8 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
     auto mapping = params_->memory->MapAtOffset(length, offset);
     DLOG(INFO) << "Mapping " << mapping.get() << " for output " << i
                << " offset " << offset << " length " << length;
-    // Use the reordered outputs.    
-    std::string output_id =
-        base::NumberToString(operand->index) + std::string("-reordered");
+    // Use the reordered outputs.
+    std::string output_id = base::NumberToString(operand->index);
     mkldnn_primitive_t memory = compiled_model_->memories[output_id];
     void* buffer;
     status = LATE(mkldnn_memory_get_data_handle)(memory, &buffer);

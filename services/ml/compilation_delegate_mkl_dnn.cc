@@ -44,6 +44,7 @@ CompiledModelMklDnn::~CompiledModelMklDnn() {
   for (std::map<std::string, mkldnn_primitive_t>::iterator itr =
            memories.begin();
        itr != memories.end(); ++itr) {
+    DLOG(INFO) << "To destropy memory primitive for " << itr->first;
     mkldnn_primitive_t primitive = itr->second;
     void* buffer = nullptr;
     status = LATE(mkldnn_memory_get_data_handle)(primitive, &buffer);
@@ -362,14 +363,14 @@ int32_t CompilationDelegateMklDnn::MkldnnAddOutput(uint32_t index) {
                << status;
     return mojom::OP_FAILED;
   }
-  std::string internal_output_id(base::NumberToString(index));
-  if (compiled_model_->memories.find(internal_output_id) ==
+  std::string output_id(base::NumberToString(index));
+  if (compiled_model_->memories.find(output_id) ==
       compiled_model_->memories.end()) {
     LOG(ERROR) << "Output memory is not ready";
     return mojom::BAD_DATA;
   }
   mkldnn_primitive_t internal_output_memory =
-      compiled_model_->memories[internal_output_id];
+      compiled_model_->memories[output_id];
   const_mkldnn_primitive_desc_t internal_output_pd;
   status = LATE(mkldnn_primitive_get_primitive_desc)(internal_output_memory,
                                                      &internal_output_pd);
@@ -377,7 +378,6 @@ int32_t CompilationDelegateMklDnn::MkldnnAddOutput(uint32_t index) {
     LOG(ERROR) << "[MKLDNN] failed to get primitive descriptor " << status;
     return mojom::OP_FAILED;
   }
-  std::string output_id = internal_output_id + "-reordered";
   if (!LATE(mkldnn_memory_primitive_desc_equal)(output_pd,
                                                 internal_output_pd)) {
     DLOG(INFO) << "Reorder internal output to output";
@@ -389,6 +389,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddOutput(uint32_t index) {
       LATE(mkldnn_primitive_desc_destroy)(output_pd);
       return mojom::OP_FAILED;
     }
+    DLOG(INFO) << "[MKLDNN] succeed to create memory primitve for "
+               << output_id;
     size_t size = LATE(mkldnn_memory_primitive_desc_get_size)(output_pd);
     void* buffer = base::AlignedAlloc(size, ALIGNMENT);
     status = LATE(mkldnn_memory_set_data_handle)(output_memory, buffer);
@@ -401,6 +403,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddOutput(uint32_t index) {
     }
     DLOG(INFO) << "[MKLDNN] succeed to add memory data handle with size "
                << size;
+    std::string internal_output_id = output_id + "-interanl";
+    compiled_model_->memories[internal_output_id] = internal_output_memory;
     compiled_model_->memories[output_id] = output_memory;
     result = MkldnnAddReorder(internal_output_id, output_id);
     if (result != mojom::NOT_ERROR) {
@@ -409,10 +413,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddOutput(uint32_t index) {
     }
   } else {
     DLOG(INFO) << "No need to reorder internal output to output";
-    compiled_model_->memories[output_id] = internal_output_memory;
   }
   LATE(mkldnn_primitive_desc_destroy)(output_pd);
-  DLOG(INFO) << "[MKLDNN] succeed to create memory primitve for " << output_id;
   return mojom::NOT_ERROR;
 }
 
@@ -962,8 +964,159 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
 
 int32_t CompilationDelegateMklDnn::MkldnnAddPooling(
     const mojom::OperationPtr& operation) {
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  PoolingParams params;
+  int32_t result = compilation_->GetPoolingParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  mkldnn_status_t status;
+  std::string input_id(base::NumberToString(operation->inputs[0]));
+  if (compiled_model_->memories.find(input_id) ==
+      compiled_model_->memories.end()) {
+    LOG(ERROR) << "Input memory is not ready";
+    return mojom::BAD_DATA;
+  }
+  mkldnn_primitive_t input_memory = compiled_model_->memories[input_id];
+  const_mkldnn_primitive_desc_t input_pd;
+  status = LATE(mkldnn_primitive_get_primitive_desc)(input_memory, &input_pd);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to get primitive descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+  const mkldnn_memory_desc_t* input_md =
+      LATE(mkldnn_primitive_desc_query_memory_d)(input_pd);
+  mkldnn_memory_desc_t output_md;
+  int output_dims[4] = {params.output_batch, params.output_channel,
+                        params.output_height, params.output_width};
+  status = LATE(mkldnn_memory_desc_init)(&output_md, 4, output_dims, mkldnn_f32,
+                                         mkldnn_any);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to init output memory descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+  mkldnn_pooling_desc_t pool_desc;
+  mkldnn_alg_kind_t pooling_kind;
+  if (operation->type == mojom::MAX_POOL_2D) {
+    pooling_kind = mkldnn_pooling_max;
+  } else if (operation->type == mojom::AVERAGE_POOL_2D) {
+    pooling_kind = mkldnn_pooling_avg;
+  } else {
+    LOG(ERROR) << "Pooling mode " << operation->type << " is not supported";
+    return mojom::BAD_DATA;
+  }
+  int kernel[2] = {params.filter_width, params.filter_height};
+  int strides[2] = {params.stride_width, params.stride_height};
+  int pad_left[2] = {params.padding_top, params.padding_left};
+  int pad_right[2] = {params.padding_bottom, params.padding_right};
+  status = LATE(mkldnn_pooling_forward_desc_init)(
+      &pool_desc, mkldnn_forward, pooling_kind, input_md, &output_md, strides,
+      kernel, pad_left, pad_right, mkldnn_padding_zero);
+  if (status != mojom::NOT_ERROR) {
+    LOG(ERROR) << "[MKLDNN] failed to init pooling descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+  mkldnn_primitive_desc_t pool_pd;
+  status = LATE(mkldnn_primitive_desc_create)(&pool_pd, &pool_desc,
+                                              compiled_model_->engine, NULL);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create pooling primitive descriptor "
+               << status;
+    return mojom::OP_FAILED;
+  }
+
+  mkldnn_primitive_t pool_indices_memory = nullptr;
+  if (operation->type == mojom::MAX_POOL_2D) {
+    DLOG(INFO) << "Add working space";
+    const_mkldnn_primitive_desc_t pool_indices_pd = LATE(
+        mkldnn_primitive_desc_query_pd)(pool_pd, mkldnn_query_workspace_pd, 0);
+    status = LATE(mkldnn_primitive_create)(&pool_indices_memory,
+                                           pool_indices_pd, NULL, NULL);
+    if (status != mkldnn_success) {
+      LOG(ERROR)
+          << "[MKLDNN] failed to create memory primitive for working space "
+          << status;
+      LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+      return mojom::OP_FAILED;
+    }
+    size_t pool_indices_size =
+        LATE(mkldnn_memory_primitive_desc_get_size)(pool_indices_pd);
+    void* pool_indices_buffer =
+        base::AlignedAlloc(pool_indices_size, ALIGNMENT);
+    status = LATE(mkldnn_memory_set_data_handle)(pool_indices_memory,
+                                                 pool_indices_buffer);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to set data to memory primitive for "
+                    "working space "
+                 << status;
+      LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+      return mojom::OP_FAILED;
+    }
+    std::string working_space_id(base::NumberToString(operation->outputs[0]) +
+                                 std::string("-working-space"));
+    compiled_model_->memories[working_space_id] = pool_indices_memory;
+    DLOG(INFO) << "[MKLDNN] succeed to create memory primitive for "
+               << working_space_id;
+  }
+
+  DLOG(INFO) << "Add output memory";
+  mkldnn_primitive_t output_memory;
+  const_mkldnn_primitive_desc_t output_pd =
+      LATE(mkldnn_primitive_desc_query_pd)(pool_pd, mkldnn_query_dst_pd, 0);
+  status = LATE(mkldnn_primitive_create)(&output_memory, output_pd, NULL, NULL);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create memory primitive " << status;
+    LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+    return mojom::OP_FAILED;
+  }
+  size_t output_size = LATE(mkldnn_memory_primitive_desc_get_size)(output_pd);
+  void* output_buffer = base::AlignedAlloc(output_size, ALIGNMENT);
+  status = LATE(mkldnn_memory_set_data_handle)(output_memory, output_buffer);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to set data handle " << status;
+    LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+    LATE(mkldnn_primitive_destroy)(output_memory);
+    base::AlignedFree(output_buffer);
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[MKLDNN] succeed to set data handle with size " << output_size;
+
+  std::string output_id(base::NumberToString(operation->outputs[0]));
+  std::string pool_output_id(output_id);
+  if (params.fuse_code != mojom::FUSED_NONE) {
+    // Need to add activation primitive layer.
+    // The output of pool becomes pre-activation
+    pool_output_id += std::string("-pre-activation");
+  }
+  compiled_model_->memories[pool_output_id] = output_memory;
+  DLOG(INFO) << "[MKLDNN] succeed to create memory primitive for "
+             << pool_output_id;
+
+  mkldnn_primitive_at_t pool_srcs[] = {
+      LATE(mkldnn_primitive_at)(input_memory, 0)};
+  const_mkldnn_primitive_t pool_dsts[] = {output_memory, pool_indices_memory};
+
+  mkldnn_primitive_t pool;
+  status = LATE(mkldnn_primitive_create)(&pool, pool_pd, pool_srcs, pool_dsts);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create pooling primitive " << status;
+    LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+    return mojom::OP_FAILED;
+  }
+  LATE(mkldnn_primitive_desc_destroy)(pool_pd);
+
+  OperationMklDnn mkldnn_operation(pool);
+  compiled_model_->operations.push_back(mkldnn_operation);
+
+  DLOG(INFO) << "[MKLDNN] succeed to create pool primitive";
+
+  if (params.fuse_code != mojom::FUSED_NONE) {
+    // Append an activation primitive that uses pool's output memory as input
+    // and output is named as output_id.
+    result =
+        MkldnnAddFusedActivation(pool_output_id, output_id, params.fuse_code);
+    if (result != mojom::NOT_ERROR)
+      return result;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnAddSoftmax(
