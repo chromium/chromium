@@ -20,6 +20,7 @@ namespace ml {
 
 struct OperationMklDnn {
   explicit OperationMklDnn(mkldnn_primitive_t);
+  explicit OperationMklDnn(const mojom::OperationPtr&);
   ~OperationMklDnn();
   OperationMklDnn(const OperationMklDnn&);
 

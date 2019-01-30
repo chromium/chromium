@@ -31,6 +31,7 @@ class ExecutionImplMklDnn : public mojom::Execution {
  private:
   int32_t MkldnnExecuteNet(std::vector<mkldnn_primitive_t>&);
   int32_t MkldnnExecuteCustomOperation(const OperationMklDnn&);
+  int32_t MkldnnExecuteReshape(const OperationMklDnn&);
   mojom::ExecutionInitParamsPtr params_;
   std::shared_ptr<CompiledModelMklDnn> compiled_model_;
 

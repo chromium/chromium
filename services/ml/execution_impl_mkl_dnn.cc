@@ -132,8 +132,56 @@ int32_t ExecutionImplMklDnn::MkldnnExecuteNet(std::vector<mkldnn_primitive_t>& n
 }
 
 int32_t ExecutionImplMklDnn::MkldnnExecuteCustomOperation(const OperationMklDnn& operation) {
-  LOG(ERROR) << "Operation type " << operation.type << " is not supported";
-  return mojom::BAD_DATA;
+  int32_t result;
+  if (operation.type == mojom::RESHAPE) {
+    result = MkldnnExecuteReshape(operation);
+  } else {
+    LOG(ERROR) << "Operation type " << operation.type << " is not supported";
+    result = mojom::BAD_DATA;
+  }
+  return result;
+}
+
+int32_t ExecutionImplMklDnn::MkldnnExecuteReshape(
+    const OperationMklDnn& operation) {
+  std::string input_id = operation.inputs[0];
+  if (compiled_model_->memories.find(input_id) ==
+      compiled_model_->memories.end()) {
+    LOG(ERROR) << "Input memory is not ready";
+    return mojom::BAD_DATA;
+  }
+  mkldnn_primitive_t input_memory = compiled_model_->memories[input_id];
+  void* input_buffer = nullptr;
+  mkldnn_status_t status =
+      LATE(mkldnn_memory_get_data_handle)(input_memory, &input_buffer);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to get memory data handle " << status;
+    return mojom::OP_FAILED;
+  }
+  std::string output_id = operation.outputs[0];
+  if (compiled_model_->memories.find(output_id) ==
+      compiled_model_->memories.end()) {
+    LOG(ERROR) << "Ouput memory is not ready";
+    return mojom::BAD_DATA;
+  }
+  mkldnn_primitive_t output_memory = compiled_model_->memories[output_id];
+  void* output_buffer = nullptr;
+  status = LATE(mkldnn_memory_get_data_handle)(output_memory, &output_buffer);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to get memory data handle " << status;
+    return mojom::OP_FAILED;
+  }
+  const_mkldnn_primitive_desc_t output_pd;
+  status = LATE(mkldnn_primitive_get_primitive_desc)(output_memory, &output_pd);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to get primitive descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+  size_t buffer_size = LATE(mkldnn_memory_primitive_desc_get_size)(output_pd);
+  memcpy(output_buffer, input_buffer, buffer_size);
+  DLOG(INFO) << "Copy memory from buffer " << input_id << " to buffer "
+             << output_id << " with size " << buffer_size;
+  return mojom::NOT_ERROR;
 }
 
 }  // namespace ml
