@@ -59,6 +59,9 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
   int32_t MkldnnGetDims(const std::vector<uint32_t>&,
                         std::vector<int32_t>&,
                         mkldnn_memory_format_t);
+  int32_t MkldnnCreateMemoryByQueryType(const mkldnn_primitive_desc_t&,
+                                        mkldnn_query_t,
+                                        mkldnn_primitive_t&);
   int32_t MkldnnAddMemory(uint32_t index,
                           mkldnn_memory_format_t* format = nullptr);
   int32_t MkldnnAddInput(uint32_t index);
