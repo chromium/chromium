@@ -880,7 +880,7 @@ int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
     compiled_model_->memories[weights_id] = weights_memory;
     DLOG(INFO) << "[MKLDNN] succeed to create memory primitve for "
                << weights_id;
-    result = MkldnnAddReorder(external_weights_id, weights_id, false);
+    result = MkldnnAddReorder(external_weights_id, weights_id, true);
     if (result != mojom::NOT_ERROR) {
       LATE(mkldnn_primitive_desc_destroy)(conv_pd);
       return result;
