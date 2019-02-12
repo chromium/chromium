@@ -9,11 +9,12 @@ import("//testing/test.gni")
 if (is_win) {
   cldnn_dll = "clDNN64.dll"
   mkldnn_dll = "mkldnn.dll"
-  vcomp_dll = "vcomp140.dll"
+  omp_dll = "vcomp140.dll"
   os_folder = "Windows64"
 } else if (is_linux) {
   cldnn_dll = "libclDNN64.so"
   mkldnn_dll = "libmkldnn.so"
+  omp_dll = "libiomp5.so"
   os_folder = "Linux64"
 }
 
@@ -156,10 +157,8 @@ source_set("lib") {
     deps += [
       ":copy_cldnn_dll",
       ":copy_mkldnn_dll",
+      ":copy_omp_dll"
     ]
-    if (is_win) {
-      deps += [ ":copy_omp_dll" ]
-    }
   }
 
   public_deps = [
@@ -188,15 +187,13 @@ if (is_win || is_linux) {
       "$root_out_dir/{{source_file_part}}",
     ]
   }
-  if (is_win) {
-    copy("copy_omp_dll") {
-      sources = [
-        "${mkldnn_dll_path}/${vcomp_dll}",
-      ]
-      outputs = [
-        "$root_out_dir/{{source_file_part}}",
-      ]
-    }
+  copy("copy_omp_dll") {
+    sources = [
+      "${mkldnn_dll_path}/${omp_dll}",
+    ]
+    outputs = [
+      "$root_out_dir/{{source_file_part}}",
+    ]
   }
 }
 
