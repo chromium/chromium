@@ -28,10 +28,11 @@ inline void CalculateExplicitPadding(bool padding_same,
 
   if (padding_same) {
     uint32_t out_size = (in_size + stride - 1) / stride;
-    uint32_t tmp = (out_size - 1) * stride + filter_size;
+    uint32_t effective_filter_size = (filter_size - 1) * dilation + 1;
+    uint32_t tmp = (out_size - 1) * stride + effective_filter_size;
     if (tmp > in_size) {
-      padding_head = ((tmp - in_size) / 2) * dilation;
-      padding_tail = ((tmp - in_size) - padding_head) * dilation;
+      padding_head = (tmp - in_size) / 2;
+      padding_tail = (tmp - in_size) - padding_head;
     }
   }
 }
