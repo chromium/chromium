@@ -1127,7 +1127,7 @@ int32_t CompilationDelegateMklDnn::MkldnnAddSoftmax(
       LATE(mkldnn_primitive_desc_query_memory_d)(input_pd);
   mkldnn_softmax_desc_t softmax_desc;
   status = LATE(mkldnn_softmax_forward_desc_init)(&softmax_desc, mkldnn_forward,
-                                                  input_md, 1);
+                                                  input_md, input_md->ndims - 1);
   if (status != mojom::NOT_ERROR) {
     LOG(ERROR) << "[MKLDNN] failed to init softmax descriptor " << status;
     return mojom::OP_FAILED;
