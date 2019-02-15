@@ -17,10 +17,10 @@ API_AVAILABLE(macosx(10.13))
 bool CompileResizeBilinearBNNS(OperationMac& operation);
 
 API_AVAILABLE(macosx(10.13))
-bool CompileCompileArithmeticBNNS(OperationMac&,
-                                  const std::map<uint32_t, ValueInfo>& values,
-                                  const std::unique_ptr<int8_t[]>& memory,
-                                  const std::vector<OperandMac>& operands);
+bool CompileArithmeticBNNS(OperationMac&,
+                           const std::map<uint32_t, ValueInfo>& values,
+                           const std::unique_ptr<int8_t[]>& memory,
+                           const std::vector<OperandMac>& operands);
 
 API_AVAILABLE(macosx(10.13))
 bool CompileConv2DBNNS(OperationMac&,

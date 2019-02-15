@@ -76,10 +76,10 @@ bool CompileResizeBilinearBNNS(OperationMac& operation) {
 }
 
 API_AVAILABLE(macosx(10.13))
-bool CompileCompileArithmeticBNNS(OperationMac& operation,
-                                  const std::map<uint32_t, ValueInfo>& values,
-                                  const std::unique_ptr<int8_t[]>& memory,
-                                  const std::vector<OperandMac>& operands) {
+bool CompileArithmeticBNNS(OperationMac& operation,
+                           const std::map<uint32_t, ValueInfo>& values,
+                           const std::unique_ptr<int8_t[]>& memory,
+                           const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   DLOG_IF(FATAL, operation.type != mojom::ADD && operation.type != mojom::MUL);
 
@@ -97,10 +97,13 @@ bool CompileCompileArithmeticBNNS(OperationMac& operation,
     return false;
   }
 
-  uint32_t extend_input_idx =
-      values.find(inputs[0]) == values.end() ? inputs[1] : inputs[0];
-  operation.extend_input.push_back(reinterpret_cast<float*>(
-      memory.get() + values.at(extend_input_idx).offset));
+  for (size_t i = 0; i < 2; i++) {
+    uint32_t extend_input_idx = inputs[i];
+    if (values.find(extend_input_idx) != values.end()) {
+      operation.extend_input.push_back(reinterpret_cast<float*>(
+          memory.get() + values.at(extend_input_idx).offset));
+    }
+  }
 
   const int32_t fuse_code = getScalarInt32(values, inputs[2], memory.get());
   DLOG(INFO) << "FUSE_CODE:  " << fuse_code;
