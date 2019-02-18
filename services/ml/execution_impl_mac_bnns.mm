@@ -148,25 +148,41 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
             float* src = nullptr;
             float* des = nullptr;
             const OperationMac& operation = compilation_->operations_[i];
-            const uint32_t operation_input_idx = operation.inputs[0];
-            const uint32_t operation_output_idx = operation.outputs[0];
-            const OperandMac& operation_input =
-                compilation_->operands_[operation_input_idx];
-            const OperandMac& operation_output =
-                compilation_->operands_[operation_output_idx];
-
             bool is_outer_input = false;
-            for (size_t j = 0; j < compilation_->inputs_.size(); j++) {
-              if (operation_input_idx == compilation_->inputs_[j]) {
-                is_outer_input = true;
+            uint32_t operation_input_idx = operation.inputs[0];
+            OperandMac& operation_input =
+                compilation_->operands_[operation_input_idx];
+            for (size_t i = 0; i < operation.inputs.size(); ++i) {
+              const uint32_t input_idx = operation.inputs[i];
+              for (size_t j = 0; j < compilation_->inputs_.size(); j++) {
+                if (input_idx == compilation_->inputs_[j]) {
+                  is_outer_input = true;
+                  operation_input_idx = input_idx;
+                  operation_input = compilation_->operands_[input_idx];
+                  break;
+                }
+              }
+
+              if (is_outer_input == true) {
                 break;
               }
             }
-
             bool is_outer_output = false;
-            for (size_t j = 0; j < compilation_->outputs_.size(); j++) {
-              if (operation_output_idx == compilation_->outputs_[j]) {
-                is_outer_output = true;
+            uint32_t operation_output_idx = operation.outputs[0];
+            OperandMac& operation_output =
+                compilation_->operands_[operation_output_idx];
+            for (size_t i = 0; i < operation.outputs.size(); ++i) {
+              const uint32_t output_idx = operation.outputs[0];
+              for (size_t j = 0; j < compilation_->outputs_.size(); j++) {
+                if (operation_output_idx == compilation_->outputs_[j]) {
+                  is_outer_output = true;
+                  operation_output_idx = output_idx;
+                  operation_output = compilation_->operands_[output_idx];
+                  break;
+                }
+              }
+
+              if (is_outer_output == true) {
                 break;
               }
             }
