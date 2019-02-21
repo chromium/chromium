@@ -59,7 +59,7 @@ LATE_BINDING_SYMBOL_TABLE_DECLARE_END(MklDnnSymbolTable)
 
 MklDnnSymbolTable* GetMklDnnSymbolTable();
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MACOSX)
 #define LATE(sym) LATESYM_GET(MklDnnSymbolTable, GetMklDnnSymbolTable(), sym)
 #else
 #define LATE(sym) sym

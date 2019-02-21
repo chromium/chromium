@@ -113,7 +113,7 @@ int32_t CompilationDelegateMklDnn::CreateExecution(
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnInit() {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   if (!GetMklDnnSymbolTable()->Load()) {
     LOG(ERROR) << "[MKLDNN] failed to load MKLDNN library";
     return mojom::OP_FAILED;

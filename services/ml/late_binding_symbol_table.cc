@@ -10,7 +10,7 @@
 
 #include "services/ml/late_binding_symbol_table.h"
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__APPLE__)
 #include <dlfcn.h>
 #elif defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -18,6 +18,8 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/mac/bundle_locations.h"
+#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 
 namespace ml {
@@ -32,6 +34,8 @@ inline static const char* GetDllError() {
   }
 #elif defined(OS_WIN)
   return "No error";
+#elif defined(OS_MACOSX)
+  return "No error";
 #endif
 }
 
@@ -45,6 +49,19 @@ DllHandle InternalLoadDll(const char dll_name[]) {
 
   base::FilePath dll_path = module_path.Append(dll_name);
   DllHandle handle = dlopen(dll_path.MaybeAsASCII().c_str(), RTLD_NOW);
+#elif defined(OS_MACOSX)
+  base::FilePath base_dir;
+  if (base::mac::AmIBundled()) {
+    base_dir = base::mac::FrameworkBundlePath().Append("Libraries");
+  } else {
+    if (!base::PathService::Get(base::FILE_EXE, &base_dir)) {
+      LOG(ERROR) << "PathService::Get failed.";
+      return nullptr;
+    }
+    base_dir = base_dir.DirName();
+  }
+  base::FilePath dll_path = base_dir.Append(dll_name);
+  DllHandle handle = dlopen(dll_path.MaybeAsASCII().c_str(), RTLD_NOW);
 #elif defined(OS_WIN)
   DllHandle handle = LoadLibraryA(dll_name);
 #endif
@@ -56,7 +73,7 @@ DllHandle InternalLoadDll(const char dll_name[]) {
 
 void InternalUnloadDll(DllHandle handle) {
 #if !defined(ADDRESS_SANITIZER)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   if (dlclose(handle) != 0) {
     DLOG(ERROR) << GetDllError();
   }
@@ -69,7 +86,7 @@ void InternalUnloadDll(DllHandle handle) {
 static bool LoadSymbol(DllHandle handle,
                        const char* symbol_name,
                        void** symbol) {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   *symbol = dlsym(handle, symbol_name);
   char* err = dlerror();
   if (err) {

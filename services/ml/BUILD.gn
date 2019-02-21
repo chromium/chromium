@@ -18,6 +18,10 @@ if (is_win) {
   mkldnn_dll = "libmkldnn.so"
   omp_dll = "libiomp5.so"
   os_folder = "Linux64"
+} else if (is_mac) {
+  mkldnn_dll = "libmkldnn.0.dylib"
+  omp_dll = "libiomp5.dylib"
+  os_folder = "Mac64"
 }
 
 source_set("ie") {
@@ -116,6 +120,10 @@ source_set("lib") {
     libs = [ "neuralnetworks" ]
   } else if (is_mac) {
     sources += [
+      "compilation_delegate_mkl_dnn.cc",
+      "compilation_delegate_mkl_dnn.h",
+      "compilation_impl.cc",
+      "compilation_impl.h",
       "compilation_impl_mac.h",
       "compilation_impl_mac.mm",
       "compilation_impl_mac_bnns.h",
@@ -126,14 +134,24 @@ source_set("lib") {
       "execution_impl_mac_bnns.mm",
       "execution_impl_mac_mps.h",
       "execution_impl_mac_mps.mm",
+      "execution_impl_mkl_dnn.cc",
+      "execution_impl_mkl_dnn.h",
+      "late_binding_symbol_table.cc",
+      "late_binding_symbol_table.h",
+      "mkl_dnn_symbol_table.cc",
+      "mkl_dnn_symbol_table.h",
       "ml_utils_mac.h",
       "ml_utils_mac.mm",
+      "model_impl.cc",
+      "model_impl.h",
       "model_impl_mac.h",
       "model_impl_mac.mm",
       "mps_protocols_impl.h",
       "mps_protocols_impl.mm",
       "mpscnn_context.h",
       "mpscnn_context.mm",
+      "neural_network_impl.cc",
+      "neural_network_impl.h",
       "neural_network_impl_mac.h",
       "neural_network_impl_mac.mm",
       "opengl_metal_mac/fragment_shader.h",
@@ -211,6 +229,11 @@ source_set("lib") {
       ":copy_mkldnn_dll",
       ":copy_omp_dll",
     ]
+  } else if (is_mac) {
+    deps += [
+      ":copy_mkldnn_dll",
+      ":copy_omp_dll",
+    ]
   }
 
   public_deps = [
@@ -233,16 +256,7 @@ source_set("lib") {
   }
 }
 
-if (is_win || is_linux) {
-  cldnn_dll_path = "//third_party/clDNN/build/out/${os_folder}/Release"
-  copy("copy_cldnn_dll") {
-    sources = [
-      "${cldnn_dll_path}/${cldnn_dll}",
-    ]
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
-  }
+if (is_win || is_linux || is_mac) {
   mkldnn_dll_path = "//third_party/mkl-dnn/lib/${os_folder}/Release"
   copy("copy_mkldnn_dll") {
     sources = [
@@ -259,5 +273,16 @@ if (is_win || is_linux) {
     outputs = [
       "$root_out_dir/{{source_file_part}}",
     ]
+  }
+  if (is_win || is_linux) {
+    cldnn_dll_path = "//third_party/clDNN/build/out/${os_folder}/Release"
+    copy("copy_cldnn_dll") {
+      sources = [
+        "${cldnn_dll_path}/${cldnn_dll}",
+      ]
+      outputs = [
+        "$root_out_dir/{{source_file_part}}",
+      ]
+    }
   }
 }

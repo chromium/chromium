@@ -280,6 +280,8 @@ static const char* const kSwitchNames[] = {
     switches::kDisableRemoteCoreAnimation,
     switches::kShowMacOverlayBorders,
     switches::kUseHighGPUThreadPriorityForPerfTests,
+    ml::switches::kUseMkldnnForMac,
+    ml::switches::kUseBNNSForMac,
 #endif
 #if defined(USE_OZONE)
     switches::kOzonePlatform,

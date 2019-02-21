@@ -823,10 +823,47 @@ if (is_win) {
     }
   }
 
+  if (is_mac) {
+    bundle_data("mkldnn_binaries") {
+      sources = [
+        "$root_out_dir/libmkldnn.0.dylib",
+      ]
+      outputs = [
+        "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
+      ]
+      public_deps = [
+        "//services/ml:copy_mkldnn_dll",
+      ]
+    }
+    bundle_data("iomp5_binaries") {
+      sources = [
+        "$root_out_dir/libiomp5.dylib",
+      ]
+      outputs = [
+        "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
+      ]
+      public_deps = [
+        "//services/ml:copy_omp_dll",
+      ]
+    }
+  }
+
   group("angle_library") {
     if (bundle_egl_libraries) {
       deps = [ ":angle_binaries" ]
     }
+  }
+
+  group("mkldnn_library") {
+    deps = [
+      ":mkldnn_binaries",
+    ]
+  }
+
+  group("iomp5_library") {
+    deps = [
+      ":iomp5_binaries",
+    ]
   }
 
   group("swiftshader_library") {
@@ -1003,6 +1040,8 @@ if (is_win) {
       ":chrome_framework_resources",
       ":chrome_framework_services",
       ":keystone_registration_framework",
+      ":iomp5_library",
+      ":mkldnn_library",
       ":swiftshader_library",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
@@ -1031,6 +1070,11 @@ if (is_win) {
 
       data_deps = [ ":chrome_dll" ]
     }
+
+    ldflags += [
+      "-rpath",
+      "@loader_path/../../Libraries",
+    ]
   }
 
   _framework_binary_path = "$root_out_dir/$chrome_framework_name.framework/Versions/$chrome_framework_version/$chrome_framework_name"

@@ -66,7 +66,9 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
       delegate_ = std::make_unique<CompilationDelegateDML>(this);
 #endif
     } else {
+#if defined(OS_WIN) || defined(OS_LINUX)
       delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+#endif  // defined(OS_WIN) || defined(OS_LINUX)
     }
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
     delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
