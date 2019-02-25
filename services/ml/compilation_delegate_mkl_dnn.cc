@@ -640,8 +640,104 @@ int32_t CompilationDelegateMklDnn::MkldnnAddFusedActivation(
 
 int32_t CompilationDelegateMklDnn::MkldnnAddElementwise(
     const mojom::OperationPtr& operation) {
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  if (operation->type != mojom::ADD) {
+    LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
+    return mojom::BAD_DATA;
+  }
+  ElementWiseParams params;
+  int32_t result = compilation_->GetElementWiseParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  if (operation->inputs.size() != 3) {
+    LOG(ERROR) << "The number of inputs is not 3";
+    return mojom::BAD_DATA;
+  }
+  mkldnn_status_t status;
+  std::vector<float> scales;
+  std::vector<const_mkldnn_primitive_desc_t> input_pds;
+  std::vector<mkldnn_primitive_t> input_memories;
+  for (size_t index = 0; index < 2; ++index) {
+    std::string input_id(base::NumberToString(operation->inputs[index]));
+    if (compiled_model_->memories.find(input_id) ==
+        compiled_model_->memories.end()) {
+      // Setup constants
+      const mojom::ModelInfoPtr& model = compilation_->GetModel();
+      if (model->values.find(input_id) != model->values.end()) {
+        result = MkldnnAddMemory(operation->inputs[index]);
+        if (result != mojom::NOT_ERROR) {
+          return result;
+        }
+      }
+    }
+
+    mkldnn_primitive_t input_memory = compiled_model_->memories[input_id];
+    input_memories.push_back(input_memory);
+    const_mkldnn_primitive_desc_t input_pd;
+    status = LATE(mkldnn_primitive_get_primitive_desc)(input_memory, &input_pd);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to get primitive descriptor " << status;
+      return mojom::OP_FAILED;
+    }
+    scales.push_back(1.0);
+    input_pds.push_back(input_pd);
+  }
+
+  mkldnn_primitive_desc_t sum_pd;
+  status = LATE(mkldnn_sum_primitive_desc_create)(
+      &sum_pd, NULL, input_pds.size(), scales.data(), input_pds.data());
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create sum primitive descriptor "
+               << status;
+    return mojom::OP_FAILED;
+  }
+
+  DLOG(INFO) << "Add output memory";
+  mkldnn_primitive_t output_memory;
+  result =
+      MkldnnCreateMemoryByQueryType(sum_pd, mkldnn_query_dst_pd, output_memory);
+  if (result != mojom::NOT_ERROR) {
+    LATE(mkldnn_primitive_desc_destroy)(sum_pd);
+    return result;
+  }
+  std::string output_id(base::NumberToString(operation->outputs[0]));
+  std::string sum_output_id(output_id);
+  if (params.fuse_code != mojom::FUSED_NONE) {
+    // Need to add activation primitive layer.
+    // The output of sum becomes pre-activation
+    sum_output_id += std::string("-pre-activation");
+  }
+  compiled_model_->memories[sum_output_id] = output_memory;
+  DLOG(INFO) << "[MKLDNN] succeed to create memory primitive for "
+             << sum_output_id;
+
+  mkldnn_primitive_at_t srcs[] = {
+      LATE(mkldnn_primitive_at)(input_memories[0], 0),
+      LATE(mkldnn_primitive_at)(input_memories[1], 0)};
+  const_mkldnn_primitive_t dsts[] = {output_memory};
+
+  mkldnn_primitive_t sum;
+  status = LATE(mkldnn_primitive_create)(&sum, sum_pd, srcs, dsts);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create sum primitive " << status;
+    LATE(mkldnn_primitive_desc_destroy)(sum_pd);
+    return mojom::OP_FAILED;
+  }
+  LATE(mkldnn_primitive_desc_destroy)(sum_pd);
+
+  OperationMklDnn mkldnn_operation(sum);
+  compiled_model_->operations.push_back(mkldnn_operation);
+
+  if (params.fuse_code != mojom::FUSED_NONE) {
+    // Append an activation primitive that uses sum's output memory as input
+    // and output is named as output_id.
+    result =
+        MkldnnAddFusedActivation(sum_output_id, output_id, params.fuse_code);
+    if (result != mojom::NOT_ERROR)
+      return result;
+  }
+
+  DLOG(INFO) << "[MKLDNN] succeed to create sum primitive";
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnAddConvolution(
@@ -1126,8 +1222,8 @@ int32_t CompilationDelegateMklDnn::MkldnnAddSoftmax(
   const mkldnn_memory_desc_t* input_md =
       LATE(mkldnn_primitive_desc_query_memory_d)(input_pd);
   mkldnn_softmax_desc_t softmax_desc;
-  status = LATE(mkldnn_softmax_forward_desc_init)(&softmax_desc, mkldnn_forward,
-                                                  input_md, input_md->ndims - 1);
+  status = LATE(mkldnn_softmax_forward_desc_init)(
+      &softmax_desc, mkldnn_forward, input_md, input_md->ndims - 1);
   if (status != mojom::NOT_ERROR) {
     LOG(ERROR) << "[MKLDNN] failed to init softmax descriptor " << status;
     return mojom::OP_FAILED;
