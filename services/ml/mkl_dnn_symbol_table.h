@@ -31,6 +31,7 @@ namespace ml {
   X(mkldnn_dilated_convolution_forward_desc_init) \
   X(mkldnn_pooling_forward_desc_init)             \
   X(mkldnn_softmax_forward_desc_init)             \
+  X(mkldnn_inner_product_forward_desc_init)       \
   X(mkldnn_reorder_primitive_desc_create)         \
   X(mkldnn_sum_primitive_desc_create)             \
   X(mkldnn_primitive_create)                      \

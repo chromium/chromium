@@ -19,6 +19,7 @@
 namespace ml {
 
 struct OperationMklDnn {
+  explicit OperationMklDnn();
   explicit OperationMklDnn(mkldnn_primitive_t);
   explicit OperationMklDnn(const mojom::OperationPtr&);
   ~OperationMklDnn();
@@ -60,11 +61,16 @@ class CompilationDelegateMklDnn : public CompilationDelegate {
   int32_t MkldnnGetDims(const std::vector<uint32_t>&,
                         std::vector<int32_t>&,
                         mkldnn_memory_format_t);
+  int32_t MkldnnCreateMemoryPrimitveDescriptor(
+      int32_t,
+      mkldnn_primitive_desc_t&,
+      mkldnn_memory_format_t* format = nullptr);
   int32_t MkldnnCreateMemoryByQueryType(const mkldnn_primitive_desc_t&,
                                         mkldnn_query_t,
                                         mkldnn_primitive_t&);
-  int32_t MkldnnAddMemory(uint32_t index,
-                          mkldnn_memory_format_t* format = nullptr);
+  int32_t MkldnnCreateMemory(uint32_t index,
+                             mkldnn_primitive_t&,
+                             mkldnn_memory_format_t* format = nullptr);
   int32_t MkldnnAddInput(uint32_t index);
   int32_t MkldnnAddOutput(uint32_t index);
   int32_t MkldnnAddReorder(const std::string& input_name,
