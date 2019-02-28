@@ -1304,8 +1304,107 @@ int32_t CompilationDelegateMklDnn::MkldnnAddReshape(
 
 int32_t CompilationDelegateMklDnn::MkldnnAddConcatenation(
     const mojom::OperationPtr& operation) {
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  ConcatParams params;
+  int32_t result = compilation_->GetConcatParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  mkldnn_status_t status;
+  std::vector<const_mkldnn_primitive_desc_t> input_pds;
+  std::vector<mkldnn_primitive_t> input_memories;
+  std::vector<mkldnn_primitive_at_t> srcs;
+  for (size_t index = 0; index < operation->inputs.size() - 1; ++index) {
+    std::string input_id(base::NumberToString(operation->inputs[index]));
+    if (compiled_model_->memories.find(input_id) ==
+        compiled_model_->memories.end()) {
+      // Setup constants
+      if (model->values.find(input_id) != model->values.end()) {
+        mkldnn_primitive_t constant_memory;
+        result = MkldnnCreateMemory(operation->inputs[index], constant_memory);
+        if (result != mojom::NOT_ERROR) {
+          return result;
+        }
+        compiled_model_->memories[input_id] = constant_memory;
+      }
+    }
+
+    mkldnn_primitive_t input_memory = compiled_model_->memories[input_id];
+    srcs.push_back(LATE(mkldnn_primitive_at)(input_memory, 0));
+    const_mkldnn_primitive_desc_t input_pd;
+    status = LATE(mkldnn_primitive_get_primitive_desc)(input_memory, &input_pd);
+    if (status != mkldnn_success) {
+      LOG(ERROR) << "[MKLDNN] failed to get primitive descriptor " << status;
+      return mojom::OP_FAILED;
+    }
+    input_pds.push_back(input_pd);
+  }
+
+  int concat_dimension = 0;
+  const uint32_t rank =
+      model->operands[operation->inputs[0]]->dimensions.size();
+  if (rank == 1 || rank == 2) {
+    concat_dimension = params.axis;
+  } else if (rank == 3) {
+    // HWC -> NCW
+    if (params.axis == 0) {
+      concat_dimension = 0;
+    } else if (params.axis == 1) {
+      concat_dimension = 2;
+    } else if (params.axis == 2) {
+      concat_dimension = 1;
+    }
+  } else if (rank == 4) {
+    // NHWC -> NCHW
+    if (params.axis == 0) {
+      concat_dimension = 0;
+    } else if (params.axis == 1) {
+      concat_dimension = 2;
+    } else if (params.axis == 2) {
+      concat_dimension = 3;
+    } else if (params.axis == 3) {
+      concat_dimension = 1;
+    }
+  } else {
+    LOG(ERROR) << "rank " << rank << " is not supported.";
+    return mojom::BAD_DATA;
+  }
+
+  mkldnn_primitive_desc_t concat_pd;
+  status = LATE(mkldnn_concat_primitive_desc_create)(
+      &concat_pd, NULL, input_pds.size(), concat_dimension, input_pds.data());
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create concat primitive descriptor "
+               << status;
+    return mojom::OP_FAILED;
+  }
+
+  DLOG(INFO) << "Add output memory";
+  mkldnn_primitive_t output_memory;
+  result = MkldnnCreateMemoryByQueryType(concat_pd, mkldnn_query_dst_pd,
+                                         output_memory);
+  if (result != mojom::NOT_ERROR) {
+    LATE(mkldnn_primitive_desc_destroy)(concat_pd);
+    return result;
+  }
+  std::string output_id(base::NumberToString(operation->outputs[0]));
+  compiled_model_->memories[output_id] = output_memory;
+  DLOG(INFO) << "[MKLDNN] succeed to create memory primitive for " << output_id;
+  const_mkldnn_primitive_t dsts[] = {output_memory};
+
+  mkldnn_primitive_t concat;
+  status = LATE(mkldnn_primitive_create)(&concat, concat_pd, srcs.data(), dsts);
+  if (status != mkldnn_success) {
+    LOG(ERROR) << "[MKLDNN] failed to create concat primitive " << status;
+    LATE(mkldnn_primitive_desc_destroy)(concat_pd);
+    return mojom::OP_FAILED;
+  }
+  LATE(mkldnn_primitive_desc_destroy)(concat_pd);
+
+  OperationMklDnn mkldnn_operation(concat);
+  compiled_model_->operations.push_back(mkldnn_operation);
+  DLOG(INFO) << "[MKLDNN] succeed to create concat primitive";
+
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnAddFullyConnected(

@@ -34,6 +34,7 @@ namespace ml {
   X(mkldnn_inner_product_forward_desc_init)       \
   X(mkldnn_reorder_primitive_desc_create)         \
   X(mkldnn_sum_primitive_desc_create)             \
+  X(mkldnn_concat_primitive_desc_create)          \
   X(mkldnn_primitive_create)                      \
   X(mkldnn_primitive_get_primitive_desc)          \
   X(mkldnn_primitive_at)                          \
