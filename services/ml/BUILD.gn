@@ -106,12 +106,23 @@ source_set("lib") {
       "mpscnn_context.mm",
       "neural_network_impl_mac.h",
       "neural_network_impl_mac.mm",
+      "opengl_metal_mac/fragment_shader.h",
+      "opengl_metal_mac/interoperable_texture.h",
+      "opengl_metal_mac/interoperable_texture.m",
+      "opengl_metal_mac/opengl_renderer.h",
+      "opengl_metal_mac/opengl_renderer.mm",
+      "opengl_metal_mac/shared_metal.h",
+      "opengl_metal_mac/shared_metal.mm",
+      "opengl_metal_mac/vertex_shader.h",
     ]
 
     libs = [
       "Accelerate.framework",
       "Metal.framework",
       "MetalPerformanceShaders.framework",
+      "OpenGL.framework",
+      "CoreVideo.framework",
+      "GLKit.framework",
     ]
   } else if (is_win) {
     sources += [
@@ -151,13 +162,14 @@ source_set("lib") {
 
   deps = [
     "//mojo/public/cpp/bindings",
+    "//skia",
   ]
 
   if (is_win || is_linux) {
     deps += [
       ":copy_cldnn_dll",
       ":copy_mkldnn_dll",
-      ":copy_omp_dll"
+      ":copy_omp_dll",
     ]
   }
 
