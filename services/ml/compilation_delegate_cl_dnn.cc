@@ -491,7 +491,7 @@ int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
     activation_desc.activation_func = activation_relu;
   } else if (fuse_code == mojom::FUSED_RELU1) {
     activation_desc.activation_func = activation_clamp;
-    activation_desc.additional_params.a = 0.0;
+    activation_desc.additional_params.a = -1.0;
     activation_desc.additional_params.b = 1.0;
   } else if (fuse_code == mojom::FUSED_RELU6) {
     activation_desc.activation_func = activation_clamp;
