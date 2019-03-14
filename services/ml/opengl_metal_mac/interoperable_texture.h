@@ -29,37 +29,9 @@
 
 #include "base/mac/availability.h"
 
-typedef struct CV_BRIDGED_TYPE(id)
-    __CVMetalTextureCache* CVMetalTextureCacheRef;
-
-CVReturn CVMetalTextureCacheCreate(
-    CFAllocatorRef CV_NULLABLE allocator,
-    CFDictionaryRef CV_NULLABLE cacheAttributes,
-    id<MTLDevice> CV_NONNULL metalDevice,
-    CFDictionaryRef CV_NULLABLE textureAttributes,
-    CV_RETURNS_RETAINED_PARAMETER CVMetalTextureCacheRef CV_NULLABLE* CV_NONNULL
-        cacheOut) API_AVAILABLE(macosx(10.11));
-
-typedef CVImageBufferRef CVMetalTextureRef;
-
-CVReturn CVMetalTextureCacheCreateTextureFromImage(
-    CFAllocatorRef CV_NULLABLE allocator,
-    CVMetalTextureCacheRef CV_NONNULL textureCache,
-    CVImageBufferRef CV_NONNULL sourceImage,
-    CFDictionaryRef CV_NULLABLE textureAttributes,
-    MTLPixelFormat pixelFormat,
-    size_t width,
-    size_t height,
-    size_t planeIndex,
-    CV_RETURNS_RETAINED_PARAMETER CVMetalTextureRef CV_NULLABLE* CV_NONNULL
-        textureOut) API_AVAILABLE(macosx(10.11));
-
-id<MTLTexture> CV_NULLABLE CVMetalTextureGetTexture(
-    CVMetalTextureRef CV_NONNULL image) API_AVAILABLE(macosx(10.11));
-
 // Implemenation of class representing a texture shared between OpenGL and
 // Metal.
-API_AVAILABLE(macosx(10.11))
+API_AVAILABLE(macosx(10.13))
 @interface InteroperableTexture : NSObject
 
 - (nonnull instancetype)initWithMetalDevice:(nonnull id<MTLDevice>)mtlDevice

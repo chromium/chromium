@@ -28,7 +28,7 @@
 
 #include "base/mac/availability.h"
 
-API_AVAILABLE(macosx(10.11))
+API_AVAILABLE(macosx(10.13))
 @interface OpenGLRenderer : NSObject
 
 - (instancetype)initWithDefault;

@@ -22,10 +22,10 @@
 
 #import "interoperable_texture.h"
 
-#import <OpenGL/OpenGL.h>
-#import <OpenGL/gl.h>
-// #import <OpenGL/gl3.h>
-#import <CoreVideo/CVMetalTextureCache.h>
+// #import <OpenGL/OpenGL.h>
+// #import <OpenGL/gl.h>
+#import <IOSurface/IOSurfaceObjC.h>
+#import <OpenGL/gl3.h>
 
 typedef struct {
   int cvPixelFormat;
@@ -40,8 +40,8 @@ static const API_AVAILABLE(macosx(10.11))
     TextureFormatInfo InteropFormatTable[] = {
         // Core Video Pixel Format,               Metal Pixel Format, GL
         // internalformat, GL format,   GL type
-        {kCVPixelFormatType_32BGRA, MTLPixelFormatBGRA8Unorm, GL_RGBA,
-         GL_BGRA_EXT, GL_UNSIGNED_INT_8_8_8_8_REV},
+        {kCVPixelFormatType_32BGRA, MTLPixelFormatBGRA8Unorm, GL_RGBA, GL_BGRA,
+         GL_UNSIGNED_INT_8_8_8_8_REV},
         // {kCVPixelFormatType_ARGB2101010LEPacked, MTLPixelFormatBGR10A2Unorm,
         //  GL_RGB10_A2, GL_BGRA, GL_UNSIGNED_INT_2_10_10_10_REV},
         {kCVPixelFormatType_32BGRA, MTLPixelFormatBGRA8Unorm_sRGB,
@@ -66,10 +66,9 @@ const TextureFormatInfo* textureFormatInfoFromMetalPixelFormat(
 
 @implementation InteroperableTexture {
   const TextureFormatInfo* _formatInfo;
-  CVPixelBufferRef _CVPixelBuffer;
+  IOSurfaceRef _ioSurface;
 
   NSOpenGLContext* _openGLContext;
-  CGLPixelFormatObj _CGLPixelFormat;
 
   // Metal
   id<MTLDevice> _metalDevice;
@@ -95,19 +94,14 @@ const TextureFormatInfo* textureFormatInfoFromMetalPixelFormat(
   _size = size;
   _metalDevice = metalevice;
   _openGLContext = glContext;
-  _CGLPixelFormat = _openGLContext.pixelFormat.CGLPixelFormatObj;
 
-  NSDictionary* cvBufferProperties = @{
-    (__bridge NSString*)kCVPixelBufferOpenGLCompatibilityKey : @YES,
-    (__bridge NSString*)kCVPixelBufferMetalCompatibilityKey : @YES,
+  NSDictionary* surfaceProperties = @{
+    IOSurfacePropertyKeyWidth : [NSNumber numberWithInt:_size.width],
+    IOSurfacePropertyKeyHeight : [NSNumber numberWithInt:_size.height],
+    IOSurfacePropertyKeyBytesPerElement : [NSNumber numberWithInt:4],
+    IOSurfacePropertyKeyPixelFormat : [NSNumber numberWithInt:'BGRA']
   };
-  CVReturn cvret = CVPixelBufferCreate(
-      kCFAllocatorDefault, size.width, size.height, _formatInfo->cvPixelFormat,
-      (__bridge CFDictionaryRef)cvBufferProperties, &_CVPixelBuffer);
-  if (cvret != kCVReturnSuccess) {
-    // LOG(ERROR) << "Failed to create CVPixelBufferf";
-    return nil;
-  }
+  _ioSurface = IOSurfaceCreate((CFDictionaryRef)surfaceProperties);
 
   [self createGLTexture];
   [self createMetalTexture];
@@ -120,28 +114,19 @@ const TextureFormatInfo* textureFormatInfoFromMetalPixelFormat(
  the following steps, and as annotated in the code listings below:
  */
 - (BOOL)createGLTexture {
-  CVOpenGLTextureCacheRef _CVGLTextureCache;
-  // 1. Create an OpenGL CoreVideo texture cache from the pixel buffer.
-  CVReturn cvret = CVOpenGLTextureCacheCreate(
-      kCFAllocatorDefault, nil, _openGLContext.CGLContextObj, _CGLPixelFormat,
-      nil, &_CVGLTextureCache);
-  if (cvret != kCVReturnSuccess) {
-    // LOG(ERROR) << "Failed to create OpenGL Texture Cache";
+  [_openGLContext makeCurrentContext];
+
+  glGenTextures(1, &_openGLTexture);
+  glBindTexture(GL_TEXTURE_RECTANGLE, _openGLTexture);
+
+  CGLError error = CGLTexImageIOSurface2D(
+      _openGLContext.CGLContextObj, GL_TEXTURE_RECTANGLE,
+      _formatInfo->glInternalFormat, _size.width, _size.height,
+      _formatInfo->glFormat, _formatInfo->glType, _ioSurface, 0);
+  if (error != kCGLNoError) {
     return NO;
   }
-  // 2. Create a CVPixelBuffer-backed OpenGL texture image from the texture
-  // cache.
-  CVOpenGLTextureRef _CVGLTexture;
-  cvret = CVOpenGLTextureCacheCreateTextureFromImage(
-      kCFAllocatorDefault, _CVGLTextureCache, _CVPixelBuffer, nil,
-      &_CVGLTexture);
-  if (cvret != kCVReturnSuccess) {
-    // LOG(ERROR) << "Failed to create OpenGL Texture From Image";
-    return NO;
-  }
-  // 3. Get an OpenGL texture name from the CVPixelBuffer-backed OpenGL texture
-  // image.
-  _openGLTexture = CVOpenGLTextureGetName(_CVGLTexture);
+  glBindTexture(GL_TEXTURE_RECTANGLE, 0);
 
   return YES;
 }
@@ -151,30 +136,14 @@ const TextureFormatInfo* textureFormatInfoFromMetalPixelFormat(
  steps, and as annotated in the code listings below:
  */
 - (BOOL)createMetalTexture {
-  CVMetalTextureCacheRef CVMTLTextureCache;
-  // 1. Create a Metal Core Video texture cache from the pixel buffer.
-  CVReturn cvret = CVMetalTextureCacheCreate(
-      kCFAllocatorDefault, nil, _metalDevice, nil, &CVMTLTextureCache);
-  if (cvret != kCVReturnSuccess) {
-    return NO;
-  }
-  // 2. Create a CoreVideo pixel buffer backed Metal texture image from the
-  // texture cache.
-  CVMetalTextureRef CVMTLTexture;
-  cvret = CVMetalTextureCacheCreateTextureFromImage(
-      kCFAllocatorDefault, CVMTLTextureCache, _CVPixelBuffer, nil,
-      _formatInfo->mtlFormat, _size.width, _size.height, 0, &CVMTLTexture);
-  if (cvret != kCVReturnSuccess) {
-    // LOG(ERROR) << "Failed to create Metal texture cache";
-    return NO;
-  }
-  // 3. Get a Metal texture object from the Core Video pixel buffer backed Metal
-  // texture image.
-  _metalTexture = CVMetalTextureGetTexture(CVMTLTexture);
-  if (!_metalTexture) {
-    // LOG(ERROR) << "Failed to get metal texture from CVMetalTextureRef";
-    return NO;
-  }
+  MTLTextureDescriptor* textureDescriptor = [MTLTextureDescriptor
+      texture2DDescriptorWithPixelFormat:_formatInfo->mtlFormat
+                                   width:_size.width
+                                  height:_size.height
+                               mipmapped:NO];
+  _metalTexture = [_metalDevice newTextureWithDescriptor:textureDescriptor
+                                               iosurface:_ioSurface
+                                                   plane:0];
 
   return YES;
 }
