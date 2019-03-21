@@ -15,8 +15,7 @@
 namespace ml {
 
 // static
-void NeuralNetworkImplAndroid::Create(
-    ml::mojom::NeuralNetworkRequest request) {
+void NeuralNetworkImplAndroid::Create(ml::mojom::NeuralNetworkRequest request) {
   mojo::MakeStrongBinding(std::make_unique<NeuralNetworkImplAndroid>(),
                           std::move(request));
 }
@@ -34,9 +33,8 @@ void NeuralNetworkImplAndroid::CreateModel(CreateModelCallback callback) {
 
   auto init_params = mojom::ModelInitParams::New();
   init_params->model = std::move(model_ptr_info);
-  
-  std::move(callback).Run(mojom::NOT_ERROR,
-                          std::move(init_params));
+
+  std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
 }  // namespace ml

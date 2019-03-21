@@ -80,10 +80,14 @@ void GpuServiceFactory::RunMediaService(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         base::CreateSingleThreadTaskRunnerWithTraits(
             {base::TaskPriority::USER_BLOCKING});
-    task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                            service_manager::Service::RunAsyncUntilTermination(
-                                std::make_unique<ml::MLService>());
-                          }));
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](service_manager::mojom::ServiceRequest request) {
+              service_manager::Service::RunAsyncUntilTermination(
+                  std::make_unique<ml::MLService>(std::move(request)));
+            },
+            std::move(request)));
     return;
   }
 }

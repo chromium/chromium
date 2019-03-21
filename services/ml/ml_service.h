@@ -12,24 +12,23 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace ml {
 
 class MLService : public service_manager::Service {
  public:
-  // Factory function for use as an embedded service.
-  static std::unique_ptr<service_manager::Service> Create();
-
-  MLService();
+  explicit MLService(service_manager::mojom::ServiceRequest request);
   ~MLService() override;
 
   void OnStart() override;
   void OnBindInterface(const service_manager::BindSourceInfo& source_info,
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
+
  private:
-  std::unique_ptr<service_manager::ServiceContextRefFactory> ref_factory_;
+  service_manager::ServiceBinding service_binding_;
   service_manager::BinderRegistry registry_;
 
   DISALLOW_COPY_AND_ASSIGN(MLService);

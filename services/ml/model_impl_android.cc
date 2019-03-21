@@ -30,12 +30,15 @@ int32_t ModelImplAndroid::AddOperand(int32_t type,
                                      int32_t zeroPoint) {
   // Logging
   DLOG(INFO) << "  ModelImplAndroid::AddOperand";
-  DLOG(INFO) << "    " << "type: " << type;
+  DLOG(INFO) << "    "
+             << "type: " << type;
   DLOG(INFO) << "    "
              << "dimensions(" << dimensions.size()
              << "): " << VectorToString(dimensions.data(), dimensions.size());
-  DLOG(INFO) << "    " << "scale: " << scale;
-  DLOG(INFO) << "    " << "zeroPoint: " << zeroPoint;
+  DLOG(INFO) << "    "
+             << "scale: " << scale;
+  DLOG(INFO) << "    "
+             << "zeroPoint: " << zeroPoint;
 
   Operand operand;
   operand.type = type;
@@ -61,8 +64,10 @@ int32_t ModelImplAndroid::SetOperandValue(uint32_t index,
                                           uint32_t length) {
   // Logging
   DLOG(INFO) << "  ModelImplAndroid::SetOperandValue";
-  DLOG(INFO) << "    " << "index: " << index;
-  DLOG(INFO) << "    " << "length: " << length;
+  DLOG(INFO) << "    "
+             << "index: " << index;
+  DLOG(INFO) << "    "
+             << "length: " << length;
 
   if (index > operands_.size()) {
     return mojom::BAD_DATA;
@@ -101,9 +106,10 @@ int32_t ModelImplAndroid::SetOperandValue(uint32_t index,
 int32_t ModelImplAndroid::AddOperation(int32_t type,
                                        const std::vector<uint32_t>& inputs,
                                        const std::vector<uint32_t>& outputs) {
-  // Logging  
+  // Logging
   DLOG(INFO) << "  ModelImplAndroid::AddOperation";
-  DLOG(INFO) << "    " << "type: " << type;
+  DLOG(INFO) << "    "
+             << "type: " << type;
   DLOG(INFO) << "    "
              << "inputs(" << inputs.size()
              << "): " << VectorToString(inputs.data(), inputs.size());
@@ -148,7 +154,7 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
 
   int32_t result;
-  for (size_t i = 0; i < model_info->operands.size(); ++i ) {
+  for (size_t i = 0; i < model_info->operands.size(); ++i) {
     DLOG(INFO) << "  operand[" << i << "]";
     const mojom::OperandPtr& operand = model_info->operands[i];
     result = AddOperand(operand->type, operand->dimensions, operand->scale,
@@ -161,7 +167,7 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
   }
 
   DLOG(INFO) << "operations(" << model_info->operations.size() << ")";
-  for (size_t i = 0; i < model_info->operations.size(); ++i ) {
+  for (size_t i = 0; i < model_info->operations.size(); ++i) {
     DLOG(INFO) << "  operation[" << i << "]";
     const mojom::OperationPtr& operation = model_info->operations[i];
 
@@ -215,9 +221,8 @@ void ModelImplAndroid::CreateCompilation(CreateCompilationCallback callback) {
 
   auto init_params = mojom::CompilationInitParams::New();
   init_params->compilation = std::move(ptr_info);
-  
-  std::move(callback).Run(mojom::NOT_ERROR,
-                          std::move(init_params));
+
+  std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
 }  // namespace ml

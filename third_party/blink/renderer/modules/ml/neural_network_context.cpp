@@ -62,7 +62,8 @@ void NeuralNetworkContext::OnCreateModel(
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NOT_ERROR) {
-    resolver->Resolve(new Model(std::move(init_params->model)));
+    resolver->Resolve(
+        MakeGarbageCollected<Model>(std::move(init_params->model)));
   } else {
     resolver->Reject(DOMException::Create(
         DOMExceptionCode::kInvalidStateError,

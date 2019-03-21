@@ -22,7 +22,7 @@ ExecutionImplClDnn::ExecutionImplClDnn(
   network_ = LATE(cldnn_allocate_network)(compilation->program_, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to allocate network " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     network_ = nullptr;
     return;
   }
@@ -36,7 +36,7 @@ ExecutionImplClDnn::~ExecutionImplClDnn() {
     LATE(cldnn_release_network)(network_, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release network " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to release network";
@@ -45,7 +45,7 @@ ExecutionImplClDnn::~ExecutionImplClDnn() {
     LATE(cldnn_release_memory)(input_memories_[i], &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     DLOG(INFO) << "[clDNN] succeed to release memory for input " << i;
@@ -92,16 +92,15 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
         layout, static_cast<void*>(mapping.get()), length, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to attach memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
       return;
     }
     std::string input_id_str = base::NumberToString(operand->index);
     LATE(cldnn_set_network_input)
     (network_, input_id_str.c_str(), memory, &status);
     if (status != CLDNN_SUCCESS) {
-      LOG(ERROR) << "[clDNN] failed to set network input " << i << " "
-                  << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+      LOG(ERROR) << "[clDNN] failed to set network input " << i << " " << status
+                 << " " << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
@@ -111,7 +110,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
   LATE(cldnn_execute_network)(network_, nullptr, 0, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to execute network " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     std::move(callback).Run(mojom::OP_FAILED);
     return;
   }
@@ -129,15 +128,15 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to get network output " << i << " "
-                  << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << status << " "
+                 << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
     void* output_ptr = LATE(cldnn_lock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }
@@ -146,7 +145,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     LATE(cldnn_unlock_memory)(memory, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
       std::move(callback).Run(mojom::OP_FAILED);
       return;
     }

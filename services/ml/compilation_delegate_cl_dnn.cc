@@ -45,7 +45,7 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
     LATE(cldnn_release_memory)(memories_[i], &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release cldnn memory " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
     }
   }
   DLOG(INFO) << "[clDNN] succeed to release memories";
@@ -54,7 +54,7 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
     LATE(cldnn_release_topology)(topology_, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release cldnn topology " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
     }
     DLOG(INFO) << "[clDNN] succeed to release topology";
   }
@@ -63,7 +63,7 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
     LATE(cldnn_release_engine)(engine_, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release cldnn engine " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
     }
     DLOG(INFO) << "[clDNN] succeed to release engine";
   }
@@ -72,7 +72,7 @@ CompilationDelegateClDnn::~CompilationDelegateClDnn() {
     LATE(cldnn_release_program)(program_, &status);
     if (status != CLDNN_SUCCESS) {
       LOG(ERROR) << "[clDNN] failed to release program " << status << " "
-                  << std::string(LATE(cldnn_get_last_error_message)());
+                 << std::string(LATE(cldnn_get_last_error_message)());
     }
     DLOG(INFO) << "[clDNN] succeed to release program";
   }
@@ -139,19 +139,19 @@ int32_t CompilationDelegateClDnn::CldnnInit() {
       LATE(cldnn_get_engine_count)(cldnn_engine_ocl, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN]: failed to get cldnn ocl engine count " << status
-                << " " << std::string(LATE(cldnn_get_last_error_message)());
+               << " " << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] ocl engine count: " << engine_count;
   if (engine_count < 1) {
     LOG(ERROR) << "[clDNN] ocl engine is not available " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   engine_ = LATE(cldnn_create_engine)(cldnn_engine_ocl, 0, nullptr, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to create cldnn ocl engine " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     engine_ = nullptr;
     return mojom::OP_FAILED;
   }
@@ -160,7 +160,7 @@ int32_t CompilationDelegateClDnn::CldnnInit() {
   cldnn_engine_info engine_info = LATE(cldnn_get_engine_info)(engine_, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get cldnn engine info " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] engine info:\n"
@@ -192,7 +192,7 @@ int32_t CompilationDelegateClDnn::CldnnCreateTopology() {
   topology_ = LATE(cldnn_create_topology)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to create cldnn topology " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     topology_ = nullptr;
     return mojom::OP_FAILED;
   }
@@ -264,7 +264,7 @@ int32_t CompilationDelegateClDnn::CldnnCreateProgram() {
                                        build_options.size(), &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to build program " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to build program";
@@ -285,11 +285,16 @@ int32_t CompilationDelegateClDnn::CldnnGetLayout(
     layout.size = {1, 1, 2, 0, {1, 1, dimensions[0], 1, 1, 1, 1, 1}};
   } else if (dimensions.size() == 2) {
     // HW -> {batch, feature, width, height}
-    layout.size = {1, 1, 2, 0, {1, 1, dimensions[1], dimensions[0], 1, 1, 1, 1}};
+    layout.size = {
+        1, 1, 2, 0, {1, 1, dimensions[1], dimensions[0], 1, 1, 1, 1}};
   } else if (dimensions.size() == 3) {
     // HWC -> {batch, feature, width, height}
     layout.size = {
-        1, 1, 2, 0, {1, dimensions[2], dimensions[1], dimensions[0], 1, 1, 1, 1}};
+        1,
+        1,
+        2,
+        0,
+        {1, dimensions[2], dimensions[1], dimensions[0], 1, 1, 1, 1}};
   } else if (dimensions.size() == 4) {
     // NHWC -> {batch, feature, width, height}
     layout.size = {1,
@@ -300,7 +305,7 @@ int32_t CompilationDelegateClDnn::CldnnGetLayout(
                     1, 1, 1, 1}};
   } else {
     LOG(ERROR) << "Operand dimensions size " << dimensions.size()
-                << " is not supported.";
+               << " is not supported.";
     return mojom::BAD_DATA;
   }
   return mojom::NOT_ERROR;
@@ -318,7 +323,7 @@ int32_t CompilationDelegateClDnn::CldnnAddInputLayout(uint32_t index) {
   cldnn_primitive_type_id type_id = LATE(cldnn_input_layout_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   std::string id_str = base::NumberToString(index);
@@ -329,7 +334,7 @@ int32_t CompilationDelegateClDnn::CldnnAddInputLayout(uint32_t index) {
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add input layout primitve with id "
@@ -345,7 +350,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReorder(
   cldnn_primitive_type_id type_id = LATE(cldnn_reorder_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_reorder_desc reorder_desc = {
@@ -371,7 +376,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReorder(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add reorder primitve with id "
@@ -391,7 +396,7 @@ int32_t CompilationDelegateClDnn::CldnnAddData(uint32_t index) {
   cldnn_memory memory = LATE(cldnn_allocate_memory)(engine_, layout, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to allocate memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   memories_.push_back(memory);
@@ -399,7 +404,7 @@ int32_t CompilationDelegateClDnn::CldnnAddData(uint32_t index) {
   void* memory_ptr = LATE(cldnn_lock_memory)(memory, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   const mojom::OperandValueInfoPtr& value_info =
@@ -433,21 +438,21 @@ int32_t CompilationDelegateClDnn::CldnnAddData(uint32_t index) {
     }
   } else {
     LOG(ERROR) << "Operand dimensions size " << operand->dimensions.size()
-                << " is not supported.";
+               << " is not supported.";
     return mojom::BAD_DATA;
   }
 
   LATE(cldnn_unlock_memory)(memory, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
   cldnn_primitive_type_id type_id = LATE(cldnn_data_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   std::string id_str = base::NumberToString(index);
@@ -458,7 +463,7 @@ int32_t CompilationDelegateClDnn::CldnnAddData(uint32_t index) {
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
@@ -474,7 +479,7 @@ int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
   cldnn_primitive_type_id type_id = LATE(cldnn_activation_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
@@ -511,7 +516,7 @@ int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add activation primitive with id " << id;
@@ -533,7 +538,7 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
   cldnn_primitive_type_id type_id = LATE(cldnn_eltwise_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_eltwise_desc eltwise_desc = {.type = type_id};
@@ -599,7 +604,7 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add eltwise primitive with id " << id_str;
@@ -634,7 +639,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   cldnn_primitive_type_id type_id = LATE(cldnn_convolution_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_convolution_desc conv_desc = {.type = type_id};
@@ -682,7 +687,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
           LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to allocate memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       memories_.push_back(weights_memory);
@@ -691,7 +696,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
           LATE(cldnn_lock_memory)(weights_memory, &status));
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
 
@@ -705,14 +710,14 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       LATE(cldnn_unlock_memory)(weights_memory, &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
 
       cldnn_primitive_type_id type_id = LATE(cldnn_data_type_id)(&status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to get primitive type id " << status
-                    << " " << std::string(LATE(cldnn_get_last_error_message)());
+                   << " " << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       std::string id_str = base::NumberToString(weights_index) +
@@ -727,7 +732,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
        &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       DLOG(INFO) << "[clDNN] succeed to add data primitive with id " << id_str;
@@ -736,7 +741,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
           LATE(cldnn_allocate_memory)(engine_, bias_layout, &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to allocate memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       memories_.push_back(bias_memory);
@@ -745,7 +750,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
           LATE(cldnn_lock_memory)(bias_memory, &status));
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       *bias_ptr = *(bias_value_ptr + c);
@@ -753,7 +758,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
       LATE(cldnn_unlock_memory)(bias_memory, &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
 
@@ -768,7 +773,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
        reinterpret_cast<const cldnn_primitive_desc*>(&bias_data_desc), &status);
       if (status != CLDNN_SUCCESS) {
         LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                    << std::string(LATE(cldnn_get_last_error_message)());
+                   << std::string(LATE(cldnn_get_last_error_message)());
         return mojom::OP_FAILED;
       }
       DLOG(INFO) << "[clDNN] succeed to add data primitive with id " << id_str;
@@ -799,11 +804,19 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   }
 
   conv_desc.input_offset = {
-      1, 1, 2, 0, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
+      1,
+      1,
+      2,
+      0,
+      {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
   conv_desc.stride = {
-      1, 1, 2, 0, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+      1,
+      1,
+      2,
+      0,
+      {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   std::string id_str = base::NumberToString(output_index);
   // Setup activation.
@@ -846,7 +859,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add conv primitive with id " << id_str;
@@ -880,7 +893,7 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
   cldnn_primitive_type_id type_id = LATE(cldnn_pooling_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_pooling_desc pool_desc = {.type = type_id};
@@ -904,14 +917,26 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
 
   // Setup kernel size.
   pool_desc.size = {
-      1, 1, 2, 0, {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
+      1,
+      1,
+      2,
+      0,
+      {1, 1, params.filter_width, params.filter_height, 1, 1, 1, 1}};
 
   pool_desc.input_offset = {
-      1, 1, 2, 0, {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
+      1,
+      1,
+      2,
+      0,
+      {0, 0, -params.padding_left, -params.padding_top, 0, 0, 0, 0}};
 
   // Setup stride.
   pool_desc.stride = {
-      1, 1, 2, 0, {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
+      1,
+      1,
+      2,
+      0,
+      {1, 1, params.stride_width, params.stride_height, 1, 1, 1, 1}};
 
   // Setup output.
   pool_desc.with_output_size = 1;
@@ -940,7 +965,7 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add pooling primitive with id " << id_str;
@@ -973,7 +998,7 @@ int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
   cldnn_primitive_type_id type_id = LATE(cldnn_softmax_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_softmax_desc softmax_desc = {.type = type_id};
@@ -1003,7 +1028,7 @@ int32_t CompilationDelegateClDnn::CldnnAddSoftmax(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add softmax primitive with id " << id_str;
@@ -1020,7 +1045,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
   cldnn_primitive_type_id type_id = LATE(cldnn_reshape_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_reshape_desc reshape_desc = {.type = type_id};
@@ -1051,7 +1076,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReshape(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add reshape primitive with id " << id_str;
@@ -1073,7 +1098,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
   cldnn_primitive_type_id type_id = LATE(cldnn_concatenation_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_concatenation_desc concat_desc = {.type = type_id};
@@ -1156,7 +1181,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConcatenation(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add concatenation primitive with id "
@@ -1182,7 +1207,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
       LATE(cldnn_fully_connected_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_fully_connected_desc fc_desc = {.type = type_id};
@@ -1198,7 +1223,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   type_id = LATE(cldnn_reshape_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_reshape_desc reshape_desc = {.type = type_id};
@@ -1210,7 +1235,11 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
 
   // Setup output shape.
   reshape_desc.output_shape = {
-      1, 1, 2, 0, {params.input_batch_size, 1, params.input_size, 1, 1, 1, 1, 1}};
+      1,
+      1,
+      2,
+      0,
+      {params.input_batch_size, 1, params.input_size, 1, 1, 1, 1, 1}};
 
   // Setup id and add into topology.
   std::string reshape_id_str(base::NumberToString(input_index) +
@@ -1221,7 +1250,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add reshape primitive with id "
@@ -1241,17 +1270,14 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   const cldnn_layout weights_layout = {
       .data_type = cldnn_f32,
       .format = cldnn_format_bfyx,
-      .size = {1,
-               1,
-               2,
-               0,
-               {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
+      .size =
+          {1, 1, 2, 0, {params.num_units, 1, params.input_size, 1, 1, 1, 1, 1}},
       .padding = {}};
   cldnn_memory weights_memory =
       LATE(cldnn_allocate_memory)(engine_, weights_layout, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to allocate memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
@@ -1259,7 +1285,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
       LATE(cldnn_lock_memory)(weights_memory, &status));
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to lock memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
@@ -1272,14 +1298,14 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   LATE(cldnn_unlock_memory)(weights_memory, &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to unlock memory " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
 
   type_id = LATE(cldnn_data_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   const std::string weights_index_str(base::NumberToString(weights_index));
@@ -1290,7 +1316,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add data primitive with id "
@@ -1334,7 +1360,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&fc_desc), &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add fc primitive with id " << id_str;
@@ -1369,7 +1395,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
       LATE(cldnn_custom_gpu_primitive_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   cldnn_custom_gpu_primitive_desc custom_desc = {.type = type_id};
@@ -1428,7 +1454,7 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
    &status);
   if (status != CLDNN_SUCCESS) {
     LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
-                << std::string(LATE(cldnn_get_last_error_message)());
+               << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
   DLOG(INFO) << "[clDNN] succeed to add custom_gpu primitive with id "

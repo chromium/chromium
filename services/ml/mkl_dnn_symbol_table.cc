@@ -6,8 +6,7 @@
 
 namespace ml {
 
-LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(MklDnnSymbolTable,
-                                       "libmkldnn.so")
+LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(MklDnnSymbolTable, "libmkldnn.so")
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DEFINE_ENTRY(MklDnnSymbolTable, sym)
 MKL_DNN_SYMBOLS_LIST
 #undef X

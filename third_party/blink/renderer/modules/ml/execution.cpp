@@ -19,7 +19,7 @@ namespace {
 uint32_t product(const WTF::Vector<uint32_t>& dims) {
   uint32_t prod = 1;
 
-  for (size_t i = 0; i < dims.size(); ++i)
+  for (wtf_size_t i = 0; i < dims.size(); ++i)
     prod *= dims[i];
 
   return prod;
@@ -54,7 +54,7 @@ Execution::Execution(ml::mojom::blink::ExecutionInitParamsPtr init_params) {
 
   uint32_t total_length = 0;
   memory_ = std::move(init_params->memory);
-  for (size_t i = 0; i < init_params->inputs.size(); ++i) {
+  for (wtf_size_t i = 0; i < init_params->inputs.size(); ++i) {
     uint32_t offset = total_length;
     uint32_t length = requiredSize(init_params->inputs[i]->type,
                                    init_params->inputs[i]->dimensions);
@@ -63,7 +63,7 @@ Execution::Execution(ml::mojom::blink::ExecutionInitParamsPtr init_params) {
     total_length += length;
   }
 
-  for (size_t i = 0; i < init_params->outputs.size(); ++i) {
+  for (wtf_size_t i = 0; i < init_params->outputs.size(); ++i) {
     uint32_t offset = total_length;
     uint32_t length = requiredSize(init_params->outputs[i]->type,
                                    init_params->outputs[i]->dimensions);
@@ -147,7 +147,7 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver,
         "startCompute fails " + String::Number(result_code)));
   }
 
-  for (size_t i = 0; i < outputs_.size(); ++i) {
+  for (wtf_size_t i = 0; i < outputs_.size(); ++i) {
     DOMArrayBufferView* view = output_buffer_views_.at(i);
     if (view) {
       uint32_t length = view->byteLength();

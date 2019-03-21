@@ -45,6 +45,6 @@ class ExecutionImplAndroid : public mojom::Execution {
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplAndroid);
 };
 
-}  // namespace  
+}  // namespace ml
 
 #endif  // SERVICES_ML_EXECUTION_IMPL_ANDROID_H_

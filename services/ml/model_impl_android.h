@@ -58,6 +58,6 @@ class ModelImplAndroid : public mojom::Model {
   DISALLOW_COPY_AND_ASSIGN(ModelImplAndroid);
 };
 
-}  // namespace  
+}  // namespace ml
 
 #endif  // SERVICES_ML_MODEL_IMPL_ANDROID_H_

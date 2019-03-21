@@ -21,8 +21,8 @@ MPSCNNNeuron* CreateMPSCNNNeuron(int32_t fuse_code) {
   if (fuse_code == mojom::FUSED_NONE) {
     relu = nullptr;
   } else if (fuse_code == mojom::FUSED_RELU) {
-    relu =
-        [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device a:0];
+    relu = [[MPSCNNNeuronReLU alloc] initWithDevice:GetMPSCNNContext().device
+                                                  a:0];
   } else if (fuse_code == mojom::FUSED_RELU1) {
     relu = [[MPSCNNNeuronReLUN alloc] initWithDevice:GetMPSCNNContext().device
                                                    a:0
@@ -76,8 +76,8 @@ MPSCNNConvolutionNode* CreateMPSCNNConvolutionNode(MPSNNImageNode* image_node,
   Class convolution_class = type == mojom::FULLY_CONNECTED
                                 ? NSClassFromString(@"MPSCNNFullyConnectedNode")
                                 : NSClassFromString(@"MPSCNNConvolutionNode");
-  return
-      [[convolution_class alloc] initWithSource:image_node weights:data_source];
+  return [[convolution_class alloc] initWithSource:image_node
+                                           weights:data_source];
 }
 
 API_AVAILABLE(macosx(10.13))

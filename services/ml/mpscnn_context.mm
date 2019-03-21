@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
 #include "services/ml/mpscnn_context.h"
+#include "base/logging.h"
 
 #import <Metal/MTLFunctionConstantValues.h>
 
@@ -152,7 +152,7 @@ MPSCNNContext& GetMPSCNNContext() {
   if (!ctx.initialized) {
     ctx.initialized = true;
 
-  	ctx.device = MTLCreateSystemDefaultDevice();
+    ctx.device = MTLCreateSystemDefaultDevice();
     if (ctx.device == nil) {
       DLOG(ERROR) << "Cannot create MTLDevice";
       return ctx;
@@ -161,15 +161,17 @@ MPSCNNContext& GetMPSCNNContext() {
     }
 
     NSError* compileError = nil;
-    ctx.library = [ctx.device newLibraryWithSource:[NSString stringWithUTF8String:MPSCNN_KERNELS]
-        options:nil
-        error:&compileError];
+    ctx.library = [ctx.device
+        newLibraryWithSource:[NSString stringWithUTF8String:MPSCNN_KERNELS]
+                     options:nil
+                       error:&compileError];
     if (compileError != nil || ctx.library == nil) {
-      DLOG(ERROR) << "Failed to load kernels: " << [[compileError localizedDescription] UTF8String];
+      DLOG(ERROR) << "Failed to load kernels: "
+                  << [[compileError localizedDescription] UTF8String];
       return ctx;
     }
 
-  	ctx.command_queue = [ctx.device newCommandQueue];
+    ctx.command_queue = [ctx.device newCommandQueue];
   };
   return ctx;
 }
@@ -198,7 +200,8 @@ id<MTLComputePipelineState> MPSCNNContext::GetPipelineState(NSString* kernel) {
 }
 
 id<MTLComputePipelineState> MPSCNNContext::GetSpecializedPipelineState(
-    NSString* kernel, const std::vector<ushort>& constants) {
+    NSString* kernel,
+    const std::vector<ushort>& constants) {
   std::string kernelStr = std::string([kernel UTF8String]);
   for (size_t i = 0; i < constants.size(); ++i) {
     kernelStr += "_" + std::to_string(constants[i]);
@@ -209,27 +212,26 @@ id<MTLComputePipelineState> MPSCNNContext::GetSpecializedPipelineState(
   }
   MTLFunctionConstantValues* constantValues = [MTLFunctionConstantValues new];
   for (size_t i = 0; i < constants.size(); ++i) {
-    [constantValues setConstantValue:&constants[i] type:MTLDataTypeUShort atIndex:i];
+    [constantValues setConstantValue:&constants[i]
+                                type:MTLDataTypeUShort
+                             atIndex:i];
   }
   NSError* errors;
 
   DLOG(INFO) << "Miss in pipeline cache for: " << kernelStr;
-  id<MTLFunction> func =
-      [library newFunctionWithName:kernel constantValues:constantValues error:&errors];
+  id<MTLFunction> func = [library newFunctionWithName:kernel
+                                       constantValues:constantValues
+                                                error:&errors];
   if (!func) {
-    DLOG(ERROR) << "Couldn't get function: " <<
-                kernelStr <<
-                " error: " <<
-                [[errors localizedDescription] UTF8String];
+    DLOG(ERROR) << "Couldn't get function: " << kernelStr
+                << " error: " << [[errors localizedDescription] UTF8String];
     return nullptr;
   }
   id<MTLComputePipelineState> state =
       [device newComputePipelineStateWithFunction:func error:&errors];
   if (!state) {
-    DLOG(ERROR) << "Couldn't get function: " <<
-                kernelStr <<
-                " error: " <<
-                [[errors localizedDescription] UTF8String];
+    DLOG(ERROR) << "Couldn't get function: " << kernelStr
+                << " error: " << [[errors localizedDescription] UTF8String];
     return nullptr;
   }
   pipelineCache_[kernelStr] = state;

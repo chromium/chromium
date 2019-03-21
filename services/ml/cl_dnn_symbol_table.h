@@ -13,39 +13,39 @@ namespace ml {
 // This list must contain precisely every libclDNN function that is used in
 // the LINUX Device.
 
-#define CL_DNN_SYMBOLS_LIST       \
-  X(cldnn_get_version)            \
-  X(cldnn_get_engine_count)       \
-  X(cldnn_get_last_error_message) \
-  X(cldnn_get_engine_info)        \
-  X(cldnn_create_engine)          \
-  X(cldnn_create_topology)        \
-  X(cldnn_release_memory)         \
-  X(cldnn_release_topology)       \
-  X(cldnn_release_engine)         \
-  X(cldnn_input_layout_type_id)   \
-  X(cldnn_reorder_type_id)        \
-  X(cldnn_add_primitive)          \
-  X(cldnn_allocate_memory)        \
-  X(cldnn_lock_memory)            \
-  X(cldnn_unlock_memory)          \
-  X(cldnn_data_type_id)           \
-  X(cldnn_activation_type_id)     \
-  X(cldnn_eltwise_type_id)        \
-  X(cldnn_convolution_type_id)    \
-  X(cldnn_pooling_type_id)        \
-  X(cldnn_softmax_type_id)        \
-  X(cldnn_reshape_type_id)        \
-  X(cldnn_fully_connected_type_id)\
-  X(cldnn_concatenation_type_id)  \
+#define CL_DNN_SYMBOLS_LIST             \
+  X(cldnn_get_version)                  \
+  X(cldnn_get_engine_count)             \
+  X(cldnn_get_last_error_message)       \
+  X(cldnn_get_engine_info)              \
+  X(cldnn_create_engine)                \
+  X(cldnn_create_topology)              \
+  X(cldnn_release_memory)               \
+  X(cldnn_release_topology)             \
+  X(cldnn_release_engine)               \
+  X(cldnn_input_layout_type_id)         \
+  X(cldnn_reorder_type_id)              \
+  X(cldnn_add_primitive)                \
+  X(cldnn_allocate_memory)              \
+  X(cldnn_lock_memory)                  \
+  X(cldnn_unlock_memory)                \
+  X(cldnn_data_type_id)                 \
+  X(cldnn_activation_type_id)           \
+  X(cldnn_eltwise_type_id)              \
+  X(cldnn_convolution_type_id)          \
+  X(cldnn_pooling_type_id)              \
+  X(cldnn_softmax_type_id)              \
+  X(cldnn_reshape_type_id)              \
+  X(cldnn_fully_connected_type_id)      \
+  X(cldnn_concatenation_type_id)        \
   X(cldnn_custom_gpu_primitive_type_id) \
-  X(cldnn_release_program)        \
-  X(cldnn_build_program)          \
-  X(cldnn_attach_memory)          \
-  X(cldnn_allocate_network)       \
-  X(cldnn_release_network)        \
-  X(cldnn_set_network_input)      \
-  X(cldnn_execute_network)        \
+  X(cldnn_release_program)              \
+  X(cldnn_build_program)                \
+  X(cldnn_attach_memory)                \
+  X(cldnn_allocate_network)             \
+  X(cldnn_release_network)              \
+  X(cldnn_set_network_input)            \
+  X(cldnn_execute_network)              \
   X(cldnn_get_network_output_memory)
 
 LATE_BINDING_SYMBOL_TABLE_DECLARE_BEGIN(ClDnnSymbolTable)

@@ -24,7 +24,7 @@ class Model final : public ScriptWrappable {
   explicit Model(ml::mojom::blink::ModelPtrInfo);
   ~Model() override;
 
-  void addOperand(const OperandOptions&, ExceptionState&);
+  void addOperand(const OperandOptions*, ExceptionState&);
   void setOperandValue(uint32_t,
                        MaybeShared<DOMArrayBufferView>,
                        ExceptionState&);

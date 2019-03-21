@@ -8,8 +8,7 @@
 
 namespace ml {
 
-void NeuralNetworkImplMac::Create(
-    ml::mojom::NeuralNetworkRequest request) {
+void NeuralNetworkImplMac::Create(ml::mojom::NeuralNetworkRequest request) {
   auto impl = std::make_unique<NeuralNetworkImplMac>();
   auto* impl_ptr = impl.get();
   impl_ptr->binding_ =
@@ -28,8 +27,7 @@ void NeuralNetworkImplMac::CreateModel(CreateModelCallback callback) {
   mojo::MakeStrongBinding(std::move(model_impl),
                           mojo::MakeRequest(&model_ptr_info));
   init_params->model = std::move(model_ptr_info);
-  std::move(callback).Run(mojom::NOT_ERROR,
-                          std::move(init_params));
+  std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
 }  // namespace ml

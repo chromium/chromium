@@ -227,8 +227,7 @@ void CompilationImplMac::CompileModelWithMPS(FinishCallback callback) {
     }
 
     DCHECK(outputs.size() == 1);
-    if (type == mojom::CONV_2D ||
-        type == mojom::DEPTHWISE_CONV_2D ||
+    if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D ||
         type == mojom::ATROUS_CONV_2D ||
         type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
       success = CompileConv2DOrDepthwiseConv2D(mps_image_nodes_, operation,

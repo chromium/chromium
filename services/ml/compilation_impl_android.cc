@@ -30,7 +30,8 @@ CompilationImplAndroid::~CompilationImplAndroid() {
 void CompilationImplAndroid::Finish(int32_t preference,
                                     FinishCallback callback) {
   DLOG(INFO) << "CompilationImplAndroid::finish";
-  DLOG(INFO) << "  " << "preference: " << preference;
+  DLOG(INFO) << "  "
+             << "preference: " << preference;
 
   int32_t result =
       ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
@@ -73,18 +74,17 @@ void CompilationImplAndroid::CreateExecution(CreateExecutionCallback callback) {
   uint32_t total_memory_size = input_memory_size + output_memory_size;
   mojo::ScopedSharedBufferHandle memory_handle =
       mojo::SharedBufferHandle::Create(total_memory_size);
-  
-  init_params->memory = memory_handle->Clone(
-      mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+
+  init_params->memory =
+      memory_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 
   mojom::ExecutionPtrInfo ptr_info;
   mojo::MakeStrongBinding(
       std::make_unique<ExecutionImplAndroid>(this, std::move(memory_handle)),
       mojo::MakeRequest(&ptr_info));
   init_params->execution = std::move(ptr_info);
-  
-  std::move(callback).Run(mojom::NOT_ERROR,
-                          std::move(init_params));
+
+  std::move(callback).Run(mojom::NOT_ERROR, std::move(init_params));
 }
 
 }  // namespace ml

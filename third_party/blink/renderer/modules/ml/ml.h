@@ -5,7 +5,7 @@
 #ifndef ML_h
 #define ML_h
 
-#include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 namespace blink {
@@ -13,8 +13,7 @@ namespace blink {
 class NavigatorML;
 class NeuralNetworkContext;
 
-class ML final : public ScriptWrappable,
-                 public ContextLifecycleObserver {
+class ML final : public ScriptWrappable, public ContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(ML);
   USING_PRE_FINALIZER(ML, Dispose);

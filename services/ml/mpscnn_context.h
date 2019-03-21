@@ -10,9 +10,9 @@
 #import <Metal/MTLDevice.h>
 #import <Metal/MTLLibrary.h>
 
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace ml {
 
@@ -30,8 +30,9 @@ struct API_AVAILABLE(macosx(10.13)) MPSCNNContext {
   }
 
   id<MTLComputePipelineState> GetPipelineState(NSString* kernel);
-  id<MTLComputePipelineState> GetSpecializedPipelineState(NSString* kernel,
-                                                          const std::vector<ushort>& constants);
+  id<MTLComputePipelineState> GetSpecializedPipelineState(
+      NSString* kernel,
+      const std::vector<ushort>& constants);
 
  private:
   std::unordered_map<std::string, id<MTLComputePipelineState>> pipelineCache_;

@@ -53,7 +53,7 @@ LaunchParams API_AVAILABLE(macosx(10.13))
                   divRoundUp(im.height, threadsPerThreadgroup.height),
                   im.numberOfImages * divRoundUp(im.featureChannels, 4));
   return {threadsPerThreadgroup, threadgroupsPerGrid};
-};
+}
 
 MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
     CreateMPSImageDescriptor(const OperandMac& operand) {
@@ -267,7 +267,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
           id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
           memcpy(output_data->mapping.get(), [output_buffer contents],
-                 output_data->length);
+                 output_data -> length);
         }
       }  // @autoreleasepool
     } while (0);

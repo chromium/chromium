@@ -21,7 +21,7 @@ const char NavigatorML::kSupplementName[] = "NavigatorML";
 NavigatorML& NavigatorML::From(Navigator& navigator) {
   NavigatorML* supplement = Supplement<Navigator>::From<NavigatorML>(navigator);
   if (!supplement) {
-    supplement = new NavigatorML(navigator);
+    supplement = MakeGarbageCollected<NavigatorML>(navigator);
     ProvideTo(navigator, supplement);
   }
   return *supplement;
@@ -34,7 +34,7 @@ ML* NavigatorML::ml(Navigator& navigator) {
 
   NavigatorML& self = NavigatorML::From(navigator);
   if (!self.ml_)
-    self.ml_ = new ML(self);
+    self.ml_ = MakeGarbageCollected<ML>(self);
 
   return self.ml_.Get();
 }

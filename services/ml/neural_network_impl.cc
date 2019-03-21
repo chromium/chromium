@@ -24,7 +24,7 @@ NeuralNetworkImpl::~NeuralNetworkImpl() = default;
 void NeuralNetworkImpl::CreateModel(CreateModelCallback callback) {
   LOG(INFO) << "createModel";
   auto model_impl = std::make_unique<ModelImpl>();
-  
+
   auto init_params = mojom::ModelInitParams::New();
   mojom::ModelPtrInfo model_ptr_info;
   mojo::MakeStrongBinding(std::move(model_impl),

@@ -8,7 +8,7 @@
 #include "services/ml/public/mojom/neuralnetwork.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -20,9 +20,8 @@ namespace blink {
 class Model;
 class NavigatorML;
 
-class NeuralNetworkContext final
-    : public ScriptWrappable,
-      public ContextLifecycleObserver {
+class NeuralNetworkContext final : public ScriptWrappable,
+                                   public ContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(NeuralNetworkContext);
   USING_PRE_FINALIZER(NeuralNetworkContext, Dispose);

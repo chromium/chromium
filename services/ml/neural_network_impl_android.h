@@ -10,8 +10,7 @@
 
 namespace ml {
 
-class NeuralNetworkImplAndroid
-    : public mojom::NeuralNetwork {
+class NeuralNetworkImplAndroid : public mojom::NeuralNetwork {
  public:
   NeuralNetworkImplAndroid();
   ~NeuralNetworkImplAndroid() override;
@@ -24,6 +23,6 @@ class NeuralNetworkImplAndroid
   DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImplAndroid);
 };
 
-}  // namespace  
+}  // namespace ml
 
 #endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_ANDROID_H_

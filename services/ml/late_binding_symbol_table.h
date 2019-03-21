@@ -152,7 +152,7 @@ class LateBindingSymbolTable {
 
 // Returns a reference to the given late-binded symbol, with the correct type.
 #define LATESYM_GET(ClassName, inst, sym) \
-  (*reinterpret_cast<typeof(&sym)>(       \
+  (*reinterpret_cast<__typeof__(&sym)>(   \
       (inst)->GetSymbol(LATESYM_INDEXOF(ClassName, sym))))
 
 }  // namespace ml

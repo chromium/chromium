@@ -1,0 +1,4 @@
+per-file manifest.cc=set noparent
+per-file manifest.cc=file://ipc/SECURITY_OWNERS
+per-file manifest.h=set noparent
+per-file manifest.h=file://ipc/SECURITY_OWNERS

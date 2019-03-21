@@ -6,7 +6,6 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "services/service_manager/public/cpp/service_context.h"
 #if defined(OS_LINUX) || defined(OS_WIN)
 #include "services/ml/neural_network_impl.h"
 #elif defined(OS_ANDROID)
@@ -17,18 +16,12 @@
 
 namespace ml {
 
-std::unique_ptr<service_manager::Service> MLService::Create() {
-  return std::make_unique<MLService>();
-}
-
-MLService::MLService() = default;
+MLService::MLService(service_manager::mojom::ServiceRequest request)
+    : service_binding_(this, std::move(request)) {}
 
 MLService::~MLService() = default;
 
 void MLService::OnStart() {
-  ref_factory_.reset(new service_manager::ServiceContextRefFactory(
-      context()->CreateQuitClosure()));
-
 #if defined(OS_LINUX) || defined(OS_WIN)
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #elif defined(OS_ANDROID)

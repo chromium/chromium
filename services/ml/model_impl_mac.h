@@ -25,10 +25,16 @@ class ModelImplMac : public mojom::Model {
   void CreateCompilation(CreateCompilationCallback callback) override;
 
  private:
-  int32_t AddOperand(int32_t type, const std::vector<uint32_t>& dimensions, float scale, int32_t zeroPoint);
+  int32_t AddOperand(int32_t type,
+                     const std::vector<uint32_t>& dimensions,
+                     float scale,
+                     int32_t zeroPoint);
   int32_t SetOperandValue(uint32_t index, const void* buffer, uint32_t length);
-  int32_t AddOperation(int32_t type, const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs);
-  int32_t IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs, const std::vector<uint32_t>& outputs);
+  int32_t AddOperation(int32_t type,
+                       const std::vector<uint32_t>& inputs,
+                       const std::vector<uint32_t>& outputs);
+  int32_t IdentifyInputsAndOutputs(const std::vector<uint32_t>& inputs,
+                                   const std::vector<uint32_t>& outputs);
 
  private:
   friend class CompilationImplMac;
@@ -37,7 +43,7 @@ class ModelImplMac : public mojom::Model {
   std::map<uint32_t, ValueInfo> values_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
-  std::unique_ptr<int8_t []> memory_;
+  std::unique_ptr<int8_t[]> memory_;
   uint32_t memory_size_;
   DISALLOW_COPY_AND_ASSIGN(ModelImplMac);
 };

@@ -51,8 +51,8 @@
   if (!pixelFormat) {
     LOG(ERROR) << "No OpenGL pixel format found";
   }
-  _openGLContext =
-      [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+  _openGLContext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat
+                                              shareContext:nil];
 
   // After a Metal device has been retrieved and an OpenGL context has been
   // created and made current, a interop texture can be created
@@ -100,8 +100,9 @@
   CGImageRef cg_image(SkCreateCGImageRefWithColorspace(bitmap, NULL));
 
   NSError* error;
-  GLKTextureInfo* texInfo =
-      [GLKTextureLoader textureWithCGImage:cg_image options:nil error:&error];
+  GLKTextureInfo* texInfo = [GLKTextureLoader textureWithCGImage:cg_image
+                                                         options:nil
+                                                           error:&error];
   if (!texInfo || error) {
     LOG(ERROR) << error.localizedDescription;
   }
@@ -110,8 +111,8 @@
 
   id<MTLTexture> new_texture = [_interopTexture.metalTexture
       newTextureViewWithPixelFormat:MTLPixelFormatBGRA8Unorm];
-  MPSImage* image =
-      [[MPSImage alloc] initWithTexture:new_texture featureChannels:3];
+  MPSImage* image = [[MPSImage alloc] initWithTexture:new_texture
+                                      featureChannels:3];
   DLOG(INFO) << image.width;
 }
 

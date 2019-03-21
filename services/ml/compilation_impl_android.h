@@ -42,6 +42,6 @@ class CompilationImplAndroid : public mojom::Compilation {
   DISALLOW_COPY_AND_ASSIGN(CompilationImplAndroid);
 };
 
-}  // namespace
+}  // namespace ml
 
 #endif  // SERVICES_ML_COMPILATION_IMPL_ANDROID_H_

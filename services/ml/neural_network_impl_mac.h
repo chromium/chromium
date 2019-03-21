@@ -12,8 +12,7 @@
 
 namespace ml {
 
-class NeuralNetworkImplMac
-    : public mojom::NeuralNetwork {
+class NeuralNetworkImplMac : public mojom::NeuralNetwork {
  public:
   NeuralNetworkImplMac();
   ~NeuralNetworkImplMac() override;
@@ -21,12 +20,12 @@ class NeuralNetworkImplMac
   void CreateModel(CreateModelCallback callback) override;
 
   static void Create(mojom::NeuralNetworkRequest request);
+
  private:
   mojo::StrongBindingPtr<mojom::NeuralNetwork> binding_;
   DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImplMac);
 };
 
-}  // namespace
-
+}  // namespace ml
 
 #endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_MAC_H_

@@ -120,10 +120,11 @@
 }
 
 - (MPSImageDescriptor*)
-destinationImageDescriptorForSourceImages:(NSArray<MPSImage*>*)sourceImages
-                             sourceStates:(NSArray<MPSState*>*)sourceStates
-                                forKernel:(MPSKernel*)kernel
-                      suggestedDescriptor:(MPSImageDescriptor*)inDescriptor {
+    destinationImageDescriptorForSourceImages:(NSArray<MPSImage*>*)sourceImages
+                                 sourceStates:(NSArray<MPSState*>*)sourceStates
+                                    forKernel:(MPSKernel*)kernel
+                          suggestedDescriptor:
+                              (MPSImageDescriptor*)inDescriptor {
   if ([kernel isKindOfClass:[MPSCNNKernel class]]) {
     MPSCNNKernel* cnn_kernel = (MPSCNNKernel*)kernel;
     [cnn_kernel setOffset:offset_];

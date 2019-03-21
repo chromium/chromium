@@ -28,6 +28,6 @@ class NeuralNetworkImpl : public mojom::NeuralNetwork {
   DISALLOW_COPY_AND_ASSIGN(NeuralNetworkImpl);
 };
 
-}  // namespace  
+}  // namespace ml
 
 #endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_H_

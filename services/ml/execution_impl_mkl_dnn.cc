@@ -15,8 +15,7 @@ namespace ml {
 ExecutionImplMklDnn::ExecutionImplMklDnn(
     std::shared_ptr<CompiledModelMklDnn> compiled_model,
     mojom::ExecutionInitParamsPtr params)
-    : params_(std::move(params)),
-      compiled_model_(std::move(compiled_model)) {}
+    : params_(std::move(params)), compiled_model_(std::move(compiled_model)) {}
 
 ExecutionImplMklDnn::~ExecutionImplMklDnn() {}
 
@@ -101,14 +100,16 @@ void ExecutionImplMklDnn::StartCompute(StartComputeCallback callback) {
       return;
     }
     memcpy(mapping.get(), buffer, length);
-    DLOG(INFO) << "Copy data from output memory primitive buffer for " << output_id;
+    DLOG(INFO) << "Copy data from output memory primitive buffer for "
+               << output_id;
   }
 
   DLOG(INFO) << "ExecutionImplMklDnn::StartCompute succeeds";
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-int32_t ExecutionImplMklDnn::MkldnnExecuteNet(std::vector<mkldnn_primitive_t>& net) {
+int32_t ExecutionImplMklDnn::MkldnnExecuteNet(
+    std::vector<mkldnn_primitive_t>& net) {
   mkldnn_stream_t stream;
   mkldnn_status_t status = LATE(mkldnn_stream_create)(&stream, mkldnn_eager);
   if (status != mkldnn_success) {
@@ -131,7 +132,8 @@ int32_t ExecutionImplMklDnn::MkldnnExecuteNet(std::vector<mkldnn_primitive_t>& n
   return mojom::NOT_ERROR;
 }
 
-int32_t ExecutionImplMklDnn::MkldnnExecuteCustomOperation(const OperationMklDnn& operation) {
+int32_t ExecutionImplMklDnn::MkldnnExecuteCustomOperation(
+    const OperationMklDnn& operation) {
   int32_t result;
   if (operation.type == mojom::RESHAPE) {
     result = MkldnnExecuteReshape(operation);

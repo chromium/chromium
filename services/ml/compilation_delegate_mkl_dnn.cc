@@ -35,7 +35,7 @@ OperationMklDnn::OperationMklDnn(const OperationMklDnn& rhs) {
   type = rhs.type;
   inputs = rhs.inputs;
   outputs = rhs.outputs;
-};
+}
 
 CompiledModelMklDnn::CompiledModelMklDnn() {}
 CompiledModelMklDnn::~CompiledModelMklDnn() {

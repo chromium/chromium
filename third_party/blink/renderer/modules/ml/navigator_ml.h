@@ -20,6 +20,8 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
   USING_GARBAGE_COLLECTED_MIXIN(NavigatorML);
 
  public:
+  explicit NavigatorML(Navigator&);
+
   static const char kSupplementName[];
 
   // Gets or creates NavigatorML supplement on Navigator.
@@ -32,8 +34,6 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
   void Trace(blink::Visitor*) override;
 
  private:
-  explicit NavigatorML(Navigator&);
-
   TraceWrapperMember<ML> ml_;
 };
 

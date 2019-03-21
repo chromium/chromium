@@ -26,20 +26,20 @@ bool InvalidState(const String& message, ExceptionState& exception_state) {
 }
 
 bool InvalidAction(bool is_finished, ExceptionState& exception_state) {
-  return is_finished ? 
-      InvalidState("Model is finished", exception_state) : false;
+  return is_finished ? InvalidState("Model is finished", exception_state)
+                     : false;
 }
 
-bool InvalidInputOutput(size_t operands,
+bool InvalidInputOutput(wtf_size_t operands,
                         const Vector<uint32_t>& inputs,
                         const Vector<uint32_t>& outputs,
                         ExceptionState& exception_state) {
-  for (size_t i = 0; i < inputs.size(); ++i) {
+  for (wtf_size_t i = 0; i < inputs.size(); ++i) {
     if (inputs[i] >= operands)
       return InvalidState("Inputs is invalid.", exception_state);
   }
 
-  for (size_t i = 0; i < outputs.size(); ++i) {
+  for (wtf_size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i] >= operands)
       return InvalidState("Outputs is invalid.", exception_state);
   }
@@ -47,27 +47,27 @@ bool InvalidInputOutput(size_t operands,
   return false;
 }
 
-bool InvalidOperand(const OperandOptions& options,
+bool InvalidOperand(const OperandOptions* options,
                     ExceptionState& exception_state) {
-  if (!options.hasType())
+  if (!options->hasType())
     return InvalidState("Data type is invalid.", exception_state);
 
-  switch (options.type()) {
+  switch (options->type()) {
     case NeuralNetworkContext::kFloat32:
     case NeuralNetworkContext::kInt32:
     case NeuralNetworkContext::kUint32:
-      if (options.hasDimensions())
+      if (options->hasDimensions())
         return InvalidState("Data type is invalid.", exception_state);
       break;
     case NeuralNetworkContext::kTensorFloat32:
     case NeuralNetworkContext::kTensorInt32:
-      if (!options.hasDimensions())
+      if (!options->hasDimensions())
         return InvalidState("Data type is invalid.", exception_state);
       break;
     case NeuralNetworkContext::kTensorQuant8Asymm:
-      if (!options.hasDimensions() || !options.hasScale()
-          || !options.hasZeroPoint() || options.scale() < 0
-          || options.zeroPoint() < 0 || options.zeroPoint() > 255)
+      if (!options->hasDimensions() || !options->hasScale() ||
+          !options->hasZeroPoint() || options->scale() < 0 ||
+          options->zeroPoint() < 0 || options->zeroPoint() > 255)
         return InvalidState("Data type is invalid.", exception_state);
       break;
     default:
@@ -76,10 +76,11 @@ bool InvalidOperand(const OperandOptions& options,
   return false;
 }
 
-bool InvalidOperandValue(size_t index,
-                         const WTF::Vector<ml::mojom::blink::OperandPtr>& operands,
-                         const DOMArrayBufferView* data,
-                         ExceptionState& exception_state) {
+bool InvalidOperandValue(
+    wtf_size_t index,
+    const WTF::Vector<ml::mojom::blink::OperandPtr>& operands,
+    const DOMArrayBufferView* data,
+    ExceptionState& exception_state) {
   if (index >= operands.size())
     return InvalidState("Data type is invalid.", exception_state);
 
@@ -132,31 +133,31 @@ Model::Model(ml::mojom::blink::ModelPtrInfo info) : is_finished_(false) {
 
 Model::~Model() = default;
 
-void Model::addOperand(const OperandOptions& options,
+void Model::addOperand(const OperandOptions* options,
                        ExceptionState& exception_state) {
-  if (InvalidAction(is_finished_, exception_state)
-      || InvalidOperand(options, exception_state))
+  if (InvalidAction(is_finished_, exception_state) ||
+      InvalidOperand(options, exception_state))
     return;
 
   model_info_->operands.push_back(ml::mojom::blink::Operand::New(
-      options.type(),
-      options.hasDimensions() ? options.dimensions() : WTF::Vector<uint32_t>(),
-      options.hasScale() ? options.scale() : 0,
-      options.hasZeroPoint() ? options.zeroPoint() : 0));
+      options->type(),
+      options->hasDimensions() ? options->dimensions()
+                               : WTF::Vector<uint32_t>(),
+      options->hasScale() ? options->scale() : 0,
+      options->hasZeroPoint() ? options->zeroPoint() : 0));
 }
 
 void Model::setOperandValue(uint32_t index,
                             MaybeShared<DOMArrayBufferView> data,
                             ExceptionState& exception_state) {
-  if (InvalidAction(is_finished_, exception_state)
-      || InvalidOperandValue(index, model_info_->operands, 
-                             data.View(), exception_state))
-      return;
+  if (InvalidAction(is_finished_, exception_state) ||
+      InvalidOperandValue(index, model_info_->operands, data.View(),
+                          exception_state))
+    return;
 
   WTF::String index_str = WTF::String::Number(index);
   model_info_->values.insert(
-      index_str,
-      ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
+      index_str, ml::mojom::blink::OperandValueInfo::New(index, 0, 0));
   buffer_views_.insert(index_str, data.View());
 }
 
@@ -164,9 +165,9 @@ void Model::addOperation(int32_t type,
                          Vector<uint32_t>& inputs,
                          Vector<uint32_t>& outputs,
                          ExceptionState& exception_state) {
-  if (InvalidAction(is_finished_, exception_state)
-      || InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
-                            exception_state))
+  if (InvalidAction(is_finished_, exception_state) ||
+      InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
+                         exception_state))
     return;
 
   model_info_->operations.push_back(
@@ -176,9 +177,9 @@ void Model::addOperation(int32_t type,
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
                                      Vector<uint32_t>& outputs,
                                      ExceptionState& exception_state) {
-  if (InvalidAction(is_finished_, exception_state)
-      || InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
-                            exception_state))
+  if (InvalidAction(is_finished_, exception_state) ||
+      InvalidInputOutput(model_info_->operands.size(), inputs, outputs,
+                         exception_state))
     return;
 
   model_info_->inputs = inputs;
@@ -202,21 +203,23 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   requests_.insert(resolver);
 
   uint32_t total_byte_length = 0;
-  for (HeapHashMap<WTF::String, Member<DOMArrayBufferView>>::const_iterator itr = buffer_views_.begin();
+  for (HeapHashMap<WTF::String, Member<DOMArrayBufferView>>::const_iterator
+           itr = buffer_views_.begin();
        itr != buffer_views_.end(); ++itr)
     total_byte_length += itr->value->byteLength();
 
-  memory_ =
-      mojo::SharedBufferHandle::Create(total_byte_length);
+  memory_ = mojo::SharedBufferHandle::Create(total_byte_length);
   mojo::ScopedSharedBufferMapping mapping = memory_->Map(total_byte_length);
 
   uint32_t offset = 0;
-  
-  for (WTF::HashMap<WTF::String, ml::mojom::blink::OperandValueInfoPtr>::const_iterator itr = model_info_->values.begin();
+
+  for (WTF::HashMap<WTF::String,
+                    ml::mojom::blink::OperandValueInfoPtr>::const_iterator itr =
+           model_info_->values.begin();
        itr != model_info_->values.end(); ++itr) {
-    const ml::mojom::blink::OperandValueInfoPtr& value_info =
-        itr->value;
-    DOMArrayBufferView* view = buffer_views_.at(WTF::String::Number(value_info->index));
+    const ml::mojom::blink::OperandValueInfoPtr& value_info = itr->value;
+    DOMArrayBufferView* view =
+        buffer_views_.at(WTF::String::Number(value_info->index));
     uint32_t length = view->byteLength();
     value_info->offset = offset;
     value_info->length = length;
@@ -257,13 +260,15 @@ ScriptPromise Model::createCompilation(ScriptState* script_state) {
 }
 
 void Model::OnCreateCompilation(
-    ScriptPromiseResolver* resolver, int32_t result_code,
+    ScriptPromiseResolver* resolver,
+    int32_t result_code,
     ml::mojom::blink::CompilationInitParamsPtr init_params) {
   DCHECK(requests_.Contains(resolver));
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NOT_ERROR) {
-    resolver->Resolve(new Compilation(std::move(init_params->compilation)));
+    resolver->Resolve(
+        MakeGarbageCollected<Compilation>(std::move(init_params->compilation)));
   } else {
     resolver->Reject(DOMException::Create(
         DOMExceptionCode::kInvalidStateError,

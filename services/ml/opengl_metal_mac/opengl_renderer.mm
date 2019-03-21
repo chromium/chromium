@@ -31,7 +31,7 @@
 #include "fragment_shader.h"
 #include "vertex_shader.h"
 
-#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+// #define BUFFER_OFFSET(i) ((char*)nullptr + (i))
 
 @implementation OpenGLRenderer {
   GLuint _programName;
@@ -85,7 +85,7 @@ enum { POS_ATTRIB_IDX, TEXCOORD_ATTRIB_IDX };
   GLuint positionOffset = offsetof(AAPLVertex, position);
 
   glVertexAttribPointer(POS_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, stride,
-                        BUFFER_OFFSET(positionOffset));
+                        reinterpret_cast<GLvoid*>(positionOffset));
 
   // Enable the position attribute for this VAO
   glEnableVertexAttribArray(TEXCOORD_ATTRIB_IDX);
@@ -93,7 +93,7 @@ enum { POS_ATTRIB_IDX, TEXCOORD_ATTRIB_IDX };
   GLuint texCoordOffset = offsetof(AAPLVertex, texCoord);
 
   glVertexAttribPointer(TEXCOORD_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, stride,
-                        BUFFER_OFFSET(texCoordOffset));
+                        reinterpret_cast<GLvoid*>(texCoordOffset));
 
   glGetError();
 

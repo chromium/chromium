@@ -39,8 +39,8 @@ inline void CalculateExplicitPadding(bool padding_same,
 
 }  // namespace
 
-CompilationImpl::CompilationImpl(mojom::ModelInfoPtr model_info) :
-    model_info_(std::move(model_info)) {}
+CompilationImpl::CompilationImpl(mojom::ModelInfoPtr model_info)
+    : model_info_(std::move(model_info)) {}
 
 CompilationImpl::~CompilationImpl() {}
 
@@ -475,8 +475,7 @@ int32_t CompilationImpl::GetResizeBilinearParams(
 
   params.align_corners = false;
   if (inputs.size() == 4) {
-    params.align_corners =
-        GetScalarInt32(inputs[3]) == 0 ? false : true;
+    params.align_corners = GetScalarInt32(inputs[3]) == 0 ? false : true;
   }
 
   DLOG(INFO) << "  height: " << params.height;

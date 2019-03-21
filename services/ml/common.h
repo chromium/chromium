@@ -29,7 +29,9 @@ struct Operand {
 };
 
 struct OperandInfo {
-  OperandInfo(uint32_t offset, uint32_t length, mojo::ScopedSharedBufferMapping mapping);
+  OperandInfo(uint32_t offset,
+              uint32_t length,
+              mojo::ScopedSharedBufferMapping mapping);
   ~OperandInfo();
   uint32_t offset;
   uint32_t length;
@@ -54,7 +56,7 @@ struct Operation {
   std::vector<uint32_t> outputs;
 };
 
-template<class T>
+template <class T>
 std::string VectorToString(const T* vect, size_t length) {
   std::string output("[");
   if (length > 200)
@@ -69,7 +71,8 @@ std::string VectorToString(const T* vect, size_t length) {
   return output;
 }
 
-void PrintOperand(const Operand& operand, const std::unique_ptr<OperandInfo>& info);
+void PrintOperand(const Operand& operand,
+                  const std::unique_ptr<OperandInfo>& info);
 
 int32_t getScalarInt32(const ValueInfo&, int8_t*);
 int32_t getScalarInt32(const std::map<uint32_t, ValueInfo>& values,
@@ -83,6 +86,6 @@ float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
 uint32_t GetRequiredSize(const mojom::OperandPtr& operand);
 uint32_t GetRequiredSize(const mojom::OperandInfoPtr& operand);
 
-}
+}  // namespace ml
 
 #endif  // SERVICES_ML_COMMON_H_

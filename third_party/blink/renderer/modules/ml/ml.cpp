@@ -18,7 +18,7 @@ ML::~ML() = default;
 
 NeuralNetworkContext* ML::getNeuralNetworkContext() {
   if (!nn_)
-    nn_ = new NeuralNetworkContext(navigator_ml_.Get());
+    nn_ = MakeGarbageCollected<NeuralNetworkContext>(navigator_ml_.Get());
 
   return nn_.Get();
 }

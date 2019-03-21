@@ -8,11 +8,13 @@ namespace ml {
 
 uint32_t product(const std::vector<uint32_t>& dims) {
   uint32_t prod = 1;
-  for (size_t i = 0; i < dims.size(); ++i) prod *= dims[i];
+  for (size_t i = 0; i < dims.size(); ++i)
+    prod *= dims[i];
   return prod;
 }
 
-uint32_t GetRequiredSize(int32_t type, const std::vector<uint32_t>& dimensions) {
+uint32_t GetRequiredSize(int32_t type,
+                         const std::vector<uint32_t>& dimensions) {
   if (type == mojom::FLOAT32) {
     return sizeof(float);
   } else if (type == mojom::INT32) {
@@ -39,7 +41,6 @@ uint32_t GetRequiredSize(const mojom::OperandInfoPtr& operand) {
   return GetRequiredSize(operand->type, operand->dimensions);
 }
 
-
 Operand::Operand() = default;
 Operand::~Operand() = default;
 Operand::Operand(const Operand&) = default;
@@ -51,8 +52,10 @@ Operation::Operation() = default;
 Operation::~Operation() = default;
 Operation::Operation(const Operation&) = default;
 
-OperandInfo::OperandInfo(uint32_t offset, uint32_t length, mojo::ScopedSharedBufferMapping mapping) :
-      offset(offset), length(length), mapping(std::move(mapping)) {}
+OperandInfo::OperandInfo(uint32_t offset,
+                         uint32_t length,
+                         mojo::ScopedSharedBufferMapping mapping)
+    : offset(offset), length(length), mapping(std::move(mapping)) {}
 
 OperandInfo::~OperandInfo() {}
 
@@ -60,24 +63,30 @@ ValueInfo::ValueInfo() = default;
 ValueInfo::~ValueInfo() = default;
 ValueInfo::ValueInfo(const ValueInfo&) = default;
 
-void PrintOperand(const Operand& operand, const std::unique_ptr<OperandInfo>& info) {
+void PrintOperand(const Operand& operand,
+                  const std::unique_ptr<OperandInfo>& info) {
   uint32_t length = info->length;
   if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
     float* value = static_cast<float*>(info->mapping.get());
     uint32_t size = length / 4;
-    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
-  } else if (operand.type == mojom::TENSOR_INT32 || operand.type == mojom::INT32) {
+    DLOG(INFO) << "  "
+               << "buffer(" << size << "): " << VectorToString(value, size);
+  } else if (operand.type == mojom::TENSOR_INT32 ||
+             operand.type == mojom::INT32) {
     int32_t* value = static_cast<int32_t*>(info->mapping.get());
     uint32_t size = length / 4;
-    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  "
+               << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::TENSOR_QUANT8_ASYMM) {
     int8_t* value = static_cast<int8_t*>(info->mapping.get());
     uint32_t size = length;
-    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  "
+               << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::UINT32) {
     uint32_t* value = static_cast<uint32_t*>(info->mapping.get());
     uint32_t size = length;
-    DLOG(INFO) << "  " << "buffer(" << size << "): " << VectorToString(value, size);
+    DLOG(INFO) << "  "
+               << "buffer(" << size << "): " << VectorToString(value, size);
   }
 }
 
@@ -117,4 +126,4 @@ float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
   return getScalarFloat(iter->second, memory);
 }
 
-}
+}  // namespace ml

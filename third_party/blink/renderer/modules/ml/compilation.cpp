@@ -110,7 +110,7 @@ void Compilation::OnCreateExecution(
   requests_.erase(resolver);
 
   if (result_code == ml::mojom::blink::NOT_ERROR) {
-    resolver->Resolve(new Execution(std::move(init_params)));
+    resolver->Resolve(MakeGarbageCollected<Execution>(std::move(init_params)));
   } else {
     resolver->Reject(DOMException::Create(
         DOMExceptionCode::kInvalidStateError,

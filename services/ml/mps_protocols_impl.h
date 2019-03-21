@@ -9,7 +9,7 @@
 #include "services/ml/ml_utils_mac.h"
 
 API_AVAILABLE(macosx(10.13))
-@interface ConvDataSource : NSObject<MPSCNNConvolutionDataSource>
+@interface ConvDataSource : NSObject <MPSCNNConvolutionDataSource>
 
 @property(nonatomic, assign) float* weights_;
 
@@ -24,7 +24,7 @@ API_AVAILABLE(macosx(10.13))
 @end
 
 API_AVAILABLE(macosx(10.13))
-@interface CustomPadding : NSObject<MPSNNPadding>
+@interface CustomPadding : NSObject <MPSNNPadding>
 
 @property(nonatomic, assign) MPSOffset offset_;
 
@@ -48,13 +48,13 @@ API_AVAILABLE(macosx(10.13))
 @end
 
 API_AVAILABLE(macosx(10.13))
-@interface OutputImageAllocator : NSObject<MPSImageAllocator>
+@interface OutputImageAllocator : NSObject <MPSImageAllocator>
 
 @property(nonatomic, retain) MPSImage* image;
 
 @end
 
-@interface TemporaryImageHandle : NSObject<MPSHandle>
+@interface TemporaryImageHandle : NSObject <MPSHandle>
 
 @property(nonatomic, copy) NSString* label_;
 
