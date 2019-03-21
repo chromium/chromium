@@ -99,9 +99,11 @@ int32_t CompilationDelegateClDnn::Compile() {
   return mojom::NOT_ERROR;
 }
 
-std::unique_ptr<mojom::Execution> CompilationDelegateClDnn::CreateExecution(
+int32_t CompilationDelegateClDnn::CreateExecution(
+    std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
-  return std::make_unique<ExecutionImplClDnn>(this, std::move(params));
+  execution = std::make_unique<ExecutionImplClDnn>(this, std::move(params));
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateClDnn::CldnnInit() {

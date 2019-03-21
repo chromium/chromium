@@ -16,6 +16,27 @@ if (is_win) {
   os_folder = "Linux64"
 }
 
+source_set("ie") {
+  sources = [
+    "compilation_delegate_ie.cc",
+    "compilation_delegate_ie.h",
+    "execution_impl_ie.cc",
+    "execution_impl_ie.h",
+  ]
+  include_dirs = [ "//third_party/libinference_engine/dldt/inference-engine/include/" ]
+
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+
+  cflags_cc = [
+    "-Wno-pessimizing-move",
+    "-Wno-extra-semi",
+    "-Wno-defaulted-function-deleted",
+  ]
+}
+
 source_set("lib") {
   sources = [
     "common.cc",
@@ -42,6 +63,8 @@ source_set("lib") {
       "execution_impl_mkl_dnn.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
+      "ml_switches.cc",
+      "ml_switches.h",
       "mkl_dnn_symbol_table.cc",
       "mkl_dnn_symbol_table.h",
       "model_impl.cc",
@@ -175,6 +198,14 @@ source_set("lib") {
     "//services/ml/public/mojom",
     "//services/service_manager/public/cpp",
   ]
+
+  if (is_linux) {
+    deps += [
+      ":ie",
+      "//third_party/libinference_engine:libinference_engine",
+      "//third_party/libinference_engine:libMKLDNNPlugin",
+    ]
+  }
 }
 
 if (is_win || is_linux) {

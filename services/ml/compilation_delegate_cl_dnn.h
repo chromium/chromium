@@ -24,7 +24,8 @@ class CompilationDelegateClDnn : public CompilationDelegate {
   ~CompilationDelegateClDnn() override;
 
   int32_t Compile() override;
-  std::unique_ptr<mojom::Execution> CreateExecution(
+  int32_t CreateExecution(
+      std::unique_ptr<mojom::Execution>& execution,
       mojom::ExecutionInitParamsPtr params) override;
 
   static int32_t CldnnGetLayout(int32_t type,

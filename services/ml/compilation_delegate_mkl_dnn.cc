@@ -104,10 +104,12 @@ int32_t CompilationDelegateMklDnn::Compile() {
   return mojom::NOT_ERROR;
 }
 
-std::unique_ptr<mojom::Execution> CompilationDelegateMklDnn::CreateExecution(
+int32_t CompilationDelegateMklDnn::CreateExecution(
+    std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
-  return std::make_unique<ExecutionImplMklDnn>(std::move(compiled_model_),
-                                               std::move(params));
+  execution = std::make_unique<ExecutionImplMklDnn>(std::move(compiled_model_),
+                                                    std::move(params));
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateMklDnn::MkldnnInit() {

@@ -9,8 +9,14 @@
 
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_delegate_cl_dnn.h"
+#include "services/ml/compilation_delegate_ie.h"
 #include "services/ml/compilation_delegate_mkl_dnn.h"
 #include "services/ml/model_impl.h"
+
+#if defined(OS_LINUX)
+#include "base/command_line.h"
+#include "services/ml/ml_switches.h"
+#endif
 
 namespace ml {
 
@@ -48,6 +54,23 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   DLOG(INFO) << "CompilationImpl::Finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
+  preference_ = preference;
+#if defined(OS_LINUX)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kUseInferenceEngine)) {
+    delegate_ = std::make_unique<CompilationDelegateIe>(this);
+  } else {
+    if (preference == mojom::PREFER_SUSTAINED_SPEED) {
+      delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+    } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
+      delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+    } else {
+      LOG(ERROR) << "Preference: " << preference << " is not suppoted.";
+      std::move(callback).Run(mojom::BAD_DATA);
+      return;
+    }
+  }
+#else
   if (preference == mojom::PREFER_SUSTAINED_SPEED) {
     delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
@@ -57,6 +80,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
     std::move(callback).Run(mojom::BAD_DATA);
     return;
   }
+#endif
   int32_t result = delegate_->Compile();
   std::move(callback).Run(result);
 }
@@ -97,7 +121,13 @@ void CompilationImpl::CreateExecution(CreateExecutionCallback callback) {
       mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 
   mojom::ExecutionPtrInfo ptr_info;
-  mojo::MakeStrongBinding(delegate_->CreateExecution(std::move(init_params)),
+  std::unique_ptr<mojom::Execution> execution;
+  int32_t result = delegate_->CreateExecution(execution, std::move(init_params));
+  if (result != mojom::NOT_ERROR) {
+    std::move(callback).Run(result, nullptr);
+    return;
+  }
+  mojo::MakeStrongBinding(std::move(execution),
                           mojo::MakeRequest(&ptr_info));
   remote_init_params->execution = std::move(ptr_info);
 

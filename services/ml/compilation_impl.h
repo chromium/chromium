@@ -23,7 +23,8 @@ class CompilationDelegate {
   virtual ~CompilationDelegate() = default;
 
   virtual int32_t Compile() = 0;
-  virtual std::unique_ptr<mojom::Execution> CreateExecution(
+  virtual int32_t CreateExecution(
+      std::unique_ptr<mojom::Execution>& execution,
       mojom::ExecutionInitParamsPtr params) = 0;
 };
 
@@ -129,8 +130,10 @@ class CompilationImpl : public mojom::Compilation {
                                   FullyConnectedParams&) const;
   int32_t GetResizeBilinearParams(const mojom::OperationPtr&,
                                   ResizeBilinearParams&) const;
+  int32_t GetPreference() const { return preference_; }
 
  private:
+  int32_t preference_;
   mojom::ModelInfoPtr model_info_;
 
   std::unique_ptr<CompilationDelegate> delegate_;
