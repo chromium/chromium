@@ -97,14 +97,6 @@ bool CompileArithmeticBNNS(OperationMac& operation,
     return false;
   }
 
-  for (size_t i = 0; i < 2; i++) {
-    uint32_t extend_input_idx = inputs[i];
-    if (values.find(extend_input_idx) != values.end()) {
-      operation.extend_input.push_back(reinterpret_cast<float*>(
-          memory.get() + values.at(extend_input_idx).offset));
-    }
-  }
-
   const int32_t fuse_code = getScalarInt32(values, inputs[2], memory.get());
   DLOG(INFO) << "FUSE_CODE:  " << fuse_code;
 
@@ -538,14 +530,6 @@ bool CompileConcatenationBNNS(OperationMac& concat,
 
   std::vector<uint32_t> inputs = concat.inputs;
   std::vector<uint32_t> outputs = concat.outputs;
-
-  if (inputs.size() > 2 && is_first_operation) {
-    for (size_t i = 1; i < inputs.size() - 1; ++i) {
-      float* input_value =
-          reinterpret_cast<float*>(memory.get() + values.at(inputs[i]).offset);
-      concat.extend_input.push_back(input_value);
-    }
-  }
 
   uint32_t axis =
       getScalarInt32(values, inputs[inputs.size() - 1], memory.get());

@@ -145,13 +145,22 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
       @autoreleasepool {
         if (compilation_ != nullptr) {
           for (size_t i = 0; i < compilation_->operations_.size(); i++) {
-            float* src = nullptr;
-            float* des = nullptr;
             const OperationMac& operation = compilation_->operations_[i];
             bool is_outer_input = false;
             uint32_t operation_input_idx = operation.inputs[0];
             OperandMac& operation_input =
                 compilation_->operands_[operation_input_idx];
+
+            std::vector<float*> src(operation.inputs.size(), nullptr);
+            float* des = nullptr;
+
+            // get src
+            bool tmp_src_malloc = false;
+            bool need_offset_transform = false;
+            if (operation.offset_x > 0 || operation.offset_y > 0) {
+              need_offset_transform = true;
+            }
+
             for (size_t i = 0; i < operation.inputs.size(); ++i) {
               const uint32_t input_idx = operation.inputs[i];
               for (size_t j = 0; j < compilation_->inputs_.size(); j++) {
@@ -167,6 +176,35 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 break;
               }
             }
+
+            // For bnns backend, the dimension must satisfy:
+            // in_width + 2 * x_padding = x_stride * (out_width - 1) + k_width;
+            // in_height + 2 * y_padding = y_stride * (out_height - 1) +
+            // k_height; But webml doesn't hava these restricts, so I need to
+            // add some 0 values for input image to adapt to bnns
+            if (is_outer_input || need_offset_transform) {
+              for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
+                operation_input_idx = operation.inputs[i];
+                float* raw_input = (float*)inputs_info_[i]->mapping.get();
+                if (is_outer_input == false) {
+                  raw_input = bnns_operands_memory_map_[operation_input_idx];
+                }
+
+                if (operation.local_operation == KBNNSFilter &&
+                    operation_input.dimensions.size() == 4) {
+                  if (!TransposeForInput(operation, operation_input, src[i],
+                                         raw_input, is_outer_input)) {
+                    success = false;
+                  }
+                  tmp_src_malloc = true;
+                } else {
+                  src[i] = raw_input;
+                }
+              }
+            } else {
+              src[0] = bnns_operands_memory_map_[operation_input_idx];
+            }
+
             bool is_outer_output = false;
             uint32_t operation_output_idx = operation.outputs[0];
             OperandMac& operation_output =
@@ -187,36 +225,6 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               }
             }
 
-            // get src
-            bool tmp_src_malloc = false;
-            bool need_offset_transform = false;
-            if (operation.offset_x > 0 || operation.offset_y > 0) {
-              need_offset_transform = true;
-            }
-            // For bnns backend, the dimension must satisfy:
-            // in_width + 2 * x_padding = x_stride * (out_width - 1) + k_width;
-            // in_height + 2 * y_padding = y_stride * (out_height - 1) +
-            // k_height; But webml doesn't hava these restricts, so I need to
-            // add some 0 values for input image to adapt to bnns
-            if (is_outer_input || need_offset_transform) {
-              float* raw_input = (float*)inputs_info_[0]->mapping.get();
-              if (is_outer_input == false) {
-                raw_input = bnns_operands_memory_map_[operation_input_idx];
-              }
-              if (operation.local_operation == KBNNSFilter &&
-                  operation_input.dimensions.size() == 4) {
-                if (!TransposeForInput(operation, operation_input, src,
-                                       raw_input, is_outer_input)) {
-                  success = false;
-                }
-                tmp_src_malloc = true;
-              } else {
-                src = raw_input;
-              }
-            } else {
-              src = bnns_operands_memory_map_[operation_input_idx];
-            }
-
             // get des
             if (is_outer_output) {
               des = (float*)outputs_info_[0]->mapping.get();
@@ -228,7 +236,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               const int32_t input_batch_size = operation.input_batch_size;
               int result;
               if (input_batch_size == 1) {
-                result = BNNSFilterApply(operation.filter, src, des);
+                result = BNNSFilterApply(operation.filter, src[0], des);
               } else {
                 int in_stride = 1, out_stride = 1;
                 for (size_t i = 1; i < operation_input.dimensions.size(); i++) {
@@ -240,7 +248,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 }
                 result =
                     BNNSFilterApplyBatch(operation.filter, input_batch_size,
-                                         src, in_stride, des, out_stride);
+                                         src[0], in_stride, des, out_stride);
               }
               if (result == -1) {
                 success = false;
@@ -249,7 +257,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
             } else if (operation.local_operation == KReshape) {
               size_t input_size = operation_input.requiredSize() / 4;
               for (size_t j = 0; j < input_size; j++) {
-                des[j] = src[j];
+                des[j] = src[0][j];
               }
             } else if (operation.local_operation == KConcatenation) {
               int32_t batch_offset_sum = 0;
@@ -263,21 +271,15 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                 const int32_t channels = operand.dimensions[3];
                 const int32_t channel_offset = width * height;
                 const int32_t batch_offset = width * height * channels;
-                if (i == 0) {
-                  float* input;
-                  if (is_outer_input) {
-                    input = (float*)inputs_info_[0]->mapping.get();
-                    is_outer_input = false;
-                  } else {
-                    input = operation.extend_input[index - 1];
-                  }
-                  if (!TransposeForInput(operation, operand, src, input,
+                if (is_outer_input) {
+                  float* input = src[index];
+                  if (!TransposeForInput(operation, operand, src[index], input,
                                          true)) {
                     success = false;
                   }
                   tmp_src_malloc = true;
                 } else {
-                  src = bnns_operands_memory_map_[concat_input_idx];
+                  src[index] = bnns_operands_memory_map_[concat_input_idx];
                 }
                 for (int b = 0; b < batch; b++) {
                   for (int c = 0; c < channels; c++) {
@@ -285,7 +287,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                                       b * batch_offset * batch +
                                       batch_offset_sum;
                     float* temp_src =
-                        src + c * channel_offset + b * batch_offset;
+                        src[index] + c * channel_offset + b * batch_offset;
                     memcpy(temp_des, temp_src, channel_offset * sizeof(float));
                   }
                 }
@@ -293,10 +295,11 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               }
             } else if (operation.local_operation == KAdd ||
                        operation.local_operation == KMul) {
-              float* input_a_values = src;
+              float* input_a_values = src[0];
               float* input_b_values =
-                  (i == 0 ? operation.extend_input[0]
-                          : bnns_operands_memory_map_[operation.inputs[1]]);
+                  (is_outer_input
+                       ? src[1]
+                       : bnns_operands_memory_map_[operation.inputs[1]]);
               const OperandMac& output =
                   compilation_->operands_[operation.outputs[0]];
               int32_t output_length = product(output.dimensions);
@@ -333,7 +336,7 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               const int32_t input_height = input.dimensions[2];
               const int32_t input_depth = input.dimensions[3];
               vImage_Buffer source_buffer;
-              source_buffer.data = src;
+              source_buffer.data = src[0];
               source_buffer.height = input_height;
               source_buffer.width = input_width;
               source_buffer.rowBytes = input_width * sizeof(float);
@@ -404,9 +407,15 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
               free(resampling_filter_verticle);
             }
 
-            if (is_outer_input && src != nullptr && tmp_src_malloc) {
-              free(src);
+            if (is_outer_input && tmp_src_malloc) {
+              for (auto it = src.begin(); it != src.end(); it++) {
+                if (*it != nullptr) {
+                  delete *it;
+                }
+              }
+              src.clear();
             }
+
             if (is_outer_output && operation_output.dimensions.size() == 4) {
               const int32_t batch = operation_output.dimensions[0];
               const int32_t width = operation_output.dimensions[1];
