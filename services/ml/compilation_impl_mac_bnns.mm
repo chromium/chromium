@@ -156,6 +156,12 @@ bool CompileConv2DBNNS(OperationMac& operation,
 
   std::vector<uint32_t> inputs = operation.inputs;
   std::vector<uint32_t> outputs = operation.outputs;
+
+  if (inputs.size() != 7 && inputs.size() != 10) {
+    DLOG(ERROR) << "Unsupported input size!";
+    return false;
+  }
+
   ParameterExtracterForConv(
       operation, inputs, outputs, values, memory, operands, input_batch_size,
       input_width, input_height, output_width, output_height, implicit_padding,
