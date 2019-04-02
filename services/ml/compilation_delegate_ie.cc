@@ -523,9 +523,49 @@ int32_t CompilationDelegateIe::AddPooling(
   int32_t result = compilation_->GetPoolingParams(operation, params);
   if (result != mojom::NOT_ERROR)
     return result;
-
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  const uint32_t input_index = operation->inputs[0];
+  if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+    LOG(ERROR) << "The layer for operand index " << input_index
+               << " is not ready";
+    return mojom::BAD_DATA;
+  }
+  try {
+    const uint32_t output_index = operation->outputs[0];
+    std::string output_name(base::NumberToString(output_index));
+    std::string name(output_name);
+    if (params.fuse_code != mojom::FUSED_NONE) {
+      name = name + "_pre_fuse";
+    }
+    const size_t input_layer_id = layer_id_map_[input_index];
+    DLOG(INFO) << "[IE] input port layer id " << input_layer_id
+               << " for operand index " << input_index;
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_id}},
+        ie::Builder::PoolingLayer(name)
+            .setExcludePad(true)
+            .setKernel({params.filter_height, params.filter_width})
+            .setStrides({params.stride_width, params.stride_height})
+            .setPaddingsBegin({params.padding_top, params.padding_left})
+            .setPaddingsEnd({params.padding_bottom, params.padding_right})
+            .setPoolingType(operation->type == mojom::AVERAGE_POOL_2D
+                                ? ie::Builder::PoolingLayer::PoolingType::AVG
+                                : ie::Builder::PoolingLayer::PoolingType::MAX)
+            .setRoundingType(ie::Builder::PoolingLayer::RoundingType::CEIL));
+    if (params.fuse_code != mojom::FUSED_NONE) {
+      result = AddActivationByFusedCode(params.fuse_code, layer_id, output_name,
+                                        layer_id);
+      if (result != mojom::NOT_ERROR) {
+        return result;
+      }
+    }
+    layer_id_map_[output_index] = layer_id;
+    DLOG(INFO) << "[IE] succeed to add pooling layer id " << layer_id
+               << " for output operand index " << output_index;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add pooling layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateIe::AddSoftmax(
