@@ -491,7 +491,7 @@ int32_t CompilationDelegateIe::AddConvolution(
         {{input_layer_id}},
         ie::Builder::ConvolutionLayer(name)
             .setKernel({params.filter_height, params.filter_width})
-            .setGroup(1)
+            .setGroup(params.depthwise? params.depth_out : 1)
             .setOutDepth(params.depth_out)
             .setDilation({params.dilation_width, params.dilation_height})
             .setStrides({params.stride_width, params.stride_height})
