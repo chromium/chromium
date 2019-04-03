@@ -606,8 +606,38 @@ int32_t CompilationDelegateIe::AddSoftmax(
 
 int32_t CompilationDelegateIe::AddReshape(
     const mojom::OperationPtr& operation) {
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  const uint32_t input_index = operation->inputs[0];
+  if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+    LOG(ERROR) << "The layer for operand index " << input_index
+               << " is not ready";
+    return mojom::BAD_DATA;
+  }
+  try {
+    const uint32_t output_index = operation->outputs[0];
+    const mojom::ModelInfoPtr& model = compilation_->GetModel();
+    const mojom::OperandPtr& output = model->operands[output_index];
+    ie::SizeVector dims;
+    int32_t result = GetDims(output->dimensions, dims);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+    std::vector<int> cdims;
+    for (auto d : dims)
+      cdims.push_back(static_cast<int>(d));
+    std::string name(base::NumberToString(output_index));
+    const size_t input_layer_id = layer_id_map_[input_index];
+    DLOG(INFO) << "[IE] input port layer id " << input_layer_id
+               << " for operand index " << input_index;
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_id}}, ie::Builder::ReshapeLayer(name).setDims(cdims));
+    layer_id_map_[output_index] = layer_id;
+    DLOG(INFO) << "[IE] succeed to add reshape layer id " << layer_id
+               << " for output operand index " << output_index;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add reshape layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateIe::AddConcatenation(
