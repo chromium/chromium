@@ -129,6 +129,9 @@ int32_t CompilationDelegateIe::BuildNetwork() {
     ie::InputsDataMap input_info(network_->getInputsInfo());
     DLOG(INFO) << "[IE] inputs data map size " << input_info.size();
     for (auto itr : input_info) {
+      if (itr.second->getLayout() == ie::Layout::NCHW) {
+        itr.second->setLayout(ie::Layout::NHWC);
+      }
       ie::SizeVector dims = itr.second->getDims();
       DLOG(INFO) << "      input item name " << itr.first << " precision "
                  << itr.second->getPrecision() << " layout "
@@ -140,6 +143,9 @@ int32_t CompilationDelegateIe::BuildNetwork() {
     DLOG(INFO) << "[IE] outputs data map size " << output_info.size();
     for (auto itr : output_info) {
       ie::SizeVector dims = itr.second->getDims();
+      if (itr.second->getLayout() == ie::Layout::NCHW) {
+        itr.second->setLayout(ie::Layout::NHWC);
+      }
       DLOG(INFO) << "      output item name " << itr.first << " precision "
                  << itr.second->getPrecision() << " layout "
                  << itr.second->getLayout() << " dims "

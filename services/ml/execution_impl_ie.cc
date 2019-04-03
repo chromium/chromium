@@ -91,10 +91,16 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
           input_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
       const float* src = reinterpret_cast<const float*>(mapping.get());
-      result = CompilationDelegateIe::Reorder(dst, src, operand->dimensions);
-      if (result != mojom::NOT_ERROR) {
-        std::move(callback).Run(mojom::BAD_DATA);
-        return;
+      if (operand->dimensions.size() == 3) {
+        // Only reorder HWC to CHW
+        result = CompilationDelegateIe::Reorder(dst, src, operand->dimensions);
+        if (result != mojom::NOT_ERROR) {
+          std::move(callback).Run(mojom::BAD_DATA);
+          return;
+        }
+      } else {
+        const size_t length = product(operand->dimensions) * sizeof(float);
+        memcpy(static_cast<void*>(dst), static_cast<const void*>(src), length);
       }
       DLOG(INFO) << "Copy data to input blob buffer for " << input_id;
     }
@@ -115,11 +121,16 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
           output_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
       float* dst = reinterpret_cast<float*>(mapping.get());
-      result =
-          CompilationDelegateIe::Reorder(dst, src, operand->dimensions, false);
-      if (result != mojom::NOT_ERROR) {
-        std::move(callback).Run(mojom::BAD_DATA);
-        return;
+      if (operand->dimensions.size() == 3) {
+        result = CompilationDelegateIe::Reorder(dst, src, operand->dimensions,
+                                                false);
+        if (result != mojom::NOT_ERROR) {
+          std::move(callback).Run(mojom::BAD_DATA);
+          return;
+        }
+      } else {
+        const size_t length = product(operand->dimensions) * sizeof(float);
+        memcpy(static_cast<void*>(dst), static_cast<const void*>(src), length);
       }
       DLOG(INFO) << "Copy data from output memory primitive buffer for "
                  << output_id;
