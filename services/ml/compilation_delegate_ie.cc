@@ -387,7 +387,8 @@ int32_t CompilationDelegateIe::AddElementwise(
   }
 
   // Binary op
-  std::vector<size_t> input_layer_ids;
+  std::vector<ie::PortInfo> input_port_infos;
+  std::vector<ie::Port> input_ports;
   for (size_t i = 0; i < 2; ++i) {
     const uint32_t input_index = operation->inputs[i];
     if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
@@ -406,7 +407,8 @@ int32_t CompilationDelegateIe::AddElementwise(
       }
     }
     const size_t layer_id = layer_id_map_[input_index];
-    input_layer_ids.push_back(layer_id);
+    input_port_infos.push_back({layer_id});
+    input_ports.push_back(builder_->getLayer(layer_id).getOutputPorts()[0]);
     DLOG(INFO) << "[IE] input " << i << " layer id " << layer_id
                << " operand index " << input_index;
   }
@@ -427,11 +429,9 @@ int32_t CompilationDelegateIe::AddElementwise(
   }
   try {
     size_t layer_id = builder_->addLayer(
-        {{input_layer_ids[0]}, {input_layer_ids[1]}},
+        input_port_infos,
         ie::Builder::EltwiseLayer(name)
-            .setInputPorts(
-                {builder_->getLayer(input_layer_ids[0]).getOutputPorts()[0],
-                 builder_->getLayer(input_layer_ids[1]).getOutputPorts()[0]})
+            .setInputPorts(input_ports)
             .setEltwiseType(type));
     DLOG(INFO) << "[IE] succeed to add eltwise layer id " << layer_id
                << " for output operand index " << output_index << " with type "
@@ -654,9 +654,9 @@ int32_t CompilationDelegateIe::AddConcatenation(
   if (result != mojom::NOT_ERROR)
     return result;
 
-  // Binary op
   const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  std::vector<size_t> input_layer_ids;
+  std::vector<ie::PortInfo> input_port_infos;
+  std::vector<ie::Port> input_ports;
   for (size_t i = 0; i < operation->inputs.size() - 1; ++i) {
     const uint32_t input_index = operation->inputs[i];
     if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
@@ -675,7 +675,8 @@ int32_t CompilationDelegateIe::AddConcatenation(
       }
     }
     const size_t layer_id = layer_id_map_[input_index];
-    input_layer_ids.push_back(layer_id);
+    input_port_infos.push_back({layer_id});
+    input_ports.push_back(builder_->getLayer(layer_id).getOutputPorts()[0]);
     DLOG(INFO) << "[IE] input " << i << " layer id " << layer_id
                << " operand index " << input_index;
   }
@@ -714,11 +715,9 @@ int32_t CompilationDelegateIe::AddConcatenation(
   std::string name(base::NumberToString(output_index));
   try {
     size_t layer_id = builder_->addLayer(
-        {{input_layer_ids[0]}, {input_layer_ids[1]}},
+        input_port_infos,
         ie::Builder::ConcatLayer(name)
-            .setInputPorts(
-                {builder_->getLayer(input_layer_ids[0]).getOutputPorts()[0],
-                 builder_->getLayer(input_layer_ids[1]).getOutputPorts()[0]})
+            .setInputPorts(input_ports)
             .setAxis(axis));
     DLOG(INFO) << "[IE] succeed to add concat layer id " << layer_id
                << " for output operand index " << output_index << "with axis"
