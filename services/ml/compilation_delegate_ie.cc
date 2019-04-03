@@ -173,8 +173,8 @@ int32_t CompilationDelegateIe::GetDims(const std::vector<uint32_t>& dimensions,
   } else if (dimensions.size() == 3) {
     // HWC -> CHW
     dims[0] = dimensions[2];
-    dims[1] = dimensions[1];
-    dims[2] = dimensions[2];
+    dims[1] = dimensions[0];
+    dims[2] = dimensions[1];
   } else if (dimensions.size() == 4) {
     // NHWC -> NCHW
     dims[0] = dimensions[0];
@@ -738,9 +738,60 @@ int32_t CompilationDelegateIe::AddFullyConnected(
   int32_t result = compilation_->GetFullyConnectedParams(operation, params);
   if (result != mojom::NOT_ERROR)
     return result;
-
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  const uint32_t input_index = operation->inputs[0];
+  if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+    LOG(ERROR) << "The layer for operand index " << input_index
+               << " is not ready";
+    return mojom::BAD_DATA;
+  }
+  try {
+    const uint32_t output_index = operation->outputs[0];
+    std::string output_name(base::NumberToString(output_index));
+    std::string name(output_name);
+    if (params.fuse_code != mojom::FUSED_NONE) {
+      name = name + "_pre_fuse";
+    }
+    const uint32_t weights_index = operation->inputs[1];
+    ie::Blob::Ptr weights;
+    result = CreateBlob(weights_index, weights);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+    const uint32_t bias_index = operation->inputs[2];
+    ie::Blob::Ptr bias;
+    result = CreateBlob(bias_index, bias);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+    size_t input_layer_id = layer_id_map_[input_index];
+    DLOG(INFO) << "[IE] input port layer id " << input_layer_id
+               << " for operand index " << input_index;
+    std::string reshape_name = name + "-reshape";
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_id}},
+        ie::Builder::ReshapeLayer(reshape_name)
+        .setDims({params.input_batch_size, params.input_size}));
+    layer_id = builder_->addLayer(
+        {{layer_id}},
+        ie::Builder::FullyConnectedLayer(name)
+            .setOutputNum(params.output_num_units)
+            .setWeights(weights)
+            .setBiases(bias));
+    if (params.fuse_code != mojom::FUSED_NONE) {
+      result = AddActivationByFusedCode(params.fuse_code, layer_id, output_name,
+                                        layer_id);
+      if (result != mojom::NOT_ERROR) {
+        return result;
+      }
+    }
+    layer_id_map_[output_index] = layer_id;
+    DLOG(INFO) << "[IE] succeed to add fc layer id " << layer_id
+               << " for output operand index " << output_index;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add fc layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateIe::AddResizeBilinear(
