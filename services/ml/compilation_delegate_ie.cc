@@ -556,7 +556,7 @@ int32_t CompilationDelegateIe::AddPooling(
             .setPoolingType(operation->type == mojom::AVERAGE_POOL_2D
                                 ? ie::Builder::PoolingLayer::PoolingType::AVG
                                 : ie::Builder::PoolingLayer::PoolingType::MAX)
-            .setRoundingType(ie::Builder::PoolingLayer::RoundingType::CEIL));
+            .setRoundingType(ie::Builder::PoolingLayer::RoundingType::FLOOR));
     if (params.fuse_code != mojom::FUSED_NONE) {
       result = AddActivationByFusedCode(params.fuse_code, layer_id, output_name,
                                         layer_id);
