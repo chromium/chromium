@@ -654,8 +654,81 @@ int32_t CompilationDelegateIe::AddConcatenation(
   if (result != mojom::NOT_ERROR)
     return result;
 
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  // Binary op
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  std::vector<size_t> input_layer_ids;
+  for (size_t i = 0; i < operation->inputs.size() - 1; ++i) {
+    const uint32_t input_index = operation->inputs[i];
+    if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+      // Setup constants
+      const mojom::ModelInfoPtr& model = compilation_->GetModel();
+      if (model->values.find(base::NumberToString(input_index)) !=
+          model->values.end()) {
+        result = AddConstant(input_index);
+        if (result != mojom::NOT_ERROR) {
+          return result;
+        }
+      } else {
+        LOG(ERROR) << "The layer for operand index " << input_index
+                   << " is not ready";
+        return mojom::BAD_DATA;
+      }
+    }
+    const size_t layer_id = layer_id_map_[input_index];
+    input_layer_ids.push_back(layer_id);
+    DLOG(INFO) << "[IE] input " << i << " layer id " << layer_id
+               << " operand index " << input_index;
+  }
+
+  int axis = 0;
+  const uint32_t rank =
+      model->operands[operation->inputs[0]]->dimensions.size();
+  if (rank == 1 || rank == 2) {
+    axis = params.axis;
+  } else if (rank == 3) {
+    // HWC -> CHW
+    if (params.axis == 0) {
+      axis = 1;
+    } else if (params.axis == 1) {
+      axis = 2;
+    } else if (params.axis == 2) {
+      axis = 0;
+    }
+  } else if (rank == 4) {
+    // NHWC -> NCHW
+    if (params.axis == 0) {
+      axis = 0;
+    } else if (params.axis == 1) {
+      axis = 2;
+    } else if (params.axis == 2) {
+      axis = 3;
+    } else if (params.axis == 3) {
+      axis = 1;
+    }
+  } else {
+    LOG(ERROR) << "rank " << rank << " is not supported.";
+    return mojom::BAD_DATA;
+  }
+
+  const uint32_t output_index = operation->outputs[0];
+  std::string name(base::NumberToString(output_index));
+  try {
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_ids[0]}, {input_layer_ids[1]}},
+        ie::Builder::ConcatLayer(name)
+            .setInputPorts(
+                {builder_->getLayer(input_layer_ids[0]).getOutputPorts()[0],
+                 builder_->getLayer(input_layer_ids[1]).getOutputPorts()[0]})
+            .setAxis(axis));
+    DLOG(INFO) << "[IE] succeed to add concat layer id " << layer_id
+               << " for output operand index " << output_index << "with axis"
+               << axis;
+    layer_id_map_[output_index] = layer_id;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add concat layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateIe::AddFullyConnected(
