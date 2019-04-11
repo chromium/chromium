@@ -142,9 +142,8 @@ bool CompileConv2DBNNS(OperationMac& operation,
                        const std::map<uint32_t, ValueInfo>& values,
                        const std::unique_ptr<int8_t[]>& memory,
                        const std::vector<OperandMac>& operands) {
-  DLOG(INFO) << "CompilationImplMac::CompileConv2DOrDepthwiseConv2D";
-  DLOG_IF(FATAL, operation.type != mojom::CONV_2D &&
-                     operation.type != mojom::DEPTHWISE_CONV_2D);
+  DLOG(INFO) << "CompilationImplMac::CompileConv2D";
+  DLOG_IF(FATAL, operation.type != mojom::CONV_2D);
   int32_t input_batch_size, input_width, input_height, output_width,
       output_height;
   bool implicit_padding = false;
@@ -520,6 +519,8 @@ bool CompileReshapeBNNS(OperationMac& reshape) {
   DLOG_IF(FATAL, reshape.type != mojom::RESHAPE);
 
   reshape.local_operation = KReshape;
+  reshape.offset_x = 0;
+  reshape.offset_y = 0;
   return true;
 }
 
