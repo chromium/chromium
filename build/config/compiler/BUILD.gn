@@ -43,7 +43,12 @@ declare_args() {
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
   # builds on Linux that could use a different version of the compiler.
   # With GCC, warnings in no-Chromium code are always not treated as errors.
-  treat_warnings_as_errors = true
+  if (current_cpu == "arm" || current_cpu == "arm64") {
+       treat_warnings_as_errors = false
+  }
+  else{
+       treat_warnings_as_errors = true
+  }
 
   # Normally, Android builds are lightly optimized, even for debug builds, to
   # keep binary size down. Setting this flag to true disables such optimization

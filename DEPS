@@ -535,7 +535,7 @@ deps = {
 
   'src/native_client': {
       'url': Var('chromium_git') + '/native_client/src/native_client.git' + '@' + Var('nacl_revision'),
-      'condition': 'checkout_nacl',
+      'condition': 'checkout_nacl and host_cpu != "arm64"',
   },
 
   'src/net/third_party/quiche/src':
@@ -2292,7 +2292,7 @@ hooks = [
     # anywhere from 30 minutes to 4 hours depending on platform to build.
     'name': 'nacltools',
     'pattern': '.',
-    'condition': 'checkout_nacl',
+    'condition': 'checkout_nacl and host_cpu != "arm64"',
     'action': [
         'python',
         'src/build/download_nacl_toolchains.py',
@@ -2376,7 +2376,7 @@ hooks = [
   {
     'name': 'binutils',
     'pattern': 'src/third_party/binutils',
-    'condition': 'host_os == "linux" and host_cpu != "mips64"',
+    'condition': '(host_os == "linux") and (host_cpu != "mips64" and host_cpu != "arm64")',
     'action': [
         'python',
         'src/third_party/binutils/download.py',
