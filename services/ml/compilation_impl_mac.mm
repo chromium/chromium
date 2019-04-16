@@ -154,8 +154,8 @@ void CompilationImplMac::CompileModelWithBNNS(FinishCallback callback) {
     } else if (type == mojom::RESHAPE) {
       success = CompileReshapeBNNS(operation);
     } else if (type == mojom::CONCATENATION) {
-      success = CompileConcatenationBNNS(operation, values_, memory_,
-                                         i == 0 ? true : false);
+      success =
+          CompileConcatenationBNNS(operation, values_, memory_, operands_);
     } else if (type == mojom::ADD || type == mojom::MUL) {
       success = CompileArithmeticBNNS(operation, values_, memory_, operands_);
     } else if (type == mojom::FULLY_CONNECTED) {

@@ -50,6 +50,7 @@ struct OperationMac : public Operation {
   int input_batch_size;
   uint32_t offset_x;
   uint32_t offset_y;
+  std::vector<float*> extend_input;
   void (*kernelFunc)(const float* xArray,
                      float* yArray,
                      unsigned long count,

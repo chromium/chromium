@@ -27,6 +27,40 @@ void ResamplingkernelFunc(const float* xArray,
   }
 }
 
+void SetExtendInputs(const uint32_t extend_input_idx,
+                     const OperandMac& input,
+                     OperationMac& operation,
+                     float* input_memory) {
+  if (input.dimensions.size() == 4) {
+    const int32_t input_batch = input.dimensions[0];
+    const int32_t input_height = input.dimensions[1];
+    const int32_t input_width = input.dimensions[2];
+    const int32_t input_depth = input.dimensions[3];
+    float* output_memory =
+        (float*)malloc(sizeof(float) * product(input.dimensions));
+    for (int b = 0; b < input_batch; b++) {
+      for (int h = 0; h < input_height; h++) {
+        for (int w = 0; w < input_width; w++) {
+          for (int d = 0; d < input_depth; d++) {
+            const int new_batch_offset =
+                b * input_height * input_width * input_depth;
+            const int ori_index = new_batch_offset +
+                                  h * input_width * input_depth +
+                                  w * input_depth + d;
+            const int new_index = new_batch_offset +
+                                  d * input_height * input_width +
+                                  h * input_width + w;
+            *(output_memory + new_index) = *(input_memory + ori_index);
+          }
+        }
+      }
+    }
+    operation.extend_input.push_back(output_memory);
+  } else {
+    operation.extend_input.push_back(input_memory);
+  }
+}
+
 API_AVAILABLE(macosx(10.13))
 void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
                                          OperationMac& operation,
@@ -95,6 +129,16 @@ bool CompileArithmeticBNNS(OperationMac& operation,
   if (operands[inputs[0]].dimensions != operands[inputs[1]].dimensions) {
     DLOG(ERROR) << "Broadcasting is not supported by now!";
     return false;
+  }
+
+  for (size_t i = 0; i < 2; i++) {
+    uint32_t extend_input_idx = inputs[i];
+    if (values.find(extend_input_idx) != values.end()) {
+      float* input_memory = reinterpret_cast<float*>(
+          memory.get() + values.at(extend_input_idx).offset);
+      const OperandMac& input = operands[inputs[i]];
+      SetExtendInputs(extend_input_idx, input, operation, input_memory);
+    }
   }
 
   const int32_t fuse_code = getScalarInt32(values, inputs[2], memory.get());
@@ -528,7 +572,7 @@ API_AVAILABLE(macosx(10.13))
 bool CompileConcatenationBNNS(OperationMac& concat,
                               const std::map<uint32_t, ValueInfo>& values,
                               const std::unique_ptr<int8_t[]>& memory,
-                              bool is_first_operation) {
+                              const std::vector<OperandMac>& operands) {
   DLOG(INFO) << "CompilationImplMac::CompileConcatenationBNNS";
   DLOG_IF(FATAL, concat.type != mojom::CONCATENATION);
   concat.local_operation = KConcatenation;
@@ -537,6 +581,16 @@ bool CompileConcatenationBNNS(OperationMac& concat,
 
   std::vector<uint32_t> inputs = concat.inputs;
   std::vector<uint32_t> outputs = concat.outputs;
+
+  for (size_t i = 0; i < inputs.size() - 1; ++i) {
+    uint32_t extend_input_idx = inputs[i];
+    if (values.find(extend_input_idx) != values.end()) {
+      float* input_memory =
+          reinterpret_cast<float*>(memory.get() + values.at(inputs[i]).offset);
+      const OperandMac& input = operands[inputs[i]];
+      SetExtendInputs(extend_input_idx, input, concat, input_memory);
+    }
+  }
 
   uint32_t axis =
       getScalarInt32(values, inputs[inputs.size() - 1], memory.get());

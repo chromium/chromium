@@ -47,7 +47,7 @@ API_AVAILABLE(macosx(10.13))
 bool CompileConcatenationBNNS(OperationMac& operation,
                               const std::map<uint32_t, ValueInfo>& values,
                               const std::unique_ptr<int8_t[]>& memory,
-                              bool is_first_operation);
+                              const std::vector<OperandMac>& operands);
 
 API_AVAILABLE(macosx(10.13))
 bool CompileFullyConnectedBNNS(OperationMac&,

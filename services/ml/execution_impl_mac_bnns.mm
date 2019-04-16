@@ -147,12 +147,12 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
 
             for (size_t i = 0; i < operation.inputs.size(); ++i) {
               size_t input_flag = 0;
-              const uint32_t input_idx = operation.inputs[i];
+              const uint32_t operation_input_idx = operation.inputs[i];
               for (size_t j = 0; j < compilation_->inputs_.size(); j++) {
-                if (input_idx == compilation_->inputs_[j]) {
+                if (operation_input_idx == compilation_->inputs_[j]) {
                   is_outer_input = true;
-                  operation_input_idx = input_idx;
-                  operation_input = compilation_->operands_[input_idx];
+                  operation_input =
+                      compilation_->operands_[operation_input_idx];
                   input_flag = j;
                   break;
                 }
@@ -184,10 +184,15 @@ void ExecutionImplMacBNNS::StartCompute(StartComputeCallback callback) {
                   src[i] = raw_input;
                 }
                 is_outer_input = false;
-              } else {
-                if (operation.local_operation == KAdd ||
-                    operation.local_operation == KMul ||
-                    operation.local_operation == KConcatenation || i == 0) {
+              } else if (i == 0) {
+                src[i] = bnns_operands_memory_map_[operation_input_idx];
+              } else if ((operation.local_operation == KAdd ||
+                          operation.local_operation == KMul ||
+                          operation.local_operation == KConcatenation) &&
+                         i < operation.inputs.size() - 1) {
+                if (operation.extend_input.size() > 0) {
+                  src[i] = operation.extend_input[i - 1];
+                } else {
                   src[i] = bnns_operands_memory_map_[operation_input_idx];
                 }
               }
