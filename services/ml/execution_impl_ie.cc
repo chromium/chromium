@@ -30,7 +30,7 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     } else if (preference == mojom::PREFER_SUSTAINED_SPEED) {
       device_name = "GPU";
     } else if (preference == mojom::PREFER_LOW_POWER) {
-      device_name = "VPU";
+      device_name = "MYRIAD";
     }
     DLOG(INFO) << "[IE] Trying to get plugin by device name " << device_name;
     plugin_.reset(

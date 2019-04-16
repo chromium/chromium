@@ -396,6 +396,7 @@ shared_library("libinference_engine") {
     "ENABLE_CLDNN=1",
     #"ENABLE_GNA",
     "ENABLE_MKL_DNN=1",
+    "ENABLE_MYRIAD=1",
     "GAPI_STANDALONE",
     "HAVE_SSE=1",
     "IE_BUILD_POSTFIX=\"\"",
@@ -1819,5 +1820,356 @@ shared_library("libclDNNPlugin") {
   ]
   libs = [
     "OpenCL",
+  ]
+}
+
+source_set("libgraph_transformer_hw") {
+  sources = [
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/pooling.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/split_large_convolution.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/common.hpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/convolution.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/try_hcw_layout.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/fc.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/fill_descriptors.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/swap_concat_and_pool.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/common.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/split_depth_convolution.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/split_hw_descriptors.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/hw/inject_sw.cpp",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/include/",
+    "dldt/inference-engine/src/inference_engine",
+    "dldt/inference-engine/src/vpu/graph_transformer/",
+    "dldt/inference-engine/src/vpu/common/",
+    "dldt/inference-engine/thirdparty/pugixml/src/",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+  configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  cflags_cc = [
+    "-Wno-potentially-evaluated-expression",
+    "-Wno-unused-lambda-capture",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-msse4.2",
+  ]
+  defines = [
+    "ENABLE_VPU",
+    "ENABLE_MYRIAD",
+    "IE_THREAD=IE_THREAD_OMP",
+    "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
+    "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
+  ]
+}
+static_library("libgraph_transformer") {
+  sources = [
+    "dldt/inference-engine/src/vpu/graph_transformer/simple_math.h",
+    "dldt/inference-engine/src/vpu/graph_transformer/network_config.hpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/mv_blob_format.h",
+    "dldt/inference-engine/src/vpu/graph_transformer/graph_transformer_impl.hpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/custom_layer.h",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/pooling.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/split.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/interp.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/custom.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/clamp.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/reshape.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/grn.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/none.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/power.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/crop.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/convolution.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/scale.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/fc.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/relu.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/tile.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/proposal.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/concat.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/elu.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/roipooling.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/psroipooling.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/flatten.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/region_yolo.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/sigmoid.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/prelu.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/normalize.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/deconvolution.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/norm.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/mvn.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/priorbox_clustered.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/reorg_yolo.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/softmax.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/detection_output.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/eltwise.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/priorbox.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/batch_norm.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/bias.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/copy.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/permute.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/tanh.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/stages/ctc_decoder.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/graph_transformer.hpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/network_config.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/ir/in_out_convert.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/ir/pre_process.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/ir/parse_network.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/ir/parse_data.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/simple_math.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/mv_common.h",
+    "dldt/inference-engine/src/vpu/graph_transformer/custom_layer.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/graph_transformer_impl.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/eliminate_reshape.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/convert_order.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/adjust_data_scale.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/eliminate_copy.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/allocate_resources.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/optimizations/pack_postops.cpp",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/include/",
+    "dldt/inference-engine/src/inference_engine",
+    "dldt/inference-engine/src/vpu/graph_transformer/",
+    "dldt/inference-engine/src/vpu/common/",
+    "dldt/inference-engine/thirdparty/pugixml/src/",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+  configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  cflags_cc = [
+    "-Wno-switch",
+    "-Wno-potentially-evaluated-expression",
+    "-Wno-unused-lambda-capture",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-msse4.2",
+  ]
+  defines = [
+    "ENABLE_VPU",
+    "ENABLE_MYRIAD",
+    "IE_THREAD=IE_THREAD_OMP",
+    "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
+    "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
+  ]
+  deps = [":libgraph_transformer_hw"]
+}
+
+static_library("libvpu_common") {
+  sources = [
+    "dldt/inference-engine/src/vpu/common/vpu_plugin_config_private.hpp",
+    "dldt/inference-engine/src/vpu/common/environment.h",
+    "dldt/inference-engine/src/vpu/common/GraphInfo.h",
+    "dldt/inference-engine/src/vpu/common/parsed_config.h",
+    "dldt/inference-engine/src/vpu/common/IExecutor.h",
+    "dldt/inference-engine/src/vpu/common/vpu_logger.h",
+    "dldt/inference-engine/src/vpu/common/parsed_config.cpp",
+    "dldt/inference-engine/src/vpu/common/vpu_logger.cpp",
+    "dldt/inference-engine/src/vpu/common/common.h",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/include/",
+    "dldt/inference-engine/src/inference_engine",
+    "dldt/inference-engine/src/vpu/graph_transformer/",
+    "dldt/inference-engine/src/vpu/common/",
+    "dldt/inference-engine/thirdparty/pugixml/src/",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+  configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  cflags_cc = [
+    "-Wno-potentially-evaluated-expression",
+    "-Wno-unused-lambda-capture",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-msse4.2",
+  ]
+  defines = [
+    "ENABLE_VPU",
+    "ENABLE_MYRIAD",
+    "IE_THREAD=IE_THREAD_OMP",
+    "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
+    "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
+  ]
+}
+
+static_library("libmvnc") {
+  sources = [
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLinkPublicDefines.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLinkVersion.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLink.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLinkDispatcher.c",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLink.c",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLinkPrivateDefines.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/UsbLinkPlatform.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/XLinkDispatcher.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/pc/usb_boot.h",
+    "dldt/inference-engine/thirdparty/movidius/XLink/pc/usb_boot.c",
+    "dldt/inference-engine/thirdparty/movidius/XLink/pc/UsbLinkPlatform.c",
+    "dldt/inference-engine/thirdparty/movidius/shared/include/mvLog.h",
+    "dldt/inference-engine/thirdparty/movidius/shared/include/mvMacros.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/mvnc_ext.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/fp16.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/ncPrivateTypes.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/mvnc.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/ncCommPrivate.h",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/src/fp16.c",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/src/mvnc_api.c",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/thirdparty/movidius/XLink/shared/",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include/",
+    "dldt/inference-engine/thirdparty/movidius/shared/include/",
+    "libusb",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  cflags_c = [
+    "-Wno-enum-conversion",
+    "-Wno-implicit-function-declaration",
+    "-Wno-missing-braces",
+    "-Wno-macro-redefined",
+    "-Wno-potentially-evaluated-expression",
+    "-Wno-unused-lambda-capture",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-msse4.2",
+  ]
+  defines = [
+    "ENABLE_MYRIAD=1",
+    "ENABLE_OBJECT_DETECTION_TESTS=1",
+    "ENABLE_SEGMENTATION_TESTS=1",
+    "HAVE_STRUCT_TIMESPEC",
+    "DEVICE_SHELL_ENABLED",
+    "USE_USB_VSC",
+    "_CRT_SECURE_NO_WARNINGS",
+    "__PC__",
+  ]
+}
+
+shared_library("libmyriadPlugin") {
+  sources = [
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_async_infer_request.cpp",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_plugin.h",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_infer_request.h",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_plugin.cpp",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_executor.cpp",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_executable_network.h",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_async_infer_request.h",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_executor.h",
+    "dldt/inference-engine/src/vpu/myriad_plugin/myriad_infer_request.cpp",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/src/inference_engine",
+    "dldt/inference-engine/thirdparty/movidius/mvnc/include",
+    "dldt/inference-engine/include",
+    "dldt/inference-engine/src/vpu/common",
+    "dldt/inference-engine/src/vpu/graph_transformer",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+  configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  cflags_cc = [
+    "-Wno-switch",
+    "-Wno-inconsistent-missing-override",
+    "-Wno-missing-braces",
+    "-Wno-potentially-evaluated-expression",
+    "-Wno-unused-lambda-capture",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-msse4.2",
+  ]
+  ldflags = [
+    "-Wl,--export-dynamic",
+  ]
+  defines = [
+    "ENABLE_VPU",
+    "ENABLE_MYRIAD",
+    "IE_THREAD=IE_THREAD_OMP",
+    "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
+    "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
+  ]
+  deps = [
+    ":libinference_engine",
+    ":libgraph_transformer",
+    ":libvpu_common",
+    ":libmvnc",
+    ":libpugixml",
+    ":copy_vpu_firmware",
+  ]
+  lib_dirs = [
+    "libusb",
+  ]
+  libs = [
+    "usb-1.0"
+  ]
+}
+
+copy("copy_vpu_firmware") {
+  sources = [
+    "dldt/inference-engine/temp/vpu/firmware/ma2480/mvnc/MvNCAPI-ma2480.mvcmd",
+    "dldt/inference-engine/temp/vpu/firmware/ma2450/mvnc/MvNCAPI-ma2450.mvcmd",
+  ]
+  outputs = [
+    "$root_out_dir/mvnc/{{source_file_part}}",
   ]
 }
