@@ -233,7 +233,7 @@ stage_install_common() {
 
   # Inference Engine
   if [ -f "${BUILDDIR}/libinference_engine.so" ]; then
-    for file in libinference_engine.so libMKLDNNPlugin.so; do
+    for file in libinference_engine.so libMKLDNNPlugin.so libclDNNPlugin.so; do
       buildfile="${BUILDDIR}/${file}"
       strippedfile="${buildfile}.stripped"
       debugfile="${buildfile}.debug"

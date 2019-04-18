@@ -204,6 +204,7 @@ source_set("lib") {
       ":ie",
       "//third_party/libinference_engine:libinference_engine",
       "//third_party/libinference_engine:libMKLDNNPlugin",
+      "//third_party/libinference_engine:libclDNNPlugin",
     ]
   }
 }
