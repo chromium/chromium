@@ -36,7 +36,7 @@ class CompilationDelegateIe : public CompilationDelegate {
 
  private:
   friend class ExecutionImplIe;
-  template<typename T>
+  template <typename T>
   static int32_t Reorder(T* dst,
                          const float* src,
                          std::vector<uint32_t>& dims,

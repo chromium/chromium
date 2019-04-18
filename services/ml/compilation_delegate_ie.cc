@@ -74,7 +74,7 @@ static short f32tof16(float x) {
 
   return static_cast<short>(v.u | s);
 }
-}
+}  // namespace
 
 CompilationDelegateIe::CompilationDelegateIe(const CompilationImpl* compilation)
     : CompilationDelegate(),
@@ -249,7 +249,7 @@ int32_t CompilationDelegateIe::GetDims(const std::vector<uint32_t>& dimensions,
   return mojom::NOT_ERROR;
 }
 
-template<typename T>
+template <typename T>
 int32_t CompilationDelegateIe::Reorder(T* dst,
                                        const float* src,
                                        std::vector<uint32_t>& dims,
@@ -262,9 +262,10 @@ int32_t CompilationDelegateIe::Reorder(T* dst,
     size_t size = product(dims);
     if (std::is_same<T, float>::value) {
       const size_t buffer_length = size * sizeof(T);
-      memcpy(static_cast<void*>(dst), static_cast<const void*>(src), buffer_length);
+      memcpy(static_cast<void*>(dst), static_cast<const void*>(src),
+             buffer_length);
     } else if (std::is_same<T, int16_t>::value) {
-      for (size_t i = 0 ; i < size; ++i) {
+      for (size_t i = 0; i < size; ++i) {
         dst[i] = f32tof16(src[i]);
       }
     }
@@ -282,11 +283,15 @@ int32_t CompilationDelegateIe::Reorder(T* dst,
           for (uint32_t x = 0; x < width; ++x) {
             uint32_t dst_index, src_index;
             if (nhwc_to_nchw) {
-              dst_index = b * channels * height * width + c * height * width + y * width + x;
-              src_index = b * height * width * channels + y * width * channels + x * channels + c;
+              dst_index = b * channels * height * width + c * height * width +
+                          y * width + x;
+              src_index = b * height * width * channels + y * width * channels +
+                          x * channels + c;
             } else {
-              dst_index = b * height * width * channels + y * width * channels + x * channels + c;
-              src_index = b * channels * height * width + c * height * width + y * width + x;
+              dst_index = b * height * width * channels + y * width * channels +
+                          x * channels + c;
+              src_index = b * channels * height * width + c * height * width +
+                          y * width + x;
             }
             if (std::is_same<T, float>::value) {
               dst[dst_index] = src[src_index];
@@ -331,7 +336,7 @@ int32_t CompilationDelegateIe::CreateBlob(
       const float* src = reinterpret_cast<const float*>(mapping.get());
       result = Reorder<float>(dst, src, operand->dimensions);
       if (result != mojom::NOT_ERROR) {
-       return result;
+        return result;
       }
     } else {
       int16_t* dst = blob->buffer().as<int16_t*>();
@@ -339,7 +344,7 @@ int32_t CompilationDelegateIe::CreateBlob(
       const float* src = reinterpret_cast<const float*>(mapping.get());
       result = Reorder<int16_t>(dst, src, operand->dimensions);
       if (result != mojom::NOT_ERROR) {
-       return result;
+        return result;
       }
     }
   } catch (const std::exception& ex) {
@@ -441,12 +446,14 @@ int32_t CompilationDelegateIe::AddActivationByFusedCode(
                  << activiation_layer_id;
     } else if (fuse_code == mojom::FUSED_RELU1) {
       activiation_layer_id = builder_->addLayer(
-          {{input_layer}}, ie::Builder::ClampLayer(name).setMinValue(-1.0).setMaxValue(1.0));
+          {{input_layer}},
+          ie::Builder::ClampLayer(name).setMinValue(-1.0).setMaxValue(1.0));
       DLOG(INFO) << "[IE] succeed to add clamp layer id "
                  << activiation_layer_id;
     } else if (fuse_code == mojom::FUSED_RELU6) {
-      activiation_layer_id =
-          builder_->addLayer({{input_layer}}, ie::Builder::ClampLayer(name).setMinValue(0.0).setMaxValue(6.0));
+      activiation_layer_id = builder_->addLayer(
+          {{input_layer}},
+          ie::Builder::ClampLayer(name).setMinValue(0.0).setMaxValue(6.0));
       DLOG(INFO) << "[IE] succeed to add clamp layer id "
                  << activiation_layer_id;
     } else {
@@ -521,11 +528,10 @@ int32_t CompilationDelegateIe::AddElementwise(
     return mojom::BAD_DATA;
   }
   try {
-    size_t layer_id = builder_->addLayer(
-        input_port_infos,
-        ie::Builder::EltwiseLayer(name)
-            .setInputPorts(input_ports)
-            .setEltwiseType(type));
+    size_t layer_id =
+        builder_->addLayer(input_port_infos, ie::Builder::EltwiseLayer(name)
+                                                 .setInputPorts(input_ports)
+                                                 .setEltwiseType(type));
     DLOG(INFO) << "[IE] succeed to add eltwise layer id " << layer_id
                << " for output operand index " << output_index << " with type "
                << type;
@@ -807,11 +813,10 @@ int32_t CompilationDelegateIe::AddConcatenation(
   const uint32_t output_index = operation->outputs[0];
   std::string name(base::NumberToString(output_index));
   try {
-    size_t layer_id = builder_->addLayer(
-        input_port_infos,
-        ie::Builder::ConcatLayer(name)
-            .setInputPorts(input_ports)
-            .setAxis(axis));
+    size_t layer_id =
+        builder_->addLayer(input_port_infos, ie::Builder::ConcatLayer(name)
+                                                 .setInputPorts(input_ports)
+                                                 .setAxis(axis));
     DLOG(INFO) << "[IE] succeed to add concat layer id " << layer_id
                << " for output operand index " << output_index << "with axis"
                << axis;
@@ -862,13 +867,12 @@ int32_t CompilationDelegateIe::AddFullyConnected(
     size_t layer_id = builder_->addLayer(
         {{input_layer_id}},
         ie::Builder::ReshapeLayer(reshape_name)
-        .setDims({params.input_batch_size, params.input_size}));
-    layer_id = builder_->addLayer(
-        {{layer_id}},
-        ie::Builder::FullyConnectedLayer(name)
-            .setOutputNum(params.output_num_units)
-            .setWeights(weights)
-            .setBiases(bias));
+            .setDims({params.input_batch_size, params.input_size}));
+    layer_id = builder_->addLayer({{layer_id}},
+                                  ie::Builder::FullyConnectedLayer(name)
+                                      .setOutputNum(params.output_num_units)
+                                      .setWeights(weights)
+                                      .setBiases(bias));
     if (params.fuse_code != mojom::FUSED_NONE) {
       result = AddActivationByFusedCode(params.fuse_code, layer_id, output_name,
                                         layer_id);

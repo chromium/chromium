@@ -93,7 +93,8 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       const float* src = reinterpret_cast<const float*>(mapping.get());
       if (operand->dimensions.size() == 3) {
         // Only reorder HWC to CHW
-        result = CompilationDelegateIe::Reorder<float>(dst, src, operand->dimensions);
+        result = CompilationDelegateIe::Reorder<float>(dst, src,
+                                                       operand->dimensions);
         if (result != mojom::NOT_ERROR) {
           std::move(callback).Run(mojom::BAD_DATA);
           return;
@@ -122,8 +123,8 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
       float* dst = reinterpret_cast<float*>(mapping.get());
       if (operand->dimensions.size() == 3) {
-        result = CompilationDelegateIe::Reorder<float>(dst, src, operand->dimensions,
-                                                       false);
+        result = CompilationDelegateIe::Reorder<float>(
+            dst, src, operand->dimensions, false);
         if (result != mojom::NOT_ERROR) {
           std::move(callback).Run(mojom::BAD_DATA);
           return;
