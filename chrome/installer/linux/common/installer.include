@@ -240,6 +240,18 @@ stage_install_common() {
       "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     done
+    # myriad plugin and firmware
+    file="libmyriadPlugin.so"
+    buildfile="${BUILDDIR}/${file}"
+    if [ -f ${buildfile} ]; then
+      strippedfile="${buildfile}.stripped"
+      debugfile="${buildfile}.debug"
+      "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+      install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/mvnc/"
+      install -m 644 "${BUILDDIR}/mvnc/MvNCAPI-ma2450.mvcmd" "${STAGEDIR}/${INSTALLDIR}/mvnc/"
+      install -m 644 "${BUILDDIR}/mvnc/MvNCAPI-ma2480.mvcmd" "${STAGEDIR}/${INSTALLDIR}/mvnc/"
+    fi
   fi
 
   # ANGLE
