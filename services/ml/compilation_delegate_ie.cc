@@ -441,13 +441,13 @@ int32_t CompilationDelegateIe::AddActivationByFusedCode(
                  << activiation_layer_id;
     } else if (fuse_code == mojom::FUSED_RELU1) {
       activiation_layer_id = builder_->addLayer(
-          {{input_layer}}, ie::Builder::ReLU6Layer(name).setN(1.0));
-      DLOG(INFO) << "[IE] succeed to add relu6 layer id "
-                 << activiation_layer_id << " with n=1.0";
+          {{input_layer}}, ie::Builder::ClampLayer(name).setMinValue(-1.0).setMaxValue(1.0));
+      DLOG(INFO) << "[IE] succeed to add clamp layer id "
+                 << activiation_layer_id;
     } else if (fuse_code == mojom::FUSED_RELU6) {
       activiation_layer_id =
-          builder_->addLayer({{input_layer}}, ie::Builder::ReLU6Layer(name));
-      DLOG(INFO) << "[IE] succeed to add relu6 layer id "
+          builder_->addLayer({{input_layer}}, ie::Builder::ClampLayer(name).setMinValue(0.0).setMaxValue(6.0));
+      DLOG(INFO) << "[IE] succeed to add clamp layer id "
                  << activiation_layer_id;
     } else {
       LOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
