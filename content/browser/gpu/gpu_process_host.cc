@@ -301,6 +301,9 @@ static const char* const kSwitchNames[] = {
 #if defined(OS_LINUX)
     ml::switches::kUseInferenceEngine,
 #endif
+#if defined(OS_WIN)
+    ml::switches::kUseDirectML,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

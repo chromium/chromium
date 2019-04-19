@@ -10,7 +10,11 @@
 namespace ml {
 
 namespace switches {
+
 extern const char kUseInferenceEngine[];
+
+extern const char kUseDirectML[];
+
 }  // namespace switches
 
 }  // namespace ml

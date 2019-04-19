@@ -10,7 +10,11 @@
 
 #include "services/ml/late_binding_symbol_table.h"
 
+#if defined(__linux__)
 #include <dlfcn.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -19,15 +23,20 @@
 namespace ml {
 
 inline static const char* GetDllError() {
+#if defined(OS_LINUX)
   char* err = dlerror();
   if (err) {
     return err;
   } else {
     return "No error";
   }
+#elif defined(OS_WIN)
+  return "No error";
+#endif
 }
 
 DllHandle InternalLoadDll(const char dll_name[]) {
+#if defined(OS_LINUX)
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path)) {
     LOG(ERROR) << "Can't get module path";
@@ -36,6 +45,9 @@ DllHandle InternalLoadDll(const char dll_name[]) {
 
   base::FilePath dll_path = module_path.Append(dll_name);
   DllHandle handle = dlopen(dll_path.MaybeAsASCII().c_str(), RTLD_NOW);
+#elif defined(OS_WIN)
+  DllHandle handle = LoadLibraryA(dll_name);
+#endif
   if (handle == kInvalidDllHandle) {
     LOG(ERROR) << "Can't load " << dll_name << " : " << GetDllError();
   }
@@ -44,15 +56,20 @@ DllHandle InternalLoadDll(const char dll_name[]) {
 
 void InternalUnloadDll(DllHandle handle) {
 #if !defined(ADDRESS_SANITIZER)
+#if defined(OS_LINUX)
   if (dlclose(handle) != 0) {
     DLOG(ERROR) << GetDllError();
   }
+#elif defined(OS_WIN)
+  FreeLibrary(static_cast<HMODULE>(handle));
+#endif
 #endif  // !defined(ADDRESS_SANITIZER)
 }
 
 static bool LoadSymbol(DllHandle handle,
                        const char* symbol_name,
                        void** symbol) {
+#if defined(OS_LINUX)
   *symbol = dlsym(handle, symbol_name);
   char* err = dlerror();
   if (err) {
@@ -62,6 +79,10 @@ static bool LoadSymbol(DllHandle handle,
     DLOG(ERROR) << "Symbol " << symbol_name << " is NULL";
     return false;
   }
+#elif defined(OS_WIN)
+  *symbol = reinterpret_cast<void*>(
+      GetProcAddress(static_cast<HMODULE>(handle), symbol_name));
+#endif
   return true;
 }
 
@@ -73,7 +94,7 @@ bool InternalLoadSymbols(DllHandle handle,
                          const char* const symbol_names[],
                          void* symbols[]) {
   // Clear any old errors.
-  dlerror();
+  GetDllError();
   for (int i = 0; i < num_symbols; ++i) {
     if (!LoadSymbol(handle, symbol_names[i], &symbols[i])) {
       return false;

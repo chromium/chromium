@@ -27,7 +27,8 @@ source_set("ie") {
     "execution_impl_ie.cc",
     "execution_impl_ie.h",
   ]
-  include_dirs = [ "//third_party/libinference_engine/dldt/inference-engine/include/" ]
+  include_dirs =
+      [ "//third_party/libinference_engine/dldt/inference-engine/include/" ]
 
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -51,6 +52,8 @@ source_set("lib") {
     "common.h",
     "ml_service.cc",
     "ml_service.h",
+    "ml_switches.cc",
+    "ml_switches.h",
   ]
 
   if (is_linux) {
@@ -71,8 +74,6 @@ source_set("lib") {
       "execution_impl_mkl_dnn.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
-      "ml_switches.cc",
-      "ml_switches.h",
       "mkl_dnn_symbol_table.cc",
       "mkl_dnn_symbol_table.h",
       "model_impl.cc",
@@ -158,14 +159,20 @@ source_set("lib") {
       "cl_dnn_custom_kernels.h",
       "compilation_delegate_cl_dnn.cc",
       "compilation_delegate_cl_dnn.h",
+      "compilation_delegate_dml.cc",
+      "compilation_delegate_dml.h",
       "compilation_delegate_mkl_dnn.cc",
       "compilation_delegate_mkl_dnn.h",
       "compilation_impl.cc",
       "compilation_impl.h",
+      "dml_symbol_table.cc",
+      "dml_symbol_table.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
       "execution_impl_mkl_dnn.cc",
       "execution_impl_mkl_dnn.h",
+      "late_binding_symbol_table.cc",
+      "late_binding_symbol_table.h",
       "model_impl.cc",
       "model_impl.h",
       "neural_network_impl.cc",

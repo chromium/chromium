@@ -7,7 +7,11 @@
 namespace ml {
 
 namespace switches {
+
 const char kUseInferenceEngine[] = "use-inference-engine";
+
+const char kUseDirectML[] = "use-dml";
+
 }  // namespace switches
 
 }  // namespace ml
