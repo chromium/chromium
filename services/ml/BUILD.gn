@@ -39,6 +39,10 @@ source_set("ie") {
     "-Wno-extra-semi",
     "-Wno-defaulted-function-deleted",
   ]
+
+  deps = [
+    "//services/ml/public/mojom",
+  ]
 }
 
 source_set("lib") {
