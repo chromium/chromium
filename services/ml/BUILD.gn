@@ -165,14 +165,19 @@ source_set("lib") {
       "compilation_delegate_mkl_dnn.h",
       "compilation_impl.cc",
       "compilation_impl.h",
+      "dml_d3dx12_utils.h",
       "dml_symbol_table.cc",
       "dml_symbol_table.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
+      "execution_impl_dml.cc",
+      "execution_impl_dml.h",
       "execution_impl_mkl_dnn.cc",
       "execution_impl_mkl_dnn.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
+      "ml_utils_dml.cc",
+      "ml_utils_dml.h",
       "model_impl.cc",
       "model_impl.h",
       "neural_network_impl.cc",
@@ -217,15 +222,13 @@ source_set("lib") {
   if (is_linux) {
     deps += [
       ":ie",
-      "//third_party/libinference_engine:libinference_engine",
       "//third_party/libinference_engine:libMKLDNNPlugin",
       "//third_party/libinference_engine:libclDNNPlugin",
+      "//third_party/libinference_engine:libinference_engine",
     ]
 
     if (enable_ie_myriad) {
-      deps += [
-        "//third_party/libinference_engine:libmyriadPlugin",
-      ]
+      deps += [ "//third_party/libinference_engine:libmyriadPlugin" ]
     }
   }
 }
