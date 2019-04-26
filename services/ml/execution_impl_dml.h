@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/ml/ml_utils_dml.h"
 #include "services/ml/public/mojom/model.mojom.h"
 
@@ -22,7 +23,7 @@ class CompilationDelegateDML;
 class ExecutionImplDML : public mojom::Execution {
  public:
   ExecutionImplDML(const CompilationDelegateDML*,
-                   std::unique_ptr<ExecutionData> dml,
+                   scoped_refptr<CompiledModelDML> dml,
                    mojom::ExecutionInitParamsPtr params);
   ~ExecutionImplDML() override;
 
@@ -30,15 +31,15 @@ class ExecutionImplDML : public mojom::Execution {
 
  private:
   HRESULT ExecuteCompiledOperator(IDMLCompiledOperator*,
-                                  uint32_t,
-                                  const mojom::OperationPtr&);
+                                  const mojom::OperationPtr&,
+                                  uint32_t);
   HRESULT ReadResultBack(uint32_t memory_offset);
 
   const CompilationDelegateDML* compilation_;
   mojom::ExecutionInitParamsPtr params_;
-  std::unique_ptr<ExecutionData> dml_;
-  std::map<uint32_t, ComPtr<ID3D12Resource>> input_resources_;
-  std::map<uint32_t, ComPtr<ID3D12Resource>> upload_resources_;
+  scoped_refptr<CompiledModelDML> dml_;
+  std::map<uint32_t, ComPtr<ID3D12Resource>> operand_resource_map_;
+  std::map<uint32_t, ComPtr<ID3D12Resource>> upload_resource_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplDML);
 };

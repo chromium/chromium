@@ -78,6 +78,19 @@ HRESULT InitializeDirect3D12(ComPtr<ID3D12Device>& d3D12_device,
   return S_OK;
 }
 
+DML_BUFFER_TENSOR_DESC BufferTensorDesc(
+    const std::vector<uint32_t>& dimensions) {
+  DML_BUFFER_TENSOR_DESC desc = {};
+  desc.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
+  desc.Flags = DML_TENSOR_FLAG_NONE;
+  desc.DimensionCount = dimensions.size();
+  desc.Sizes = dimensions.data();
+  desc.Strides = nullptr;
+  desc.TotalTensorSizeInBytes = DMLCalcBufferTensorSize(
+      desc.DataType, desc.DimensionCount, desc.Sizes, desc.Strides);
+  return desc;
+}
+
 }  // namespace
 
 CompilationDelegateDML::CompilationDelegateDML(
@@ -85,7 +98,7 @@ CompilationDelegateDML::CompilationDelegateDML(
     : compilation_(compilation),
       execute_descriptor_count_(0),
       execute_temporary_resource_size_(0) {
-  dml_ = std::make_unique<ExecutionData>();
+  dml_ = base::MakeRefCounted<CompiledModelDML>();
 
   // Set up Direct3D 12.
   HRESULT hr =
@@ -111,6 +124,11 @@ CompilationDelegateDML::CompilationDelegateDML(
 CompilationDelegateDML::~CompilationDelegateDML() = default;
 
 int32_t CompilationDelegateDML::Compile() {
+  if (!dml_->d3D12_device_ || !dml_->dml_device_) {
+    LOG(ERROR) << "Failed enabling DirectML backend";
+    return mojom::OP_FAILED;
+  }
+
   HRESULT hr = S_OK;
   const mojom::ModelInfoPtr& model = compilation_->GetModel();
   for (size_t i = 0; i < model->operations.size(); ++i) {
@@ -142,8 +160,7 @@ int32_t CompilationDelegateDML::Compile() {
 int32_t CompilationDelegateDML::CreateExecution(
     std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
-  execution = std::make_unique<ExecutionImplDML>(this, std::move(dml_),
-                                                 std::move(params));
+  execution = std::make_unique<ExecutionImplDML>(this, dml_, std::move(params));
 
   return mojom::NOT_ERROR;
 }
@@ -151,6 +168,7 @@ int32_t CompilationDelegateDML::CreateExecution(
 const mojom::ModelInfoPtr& CompilationDelegateDML::GetModel() const {
   return compilation_->GetModel();
 }
+
 mojo::ScopedSharedBufferMapping CompilationDelegateDML::MapMemory(
     uint32_t index) const {
   return compilation_->MapMemory(index);
@@ -158,10 +176,10 @@ mojo::ScopedSharedBufferMapping CompilationDelegateDML::MapMemory(
 
 HRESULT CompilationDelegateDML::InitializeOperators() {
   ComPtr<IDMLOperatorInitializer> operator_initializer;
-  size_t size = dml_->compiled_operators_.size();
+  size_t size = dml_->operations_.size();
   IDMLCompiledOperator* compiled_operators[size];
   for (size_t i = 0; i < size; i++) {
-    compiled_operators[i] = dml_->compiled_operators_[i].Get();
+    compiled_operators[i] = dml_->operations_[i]->compiled_operator_.Get();
   }
   HRESULT hr = dml_->dml_device_->CreateOperatorInitializer(
       size, compiled_operators, IID_PPV_ARGS(&operator_initializer));
@@ -210,6 +228,7 @@ HRESULT CompilationDelegateDML::InitializeOperators() {
     LOG(ERROR) << "Failed creating binding table.";
     return hr;
   }
+  dml_->descriptor_heap_ = std::move(descriptor_heap);
 
   // The command recorder is a stateless object that records Dispatches into an
   // existing Direct3D 12 command list.
@@ -234,10 +253,6 @@ HRESULT CompilationDelegateDML::InitializeOperators() {
     return hr;
   }
 
-  // Bind and execute the operator on the GPU.
-  dml_->command_list_->SetDescriptorHeaps(ARRAYSIZE(d3D12_descriptor_heaps),
-                                          d3D12_descriptor_heaps);
-
   return S_OK;
 }
 
@@ -245,8 +260,12 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation,
     std::vector<uint32_t>& constants) {
+  // TODO: Support Activation for Add operation in
+  // https://github.com/intel/webml-polyfill/issues/757.
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
-  // Check constants for input 0 and 1
+  // TODO:: Create persistent resources for constants
+  // https://github.com/intel/webml-polyfill/issues/758.
+  // Check constants for input 0 and 1.
   for (size_t i = 0; i < 2; ++i) {
     size_t input_index = operation->inputs[i];
     std::string index_id(base::NumberToString(input_index));
@@ -255,19 +274,10 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
     }
   }
 
-  // Assume there are the same dimensions.
+  // Assume they are the same dimensions.
   const std::vector<uint32_t>& dimensions =
       model->operands[operation->inputs[0]]->dimensions;
-  DML_BUFFER_TENSOR_DESC buffer_tensor_desc = {};
-  buffer_tensor_desc.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
-  buffer_tensor_desc.Flags = DML_TENSOR_FLAG_NONE;
-  buffer_tensor_desc.DimensionCount = dimensions.size();
-  buffer_tensor_desc.Sizes = dimensions.data();
-  buffer_tensor_desc.Strides = nullptr;
-  buffer_tensor_desc.TotalTensorSizeInBytes = DMLCalcBufferTensorSize(
-      buffer_tensor_desc.DataType, buffer_tensor_desc.DimensionCount,
-      buffer_tensor_desc.Sizes, buffer_tensor_desc.Strides);
-
+  DML_BUFFER_TENSOR_DESC buffer_tensor_desc = BufferTensorDesc(dimensions);
   DML_TENSOR_DESC tensor_desc = {DML_TENSOR_TYPE_BUFFER, &buffer_tensor_desc};
   DML_ELEMENT_WISE_ADD_OPERATOR_DESC add_operator_desc = {
       &tensor_desc, &tensor_desc, &tensor_desc};
@@ -293,12 +303,14 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
 
   DML_BINDING_PROPERTIES execute_binding_properties =
       compiled_operator->GetBindingProperties();
-  execute_descriptor_count_ +=
+  uint32_t descriptor_count =
       execute_binding_properties.RequiredDescriptorCount;
+  dml_->operations_.push_back(
+      std::make_unique<OperationDML>(compiled_operator, descriptor_count));
+
+  execute_descriptor_count_ += descriptor_count;
   execute_temporary_resource_size_ +=
       execute_binding_properties.TemporaryResourceSize;
-
-  dml_->compiled_operators_.push_back(std::move(compiled_operator));
 
   return hr;
 }

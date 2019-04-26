@@ -72,6 +72,13 @@ struct CD3DX12_RESOURCE_BARRIER : public D3D12_RESOURCE_BARRIER {
     barrier.Transition.Subresource = subresource;
     return result;
   }
+  static inline CD3DX12_RESOURCE_BARRIER UAV(_In_ ID3D12Resource* pResource) {
+    CD3DX12_RESOURCE_BARRIER result = {};
+    D3D12_RESOURCE_BARRIER& barrier = result;
+    result.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+    barrier.UAV.pResource = pResource;
+    return result;
+  }
 };
 
 //------------------------------------------------------------------------------------------------

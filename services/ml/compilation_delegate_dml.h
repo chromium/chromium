@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "d3d12.h"
 #include "services/ml/compilation_impl.h"
 #include "services/ml/execution_impl_dml.h"
@@ -42,8 +43,8 @@ class CompilationDelegateDML : public CompilationDelegate {
                             const mojom::OperationPtr& operation,
                             std::vector<uint32_t>& constants);
 
-  std::unique_ptr<ExecutionData> dml_;
-  UINT execute_descriptor_count_;
+  scoped_refptr<CompiledModelDML> dml_;
+  uint32_t execute_descriptor_count_;
   uint64_t execute_temporary_resource_size_;
 
   DISALLOW_COPY_AND_ASSIGN(CompilationDelegateDML);

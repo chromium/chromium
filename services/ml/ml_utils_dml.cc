@@ -12,8 +12,15 @@
 
 namespace ml {
 
-ExecutionData::ExecutionData() = default;
-ExecutionData::~ExecutionData() = default;
+OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
+                           uint32_t descriptor_count)
+    : compiled_operator_(std::move(compiled_operator)),
+      descriptor_count_(descriptor_count) {}
+
+OperationDML::~OperationDML() = default;
+
+CompiledModelDML::CompiledModelDML() = default;
+CompiledModelDML::~CompiledModelDML() = default;
 
 UINT64 DMLCalcBufferTensorSize(DML_TENSOR_DATA_TYPE dataType,
                                UINT dimensionCount,
@@ -114,17 +121,7 @@ HRESULT UploadTensorResource(const void* data,
                              uint64_t size,
                              ComPtr<ID3D12Resource>& upload_resource,
                              ComPtr<ID3D12Resource>& input_resource,
-                             std::unique_ptr<ExecutionData>& dml) {
-  // const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  // const mojom::OperandValueInfoPtr& weights_info =
-  //     model->values[base::NumberToString(weights_index)];
-  // auto mapping = compilation_->MapMemory(weights_index);
-  // memcpy(weights_memory_ptr, mapping.get(), weights_info->length);
-
-  // std::string index_id(base::NumberToString(input_index));
-  // // The vaule input with setOperandValue Javascript API.
-  // if (model->values.find(index_id) != model->values.end()) {
-  // }
+                             scoped_refptr<CompiledModelDML> dml) {
   CD3DX12_HEAP_PROPERTIES upload_heap =
       CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
   CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
