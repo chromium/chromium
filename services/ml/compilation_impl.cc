@@ -10,7 +10,9 @@
 #include "base/command_line.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_delegate_cl_dnn.h"
+#if defined(OS_WIN)
 #include "services/ml/compilation_delegate_dml.h"
+#endif
 #include "services/ml/compilation_delegate_ie.h"
 #include "services/ml/compilation_delegate_mkl_dnn.h"
 #include "services/ml/ml_switches.h"

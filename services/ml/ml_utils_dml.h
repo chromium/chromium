@@ -8,7 +8,6 @@
 #ifndef SERVICES_ML_ML_UTILS_DML_H_
 #define SERVICES_ML_ML_UTILS_DML_H_
 
-#include <DirectML.h>
 #include <wrl/client.h>
 #include <map>
 #include <vector>
@@ -16,6 +15,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "d3d12.h"
+// TODO: Window sdk should be upgraded to 10.0.18361.0 in VS
+// seeing https://chromium-review.googlesource.com/c/chromium/src/+/1054027
+#include "services/ml/direct_ml.h"
 
 using Microsoft::WRL::ComPtr;
 

@@ -8,7 +8,6 @@
 #ifndef SERVICES_ML_COMPILATION_DELEGATE_DML_H_
 #define SERVICES_ML_COMPILATION_DELEGATE_DML_H_
 
-#include <DirectML.h>
 #include <wrl/client.h>
 #include <memory>
 

@@ -10,6 +10,9 @@
 #include <dxgi1_4.h>
 
 #include "base/logging.h"
+// TODO: Window sdk should be upgraded to 10.0.18361.0 in VS
+// seeing https://chromium-review.googlesource.com/c/chromium/src/+/1054027
+#include "services/ml/direct_ml.h"
 #include "services/ml/dml_d3dx12_utils.h"
 #include "services/ml/dml_symbol_table.h"
 #include "services/ml/ml_utils_dml.h"
