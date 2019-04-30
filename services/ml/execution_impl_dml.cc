@@ -9,7 +9,7 @@
 
 #include <utility>
 
-#include "services/ml/compilation_delegate_dml.h"
+#include "services/ml/common.h"
 #include "services/ml/dml_d3dx12_utils.h"
 #include "services/ml/public/mojom/constants.mojom.h"
 
@@ -44,26 +44,9 @@ HRESULT ResetBindingTable(scoped_refptr<CompiledModelDML> dml,
 
 }  // namespace
 
-ExecutionImplDML::ExecutionImplDML(const CompilationDelegateDML* compilation,
-                                   scoped_refptr<CompiledModelDML> dml,
+ExecutionImplDML::ExecutionImplDML(scoped_refptr<CompiledModelDML> dml,
                                    mojom::ExecutionInitParamsPtr params)
-    : compilation_(compilation), params_(std::move(params)), dml_(dml) {
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  // The constants_ hold the value of setting with setOperandValue js API.
-  for (size_t i = 0; i < dml_->constants_.size(); ++i) {
-    uint32_t index = dml_->constants_[i];
-    const mojom::OperandValueInfoPtr& input_info =
-        model->values[base::NumberToString(index)];
-    auto mapping = compilation_->MapMemory(index);
-    HRESULT hr = UploadTensorResource(
-        static_cast<void*>(mapping.get()), input_info->length,
-        upload_resource_map_[index], operand_resource_map_[index], dml_);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
-      return;
-    }
-  }
-}
+    : params_(std::move(params)), dml_(dml) {}
 
 ExecutionImplDML::~ExecutionImplDML() = default;
 
@@ -82,9 +65,13 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
     uint32_t length = GetRequiredSize(operand);
     memory_offset += length;
     auto mapping = params_->memory->MapAtOffset(length, offset);
+    ComPtr<ID3D12Resource> upload_resource =
+        dml_->operand_map_[operand->index]->upload_resource_;
+    ComPtr<ID3D12Resource> operand_resource =
+        dml_->operand_map_[operand->index]->operand_resource_;
     hr = UploadTensorResource(static_cast<void*>(mapping.get()), length,
-                              upload_resource_map_[operand->index],
-                              operand_resource_map_[operand->index], dml_);
+                              upload_resource, operand_resource,
+                              dml_->command_list_);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
       std::move(callback).Run(mojom::BAD_DATA);
@@ -92,11 +79,9 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
     }
   }
 
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  for (size_t i = 0; i < model->operations.size(); ++i) {
-    const mojom::OperationPtr& operation = model->operations[i];
+  for (size_t i = 0; i < dml_->operations_.size(); ++i) {
     hr = ExecuteCompiledOperator(dml_->operations_[i]->compiled_operator_.Get(),
-                                 operation, i);
+                                 dml_->operations_[i], i);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed executing operator.";
       std::move(callback).Run(mojom::OP_FAILED);
@@ -122,7 +107,7 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
 
 HRESULT ExecutionImplDML::ExecuteCompiledOperator(
     IDMLCompiledOperator* compiled_operator,
-    const mojom::OperationPtr& operation,
+    const std::unique_ptr<OperationDML>& operation,
     uint32_t operation_index) {
   // Reset the binding table to bind for the operator, or create
   // a new table for executing operators.
@@ -132,45 +117,34 @@ HRESULT ExecutionImplDML::ExecuteCompiledOperator(
     return hr;
   }
 
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
-  size_t input_size = operation->type == mojom::ADD ? 2 : 1;
+  size_t input_size = operation->type_ == mojom::ADD ? 2 : 1;
   DML_BUFFER_BINDING input_buffer_binding[input_size];
   DML_BINDING_DESC input_binding_array[input_size];
   DCHECK(input_size != 0);
   for (size_t i = 0; i < input_size; ++i) {
-    size_t input_index = operation->inputs[i];
-    const mojom::OperandPtr& operand = model->operands[input_index];
-    input_buffer_binding[i] = {operand_resource_map_[input_index].Get(), 0,
-                               GetRequiredSize(operand)};
+    size_t input_index = operation->inputs_[i];
+    UINT64 input_buffer_size = dml_->operand_map_[input_index]->SizeInBytes();
+    ComPtr<ID3D12Resource> input_resource =
+        dml_->operand_map_[input_index]->operand_resource_;
+    input_buffer_binding[i] = {input_resource.Get(), 0, input_buffer_size};
     input_binding_array[i] = {DML_BINDING_TYPE_BUFFER,
                               &input_buffer_binding[i]};
   }
   dml_->binding_table_->BindInputs(input_size, input_binding_array);
 
-  DCHECK(operation->outputs.size() == 1);
-  size_t output_index = operation->outputs[0];
-  UINT64 output_buffer_size = GetRequiredSize(model->operands[output_index]);
-  CD3DX12_HEAP_PROPERTIES default_heap =
-      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(
-      output_buffer_size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
-  hr = dml_->d3D12_device_->CreateCommittedResource(
-      &default_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
-      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr,
-      IID_PPV_ARGS(&operand_resource_map_[output_index]));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed creating committed resource for output.";
-    return hr;
-  }
-
-  DML_BUFFER_BINDING output_buffer_binding = {
-      operand_resource_map_[output_index].Get(), 0, output_buffer_size};
+  DCHECK(operation->outputs_.size() == 1);
+  size_t output_index = operation->outputs_[0];
+  UINT64 output_buffer_size = dml_->operand_map_[output_index]->SizeInBytes();
+  ComPtr<ID3D12Resource> output_resource =
+      dml_->operand_map_[output_index]->operand_resource_;
+  DML_BUFFER_BINDING output_buffer_binding = {output_resource.Get(), 0,
+                                              output_buffer_size};
   DML_BINDING_DESC output_binding_desc{DML_BINDING_TYPE_BUFFER,
                                        &output_buffer_binding};
   dml_->binding_table_->BindOutputs(1, &output_binding_desc);
 
   CD3DX12_RESOURCE_BARRIER resource_barrier =
-      CD3DX12_RESOURCE_BARRIER::UAV(operand_resource_map_[output_index].Get());
+      CD3DX12_RESOURCE_BARRIER::UAV(output_resource.Get());
   dml_->command_list_->ResourceBarrier(1, &resource_barrier);
 
   // Record execution of the compiled operator.
@@ -184,41 +158,29 @@ HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
   // The output buffer now contains the result of the identity operator,
   // so read it back if you want the CPU to access it.
   HRESULT hr = S_OK;
-  std::vector<ComPtr<ID3D12Resource>> readback_buffers;
-  CD3DX12_HEAP_PROPERTIES readback_heap =
-      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
   for (size_t i = 0; i < params_->outputs.size(); ++i) {
-    const mojom::OperandInfoPtr& operand = params_->outputs[i];
-    const uint32_t output_buffer_size = GetRequiredSize(operand);
-    CD3DX12_RESOURCE_DESC resource_desc =
-        CD3DX12_RESOURCE_DESC::Buffer(output_buffer_size);
-    ComPtr<ID3D12Resource> readback_buffer;
-    hr = dml_->d3D12_device_->CreateCommittedResource(
-        &readback_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
-        D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
-        IID_PPV_ARGS(&readback_buffer));
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed creating committed resource for output data.";
-      return hr;
-    }
-
-    size_t output_index = operand->index;
+    size_t output_index = params_->outputs[i]->index;
+    ComPtr<ID3D12Resource> output_resource =
+        dml_->operand_map_[output_index]->operand_resource_;
+    ComPtr<ID3D12Resource> readback_buffer =
+        dml_->operand_map_[output_index]->readback_resource_;
     CD3DX12_RESOURCE_BARRIER resource_barrier =
         CD3DX12_RESOURCE_BARRIER::Transition(
-            operand_resource_map_[output_index].Get(),
-            D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+            output_resource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
             D3D12_RESOURCE_STATE_COPY_SOURCE);
     dml_->command_list_->ResourceBarrier(1, &resource_barrier);
 
-    dml_->command_list_->CopyResource(
-        readback_buffer.Get(), operand_resource_map_[output_index].Get());
-    readback_buffers.push_back(readback_buffer);
+    dml_->command_list_->CopyResource(readback_buffer.Get(),
+                                      output_resource.Get());
   }
 
   CloseExecuteResetWait(dml_->d3D12_device_, dml_->command_queue_,
                         dml_->command_allocator_, dml_->command_list_);
 
   for (size_t i = 0; i < params_->outputs.size(); ++i) {
+    size_t output_index = params_->outputs[i]->index;
+    ComPtr<ID3D12Resource> readback_buffer =
+        dml_->operand_map_[output_index]->readback_resource_;
     const mojom::OperandInfoPtr& operand = params_->outputs[i];
     const uint32_t offset = memory_offset;
     const uint32_t output_buffer_size = GetRequiredSize(operand);
@@ -226,7 +188,7 @@ HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
     auto mapping = params_->memory->MapAtOffset(output_buffer_size, offset);
     D3D12_RANGE tensor_buffer_range = {0, output_buffer_size};
     void* output_buffer_data = nullptr;
-    hr = readback_buffers[i]->Map(0, &tensor_buffer_range, &output_buffer_data);
+    hr = readback_buffer->Map(0, &tensor_buffer_range, &output_buffer_data);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed map buffer for reading result.";
       return hr;
@@ -234,7 +196,7 @@ HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
     memcpy(mapping.get(), output_buffer_data, output_buffer_size);
 
     D3D12_RANGE empty_range{0, 0};
-    readback_buffers[i]->Unmap(0, &empty_range);
+    readback_buffer->Unmap(0, &empty_range);
   }
 
   return S_OK;

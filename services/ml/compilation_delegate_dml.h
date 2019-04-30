@@ -37,10 +37,14 @@ class CompilationDelegateDML : public CompilationDelegate {
   const CompilationImpl* compilation_;
 
   friend class ExecutionImplDML;
+  HRESULT UploadConstantResource(uint32_t index);
+  HRESULT CreateIntermediateResource(uint32_t index);
+  HRESULT CreateCommittedResources();
+
   HRESULT InitializeOperators();
   HRESULT CompileArithmetic(const mojom::ModelInfoPtr& model,
                             const mojom::OperationPtr& operation,
-                            std::vector<uint32_t>& constants);
+                            size_t type);
 
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;

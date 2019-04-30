@@ -13,11 +13,24 @@
 namespace ml {
 
 OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
-                           uint32_t descriptor_count)
+                           uint32_t descriptor_count,
+                           int32_t type,
+                           std::vector<uint32_t> inputs,
+                           std::vector<uint32_t> outputs)
     : compiled_operator_(std::move(compiled_operator)),
-      descriptor_count_(descriptor_count) {}
+      descriptor_count_(descriptor_count),
+      type_(type),
+      inputs_(inputs),
+      outputs_(outputs) {}
 
 OperationDML::~OperationDML() = default;
+
+OperandDML::OperandDML(DML_BUFFER_TENSOR_DESC operand_desc)
+    : operand_desc_(operand_desc),
+      operand_resource_(nullptr),
+      upload_resource_(nullptr),
+      readback_resource_(nullptr) {}
+OperandDML::~OperandDML() = default;
 
 CompiledModelDML::CompiledModelDML() = default;
 CompiledModelDML::~CompiledModelDML() = default;
@@ -117,15 +130,57 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
   return S_OK;
 }
 
-HRESULT UploadTensorResource(const void* data,
-                             uint64_t size,
+HRESULT CreateOutputResource(uint64_t size,
+                             ComPtr<ID3D12Resource>& intermediate_resource,
+                             ComPtr<ID3D12Device> d3D12_device) {
+  CD3DX12_HEAP_PROPERTIES default_heap =
+      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(
+      size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+  HRESULT hr = d3D12_device->CreateCommittedResource(
+      &default_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr,
+      IID_PPV_ARGS(&intermediate_resource));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for output.";
+    return hr;
+  }
+  return S_OK;
+}
+
+HRESULT CreateReadbackResource(uint64_t size,
+                               ComPtr<ID3D12Resource>& readback_resource,
+                               ComPtr<ID3D12Resource>& operand_resource,
+                               ComPtr<ID3D12Device> d3D12_device) {
+  CD3DX12_HEAP_PROPERTIES readback_heap =
+      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
+  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+  HRESULT hr = d3D12_device->CreateCommittedResource(
+      &readback_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+      IID_PPV_ARGS(&readback_resource));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for output data.";
+    return hr;
+  }
+
+  hr = CreateOutputResource(size, operand_resource, d3D12_device);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for output data.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CreateUploadResource(uint64_t size,
                              ComPtr<ID3D12Resource>& upload_resource,
                              ComPtr<ID3D12Resource>& input_resource,
-                             scoped_refptr<CompiledModelDML> dml) {
+                             ComPtr<ID3D12Device> d3D12_device) {
   CD3DX12_HEAP_PROPERTIES upload_heap =
       CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
   CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
-  HRESULT hr = dml->d3D12_device_->CreateCommittedResource(
+  HRESULT hr = d3D12_device->CreateCommittedResource(
       &upload_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
       IID_PPV_ARGS(&upload_resource));
@@ -138,28 +193,35 @@ HRESULT UploadTensorResource(const void* data,
       CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
   resource_desc = CD3DX12_RESOURCE_DESC::Buffer(
       size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
-  hr = dml->d3D12_device_->CreateCommittedResource(
+  hr = d3D12_device->CreateCommittedResource(
       &default_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&input_resource));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed creating committed resource for coping";
     return hr;
   }
+  return S_OK;
+}
 
+HRESULT UploadTensorResource(const void* data,
+                             uint64_t size,
+                             ComPtr<ID3D12Resource>& upload_resource,
+                             ComPtr<ID3D12Resource>& input_resource,
+                             ComPtr<ID3D12GraphicsCommandList> command_list) {
   D3D12_SUBRESOURCE_DATA subresource_data = {};
   subresource_data.pData = data;
   subresource_data.RowPitch = size;
   subresource_data.SlicePitch = subresource_data.RowPitch;
 
   // Upload the input tensor to the GPU.
-  UpdateSubresources(dml->command_list_.Get(), input_resource.Get(),
+  UpdateSubresources(command_list.Get(), input_resource.Get(),
                      upload_resource.Get(), 0, 0, 1, &subresource_data);
 
   CD3DX12_RESOURCE_BARRIER resource_barrier =
       CD3DX12_RESOURCE_BARRIER::Transition(
           input_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
           D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-  dml->command_list_->ResourceBarrier(1, &resource_barrier);
+  command_list->ResourceBarrier(1, &resource_barrier);
 
   return S_OK;
 }

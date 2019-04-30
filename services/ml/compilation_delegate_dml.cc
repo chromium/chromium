@@ -81,8 +81,9 @@ HRESULT InitializeDirect3D12(ComPtr<ID3D12Device>& d3D12_device,
   return S_OK;
 }
 
-DML_BUFFER_TENSOR_DESC BufferTensorDesc(
-    const std::vector<uint32_t>& dimensions) {
+DML_BUFFER_TENSOR_DESC BufferTensorDesc(const mojom::OperandPtr& operand) {
+  const std::vector<uint32_t>& dimensions = operand->dimensions;
+
   DML_BUFFER_TENSOR_DESC desc = {};
   desc.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
   desc.Flags = DML_TENSOR_FLAG_NONE;
@@ -132,14 +133,19 @@ int32_t CompilationDelegateDML::Compile() {
     return mojom::OP_FAILED;
   }
 
-  HRESULT hr = S_OK;
+  HRESULT hr = CreateCommittedResources();
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resources for all of operands.";
+    return mojom::OP_FAILED;
+  }
+
   const mojom::ModelInfoPtr& model = compilation_->GetModel();
   for (size_t i = 0; i < model->operations.size(); ++i) {
     const mojom::OperationPtr& operation = model->operations[i];
     DCHECK(operation->outputs.size() == 1);
 
     if (operation->type == mojom::ADD) {
-      hr = CompileArithmetic(model, operation, dml_->constants_);
+      hr = CompileArithmetic(model, operation, operation->type);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -163,7 +169,7 @@ int32_t CompilationDelegateDML::Compile() {
 int32_t CompilationDelegateDML::CreateExecution(
     std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
-  execution = std::make_unique<ExecutionImplDML>(this, dml_, std::move(params));
+  execution = std::make_unique<ExecutionImplDML>(dml_, std::move(params));
 
   return mojom::NOT_ERROR;
 }
@@ -259,36 +265,147 @@ HRESULT CompilationDelegateDML::InitializeOperators() {
   return S_OK;
 }
 
+HRESULT CompilationDelegateDML::UploadConstantResource(uint32_t index) {
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  if (dml_->operand_map_.find(index) == dml_->operand_map_.end()) {
+    dml_->operand_map_[index] =
+        std::make_unique<OperandDML>(BufferTensorDesc(model->operands[index]));
+  }
+
+  // Upload constants_ that hold the value of setting with setOperandValue js
+  // API, and maybe it has been uploaded.
+  if (dml_->operand_map_[index]->operand_resource_)
+    return S_OK;
+
+  HRESULT hr = CreateUploadResource(
+      dml_->operand_map_[index]->SizeInBytes(),
+      dml_->operand_map_[index]->upload_resource_,
+      dml_->operand_map_[index]->operand_resource_, dml_->d3D12_device_);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for inputs.";
+    return hr;
+  }
+
+  const mojom::OperandValueInfoPtr& input_info =
+      model->values[base::NumberToString(index)];
+  auto mapping = compilation_->MapMemory(index);
+  DCHECK(input_info->length == dml_->operand_map_[index]->SizeInBytes());
+  hr = UploadTensorResource(
+      static_cast<void*>(mapping.get()), input_info->length,
+      dml_->operand_map_[index]->upload_resource_,
+      dml_->operand_map_[index]->operand_resource_, dml_->command_list_);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
+    return hr;
+  }
+  return S_OK;
+}
+
+// Create committed resources for inputs and outputs of Model.
+HRESULT CompilationDelegateDML::CreateCommittedResources() {
+  HRESULT hr;
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  // Create committed resource for graphic inputs to upload CPU resource to GPU.
+  const std::vector<uint32_t>& inputs = model->inputs;
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    size_t index = inputs[i];
+    dml_->operand_map_[index] =
+        std::make_unique<OperandDML>(BufferTensorDesc(model->operands[index]));
+    hr = CreateUploadResource(dml_->operand_map_[index]->SizeInBytes(),
+                              dml_->operand_map_[index]->upload_resource_,
+                              dml_->operand_map_[index]->operand_resource_,
+                              dml_->d3D12_device_);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed creating committed resource for inputs.";
+      return hr;
+    }
+  }
+
+  // Create readback resource for graphic outputs.
+  const std::vector<uint32_t>& outputs = model->outputs;
+  for (size_t i = 0; i < outputs.size(); ++i) {
+    size_t index = outputs[i];
+    dml_->operand_map_[index] =
+        std::make_unique<OperandDML>(BufferTensorDesc(model->operands[index]));
+    hr = CreateReadbackResource(dml_->operand_map_[index]->SizeInBytes(),
+                                dml_->operand_map_[index]->readback_resource_,
+                                dml_->operand_map_[index]->operand_resource_,
+                                dml_->d3D12_device_);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed creating committed resource for inputs.";
+      return hr;
+    }
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CreateIntermediateResource(uint32_t index) {
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  const std::vector<uint32_t>& outputs = model->outputs;
+  for (size_t i = 0; i < outputs.size(); ++i) {
+    // It's not intermediate output.
+    if (index == outputs[i])
+      return S_OK;
+  }
+
+  if (dml_->operand_map_.find(index) == dml_->operand_map_.end()) {
+    dml_->operand_map_[index] =
+        std::make_unique<OperandDML>(BufferTensorDesc(model->operands[index]));
+  }
+
+  if (dml_->operand_map_[index]->operand_resource_)
+    return S_OK;
+
+  HRESULT hr = CreateOutputResource(
+      dml_->operand_map_[index]->SizeInBytes(),
+      dml_->operand_map_[index]->operand_resource_, dml_->d3D12_device_);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for intermediate.";
+    return hr;
+  }
+  return S_OK;
+}
+
 HRESULT CompilationDelegateDML::CompileArithmetic(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation,
-    std::vector<uint32_t>& constants) {
+    size_t type) {
   // TODO: Support Activation for Add operation in
   // https://github.com/intel/webml-polyfill/issues/757.
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   // TODO:: Create persistent resources for constants
   // https://github.com/intel/webml-polyfill/issues/758.
   // Check constants for input 0 and 1.
+  HRESULT hr = S_OK;
   for (size_t i = 0; i < 2; ++i) {
     size_t input_index = operation->inputs[i];
     std::string index_id(base::NumberToString(input_index));
     if (model->values.find(index_id) != model->values.end()) {
-      constants.push_back(input_index);
+      hr = UploadConstantResource(input_index);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed uploading constant resource.";
+        return hr;
+      }
     }
   }
+  hr = CreateIntermediateResource(operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed uploading constant resource.";
+    return hr;
+  }
 
-  // Assume they are the same dimensions.
-  const std::vector<uint32_t>& dimensions =
-      model->operands[operation->inputs[0]]->dimensions;
-  DML_BUFFER_TENSOR_DESC buffer_tensor_desc = BufferTensorDesc(dimensions);
+  size_t operand_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC buffer_tensor_desc =
+      dml_->operand_map_[operand_index]->operand_desc_;
   DML_TENSOR_DESC tensor_desc = {DML_TENSOR_TYPE_BUFFER, &buffer_tensor_desc};
   DML_ELEMENT_WISE_ADD_OPERATOR_DESC add_operator_desc = {
       &tensor_desc, &tensor_desc, &tensor_desc};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD,
                                      &add_operator_desc};
   ComPtr<IDMLOperator> dml_operator;
-  HRESULT hr = dml_->dml_device_->CreateOperator(&operator_desc,
-                                                 IID_PPV_ARGS(&dml_operator));
+  hr = dml_->dml_device_->CreateOperator(&operator_desc,
+                                         IID_PPV_ARGS(&dml_operator));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed creating add operator";
     return hr;
@@ -309,7 +426,8 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
   uint32_t descriptor_count =
       execute_binding_properties.RequiredDescriptorCount;
   dml_->operations_.push_back(
-      std::make_unique<OperationDML>(compiled_operator, descriptor_count));
+      std::make_unique<OperationDML>(compiled_operator, descriptor_count, type,
+                                     operation->inputs, operation->outputs));
 
   execute_descriptor_count_ += descriptor_count;
   execute_temporary_resource_size_ +=

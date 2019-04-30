@@ -22,24 +22,21 @@ class CompilationDelegateDML;
 
 class ExecutionImplDML : public mojom::Execution {
  public:
-  ExecutionImplDML(const CompilationDelegateDML*,
-                   scoped_refptr<CompiledModelDML> dml,
+  ExecutionImplDML(scoped_refptr<CompiledModelDML> dml,
                    mojom::ExecutionInitParamsPtr params);
   ~ExecutionImplDML() override;
 
   void StartCompute(StartComputeCallback callback) override;
 
  private:
+  HRESULT CreateCommittedResources();
   HRESULT ExecuteCompiledOperator(IDMLCompiledOperator*,
-                                  const mojom::OperationPtr&,
+                                  const std::unique_ptr<OperationDML>&,
                                   uint32_t);
   HRESULT ReadResultBack(uint32_t memory_offset);
 
-  const CompilationDelegateDML* compilation_;
   mojom::ExecutionInitParamsPtr params_;
   scoped_refptr<CompiledModelDML> dml_;
-  std::map<uint32_t, ComPtr<ID3D12Resource>> operand_resource_map_;
-  std::map<uint32_t, ComPtr<ID3D12Resource>> upload_resource_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplDML);
 };

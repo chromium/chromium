@@ -26,14 +26,37 @@ namespace ml {
 struct OperationDML {
  public:
   OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
-               uint32_t descriptor_count);
+               uint32_t descriptor_count,
+               int32_t type,
+               std::vector<uint32_t> inputs,
+               std::vector<uint32_t> outputs);
   ~OperationDML();
 
   ComPtr<IDMLCompiledOperator> compiled_operator_;
   uint32_t descriptor_count_;
 
+  int32_t type_;
+  std::vector<uint32_t> inputs_;
+  std::vector<uint32_t> outputs_;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(OperationDML);
+};
+
+struct OperandDML {
+ public:
+  OperandDML(DML_BUFFER_TENSOR_DESC operand_desc);
+  ~OperandDML();
+
+  size_t SizeInBytes() { return operand_desc_.TotalTensorSizeInBytes; }
+
+  DML_BUFFER_TENSOR_DESC operand_desc_;
+  ComPtr<ID3D12Resource> operand_resource_;
+  ComPtr<ID3D12Resource> upload_resource_;
+  ComPtr<ID3D12Resource> readback_resource_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(OperandDML);
 };
 
 class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
@@ -52,14 +75,12 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
   ComPtr<IDMLBindingTable> binding_table_;
 
   std::vector<std::unique_ptr<OperationDML>> operations_;
+  std::map<uint32_t, std::unique_ptr<OperandDML>> operand_map_;
 
   ComPtr<ID3D12Resource> temporary_buffer_;
   UINT64 temporary_resource_size_;
   std::map<uint32_t, ComPtr<ID3D12Resource>> persistent_buffer_;
   std::map<uint32_t, uint64_t> persistent_resource_size_;
-
-  // Operation Data.
-  std::vector<uint32_t> constants_;
 
  private:
   friend class base::RefCounted<CompiledModelDML>;
@@ -78,11 +99,25 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
                               ComPtr<ID3D12CommandAllocator> command_allocator,
                               ComPtr<ID3D12GraphicsCommandList> command_list);
 
+HRESULT CreateOutputResource(uint64_t size,
+                             ComPtr<ID3D12Resource>& intermediate_resource,
+                             ComPtr<ID3D12Device> d3D12_device);
+
+HRESULT CreateReadbackResource(uint64_t size,
+                               ComPtr<ID3D12Resource>& readback_resource,
+                               ComPtr<ID3D12Resource>& operand_resource,
+                               ComPtr<ID3D12Device> d3D12_device);
+
+HRESULT CreateUploadResource(uint64_t size,
+                             ComPtr<ID3D12Resource>& upload_resource,
+                             ComPtr<ID3D12Resource>& input_resource,
+                             ComPtr<ID3D12Device> d3D12_device);
+
 HRESULT UploadTensorResource(const void* data,
                              uint64_t size,
                              ComPtr<ID3D12Resource>& upload_resource,
                              ComPtr<ID3D12Resource>& input_resource,
-                             scoped_refptr<CompiledModelDML> dml);
+                             ComPtr<ID3D12GraphicsCommandList> command_list);
 }  // namespace ml
 
 #endif  // SERVICES_ML_ML_UTILS_DML_H_
