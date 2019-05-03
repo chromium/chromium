@@ -27,15 +27,20 @@ struct OperationDML {
  public:
   OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
                uint32_t descriptor_count,
-               int32_t type,
+               int32_t inputs_size,
                std::vector<uint32_t> inputs,
-               std::vector<uint32_t> outputs);
+               std::vector<uint32_t> outputs,
+               ComPtr<ID3D12Resource> persistent_buffer,
+               uint64_t persistent_size);
   ~OperationDML();
 
   ComPtr<IDMLCompiledOperator> compiled_operator_;
   uint32_t descriptor_count_;
+  ComPtr<ID3D12Resource> persistent_buffer_;
+  uint64_t persistent_size_;
+  std::vector<uint32_t> persistent_index_;
 
-  int32_t type_;
+  int32_t bind_inputs_size;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
 
@@ -45,12 +50,14 @@ struct OperationDML {
 
 struct OperandDML {
  public:
-  OperandDML(DML_BUFFER_TENSOR_DESC operand_desc);
+  OperandDML(std::vector<uint32_t>& dimensions);
   ~OperandDML();
 
   size_t SizeInBytes() { return operand_desc_.TotalTensorSizeInBytes; }
 
+  UINT strides_[4];
   DML_BUFFER_TENSOR_DESC operand_desc_;
+
   ComPtr<ID3D12Resource> operand_resource_;
   ComPtr<ID3D12Resource> upload_resource_;
   ComPtr<ID3D12Resource> readback_resource_;
@@ -78,9 +85,7 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
   std::map<uint32_t, std::unique_ptr<OperandDML>> operand_map_;
 
   ComPtr<ID3D12Resource> temporary_buffer_;
-  UINT64 temporary_resource_size_;
-  std::map<uint32_t, ComPtr<ID3D12Resource>> persistent_buffer_;
-  std::map<uint32_t, uint64_t> persistent_resource_size_;
+  uint64_t temporary_resource_size_;
 
  private:
   friend class base::RefCounted<CompiledModelDML>;
@@ -98,6 +103,10 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
                               ComPtr<ID3D12CommandQueue> command_queue,
                               ComPtr<ID3D12CommandAllocator> command_allocator,
                               ComPtr<ID3D12GraphicsCommandList> command_list);
+
+HRESULT CreateCommonResource(uint64_t size,
+                             ComPtr<ID3D12Resource>& commom_resource,
+                             ComPtr<ID3D12Device> d3D12_device);
 
 HRESULT CreateOutputResource(uint64_t size,
                              ComPtr<ID3D12Resource>& intermediate_resource,

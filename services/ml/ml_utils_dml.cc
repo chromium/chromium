@@ -14,22 +14,62 @@ namespace ml {
 
 OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
                            uint32_t descriptor_count,
-                           int32_t type,
+                           int32_t inputs_size,
                            std::vector<uint32_t> inputs,
-                           std::vector<uint32_t> outputs)
+                           std::vector<uint32_t> outputs,
+                           ComPtr<ID3D12Resource> persistent_buffer,
+                           uint64_t persistent_size)
     : compiled_operator_(std::move(compiled_operator)),
       descriptor_count_(descriptor_count),
-      type_(type),
+      persistent_buffer_(std::move(persistent_buffer)),
+      persistent_size_(persistent_size),
+      bind_inputs_size(inputs_size),
       inputs_(inputs),
       outputs_(outputs) {}
 
 OperationDML::~OperationDML() = default;
 
-OperandDML::OperandDML(DML_BUFFER_TENSOR_DESC operand_desc)
-    : operand_desc_(operand_desc),
+OperandDML::OperandDML(std::vector<uint32_t>& dimensions)
+    : operand_desc_({}),
       operand_resource_(nullptr),
       upload_resource_(nullptr),
-      readback_resource_(nullptr) {}
+      readback_resource_(nullptr) {
+  // All buffer tensors must have a DimensionCount of either 4 or 5.
+  // input data of NHWC to DirectML NCHW.
+  switch (dimensions.size()) {
+    case 1:
+      dimensions = {1, 1, 1, dimensions[0]};
+      break;
+    case 2:
+      dimensions = {1, 1, dimensions[0], dimensions[1]};
+      break;
+    case 3:
+      dimensions = {1, dimensions[2], dimensions[0], dimensions[1]};
+      break;
+    case 4:
+      dimensions = {dimensions[0], dimensions[3], dimensions[1], dimensions[2]};
+      break;
+    default: {
+      NOTREACHED();
+      LOG(ERROR) << "The dimension isn't supported.";
+    }
+  }
+
+  strides_[0] =
+      dimensions[1] * dimensions[2] * dimensions[3];  // new_n = h * w *c
+  strides_[1] = 1;                                    // new_c = 1
+  strides_[2] = dimensions[1] * dimensions[3];        // new_h = w * c
+  strides_[3] = dimensions[1];                        // new_w = c
+
+  operand_desc_.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
+  operand_desc_.Flags = DML_TENSOR_FLAG_NONE;
+  operand_desc_.DimensionCount = dimensions.size();
+  operand_desc_.Sizes = dimensions.data();
+  operand_desc_.Strides = strides_;
+  operand_desc_.TotalTensorSizeInBytes = DMLCalcBufferTensorSize(
+      operand_desc_.DataType, operand_desc_.DimensionCount, operand_desc_.Sizes,
+      operand_desc_.Strides);
+}
 OperandDML::~OperandDML() = default;
 
 CompiledModelDML::CompiledModelDML() = default;
@@ -127,6 +167,23 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
   }
   WaitForSingleObjectEx(fence_event_handle, INFINITE, FALSE);
 
+  return S_OK;
+}
+
+// Create common resource for temporary and persistent resource.
+HRESULT CreateCommonResource(uint64_t size,
+                             ComPtr<ID3D12Resource>& commom_resource,
+                             ComPtr<ID3D12Device> d3D12_device) {
+  CD3DX12_HEAP_PROPERTIES default_heap =
+      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+  HRESULT hr = d3D12_device->CreateCommittedResource(
+      &default_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
+      D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&commom_resource));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating committed resource for temorary buffer.";
+    return hr;
+  }
   return S_OK;
 }
 

@@ -117,7 +117,14 @@ HRESULT ExecutionImplDML::ExecuteCompiledOperator(
     return hr;
   }
 
-  size_t input_size = operation->type_ == mojom::ADD ? 2 : 1;
+  if (dml_->temporary_resource_size_ != 0) {
+    DML_BUFFER_BINDING buffer_binding{dml_->temporary_buffer_.Get(), 0,
+                                      dml_->temporary_resource_size_};
+    DML_BINDING_DESC binding_desc{DML_BINDING_TYPE_BUFFER, &buffer_binding};
+    dml_->binding_table_->BindTemporaryResource(&binding_desc);
+  }
+
+  size_t input_size = operation->bind_inputs_size;
   DML_BUFFER_BINDING input_buffer_binding[input_size];
   DML_BINDING_DESC input_binding_array[input_size];
   DCHECK(input_size != 0);

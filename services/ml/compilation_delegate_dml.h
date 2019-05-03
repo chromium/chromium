@@ -30,8 +30,6 @@ class CompilationDelegateDML : public CompilationDelegate {
   int32_t Compile() override;
   int32_t CreateExecution(std::unique_ptr<mojom::Execution>& execution,
                           mojom::ExecutionInitParamsPtr params) override;
-  const mojom::ModelInfoPtr& GetModel() const;
-  mojo::ScopedSharedBufferMapping MapMemory(uint32_t index) const;
 
  private:
   const CompilationImpl* compilation_;
@@ -42,10 +40,13 @@ class CompilationDelegateDML : public CompilationDelegate {
   HRESULT CreateCommittedResources();
 
   HRESULT InitializeOperators();
+  HRESULT CompileOperator(DML_OPERATOR_DESC&,
+                          size_t,
+                          const mojom::OperationPtr&);
   HRESULT CompileArithmetic(const mojom::ModelInfoPtr& model,
-                            const mojom::OperationPtr& operation,
-                            size_t type);
-
+                            const mojom::OperationPtr& operation);
+  HRESULT CompileConvolution(const mojom::ModelInfoPtr& model,
+                             const mojom::OperationPtr& operation);
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;
   uint64_t execute_temporary_resource_size_;
