@@ -35,11 +35,6 @@ class CompilationDelegateDML : public CompilationDelegate {
   const CompilationImpl* compilation_;
 
   friend class ExecutionImplDML;
-  HRESULT UploadConstantResource(uint32_t index);
-  HRESULT CreateIntermediateResource(uint32_t index);
-  HRESULT CreateCommittedResources();
-
-  HRESULT InitializeOperators();
   HRESULT CompileOperator(DML_OPERATOR_DESC&,
                           size_t,
                           const mojom::OperationPtr&);

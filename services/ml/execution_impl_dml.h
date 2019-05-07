@@ -29,7 +29,6 @@ class ExecutionImplDML : public mojom::Execution {
   void StartCompute(StartComputeCallback callback) override;
 
  private:
-  HRESULT CreateCommittedResources();
   HRESULT ExecuteCompiledOperator(IDMLCompiledOperator*,
                                   const std::unique_ptr<OperationDML>&,
                                   uint32_t);
