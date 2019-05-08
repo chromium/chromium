@@ -176,7 +176,8 @@ HRESULT CreateCommonResource(uint64_t size,
                              ComPtr<ID3D12Device> d3D12_device) {
   CD3DX12_HEAP_PROPERTIES default_heap =
       CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
+  CD3DX12_RESOURCE_DESC resource_desc = CD3DX12_RESOURCE_DESC::Buffer(
+      size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
   HRESULT hr = d3D12_device->CreateCommittedResource(
       &default_heap, D3D12_HEAP_FLAG_NONE, &resource_desc,
       D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&commom_resource));

@@ -117,10 +117,12 @@ HRESULT ExecutionImplDML::ExecuteCompiledOperator(
     return hr;
   }
 
-  if (dml_->temporary_resource_size_ != 0) {
-    DML_BUFFER_BINDING buffer_binding{dml_->temporary_buffer_.Get(), 0,
-                                      dml_->temporary_resource_size_};
-    DML_BINDING_DESC binding_desc{DML_BINDING_TYPE_BUFFER, &buffer_binding};
+  DML_BINDING_PROPERTIES binding_properties =
+      compiled_operator->GetBindingProperties();
+  if (binding_properties.TemporaryResourceSize != 0) {
+    DML_BUFFER_BINDING buffer_binding = {dml_->temporary_buffer_.Get(), 0,
+                                         dml_->temporary_resource_size_};
+    DML_BINDING_DESC binding_desc = {DML_BINDING_TYPE_BUFFER, &buffer_binding};
     dml_->binding_table_->BindTemporaryResource(&binding_desc);
   }
 

@@ -265,11 +265,6 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
       LOG(ERROR) << "Failed creating committed resource for temorary buffer.";
       return hr;
     }
-
-    DML_BUFFER_BINDING buffer_binding = {dml->temporary_buffer_.Get(), 0,
-                                         dml->temporary_resource_size_};
-    DML_BINDING_DESC binding_desc = {DML_BINDING_TYPE_BUFFER, &buffer_binding};
-    dml->binding_table_->BindTemporaryResource(&binding_desc);
   }
 
   // The command recorder is a stateless object that records Dispatches into an
@@ -360,6 +355,8 @@ int32_t CompilationDelegateDML::Compile() {
     } else if (operation->type == mojom::AVERAGE_POOL_2D ||
                operation->type == mojom::MAX_POOL_2D) {
       hr = CompilePooling(model, operation);
+    } else if (operation->type == mojom::SOFTMAX) {
+      hr = CompileSoftmax(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -679,6 +676,50 @@ HRESULT CompilationDelegateDML::CompilePooling(
   hr = CompileActivation(params.fuse_code, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling activation operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileSoftmax(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileSoftmax";
+  SoftmaxParams params;
+  int32_t result = compilation_->GetSoftmaxParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+  if (params.beta != 1.0) {
+    LOG(ERROR) << "beta " << params.beta << " is not supported.";
+    return E_FAIL;
+  }
+
+  HRESULT hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  size_t input_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_ACTIVATION_SOFTMAX_OPERATOR_DESC softmax_operator_desc = {
+      &input_tensor_desc, &output_tensor_desc};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ACTIVATION_SOFTMAX,
+                                     &softmax_operator_desc};
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling softmax operator.";
     return hr;
   }
 
