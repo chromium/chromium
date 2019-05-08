@@ -357,6 +357,9 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileArithmetic(model, operation);
     } else if (operation->type == mojom::CONV_2D) {
       hr = CompileConvolution(model, operation);
+    } else if (operation->type == mojom::AVERAGE_POOL_2D ||
+               operation->type == mojom::MAX_POOL_2D) {
+      hr = CompilePooling(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -389,7 +392,8 @@ int32_t CompilationDelegateDML::CreateExecution(
 HRESULT CompilationDelegateDML::CompileOperator(
     DML_OPERATOR_DESC& operator_desc,
     size_t bind_input_size,
-    const mojom::OperationPtr& operation) {
+    const std::vector<uint32_t>& inputs,
+    const std::vector<uint32_t>& outputs) {
   ComPtr<IDMLOperator> dml_operator;
   HRESULT hr = dml_->dml_device_->CreateOperator(&operator_desc,
                                                  IID_PPV_ARGS(&dml_operator));
@@ -423,12 +427,54 @@ HRESULT CompilationDelegateDML::CompileOperator(
     }
   }
   dml_->operations_.push_back(std::make_unique<OperationDML>(
-      compiled_operator, descriptor_count, bind_input_size, operation->inputs,
-      operation->outputs, persistent_buffer, persistent_size));
+      compiled_operator, descriptor_count, bind_input_size, inputs, outputs,
+      persistent_buffer, persistent_size));
 
   execute_descriptor_count_ += descriptor_count;
   execute_temporary_resource_size_ +=
       execute_binding_properties.TemporaryResourceSize;
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileActivation(
+    int32_t fuse_code,
+    std::vector<uint32_t> outputs) {
+  if (fuse_code == mojom::FUSED_NONE)
+    return S_OK;
+
+  DLOG(INFO) << "CompilationImplMac::CompileActivation";
+  // The inputs and outputs are the same operand.
+  DML_BUFFER_TENSOR_DESC buffer_tensor_desc =
+      dml_->operand_map_[outputs[0]]->operand_desc_;
+  DML_TENSOR_DESC tensor_desc = {DML_TENSOR_TYPE_BUFFER, &buffer_tensor_desc};
+  DML_ACTIVATION_RELU_OPERATOR_DESC relu_operator_desc;
+  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clip_operator_desc;
+  DML_SCALE_BIAS scale = {1.0, 0};
+  DML_OPERATOR_DESC operator_desc;
+  switch (fuse_code) {
+    case mojom::FUSED_RELU:
+      relu_operator_desc = {&tensor_desc, &tensor_desc};
+      operator_desc = {DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc};
+      break;
+    case mojom::FUSED_RELU1:
+      clip_operator_desc = {&tensor_desc, &tensor_desc, &scale, -1.0, 1.0};
+      operator_desc = {DML_OPERATOR_ELEMENT_WISE_CLIP, &clip_operator_desc};
+      break;
+    case mojom::FUSED_RELU6:
+      clip_operator_desc = {&tensor_desc, &tensor_desc, &scale, 0, 6.0};
+      operator_desc = {DML_OPERATOR_ELEMENT_WISE_CLIP, &clip_operator_desc};
+      break;
+    default:
+      LOG(ERROR) << "Fuse code " << fuse_code << "isn't supported.";
+      return E_FAIL;
+  }
+
+  HRESULT hr = CompileOperator(operator_desc, 1, outputs, outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling add operator.";
+    return hr;
+  }
 
   return S_OK;
 }
@@ -470,9 +516,19 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD,
                                      &add_operator_desc};
 
-  hr = CompileOperator(operator_desc, 2, operation);
+  hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling add operator.";
+    return hr;
+  }
+
+  ElementWiseParams params;
+  int32_t result = compilation_->GetElementWiseParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+  hr = CompileActivation(params.fuse_code, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling activation operator.";
     return hr;
   }
 
@@ -543,7 +599,7 @@ HRESULT CompilationDelegateDML::CompileConvolution(
       &weights_tensor_desc,
       &bias_tensor_desc,
       &output_tensor_desc,
-      DML_CONVOLUTION_MODE_CONVOLUTION,
+      DML_CONVOLUTION_MODE_CROSS_CORRELATION,
       DML_CONVOLUTION_DIRECTION_FORWARD,
       2,
       strides,
@@ -555,9 +611,74 @@ HRESULT CompilationDelegateDML::CompileConvolution(
       nullptr};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_CONVOLUTION,
                                      &conv_operator_desc};
-  hr = CompileOperator(operator_desc, 3, operation);
+  hr = CompileOperator(operator_desc, 3, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling convolution operator.";
+    return hr;
+  }
+  hr = CompileActivation(params.fuse_code, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling activation operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompilePooling(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompilePooling";
+  HRESULT hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  size_t input_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  PoolingParams params;
+  int32_t result = compilation_->GetPoolingParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+
+  const uint32_t strides[2] = {params.stride_width, params.stride_height};
+  const uint32_t windows_size[2] = {params.filter_width, params.filter_height};
+  const uint32_t start_padding[2] = {params.padding_left, params.padding_top};
+  const uint32_t end_padding[2] = {params.padding_right, params.padding_bottom};
+
+  DML_OPERATOR_DESC operator_desc;
+  DML_AVERAGE_POOLING_OPERATOR_DESC average_pooling_desc;
+  DML_MAX_POOLING_OPERATOR_DESC max_pooling_desc;
+  if (operation->type == mojom::AVERAGE_POOL_2D) {
+    average_pooling_desc = {
+        &input_tensor_desc, &output_tensor_desc, 2,           strides,
+        windows_size,       start_padding,       end_padding, false};
+    operator_desc = {DML_OPERATOR_AVERAGE_POOLING, &average_pooling_desc};
+  } else if (operation->type == mojom::MAX_POOL_2D) {
+    max_pooling_desc = {
+        &input_tensor_desc, &output_tensor_desc, 2,          strides,
+        windows_size,       start_padding,       end_padding};
+    operator_desc = {DML_OPERATOR_MAX_POOLING, &max_pooling_desc};
+  }
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling pooling operator.";
+    return hr;
+  }
+  hr = CompileActivation(params.fuse_code, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling activation operator.";
     return hr;
   }
 

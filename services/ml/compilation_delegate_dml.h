@@ -37,11 +37,15 @@ class CompilationDelegateDML : public CompilationDelegate {
   friend class ExecutionImplDML;
   HRESULT CompileOperator(DML_OPERATOR_DESC&,
                           size_t,
-                          const mojom::OperationPtr&);
+                          const std::vector<uint32_t>&,
+                          const std::vector<uint32_t>&);
+  HRESULT CompileActivation(int32_t fuse_code, std::vector<uint32_t>);
   HRESULT CompileArithmetic(const mojom::ModelInfoPtr& model,
                             const mojom::OperationPtr& operation);
   HRESULT CompileConvolution(const mojom::ModelInfoPtr& model,
                              const mojom::OperationPtr& operation);
+  HRESULT CompilePooling(const mojom::ModelInfoPtr& model,
+                         const mojom::OperationPtr& operation);
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;
   uint64_t execute_temporary_resource_size_;
