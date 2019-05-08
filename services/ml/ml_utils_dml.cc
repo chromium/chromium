@@ -29,7 +29,8 @@ OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
 
 OperationDML::~OperationDML() = default;
 
-OperandDML::OperandDML(std::vector<uint32_t>& dimensions)
+OperandDML::OperandDML(std::vector<uint32_t>& dimensions,
+                       bool depth_conv_weight)
     : operand_desc_({}),
       operand_resource_(nullptr),
       upload_resource_(nullptr),
@@ -38,7 +39,8 @@ OperandDML::OperandDML(std::vector<uint32_t>& dimensions)
   // input data of NHWC to DirectML NCHW.
   switch (dimensions.size()) {
     case 1:
-      dimensions = {1, 1, 1, dimensions[0]};
+      // One bias per output channel.
+      dimensions = {1, dimensions[0], 1, 1};
       break;
     case 2:
       dimensions = {1, 1, dimensions[0], dimensions[1]};
@@ -47,7 +49,13 @@ OperandDML::OperandDML(std::vector<uint32_t>& dimensions)
       dimensions = {1, dimensions[2], dimensions[0], dimensions[1]};
       break;
     case 4:
-      dimensions = {dimensions[0], dimensions[3], dimensions[1], dimensions[2]};
+      if (depth_conv_weight) {
+        dimensions = {dimensions[3], dimensions[0], dimensions[1],
+                      dimensions[2]};
+      } else {
+        dimensions = {dimensions[0], dimensions[3], dimensions[1],
+                      dimensions[2]};
+      }
       break;
     default: {
       NOTREACHED();
@@ -55,11 +63,18 @@ OperandDML::OperandDML(std::vector<uint32_t>& dimensions)
     }
   }
 
-  strides_[0] =
-      dimensions[1] * dimensions[2] * dimensions[3];  // new_n = h * w *c
-  strides_[1] = 1;                                    // new_c = 1
-  strides_[2] = dimensions[1] * dimensions[3];        // new_h = w * c
-  strides_[3] = dimensions[1];                        // new_w = c
+  if (depth_conv_weight) {
+    strides_[0] = 1;
+    strides_[1] = dimensions[2] * dimensions[3];  // new_c = 1
+    strides_[2] = dimensions[0] * dimensions[3];  // new_h = depth_out * w
+    strides_[3] = dimensions[0];                  // new_w = depth_out
+  } else {
+    strides_[0] =
+        dimensions[1] * dimensions[2] * dimensions[3];  // new_n = h * w *c
+    strides_[1] = 1;                                    // new_c = 1
+    strides_[2] = dimensions[1] * dimensions[3];        // new_h = w * c
+    strides_[3] = dimensions[1];                        // new_w = c
+  }
 
   operand_desc_.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
   operand_desc_.Flags = DML_TENSOR_FLAG_NONE;

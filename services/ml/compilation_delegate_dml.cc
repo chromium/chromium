@@ -135,11 +135,12 @@ HRESULT CreateCommittedResources(scoped_refptr<CompiledModelDML> dml,
 HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
                                const mojom::ModelInfoPtr& model,
                                uint32_t index,
-                               mojo::ScopedSharedBufferMapping mapping) {
+                               mojo::ScopedSharedBufferMapping mapping,
+                               bool depth_conv_weight = false) {
   // Create OperandDML if it doesn't exist.
   if (dml->operand_map_.find(index) == dml->operand_map_.end()) {
-    dml->operand_map_[index] =
-        std::make_unique<OperandDML>(model->operands[index]->dimensions);
+    dml->operand_map_[index] = std::make_unique<OperandDML>(
+        model->operands[index]->dimensions, depth_conv_weight);
   }
 
   // Upload constants_ that hold the value of setting with setOperandValue js
@@ -350,7 +351,8 @@ int32_t CompilationDelegateDML::Compile() {
 
     if (operation->type == mojom::ADD) {
       hr = CompileArithmetic(model, operation);
-    } else if (operation->type == mojom::CONV_2D) {
+    } else if (operation->type == mojom::CONV_2D ||
+               operation->type == mojom::DEPTHWISE_CONV_2D) {
       hr = CompileConvolution(model, operation);
     } else if (operation->type == mojom::AVERAGE_POOL_2D ||
                operation->type == mojom::MAX_POOL_2D) {
@@ -536,6 +538,16 @@ HRESULT CompilationDelegateDML::CompileConvolution(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation) {
   DLOG(INFO) << "CompilationImplMac::CompileConvolution";
+  ConvParams params;
+  int32_t result = compilation_->GetConvParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+  if (params.depthwise && params.depthwise_multiplier != 1) {
+    LOG(ERROR) << "depthwise_multiplier " << params.depthwise_multiplier
+               << " is not supported.";
+    return E_FAIL;
+  }
+
   HRESULT hr = S_OK;
   // Create committed resource for weights and bias.
   for (size_t i = 1; i < 3; ++i) {
@@ -543,7 +555,8 @@ HRESULT CompilationDelegateDML::CompileConvolution(
     std::string index_id(base::NumberToString(index));
     if (model->values.find(index_id) != model->values.end()) {
       hr = UploadConstantResource(dml_, model, index,
-                                  compilation_->MapMemory(index));
+                                  compilation_->MapMemory(index),
+                                  params.depthwise && i == 1 ? true : false);
       if (FAILED(hr)) {
         LOG(ERROR) << "Failed uploading for weights and bias.";
         return hr;
@@ -580,15 +593,10 @@ HRESULT CompilationDelegateDML::CompileConvolution(
   DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                         &output_buffer_desc};
 
-  ConvParams params;
-  int32_t result = compilation_->GetConvParams(operation, params);
-  if (result != mojom::NOT_ERROR)
-    return E_FAIL;
-
   const uint32_t strides[2] = {params.stride_width, params.stride_height};
   const uint32_t dilations[2] = {params.dilation_width, params.dilation_height};
-  const uint32_t start_padding[2] = {params.padding_left, params.padding_top};
-  const uint32_t end_padding[2] = {params.padding_right, params.padding_bottom};
+  const uint32_t start_padding[2] = {params.padding_top, params.padding_left};
+  const uint32_t end_padding[2] = {params.padding_bottom, params.padding_right};
   const uint32_t output_padding[2] = {0, 0};
 
   DML_CONVOLUTION_OPERATOR_DESC conv_operator_desc = {
@@ -604,7 +612,7 @@ HRESULT CompilationDelegateDML::CompileConvolution(
       start_padding,
       end_padding,
       output_padding,
-      1,
+      params.depthwise ? params.depth_in : 1,
       nullptr};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_CONVOLUTION,
                                      &conv_operator_desc};

@@ -50,7 +50,7 @@ struct OperationDML {
 
 struct OperandDML {
  public:
-  OperandDML(std::vector<uint32_t>& dimensions);
+  OperandDML(std::vector<uint32_t>&, bool depth_conv_weight = false);
   ~OperandDML();
 
   size_t SizeInBytes() { return operand_desc_.TotalTensorSizeInBytes; }
