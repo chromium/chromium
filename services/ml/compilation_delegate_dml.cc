@@ -359,6 +359,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompilePooling(model, operation);
     } else if (operation->type == mojom::SOFTMAX) {
       hr = CompileSoftmax(model, operation);
+    } else if (operation->type == mojom::RESHAPE) {
+      hr = CompileReshape(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -728,6 +730,40 @@ HRESULT CompilationDelegateDML::CompileSoftmax(
   hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling softmax operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileReshape(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileReshape";
+  HRESULT hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  size_t input_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_CAST_OPERATOR_DESC cast_operator_desc = {&input_tensor_desc,
+                                               &output_tensor_desc};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_CAST, &cast_operator_desc};
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling reshape operator.";
     return hr;
   }
 

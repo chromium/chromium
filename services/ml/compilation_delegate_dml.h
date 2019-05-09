@@ -48,6 +48,8 @@ class CompilationDelegateDML : public CompilationDelegate {
                          const mojom::OperationPtr& operation);
   HRESULT CompileSoftmax(const mojom::ModelInfoPtr& model,
                          const mojom::OperationPtr& operation);
+  HRESULT CompileReshape(const mojom::ModelInfoPtr& model,
+                         const mojom::OperationPtr& operation);
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;
   uint64_t execute_temporary_resource_size_;
