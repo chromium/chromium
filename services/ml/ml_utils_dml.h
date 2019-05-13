@@ -26,7 +26,7 @@ namespace ml {
 struct OperationDML {
  public:
   OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
-               uint32_t descriptor_count,
+               size_t descriptor_index,
                int32_t inputs_size,
                std::vector<uint32_t> inputs,
                std::vector<uint32_t> outputs,
@@ -34,8 +34,9 @@ struct OperationDML {
                uint64_t persistent_size);
   ~OperationDML();
 
+  size_t descriptor_index_;
+  ComPtr<IDMLBindingTable> binding_table_;
   ComPtr<IDMLCompiledOperator> compiled_operator_;
-  uint32_t descriptor_count_;
   ComPtr<ID3D12Resource> persistent_buffer_;
   uint64_t persistent_size_;
   std::vector<uint32_t> persistent_index_;
@@ -71,7 +72,10 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
  public:
   CompiledModelDML();
 
-  ComPtr<ID3D12Device> d3D12_device_;
+  D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle(size_t index) const;
+  D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(size_t index) const;
+
+  ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<IDMLDevice> dml_device_;
   ComPtr<IDMLCommandRecorder> command_recorder_;
   ComPtr<ID3D12GraphicsCommandList> command_list_;
@@ -79,8 +83,6 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
   ComPtr<ID3D12CommandAllocator> command_allocator_;
 
   ComPtr<ID3D12DescriptorHeap> descriptor_heap_;
-  DML_BINDING_TABLE_DESC binding_table_desc_;
-  ComPtr<IDMLBindingTable> binding_table_;
 
   std::vector<std::unique_ptr<OperationDML>> operations_;
   std::map<uint32_t, std::unique_ptr<OperandDML>> operand_map_;

@@ -15,35 +15,6 @@
 
 namespace ml {
 
-namespace {
-
-HRESULT ResetBindingTable(scoped_refptr<CompiledModelDML> dml,
-                          size_t operation_index) {
-  if (operation_index > 0) {
-    static size_t increment_size =
-        dml->d3D12_device_->GetDescriptorHandleIncrementSize(
-            D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    size_t offset_in_descriptors =
-        dml->operations_[operation_index - 1]->descriptor_count_;
-    size_t offset_ptr = INT64(offset_in_descriptors) * UINT64(increment_size);
-    dml->binding_table_desc_.CPUDescriptorHandle.ptr += offset_ptr;
-    dml->binding_table_desc_.GPUDescriptorHandle.ptr += offset_ptr;
-  }
-  dml->binding_table_desc_.SizeInDescriptors =
-      dml->operations_[operation_index]->descriptor_count_;
-  dml->binding_table_desc_.Dispatchable =
-      dml->operations_[operation_index]->compiled_operator_.Get();
-
-  HRESULT hr = dml->binding_table_->Reset(&dml->binding_table_desc_);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed resetting binding table.";
-    return hr;
-  }
-  return S_OK;
-}
-
-}  // namespace
-
 ExecutionImplDML::ExecutionImplDML(scoped_refptr<CompiledModelDML> dml,
                                    mojom::ExecutionInitParamsPtr params)
     : params_(std::move(params)), dml_(dml) {}
@@ -88,7 +59,7 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
       return;
     }
   }
-  hr = CloseExecuteResetWait(dml_->d3D12_device_, dml_->command_queue_,
+  hr = CloseExecuteResetWait(dml_->d3d12_device_, dml_->command_queue_,
                              dml_->command_allocator_, dml_->command_list_);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed executing command list for compiled operators.";
@@ -109,56 +80,13 @@ HRESULT ExecutionImplDML::ExecuteCompiledOperator(
     IDMLCompiledOperator* compiled_operator,
     const std::unique_ptr<OperationDML>& operation,
     uint32_t operation_index) {
-  // Reset the binding table to bind for the operator, or create
-  // a new table for executing operators.
-  HRESULT hr = ResetBindingTable(dml_, operation_index);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed resetting binding table on executing operator.";
-    return hr;
-  }
-
-  DML_BINDING_PROPERTIES binding_properties =
-      compiled_operator->GetBindingProperties();
-  if (binding_properties.TemporaryResourceSize != 0) {
-    DML_BUFFER_BINDING buffer_binding = {dml_->temporary_buffer_.Get(), 0,
-                                         dml_->temporary_resource_size_};
-    DML_BINDING_DESC binding_desc = {DML_BINDING_TYPE_BUFFER, &buffer_binding};
-    dml_->binding_table_->BindTemporaryResource(&binding_desc);
-  }
-
-  size_t input_size = operation->bind_inputs_size;
-  DML_BUFFER_BINDING input_buffer_binding[input_size];
-  DML_BINDING_DESC input_binding_array[input_size];
-  DCHECK(input_size != 0);
-  for (size_t i = 0; i < input_size; ++i) {
-    size_t input_index = operation->inputs_[i];
-    UINT64 input_buffer_size = dml_->operand_map_[input_index]->SizeInBytes();
-    ComPtr<ID3D12Resource> input_resource =
-        dml_->operand_map_[input_index]->operand_resource_;
-    input_buffer_binding[i] = {input_resource.Get(), 0, input_buffer_size};
-    input_binding_array[i] = {DML_BINDING_TYPE_BUFFER,
-                              &input_buffer_binding[i]};
-  }
-  dml_->binding_table_->BindInputs(input_size, input_binding_array);
-
-  DCHECK(operation->outputs_.size() == 1);
-  size_t output_index = operation->outputs_[0];
-  UINT64 output_buffer_size = dml_->operand_map_[output_index]->SizeInBytes();
-  ComPtr<ID3D12Resource> output_resource =
-      dml_->operand_map_[output_index]->operand_resource_;
-  DML_BUFFER_BINDING output_buffer_binding = {output_resource.Get(), 0,
-                                              output_buffer_size};
-  DML_BINDING_DESC output_binding_desc{DML_BINDING_TYPE_BUFFER,
-                                       &output_buffer_binding};
-  dml_->binding_table_->BindOutputs(1, &output_binding_desc);
-
-  CD3DX12_RESOURCE_BARRIER resource_barrier =
-      CD3DX12_RESOURCE_BARRIER::UAV(output_resource.Get());
-  dml_->command_list_->ResourceBarrier(1, &resource_barrier);
-
   // Record execution of the compiled operator.
-  dml_->command_recorder_->RecordDispatch(
-      dml_->command_list_.Get(), compiled_operator, dml_->binding_table_.Get());
+  dml_->command_recorder_->RecordDispatch(dml_->command_list_.Get(),
+                                          compiled_operator,
+                                          operation->binding_table_.Get());
+  CD3DX12_RESOURCE_BARRIER resource_barrier =
+      CD3DX12_RESOURCE_BARRIER::UAV(nullptr);
+  dml_->command_list_->ResourceBarrier(1, &resource_barrier);
 
   return S_OK;
 }
@@ -183,7 +111,7 @@ HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
                                       output_resource.Get());
   }
 
-  CloseExecuteResetWait(dml_->d3D12_device_, dml_->command_queue_,
+  CloseExecuteResetWait(dml_->d3d12_device_, dml_->command_queue_,
                         dml_->command_allocator_, dml_->command_list_);
 
   for (size_t i = 0; i < params_->outputs.size(); ++i) {

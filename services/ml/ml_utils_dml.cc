@@ -13,14 +13,15 @@
 namespace ml {
 
 OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
-                           uint32_t descriptor_count,
+                           size_t descriptor_index,
                            int32_t inputs_size,
                            std::vector<uint32_t> inputs,
                            std::vector<uint32_t> outputs,
                            ComPtr<ID3D12Resource> persistent_buffer,
                            uint64_t persistent_size)
-    : compiled_operator_(std::move(compiled_operator)),
-      descriptor_count_(descriptor_count),
+    : descriptor_index_(descriptor_index),
+      binding_table_(nullptr),
+      compiled_operator_(std::move(compiled_operator)),
       persistent_buffer_(std::move(persistent_buffer)),
       persistent_size_(persistent_size),
       bind_inputs_size(inputs_size),
@@ -87,6 +88,30 @@ OperandDML::~OperandDML() = default;
 
 CompiledModelDML::CompiledModelDML() = default;
 CompiledModelDML::~CompiledModelDML() = default;
+
+D3D12_GPU_DESCRIPTOR_HANDLE CompiledModelDML::GetGpuHandle(size_t index) const {
+  D3D12_DESCRIPTOR_HEAP_DESC heap_desc = descriptor_heap_->GetDesc();
+  DCHECK(index < heap_desc.NumDescriptors);
+  uint32_t increment_size =
+      d3d12_device_->GetDescriptorHandleIncrementSize(heap_desc.Type);
+  D3D12_GPU_DESCRIPTOR_HANDLE handle;
+  D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle =
+      descriptor_heap_->GetGPUDescriptorHandleForHeapStart();
+  handle.ptr = gpu_handle.ptr + UINT64(index) * UINT64(increment_size);
+  return handle;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE CompiledModelDML::GetCpuHandle(size_t index) const {
+  D3D12_DESCRIPTOR_HEAP_DESC heap_desc = descriptor_heap_->GetDesc();
+  DCHECK(index < heap_desc.NumDescriptors);
+  uint32_t increment_size =
+      d3d12_device_->GetDescriptorHandleIncrementSize(heap_desc.Type);
+  D3D12_CPU_DESCRIPTOR_HANDLE handle;
+  D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle =
+      descriptor_heap_->GetCPUDescriptorHandleForHeapStart();
+  handle.ptr = cpu_handle.ptr + UINT64(index) * UINT64(increment_size);
+  return handle;
+}
 
 UINT64 DMLCalcBufferTensorSize(DML_TENSOR_DATA_TYPE dataType,
                                UINT dimensionCount,
