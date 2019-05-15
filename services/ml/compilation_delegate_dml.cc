@@ -402,7 +402,7 @@ int32_t CompilationDelegateDML::Compile() {
     const mojom::OperationPtr& operation = model->operations[i];
     DCHECK(operation->outputs.size() == 1);
 
-    if (operation->type == mojom::ADD) {
+    if (operation->type == mojom::ADD || operation->type == mojom::MUL) {
       hr = CompileArithmetic(model, operation);
     } else if (operation->type == mojom::CONV_2D ||
                operation->type == mojom::DEPTHWISE_CONV_2D) {
@@ -612,10 +612,17 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
   DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                         &output_buffer_desc};
 
+  DML_OPERATOR_DESC operator_desc;
   DML_ELEMENT_WISE_ADD_OPERATOR_DESC add_operator_desc = {
       &primary_tensor_desc, &secondary_tensor_desc, &output_tensor_desc};
-  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD,
-                                     &add_operator_desc};
+  DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC multiply_operator_desc = {
+      &primary_tensor_desc, &secondary_tensor_desc, &output_tensor_desc};
+  if (operation->type == mojom::ADD) {
+    operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD, &add_operator_desc};
+  } else if (operation->type == mojom::MUL) {
+    operator_desc = {DML_OPERATOR_ELEMENT_WISE_MULTIPLY,
+                     &multiply_operator_desc};
+  }
 
   hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
