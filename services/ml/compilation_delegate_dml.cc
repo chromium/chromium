@@ -546,8 +546,6 @@ HRESULT CompilationDelegateDML::CompileActivation(
 HRESULT CompilationDelegateDML::CompileArithmetic(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation) {
-  // TODO: Support Activation for Add operation in
-  // https://github.com/intel/webml-polyfill/issues/757.
   DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
   // TODO:: Create persistent resources for constants
   // https://github.com/intel/webml-polyfill/issues/758.
@@ -571,12 +569,51 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
     return hr;
   }
 
-  size_t operand_index = operation->inputs[0];
-  DML_BUFFER_TENSOR_DESC buffer_tensor_desc =
-      dml_->operand_map_[operand_index]->operand_desc_;
-  DML_TENSOR_DESC tensor_desc = {DML_TENSOR_TYPE_BUFFER, &buffer_tensor_desc};
+  // Update strides to support broadcasting.
+  size_t primary_index = operation->inputs[0];
+  size_t secondary_index = operation->inputs[1];
+  // Copy new dimensions so that keep original dimensions.
+  std::vector<uint32_t> primary_dimensions =
+      dml_->operand_map_[primary_index]->dimensions_;
+  std::vector<uint32_t> primary_strides =
+      dml_->operand_map_[primary_index]->strides_;
+  std::vector<uint32_t> secondary_dimensions =
+      dml_->operand_map_[secondary_index]->dimensions_;
+  std::vector<uint32_t> secondary_strides =
+      dml_->operand_map_[secondary_index]->strides_;
+  DCHECK(primary_dimensions.size() == 4);
+  for (size_t i = 0; i < 4; ++i) {
+    if (primary_dimensions[i] > secondary_dimensions[i]) {
+      secondary_dimensions[i] = primary_dimensions[i];
+      secondary_strides[i] = 0;
+    } else if (primary_dimensions[i] < secondary_dimensions[i]) {
+      primary_dimensions[i] = secondary_dimensions[i];
+      primary_strides[i] = 0;
+    }
+  }
+
+  DML_BUFFER_TENSOR_DESC primary_buffer_desc =
+      dml_->operand_map_[primary_index]->operand_desc_;
+  primary_buffer_desc.Sizes = primary_dimensions.data();
+  primary_buffer_desc.Strides = primary_strides.data();
+  DML_TENSOR_DESC primary_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                         &primary_buffer_desc};
+
+  DML_BUFFER_TENSOR_DESC secondary_buffer_desc =
+      dml_->operand_map_[secondary_index]->operand_desc_;
+  secondary_buffer_desc.Sizes = secondary_dimensions.data();
+  secondary_buffer_desc.Strides = secondary_strides.data();
+  DML_TENSOR_DESC secondary_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                           &secondary_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
   DML_ELEMENT_WISE_ADD_OPERATOR_DESC add_operator_desc = {
-      &tensor_desc, &tensor_desc, &tensor_desc};
+      &primary_tensor_desc, &secondary_tensor_desc, &output_tensor_desc};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD,
                                      &add_operator_desc};
 

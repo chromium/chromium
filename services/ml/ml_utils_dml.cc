@@ -63,23 +63,26 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
   }
 
   if (depth_conv_weight) {
-    strides_[0] = 1;
-    strides_[1] = dimensions_[2] * dimensions_[3];  // new_c = 1
-    strides_[2] = dimensions_[0] * dimensions_[3];  // new_h = depth_out * w
-    strides_[3] = dimensions_[0];                   // new_w = depth_out
+    strides_ = {
+        1,
+        dimensions_[2] * dimensions_[3],  // new_c = 1
+        dimensions_[0] * dimensions_[3],  // new_h = depth_out * w
+        dimensions_[0]                    // new_w = depth_out
+    };
   } else {
-    strides_[0] =
-        dimensions_[1] * dimensions_[2] * dimensions_[3];  // new_n = h * w *c
-    strides_[1] = 1;                                    // new_c = 1
-    strides_[2] = dimensions_[1] * dimensions_[3];      // new_h = w * c
-    strides_[3] = dimensions_[1];                       // new_w = c
+    strides_ = {
+        dimensions_[1] * dimensions_[2] * dimensions_[3],  // new_n = h * w *c
+        1,                                                 // new_c = 1
+        dimensions_[1] * dimensions_[3],                   // new_h = w * c
+        dimensions_[1],                                    // new_w = c
+    };
   }
 
   operand_desc_.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
   operand_desc_.Flags = DML_TENSOR_FLAG_NONE;
   operand_desc_.DimensionCount = dimensions_.size();
   operand_desc_.Sizes = dimensions_.data();
-  operand_desc_.Strides = strides_;
+  operand_desc_.Strides = strides_.data();
   operand_desc_.TotalTensorSizeInBytes = DMLCalcBufferTensorSize(
       operand_desc_.DataType, operand_desc_.DimensionCount, operand_desc_.Sizes,
       operand_desc_.Strides);
