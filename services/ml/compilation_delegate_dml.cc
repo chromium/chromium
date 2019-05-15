@@ -414,6 +414,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileSoftmax(model, operation);
     } else if (operation->type == mojom::RESHAPE) {
       hr = CompileReshape(model, operation);
+    } else if (operation->type == mojom::CONCATENATION) {
+      hr = CompileConcatenation(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -825,6 +827,90 @@ HRESULT CompilationDelegateDML::CompileReshape(
   hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling reshape operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileConcatenation(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileConcatenation";
+  ConcatParams params;
+  int32_t result = compilation_->GetConcatParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+
+  uint32_t axis = 0;
+  // Original rank has convert to 4 for NCHW.
+  switch (model->operands[operation->inputs[0]]->dimensions.size()) {
+    case 1:
+      axis = 3;
+      break;
+    case 2:
+      axis = params.axis + 2;
+      break;
+    case 3:
+      if (params.axis == 2) {
+        axis = 1;
+      } else {
+        axis = params.axis + 2;
+      }
+      break;
+    case 4:
+      if (params.axis == 0) {
+        axis = 0;
+      } else if (params.axis == 1) {
+        axis = 2;
+      } else if (params.axis == 2) {
+        axis = 3;
+      } else {
+        axis = 1;
+      }
+      break;
+    default:
+      LOG(ERROR) << "The rank isn't supported.";
+      return E_FAIL;
+  }
+
+  // Check constants for inputs tensor.
+  HRESULT hr = S_OK;
+  size_t inputs_size = operation->inputs.size() - 1;
+  DML_TENSOR_DESC inputs_tensor_desc[inputs_size];
+  for (size_t i = 0; i < inputs_size; ++i) {
+    size_t input_index = operation->inputs[i];
+    std::string index_id(base::NumberToString(input_index));
+    if (model->values.find(index_id) != model->values.end()) {
+      hr = UploadConstantResource(dml_, model, input_index,
+                                  compilation_->MapMemory(input_index));
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed uploading constant resource.";
+        return hr;
+      }
+    }
+    inputs_tensor_desc[i] = {DML_TENSOR_TYPE_BUFFER,
+                             &dml_->operand_map_[input_index]->operand_desc_};
+  }
+  hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_JOIN_OPERATOR_DESC join_operator_desc = {inputs_size, inputs_tensor_desc,
+                                               &output_tensor_desc, axis};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_JOIN, &join_operator_desc};
+
+  hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling gather operator.";
     return hr;
   }
 
