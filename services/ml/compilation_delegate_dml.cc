@@ -416,6 +416,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileReshape(model, operation);
     } else if (operation->type == mojom::CONCATENATION) {
       hr = CompileConcatenation(model, operation);
+    } else if (operation->type == mojom::FULLY_CONNECTED) {
+      hr = CompileFullyConnected(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -955,6 +957,102 @@ HRESULT CompilationDelegateDML::CompileConcatenation(
   hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling gather operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileFullyConnected(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileFullyConnected";
+  FullyConnectedParams params;
+  int32_t result = compilation_->GetFullyConnectedParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+
+  HRESULT hr = S_OK;
+  // Create committed resource for weights and bias.
+  for (size_t i = 1; i < 3; ++i) {
+    size_t index = operation->inputs[i];
+    std::string index_id(base::NumberToString(index));
+    if (model->values.find(index_id) != model->values.end()) {
+      hr = UploadConstantResource(dml_, model, index,
+                                  compilation_->MapMemory(index));
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed uploading for weights and bias.";
+        return hr;
+      }
+    }
+  }
+  hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  // Update tensor's dimensions to [batch_size, input_size]
+  size_t input_index = operation->inputs[0];
+  // Copy new dimensions so that keep original dimensions.
+  std::vector<uint32_t> input_dimensions = {1, 1, params.input_batch_size,
+                                            params.input_size};
+  std::vector<uint32_t> input_strides = {
+      input_dimensions[1] * input_dimensions[2] *
+          input_dimensions[3],                    // new_n = h * w *c
+      1,                                          // new_c = 1
+      input_dimensions[1] * input_dimensions[3],  // new_h = w * c
+      input_dimensions[1],                        // new_w = c
+  };
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  input_buffer_desc.Sizes = input_dimensions.data();
+  input_buffer_desc.Strides = input_strides.data();
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  size_t weights_index = operation->inputs[1];
+  DML_BUFFER_TENSOR_DESC weights_buffer_desc =
+      dml_->operand_map_[weights_index]->operand_desc_;
+  DML_TENSOR_DESC weights_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                         &weights_buffer_desc};
+
+  size_t bias_index = operation->inputs[2];
+  DML_BUFFER_TENSOR_DESC bias_buffer_desc =
+      dml_->operand_map_[bias_index]->operand_desc_;
+  // Update strides to support broadcasting for bias.
+  std::vector<uint32_t> bias_dimensions = {1, 1, params.output_batch_size,
+                                           params.output_num_units};
+  std::vector<uint32_t> bias_strides = {1, 1, 0, 1};
+  bias_buffer_desc.Sizes = bias_dimensions.data();
+  bias_buffer_desc.Strides = bias_strides.data();
+  DML_TENSOR_DESC bias_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                      &bias_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_GEMM_OPERATOR_DESC gemm_operator_desc = {&input_tensor_desc,
+                                               &weights_tensor_desc,
+                                               &bias_tensor_desc,
+                                               &output_tensor_desc,
+                                               DML_MATRIX_TRANSFORM_NONE,
+                                               DML_MATRIX_TRANSFORM_TRANSPOSE,
+                                               1.0f,
+                                               1.0f,
+                                               nullptr};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_GEMM, &gemm_operator_desc};
+  hr = CompileOperator(operator_desc, 3, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling fully connected operator.";
+    return hr;
+  }
+  hr = CompileActivation(params.fuse_code, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling activation operator.";
     return hr;
   }
 
