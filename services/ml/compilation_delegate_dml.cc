@@ -405,7 +405,9 @@ int32_t CompilationDelegateDML::Compile() {
     if (operation->type == mojom::ADD || operation->type == mojom::MUL) {
       hr = CompileArithmetic(model, operation);
     } else if (operation->type == mojom::CONV_2D ||
-               operation->type == mojom::DEPTHWISE_CONV_2D) {
+               operation->type == mojom::DEPTHWISE_CONV_2D ||
+               operation->type == mojom::ATROUS_CONV_2D ||
+               operation->type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
       hr = CompileConvolution(model, operation);
     } else if (operation->type == mojom::AVERAGE_POOL_2D ||
                operation->type == mojom::MAX_POOL_2D) {
@@ -418,6 +420,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileConcatenation(model, operation);
     } else if (operation->type == mojom::FULLY_CONNECTED) {
       hr = CompileFullyConnected(model, operation);
+    } else if (operation->type == mojom::RESIZE_BILINEAR) {
+      hr = CompileBilinearScale(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -954,7 +958,8 @@ HRESULT CompilationDelegateDML::CompileConcatenation(
                                                &output_tensor_desc, axis};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_JOIN, &join_operator_desc};
 
-  hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
+  hr = CompileOperator(operator_desc, inputs_size, operation->inputs,
+                       operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling gather operator.";
     return hr;
@@ -1053,6 +1058,54 @@ HRESULT CompilationDelegateDML::CompileFullyConnected(
   hr = CompileActivation(params.fuse_code, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling activation operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileBilinearScale(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileBilinearScale";
+  ResizeBilinearParams params;
+  int32_t result = compilation_->GetResizeBilinearParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+
+  if (params.new_height % params.height != 0 ||
+      params.new_width % params.width != 0) {
+    LOG(ERROR) << "The upsampling factor for the x/y must be integer.";
+    return E_FAIL;
+  }
+
+  HRESULT hr = CreateIntermediateResource(dml_, model, operation->outputs[0]);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  size_t input_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  size_t output_index = operation->outputs[0];
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_SIZE_2D scale_size = {params.x_scale, params.y_scale};
+  DML_UPSAMPLE_2D_OPERATOR_DESC upsample_operator_desc = {
+      &input_tensor_desc, &output_tensor_desc, scale_size,
+      DML_INTERPOLATION_MODE_LINEAR};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_UPSAMPLE_2D,
+                                     &upsample_operator_desc};
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling resize bilinear operator.";
     return hr;
   }
 
