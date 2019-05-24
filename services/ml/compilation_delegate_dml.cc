@@ -198,15 +198,72 @@ HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
   return S_OK;
 }
 
+DML_BUFFER_BINDING* InputBuffers(CompiledModelDML* dml,
+                                 OperationDML* operation) {
+  // It's to output persistent resources.
+  size_t input_size = operation->bind_inputs_size;
+  DML_BUFFER_BINDING* input_buffers = new DML_BUFFER_BINDING[input_size];
+  for (size_t i = 0; i < input_size; ++i) {
+    size_t input_index = operation->inputs_[i];
+    OperandDML* operand = dml->operand_map_[input_index].get();
+    if (operand->operand_desc_.Flags == DML_TENSOR_FLAG_OWNED_BY_DML) {
+      input_buffers[i] = {operand->operand_resource_.Get(), 0,
+                          operand->SizeInBytes()};
+    } else {
+      // Empty buffer binding.
+      input_buffers[i] = {nullptr, 0, 0};
+    }
+  }
+  return input_buffers;
+}
+
+void FreeUnusedResources(CompiledModelDML* dml,
+                         DML_BUFFER_ARRAY_BINDING* buffer_array,
+                         size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+    delete buffer_array[i].Bindings;
+  }
+  // Release those have been copied to persistent resources.
+  for (auto& iter : dml->operand_map_) {
+    OperandDML* operand = iter.second.get();
+    if (operand->operand_desc_.Flags == DML_TENSOR_FLAG_OWNED_BY_DML) {
+      operand->operand_resource_.Reset();
+      operand->upload_resource_.Reset();
+    }
+  }
+}
+
 HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
                             uint32_t execute_descriptor_count,
                             uint64_t execute_temporary_resource_size) {
-  ComPtr<IDMLOperatorInitializer> operator_initializer;
   size_t size = dml->operations_.size();
+  DML_BUFFER_ARRAY_BINDING init_buffer_array[size];
+  DML_BINDING_DESC init_binding_array[size];
+  DML_BUFFER_BINDING persistent_buffers[size];
+  DML_BINDING_DESC persistent_bindings[size];
   IDMLCompiledOperator* compiled_operators[size];
   for (size_t i = 0; i < size; i++) {
+    OperationDML* operation = dml->operations_[i].get();
+    // Inputs binding desc for initializeing.
+    init_buffer_array[i] = {operation->bind_inputs_size,
+                            InputBuffers(dml.get(), operation)};
+    init_binding_array[i] = {DML_BINDING_TYPE_BUFFER_ARRAY,
+                             &init_buffer_array[i]};
+
+    // Output binding desc for persistent resources.
+    if (operation->persistent_size_ != 0) {
+      persistent_buffers[i] = {operation->persistent_buffer_.Get(), 0,
+                               operation->persistent_size_};
+      persistent_bindings[i] = {DML_BINDING_TYPE_BUFFER,
+                                &persistent_buffers[i]};
+    } else {
+      persistent_bindings[i] = {DML_BINDING_TYPE_NONE, nullptr};
+    }
+
+    // Compiled operators for initializeing.
     compiled_operators[i] = dml->operations_[i]->compiled_operator_.Get();
   }
+  ComPtr<IDMLOperatorInitializer> operator_initializer;
   HRESULT hr = dml->dml_device_->CreateOperatorInitializer(
       size, compiled_operators, IID_PPV_ARGS(&operator_initializer));
   if (FAILED(hr)) {
@@ -254,6 +311,9 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
     LOG(ERROR) << "Failed creating binding table.";
     return hr;
   }
+  binding_table->BindInputs(size, init_binding_array);
+  binding_table->BindOutputs(size, persistent_bindings);
+
   dml->descriptor_heap_ = std::move(descriptor_heap);
 
   dml->temporary_resource_size_ =
@@ -291,6 +351,9 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
     return hr;
   }
 
+  // Free unused resources.
+  FreeUnusedResources(dml.get(), init_buffer_array, size);
+
   return S_OK;
 }
 
@@ -318,18 +381,29 @@ HRESULT BindingTableForExecution(IDMLDevice* dml_device,
     operation->binding_table_->BindTemporaryResource(&binding_desc);
   }
 
+  if (operation->persistent_size_ != 0) {
+    DML_BUFFER_BINDING persistent_buffer = {operation->persistent_buffer_.Get(),
+                                            0, operation->persistent_size_};
+    DML_BINDING_DESC persistent_binding = {DML_BINDING_TYPE_BUFFER,
+                                           &persistent_buffer};
+    operation->binding_table_->BindPersistentResource(&persistent_binding);
+  }
+
   size_t input_size = operation->bind_inputs_size;
-  DML_BUFFER_BINDING input_buffer_binding[input_size];
+  DML_BUFFER_BINDING input_buffer_array[input_size];
   DML_BINDING_DESC input_binding_array[input_size];
   DCHECK(input_size != 0);
   for (size_t i = 0; i < input_size; ++i) {
     size_t input_index = operation->inputs_[i];
-    UINT64 input_buffer_size = dml->operand_map_[input_index]->SizeInBytes();
-    ComPtr<ID3D12Resource> input_resource =
-        dml->operand_map_[input_index]->operand_resource_;
-    input_buffer_binding[i] = {input_resource.Get(), 0, input_buffer_size};
-    input_binding_array[i] = {DML_BINDING_TYPE_BUFFER,
-                              &input_buffer_binding[i]};
+    OperandDML* operand = dml->operand_map_[input_index].get();
+    if (operand->operand_desc_.Flags == DML_TENSOR_FLAG_OWNED_BY_DML) {
+      input_binding_array[i] = {DML_BINDING_TYPE_NONE, nullptr};
+    } else {
+      input_buffer_array[i] = {operand->operand_resource_.Get(), 0,
+                                 operand->SizeInBytes()};
+      input_binding_array[i] = {DML_BINDING_TYPE_BUFFER,
+                                &input_buffer_array[i]};
+    }
   }
   operation->binding_table_->BindInputs(input_size, input_binding_array);
 
@@ -691,14 +765,17 @@ HRESULT CompilationDelegateDML::CompileConvolution(
                                        &input_buffer_desc};
 
   size_t weights_index = operation->inputs[1];
-  DML_BUFFER_TENSOR_DESC weights_buffer_desc =
+  DML_BUFFER_TENSOR_DESC& weights_buffer_desc =
       dml_->operand_map_[weights_index]->operand_desc_;
+  //
+  weights_buffer_desc.Flags = DML_TENSOR_FLAG_OWNED_BY_DML;
   DML_TENSOR_DESC weights_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                          &weights_buffer_desc};
 
   size_t bias_index = operation->inputs[2];
-  DML_BUFFER_TENSOR_DESC bias_buffer_desc =
+  DML_BUFFER_TENSOR_DESC& bias_buffer_desc =
       dml_->operand_map_[bias_index]->operand_desc_;
+  bias_buffer_desc.Flags = DML_TENSOR_FLAG_OWNED_BY_DML;
   DML_TENSOR_DESC bias_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                       &bias_buffer_desc};
 
