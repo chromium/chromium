@@ -154,7 +154,7 @@ MPSCNNContext& GetMPSCNNContext() {
 
     ctx.device = MTLCreateSystemDefaultDevice();
     if (ctx.device == nil) {
-      DLOG(ERROR) << "Cannot create MTLDevice";
+      LOG(ERROR) << "Cannot create MTLDevice";
       return ctx;
     } else {
       DLOG(INFO) << "Created MTLDevice: " << ctx.device.name.UTF8String;

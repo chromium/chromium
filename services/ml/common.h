@@ -85,6 +85,7 @@ float getScalarFloat(const std::map<uint32_t, ValueInfo>& values,
 
 uint32_t GetRequiredSize(const mojom::OperandPtr& operand);
 uint32_t GetRequiredSize(const mojom::OperandInfoPtr& operand);
+uint32_t GetRequiredSize(int32_t type, const std::vector<uint32_t>& dimensions);
 
 }  // namespace ml
 

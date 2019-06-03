@@ -8,13 +8,10 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MACOSX)
 #include "services/ml/neural_network_impl.h"
 #elif defined(OS_ANDROID)
 #include "services/ml/neural_network_impl_android.h"
-#elif defined(OS_MACOSX)
-#include "services/ml/neural_network_impl.h"
-#include "services/ml/neural_network_impl_mac.h"
 #endif
 
 namespace ml {
@@ -25,16 +22,7 @@ MLService::MLService(service_manager::mojom::ServiceRequest request)
 MLService::~MLService() = default;
 
 void MLService::OnStart() {
-#if defined(OS_MACOSX)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kUseMkldnn)) {
-    registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
-  } else {
-    // for mps and bnns
-    registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
-  }
-
-#elif defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_MACOSX) || (OS_LINUX) || defined(OS_WIN)
   registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
 #elif defined(OS_ANDROID)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));

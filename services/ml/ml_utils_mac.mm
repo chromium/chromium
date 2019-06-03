@@ -2,21 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/ml/common.h"
 #include "services/ml/ml_utils_mac.h"
 
 namespace ml {
 
 OperandMac::OperandMac() = default;
 OperandMac::OperandMac(const OperandMac& operand) = default;
-OperandMac::OperandMac(const Operand& operand)
-    : Operand(operand), read_count(0) {}
+OperandMac::OperandMac(const mojom::OperandPtr& operand_ptr) {
+  type = operand_ptr->type;
+  dimensions = operand_ptr->dimensions;
+  scale = operand_ptr->scale;
+  zeroPoint = operand_ptr->zeroPoint;
+}
+
+OperandMac::OperandMac(const ml::Operand& operand) {
+  type = operand.type;
+  dimensions = operand.dimensions;
+  scale = operand.scale;
+  zeroPoint = operand.zeroPoint;
+}
+
 OperandMac::~OperandMac() = default;
 
 OperationMac::OperationMac() = default;
 OperationMac::OperationMac(const OperationMac& operation) = default;
-OperationMac::OperationMac(const Operation& operation)
-    : Operation(operation), local_operation(KBNNSFilter) {}
+OperationMac::OperationMac(const mojom::OperationPtr& operation_ptr) {
+  type = operation_ptr->type;
+  inputs = operation_ptr->inputs;
+  outputs = operation_ptr->outputs;
+  local_operation = KBNNSFilter;
+}
+
+OperationMac::OperationMac(const ml::Operation& operation) {
+  type = operation.type;
+  inputs = operation.inputs;
+  outputs = operation.outputs;
+  local_operation = KBNNSFilter;
+}
+
 OperationMac::~OperationMac() = default;
+
+uint32_t OperandMac::requiredSize() const {
+  return GetRequiredSize(type, dimensions);
+}
+
+CompiledModel::CompiledModel() = default;
+CompiledModel::~CompiledModel() = default;
+
+void CompileForModel(const mojom::ModelInfoPtr& model,
+                     CompiledModel* compiled_model) {
+  compiled_model->operands_.reserve(model->operands.size());
+  for (uint32_t i = 0; i < model->operands.size(); ++i) {
+    OperandMac operand(model->operands[i]);
+    compiled_model->operands_.push_back(operand);
+  }
+  compiled_model->operations_.reserve(model->operations.size());
+  for (uint32_t i = 0; i < model->operations.size(); ++i) {
+    OperationMac operation(model->operations[i]);
+    operation.filter = nullptr;
+    compiled_model->operations_.push_back(operation);
+  }
+
+  compiled_model->inputs_ = model->inputs;
+  compiled_model->outputs_ = model->outputs;
+}
 
 bool ParameterExtracterForConv(const OperationMac& operation,
                                const std::vector<uint32_t>& inputs,

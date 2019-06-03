@@ -52,6 +52,8 @@
 }
 
 - (void)purge {
+  free(self.weights_);
+  free(self.bias_);
   return;
 }
 

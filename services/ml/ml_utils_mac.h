@@ -13,11 +13,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "services/ml/common.h"
-
-@class MPSCNNKernel;
-@class MPSCNNBinaryKernel;
+#include "services/ml/public/mojom/compilation.mojom.h"
+#include "services/ml/public/mojom/model.mojom.h"
 
 typedef enum LocalOperation {
   KBNNSFilter = 1,
@@ -30,18 +28,22 @@ typedef enum LocalOperation {
 
 namespace ml {
 
-struct OperandMac : public Operand {
+struct OperandMac : public mojom::Operand {
   OperandMac();
+  // explicit OperandMac(const Operand&);
   explicit OperandMac(const OperandMac&);
-  explicit OperandMac(const Operand&);
+  explicit OperandMac(const mojom::OperandPtr&);
+  explicit OperandMac(const ml::Operand&);
   ~OperandMac();
   uint32_t read_count;
+  uint32_t requiredSize() const;
 };
 
-struct OperationMac : public Operation {
+struct OperationMac : public mojom::Operation {
   OperationMac();
   explicit OperationMac(const OperationMac&);
-  explicit OperationMac(const Operation&);
+  explicit OperationMac(const mojom::OperationPtr&);
+  explicit OperationMac(const ml::Operation&);
   ~OperationMac();
   ::BNNSFilter filter;
   LocalOperation local_operation;
@@ -56,6 +58,22 @@ struct OperationMac : public Operation {
                      unsigned long count,
                      void* userData);
 };
+
+class CompiledModel {
+ public:
+  CompiledModel();
+
+  std::vector<OperandMac> operands_;
+  std::vector<OperationMac> operations_;
+  std::vector<uint32_t> inputs_;
+  std::vector<uint32_t> outputs_;
+
+ protected:
+  ~CompiledModel();
+};
+
+void CompileForModel(const mojom::ModelInfoPtr& model,
+                     CompiledModel* compiled_model);
 
 bool ParameterExtracterForConv(const OperationMac&,
                                const std::vector<uint32_t>&,

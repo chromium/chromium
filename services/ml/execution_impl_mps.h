@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_EXECUTION_IMPL_MAC_MPS_H_
-#define SERVICES_ML_EXECUTION_IMPL_MAC_MPS_H_
+#ifndef SERVICES_ML_EXECUTION_IMPL_MPS_H_
+#define SERVICES_ML_EXECUTION_IMPL_MPS_H_
 
 #import <Metal/MTLBuffer.h>
 #import <Metal/MTLCommandBuffer.h>
@@ -14,10 +14,12 @@
 #include "base/mac/availability.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/ml/common.h"
-#include "services/ml/compilation_impl_mac.h"
+// #include "services/ml/compilation_impl_mac.h"
+#include "services/ml/compilation_delegate_mps.h"
 #include "services/ml/public/mojom/execution.mojom.h"
 
 @class MPSImage;
@@ -25,17 +27,24 @@
 
 namespace ml {
 
-class ExecutionImplMacMPS : public mojom::Execution {
+class CompilationDelegateMPS;
+class CompiledModelMPS;
+
+class API_AVAILABLE(macosx(10.13)) ExecutionImplMPS : public mojom::Execution {
  public:
-  ExecutionImplMacMPS(base::WeakPtr<CompilationImplMac>,
-                      mojo::ScopedSharedBufferHandle);
-  ~ExecutionImplMacMPS() override;
+  ExecutionImplMPS(scoped_refptr<CompiledModelMPS> compiled_model,
+                   mojom::ExecutionInitParamsPtr params);
+  ~ExecutionImplMPS() override;
 
   void StartCompute(StartComputeCallback callback) override;
 
-  bool IsValid() const;
-
  private:
+  mojom::ExecutionInitParamsPtr params_;
+
+  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
+  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
+
+  scoped_refptr<CompiledModelMPS> compiled_model_;
   void API_AVAILABLE(macos(10_13))
       SetupMPSImageForOperands(std::vector<base::scoped_nsobject<MPSImage>>&,
                                std::vector<id<MTLBuffer>>&,
@@ -47,12 +56,6 @@ class ExecutionImplMacMPS : public mojom::Execution {
                                                     const id<MTLCommandBuffer>&,
                                                     const void*,
                                                     size_t);
-
-  base::WeakPtr<CompilationImplMac> compilation_;
-
-  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
-  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
-
   API_AVAILABLE(macos(10_13))
   std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
@@ -61,9 +64,9 @@ class ExecutionImplMacMPS : public mojom::Execution {
   std::vector<base::scoped_nsobject<MPSImage>> constant_mpsimages_;
   API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> constant_mtlbuffers_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExecutionImplMacMPS);
+  DISALLOW_COPY_AND_ASSIGN(ExecutionImplMPS);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_EXECUTION_IMPL_MAC_MPS_H_
+#endif

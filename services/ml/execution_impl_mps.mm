@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/execution_impl_mac_mps.h"
+#include "services/ml/execution_impl_mps.h"
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
+#include "services/ml/common.h"
 #include "services/ml/ml_utils_mac.h"
 #include "services/ml/mps_protocols_impl.h"
 #include "services/ml/mpscnn_context.h"
@@ -75,8 +76,8 @@ MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
                         numberOfImages:n
                                  usage:MTLTextureUsageShaderRead |
                                        MTLTextureUsageShaderWrite];
-  LOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc << " [" << width
-            << ", " << height << ", " << channels << "]";
+  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc << " [" << width
+             << ", " << height << ", " << channels << "]";
   return mpsimage_desc;
 }
 
@@ -91,47 +92,37 @@ void SaveTemporaryImages(std::map<uint32_t, MPSImage*>& temporary_images,
 
 }  // namespace
 
-ExecutionImplMacMPS::ExecutionImplMacMPS(
-    base::WeakPtr<CompilationImplMac> compilation,
-    mojo::ScopedSharedBufferHandle memory) {
-  compilation_ = compilation;
+API_AVAILABLE(macosx(10.13))
+ExecutionImplMPS::ExecutionImplMPS(
+    scoped_refptr<CompiledModelMPS> compiled_model,
+    mojom::ExecutionInitParamsPtr params)
+    : params_(std::move(params)), compiled_model_(std::move(compiled_model)) {
   uint32_t mapped_length = 0;
-  SetupOperandInfoForOperands(inputs_info_, compilation_->operands_,
-                              compilation_->inputs_, memory, mapped_length);
-  SetupOperandInfoForOperands(outputs_info_, compilation_->operands_,
-                              compilation_->outputs_, memory, mapped_length);
+  SetupOperandInfoForOperands(inputs_info_, compiled_model_->operands_,
+                              compiled_model_->inputs_, params_->memory,
+                              mapped_length);
+  SetupOperandInfoForOperands(outputs_info_, compiled_model_->operands_,
+                              compiled_model_->outputs_, params_->memory,
+                              mapped_length);
 
   if (@available(macOS 10.13, *)) {
     SetupMPSImageForOperands(input_mpsimages_, input_mtlbuffers_,
-                             compilation_->inputs_);
+                             compiled_model_->inputs_);
     SetupMPSImageForOperands(constant_mpsimages_, constant_mtlbuffers_,
-                             compilation_->constants_);
+                             compiled_model_->constants_);
     CreateOutputMTLBuffer();
   }
 }
 
-ExecutionImplMacMPS::~ExecutionImplMacMPS() = default;
+ExecutionImplMPS::~ExecutionImplMPS() = default;
 
-bool ExecutionImplMacMPS::IsValid() const {
-  bool valid = compilation_ != nil &&
-               inputs_info_.size() == compilation_->inputs_.size() &&
-               outputs_info_.size() == compilation_->outputs_.size();
-  if (compilation_) {
-    if (@available(macOS 10.13, *)) {
-      valid &= compilation_->inputs_.size() == input_mpsimages_.size() &&
-               compilation_->constants_.size() == constant_mpsimages_.size();
-    }
-  }
-  return valid;
-}
-
-void API_AVAILABLE(macosx(10.13)) ExecutionImplMacMPS::SetupMPSImageForOperands(
+void API_AVAILABLE(macosx(10.13)) ExecutionImplMPS::SetupMPSImageForOperands(
     std::vector<base::scoped_nsobject<MPSImage>>& mps_image_array,
     std::vector<id<MTLBuffer>>& mtl_buffer_array,
     const std::vector<uint32_t>& operands_index_array) {
   for (size_t i = 0; i < operands_index_array.size(); ++i) {
     const OperandMac& operand =
-        compilation_->operands_[operands_index_array[i]];
+        compiled_model_->operands_[operands_index_array[i]];
     if (@available(macOS 10.13, *)) {
       MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
       if (!descriptor)
@@ -148,18 +139,18 @@ void API_AVAILABLE(macosx(10.13)) ExecutionImplMacMPS::SetupMPSImageForOperands(
 }
 
 API_AVAILABLE(macosx(10.13))
-void ExecutionImplMacMPS::CreateOutputMTLBuffer() {
-  for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
+void ExecutionImplMPS::CreateOutputMTLBuffer() {
+  for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
     const OperandMac& operand =
-        compilation_->operands_[compilation_->outputs_[i]];
+        compiled_model_->operands_[compiled_model_->outputs_[i]];
     output_mtlbuffers_.push_back([GetMPSCNNContext().device
         newBufferWithLength:operand.requiredSize()
                     options:MTLResourceOptionCPUCacheModeWriteCombined]);
   }
 }
 
-void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
-  DLOG(INFO) << "ExecutionImplMac::StartCompute";
+void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
+  DLOG(INFO) << "ExecutionImplMPS::StartCompute";
   bool success = true;
   if (@available(macOS 10.13, *)) {
     do {
@@ -169,7 +160,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
 
         NSMutableArray<MPSImage*>* image_array =
             [NSMutableArray arrayWithCapacity:1];
-        for (size_t i = 0; i < compilation_->inputs_.size(); ++i) {
+        for (size_t i = 0; i < compiled_model_->inputs_.size(); ++i) {
           std::unique_ptr<OperandInfo>& input_data = inputs_info_[i];
           MPSImage* mps_img = input_mpsimages_[i].get();
           const id<MTLBuffer> mtl_buffer = input_mtlbuffers_[i];
@@ -178,20 +169,20 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           [image_array addObject:mps_img];
         }
 
-        for (size_t i = 0; i < compilation_->constants_.size(); ++i) {
-          uint32_t index = compilation_->constants_[i];
-          if (compilation_->values_.find(index) ==
-              compilation_->values_.end()) {
-            DLOG(ERROR) << "Can't find constant " << index;
+        for (size_t i = 0; i < compiled_model_->constants_.size(); ++i) {
+          std::string index(
+              base::NumberToString(compiled_model_->constants_[i]));
+          if (compiled_model_->values_.find(index) ==
+              compiled_model_->values_.end()) {
+            LOG(ERROR) << "Can't find constant " << index;
             success = false;
             break;
           }
-          const ValueInfo& value_info =
-              compilation_->values_[compilation_->constants_[i]];
+          ValueInfo value_info = compiled_model_->values_[index];
           MPSImage* mps_img = constant_mpsimages_[i].get();
           const id<MTLBuffer> mtl_buffer = constant_mtlbuffers_[i];
           const void* cpu_buffer = static_cast<const void*>(
-              compilation_->memory_.get() + value_info.offset);
+              compiled_model_->memory_.get() + value_info.offset);
           UploadToMPSImage(mps_img, mtl_buffer, command_buffer, cpu_buffer,
                            value_info.length);
           [image_array addObject:mps_img];
@@ -199,7 +190,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
 
         std::map<uint32_t, MPSImage*> output_mps_images;
         std::map<uint32_t, MPSImage*> temporary_mps_images;
-        for (size_t i = 0; i < compilation_->graphs_.size(); i++) {
+        for (size_t i = 0; i < compiled_model_->graphs_.size(); i++) {
           // temporary_inputs_[i -1] is the temporary input image index.
           // temporary_mps_images[temporary_inputs_[i -1]] is temporary input
           // image.
@@ -210,7 +201,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           } else {
             source_images = [NSMutableArray arrayWithCapacity:1];
             NSArray<id<MPSHandle>>* source_image_handles =
-                compilation_->graphs_[i].get().sourceImageHandles;
+                compiled_model_->graphs_[i].get().sourceImageHandles;
             if (source_image_handles.count) {
               // There are only one paramters for new graph.
               DCHECK(source_image_handles.count == 1);
@@ -231,7 +222,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           NSMutableArray<MPSImage*>* intermediate_images =
               [NSMutableArray arrayWithCapacity:1];
 
-          MPSImage* graph_output_image = [compilation_->graphs_[i]
+          MPSImage* graph_output_image = [compiled_model_->graphs_[i]
               encodeToCommandBuffer:command_buffer
                        sourceImages:source_images
                        sourceStates:nullptr
@@ -244,8 +235,9 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
           output_mps_images[output_index] = graph_output_image;
         }
 
-        for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
-          MPSImage* output_img = output_mps_images[compilation_->outputs_[i]];
+        for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
+          MPSImage* output_img =
+              output_mps_images[compiled_model_->outputs_[i]];
           id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
 
           id<MTLComputeCommandEncoder> encoder =
@@ -272,7 +264,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
         [command_buffer commit];
         [command_buffer waitUntilCompleted];
 
-        for (size_t i = 0; i < compilation_->outputs_.size(); ++i) {
+        for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
           std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
           id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
           memcpy(output_data->mapping.get(), [output_buffer contents],
@@ -289,7 +281,7 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
   }
 }
 
-void ExecutionImplMacMPS::UploadToMPSImage(
+void ExecutionImplMPS::UploadToMPSImage(
     const MPSImage* mps_image,
     const id<MTLBuffer>& mtl_buffer,
     const id<MTLCommandBuffer>& command_buffer,

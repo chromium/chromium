@@ -15,6 +15,10 @@
 #endif
 #include "services/ml/compilation_delegate_ie.h"
 #include "services/ml/compilation_delegate_mkl_dnn.h"
+#if defined(OS_MACOSX)
+#include "services/ml/compilation_delegate_bnns.h"
+#include "services/ml/compilation_delegate_mps.h"
+#endif
 #include "services/ml/ml_switches.h"
 #include "services/ml/model_impl.h"
 
@@ -68,12 +72,29 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
     } else {
 #if defined(OS_WIN) || defined(OS_LINUX)
       delegate_ = std::make_unique<CompilationDelegateClDnn>(this);
+#else
+      if (@available(macOS 10.13, *)) {
+        delegate_ = std::make_unique<CompilationDelegateMPS>(this);
+      }
 #endif  // defined(OS_WIN) || defined(OS_LINUX)
     }
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
-    delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+    if (command_line->HasSwitch(switches::kUseMkldnn)) {
+      delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+    } else {
+#if defined(OS_MACOSX)
+      if (@available(macOS 10.13, *)) {
+        delegate_ = std::make_unique<CompilationDelegateBnns>(this);
+      }
+#endif
+    }
   } else {
     LOG(ERROR) << "Preference: " << preference << " is not suppoted.";
+    std::move(callback).Run(mojom::BAD_DATA);
+    return;
+  }
+
+  if (!delegate_.get()) {
     std::move(callback).Run(mojom::BAD_DATA);
     return;
   }
