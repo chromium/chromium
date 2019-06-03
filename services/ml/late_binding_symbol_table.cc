@@ -18,8 +18,10 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#if defined (__APPLE__)
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
+#endif
 #include "base/path_service.h"
 
 namespace ml {
