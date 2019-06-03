@@ -282,6 +282,7 @@ static const char* const kSwitchNames[] = {
     switches::kUseHighGPUThreadPriorityForPerfTests,
     ml::switches::kUseMkldnnForMac,
     ml::switches::kUseBNNSForMac,
+    ml::switches::kUseMkldnn,
 #endif
 #if defined(USE_OZONE)
     switches::kOzonePlatform,
