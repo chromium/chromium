@@ -4,6 +4,8 @@
 
 #include "services/ml/mkl_dnn_symbol_table.h"
 
+#include "build/build_config.h"
+
 namespace ml {
 
 #if defined(OS_LINUX)
