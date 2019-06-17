@@ -23,6 +23,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace ml {
 
+class FormatData;
 struct OperationDML {
  public:
   OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -63,6 +64,7 @@ struct OperandDML {
   ComPtr<ID3D12Resource> operand_resource_;
   ComPtr<ID3D12Resource> upload_resource_;
   ComPtr<ID3D12Resource> readback_resource_;
+  ComPtr<ID3D12Resource> format_resource_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OperandDML);
@@ -70,10 +72,14 @@ struct OperandDML {
 
 class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
  public:
-  CompiledModelDML();
+  CompiledModelDML(std::vector<uint32_t> inputs, std::vector<uint32_t> outputs);
 
   D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle(size_t index) const;
   D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(size_t index) const;
+
+  void CreateFormatData();
+  void FormatInputData();
+  void FormatOutputData();
 
   ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<IDMLDevice> dml_device_;
@@ -84,6 +90,8 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
 
   ComPtr<ID3D12DescriptorHeap> descriptor_heap_;
 
+  std::vector<uint32_t> inputs_;
+  std::vector<uint32_t> outputs_;
   std::vector<std::unique_ptr<OperationDML>> operations_;
   std::map<uint32_t, std::unique_ptr<OperandDML>> operand_map_;
 
@@ -93,6 +101,8 @@ class CompiledModelDML : public base::RefCounted<CompiledModelDML> {
  private:
   friend class base::RefCounted<CompiledModelDML>;
   ~CompiledModelDML();
+
+  std::unique_ptr<FormatData> format_data_;
 
   DISALLOW_COPY_AND_ASSIGN(CompiledModelDML);
 };
@@ -117,7 +127,7 @@ HRESULT CreateOutputResource(uint64_t size,
 
 HRESULT CreateReadbackResource(uint64_t size,
                                ComPtr<ID3D12Resource>& readback_resource,
-                               ComPtr<ID3D12Resource>& operand_resource,
+                               ComPtr<ID3D12Resource>& formatted_resource,
                                ComPtr<ID3D12Device> d3D12_device);
 
 HRESULT CreateUploadResource(uint64_t size,
@@ -130,6 +140,13 @@ HRESULT UploadTensorResource(const void* data,
                              ComPtr<ID3D12Resource>& upload_resource,
                              ComPtr<ID3D12Resource>& input_resource,
                              ComPtr<ID3D12GraphicsCommandList> command_list);
+
+HRESULT UploadFloat16Resource(void* data,
+                              const std::vector<uint32_t>& dimension,
+                              ComPtr<ID3D12Resource>& upload_resource,
+                              ComPtr<ID3D12Resource>& input_resource,
+                              ComPtr<ID3D12GraphicsCommandList> command_list,
+                              bool depth_conv_weight);
 }  // namespace ml
 
 #endif  // SERVICES_ML_ML_UTILS_DML_H_

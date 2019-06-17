@@ -12,6 +12,7 @@
 #include "base/logging.h"
 // TODO: Window sdk should be upgraded to 10.0.18361.0 in VS
 // seeing https://chromium-review.googlesource.com/c/chromium/src/+/1054027
+#include "services/ml/common.h"
 #include "services/ml/direct_ml.h"
 #include "services/ml/dml_d3dx12_utils.h"
 #include "services/ml/dml_symbol_table.h"
@@ -103,12 +104,23 @@ HRESULT CreateCommittedResources(scoped_refptr<CompiledModelDML> dml,
     size_t index = inputs[i];
     dml->operand_map_[index] =
         std::make_unique<OperandDML>(model->operands[index]->dimensions);
-    hr = CreateUploadResource(dml->operand_map_[index]->SizeInBytes(),
-                              dml->operand_map_[index]->upload_resource_,
+    // The input data will be formatted with hsls, so the size of input
+    // data is Float32 * product(dimensions).
+    size_t input_data_size =
+        product(model->operands[index]->dimensions) * sizeof(float);
+    hr = CreateUploadResource(
+        input_data_size, dml->operand_map_[index]->upload_resource_,
+        dml->operand_map_[index]->format_resource_, dml->d3d12_device_);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed creating upload committed resource for inputs.";
+      return hr;
+    }
+    // Create common resource for formatting input data.
+    hr = CreateCommonResource(dml->operand_map_[index]->SizeInBytes(),
                               dml->operand_map_[index]->operand_resource_,
                               dml->d3d12_device_);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed creating upload committed resource for inputs.";
+      LOG(ERROR) << "Failed creating resource for formatting input data.";
       return hr;
     }
   }
@@ -119,10 +131,21 @@ HRESULT CreateCommittedResources(scoped_refptr<CompiledModelDML> dml,
     size_t index = outputs[i];
     dml->operand_map_[index] =
         std::make_unique<OperandDML>(model->operands[index]->dimensions);
-    hr = CreateReadbackResource(dml->operand_map_[index]->SizeInBytes(),
-                                dml->operand_map_[index]->readback_resource_,
-                                dml->operand_map_[index]->operand_resource_,
-                                dml->d3d12_device_);
+    hr = CreateOutputResource(dml->operand_map_[index]->SizeInBytes(),
+                              dml->operand_map_[index]->operand_resource_,
+                              dml->d3d12_device_);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed creating committed resource for output data.";
+      return hr;
+    }
+
+    // The input data will be formatted with hsls, so the size of input
+    // data is Float32 * product(dimensions).
+    size_t output_data_size =
+        product(model->operands[index]->dimensions) * sizeof(float);
+    hr = CreateReadbackResource(
+        output_data_size, dml->operand_map_[index]->readback_resource_,
+        dml->operand_map_[index]->format_resource_, dml->d3d12_device_);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed creating readback committed resource for inputs.";
       return hr;
@@ -157,12 +180,11 @@ HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
     return hr;
   }
 
-  const mojom::OperandValueInfoPtr& input_info =
-      model->values[base::NumberToString(index)];
-  hr = UploadTensorResource(
-      static_cast<void*>(mapping.get()), input_info->length,
-      dml->operand_map_[index]->upload_resource_,
-      dml->operand_map_[index]->operand_resource_, dml->command_list_);
+  hr = UploadFloat16Resource(static_cast<void*>(mapping.get()),
+                             dml->operand_map_[index]->dimensions_,
+                             dml->operand_map_[index]->upload_resource_,
+                             dml->operand_map_[index]->operand_resource_,
+                             dml->command_list_, depth_conv_weight);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
     return hr;
@@ -428,7 +450,8 @@ CompilationDelegateDML::CompilationDelegateDML(
     : compilation_(compilation),
       execute_descriptor_count_(0),
       execute_temporary_resource_size_(0) {
-  dml_ = base::MakeRefCounted<CompiledModelDML>();
+  const mojom::ModelInfoPtr& model = compilation->GetModel();
+  dml_ = base::MakeRefCounted<CompiledModelDML>(model->inputs, model->outputs);
 
   // Set up Direct3D 12.
   HRESULT hr =
@@ -767,7 +790,6 @@ HRESULT CompilationDelegateDML::CompileConvolution(
   size_t weights_index = operation->inputs[1];
   DML_BUFFER_TENSOR_DESC& weights_buffer_desc =
       dml_->operand_map_[weights_index]->operand_desc_;
-  //
   weights_buffer_desc.Flags = DML_TENSOR_FLAG_OWNED_BY_DML;
   DML_TENSOR_DESC weights_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                          &weights_buffer_desc};
@@ -1076,19 +1098,17 @@ HRESULT CompilationDelegateDML::CompileFullyConnected(
 
   // Update tensor's dimensions to [batch_size, input_size]
   size_t input_index = operation->inputs[0];
-  // Copy new dimensions so that keep original dimensions.
-  std::vector<uint32_t> input_dimensions = {1, 1, params.input_batch_size,
-                                            params.input_size};
+  OperandDML* operand = dml_->operand_map_[input_index].get();
+  // Update the dimensions to be used in FormatData class.
+  operand->dimensions_ = {1, 1, params.input_batch_size, params.input_size};
   std::vector<uint32_t> input_strides = {
-      input_dimensions[1] * input_dimensions[2] *
-          input_dimensions[3],                    // new_n = h * w *c
-      1,                                          // new_c = 1
-      input_dimensions[1] * input_dimensions[3],  // new_h = w * c
-      input_dimensions[1],                        // new_w = c
+      operand->dimensions_[1] * operand->dimensions_[2] *
+          operand->dimensions_[3],
+      operand->dimensions_[2] * operand->dimensions_[3],
+      operand->dimensions_[3],
+      1,
   };
-  DML_BUFFER_TENSOR_DESC input_buffer_desc =
-      dml_->operand_map_[input_index]->operand_desc_;
-  input_buffer_desc.Sizes = input_dimensions.data();
+  DML_BUFFER_TENSOR_DESC input_buffer_desc = operand->operand_desc_;
   input_buffer_desc.Strides = input_strides.data();
   DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                        &input_buffer_desc};

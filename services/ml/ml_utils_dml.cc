@@ -8,6 +8,9 @@
 #include "services/ml/ml_utils_dml.h"
 
 #include "base/logging.h"
+#include "services/ml/common.h"
+#include "services/ml/dml/float16_compressor.h"
+#include "services/ml/dml/format_data.h"
 #include "services/ml/dml_d3dx12_utils.h"
 
 namespace ml {
@@ -51,6 +54,7 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
       break;
     case 4:
       if (depth_conv_weight) {
+        // depth_out, depth_in, h, w
         dimensions_ = {sizes[3], sizes[0], sizes[1], sizes[2]};
       } else {
         dimensions_ = {sizes[0], sizes[3], sizes[1], sizes[2]};
@@ -61,22 +65,12 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
       LOG(ERROR) << "The dimension isn't supported.";
     }
   }
-
-  if (depth_conv_weight) {
-    strides_ = {
-        1,
-        dimensions_[2] * dimensions_[3],  // new_c = 1
-        dimensions_[0] * dimensions_[3],  // new_h = depth_out * w
-        dimensions_[0]                    // new_w = depth_out
-    };
-  } else {
-    strides_ = {
-        dimensions_[1] * dimensions_[2] * dimensions_[3],  // new_n = h * w *c
-        1,                                                 // new_c = 1
-        dimensions_[1] * dimensions_[3],                   // new_h = w * c
-        dimensions_[1],                                    // new_w = c
-    };
-  }
+  strides_ = {
+      dimensions_[1] * dimensions_[2] * dimensions_[3],
+      dimensions_[2] * dimensions_[3],
+      dimensions_[3],
+      1,
+  };
 
   operand_desc_.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
   operand_desc_.Flags = DML_TENSOR_FLAG_NONE;
@@ -89,7 +83,9 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
 }
 OperandDML::~OperandDML() = default;
 
-CompiledModelDML::CompiledModelDML() = default;
+CompiledModelDML::CompiledModelDML(std::vector<uint32_t> inputs,
+                                   std::vector<uint32_t> outputs)
+    : inputs_(inputs), outputs_(outputs) {}
 CompiledModelDML::~CompiledModelDML() = default;
 
 D3D12_GPU_DESCRIPTOR_HANDLE CompiledModelDML::GetGpuHandle(size_t index) const {
@@ -114,6 +110,18 @@ D3D12_CPU_DESCRIPTOR_HANDLE CompiledModelDML::GetCpuHandle(size_t index) const {
       descriptor_heap_->GetCPUDescriptorHandleForHeapStart();
   handle.ptr = cpu_handle.ptr + UINT64(index) * UINT64(increment_size);
   return handle;
+}
+
+void CompiledModelDML::CreateFormatData() {
+  format_data_ = std::make_unique<FormatData>(this);
+}
+
+void CompiledModelDML::FormatInputData() {
+  format_data_->FormatInputData(this);
+}
+
+void CompiledModelDML::FormatOutputData() {
+  format_data_->FormatOutputData(this);
 }
 
 UINT64 DMLCalcBufferTensorSize(DML_TENSOR_DATA_TYPE dataType,
@@ -161,7 +169,7 @@ UINT64 DMLCalcBufferTensorSize(DML_TENSOR_DATA_TYPE dataType,
 
   // Round up to the nearest 4 bytes.
   UINT64 roundUpSizeInBytes = (minimumImpliedSizeInBytes + 3) & ~3ui64;
-  DCHECK(roundUpSizeInBytes == minimumImpliedSizeInBytes);
+  // DCHECK(roundUpSizeInBytes == minimumImpliedSizeInBytes);
 
   return roundUpSizeInBytes;
 }
@@ -249,7 +257,7 @@ HRESULT CreateOutputResource(uint64_t size,
 
 HRESULT CreateReadbackResource(uint64_t size,
                                ComPtr<ID3D12Resource>& readback_resource,
-                               ComPtr<ID3D12Resource>& operand_resource,
+                               ComPtr<ID3D12Resource>& formatted_resource,
                                ComPtr<ID3D12Device> d3D12_device) {
   CD3DX12_HEAP_PROPERTIES readback_heap =
       CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
@@ -263,9 +271,9 @@ HRESULT CreateReadbackResource(uint64_t size,
     return hr;
   }
 
-  hr = CreateOutputResource(size, operand_resource, d3D12_device);
+  hr = CreateCommonResource(size, formatted_resource, d3D12_device);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed creating committed resource for output data.";
+    LOG(ERROR) << "Failed creating resource for formatting output data.";
     return hr;
   }
 
@@ -322,6 +330,42 @@ HRESULT UploadTensorResource(const void* data,
           D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
   command_list->ResourceBarrier(1, &resource_barrier);
 
+  return S_OK;
+}
+
+HRESULT UploadFloat16Resource(void* data,
+                              const std::vector<uint32_t>& dimension,
+                              ComPtr<ID3D12Resource>& upload_resource,
+                              ComPtr<ID3D12Resource>& input_resource,
+                              ComPtr<ID3D12GraphicsCommandList> command_list,
+                              bool depth_conv_weight = false) {
+  // float32 -> float16
+  float* float32_data = static_cast<float*>(data);
+  std::vector<float> float16_data(product(dimension));
+  if (depth_conv_weight) {
+    // n = 1
+    size_t chw_length = dimension[0] * dimension[2] * dimension[3];
+    size_t size = dimension[2] * dimension[3];
+    size_t channel = dimension[0];
+    for (size_t i = 0; i < chw_length; ++i) {
+      float16_data[i % channel * size + i / channel] = float32_data[i];
+    }
+  } else {
+    // NHWC -> NCHW
+    for (size_t n = 0; n < dimension[0]; ++n) {
+      size_t chw_length = dimension[1] * dimension[2] * dimension[3];
+      size_t size = dimension[2] * dimension[3];
+      size_t channel = dimension[1];
+      for (size_t i = 0; i < chw_length; ++i) {
+        float16_data[i % channel * size + i / channel + chw_length * n] =
+            float32_data[i + chw_length * n];
+      }
+    }
+  }
+
+  // Upload float16 constant resources.
+  UploadTensorResource(float16_data.data(), float16_data.size() * sizeof(float),
+                       upload_resource, input_resource, command_list);
   return S_OK;
 }
 

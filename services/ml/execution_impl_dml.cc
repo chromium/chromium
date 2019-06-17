@@ -17,17 +17,13 @@ namespace ml {
 
 ExecutionImplDML::ExecutionImplDML(scoped_refptr<CompiledModelDML> dml,
                                    mojom::ExecutionInitParamsPtr params)
-    : params_(std::move(params)), dml_(dml) {}
+    : params_(std::move(params)), dml_(dml) {
+  dml->CreateFormatData();
+}
 
 ExecutionImplDML::~ExecutionImplDML() = default;
 
 void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
-  // Bind and execute the operator on the GPU.
-  ID3D12DescriptorHeap* d3D12_descriptor_heaps[] = {
-      dml_->descriptor_heap_.Get()};
-  dml_->command_list_->SetDescriptorHeaps(ARRAYSIZE(d3D12_descriptor_heaps),
-                                          d3D12_descriptor_heaps);
-
   uint32_t memory_offset = 0;
   HRESULT hr = S_OK;
   for (size_t i = 0; i < params_->inputs.size(); ++i) {
@@ -38,10 +34,10 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
     auto mapping = params_->memory->MapAtOffset(length, offset);
     ComPtr<ID3D12Resource> upload_resource =
         dml_->operand_map_[operand->index]->upload_resource_;
-    ComPtr<ID3D12Resource> operand_resource =
-        dml_->operand_map_[operand->index]->operand_resource_;
+    ComPtr<ID3D12Resource> format_resource =
+        dml_->operand_map_[operand->index]->format_resource_;
     hr = UploadTensorResource(static_cast<void*>(mapping.get()), length,
-                              upload_resource, operand_resource,
+                              upload_resource, format_resource,
                               dml_->command_list_);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
@@ -49,7 +45,14 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
       return;
     }
   }
+  // Format input data from NHWC to NCHW and float16 precision.
+  dml_->FormatInputData();
 
+  // Bind and execute the operator on the GPU.
+  ID3D12DescriptorHeap* d3D12_descriptor_heaps[] = {
+      dml_->descriptor_heap_.Get()};
+  dml_->command_list_->SetDescriptorHeaps(ARRAYSIZE(d3D12_descriptor_heaps),
+                                          d3D12_descriptor_heaps);
   for (size_t i = 0; i < dml_->operations_.size(); ++i) {
     hr = ExecuteCompiledOperator(dml_->operations_[i]->compiled_operator_.Get(),
                                  dml_->operations_[i], i);
@@ -92,13 +95,16 @@ HRESULT ExecutionImplDML::ExecuteCompiledOperator(
 }
 
 HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
+  // Format input data from NCHW to NHWC and float32 precision.
+  dml_->FormatOutputData();
+
   // The output buffer now contains the result of the identity operator,
   // so read it back if you want the CPU to access it.
   HRESULT hr = S_OK;
   for (size_t i = 0; i < params_->outputs.size(); ++i) {
     size_t output_index = params_->outputs[i]->index;
     ComPtr<ID3D12Resource> output_resource =
-        dml_->operand_map_[output_index]->operand_resource_;
+        dml_->operand_map_[output_index]->format_resource_;
     ComPtr<ID3D12Resource> readback_buffer =
         dml_->operand_map_[output_index]->readback_resource_;
     CD3DX12_RESOURCE_BARRIER resource_barrier =

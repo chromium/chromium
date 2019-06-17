@@ -12,8 +12,9 @@ namespace ml {
 // The d3d12 symbols we need, as an X-Macro list.
 // This list must contain precisely every d3d function that is used in
 // the Windows Device.
-#define D3D_SYMBOLS_LIST \
-  X(D3D12CreateDevice)   \
+#define D3D_SYMBOLS_LIST         \
+  X(D3D12CreateDevice)           \
+  X(D3D12SerializeRootSignature) \
   X(D3D12GetDebugInterface)
 
 LATE_BINDING_SYMBOL_TABLE_DECLARE_BEGIN(D3DSymbolTable)
