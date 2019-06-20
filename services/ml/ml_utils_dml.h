@@ -23,6 +23,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace ml {
 
+extern bool g_support_f16;
+
 class FormatData;
 struct OperationDML {
  public:
@@ -141,12 +143,12 @@ HRESULT UploadTensorResource(const void* data,
                              ComPtr<ID3D12Resource>& input_resource,
                              ComPtr<ID3D12GraphicsCommandList> command_list);
 
-HRESULT UploadFloat16Resource(void* data,
-                              const std::vector<uint32_t>& dimension,
-                              ComPtr<ID3D12Resource>& upload_resource,
-                              ComPtr<ID3D12Resource>& input_resource,
-                              ComPtr<ID3D12GraphicsCommandList> command_list,
-                              bool depth_conv_weight);
+HRESULT FormatAndUploadResource(void* data,
+                                const std::vector<uint32_t>& dimension,
+                                ComPtr<ID3D12Resource>& upload_resource,
+                                ComPtr<ID3D12Resource>& input_resource,
+                                ComPtr<ID3D12GraphicsCommandList> command_list,
+                                bool depth_conv_weight);
 }  // namespace ml
 
 #endif  // SERVICES_ML_ML_UTILS_DML_H_

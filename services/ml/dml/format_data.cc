@@ -1,12 +1,17 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 #include "services/ml/dml/format_data.h"
 
 #include "base/logging.h"
 #include "services/ml/common.h"
 #include "services/ml/dml/format_input_shader.h"
 #include "services/ml/dml/format_output_shader.h"
+#include "services/ml/dml/half_input_shader.h"
+#include "services/ml/dml/half_output_shader.h"
 #include "services/ml/dml_d3dx12_utils.h"
 #include "services/ml/dml_symbol_table.h"
 #include "services/ml/ml_utils_dml.h"
@@ -98,9 +103,10 @@ FormatData::FormatData(CompiledModelDML* dml) {
     CreateUnorderedAccessView(dml, operand->format_resource_.Get(),
                               element_count, DXGI_FORMAT_R32_FLOAT,
                               descriptor_heap_.Get(), 2 * i);
-    CreateUnorderedAccessView(dml, operand->operand_resource_.Get(),
-                              element_count, DXGI_FORMAT_R32_FLOAT,
-                              descriptor_heap_.Get(), 2 * i + 1);
+    CreateUnorderedAccessView(
+        dml, operand->operand_resource_.Get(), element_count,
+        g_support_f16 ? DXGI_FORMAT_R16_FLOAT : DXGI_FORMAT_R32_FLOAT,
+        descriptor_heap_.Get(), 2 * i + 1);
   }
 
   size_t output_heap_index = inputs.size() * 2;
@@ -108,10 +114,10 @@ FormatData::FormatData(CompiledModelDML* dml) {
   for (size_t i = 0; i < outputs.size(); ++i) {
     const OperandDML* operand = dml->operand_map_[outputs[i]].get();
     size_t element_count = product(operand->dimensions_);
-    CreateUnorderedAccessView(dml, operand->operand_resource_.Get(),
-                              element_count, DXGI_FORMAT_R32_FLOAT,
-                              descriptor_heap_.Get(),
-                              2 * i + output_heap_index);
+    CreateUnorderedAccessView(
+        dml, operand->operand_resource_.Get(), element_count,
+        g_support_f16 ? DXGI_FORMAT_R16_FLOAT : DXGI_FORMAT_R32_FLOAT,
+        descriptor_heap_.Get(), 2 * i + output_heap_index);
     CreateUnorderedAccessView(dml, operand->format_resource_.Get(),
                               element_count, DXGI_FORMAT_R32_FLOAT,
                               descriptor_heap_.Get(),
@@ -152,8 +158,10 @@ FormatData::FormatData(CompiledModelDML* dml) {
   // Create compute pipeline state
   D3D12_COMPUTE_PIPELINE_STATE_DESC pipeline_state_desc = {};
   pipeline_state_desc.pRootSignature = root_signature_.Get();
-  pipeline_state_desc.CS.pShaderBytecode = g_format_input;
-  pipeline_state_desc.CS.BytecodeLength = _countof(g_format_input);
+  pipeline_state_desc.CS.pShaderBytecode =
+      g_support_f16 ? g_format_half_input : g_format_input;
+  pipeline_state_desc.CS.BytecodeLength =
+      _countof(g_support_f16 ? g_format_half_input : g_format_input);
 
   hr = dml->d3d12_device_->CreateComputePipelineState(
       &pipeline_state_desc, IID_PPV_ARGS(&input_pipline_state_));
@@ -163,8 +171,11 @@ FormatData::FormatData(CompiledModelDML* dml) {
   }
 
   pipeline_state_desc.pRootSignature = root_signature_.Get();
-  pipeline_state_desc.CS.pShaderBytecode = g_format_output;
-  pipeline_state_desc.CS.BytecodeLength = _countof(g_format_output);
+  // byte_code = g_support_f16 ? g_format_half_output : g_format_output;
+  pipeline_state_desc.CS.pShaderBytecode =
+      g_support_f16 ? g_format_half_output : g_format_output;
+  pipeline_state_desc.CS.BytecodeLength =
+      _countof(g_support_f16 ? g_format_half_output : g_format_output);
 
   hr = dml->d3d12_device_->CreateComputePipelineState(
       &pipeline_state_desc, IID_PPV_ARGS(&output_pipline_state_));
@@ -208,7 +219,7 @@ HRESULT FormatData::FormatInputData(CompiledModelDML* dml) {
                                             descriptor_heap_.Get(), 2 * i + 1));
 
     dml->command_list_->SetPipelineState(input_pipline_state_.Get());
-    dml->command_list_->Dispatch(512, 1, 1);
+    dml->command_list_->Dispatch(product(operand->dimensions_) / 512, 1, 1);
   }
   CD3DX12_RESOURCE_BARRIER uav_barrier = CD3DX12_RESOURCE_BARRIER::UAV(nullptr);
   dml->command_list_->ResourceBarrier(1, &uav_barrier);
@@ -252,7 +263,7 @@ HRESULT FormatData::FormatOutputData(CompiledModelDML* dml) {
                      2 * i + 1 + output_heap_index));
 
     dml->command_list_->SetPipelineState(output_pipline_state_.Get());
-    dml->command_list_->Dispatch(512, 1, 1);
+    dml->command_list_->Dispatch(product(operand->dimensions_) / 512, 1, 1);
   }
   CD3DX12_RESOURCE_BARRIER uav_barrier = CD3DX12_RESOURCE_BARRIER::UAV(nullptr);
   dml->command_list_->ResourceBarrier(1, &uav_barrier);

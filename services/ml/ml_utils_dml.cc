@@ -72,7 +72,8 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
       1,
   };
 
-  operand_desc_.DataType = DML_TENSOR_DATA_TYPE_FLOAT32;
+  operand_desc_.DataType = g_support_f16 ? DML_TENSOR_DATA_TYPE_FLOAT16
+                                         : DML_TENSOR_DATA_TYPE_FLOAT32;
   operand_desc_.Flags = DML_TENSOR_FLAG_NONE;
   operand_desc_.DimensionCount = dimensions_.size();
   operand_desc_.Sizes = dimensions_.data();
@@ -333,22 +334,32 @@ HRESULT UploadTensorResource(const void* data,
   return S_OK;
 }
 
-HRESULT UploadFloat16Resource(void* data,
-                              const std::vector<uint32_t>& dimension,
-                              ComPtr<ID3D12Resource>& upload_resource,
-                              ComPtr<ID3D12Resource>& input_resource,
-                              ComPtr<ID3D12GraphicsCommandList> command_list,
-                              bool depth_conv_weight = false) {
+HRESULT FormatAndUploadResource(void* data,
+                                const std::vector<uint32_t>& dimension,
+                                ComPtr<ID3D12Resource>& upload_resource,
+                                ComPtr<ID3D12Resource>& input_resource,
+                                ComPtr<ID3D12GraphicsCommandList> command_list,
+                                bool depth_conv_weight = false) {
   // float32 -> float16
-  float* float32_data = static_cast<float*>(data);
-  std::vector<float> float16_data(product(dimension));
+  float* original_data = static_cast<float*>(data);
+  std::vector<float> float32_data;
+  std::vector<uint16_t> float16_data;
+  size_t data_length = product(dimension);
+  g_support_f16 ? float16_data.resize(data_length)
+                : float32_data.resize(data_length);
+
   if (depth_conv_weight) {
     // n = 1
     size_t chw_length = dimension[0] * dimension[2] * dimension[3];
     size_t size = dimension[2] * dimension[3];
     size_t channel = dimension[0];
     for (size_t i = 0; i < chw_length; ++i) {
-      float16_data[i % channel * size + i / channel] = float32_data[i];
+      if (g_support_f16) {
+        float16_data[i % channel * size + i / channel] =
+            Float16Compressor::compress(original_data[i]);
+      } else {
+        float32_data[i % channel * size + i / channel] = original_data[i];
+      }
     }
   } else {
     // NHWC -> NCHW
@@ -357,15 +368,27 @@ HRESULT UploadFloat16Resource(void* data,
       size_t size = dimension[2] * dimension[3];
       size_t channel = dimension[1];
       for (size_t i = 0; i < chw_length; ++i) {
-        float16_data[i % channel * size + i / channel + chw_length * n] =
-            float32_data[i + chw_length * n];
+        if (g_support_f16) {
+          float16_data[i % channel * size + i / channel + chw_length * n] =
+              Float16Compressor::compress(original_data[i + chw_length * n]);
+        } else {
+          float32_data[i % channel * size + i / channel + chw_length * n] =
+              original_data[i + chw_length * n];
+        }
       }
     }
   }
 
   // Upload float16 constant resources.
-  UploadTensorResource(float16_data.data(), float16_data.size() * sizeof(float),
-                       upload_resource, input_resource, command_list);
+  if (g_support_f16) {
+    UploadTensorResource(float16_data.data(),
+                         float16_data.size() * sizeof(uint16_t),
+                         upload_resource, input_resource, command_list);
+  } else {
+    UploadTensorResource(float32_data.data(),
+                         float32_data.size() * sizeof(float), upload_resource,
+                         input_resource, command_list);
+  }
   return S_OK;
 }
 

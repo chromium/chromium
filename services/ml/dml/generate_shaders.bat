@@ -22,6 +22,8 @@ if "%1" == "release" (
 ::              | Input file             | Entry point  | Type            | Output file           | Debug |
 call:BuildShader format_input_shader.hlsl   format_input    cs_5_1  format_input_shader.h    %debug%
 call:BuildShader format_output_shader.hlsl  format_output   cs_5_1  format_output_shader.h   %debug%
+call:BuildShader half_input_shader.hlsl   format_half_input    cs_5_1  half_input_shader.h    %debug%
+call:BuildShader half_output_shader.hlsl  format_half_output   cs_5_1  half_output_shader.h   %debug%
 
 echo.
 

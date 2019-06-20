@@ -23,6 +23,8 @@
 
 namespace ml {
 
+bool g_support_f16;
+
 namespace {
 
 using Microsoft::WRL::ComPtr;
@@ -180,11 +182,11 @@ HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
     return hr;
   }
 
-  hr = UploadFloat16Resource(static_cast<void*>(mapping.get()),
-                             dml->operand_map_[index]->dimensions_,
-                             dml->operand_map_[index]->upload_resource_,
-                             dml->operand_map_[index]->operand_resource_,
-                             dml->command_list_, depth_conv_weight);
+  hr = FormatAndUploadResource(static_cast<void*>(mapping.get()),
+                               dml->operand_map_[index]->dimensions_,
+                               dml->operand_map_[index]->upload_resource_,
+                               dml->operand_map_[index]->operand_resource_,
+                               dml->command_list_, depth_conv_weight);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed uploading tensor resource for inputs data.";
     return hr;
@@ -476,6 +478,17 @@ CompilationDelegateDML::CompilationDelegateDML(
     LOG(ERROR) << "Failed creating DirectML.";
     return;
   }
+
+  DML_FEATURE_DATA_TENSOR_DATA_TYPE_SUPPORT support_f16 = {false};
+  DML_FEATURE_QUERY_TENSOR_DATA_TYPE_SUPPORT fp16_query = {
+      DML_TENSOR_DATA_TYPE_FLOAT16};
+  hr = dml_->dml_device_->CheckFeatureSupport(
+      DML_FEATURE_TENSOR_DATA_TYPE_SUPPORT, sizeof(fp16_query), &fp16_query,
+      sizeof(support_f16), &support_f16);
+  if (SUCCEEDED(hr)) {
+    DLOG(INFO) << "Support float16 data type " << g_support_f16;
+  }
+  g_support_f16 = false;//support_f16.IsSupported;
 }
 
 CompilationDelegateDML::~CompilationDelegateDML() = default;
@@ -571,9 +584,11 @@ HRESULT CompilationDelegateDML::CompileOperator(
 
   // Compile the operator into an object that can be dispatched to the GPU.
   ComPtr<IDMLCompiledOperator> compiled_operator;
-  hr = dml_->dml_device_->CompileOperator(dml_operator.Get(),
-                                          DML_EXECUTION_FLAG_NONE,
-                                          IID_PPV_ARGS(&compiled_operator));
+  hr = dml_->dml_device_->CompileOperator(
+      dml_operator.Get(),
+      g_support_f16 ? DML_EXECUTION_FLAG_ALLOW_HALF_PRECISION_COMPUTATION
+                    : DML_EXECUTION_FLAG_NONE,
+      IID_PPV_ARGS(&compiled_operator));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling operator.";
     return hr;
