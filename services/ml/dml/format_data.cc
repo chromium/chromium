@@ -219,7 +219,9 @@ HRESULT FormatData::FormatInputData(CompiledModelDML* dml) {
                                             descriptor_heap_.Get(), 2 * i + 1));
 
     dml->command_list_->SetPipelineState(input_pipline_state_.Get());
-    dml->command_list_->Dispatch(product(operand->dimensions_) / 512, 1, 1);
+    // 512 is the number of threads to be executed in a single group.
+    // dimensions / 512 is the number of groups dispatched in the x direction.
+    dml->command_list_->Dispatch(product(operand->dimensions_) / 512 + 1, 1, 1);
   }
   CD3DX12_RESOURCE_BARRIER uav_barrier = CD3DX12_RESOURCE_BARRIER::UAV(nullptr);
   dml->command_list_->ResourceBarrier(1, &uav_barrier);
@@ -263,7 +265,9 @@ HRESULT FormatData::FormatOutputData(CompiledModelDML* dml) {
                      2 * i + 1 + output_heap_index));
 
     dml->command_list_->SetPipelineState(output_pipline_state_.Get());
-    dml->command_list_->Dispatch(product(operand->dimensions_) / 512, 1, 1);
+    // 512 is the number of threads to be executed in a single group.
+    // dimensions / 512 is the number of groups dispatched in the x direction.
+    dml->command_list_->Dispatch(product(operand->dimensions_) / 512 + 1, 1, 1);
   }
   CD3DX12_RESOURCE_BARRIER uav_barrier = CD3DX12_RESOURCE_BARRIER::UAV(nullptr);
   dml->command_list_->ResourceBarrier(1, &uav_barrier);
