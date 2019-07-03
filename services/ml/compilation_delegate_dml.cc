@@ -377,6 +377,9 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
 
   // Free unused resources.
   FreeUnusedResources(dml.get(), init_buffer_array, size);
+  // Reset command list and allocator those will be setted in execution phase.
+  dml->command_allocator_->Reset();
+  dml->command_list_->Reset(dml->command_allocator_.Get(), nullptr);
 
   return S_OK;
 }

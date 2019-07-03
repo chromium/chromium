@@ -62,12 +62,6 @@ void ExecutionImplDML::StartCompute(StartComputeCallback callback) {
       return;
     }
   }
-  hr = CloseExecuteResetWait(dml_->d3d12_device_, dml_->command_queue_,
-                             dml_->command_allocator_, dml_->command_list_);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed executing command list for compiled operators.";
-    return;
-  }
 
   hr = ReadResultBack(memory_offset);
   if (FAILED(hr)) {
@@ -117,6 +111,7 @@ HRESULT ExecutionImplDML::ReadResultBack(uint32_t memory_offset) {
                                       output_resource.Get());
   }
 
+  // Reset command list only, keep the command in allocator.
   CloseExecuteResetWait(dml_->d3d12_device_, dml_->command_queue_,
                         dml_->command_allocator_, dml_->command_list_);
 
