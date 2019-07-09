@@ -52,6 +52,8 @@ class CompilationDelegateDML : public CompilationDelegate {
                          const mojom::OperationPtr& operation);
   HRESULT CompileConcatenation(const mojom::ModelInfoPtr& model,
                                const mojom::OperationPtr& operation);
+  HRESULT ConvertToNHWC(const mojom::ModelInfoPtr& model,
+                        const mojom::OperationPtr& operation);
   HRESULT CompileFullyConnected(const mojom::ModelInfoPtr& model,
                                const mojom::OperationPtr& operation);
   HRESULT CompileBilinearScale(const mojom::ModelInfoPtr& model,
@@ -59,6 +61,7 @@ class CompilationDelegateDML : public CompilationDelegate {
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;
   uint64_t execute_temporary_resource_size_;
+  size_t temp_operand_index_;
 
   DISALLOW_COPY_AND_ASSIGN(CompilationDelegateDML);
 };

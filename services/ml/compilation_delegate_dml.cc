@@ -195,9 +195,9 @@ HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
 }
 
 HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
-                                   const mojom::ModelInfoPtr& model,
-                                   uint32_t index) {
-  const std::vector<uint32_t>& outputs = model->outputs;
+                                   const std::vector<uint32_t>& outputs,
+                                   uint32_t index,
+                                   const std::vector<uint32_t>& dimensions) {
   for (size_t i = 0; i < outputs.size(); ++i) {
     // It's not intermediate output.
     if (index == outputs[i])
@@ -205,8 +205,7 @@ HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
   }
 
   if (dml->operand_map_.find(index) == dml->operand_map_.end()) {
-    dml->operand_map_[index] =
-        std::make_unique<OperandDML>(model->operands[index]->dimensions);
+    dml->operand_map_[index] = std::make_unique<OperandDML>(dimensions);
   }
 
   if (dml->operand_map_[index]->operand_resource_)
@@ -220,6 +219,13 @@ HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
     return hr;
   }
   return S_OK;
+}
+
+HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
+                                   const mojom::ModelInfoPtr& model,
+                                   uint32_t index) {
+  return CreateIntermediateResource(dml, model->outputs, index,
+                                    model->operands[index]->dimensions);
 }
 
 DML_BUFFER_BINDING* InputBuffers(CompiledModelDML* dml,
@@ -457,6 +463,7 @@ CompilationDelegateDML::CompilationDelegateDML(
       execute_temporary_resource_size_(0) {
   const mojom::ModelInfoPtr& model = compilation->GetModel();
   dml_ = base::MakeRefCounted<CompiledModelDML>(model->inputs, model->outputs);
+  temp_operand_index_ = model->operands.size();
 
   // Set up Direct3D 12.
   HRESULT hr =
@@ -1085,6 +1092,61 @@ HRESULT CompilationDelegateDML::CompileConcatenation(
   return S_OK;
 }
 
+// Convert NCHW{n, c, h, w} to NHWC{n, 1, 1, c * h * w} in order to reshape
+// NCHW{n, c, h, w} to NCHW{n, 1, c * h * w / x, x} in Fully Connected
+// Operation.
+HRESULT CompilationDelegateDML::ConvertToNHWC(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationDelegateDML::ConvertToNHWC";
+  size_t input_index = operation->inputs[0];
+  // Copy a temp operand at the last with the input operand.
+  temp_operand_index_++;
+  HRESULT hr =
+      CreateIntermediateResource(dml_, model->outputs, temp_operand_index_,
+                                 model->operands[input_index]->dimensions);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for temp operand.";
+    return hr;
+  }
+
+  OperandDML* operand = dml_->operand_map_[input_index].get();
+  DML_BUFFER_TENSOR_DESC input_buffer_desc = operand->operand_desc_;
+  // NCHW => NHWC in order to reshape.
+  std::vector<uint32_t> input_strides = {
+      operand->dimensions_[1] * operand->dimensions_[2] *
+          operand->dimensions_[3],
+      operand->dimensions_[3],  // w
+      1,
+      operand->dimensions_[2] * operand->dimensions_[3],  // H * W
+  };
+  input_buffer_desc.Strides = input_strides.data();
+  std::vector<uint32_t> nhwc_dimensions = {
+      operand->dimensions_[0], operand->dimensions_[2], operand->dimensions_[3],
+      operand->dimensions_[1]};
+  input_buffer_desc.Sizes = nhwc_dimensions.data();
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  OperandDML* temp_operand = dml_->operand_map_[temp_operand_index_].get();
+  DML_BUFFER_TENSOR_DESC output_buffer_desc = temp_operand->operand_desc_;
+  output_buffer_desc.Sizes = nhwc_dimensions.data();
+  output_buffer_desc.Strides = nullptr;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+  DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC identity_operator_desc = {
+      &input_tensor_desc, &output_tensor_desc};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ELEMENT_WISE_IDENTITY,
+                                     &identity_operator_desc};
+  hr = CompileOperator(operator_desc, 1, {input_index}, {temp_operand_index_});
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling reshape operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
 HRESULT CompilationDelegateDML::CompileFullyConnected(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation) {
@@ -1117,7 +1179,25 @@ HRESULT CompilationDelegateDML::CompileFullyConnected(
   // Update tensor's dimensions to [batch_size, input_size]
   size_t input_index = operation->inputs[0];
   OperandDML* operand = dml_->operand_map_[input_index].get();
-  // Update the dimensions to be used in FormatData class.
+  // 1, Convert NCHW {1, c, h, w} to NHWC {1, c, h, w}
+  bool convert =
+      operand->dimensions_[1] * operand->dimensions_[2] != 1 ? true : false;
+  // The inputs data have convert with HLSL.
+  for (auto index : model->inputs) {
+    if (input_index == index)
+      convert = false;
+  }
+  if (convert) {
+    hr = ConvertToNHWC(model, operation);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed creating intermediate resource for output.";
+      return hr;
+    }
+    // operand = dml_->operand_map_[temp_operand_index_].get();
+  }
+  // 2, Reshape NHWC {1, 1, 1, c * h * w} to NCHW {1, 1,
+  // params.input_batch_size, params.input_size} Update the dimensions to be
+  // used in FormatData class.
   operand->dimensions_ = {1, 1, params.input_batch_size, params.input_size};
   std::vector<uint32_t> input_strides = {
       operand->dimensions_[1] * operand->dimensions_[2] *
@@ -1165,7 +1245,10 @@ HRESULT CompilationDelegateDML::CompileFullyConnected(
                                                1.0f,
                                                nullptr};
   DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_GEMM, &gemm_operator_desc};
-  hr = CompileOperator(operator_desc, 3, operation->inputs, operation->outputs);
+  hr = CompileOperator(
+      operator_desc, 3,
+      {convert ? temp_operand_index_ : input_index, weights_index, bias_index},
+      operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling fully connected operator.";
     return hr;
