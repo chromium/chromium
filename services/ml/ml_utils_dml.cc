@@ -188,12 +188,6 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
   ID3D12CommandList* command_lists[] = {command_list.Get()};
   command_queue->ExecuteCommandLists(ARRAYSIZE(command_lists), command_lists);
 
-  hr = command_list->Reset(command_allocator.Get(), nullptr);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed resetting command list.";
-    return hr;
-  }
-
   ComPtr<ID3D12Fence> d3D12_fence;
   hr = d3D12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE,
                                  IID_PPV_ARGS(&d3D12_fence));
@@ -216,6 +210,17 @@ HRESULT CloseExecuteResetWait(ComPtr<ID3D12Device> d3D12_device,
     return hr;
   }
   WaitForSingleObjectEx(fence_event_handle, INFINITE, FALSE);
+
+  hr = command_allocator->Reset();
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed resetting command allocator.";
+    return hr;
+  }
+  hr = command_list->Reset(command_allocator.Get(), nullptr);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed resetting command list.";
+    return hr;
+  }
 
   return S_OK;
 }
