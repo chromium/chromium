@@ -491,7 +491,7 @@ CompilationDelegateDML::CompilationDelegateDML(
   if (SUCCEEDED(hr)) {
     DLOG(INFO) << "Support float16 data type " << g_support_f16;
   }
-  g_support_f16 = false;//support_f16.IsSupported;
+  g_support_f16 = support_f16.IsSupported;
 }
 
 CompilationDelegateDML::~CompilationDelegateDML() = default;
