@@ -88,6 +88,7 @@ android_library("content_java") {
     "//third_party/jsr-305:jsr_305_javalib",
     "//ui/android:ui_java",
     "//ui/gfx/geometry/mojo:mojo_java",
+    "//third_party/android_deps:com_android_support_support_core_utils_java",
   ]
 
   srcjar_deps = [

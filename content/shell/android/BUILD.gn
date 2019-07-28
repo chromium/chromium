@@ -387,9 +387,6 @@ android_assets("content_shell_assets") {
   testonly = true
   sources = [
     "$root_out_dir/content_shell.pak",
-    "shell_apk/assets/libecemu.cr.so",
-    "shell_apk/assets/libecfs.so",
-    "shell_apk/assets/libSDL2.so",
   ]
   disable_compression = true
   deps = [
