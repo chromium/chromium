@@ -130,6 +130,7 @@
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
 #include "v8/include/v8.h"
+#include "ppapi/shared_impl/ppapi_switches.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon
@@ -839,8 +840,8 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
 }
 
 bool PepperPluginInstanceImpl::Initialize(
-    const std::vector<std::string>& arg_names,
-    const std::vector<std::string>& arg_values,
+    const std::vector<std::string>& c_arg_names,
+    const std::vector<std::string>& c_arg_values,
     bool full_frame,
     std::unique_ptr<PluginInstanceThrottlerImpl> throttler) {
   DCHECK(!throttler_);
@@ -852,6 +853,36 @@ bool PepperPluginInstanceImpl::Initialize(
     throttler_ = std::move(throttler);
     throttler_->AddObserver(this);
   }
+  
+  std::vector<std::string> arg_names(c_arg_names);
+  std::vector<std::string> arg_values(c_arg_values);
+  
+    
+    const std::string files_dir =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kFilesDir);				
+	
+	arg_names.push_back(switches::kFilesDir);
+	arg_values.push_back(files_dir.c_str());
+	
+	
+	const std::string ec_lib_dir =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kEcLibDir);				
+	
+	arg_names.push_back(switches::kEcLibDir);
+	arg_values.push_back(ec_lib_dir.c_str());
+	
+	
+	const std::string ec_www_dir =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kEcWwwDir);				
+	
+	arg_names.push_back(switches::kEcWwwDir);
+	arg_values.push_back(ec_www_dir.c_str());
+	
+	
+	//instance->pp_instance()->ec_set_files_dir(files_dir.c_str());
 
   message_channel_ = MessageChannel::Create(this, &message_channel_object_);
   DCHECK(message_channel_);

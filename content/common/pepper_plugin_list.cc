@@ -18,6 +18,136 @@
 #include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
+#if _WIN32
+
+#include <windows.h>
+#include <Shlobj.h>
+
+static const wchar_t *g_ecemuURL = L"https://cloudretro.com/native/windows/win64/ecemu.dll";
+
+#ifdef _WIN32
+#include <windows.h>
+#include <wininet.h>
+#include <Shlobj.h>
+
+bool DownloadFile(const wchar_t * szUrl, const wchar_t* szPath) {
+	HINTERNET hOpen = NULL;
+	HINTERNET hFile = NULL;
+	HANDLE hOut = NULL;
+	char* lpBuffer = NULL;
+	DWORD dwBytesRead = 0;
+	DWORD dwBytesWritten = 0;
+
+	hOpen = InternetOpen(L"CLOUDRETROAGENT", NULL, NULL, NULL, NULL);
+	if(!hOpen) return false;
+
+	hFile = InternetOpenUrl(hOpen, szUrl, NULL, NULL, INTERNET_FLAG_RELOAD | INTERNET_FLAG_DONT_CACHE, NULL);
+	if(!hFile) {
+		InternetCloseHandle(hOpen);
+		return false;
+	}
+
+	hOut = CreateFile(szPath, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, NULL, NULL);
+	if (hOut == INVALID_HANDLE_VALUE) {
+		InternetCloseHandle(hFile);
+		InternetCloseHandle(hOpen);
+		return false;
+	}
+
+	do {
+		lpBuffer = new char[2000];
+		ZeroMemory(lpBuffer, 2000);
+		InternetReadFile(hFile, (LPVOID)lpBuffer, 2000, &dwBytesRead);
+		WriteFile(hOut, &lpBuffer[0], dwBytesRead, &dwBytesWritten, NULL);
+		delete[] lpBuffer;
+		lpBuffer = NULL;
+	} while (dwBytesRead);
+
+	CloseHandle(hOut);
+	InternetCloseHandle(hFile);
+	InternetCloseHandle(hOpen);
+	return true;
+}
+#endif
+
+void setECEmuPath() {
+	
+	#ifdef _WIN32
+	{
+ wchar_t path[MAX_PATH];
+  SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path);
+  lstrcat(path, L"\\CloudRetro");
+  CreateDirectory(path, NULL);
+  lstrcat(path, L"\\ecemu.dll");
+  
+ wchar_t bridgepath[MAX_PATH];
+  SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, bridgepath);
+  lstrcat(bridgepath, L"\\CloudRetro");
+  CreateDirectory(bridgepath, NULL);
+  lstrcat(bridgepath, L"\\ecbridge.dll");  
+  
+  //MessageBoxA(NULL, "b4", "", MB_OK);
+  base::CommandLine* wcommand_line = base::CommandLine::ForCurrentProcess();
+	if (wcommand_line->HasSwitch(switches::kEcUrl)) {
+		const std::string theurl = wcommand_line->GetSwitchValueASCII(
+					  switches::kEcUrl);
+		std::string myurl = theurl;
+		std::string ecemupath = "/native/windows/win64/ecemu.dll";
+		myurl.append(ecemupath);
+		
+		wchar_t *wszDest = (wchar_t *)malloc(myurl.length() * 4 + 4);
+		MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, myurl.c_str(), -1, wszDest, myurl.length() * 4);
+		DownloadFile(wszDest, path);	
+		
+		free(wszDest);
+	}
+	else { 
+		DownloadFile(g_ecemuURL, path);
+	}
+	
+	CopyFile(path,bridgepath, FALSE);
+	
+  //wchar_t w_ecemustr[MAX_PATH];
+ // lstrcpy(w_ecemustr, path);
+  //mbstowcs(w_ecemustr, path, sizeof(path));	
+	}
+#endif
+				
+	
+	
+	
+	{
+	char path[MAX_PATH*2+200];
+	char homepath[MAX_PATH];
+  SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, homepath);
+  
+  strcpy(path, homepath);
+  strcat(path, "\\CloudRetro");
+  strcat(path, "\\ecemu.dll");
+  strcat(path, ";application/x-ppapi-ecemu");
+  
+  strcat(path, ",");
+  
+  strcat(path, homepath);
+  strcat(path, "\\CloudRetro");
+  strcat(path, "\\ecbridge.dll");
+  strcat(path, ";application/x-ppapi-ecfs");
+  
+  wchar_t w_ecemustr[MAX_PATH*2+200];
+  mbstowcs(w_ecemustr, path, sizeof(path));
+  
+   base::CommandLine::ForCurrentProcess()->AppendSwitchNative(
+      switches::kRegisterPepperPlugins, w_ecemustr);
+	}
+}
+
+#elif defined(OS_MACOSX)
+	void setECEmuPath() {
+		
+	}
+
+#endif
+
 namespace content {
 namespace {
 
@@ -39,9 +169,13 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
       "max plugins to register from command line exceeds limit");
 
   bool out_of_process = true;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPpapiInProcess))
-    out_of_process = false;
+  //if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  //        switches::kPpapiInProcess))
+  //  out_of_process = false;
+  
+#if ! defined(OS_ANDROID)
+	setECEmuPath();
+#endif  
 
   const std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

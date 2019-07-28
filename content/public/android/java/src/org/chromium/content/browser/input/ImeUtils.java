@@ -58,6 +58,10 @@ public class ImeUtils {
                 if ((inputFlags & WebTextInputFlags.AUTOCORRECT_OFF) == 0) {
                     outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT;
                 }
+				else {
+					outAttrs.inputType =
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+				}
             } else if (inputType == TextInputType.PASSWORD) {
                 outAttrs.inputType =
                         InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;

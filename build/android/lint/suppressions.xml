@@ -124,14 +124,17 @@ Still reading?
     <ignore regexp="chromecast/internal"/>
     <!-- These only need to be 1px for all densities. See: crbug.com/804449 -->
     <ignore regexp="chrome/android/java/res/.*tab_strip_fade"/>
+    <ignore regexp="content/.*/app_icon.png"/>
   </issue>
   <issue id="IconDuplicates" severity="Error">
     <ignore regexp="chromecast/internal"/>
     <!-- mipmap version is used for app launcher only. drawables used for notifications -->
     <ignore regexp="chromecast/browser/android/apk/res/mipmap-.*/app_icon.png"/>
+    <ignore regexp="content/.*/app_icon.png"/>
   </issue>
   <issue id="IconDuplicatesConfig" severity="Error">
-    <ignore regexp="chromecast/internal"/>
+	  <ignore regexp="chromecast/internal"/>
+	  <ignore regexp="content/.*/app_icon.png"/>
   </issue>
   <issue id="IconLauncherFormat" severity="ignore">
     <!-- TODO(crbug.com/739746): Remove after lint version has been updated. -->
@@ -317,6 +320,7 @@ Still reading?
   <!-- Our generated enums are allowed to have the same values. -->
   <issue id="UniqueConstants" severity="ignore"/>
   <issue id="UnusedResources">
+     <ignore regexp="content/shell/android/java/res/drawable/ic_refresh.png"/>
     <!-- Do not add new suppressions without rationale. -->
     <!-- 3 raw resources are accessed by URL in various places -->
     <ignore regexp="PRODUCT_DIR/gen/remoting/android/.*/res/raw/credits.html"/>

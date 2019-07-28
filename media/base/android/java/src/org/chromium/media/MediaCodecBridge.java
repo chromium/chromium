@@ -334,9 +334,9 @@ class MediaCodecBridge {
             }
         }
         try {
-            String codecName = mMediaCodec.getName();
+            //String codecName = mMediaCodec.getName();
             // This logging is to help us identify hung MediaCodecs in crash reports.
-            Log.w(TAG, "Releasing: " + codecName);
+            //Log.w(TAG, "Releasing: " + codecName);
             mMediaCodec.release();
             Log.w(TAG, "Codec released");
         } catch (IllegalStateException e) {

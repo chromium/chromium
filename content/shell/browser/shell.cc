@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 #include "content/shell/browser/shell.h"
+#include "chrome/browser/file_select_helper.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#include <string>
+#include <shlobj.h>
+#include <iostream>
+#include <sstream>
+#include <commdlg.h>
+#endif
 
 #include <stddef.h>
 
@@ -47,6 +57,9 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/web/web_presentation_receiver_flags.h"
+#include "chrome/browser/file_select_helper.h"
+
+#include "content/public/common/file_chooser_file_info.h"
 
 namespace content {
 
@@ -77,6 +90,236 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(DevToolsWebContentsObserver);
 };
 
+#ifdef _WIN32
+
+static int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+
+    if(uMsg == BFFM_INITIALIZED)
+    {
+        std::string tmp = (const char *) lpData;
+        std::cout << "path: " << tmp << std::endl;
+        SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+    }
+
+    return 0;
+}
+
+
+struct handle_data {
+    unsigned long process_id;
+    HWND window_handle;
+};
+
+BOOL is_main_window(HWND handle)
+{   
+    return GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
+}
+
+BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
+{
+    handle_data& data = *(handle_data*)lParam;
+    unsigned long process_id = 0;
+    GetWindowThreadProcessId(handle, &process_id);
+    if (data.process_id != process_id || !is_main_window(handle))
+        return TRUE;
+    data.window_handle = handle;
+    return FALSE;   
+}
+
+
+
+HWND find_main_window(unsigned long process_id)
+{
+    handle_data data = { 0, NULL };
+    data.process_id = process_id;
+    data.window_handle = 0;
+    EnumWindows(enum_windows_callback, (LPARAM)&data);
+    return data.window_handle;
+}
+
+bool ListDirectoryContents(const wchar_t *sDir, std::vector<FileChooserFileInfoPtr> &files)
+{ 
+    WIN32_FIND_DATA fdFile; 
+    HANDLE hFind = NULL; 
+
+    wchar_t sPath[2048]; 
+
+    //Specify a file mask. *.* = We want everything! 
+    wsprintf(sPath, L"%s\\*.*", sDir); 
+
+    if((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) 
+    { 
+        //wprintf(L"Path not found: [%s]\n", sDir); 
+        return false; 
+    } 
+
+    do
+    { 
+        //Find first file will always return "."
+        //    and ".." as the first two directories. 
+        if(wcscmp(fdFile.cFileName, L".") != 0
+                && wcscmp(fdFile.cFileName, L"..") != 0) 
+        { 
+            //Build up our file path using the passed in 
+            //  [sDir] and the file/foldername we just found: 
+            wsprintf(sPath, L"%s\\%s", sDir, fdFile.cFileName); 
+
+            //Is the entity a File or Folder? 
+            if(fdFile.dwFileAttributes &FILE_ATTRIBUTE_DIRECTORY) 
+            { 
+                //wprintf(L"Directory: %s\n", sPath); 
+                ListDirectoryContents(sPath, files); //Recursion, I love it! 
+            } 
+            else{ 
+                //wprintf(L"File: %s\n", sPath); 
+				
+				files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+					blink::mojom::NativeFileInfo::New(base::FilePath(sPath), sPath)));
+				
+				/*base::FilePath fpath(sPath);
+		
+				FileChooserFileInfo file_info;
+				file_info.file_path = fpath;
+				files.push_back(file_info);*/
+				
+            } 
+        }
+    } 
+    while(FindNextFile(hFind, &fdFile)); //Find the next file. 
+
+    FindClose(hFind); //Always, Always, clean things up! 
+
+    return true; 
+} 
+
+void Shell::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+	std::unique_ptr<FileSelectListener> listener,
+    const FileChooserParams& params) {
+  
+  std::vector<FileChooserFileInfoPtr> files;
+  
+  wchar_t path[MAX_PATH];
+  
+  if ((ui::SelectFileDialog::Type)params.mode == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
+	  
+	  
+	wchar_t path_param[MAX_PATH];
+	SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, path_param);
+
+	//const wchar_t *path_param = L"C:\\";
+	  
+	BROWSEINFO bi = { 0 };
+    bi.lpszTitle  = L"Browse for folder...";
+    bi.ulFlags    = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+    bi.lpfn       = BrowseCallbackProc;
+    bi.lParam     = (LPARAM) path_param;
+	bi.hwndOwner  =  find_main_window(GetCurrentProcessId());
+	
+	
+	
+    LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
+
+    if ( pidl != 0 )
+    {
+        //get the name of the folder and put it in path
+        SHGetPathFromIDList ( pidl, path );
+
+        //free memory used
+        IMalloc * imalloc = 0;
+        if ( SUCCEEDED( SHGetMalloc ( &imalloc )) )
+        {
+            imalloc->Free ( pidl );
+            imalloc->Release ( );
+        }
+		
+		wchar_t buff[MAX_PATH];
+		lstrcpy(buff, path);
+		lstrcat(buff, L"/ ");
+		//base::FilePath fpath(buff);
+		
+		//FileChooserFileInfoPtr file_info;
+		//file_info.file_path = fpath;
+		//files.push_back(file_info);
+		
+		//files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+		//			blink::mojom::NativeFileInfo::New(base::FilePath(buff), buff)));
+		
+		ListDirectoryContents(path, files);
+    }
+  }
+  else {
+		wchar_t fbuff[ MAX_PATH ];
+
+		OPENFILENAME ofn;
+		ZeroMemory( &fbuff, sizeof( fbuff ) );
+		ZeroMemory( &ofn,      sizeof( ofn ) );
+		ofn.lStructSize  = sizeof( ofn );
+		ofn.hwndOwner    = find_main_window(GetCurrentProcessId());  // If you have a window to center over, put its HANDLE here
+		ofn.lpstrFilter  = L"Any File\0*.*\0";
+		ofn.lpstrFile    = fbuff;
+		ofn.nMaxFile     = MAX_PATH;
+		ofn.lpstrTitle   = L"Select ROMS for upload";
+		ofn.Flags        = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER ;
+	  
+		if (GetOpenFileName( &ofn )) {
+			wchar_t * str = ofn.lpstrFile;
+			//MessageBox(NULL, str, L"", MB_OK);
+			std::wstring directory = str;
+			lstrcpy(path, directory.c_str());
+			str += ( directory.length() + 1 );
+			if (! *str) {
+				std::wstring filename = directory;
+				//base::FilePath fpath(filename.c_str());
+				
+				files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+					blink::mojom::NativeFileInfo::New(base::FilePath(filename.c_str()), filename.c_str())));
+
+				//FileChooserFileInfoPtr file_info;
+				//file_info.file_path = fpath;
+				//files.push_back(file_info);
+			}
+			while ( *str ) {
+				//MessageBox(NULL, str, L"", MB_OK);
+				std::wstring filename = directory;
+				std::wstring str2 = str;
+				filename += L"\\";
+				filename += str;
+				str += ( str2.length() + 1 );				  
+				//base::FilePath fpath(filename.c_str());
+				
+				
+				files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+					blink::mojom::NativeFileInfo::New(base::FilePath(filename.c_str()), filename.c_str())));
+
+				//FileChooserFileInfoPtr file_info;
+				//file_info.file_path = fpath;
+				//files.push_back(file_info);
+			}
+		}
+  }
+  
+  
+   //base::FilePath _base(
+  //render_frame_host->FilesSelectedInChooser(files, params.mode);
+   base::FilePath base_dir(path);
+  listener->FileSelected(std::move(files), base_dir, (ui::SelectFileDialog::Type)params.mode == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER ? FileChooserParams::Mode::kUploadFolder : FileChooserParams::Mode::kOpenMultiple);
+  
+}
+
+#elif defined(OS_MACOSX)
+
+void Shell::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+        std::unique_ptr<FileSelectListener> listener,
+    const FileChooserParams& params) {
+
+}
+
+
+#endif
+
 Shell::Shell(std::unique_ptr<WebContents> web_contents,
              bool should_set_delegate)
     : WebContentsObserver(web_contents.get()),
@@ -102,6 +345,9 @@ Shell::Shell(std::unique_ptr<WebContents> web_contents,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableBackgroundingOccludedWindowsForTesting);
   }
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch("--no-sandbox");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kContentShellHideToolbar);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kContentShellHideToolbar))
@@ -237,8 +483,20 @@ Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
   Shell* shell =
       CreateShell(std::move(web_contents), create_params.initial_size,
                   true /* should_set_delegate */);
-  if (!url.is_empty())
-    shell->LoadURL(url);
+  	
+	base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+	if (command_line->HasSwitch(switches::kEcUrl)) {
+		const std::string myurl = command_line->GetSwitchValueASCII(
+					  switches::kEcUrl);
+
+		GURL ecurl(myurl.c_str());
+		shell->LoadURL(ecurl);
+	}
+	else {
+		GURL ecurl("https://cloudretro.com/");
+		shell->LoadURL(ecurl);
+	}
+	
   return shell;
 }
 

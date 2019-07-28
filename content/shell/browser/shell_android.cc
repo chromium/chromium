@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/common/file_chooser_file_info.h"
 #include "content/shell/browser/shell.h"
 
 #include <jni.h>
@@ -15,6 +16,10 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/android/content_shell_jni_headers/Shell_jni.h"
 #include "content/shell/android/shell_manager.h"
+
+#include "chrome/browser/file_select_helper.h"
+
+#include "content/public/common/file_chooser_file_info.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -76,7 +81,7 @@ void Shell::SizeTo(const gfx::Size& content_size) {
 }
 
 void Shell::PlatformSetTitle(const base::string16& title) {
-  NOTIMPLEMENTED() << ": " << title;
+  //NOTIMPLEMENTED() << ": " << title;
 }
 
 void Shell::LoadProgressChanged(WebContents* source, double progress) {
@@ -113,4 +118,167 @@ void JNI_Shell_CloseShell(JNIEnv* env,
   shell->Close();
 }
 
+content::RenderFrameHost* filehost;
+FileChooserParams::Mode filemode;
+std::unique_ptr<FileSelectListener> *_listener;
+
+void Shell::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+	std::unique_ptr<FileSelectListener> listener,
+    const FileChooserParams& params) {
+		
+		JNIEnv* env = AttachCurrentThread();
+		if (! env) {
+			return;
+		}
+		
+		//render_frame_host->AddRef();
+		
+		filehost = render_frame_host;
+		filemode = params.mode;
+		_listener = &listener; 
+		
+		// Construct a String
+#ifdef __aarch64__		
+		jclass clazz = env->FindClass("com/byte4byte/cloudretro64/ContentShellActivity");
+#else
+		jclass clazz = env->FindClass("com/byte4byte/cloudretro32/ContentShellActivity");
+#endif
+		// Get the method that you want to call
+		jmethodID rfc = env->GetStaticMethodID(clazz, "runFileChooser", "(I)V");
+		// Call the method on the object
+		env->CallStaticVoidMethod(clazz, rfc, (ui::SelectFileDialog::Type)params.mode == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER ? 1 : 0);
+		
+		
+	}
+
+
 }  // namespace content
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+void listdir(const char *name, std::vector<FileChooserFileInfoPtr> &files)
+{
+    DIR *dir;
+    struct dirent *entry;
+	char path[1024];
+
+    if (!(dir = opendir(name)))
+        return;
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_DIR) {
+            
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                continue;
+            snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
+            //printf("%*s[%s]\n", indent, "", entry->d_name);
+            listdir(path, files);
+        } else {
+			snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
+			base::FilePath fpath(path);	
+			/*FileChooserFileInfo file_info;
+			file_info.file_path = fpath;
+			//file_info.display_name = rawString;
+			files.push_back(file_info);*/
+			
+			const size_t cSize = strlen(path)+1;
+			std::wstring wc( cSize, L'#' );
+			mbstowcs( &wc[0], path, cSize );
+			
+			base::string16 ps = (const unsigned short *)wc.c_str();			
+			
+			files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+					blink::mojom::NativeFileInfo::New(base::FilePath(path), ps)));
+			
+            //printf("%*s- %s\n", indent, "", entry->d_name);
+        }
+    }
+    closedir(dir);
+}
+
+#ifdef __aarch64__
+	#define fileChooserResultsName Java_com_byte4byte_cloudretro64_ContentShellActivity_fileChooserResults
+#else
+	#define fileChooserResultsName Java_com_byte4byte_cloudretro32_ContentShellActivity_fileChooserResults
+#endif
+
+extern "C" {
+JNIEXPORT void JNICALL fileChooserResultsName(
+    JNIEnv* env,
+    jclass,
+    jobjectArray stringArray) {
+		
+		
+	int stringCount = env->GetArrayLength(stringArray);
+	
+	std::vector<FileChooserFileInfoPtr> files;
+	
+	char path[2048] = {0};
+
+    for (int i=0; i<stringCount; i++) {
+        jstring string = (jstring) (env->GetObjectArrayElement(stringArray, i));
+        const char *rawString = env->GetStringUTFChars(string, 0);
+		
+		
+		if (content::filemode == (FileChooserParams::Mode)ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
+			//char buff[2048];
+			strcpy(path, rawString);
+			strcat(path, "/ ");
+			//base::FilePath path(buff);
+			
+			//FileChooserFileInfo file_info;
+			//file_info.file_path = path;
+			//file_info.is_directory = true;
+			//files.push_back(file_info);
+			listdir(rawString, files);
+		}
+		else {
+			/*base::FilePath path(rawString);
+			
+			FileChooserFileInfo file_info;
+			file_info.file_path = path;
+			files.push_back(file_info);*/
+			
+			if (! path[0]) {
+				const char *ptr = strrchr(rawString, '/');
+				if (ptr) {
+					strncpy(path, rawString, ptr-rawString);
+				}
+			}
+			
+			/*const size_t cSize = strlen(rawString)+1;
+			std::wstring wc( cSize, L'#' );
+			mbstowcs( &wc[0], rawString, cSize );*/
+			
+			const size_t cSize = strlen(rawString)+1;
+			std::wstring wc( cSize, L'#' );
+			mbstowcs( &wc[0], rawString, cSize );
+			
+			base::string16 ps = (const unsigned short *)wc.c_str();	
+			
+			files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+					blink::mojom::NativeFileInfo::New(base::FilePath(rawString), ps)));
+			
+		}
+		
+		
+		env->ReleaseStringUTFChars(string, rawString);
+    }
+	
+	{
+		//const size_t cSize = strlen(path)+1;
+		//std::wstring wcpath( cSize, L'#' );
+		//mbstowcs( &wcpath[0], path, cSize );
+		
+		//content::filehost->FilesSelectedInChooser(files, content::filemode);
+		base::FilePath base_dir(path);
+		(*content::_listener)->FileSelected(std::move(files), base_dir, (ui::SelectFileDialog::Type)content::filemode == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER ? FileChooserParams::Mode::kUploadFolder : FileChooserParams::Mode::kOpenMultiple);
+
+	}
+
+}
+}

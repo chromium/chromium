@@ -12,8 +12,8 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
-assert(!is_android || enable_plugins,
-       "//ppapi should not be referenced when is_android && !enable_plugins")
+#assert(!is_android || enable_plugins,
+#       "//ppapi should not be referenced when is_android && !enable_plugins")
 
 # Test files shared between several targets below.
 #

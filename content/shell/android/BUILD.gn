@@ -90,10 +90,216 @@ android_library("content_shell_java") {
   android_manifest_for_lint = content_shell_manifest
 }
 
+if (target_cpu=="arm64") {
 jinja_template("content_shell_manifest") {
   testonly = true
-  input = "shell_apk/AndroidManifest.xml.jinja2"
+  input = "shell_apk/ECManifest.xml.jinja2"
   output = content_shell_manifest
+  
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ] 
+}
+jinja_template("ChildProcessLauncherTestHelperService") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ChildProcessLauncherTestHelperService.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ChildProcessLauncherTestHelperService.java"
+
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+jinja_template("GetPathUtils") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/GetPathUtils.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/GetPathUtils.java"
+
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]
+}
+jinja_template("ChildProcessLauncherTestUtils") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ChildProcessLauncherTestUtils.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ChildProcessLauncherTestUtils.java"
+  
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ] 
+}
+jinja_template("ContentShellActivity") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ContentShellActivity.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ContentShellActivity.java"
+  
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+jinja_template("ContentShellApplication") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ContentShellApplication.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ContentShellApplication.java"
+  
+   variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+jinja_template("TestChildProcessService") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService.java"
+  
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]   
+}
+jinja_template("TestChildProcessService0") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService0.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService0.java"
+  
+variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+jinja_template("TestChildProcessService1") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService1.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService1.java"
+
+ variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+jinja_template("IChildProcessTest") {
+  testonly = false
+  input = "shell_apk/src/com/byte4byte/cloudretro/IChildProcessTest.aidl.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/IChildProcessTest.aidl"
+  
+  variables = [
+    "bits=64",
+    "cpu=arm64",
+  ]  
+}
+
+}
+else {
+
+
+
+jinja_template("content_shell_manifest") {
+  testonly = true
+  input = "shell_apk/ECManifest.xml.jinja2"
+  output = content_shell_manifest
+  
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ] 
+  
+}
+jinja_template("ChildProcessLauncherTestHelperService") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ChildProcessLauncherTestHelperService.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ChildProcessLauncherTestHelperService.java"
+
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+jinja_template("ChildProcessLauncherTestUtils") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ChildProcessLauncherTestUtils.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ChildProcessLauncherTestUtils.java"
+  
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ] 
+}
+jinja_template("GetPathUtils") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/GetPathUtils.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/GetPathUtils.java"
+
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ]
+}
+
+jinja_template("ContentShellActivity") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ContentShellActivity.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ContentShellActivity.java"
+  
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+jinja_template("ContentShellApplication") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/ContentShellApplication.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ContentShellApplication.java"
+  
+   variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+jinja_template("TestChildProcessService") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService.java"
+  
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ]   
+}
+jinja_template("TestChildProcessService0") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService0.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService0.java"
+  
+variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+jinja_template("TestChildProcessService1") {
+  testonly = true
+  input = "shell_apk/src/com/byte4byte/cloudretro/TestChildProcessService1.java.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService1.java"
+
+ variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+jinja_template("IChildProcessTest") {
+  testonly = false
+  input = "shell_apk/src/com/byte4byte/cloudretro/IChildProcessTest.aidl.jinja2"
+  output = "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/IChildProcessTest.aidl"
+  
+  variables = [
+    "bits=32",
+    "cpu=arm",
+  ]  
+}
+  
 }
 
 android_resources("content_shell_apk_resources") {
@@ -122,32 +328,68 @@ android_library("content_shell_apk_java") {
     "//net/android:net_java",
     "//third_party/jsr-305:jsr_305_javalib",
     "//ui/android:ui_java",
+    "//content/shell/android:TestChildProcessService1",
+    "//content/shell/android:TestChildProcessService0",
+    "//content/shell/android:TestChildProcessService",
+    "//content/shell/android:ContentShellApplication",
+    "//content/shell/android:ContentShellActivity",
+    "//content/shell/android:ChildProcessLauncherTestUtils",
+    "//content/shell/android:ChildProcessLauncherTestHelperService",
+    "//content/shell/android:GetPathUtils",
   ]
 
   android_manifest_for_lint = content_shell_manifest
 
-  java_files = [
-    "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestHelperService.java",
-    "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestUtils.java",
-    "shell_apk/src/org/chromium/content_shell_apk/ContentShellActivity.java",
-    "shell_apk/src/org/chromium/content_shell_apk/ContentShellApplication.java",
-    "shell_apk/src/org/chromium/content_shell_apk/TestChildProcessService.java",
-    "shell_apk/src/org/chromium/content_shell_apk/TestChildProcessService0.java",
-    "shell_apk/src/org/chromium/content_shell_apk/TestChildProcessService1.java",
-  ]
+  if (target_cpu=="arm64") {
+    java_files = [
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ChildProcessLauncherTestHelperService.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ChildProcessLauncherTestUtils.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ContentShellActivity.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/ContentShellApplication.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService0.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/TestChildProcessService1.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/GetPathUtils.java",
+    ]
+  }
+  else {
+    java_files = [
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ChildProcessLauncherTestHelperService.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ChildProcessLauncherTestUtils.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ContentShellActivity.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/ContentShellApplication.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService0.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/TestChildProcessService1.java",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/GetPathUtils.java", 
+   ]
+  }
 }
 
 android_aidl("content_javatests_aidl") {
   import_include = [ "shell_apk/src" ]
+  
+  deps = [ ":IChildProcessTest" ]
+
+  if (target_cpu=="arm64") {
   sources = [
-    "shell_apk/src/org/chromium/content_shell_apk/IChildProcessTest.aidl",
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro64/IChildProcessTest.aidl",
   ]
+  }
+  else {
+    sources = [
+    "$target_out_dir/shell_apk/src/com/byte4byte/cloudretro32/IChildProcessTest.aidl",
+    ]
+  }
 }
 
 android_assets("content_shell_assets") {
   testonly = true
   sources = [
     "$root_out_dir/content_shell.pak",
+    "shell_apk/assets/libecemu.cr.so",
+    "shell_apk/assets/libecfs.so",
+    "shell_apk/assets/libSDL2.so",
   ]
   disable_compression = true
   deps = [

@@ -16,8 +16,20 @@
 #include "ui/base/ui_base_switches.h"
 
 namespace content {
+	
+void setEcUrl(const std::string& url) {
 
-void SetContentCommandLineFlags(bool single_process) {
+	  base::CommandLine* parsed_command_line =
+		  base::CommandLine::ForCurrentProcess();
+		  
+	parsed_command_line->AppendSwitchNative(switches::kEcUrl, url);
+}	
+
+void SetContentCommandLineFlags(bool single_process,
+								const std::string& plugin_descriptor,
+								const std::string& files_dir,
+								const std::string& ec_lib_dir,
+								const std::string& ec_www_dir) {
   // May be called multiple times, to cover all possible program entry points.
   static bool already_initialized = false;
   if (already_initialized)
@@ -57,6 +69,22 @@ void SetContentCommandLineFlags(bool single_process) {
   // Disable anti-aliasing.
   parsed_command_line->AppendSwitch(
       cc::switches::kDisableCompositedAntialiasing);
+	  
+  if (!plugin_descriptor.empty()) {
+    parsed_command_line->AppendSwitchNative(
+      switches::kRegisterPepperPlugins, plugin_descriptor);
+  }
+  if (!files_dir.empty()) {
+	parsed_command_line->AppendSwitchNative(switches::kFilesDir, files_dir);
+  }
+  if (!ec_lib_dir.empty()) {
+	parsed_command_line->AppendSwitchNative(switches::kEcLibDir, ec_lib_dir);
+  }
+  if (!ec_www_dir.empty()) {
+	parsed_command_line->AppendSwitchNative(switches::kEcWwwDir, ec_www_dir);
+  }
+  parsed_command_line->AppendSwitchNative("autoplay-policy",
+		          "no-user-gesture-required");  
 }
 
 }  // namespace content

@@ -76,7 +76,9 @@ int32_t TrueTypeFontMessageFilter::OnHostMsgGetFontFamilies(
     ppapi::host::HostMessageContext* context) {
   // OK to use "slow blocking" version since we're on the blocking pool.
   std::vector<std::string> font_families;
+#if 0  
   GetFontFamilies_SlowBlocking(&font_families);
+#endif
   // Sort the names in case the host platform returns them out of order.
   std::sort(font_families.begin(), font_families.end());
 
@@ -90,7 +92,9 @@ int32_t TrueTypeFontMessageFilter::OnHostMsgGetFontsInFamily(
     const std::string& family) {
   // OK to use "slow blocking" version since we're on the blocking pool.
   std::vector<ppapi::proxy::SerializedTrueTypeFontDesc> fonts_in_family;
-  GetFontsInFamily_SlowBlocking(family, &fonts_in_family);
+#if 0
+  GetFontsInFamily_SlowBlocking(family, &fonts_in_family)
+#endif
 
   context->reply_msg =
       PpapiPluginMsg_TrueTypeFontSingleton_GetFontsInFamilyReply(

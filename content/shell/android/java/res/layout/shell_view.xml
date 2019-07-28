@@ -8,22 +8,32 @@
 
 <org.chromium.content_shell.Shell
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <LinearLayout android:id="@+id/toolbar"
+    android:orientation="vertical" android:background="@android:color/black" >
+<!--    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent"
+          android:layout_height="fill_parent" android:id="@+id/splash" android:background="@android:color/black">
+
+          <ImageView android:contentDescription="@string/cloudretro" android:id="@+id/splashscreen" android:layout_width="wrap_content"
+                  android:layout_height="fill_parent"
+                  android:src="@drawable/logo"
+                  android:layout_gravity="center"/>
+
+	</LinearLayout>
+-->    
+<LinearLayout android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/progress">
+        android:background="@drawable/progress"
+		android:visibility="gone">
         <ImageButton android:id="@+id/stop_reload_button"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:scaleType="centerCrop"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@null" />
         <EditText android:id="@+id/url"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -40,16 +50,17 @@
             android:layout_height="38dp"
             android:src="@android:drawable/ic_media_previous"
             android:scaleType="center"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@null" />
         <ImageButton android:id="@+id/next"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:src="@android:drawable/ic_media_next"
             android:scaleType="center"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@null" />
     </LinearLayout>
     <FrameLayout android:id="@+id/contentview_holder"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+		android:visibility="gone" android:background="@android:color/black" />
 </org.chromium.content_shell.Shell>

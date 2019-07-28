@@ -1416,7 +1416,7 @@ if (enable_java_templates) {
         android_manifest = "//build/android/AndroidManifest.xml"
       }
       arsc_output = _resource_arsc_output
-      min_sdk_version = 19
+      min_sdk_version = 17
       target_sdk_version = 23
     }
 
@@ -1895,7 +1895,7 @@ if (enable_java_templates) {
       supports_android = true
       requires_android = true
       if (!defined(invoker.min_sdk_version)) {
-        min_sdk_version = 19
+        min_sdk_version = 17
       }
 
       if (!defined(jar_excluded_patterns)) {
@@ -2140,7 +2140,7 @@ if (enable_java_templates) {
     _build_config = "$target_gen_dir/$target_name.build_config"
     _build_config_target = "$target_name$build_config_target_suffix"
 
-    _min_sdk_version = 19
+    _min_sdk_version = 17
     _target_sdk_version = 23
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
@@ -3878,6 +3878,11 @@ if (enable_java_templates) {
         "--srcjar",
         rebase_path(_srcjar_path, root_build_dir),
       ]
+      deps = [
+      ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      } 
       if (defined(invoker.import_include) && invoker.import_include != []) {
         # TODO(cjhopman): aidl supports creating a depfile. We should be able to
         # switch to constructing a depfile for the overall action from that

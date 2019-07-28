@@ -21,13 +21,13 @@
 
     <application android:name="ContentShellApplication"
             android:icon="@mipmap/app_icon"
-            android:label="Content Shell">
+            android:label="Cloud Retro" android:background="@android:color/black">
         <activity android:name="ContentShellActivity"
                   android:launchMode="singleTask"
-                  android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+                  android:theme="@android:style/Theme.Holo.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:windowSoftInputMode="adjustResize"
-                  android:hardwareAccelerated="true">
+                  android:hardwareAccelerated="true" android:background="@android:color/black>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -51,7 +51,7 @@
         {% for i in range(num_sandboxed_services) %}
         <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
-                 android:isolatedProcess="true"
+                 android:isolatedProcess="false"
                  android:exported="false" />
         {% endfor %}
 

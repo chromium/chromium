@@ -6,8 +6,31 @@
 
 {
   global:
+    PPP_InitializeModule;
+    PPP_ShutdownModule;
+    PPP_GetInterface;
+    Java_org_chromium_content_1shell_1apk_ContentShellActivity_SetCommandLineFlag;
+    Java_org_chromium_content_1shell_1apk_ContentShellActivity_fileChooserResults;
+    Java_com_byte4byte_cloudretro64_ContentShellActivity_fileChooserResults;
+    Java_com_byte4byte_cloudretro64_ContentShellActivity_SetCommandLineFlag;
+    Java_com_byte4byte_cloudretro32_ContentShellActivity_fileChooserResults;
+    Java_com_byte4byte_cloudretro32_ContentShellActivity_SetCommandLineFlag;
     JNI_OnLoad;
-    Java_*;
+	Java_*;
+	fopen;
+	fopen64;
+	write;
+	fputs;
+	fwrite64;
+	fputc;
+	fwrite;
+	fprintf;
+	fread;
+	fgets;
+	pread;
+	pwrite;
+	_fopens;
+	ec_set_files_dir;
   local:
     *;
 };

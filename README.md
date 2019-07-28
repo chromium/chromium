@@ -1,11 +1,27 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+mkdir cloudretroandroid
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+cd cloudretroandroid
 
-The project's web site is https://www.chromium.org.
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
+export PATH="$PATH:$(pwd)/depot_tools"
 
-Learn how to [Get Around the Chromium Source Code Directory Structure
-](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
+git clone https://github.com/byte4byte/cloudretro.git src
+
+cd src
+
+echo "solutions = [ { "url": "https://github.com/byte4byte/cloudretro.git", "managed": False, "name": "src", "custom_deps": {}, }, ] target_os = ["android"] target_os = [ 'android' ]" > ../.gclient
+
+gclient sync
+
+build/install-build-deps-android.sh
+
+gclient runhooks
+
+gn gen --args='target_os="android"' out/Default
+
+-- or --
+
+gn gen --args='target_os="android" target_cpu="arm64"' out/Default
+
+ninja -C out/Default content_shell_apk

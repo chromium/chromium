@@ -47,18 +47,18 @@ public class Shell extends LinearLayout {
     private final Runnable mClearProgressRunnable = new Runnable() {
         @Override
         public void run() {
-            mProgressDrawable.setLevel(0);
+            //mProgressDrawable.setLevel(0);
         }
     };
 
     private WebContents mWebContents;
     private NavigationController mNavigationController;
-    private EditText mUrlTextView;
-    private ImageButton mPrevButton;
+    //private EditText mUrlTextView;
+    /*private ImageButton mPrevButton;
     private ImageButton mNextButton;
-    private ImageButton mStopReloadButton;
+    private ImageButton mStopReloadButton;*/
 
-    private ClipDrawable mProgressDrawable;
+   // private ClipDrawable mProgressDrawable;
 
     private long mNativeShell;
     private ContentViewRenderView mContentViewRenderView;
@@ -141,14 +141,14 @@ public class Shell extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View toolbar = findViewById(R.id.toolbar);
-        mProgressDrawable = (ClipDrawable) toolbar.getBackground();
-        initializeUrlField();
-        initializeNavigationButtons();
+        //View toolbar = findViewById(R.id.toolbar);
+        //mProgressDrawable = (ClipDrawable) toolbar.getBackground();
+        //initializeUrlField();
+        //initializeNavigationButtons();
     }
 
     private void initializeUrlField() {
-        mUrlTextView = (EditText) findViewById(R.id.url);
+        /*mUrlTextView = (EditText) findViewById(R.id.url);
         mUrlTextView.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -184,7 +184,7 @@ public class Shell extends LinearLayout {
                 }
                 return false;
             }
-        });
+        });*/
     }
 
     /**
@@ -201,7 +201,7 @@ public class Shell extends LinearLayout {
         } else {
             mNavigationController.loadUrl(new LoadUrlParams(sanitizeUrl(url)));
         }
-        mUrlTextView.clearFocus();
+        //mUrlTextView.clearFocus();
         // TODO(aurimas): Remove this when crbug.com/174541 is fixed.
         getContentView().clearFocus();
         getContentView().requestFocus();
@@ -219,7 +219,7 @@ public class Shell extends LinearLayout {
     }
 
     private void initializeNavigationButtons() {
-        mPrevButton = (ImageButton) findViewById(R.id.prev);
+        /*mPrevButton = (ImageButton) findViewById(R.id.prev);
         mPrevButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,28 +241,28 @@ public class Shell extends LinearLayout {
                 if (mLoading) mWebContents.stop();
                 else mNavigationController.reload(true);
             }
-        });
+        });*/
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void onUpdateUrl(String url) {
-        mUrlTextView.setText(url);
+        //mUrlTextView.setText(url);
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void onLoadProgressChanged(double progress) {
         removeCallbacks(mClearProgressRunnable);
-        mProgressDrawable.setLevel((int) (10000.0 * progress));
+       // mProgressDrawable.setLevel((int) (10000.0 * progress));
         if (progress == 1.0) postDelayed(mClearProgressRunnable, COMPLETED_PROGRESS_TIMEOUT_MS);
     }
 
     @CalledByNative
     private void toggleFullscreenModeForTab(boolean enterFullscreen) {
         mIsFullscreen = enterFullscreen;
-        LinearLayout toolBar = (LinearLayout) findViewById(R.id.toolbar);
-        toolBar.setVisibility(enterFullscreen ? GONE : VISIBLE);
+       // LinearLayout toolBar = (LinearLayout) findViewById(R.id.toolbar);
+       // toolBar.setVisibility(enterFullscreen ? GONE : VISIBLE);
     }
 
     @CalledByNative
@@ -274,12 +274,16 @@ public class Shell extends LinearLayout {
     @CalledByNative
     private void setIsLoading(boolean loading) {
         mLoading = loading;
-        if (mLoading) {
-            mStopReloadButton
-                    .setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+   /*     if (R.drawable.ic_refresh != 0 &&
+		    R.string.launch != 0 &&
+			R.string.url != 0) {
+	if (mLoading) {
+           // mStopReloadButton
+           //         .setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
         } else {
-            mStopReloadButton.setImageResource(R.drawable.ic_refresh);
+            //mStopReloadButton.setImageResource(R.drawable.ic_refresh);
         }
+	}*/
     }
 
     public ShellViewAndroidDelegate getViewAndroidDelegate() {
@@ -306,7 +310,7 @@ public class Shell extends LinearLayout {
         mNavigationController = mWebContents.getNavigationController();
         if (getParent() != null) mWebContents.onShow();
         if (mWebContents.getVisibleUrl() != null) {
-            mUrlTextView.setText(mWebContents.getVisibleUrl());
+           // mUrlTextView.setText(mWebContents.getVisibleUrl());
         }
         ((FrameLayout) findViewById(R.id.contentview_holder)).addView(cv,
                 new FrameLayout.LayoutParams(
@@ -375,9 +379,9 @@ public class Shell extends LinearLayout {
     @CalledByNative
     private void enableUiControl(int controlId, boolean enabled) {
         if (controlId == 0) {
-            mPrevButton.setEnabled(enabled);
+            //mPrevButton.setEnabled(enabled);
         } else if (controlId == 1) {
-            mNextButton.setEnabled(enabled);
+            //mNextButton.setEnabled(enabled);
         }
     }
 
@@ -400,9 +404,9 @@ public class Shell extends LinearLayout {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         if (visible) {
-            imm.showSoftInput(mUrlTextView, InputMethodManager.SHOW_IMPLICIT);
+            //imm.showSoftInput(mUrlTextView, InputMethodManager.SHOW_IMPLICIT);
         } else {
-            imm.hideSoftInputFromWindow(mUrlTextView.getWindowToken(), 0);
+            //imm.hideSoftInputFromWindow(mUrlTextView.getWindowToken(), 0);
         }
     }
 

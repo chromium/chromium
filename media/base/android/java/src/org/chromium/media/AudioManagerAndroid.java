@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
+
 @JNINamespace("media")
 class AudioManagerAndroid {
     private static final String TAG = "cr.media";
@@ -600,11 +602,16 @@ class AudioManagerAndroid {
      * android.bluetooth.BluetoothAdapter.getProfileConnectionState() requires
      * the BLUETOOTH permission.
      */
+    @SuppressLint("NewAPi")
     private boolean hasBluetoothHeadset() {
         if (!mHasBluetoothPermission) {
             Log.w(TAG, "hasBluetoothHeadset() requires BLUETOOTH permission");
             return false;
         }
+
+	if (Build.VERSION.SDK_INT < 18) { 
+		return false;
+	}
 
         BluetoothManager btManager =
                 (BluetoothManager) ContextUtils.getApplicationContext().getSystemService(

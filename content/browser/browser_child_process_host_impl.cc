@@ -326,6 +326,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       switches::kTraceToConsole,
       switches::kV,
       switches::kVModule,
+	  switches::kEcUrl
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches,
                              base::size(kForwardSwitches));

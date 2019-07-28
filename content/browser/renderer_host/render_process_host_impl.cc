@@ -3028,6 +3028,8 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kProfilingFile,
     switches::kProfilingFlush,
     switches::kRegisterPepperPlugins,
+	switches::kEcUrl,
+	switches::kFilesDir,	
     switches::kRendererStartupDialog,
     switches::kReportVp9AsAnUnsupportedMimeType,
     switches::kShowLayoutShiftRegions,

@@ -23,6 +23,8 @@ import java.io.FileReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.annotation.SuppressLint;
+
 /**
  * Exposes system related information about the current device.
  */
@@ -216,9 +218,13 @@ public class SysUtils {
         return sHighEndDiskDevice.booleanValue();
     }
 
+    @SuppressLint("NewAPi") 
     private static boolean detectHighEndDiskDevice() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             StatFs dataStats = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+	    if (Build.VERSION.SDK_INT < 18) { 
+	    	return true;
+	    }
             long totalGBytes = dataStats.getTotalBytes() / BYTES_PER_GIGABYTE;
             return totalGBytes >= HIGH_END_DEVICE_DISK_CAPACITY_GB;
         } catch (IllegalArgumentException e) {

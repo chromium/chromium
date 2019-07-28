@@ -1,0 +1,1430 @@
+// Copyright 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package com.byte4byte.cloudretro{{ bits }};
+
+import android.content.BroadcastReceiver;
+import android.support.v4.content.LocalBroadcastManager;
+import android.content.IntentFilter;
+
+import android.app.Activity;
+import android.view.View;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
+import android.graphics.Color;
+
+import android.os.SystemClock;
+
+import android.app.Instrumentation;
+
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+
+import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import android.provider.MediaStore;
+import android.provider.DocumentsContract;
+import android.content.ContentUris;
+import android.os.Environment;
+import android.os.Build;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import org.json.JSONArray;
+import org.json.JSONException;
+import java.io.ByteArrayOutputStream;
+
+import android.content.Context;
+import android.net.Uri;
+import java.net.URISyntaxException;
+import android.database.Cursor;
+import android.provider.DocumentsContract;
+import android.os.storage.StorageManager;
+import java.lang.reflect.Method;
+import java.lang.reflect.Array;
+
+import org.chromium.base.CommandLine;
+import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.library_loader.ProcessInitException;
+import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_shell.Shell;
+import org.chromium.content_shell.ShellManager;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import android.content.res.AssetManager;
+import java.io.*;
+import java.util.*;
+import android.view.KeyEvent;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.MotionEvent;
+import android.os.Process;
+import android.widget.EditText;
+import android.content.SharedPreferences;
+import android.widget.Button;
+import android.view.View.OnClickListener;
+import android.content.pm.PackageManager;
+import android.Manifest;
+import android.support.v4.app.ActivityCompat;
+import android.widget.ImageView;
+
+/**
+ * Activity for managing the Content Shell.
+ */
+public class ContentShellActivity extends Activity {
+
+    private static final String TAG = "ContentShellActivity";
+
+    private static  String CRURL = "https://cloudretro.com";
+
+    private static final String ACTIVE_SHELL_URL_KEY = "activeUrl";
+    public static final String COMMAND_LINE_ARGS_KEY = "commandLineArgs";
+
+    // Native switch - shell_switches::kRunWebTests
+    private static final String RUN_WEB_TESTS_SWITCH = "run-web-tests";
+
+    private ShellManager mShellManager;
+    private ActivityWindowAndroid mWindowAndroid;
+    private Intent mLastSentIntent;
+    private String mStartupUrl;
+	
+	private static final int FILE_SELECT_CODE = 0;
+	private static final int DIR_SELECT_CODE = 1;
+	
+	public static native void fileChooserResults(String []results);
+	
+	public ContentShellActivity() {
+		mWindowAndroid = null;
+		active = false;
+	}
+	
+	public static void runFileChooser(int mode) {
+									
+		Intent intent;
+		if (mode == 1) intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE); 
+		else {
+			intent = new Intent(Intent.ACTION_GET_CONTENT); 
+			intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); 
+			intent.setType("*/*"); 
+			intent.addCategory(Intent.CATEGORY_OPENABLE);			
+		}
+		
+
+		try {
+			if (mode == 1) {
+				ctx.startActivityForResult(
+					intent,
+					DIR_SELECT_CODE);
+			}
+			else {
+				ctx.startActivityForResult(
+					Intent.createChooser(intent, "Select a File to Upload"),
+					FILE_SELECT_CODE);
+			}
+		} catch (android.content.ActivityNotFoundException ex) {
+			// Potentially direct the user to the Market with a Dialog
+			Toast.makeText(ctx, "Please install a File Manager.", 
+					Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	/*public static String getPath(Context context, Uri uri) throws URISyntaxException {
+		if ("content".equalsIgnoreCase(uri.getScheme())) {
+			String[] projection = { "_data" };
+			Cursor cursor = null;
+
+			try {
+				cursor = context.getContentResolver().query(uri, projection, null, null, null);
+				int column_index = cursor.getColumnIndexOrThrow("_data");
+				if (cursor.moveToFirst()) {
+					return cursor.getString(column_index);
+				}
+			} catch (Exception e) {
+				// Eat it
+			}
+		}
+		else if ("file".equalsIgnoreCase(uri.getScheme())) {
+			return uri.getPath();
+		}
+
+		return uri.getPath();
+	} */
+	
+	
+/*
+    public static String getPath(final Context context, final Uri uri) {
+
+
+					
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+			
+			//Toast.makeText(ctx, "here4",  Toast.LENGTH_SHORT).show();
+			
+            // LocalStorageProvider
+            if (isLocalStorageDocument(uri)) {
+                // The path is the id
+                return DocumentsContract.getDocumentId(uri);
+            }
+            // ExternalStorageProvider
+            else if (isExternalStorageDocument(uri)) {
+				
+				//Toast.makeText(ctx, "here5",  Toast.LENGTH_SHORT).show();
+				
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+				else {
+					return getVolumePath(type, ctx) + "/" + split[1];
+				}
+
+                // TODO handle non-primary volumes
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+
+			
+			Toast.makeText(ctx, "downloads",  Toast.LENGTH_SHORT).show();
+			
+                final String id = DocumentsContract.getDocumentId(uri);
+				Toast.makeText(ctx, id,  Toast.LENGTH_SHORT).show();
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                return getDataColumn(context, contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[] {
+                        split[1]
+                };
+
+                return getDataColumn(context, contentUri, selection, selectionArgs);
+            }
+        }
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+
+            return getDataColumn(context, uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {		
+            return uri.getPath();
+        }
+
+		
+		
+		
+        return null;
+	
+    }
+
+
+public static String getDataColumn(Context context, Uri uri, String selection,
+        String[] selectionArgs) {
+
+    Cursor cursor = null;
+    final String column = "_data";
+    final String[] projection = {
+            column
+    };
+
+    try {
+        cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                null);
+        if (cursor != null && cursor.moveToFirst()) {
+            final int column_index = cursor.getColumnIndexOrThrow(column);
+            return cursor.getString(column_index);
+        }
+    } finally {
+        if (cursor != null)
+            cursor.close();
+    }
+    return null;
+}
+
+public static boolean isLocalStorageDocument(Uri uri) {
+        //return LocalStorageProvider.AUTHORITY.equals(uri.getAuthority());
+		return false;
+    }
+
+public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+	
+
+public static boolean isExternalStorageDocument(Uri uri) {
+    return "com.android.externalstorage.documents".equals(uri.getAuthority());
+}
+
+
+public static boolean isDownloadsDocument(Uri uri) {
+    return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+}
+
+
+public static boolean isMediaDocument(Uri uri) {
+    return "com.android.providers.media.documents".equals(uri.getAuthority());
+}
+	*/
+	/*@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case FILE_SELECT_CODE:
+			if (resultCode == RESULT_OK) {
+				// Get the Uri of the selected file 
+				Uri uri = data.getData();
+				//Log.d(TAG, "File Uri: " + uri.toString());
+				// Get the path
+				String path = getPath(this, uri);
+				//Log.d(TAG, "File Path: " + path);
+				// Get the file instance
+				// File file = new File(path);
+				// Initiate the upload
+			}
+			
+			fileChooserResults(new String[0]);
+			
+			return;
+		}
+		
+		super.onActivityResult(requestCode, resultCode, data);
+	}*/
+
+	private ArrayList<String> fetchNativeFiles() {
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		try {
+			URL url = new URL(CRURL + "/native/android/{{ cpu }}/files.json");
+
+                    //create the new connection
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+					
+					//Log.i("pepper", "downloading: " + filename);
+
+                    //set up some things on the connection
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setDoOutput(true);
+
+                    //and connect!
+                    urlConnection.connect();
+
+                    //set the path where we want to save the file
+                    //in this case, going to save it on the root directory of the
+                    //sd card.
+                    // File SDCardRoot = Environment.getExternalStorageDirectory();
+                    //create a new file, specifying the path, and the filename
+                    //which we want to save the file as.
+                    //File file = new File(SDCardRoot,"somefile.ext");
+
+                    String outDir = getFilesDir().getPath(); //"/data/data/org.chromium.content_shell_apk/files/" ; 
+
+                    Log.i("pepper", "writint to: " + outDir);
+
+                    //;File file = new File(outDir, filename);
+
+                    //this will be used to write the downloaded data into the file we created
+                    //FileOutputStream fileOutput = new FileOutputStream(file);
+
+                    //this will be used in reading the data from the internet
+                    InputStream inputStream = urlConnection.getInputStream();
+
+                    //this is the total size of the file
+                    int totalSize = urlConnection.getContentLength();
+                    //variable to store total downloaded bytes
+                    int downloadedSize = 0;
+
+                    ByteArrayOutputStream result = new ByteArrayOutputStream();
+					byte[] buffer = new byte[1024];
+					int length;
+					while ((length = inputStream.read(buffer)) != -1) {
+						result.write(buffer, 0, length);
+					}
+					// StandardCharsets.UTF_8.name() > JDK 7
+					String json = result.toString("UTF-8");
+					
+					JSONArray arr = new JSONArray(json);
+					for(int i = 0; i < arr.length(); i++){
+						ret.add(arr.getString(i));
+					}
+
+                    //catch some possible errors...
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+				catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+		return ret;
+		
+	}
+	
+	private void writeNativeFile(String outDir, String outFiles[], HttpURLConnection urlConnection) throws Exception {
+		
+		FileOutputStream fileOutput[] = new FileOutputStream[outFiles.length];
+		for (int i = 0; i < outFiles.length; i++) {
+			fileOutput[i] = new FileOutputStream(new File(outDir, outFiles[i]));
+		}
+
+		//this will be used to write the downloaded data into the file we created
+		//FileOutputStream fileOutput = new FileOutputStream(file);
+
+		//this will be used in reading the data from the internet
+		InputStream inputStream = urlConnection.getInputStream();
+
+		//this is the total size of the file
+		int totalSize = urlConnection.getContentLength();
+		//variable to store total downloaded bytes
+		int downloadedSize = 0;
+
+		//create a buffer...
+		byte[] buffer = new byte[1024];
+		int bufferLength = 0; //used to store a temporary size of the buffer
+
+		//now, read through the input buffer and write the contents to the file
+		while ((bufferLength = inputStream.read(buffer)) > 0) {
+			//add the data in the buffer to the file in the file output stream (the file on the sd card
+			for (int i = 0; i < fileOutput.length; i++) fileOutput[i].write(buffer, 0, bufferLength);
+			//add up the size so we know how much is downloaded
+			downloadedSize += bufferLength;
+			//this is where you would do something to report the prgress, like this maybe
+			//updateProgress(downloadedSize, totalSize);
+
+		}
+		//close the output stream when done
+		for (int i = 0; i < fileOutput.length; i++) fileOutput[i].close();
+	}
+	
+	private void getNativeFile(String filename) {
+		try {
+                    //set the download URL, a url that points to a file on the internet
+                    //this is the file to be downloaded
+
+                   // String filename = "libecemu.cr.so";
+
+                    URL url = new URL(CRURL + "/native/android/{{ cpu }}/" + filename);
+
+                    //create the new connection
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+					
+					Log.i("pepper", "downloading: " + filename);
+
+                    //set up some things on the connection
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setDoOutput(true);
+
+                    //and connect!
+                    urlConnection.connect();
+
+                    //set the path where we want to save the file
+                    //in this case, going to save it on the root directory of the
+                    //sd card.
+                    // File SDCardRoot = Environment.getExternalStorageDirectory();
+                    //create a new file, specifying the path, and the filename
+                    //which we want to save the file as.
+                    //File file = new File(SDCardRoot,"somefile.ext");
+
+                    String outDir = getFilesDir().getPath(); //"/data/data/org.chromium.content_shell_apk/files/" ; 
+
+                    Log.i("pepper", "writint to: " + outDir);
+					
+					if (filename.equals("libecemu.cr.so")) { 
+						String filenames[] = { "libecemu.cr.so", "libecbridge.cr.so" };
+						writeNativeFile(outDir, filenames, urlConnection);
+					}
+					else { 
+						String filenames[] = { filename };
+						writeNativeFile(outDir, filenames, urlConnection);
+					}
+
+                    //catch some possible errors...
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+    private void downloadNativeAdapter() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+				ArrayList<String> files = fetchNativeFiles();
+				for (String filename : files) {
+					getNativeFile(filename);
+				}
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        afterDownloads();
+
+                    }
+                });
+
+            }
+
+        }).start();
+    }
+
+    private void copyAssets() {
+        AssetManager assetManager = getAssets();
+        String[] files = {
+            "libecemu.cr.so",
+            "libecfs.so",
+            "libSDL2.so"
+        };
+        /*try {
+            files = assetManager.list("");
+        } catch (IOException e) {
+            Log.e("pepper", "Failed to get asset file list.", e);
+          }*/
+        for (String filename: files) {
+            InputStream in = null;
+            OutputStream out = null;
+            try { in = assetManager.open(filename);
+
+                Log.i("pepper", "found asset: " + filename);
+
+                String outDir = getFilesDir().getPath(); //"/data/data/org.chromium.content_shell_apk/files/" ; 
+
+                Log.i("pepper", "writint to: " + outDir);
+
+                File outFile = new File(outDir, filename);
+
+                out = new FileOutputStream(outFile);
+                copyFile( in , out); in .close(); in = null;
+                out.flush();
+                out.close();
+                out = null;
+            } catch (IOException e) {
+                Log.e("pepper", "Failed to copy asset file: " + filename, e);
+            }
+        }
+    }
+    private void copyFile(InputStream in , OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while ((read = in .read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
+    }
+
+    public static List < File > getListFiles(File parentDir) {
+        ArrayList < File > inFiles = new ArrayList < File > ();
+        File[] files = parentDir.listFiles();
+        for (File file: files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(getListFiles(file));
+            } else {
+                //if(file.getName().endsWith(".csv")){
+                inFiles.add(file);
+                //}
+            }
+        }
+        return inFiles;
+    }
+
+	public static native void setEcUrl(String url);
+    public static native void SetCommandLineFlags(String libs, String files_dir, String eclibpath, String wwwpath);
+	public static native void setpriority(int prio);
+
+    private static ContentShellActivity ctx;
+
+    protected void afterDownloads() {
+
+        /*Log.i("peppermsg", "trying to load lib");
+        try {
+        	System.load(getFilesDir().getPath() + "/libecemu.cr.so");
+        } catch (Exception e) {
+        		Log.i("peppermsg", e.getMessage());
+        }*/
+
+        String files_dir = getFilesDir().getPath();
+
+        List < File > files = getListFiles(new File(files_dir));
+        for (int i = 0; i < files.size(); i++) {
+            Log.i("pepper Files", files.get(i).getAbsolutePath() + " - " + files.get(i).length());
+        }
+
+
+
+        //SetCommandLineFlags(loadlibs);
+
+        // Initializing the command line must occur before loading the library.
+        if (!CommandLine.isInitialized()) {
+
+            ((ContentShellApplication) getApplication()).initCommandLine();
+
+
+
+            Log.i("PEPPER", "SETTING SWITCH");
+
+            String[] commandLineParams = getCommandLineParamsFromIntent(getIntent());
+            if (commandLineParams != null) {
+                CommandLine.getInstance().appendSwitchesAndArguments(commandLineParams);
+            }
+
+        }
+
+         DeviceUtils.addDeviceSpecificUserAgentSwitch();
+
+        try {
+            LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
+        } catch (ProcessInitException e) {
+            Log.e(TAG, "ContentView initialization failed.", e);
+            // Since the library failed to initialize nothing in the application
+            // can work, so kill the whole application not just the activity
+            System.exit(-1);
+            return;
+        }
+
+        //String loadlibs[] =  {"--register-pepper-plugins=\"" + files_dir + 			//"/libppapi_example_graphics_2d.cr.so;application/x-ppapi-example-2d\""
+        //	};
+        String loadlibs[] = {
+            files_dir + "/libecemu.cr.so;application/x-ppapi-ecemu," + files_dir + "/libecbridge.cr.so;application/x-ppapi-ecfs"
+        };
+		setpriority(-20);
+		
+		String eclibpath = Environment.getExternalStorageDirectory().getAbsolutePath();
+		eclibpath += "/CloudRetro";
+		try {
+			new File(eclibpath).mkdirs();
+		} catch (Exception e) {}
+		
+		String wwwpath = getCacheDir().getAbsolutePath();
+		wwwpath += "/CloudRetro_www";
+		try {
+			new File(wwwpath).mkdirs();
+		} catch (Exception e) {}
+		
+        SetCommandLineFlags(loadlibs[0], files_dir, eclibpath, wwwpath);
+		
+		synchronized(layoutLock) {
+			
+			exitLayoutLock = true;
+
+        setContentView(R.layout.content_shell_activity);
+
+        mShellManager = (ShellManager) findViewById(R.id.shell_container);
+        final boolean listenToActivityState = true;
+        mWindowAndroid = new ActivityWindowAndroid(this, listenToActivityState);
+        mWindowAndroid.restoreInstanceState(_savedInstanceState);
+        mShellManager.setWindow(mWindowAndroid);
+        // Set up the animation placeholder to be the SurfaceView. This disables the
+        // SurfaceView's 'hole' clipping during animations that are notified to the window.
+        mWindowAndroid.setAnimationPlaceholderView(
+                mShellManager.getContentViewRenderView().getSurfaceView());
+
+        mStartupUrl = getUrlFromIntent(getIntent());
+        if (!TextUtils.isEmpty(mStartupUrl)) {
+            mShellManager.setStartupUrl(Shell.sanitizeUrl(mStartupUrl));
+        }
+
+        if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
+            try {
+                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .startBrowserProcessesSync(false);
+            } catch (ProcessInitException e) {
+                Log.e(TAG, "Failed to load native library.", e);
+                System.exit(-1);
+            }
+        } else {
+            try {
+                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .startBrowserProcessesAsync(
+                                true, false, new BrowserStartupController.StartupCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        finishInitialization(_savedInstanceState);
+                                    }
+
+                                    @Override
+                                    public void onFailure() {
+                                        initializationFailed();
+                                    }
+                                });
+            } catch (ProcessInitException e) {
+                Log.e(TAG, "Unable to load native library.", e);
+                System.exit(-1);
+            }
+        }
+		
+		}
+
+    }
+	
+	public  boolean isStoragePermissionGranted() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            Log.v(TAG,"Permission is granted");
+            return true;
+        } else {
+
+            Log.v(TAG,"Permission is revoked");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            return false;
+        }
+    }
+    else { //permission is automatically granted on sdk<23 upon installation
+        Log.v(TAG,"Permission is granted");
+        return true;
+    }
+}
+
+
+    Bundle _savedInstanceState;
+	private Object layoutLock;
+	private boolean exitLayoutLock;
+	int animNum;
+	int animDesc;
+	
+	public void doAnimLogo() {
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
+				
+				if (animNum == 1) {
+					try {
+						Thread.sleep(1500);
+					} catch (Exception e) {}
+				}
+				else if (animNum == 4) {
+					try {
+						Thread.sleep(1500);
+					} catch (Exception e) {}
+				}
+				else {
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {}
+				}
+				
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {				
+					
+						synchronized(layoutLock) {
+							if (exitLayoutLock) return;
+			
+							if (animDesc != 0) {
+								animNum--;
+								if (animNum < 1) {
+									animNum = 2;
+									animDesc = 0;
+								}
+							}
+							else {
+								animNum++;
+								if (animNum > 4) {
+									animNum = 3;
+									animDesc = 1;
+								}
+							}
+							
+							//String imgname = "logo" + num;
+							int res = 0;
+							switch (animNum) {
+								case 1:
+									res = R.drawable.logo1;
+									break;
+								case 2:
+									res = R.drawable.logo2;
+									break;
+								case 3:
+									res = R.drawable.logo3;
+									break;
+								case 4:
+									res = R.drawable.logo4;
+									break;
+							}
+							
+							ImageView imageView= (ImageView) findViewById(R.id.splashscreen);
+							if (imageView != null && res != 0) {
+								 imageView.setImageResource(res);
+							}
+						}
+						
+						doAnimLogo();
+					}
+				});
+				
+			}
+		}).start();
+	}
+
+    @Override
+    protected void onCreate(final Bundle savedInstanceState) {
+
+        getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+		
+		layoutLock = new Object();
+		exitLayoutLock = false;
+		animNum = 0;
+		animDesc = 0;
+		
+		if (Build.VERSION.SDK_INT >= 24) 
+		{ 
+		  //getWindow().setSustainedPerformanceMode(true); 
+		} 
+
+        setContentView(R.layout.splashscreen);
+        ctx = this;
+		
+		doAnimLogo();
+		
+		
+		//Process.setThreadPriority(Process.myTid(), Process.THREAD_PRIORITY_AUDIO);
+
+        super.onCreate(savedInstanceState);
+        _savedInstanceState = savedInstanceState;
+		
+		isStoragePermissionGranted();
+		
+		
+		PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+		WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK,
+				":MyWakelockTag");
+		wakeLock.acquire(3000L);
+		
+		EditText edit = (EditText)findViewById(R.id.ecurl);
+		SharedPreferences sharedPref = ctx.getSharedPreferences("ecprops", Context.MODE_PRIVATE);
+		CRURL = sharedPref.getString("CRURL", CRURL);
+		edit.setText(CRURL);
+		//edit.clearFocus();
+		// get saved value set value
+		
+		Button clickButton = (Button) findViewById(R.id.eclaunch);
+		clickButton.requestFocus();
+		
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		
+		clickButton.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+				//EditText edit = (EditText)findViewById(R.id.ecurl);
+				CRURL = edit.getText().toString();
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putString("CRURL", CRURL);
+				editor.apply();
+				
+				edit.setVisibility(View.GONE);
+				clickButton.setVisibility(View.GONE);
+				
+				// save value here
+                downloadNativeAdapter();
+            }
+        });
+
+
+        /*new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.i("pepper", "copying assets");
+
+                //copyAssets();
+                downloadNativeAdapter();
+            }
+
+        }, 50);
+*/
+    }
+	
+	Instrumentation instrumentation = new Instrumentation(); 
+	
+	void simulateEventDown()
+	{
+		if (active) {
+			
+			instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACKSLASH);
+		}
+		
+	}
+	
+	static boolean active;
+
+      @Override
+      public void onStop() {
+         super.onStop();
+         active = false;
+      }
+
+    private final int SPLASH_DISPLAY_LENGTH = 2000;
+
+    private void finishInitialization(Bundle savedInstanceState) {
+        String shellUrl;
+        /*if (!TextUtils.isEmpty(mStartupUrl)) {
+            shellUrl = mStartupUrl;
+        } else {
+            shellUrl = ShellManager.DEFAULT_SHELL_URL;
+        }
+
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(ACTIVE_SHELL_URL_KEY)) {
+            shellUrl = savedInstanceState.getString(ACTIVE_SHELL_URL_KEY);
+        }
+		*/
+
+        shellUrl = CRURL;
+		
+		setEcUrl(shellUrl);
+		
+		//Toast.makeText(ctx, shellUrl,  Toast.LENGTH_SHORT).show();
+
+        mShellManager.launchShell(shellUrl);
+		
+		
+		
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                /* Create an Intent that will start the Menu-Activity. */
+                //Intent mainIntent = new Intent(Splash.this,Menu.class);
+                //Splash.this.startActivity(mainIntent);
+                //Splash.this.finish();
+                //setContentView(R.layout.content_shell_activity);
+
+
+                findViewById(R.id.contentview_holder).setVisibility(View.VISIBLE);
+				// findViewById(R.id.contentview_holder).getBackground().setAlpha(35);
+                //findViewById(R.id.splash).setVisibility(View.GONE);
+				//simulateEventDown(findViewById(R.id.contentview_holder), 0, 0);
+				
+            }
+        }, SPLASH_DISPLAY_LENGTH);
+
+
+
+    }
+
+    private void initializationFailed() {
+        Log.e(TAG, "ContentView initialization failed.");
+        Toast.makeText(ContentShellActivity.this,
+            R.string.browser_process_initialization_failed,
+            Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+		if (mWindowAndroid != null) {
+			WebContents webContents = getActiveWebContents();
+			if (webContents != null) {
+				outState.putString(ACTIVE_SHELL_URL_KEY, webContents.getLastCommittedUrl());
+			}
+
+			mWindowAndroid.saveInstanceState(outState);
+		}
+    }
+
+    public void callJS(String js) {
+        Shell activeView = getActiveShell();
+        if (activeView != null) {
+            activeView.loadUrl("javascript:" + js);
+        }
+    }
+
+    //public static native void SetCommandLineFlags(String regPlugins);
+
+    protected float dpadThreshold = 0.2f;
+    protected float joystickDeadzone = 0.5f; // very high, since we don't know the device type
+    private static final float MAX_MOTION_RANGE = 1.0f;
+
+    // clean values
+    // remove values larger than max
+    // apply deadzone logic
+    protected float cleanMotionValues(float number) {
+
+        // apply deadzone
+        if (number < joystickDeadzone && number > -joystickDeadzone)
+            return 0.0f;
+
+        // apply trim
+        if (number > MAX_MOTION_RANGE)
+            return MAX_MOTION_RANGE;
+        if (number < -MAX_MOTION_RANGE)
+            return -MAX_MOTION_RANGE;
+
+        // scale values to be between deadzone and trim
+        /*if (number < 0) {
+            Range.scale(number, joystickDeadzone, MAX_MOTION_RANGE, 0, MAX_MOTION_RANGE);
+        }
+        if (number > 0) {
+            Range.scale(number, -joystickDeadzone, -MAX_MOTION_RANGE, 0, -MAX_MOTION_RANGE);
+        }*/
+
+
+        return number;
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+        // if (event.getAction() == KeyEvent.ACTION_DOWN) {
+
+        //callJS("printStr('" + ev.getAxisValue(MotionEvent.AXIS_X) +" | " + ev.getAxisValue(MotionEvent.AXIS_Y )+ "');");
+
+        /* int actionCode = ev.getAction() & ev.ACTION_MASK;
+            if (actionCode == MotionEvent.ACTION_UP || actionCode == MotionEvent.ACTION_CANCEL) {
+                callJS("setNavKeyUp(40);");
+                callJS("setNavKeyUp(38);");
+                callJS("setNavKeyUp(37);");
+                callJS("setNavKeyUp(39);");
+            }
+            else if (actionCode == MotionEvent.ACTION_DOWN || actionCode == MotionEvent.ACTION_MOVE) {
+*/
+
+        float left_stick_x = cleanMotionValues(ev.getAxisValue(MotionEvent.AXIS_X));
+        float left_stick_y = cleanMotionValues(ev.getAxisValue(MotionEvent.AXIS_Y));
+        float right_stick_x = cleanMotionValues(ev.getAxisValue(MotionEvent.AXIS_Z));
+        float right_stick_y = cleanMotionValues(ev.getAxisValue(MotionEvent.AXIS_RZ));
+        // float left_trigger = ev.getAxisValue(MotionEvent.AXIS_LTRIGGER);
+        //float right_trigger = ev.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+        boolean dpad_down = ev.getAxisValue(MotionEvent.AXIS_HAT_Y) > dpadThreshold;
+        boolean dpad_up = ev.getAxisValue(MotionEvent.AXIS_HAT_Y) < -dpadThreshold;
+        boolean dpad_right = ev.getAxisValue(MotionEvent.AXIS_HAT_X) > dpadThreshold;
+        boolean dpad_left = ev.getAxisValue(MotionEvent.AXIS_HAT_X) < -dpadThreshold;
+
+        if (dpad_left || left_stick_x < 0 || right_stick_x < 0) {
+            callJS("setNavKeyDown(37);");
+        } else {
+            callJS("setNavKeyUp(37);");
+        }
+        if (dpad_right || left_stick_x > 0 || right_stick_x > 0) {
+            callJS("setNavKeyDown(39);");
+        } else {
+            callJS("setNavKeyUp(39);");
+
+        }
+        if (dpad_up || left_stick_y < 0 || right_stick_y < 0) {
+            callJS("setNavKeyDown(38);");
+        } else {
+            callJS("setNavKeyUp(38);");
+        }
+        if (dpad_down || left_stick_y > 0 || right_stick_y > 0) {
+            callJS("setNavKeyDown(40);");
+        } else {
+            callJS("setNavKeyUp(40);");
+        }
+        // }
+        return super.dispatchGenericMotionEvent(ev);
+    }
+
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        callJS("setNavKeyDown(" + event.getKeyCode() + ");");
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(40);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(40);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(37);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(37);");
+            }
+            // return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(39);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(39);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(38);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(38);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(-1000);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(-1000);");
+            }
+            return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_A) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(13);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(13);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_X) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(32);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(32);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_B) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(27);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(27);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_Y) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(46);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(46);");
+            }
+            //return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                callJS("setNavKeyDown(-1001);");
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                callJS("setNavKeyUp(-1001);");
+            }
+
+            return true;
+            //return super.dispatchKeyEvent(event);
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+
+    /*@Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            WebContents webContents = getActiveWebContents();
+            if (webContents != null && webContents.getNavigationController().canGoBack()) {
+                webContents.getNavigationController().goBack();
+                return true;
+            }
+        }
+
+        return super.onKeyUp(keyCode, event);
+    }*/
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (getCommandLineParamsFromIntent(intent) != null) {
+            Log.i(TAG, "Ignoring command line params: can only be set when creating the activity.");
+        }
+
+        if (MemoryPressureListener.handleDebugIntent(this, intent.getAction())) return;
+
+        String url = getUrlFromIntent(intent);
+        if (!TextUtils.isEmpty(url)) {
+            Shell activeView = getActiveShell();
+            if (activeView != null) {
+                activeView.loadUrl(url);
+            }
+        }
+    }
+
+
+// Handling the received Intents for the "my-integer" event 
+private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    // Extract data included in the Intent
+    String js  = intent.getStringExtra("js");
+    callJS(js);
+  }
+};
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                                         new IntentFilter("callJS"));
+
+		active = true;//
+		
+		/*new Thread(new Runnable() {
+            @Override
+            public void run() {
+				while (active) {			
+					//simulateEventDown();
+					//try {
+					//	Thread.sleep(6);
+					//} catch (Exception e) {}
+				}
+			}
+		}).start();*/
+	}
+	
+	@Override
+	protected void onPause() {
+		active = false;
+// Unregister since the activity is not visible
+  LocalBroadcastManager.getInstance(this)
+                       .unregisterReceiver(mMessageReceiver);
+		super.onPause();
+	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+		
+		
+
+        WebContents webContents = getActiveWebContents();
+        if (webContents != null) webContents.onShow();
+    }
+	
+/*	private static final String PRIMARY_VOLUME_NAME = "primary";
+	
+    public static String getFullPathFromTreeUri(final Uri treeUri, Context con) {
+        if (treeUri == null) return null;
+        String volumePath = getVolumePath(getVolumeIdFromTreeUri(treeUri),con);
+        if (volumePath == null) {
+			//return File.separator;
+			volumePath = "";
+		}
+		else {
+			if (volumePath.endsWith(File.separator))
+				volumePath = volumePath.substring(0, volumePath.length() - 1);
+		}
+		
+        String documentPath = getDocumentPathFromTreeUri(treeUri);
+        if (documentPath.endsWith(File.separator))
+            documentPath = documentPath.substring(0, documentPath.length() - 1);
+
+        if (documentPath.length() > 0) {
+            if (documentPath.startsWith(File.separator))
+                return volumePath + documentPath;
+            else
+                return volumePath + File.separator + documentPath;
+        }
+        else return volumePath;
+    }
+	
+    private static String getVolumePath(final String volumeId, Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return null;
+        try {
+            StorageManager mStorageManager =
+                    (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+            Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getUuid = storageVolumeClazz.getMethod("getUuid");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isPrimary = storageVolumeClazz.getMethod("isPrimary");
+            Object result = getVolumeList.invoke(mStorageManager);
+
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String uuid = (String) getUuid.invoke(storageVolumeElement);
+                Boolean primary = (Boolean) isPrimary.invoke(storageVolumeElement);
+
+                // primary volume?
+                if (primary && PRIMARY_VOLUME_NAME.equals(volumeId))
+                    return (String) getPath.invoke(storageVolumeElement);
+
+                // other volumes?
+                if (uuid != null && uuid.equals(volumeId))
+                    return (String) getPath.invoke(storageVolumeElement);
+            }
+            // not found.
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private static String getVolumeIdFromTreeUri(final Uri treeUri) {
+        final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+        final String[] split = docId.split(":");
+        if (split.length > 0) return split[0];
+        else return null;
+    }
+
+
+    private static String getDocumentPathFromTreeUri(final Uri treeUri) {
+        final String docId = DocumentsContract.getTreeDocumentId(treeUri);
+        final String[] split = docId.split(":");
+        if ((split.length >= 2) && (split[1] != null)) return split[1];
+        else return docId;
+    }*/
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		switch (requestCode) {
+			case DIR_SELECT_CODE:
+			{
+				ArrayList<String> ret = new ArrayList<String>();
+				if (resultCode == RESULT_OK) {
+					try {
+						Uri uri = data.getData();
+						Toast.makeText(ctx, uri.toString(),  Toast.LENGTH_SHORT).show();
+						//Uri docUri = DocumentsContract.buildDocumentUriUsingTree(uri,  DocumentsContract.getTreeDocumentId(uri));
+					//	String path = getPath(this, uri);
+						
+						String path = GetPathUtils.getDirectoryPathFromUri(this, uri); //getFullPathFromTreeUri(uri, this);
+						if (path.trim().equals("/")) path = null;
+						
+						Toast.makeText(ctx, "Path: " + path,  Toast.LENGTH_SHORT).show();
+						if (path != null) ret.add(path);
+					} catch (Exception e) {}
+				}
+				
+				String arr[] = new String[ret.size()];
+				fileChooserResults(ret.toArray(arr));
+				
+				return;
+				//break;
+			}	
+			case FILE_SELECT_CODE:
+			{
+				ArrayList<String> ret = new ArrayList<String>();
+				
+				if (resultCode == RESULT_OK) {
+					// Get the Uri of the selected file 
+					if(null != data) { // checking empty selection
+					  if(null != data.getClipData()) { // checking multiple selection or not
+						 for(int i = 0; i < data.getClipData().getItemCount(); i++) {
+							try {
+								Uri uri = data.getClipData().getItemAt(i).getUri();
+								String path = null;
+								//path = getPath(this, uri);
+								path = GetPathUtils.getFilePathFromUri(this, uri);
+								Toast.makeText(ctx, "Path: " + path,  Toast.LENGTH_SHORT).show();
+								if (path != null) ret.add(path);
+							} catch (Exception e){}
+						 }
+					  } else {
+						  try {
+							Uri uri = data.getData();
+							String path = null;
+							//path = getPath(this, uri);
+							path = GetPathUtils.getFilePathFromUri(this, uri);
+							Toast.makeText(ctx, "Path: " + path,  Toast.LENGTH_SHORT).show();
+							if (path != null) ret.add(path);
+						 } catch (Exception e){}
+					  }
+				   }
+				}
+				
+				String arr[] = new String[ret.size()];
+				fileChooserResults(ret.toArray(arr));
+				
+				return;
+			}
+		}
+		
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mWindowAndroid != null) mWindowAndroid.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void startActivity(Intent i) {
+        mLastSentIntent = i;
+        super.startActivity(i);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mShellManager != null) mShellManager.destroy();
+        super.onDestroy();
+    }
+
+    public Intent getLastSentIntent() {
+        return mLastSentIntent;
+    }
+
+    private static String getUrlFromIntent(Intent intent) {
+        return intent != null ? intent.getDataString() : null;
+    }
+
+    private static String[] getCommandLineParamsFromIntent(Intent intent) {
+        return intent != null ? intent.getStringArrayExtra(COMMAND_LINE_ARGS_KEY) : null;
+    }
+
+    /**
+     * @return The {@link ShellManager} configured for the activity or null if it has not been
+     *         created yet.
+     */
+    public ShellManager getShellManager() {
+        return mShellManager;
+    }
+
+    /**
+     * @return The currently visible {@link Shell} or null if one is not showing.
+     */
+    public Shell getActiveShell() {
+        return mShellManager != null ? mShellManager.getActiveShell() : null;
+    }
+
+    /**
+     * @return The {@link WebContents} owned by the currently visible {@link Shell} or null if
+     *         one is not showing.
+     */
+    public WebContents getActiveWebContents() {
+        Shell shell = getActiveShell();
+        return shell != null ? shell.getWebContents() : null;
+    }
+
+}

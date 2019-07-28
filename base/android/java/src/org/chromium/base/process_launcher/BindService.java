@@ -80,7 +80,7 @@ final class BindService {
             Context context, ServiceConnection connection, int group, int importance) {
         try {
             sUpdateServiceGroupQMethod.invoke(null, context, connection, group, importance);
-        } catch (ReflectiveOperationException e) {
+        } catch (Exception e) {
             // Ignore reflection errors.
         }
     }

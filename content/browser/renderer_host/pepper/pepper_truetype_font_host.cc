@@ -27,7 +27,9 @@ PepperTrueTypeFontHost::PepperTrueTypeFontHost(
     const SerializedTrueTypeFontDesc& desc)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       initialize_completed_(false) {
+#if 0		  
   font_ = PepperTrueTypeFont::Create();
+#endif
   // Initialize the font on a ThreadPool thread. This must complete before
   // using |font_|.
   task_runner_ = base::CreateSequencedTaskRunnerWithTraits(

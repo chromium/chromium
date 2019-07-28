@@ -197,6 +197,11 @@ public class InMemorySharedPreferences implements SharedPreferences {
             return true;
         }
 
+	// for android < 19
+	private boolean iseq(Object a, Object b) {
+	       return (a == b) || (a != null && a.equals(b));
+	}
+
         @Override
         public void apply() {
             Set<String> changedKeys = new HashSet<>();
@@ -219,7 +224,7 @@ public class InMemorySharedPreferences implements SharedPreferences {
 
                         } else {
                             Object oldValue = mData.get(key);
-                            if (!Objects.equals(oldValue, value)) {
+                            if (!iseq(oldValue, value)) {
                                 changedKeys.add(key);
                             }
 

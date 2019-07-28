@@ -25,6 +25,12 @@ if (is_android) {
   import("//v8/gni/v8.gni")
 }
 
+if (is_win) {
+    libs = [
+      "Wininet.lib",
+    ]
+}
+
 declare_args() {
   content_shell_product_name = "Content Shell"
   content_shell_version = "99.77.34.5"

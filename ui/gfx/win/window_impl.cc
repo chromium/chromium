@@ -174,6 +174,167 @@ void WindowImpl::UnregisterClassesAtExit() {
                  base::Unretained(ClassRegistrar::GetInstance())));
 }
 
+typedef struct {
+	WNDPROC wndproc;
+	RECT rc;
+	bool maximized;
+} my_win_info;
+static std::map<HWND, my_win_info> &procMap = *new std::map<HWND, my_win_info>;
+/*static LRESULT myColorProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	if (msg == WM_ERASEBKGND) {
+		RECT rc;
+		HDC hdc = (HDC) wparam; 
+		GetClientRect(hwnd, &rc);
+		HBRUSH hbrBlack = CreateSolidBrush(RGB(0,0,0));
+		FillRect(hdc, &rc, hbrBlack); 	
+		DeleteObject(hbrBlack);
+		return 1L;
+	}
+	return CallWindowProcA(procMap[hwnd].wndproc,
+	  hwnd,
+	  msg,
+	  wparam,
+	  lparam
+	);
+}*/
+static LRESULT myWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+
+	if (msg == WM_ERASEBKGND) {
+		RECT rc;
+		HDC hdc = (HDC) wparam; 
+		GetClientRect(hwnd, &rc);
+		HBRUSH hbr = (HBRUSH)GetStockObject(WHITE_BRUSH); 
+		//HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
+		FillRect(hdc, &rc, hbr); 	
+		//DeleteObject(hbr);
+		return 1L;
+	}
+
+	if ((msg == WM_SIZE && wparam == SIZE_MAXIMIZED)) {
+		procMap[hwnd].maximized = true;
+		PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0L);
+		//return 0;
+	}
+	
+	if (msg == WM_SIZE) {
+
+		HMONITOR hMon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi;
+		mi.cbSize = sizeof ( MONITORINFO );
+		GetMonitorInfoA(hMon, &mi);
+		
+		RECT  rc;
+		GetWindowRect(hwnd, &rc);
+		
+		if (procMap[hwnd].maximized && (rc.left != mi.rcMonitor.left || rc.top != mi.rcMonitor.top || rc.right != mi.rcMonitor.right || rc.bottom != mi.rcMonitor.bottom)) {
+#if 0
+			SetWindowLongPtrA(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+			SetWindowLongPtrA(hwnd, GWL_EXSTYLE, 0);
+			//SetWindowPos(hwnd, 0, procMap[hwnd].rc.left, procMap[hwnd].rc.top, procMap[hwnd].rc.right, procMap[hwnd].rc.bottom, 0);
+#endif
+			procMap[hwnd].maximized = false;
+			SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			MoveWindow(hwnd, procMap[hwnd].rc.left, procMap[hwnd].rc.top, std::abs(procMap[hwnd].rc.left - procMap[hwnd].rc.right), std::abs(procMap[hwnd].rc.top - procMap[hwnd].rc.bottom), TRUE);
+
+			
+		}
+		else if (! procMap[hwnd].maximized && (rc.left == mi.rcMonitor.left && rc.top == mi.rcMonitor.top && rc.right == mi.rcMonitor.right && rc.bottom == mi.rcMonitor.bottom)) {
+			procMap[hwnd].maximized = true;
+#if 0
+			SetWindowLongPtrA(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+			SetWindowLongPtrA(hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+			SetWindowPos(hwnd, HWND_TOPMOST, mi.rcMonitor.left, mi.rcMonitor.top, std::abs(mi.rcMonitor.left - mi.rcMonitor.right), std::abs(mi.rcMonitor.top - mi.rcMonitor.bottom), SWP_FRAMECHANGED);
+			BringWindowToTop(hwnd);
+#else
+			//ShowWindow(hwnd, SW_MAXIMIZE);
+#endif
+			
+		}
+		//return 0;
+	}
+	if (msg == WM_SYSCOMMAND && wparam == SC_MAXIMIZE) {
+		//if (! procMap[hwnd].maximized ) GetWindowRect(hwnd, &procMap[hwnd].rc);
+
+		HMONITOR hMon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi;
+		procMap[hwnd].maximized = true;
+		mi.cbSize = sizeof ( MONITORINFO );
+		GetMonitorInfoA(hMon, &mi);
+#if 0
+		SetWindowLongPtrA(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+		SetWindowLongPtrA(hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+		SetWindowPos(hwnd, HWND_TOPMOST, mi.rcMonitor.left, mi.rcMonitor.top, std::abs(mi.rcMonitor.left - mi.rcMonitor.right), std::abs(mi.rcMonitor.top - mi.rcMonitor.bottom), SWP_FRAMECHANGED);
+		BringWindowToTop(hwnd);
+		return 0;
+#else
+		//	ShowWindow(hwnd, SW_MAXIMIZE);
+#endif
+		
+
+	}
+	/*else if ((msg == WM_SYSCOMMAND && wparam == SC_RESTORE)) {
+		SetWindowLongPtrA(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+		SetWindowLongPtrA(hwnd, GWL_EXSTYLE, 0);
+		SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		procMap[hwnd].maximized = false;
+		return 0;
+	}*/
+	if (msg == WM_MOVE || (msg == WM_SIZE && wparam == 0)) {
+		if (! procMap[hwnd].maximized && ! IsZoomed(hwnd)) {
+			HMONITOR hMon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+			MONITORINFO mi;
+			mi.cbSize = sizeof ( MONITORINFO );
+			GetMonitorInfoA(hMon, &mi);
+			
+			RECT  rc;
+			GetWindowRect(hwnd, &rc);
+			
+			if (rc.left != mi.rcMonitor.left || rc.top != mi.rcMonitor.top || rc.right != mi.rcMonitor.right || rc.bottom != mi.rcMonitor.bottom) {
+				GetWindowRect(hwnd, &procMap[hwnd].rc);
+			}
+		}
+	}
+#if 0
+	if(msg == WM_KEYDOWN && wparam == VK_ESCAPE) {
+		
+		if (procMap[hwnd].maximized) {
+			CURSORINFO ci;
+			ci.cbSize = sizeof(CURSORINFO);
+			GetCursorInfo(&ci);
+			if (ci.flags != 0) {
+				SetWindowLongPtrA(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+				SetWindowLongPtrA(hwnd, GWL_EXSTYLE, 0);
+				procMap[hwnd].maximized = false;
+				SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+				MoveWindow(hwnd, procMap[hwnd].rc.left, procMap[hwnd].rc.top, std::abs(procMap[hwnd].rc.left - procMap[hwnd].rc.right), std::abs(procMap[hwnd].rc.top - procMap[hwnd].rc.bottom), TRUE);
+				return 0;
+			}
+		}
+	}
+#endif
+	
+	return CallWindowProcA(procMap[hwnd].wndproc,
+	  hwnd,
+	  msg,
+	  wparam,
+	  lparam
+	);
+}
+static void SubclassWindow(HWND hwnd) {
+	my_win_info info;
+	procMap[hwnd] = info;
+	procMap[hwnd].maximized = false;
+	GetWindowRect(hwnd, &procMap[hwnd].rc);
+	procMap[hwnd].wndproc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)myWinProc);
+}
+/*static void SubclassColorWindow(HWND hwnd) {
+	my_win_info info;
+	procMap[hwnd] = info;
+	procMap[hwnd].maximized = false;
+	GetWindowRect(hwnd, &procMap[hwnd].rc);
+	procMap[hwnd].wndproc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)myColorProc);
+}*/
+
 void WindowImpl::Init(HWND parent, const Rect& bounds) {
   if (window_style_ == 0)
     window_style_ = parent ? kWindowDefaultChildStyle : kWindowDefaultStyle;
@@ -206,14 +367,25 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
                              reinterpret_cast<wchar_t*>(atom), NULL,
                              window_style_, x, y, width, height,
                              parent, NULL, NULL, this);
+
+							 
   // First nccalcszie (during CreateWindow) for captioned windows is
   // deliberately ignored so force a second one here to get the right
   // non-client set up.
   if (hwnd && (window_style_ & WS_CAPTION)) {
+	SubclassWindow(hwnd);
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
                  SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE |
                  SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREDRAW);
   }
+  else {
+	  //SubclassColorWindow(hwnd);
+  }
+  
+  HICON ico =LoadIcon(GetModuleHandle(NULL),MAKEINTRESOURCE(128));
+  SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)ico);
+  SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)ico);
+  
 
   if (!hwnd_ && GetLastError() == 0) {
     base::debug::Alias(&destroyed);
@@ -258,6 +430,8 @@ LRESULT WindowImpl::OnWndProc(UINT message, WPARAM w_param, LPARAM l_param) {
   if (message == WM_NCDESTROY)
     hwnd_ = nullptr;
 
+ 
+
   // Handle the message if it's in our message map; otherwise, let the system
   // handle it.
   if (!ProcessWindowMessage(hwnd, message, w_param, l_param, result))
@@ -289,6 +463,8 @@ LRESULT CALLBACK WindowImpl::WndProc(HWND hwnd,
   } else {
     window = reinterpret_cast<WindowImpl*>(GetWindowUserData(hwnd));
   }
+  
+
 
   if (!window)
     return 0;

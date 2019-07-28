@@ -70,6 +70,8 @@ const char kDisable2dCanvasImageChromium[] = "disable-2d-canvas-image-chromium";
 // support for controlling access to these APIs.
 const char kDisable3DAPIs[]                 = "disable-3d-apis";
 
+const char kEcUrl[]                 = "ec-url";
+
 // Disable gpu-accelerated 2d canvas.
 const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 
@@ -698,6 +700,14 @@ const char kPullToRefresh[] = "pull-to-refresh";
 
 // Register Pepper plugins (see pepper_plugin_list.cc for its format).
 const char kRegisterPepperPlugins[]         = "register-pepper-plugins";
+const char kEnablePepperTesting[] = "enable-pepper-testing";
+
+
+const char kFilesDir[] 						= "files-dir";
+
+const char kEcLibDir[] 						= "ec-lib-dir";
+
+const char kEcWwwDir[] 						= "ec-www-dir";
 
 // Enables remote debug over stdio pipes [in=3, out=4].
 // Optionally, specifies the format for the protocol messages, can be either

@@ -131,7 +131,7 @@ public class LibraryPrefetcher {
                     Log.i(TAG, "Successfully pinned ordered code");
                 }
             } catch (
-                    NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                    Exception ex) {
                 Log.w(TAG, "Error invoking the method. " + ex.getMessage());
             }
         }

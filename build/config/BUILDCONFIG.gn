@@ -151,8 +151,8 @@ declare_args() {
 }
 
 declare_args() {
-  # Debug build. Enabling official builds automatically sets is_debug to false.
-  is_debug = !is_official_build
+  #is_debug = !is_official_build
+  is_debug = false
 }
 
 declare_args() {
@@ -162,7 +162,8 @@ declare_args() {
   #
   # For more information see
   # https://chromium.googlesource.com/chromium/src/+/master/docs/component_build.md
-  is_component_build = is_debug && current_os != "ios"
+  #is_component_build = is_debug && current_os != "ios"
+  is_component_build = true
 }
 
 assert(!(is_debug && is_official_build), "Can't do official debug builds")

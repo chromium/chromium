@@ -116,8 +116,9 @@ bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
 
 bool RegisterFlashTestPlugin(base::CommandLine* command_line) {
   // Power Saver plugin requires Pepper testing API.
+#if 0
   command_line->AppendSwitch(switches::kEnablePepperTesting);
-
+#endif
   // The Power Saver plugin ignores the data attribute and just draws a
   // checkerboard pattern - while providing some Plugin Power Saver diagnostics.
   //

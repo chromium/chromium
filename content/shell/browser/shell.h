@@ -21,6 +21,17 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
+
+using blink::mojom::FileChooserFileInfo;
+using blink::mojom::FileChooserFileInfoPtr;
+using blink::mojom::FileChooserParams;
+
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #elif defined(USE_AURA)
@@ -58,6 +69,10 @@ class Shell : public WebContentsDelegate,
               public WebContentsObserver {
  public:
   ~Shell() override;
+  
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+							std::unique_ptr<content::FileSelectListener> listener,
+                              const FileChooserParams& params) override;
 
   void LoadURL(const GURL& url);
   void LoadURLForFrame(const GURL& url,

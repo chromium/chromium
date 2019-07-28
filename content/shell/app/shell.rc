@@ -17,6 +17,32 @@
 LANGUAGE 9, 1
 #pragma code_page(1252)
 
+128 ICON "app.ico"
+
+1 VERSIONINFO
+FILEVERSION 1, 0, 0, 0
+PRODUCTVERSION 1, 0, 0, 0
+FILEOS VOS_DOS_WINDOWS32
+FILETYPE VFT_APP
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "CompanyName", "Byte4Byte\000"
+   VALUE "FileDescription", "Cloud Retro\000"
+   VALUE "FileVersion", "1.0\000"
+   VALUE "InternalName", "cloudretro\000"
+   VALUE "LegalCopyright", "Copyright - Byte4Byte\000"
+   VALUE "OriginalFilename", "cloudretro.exe\000"
+  }
+ }
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 1033, 1252
+ }
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu

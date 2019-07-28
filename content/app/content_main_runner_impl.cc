@@ -134,6 +134,13 @@
 
 #endif  // OS_LINUX
 
+// os android
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "base/native_library.h"
+#include "content/common/pepper_plugin_list.h"
+#include "content/public/common/pepper_plugin_info.h"
+#endif
+
 #if !defined(CHROME_MULTIPLE_DLL_BROWSER)
 #include "content/child/field_trial.h"
 #include "content/public/gpu/content_gpu_client.h"
@@ -275,8 +282,8 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       // Zygote process needs to know what resources to have loaded when it
       // becomes a renderer process.
       switches::kForceDeviceScaleFactor, switches::kLoggingLevel,
-      switches::kPpapiInProcess, switches::kRegisterPepperPlugins, switches::kV,
-      switches::kVModule,
+      switches::kPpapiInProcess, switches::kRegisterPepperPlugins, switches::kFilesDir, switches::kV,
+      switches::kVModule, switches::kEcUrl,
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches, base::size(kForwardSwitches));
@@ -324,8 +331,6 @@ void InitializeZygoteSandboxForBrowserProcess(
 }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_LINUX)
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Loads the (native) libraries but does not initialize them (i.e., does not
 // call PPP_InitializeModule). This is needed by the zygote on Linux to get
@@ -346,6 +351,8 @@ void PreloadPepperPlugins() {
   }
 }
 #endif
+
+#if defined(OS_LINUX)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Loads registered library CDMs but does not initialize them. This is needed by
@@ -482,6 +489,9 @@ int RunZygote(ContentMainDelegate* delegate) {
 #if defined(OS_LINUX)
   PreSandboxInit();
 #endif
+#if defined(OS_ANDROID)
+	PreloadPepperPlugins();
+#endif
 
   // This function call can return multiple times, once per fork().
   if (!service_manager::ZygoteMain(std::move(zygote_fork_delegates))) {
@@ -579,6 +589,10 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
     }
   }
 #endif  // !CHROME_MULTIPLE_DLL_BROWSER
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+	PreloadPepperPlugins();
+#endif
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Zygote startup is special -- see RunZygote comments above

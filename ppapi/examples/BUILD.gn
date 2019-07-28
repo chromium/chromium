@@ -5,32 +5,5 @@
 group("examples") {
   testonly = true
   deps = [
-    "//ppapi/examples/2d",
-    "//ppapi/examples/audio",
-    "//ppapi/examples/audio_encode",
-    "//ppapi/examples/audio_input",
-    "//ppapi/examples/crxfs",
-    "//ppapi/examples/enumerate_devices",
-    "//ppapi/examples/file_chooser",
-    "//ppapi/examples/flash_topmost",
-    "//ppapi/examples/font",
-    "//ppapi/examples/gamepad",
-    "//ppapi/examples/gles2",
-    "//ppapi/examples/gles2_spinning_cube",
-    "//ppapi/examples/ime",
-    "//ppapi/examples/input",
-    "//ppapi/examples/media_stream_audio",
-    "//ppapi/examples/media_stream_video",
-    "//ppapi/examples/mouse_cursor",
-    "//ppapi/examples/mouse_lock",
-    "//ppapi/examples/printing",
-    "//ppapi/examples/scaling",
-    "//ppapi/examples/scripting",
-    "//ppapi/examples/stub",
-    "//ppapi/examples/threading",
-    "//ppapi/examples/url_loader",
-    "//ppapi/examples/video_capture",
-    "//ppapi/examples/video_decode",
-    "//ppapi/examples/video_encode",
   ]
 }

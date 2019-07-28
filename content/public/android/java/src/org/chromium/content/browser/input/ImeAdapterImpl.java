@@ -4,6 +4,15 @@
 
 package org.chromium.content.browser.input;
 
+import android.view.WindowManager;
+import android.app.Activity;
+import org.chromium.base.ThreadUtils;
+import android.content.BroadcastReceiver;
+import android.support.v4.content.LocalBroadcastManager;
+import android.content.IntentFilter;
+import android.content.Intent;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -499,19 +508,27 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
     }
 
     /**
-     * Show soft keyboard only if it is the current keyboard configuration.
+     * Shew soft keyboard only if it is the nurrent keyboard configuration.
      */
     private void showSoftKeyboard() {
         if (!isValid()) return;
         if (DEBUG_LOGS) Log.i(TAG, "showSoftKeyboard");
-        View containerView = getContainerView();
+
+	View containerView = getContainerView();
+
+        try {
+	   Intent intent = new Intent("callJS");
+           intent.putExtra("js", "MOBILE_KEYBOARD_SHOWN();");
+           LocalBroadcastManager.getInstance(containerView.getContext()).sendBroadcastSync(intent);
+        } catch (Exception e) {}
+
+	((Activity)containerView.getContext()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         mInputMethodManagerWrapper.showSoftInput(containerView, 0, getNewShowKeyboardReceiver());
         if (containerView.getResources().getConfiguration().keyboard
                 != Configuration.KEYBOARD_NOKEYS) {
             mWebContents.scrollFocusedEditableNodeIntoView();
         }
-    }
-
+   }
     /**
      * Call this when we get result from ResultReceiver passed in calling showSoftInput().
      * @param resultCode The result of showSoftInput() as defined in InputMethodManager.
@@ -524,7 +541,7 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
             // new size).
             // TODO(jdduke): We should not assume that onSizeChanged will
             // always be called, crbug.com/294908.
-            containerView.getWindowVisibleDisplayFrame(mFocusPreOSKViewportRect);
+       	    containerView.getWindowVisibleDisplayFrame(mFocusPreOSKViewportRect);
         } else if (ViewUtils.hasFocus(containerView)
                 && resultCode == InputMethodManager.RESULT_UNCHANGED_SHOWN) {
             // If the OSK was already there, focus the form immediately.
@@ -532,6 +549,13 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
             // doesn't affect the size of the web contents.
             mWebContents.scrollFocusedEditableNodeIntoView();
         }
+	else if (resultCode == InputMethodManager.RESULT_HIDDEN || resultCode == InputMethodManager.RESULT_UNCHANGED_HIDDEN) {
+	    try {
+	       Intent intent = new Intent("callJS");
+	       intent.putExtra("js", "MOBILE_KEYBOARD_HIDDEN();");
+	       LocalBroadcastManager.getInstance(containerView.getContext()).sendBroadcastSync(intent);
+            } catch (Exception e) {}
+	}
     }
 
     @CalledByNative
@@ -578,9 +602,9 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
         if (!isValid()) return;
         if (DEBUG_LOGS) Log.i(TAG, "hideKeyboard");
         View view = mViewDelegate.getContainerView();
-        if (mInputMethodManagerWrapper.isActive(view)) {
-            // NOTE: we should not set ResultReceiver here. Otherwise, IMM will own
-            // ImeAdapter even after input method goes away and result gets received.
+
+        if (mInputMethodManagerWrapper.isActive(view) && !focusedNodeEditable() && ! focusedNodeAllowsSoftKeyboard()) {
+	    // pth commenting below line as it broke keyboard when typin
             mInputMethodManagerWrapper.hideSoftInputFromWindow(view.getWindowToken(), 0, null);
         }
         // Detach input connection by returning null from onCreateInputConnection().
@@ -603,7 +627,7 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
         if (mCurrentConfig.keyboard == newConfig.keyboard
                 && mCurrentConfig.keyboardHidden == newConfig.keyboardHidden
                 && mCurrentConfig.hardKeyboardHidden == newConfig.hardKeyboardHidden) {
-            return;
+		return;
         }
 
         // Deep copy newConfig so that we can notice the difference.
@@ -623,7 +647,7 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
             // present.
             restartInput();
             if (!isHardwareKeyboardAttached())
-                hideKeyboard();
+	        hideKeyboard();
             else
                 showSoftKeyboard();
         }
@@ -654,7 +678,7 @@ public class ImeAdapterImpl implements ImeAdapter, WindowEventObserver, UserData
     @Override
     public void onViewFocusChanged(boolean gainFocus, boolean hideKeyboardOnBlur) {
         if (DEBUG_LOGS) Log.i(TAG, "onViewFocusChanged: gainFocus [%b]", gainFocus);
-        if (!gainFocus && hideKeyboardOnBlur) resetAndHideKeyboard();
+        //if (!gainFocus && hideKeyboardOnBlur) resetAndHideKeyboard();
         if (mInputConnectionFactory != null) {
             mInputConnectionFactory.onViewFocusChanged(gainFocus);
         }

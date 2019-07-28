@@ -19,6 +19,9 @@ template("ppapi_example") {
 
       sources = invoker.sources
       deps = invoker.deps
+
+      cflags = invoker.cflags  
+      ldflags = invoker.ldflags
     }
   } else {
     mac_plugin_bundle(target_name) {
@@ -31,7 +34,10 @@ template("ppapi_example") {
       sources = invoker.sources
       deps = invoker.deps
 
-      ldflags = [
+      cflags = invoker.cflags
+      ldflags = invoker.ldflags
+
+      ldflags += [
         # Not to strip important symbols by -Wl,-dead_strip.
         "-Wl,-exported_symbol,_PPP_GetInterface",
         "-Wl,-exported_symbol,_PPP_InitializeModule",
