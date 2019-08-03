@@ -90,7 +90,7 @@ JNIEXPORT void JNICALL SetCommandLineFlagsName(
       (plugin_descriptor == NULL
            ? std::string()
            : base::android::ConvertJavaStringToUTF8(env, plugin_descriptor));*/
-  content::SetContentCommandLineFlags(true, plugin_str, files_dir, eclib_dir, ecwww_dir);
+  content::SetContentCommandLineFlags(false, plugin_str, files_dir, eclib_dir, ecwww_dir);
 }
 
 }
