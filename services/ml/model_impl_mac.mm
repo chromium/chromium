@@ -58,11 +58,6 @@ int32_t ModelImplMac::SetOperandValue(uint32_t index,
     uint32_t size = length / 4;
     DLOG(INFO) << "    "
                << "buffer(" << size << "): " << VectorToString(value, size);
-  } else if (operand.type == mojom::TENSOR_QUANT8_ASYMM) {
-    const int8_t* value = static_cast<const int8_t*>(buffer);
-    uint32_t size = length;
-    DLOG(INFO) << "    "
-               << "buffer(" << size << "): " << VectorToString(value, size);
   } else if (operand.type == mojom::UINT32) {
     const uint32_t* value = static_cast<const uint32_t*>(buffer);
     uint32_t size = length;
