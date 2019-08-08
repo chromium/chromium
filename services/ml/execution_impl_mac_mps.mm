@@ -216,6 +216,15 @@ void ExecutionImplMacMPS::StartCompute(StartComputeCallback callback) {
               DCHECK(source_image_handles.count == 1);
               uint32_t input_index = [source_image_handles[0].label intValue];
               // Find temporary input images of next graph.
+              // The node has been optimized by last graph that isn't result
+              // node, so the value of temporary_mps_images[input_index] will
+              // be null, the desnet need to be support above 10.15 with
+              // resultImages.
+              // such as graph in desnet: 112->126->122 126->3->0, the 122 node
+              // will be optimized.
+              if (temporary_mps_images.find(input_index) ==
+                  temporary_mps_images.end())
+                break;
               [source_images addObject:temporary_mps_images[input_index]];
             }
           }
