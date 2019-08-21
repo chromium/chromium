@@ -166,8 +166,8 @@ MPSCNNContext& GetMPSCNNContext() {
                      options:nil
                        error:&compileError];
     if (compileError != nil || ctx.library == nil) {
-      DLOG(ERROR) << "Failed to load kernels: "
-                  << [[compileError localizedDescription] UTF8String];
+      LOG(ERROR) << "Failed to load kernels: "
+                 << [[compileError localizedDescription] UTF8String];
       return ctx;
     }
 
