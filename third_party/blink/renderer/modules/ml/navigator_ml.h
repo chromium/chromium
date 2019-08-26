@@ -34,7 +34,7 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
   void Trace(blink::Visitor*) override;
 
  private:
-  TraceWrapperMember<ML> ml_;
+  Member<ML> ml_;
 };
 
 }  // namespace blink

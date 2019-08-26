@@ -187,16 +187,16 @@ void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,
 }
 
 ScriptPromise Model::finish(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (is_finished_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Model is finished."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Model is finished."));
     return promise;
   }
   if (!model_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Model service unavailable."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Model service unavailable."));
     return promise;
   }
 
@@ -239,16 +239,16 @@ ScriptPromise Model::finish(ScriptState* script_state) {
 }
 
 ScriptPromise Model::createCompilation(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!is_finished_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Model is not finished."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Model is not finished."));
     return promise;
   }
   if (!model_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Model service unavailable."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Model service unavailable."));
     return promise;
   }
   requests_.insert(resolver);
@@ -270,7 +270,7 @@ void Model::OnCreateCompilation(
     resolver->Resolve(
         MakeGarbageCollected<Compilation>(std::move(init_params->compilation)));
   } else {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "createCompilation fails: " + String::Number(result_code)));
   }
@@ -285,9 +285,9 @@ void Model::OnResultCode(ScriptPromiseResolver* resolver,
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "fails: " + String::Number(result_code)));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "fails: " + String::Number(result_code)));
   }
 }
 
@@ -299,8 +299,8 @@ void Model::Trace(blink::Visitor* visitor) {
 
 void Model::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                         "Model is not implemented."));
+    request->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Model is not implemented."));
   }
   requests_.clear();
   model_.reset();

@@ -20,6 +20,8 @@ const service_manager::Manifest& GetManifest() {
           .WithServiceName(mojom::kServiceName)
           .WithDisplayName("Machine Learning Service")
           .WithOptions(service_manager::ManifestOptionsBuilder()
+                          .WithExecutionMode(service_manager::Manifest::ExecutionMode::
+                                         kOutOfProcessBuiltin)
                            .WithInstanceSharingPolicy(
                                service_manager::Manifest::
                                    InstanceSharingPolicy::kSharedAcrossGroups)

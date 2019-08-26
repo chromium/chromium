@@ -38,16 +38,17 @@ void Compilation::setPreference(int32_t preference,
 }
 
 ScriptPromise Compilation::finish(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (is_finished_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Compilation is finished."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Compilation is finished."));
     return promise;
   }
   if (!compilation_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Compilation service unavailable."));
+    resolver->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                           "Compilation service unavailable."));
     return promise;
   }
 
@@ -61,16 +62,17 @@ ScriptPromise Compilation::finish(ScriptState* script_state) {
 }
 
 ScriptPromise Compilation::createExecution(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!is_finished_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Compilation is not finished."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Compilation is not finished."));
     return promise;
   }
   if (!compilation_) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Compilation service unavailable."));
+    resolver->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                           "Compilation service unavailable."));
     return promise;
   }
 
@@ -96,7 +98,7 @@ void Compilation::OnResultCode(ScriptPromiseResolver* resolver,
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(result_code);
   } else {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         operation_name + "fails: " + String::Number(result_code)));
   }
@@ -112,7 +114,7 @@ void Compilation::OnCreateExecution(
   if (result_code == ml::mojom::blink::NOT_ERROR) {
     resolver->Resolve(MakeGarbageCollected<Execution>(std::move(init_params)));
   } else {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "createExecution fails: " + String::Number(result_code)));
   }
@@ -120,8 +122,9 @@ void Compilation::OnCreateExecution(
 
 void Compilation::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                         "Compilation is not implemented."));
+    request->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                           "Compilation is not implemented."));
   }
 
   requests_.clear();

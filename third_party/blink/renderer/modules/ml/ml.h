@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
+
 namespace blink {
 
 class NavigatorML;
@@ -33,8 +33,8 @@ class ML final : public ScriptWrappable, public ContextLifecycleObserver {
  private:
   void Dispose();
 
-  TraceWrapperMember<NavigatorML> navigator_ml_;
-  TraceWrapperMember<NeuralNetworkContext> nn_;
+  Member<NavigatorML> navigator_ml_;
+  Member<NeuralNetworkContext> nn_;
 };
 
 }  // namespace blink

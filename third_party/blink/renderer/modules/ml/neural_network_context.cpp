@@ -28,12 +28,12 @@ NeuralNetworkContext::NeuralNetworkContext(NavigatorML* navigator_ml)
 NeuralNetworkContext::~NeuralNetworkContext() = default;
 
 ScriptPromise NeuralNetworkContext::createModel(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!neural_network_) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                             "Neural Network service unavailable."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Neural Network service unavailable."));
     return promise;
   }
 
@@ -65,7 +65,7 @@ void NeuralNetworkContext::OnCreateModel(
     resolver->Resolve(
         MakeGarbageCollected<Model>(std::move(init_params->model)));
   } else {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "createModel fails: " + String::Number(result_code)));
   }
@@ -73,8 +73,9 @@ void NeuralNetworkContext::OnCreateModel(
 
 void NeuralNetworkContext::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                         "Neural Network is not implemented."));
+    request->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Neural Network is not implemented."));
   }
   requests_.clear();
   neural_network_.reset();

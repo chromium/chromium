@@ -119,12 +119,12 @@ void Execution::setOutput(uint32_t index,
 }
 
 ScriptPromise Execution::startCompute(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!execution_) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                             "Neural Network service unavailable."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Neural Network service unavailable."));
     return promise;
   }
 
@@ -142,7 +142,7 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver,
   requests_.erase(resolver);
 
   if (result_code != ml::mojom::blink::NOT_ERROR) {
-    return resolver->Reject(DOMException::Create(
+    return resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "startCompute fails " + String::Number(result_code)));
   }
@@ -166,7 +166,7 @@ void Execution::OnResultCode(ScriptPromiseResolver* resolver,
   requests_.erase(resolver);
 
   if (result_code != ml::mojom::blink::NOT_ERROR) {
-    return resolver->Reject(DOMException::Create(
+    return resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         operation_name + "fails: " + String::Number(result_code)));
   }
@@ -182,8 +182,8 @@ void Execution::Trace(blink::Visitor* visitor) {
 
 void Execution::OnConnectionError() {
   for (const auto& request : requests_) {
-    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                         "Execution is not implemented."));
+    request->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Execution is not implemented."));
   }
 
   requests_.clear();

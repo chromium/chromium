@@ -105,7 +105,9 @@ service_manager::Manifest GetContentSystemManifest() {
   return manifest;
 }
 
-void DestroyConnectorOnIOThread() { g_io_thread_connector.Get().reset(); }
+void DestroyConnectorOnIOThread() {
+  g_io_thread_connector.Get().reset();
+}
 
 // A ServiceProcessHost implementation which delegates to Content-managed
 // processes, either via a new UtilityProcessHost to launch new service
