@@ -132,7 +132,7 @@ class CompilationImpl : public mojom::Compilation {
                                   ResizeBilinearParams&) const;
   int32_t GetPreference() const { return preference_; }
 
- private:
+ protected:
   int32_t preference_;
   mojom::ModelInfoPtr model_info_;
 

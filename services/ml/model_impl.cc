@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "services/ml/model_impl.h"
 
 #include "base/strings/string_number_conversions.h"
@@ -21,11 +23,7 @@ void ModelImpl::Finish(mojom::ModelInfoPtr model_info,
   std::move(callback).Run(mojom::NOT_ERROR);
 }
 
-void ModelImpl::CreateCompilation(CreateCompilationCallback callback) {
-  DLOG(INFO) << "ModelImpl::CreateCompilation";
-  auto init_params = mojom::CompilationInitParams::New();
-
-  auto model_info = mojom::ModelInfo::New();
+void ModelImpl::CopyModelInfo(mojom::ModelInfoPtr& model_info) {
   for (auto itr = model_info_->operands.begin();
        itr != model_info_->operands.end(); ++itr) {
     model_info->operands.push_back(itr->Clone());
@@ -43,7 +41,14 @@ void ModelImpl::CreateCompilation(CreateCompilationCallback callback) {
   model_info->memory_size = model_info_->memory_size;
   model_info->inputs = model_info_->inputs;
   model_info->outputs = model_info_->outputs;
+}
 
+void ModelImpl::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImpl::CreateCompilation";
+  auto init_params = mojom::CompilationInitParams::New();
+
+  auto model_info = mojom::ModelInfo::New();
+  CopyModelInfo(model_info);
   auto impl = std::make_unique<CompilationImpl>(std::move(model_info));
 
   mojom::CompilationPtrInfo ptr_info;

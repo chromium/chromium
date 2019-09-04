@@ -4,6 +4,7 @@
 
 #include "services/ml/neural_network_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "services/ml/model_impl.h"
@@ -22,7 +23,7 @@ NeuralNetworkImpl::NeuralNetworkImpl() = default;
 NeuralNetworkImpl::~NeuralNetworkImpl() = default;
 
 void NeuralNetworkImpl::CreateModel(CreateModelCallback callback) {
-  LOG(INFO) << "createModel";
+  DLOG(INFO) << "Create Model";
   auto model_impl = std::make_unique<ModelImpl>();
 
   auto init_params = mojom::ModelInitParams::New();

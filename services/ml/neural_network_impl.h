@@ -20,7 +20,7 @@ class NeuralNetworkImpl : public mojom::NeuralNetwork {
 
   static void Create(mojom::NeuralNetworkRequest request);
 
- private:
+ protected:
   friend class ModelImpl;
 
   mojo::StrongBindingPtr<mojom::NeuralNetwork> binding_;
@@ -30,4 +30,4 @@ class NeuralNetworkImpl : public mojom::NeuralNetwork {
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_H_
+#endif  // SERVICES_ML_NEURAL_NETWORK_IMPL_MAC_H_

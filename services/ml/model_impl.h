@@ -20,9 +20,11 @@ class ModelImpl : public mojom::Model {
 
   void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
 
+  void CopyModelInfo(mojom::ModelInfoPtr& model_info);
+
   void CreateCompilation(CreateCompilationCallback callback) override;
 
- private:
+ protected:
   friend class CompilationImpl;
   mojom::ModelInfoPtr model_info_;
   DISALLOW_COPY_AND_ASSIGN(ModelImpl);
