@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+"""Gitiles log summarizer
+
+Given a Gitiles log url, outputs the list of changes in the log in 
+a summarized form for including in a CL description in a convenient way.
+
+Usage:
+
+  $ gitiles_log_summary https://gn.googlesource.com/gn.git/+log/d062e74..74657a6
+
+"""
+
+import argparse
+import json
+import urllib2
+
+
+parser = argparse.ArgumentParser(
+    description=__doc__,
+    formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument('url')
+
+args = parser.parse_args()
+
+resp = urllib2.urlopen(args.url + '?format=JSON')
+log = json.loads(resp.read()[5:])
+
+lines = ['    %s %s' % (c['commit'][:8], c['message'].splitlines()[0])
+         for c in log['log']]
+print('    %s\n\n%s' % (args.url, '\n'.join(lines)))
