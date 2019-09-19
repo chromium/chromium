@@ -97,7 +97,7 @@ source_set("lib") {
       "neural_network_impl_android.h",
     ]
 
-    include_dirs = [ "${android_ndk_root}/sysroot/usr/include" ]
+    #include_dirs = [ "${android_ndk_root}/sysroot/usr/include" ]
 
     libdir = ""
     if (current_cpu == "x86") {
