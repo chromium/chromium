@@ -183,8 +183,8 @@ the [get the code](https://dev.chromium.org/developers/how-tos/get-the-code)
 page):
 
 ```shell
-$ gn gen --ide=vs out\Default
-$ devenv out\Default\all.sln
+$ gn gen --ide=vs out/Default
+$ devenv out/Default/all.sln
 ```
 
 GN will produce a file `all.sln` in your build directory. It will internally
@@ -202,7 +202,7 @@ let you compile and run Chrome in the IDE but will not show any source files
 is:
 
 ```
-$ gn gen --ide=vs --filters=//chrome --no-deps out\Default
+$ gn gen --ide=vs --filters=//chrome --no-deps out/Default
 ```
 
 You can selectively add other directories you care about to the filter like so:
@@ -220,7 +220,7 @@ fail to attach to some of Chrome's child processes.
 It is also possible to debug and develop Chrome in Visual Studio without a
 solution file. Simply "open" your chrome.exe binary with
 `File->Open->Project/Solution`, or from a Visual Studio command prompt like
-so: `devenv /debugexe out\Debug\chrome.exe <your arguments>`. Many of Visual
+so: `devenv /debugexe out/Debug/chrome.exe <your arguments>`. Many of Visual
 Studio's code editing features will not work in this configuration, but by
 installing the [VsChromium Visual Studio Extension](https://chromium.github.io/vs-chromium/)
 you can get the source code to appear in the solution explorer window along
@@ -264,7 +264,7 @@ A good default is 10\*numCores to 20\*numCores. If you run autoninja then it
 will automatically pass an appropriate -j value to ninja for goma or not.
 
 ```shell
-$ autoninja -C out\Default chrome
+$ autoninja -C out/Default chrome
 ```
 
 When invoking ninja specify 'chrome' as the target to avoid building all test
@@ -292,7 +292,7 @@ per second, and how long the build has been running, as shown here:
 
 ```shell
 $ set NINJA_SUMMARIZE_BUILD=1
-$ autoninja -C out\Default base
+$ autoninja -C out/Default base
 ninja: Entering directory `out\Default'
 [1 processes, 86/86 @ 2.7/s : 31.785s ] LINK(DLL) base.dll base.dll.lib base.dll.pdb
 ```
@@ -306,7 +306,7 @@ steps and slowest build-step types, as shown here:
 
 ```shell
 $ set NINJA_SUMMARIZE_BUILD=1
-$ autoninja -C out\Default base
+$ autoninja -C out/Default base
     Longest build steps:
 ...
            1.2 weighted s to build base.dll, base.dll.lib, base.dll.pdb (1.2 s CPU time)
@@ -322,7 +322,7 @@ $ autoninja -C out\Default base
 You can also generate these reports by manually running the script after a build:
 
 ```shell
-$ python depot_tools\post_build_ninja_summary.py -C out\Default
+$ python depot_tools/post_build_ninja_summary.py -C out/Default
 ```
 
 Finally, setting ``NINJA_SUMMARIZE_BUILD=1`` tells autoninja to tell Ninja to
@@ -333,8 +333,8 @@ an excluded directory:
 
 ```shell
 $ set NINJA_SUMMARIZE_BUILD=1
-$ autoninja -C out\Default base
-"c:\src\depot_tools\ninja.exe" -C out\Default base -j 10 -d stats
+$ autoninja -C out/Default base
+"c:\src\depot_tools\ninja.exe" -C out/Default base -j 10 -d stats
 metric                  count   avg (us)        total (ms)
 .ninja parse            3555    1539.4          5472.6
 canonicalize str        1383032 0.0             12.7
@@ -354,7 +354,7 @@ You can also get a visual report of the build performance with
 .ninja_log file into a .json file which can be loaded into chrome://tracing:
 
 ```shell
-$ python ninjatracing out\Default\.ninja_log >build.json
+$ python ninjatracing out/Default/.ninja_log >build.json
 ```
 
 ## Build Chromium
@@ -362,7 +362,7 @@ $ python ninjatracing out\Default\.ninja_log >build.json
 Build Chromium (the "chrome" target) with Ninja using the command:
 
 ```shell
-$ autoninja -C out\Default chrome
+$ autoninja -C out/Default chrome
 ```
 
 `autoninja` is a wrapper that automatically provides optimal values for the
@@ -378,7 +378,7 @@ use ninja -C out/Default chrome/test:unit_tests`).
 Once it is built, you can simply run the browser:
 
 ```shell
-$ out\Default\chrome.exe
+$ out/Default/chrome.exe
 ```
 
 (The ".exe" suffix in the command is actually optional).
@@ -389,7 +389,7 @@ You can run the tests in the same way. You can also limit which tests are
 run using the `--gtest_filter` arg, e.g.:
 
 ```shell
-$ out\Default\unit_tests.exe --gtest_filter="PushClientTest.*"
+$ out/Default/unit_tests.exe --gtest_filter="PushClientTest.*"
 ```
 
 You can find out more about GoogleTest at its
