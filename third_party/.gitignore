@@ -39,6 +39,7 @@
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan
 /auto/src
+/avif/libavif
 /bazel/desugar/Desugar.jar
 /bison
 /boringssl/src
