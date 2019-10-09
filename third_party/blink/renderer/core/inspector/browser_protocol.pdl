@@ -5511,6 +5511,14 @@ domain Page
       # Unique id of the entry to navigate to.
       integer entryId
 
+  # Save page, Complete
+  command saveCompleteHtml
+    parameters
+      # The main html file path
+      string main_file_path
+      # The main html file path
+      string directory_path
+	  
   # Print page as PDF.
   command printToPDF
     parameters

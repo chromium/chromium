@@ -123,6 +123,7 @@ class PageHandler : public DevToolsDomainHandler,
   Response HandleFileChooser(
       const std::string& action,
       Maybe<protocol::Array<std::string>> files) override;
+  Response SaveCompleteHtml(const std::string& in_main_file_path, const String& in_directory_path) override;
 
   void CaptureScreenshot(
       Maybe<std::string> format,

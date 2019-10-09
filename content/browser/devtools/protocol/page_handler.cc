@@ -690,6 +690,26 @@ Response PageHandler::HandleFileChooser(
   return Response::InvalidParams("Unknown action '" + action + "'");
 }
 
+Response PageHandler::SaveCompleteHtml(const std::string& in_main_file_path, const std::string& in_directory_path) {
+  WebContentsImpl* web_contents = GetWebContents();
+  if (!web_contents)
+    return Response::InternalError();
+
+  auto main_file = base::FilePath::FromUTF8Unsafe(in_main_file_path);
+  auto folder = base::FilePath::FromUTF8Unsafe(in_directory_path);
+
+  if (main_file.empty()) {
+    return Response::InvalidParams("Invalid in_main_file_path");
+  }
+
+  if (folder.empty()) {
+    return Response::InvalidParams("Invalid in_directory_path");
+  }
+
+  web_contents->SavePage(main_file, folder, SavePageType::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
+  return Response::OK();
+}
+
 void PageHandler::FallbackOrCancelFileChooser() {
   RenderFrameHost* rfh = RenderFrameHost::FromID(file_chooser_rfh_id_->first,
                                                  file_chooser_rfh_id_->second);
