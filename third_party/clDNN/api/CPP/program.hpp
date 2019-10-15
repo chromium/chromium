@@ -63,10 +63,8 @@ enum class build_option_type
     tuning_config = cldnn_build_option_tuning_config,
 
     /// @brief Specifies a directory to which stages of network compilation should be dumped. (default: empty, i.e. no dumping)
-    graph_dumps_dir = cldnn_build_option_graph_dumps_dir,
-    /// @brief Name for serialization process
-    serialize_network = cldnn_build_option_serialization,
-    load_program = cldnn_build_option_load_program
+    graph_dumps_dir = cldnn_build_option_graph_dumps_dir
+
 };
 
 /// @brief Tuning mode.
@@ -135,11 +133,6 @@ struct build_option
 
     /// @brief Specifies a directory to which stages of network compilation should be dumped (default: empty, i.e. no dumping)
     static std::shared_ptr<const build_option> graph_dumps_dir(const std::string& dir_path);
-
-    /// @brief Specifies a name for serialization process.
-    static std::shared_ptr<const build_option> serialize_network(const std::string& network_name);
-    /// @brief Specifies a name of load_program process.
-    static std::shared_ptr<const build_option> load_program(const std::string& network_name);
 
     /// @brief User defined learning parameters.
     static std::shared_ptr<const build_option> learning_config(const learning_params& params = learning_params());
@@ -360,79 +353,6 @@ private:
     }
 };
 
-/// @brief @ref build_option specialization for serialization process.
-template<build_option_type OptType>
-struct build_option_serialization : build_option
-{
-    const std::string serialization_network_name;
-
-
-    explicit build_option_serialization(const std::string& name)
-        : serialization_network_name(name)
-    {}
-
-
-    explicit build_option_serialization(const cldnn_build_option& value)
-        : serialization_network_name(from_c_value(value))
-    {}
-
-private:
-
-    build_option_type get_type() const override { return build_option_type::serialize_network; }
-
-    const void* get_data() const override { return (serialization_network_name.empty() ? nullptr : serialization_network_name.c_str()); }
-
-    build_option_serialization(const build_option_serialization& other) = delete;
-    build_option_serialization& operator=(const build_option_serialization& other) = delete;
-
-    static std::string from_c_value(const cldnn_build_option& value)
-    {
-        if (value.type != static_cast<int32_t>(OptType))
-            throw std::invalid_argument("option type does not match");
-        if (value.data == nullptr)
-            return{};
-
-        return{ static_cast<const char*>(value.data) };
-    }
-};
-
-
-/// @brief @ref build_option specialization for load_program process.
-template<build_option_type OptType>
-struct build_option_load_program : build_option
-{
-    const std::string load_program_name;
-
-
-    explicit build_option_load_program(const std::string& name)
-        : load_program_name(name)
-    {}
-
-
-    explicit build_option_load_program(const cldnn_build_option& value)
-        : load_program_name(from_c_value(value))
-    {}
-
-private:
-
-    build_option_type get_type() const override { return build_option_type::load_program; }
-
-    const void* get_data() const override { return (load_program_name.empty() ? nullptr : load_program_name.c_str()); }
-
-    build_option_load_program(const build_option_load_program& other) = delete;
-    build_option_load_program& operator=(const build_option_load_program& other) = delete;
-
-    static std::string from_c_value(const cldnn_build_option& value)
-    {
-        if (value.type != static_cast<int32_t>(OptType))
-            throw std::invalid_argument("option type does not match");
-        if (value.data == nullptr)
-            return{};
-
-        return{ static_cast<const char*>(value.data) };
-    }
-};
-
 namespace detail
 {
     /// @brief Helper template to convert @ref build_option_type value to particular @ref build_option class.
@@ -528,26 +448,6 @@ namespace detail
             return std::make_shared<object_type>(option);
         }
     };
-    template<> struct build_option_traits<build_option_type::serialize_network>
-    {
-        typedef build_option_serialization<build_option_type::serialize_network> object_type;
-        static std::shared_ptr<const build_option> make_default() { return build_option::serialize_network({}); }
-        static std::shared_ptr<const build_option> make_option(const cldnn_build_option& option)
-        {
-            assert(option.type == cldnn_build_option_serialization);
-            return std::make_shared<object_type>(option);
-        }
-    };
-    template<> struct build_option_traits<build_option_type::load_program>
-    {
-        typedef build_option_load_program<build_option_type::load_program> object_type;
-        static std::shared_ptr<const build_option> make_default() { return build_option::load_program({}); }
-        static std::shared_ptr<const build_option> make_option(const cldnn_build_option& option)
-        {
-            assert(option.type == cldnn_build_option_load_program);
-            return std::make_shared<object_type>(option);
-        }
-    };
 
 #endif
 } // namespace detail
@@ -592,14 +492,7 @@ inline std::shared_ptr<const build_option> build_option::graph_dumps_dir(const s
 {
     return std::make_shared<build_option_directory<build_option_type::graph_dumps_dir>>(dir_path);
 }
-inline std::shared_ptr<const build_option> build_option::serialize_network(const std::string& name)
-{
-    return std::make_shared<build_option_serialization<build_option_type::serialize_network>>(name);
-}
-inline std::shared_ptr<const build_option> build_option::load_program(const std::string& name)
-{
-    return std::make_shared<build_option_load_program<build_option_type::load_program>>(name);
-}
+
 #endif
 
 /// @brief Represents program build options list.
@@ -699,10 +592,6 @@ private:
             return detail::build_option_traits<build_option_type::tuning_config>::make_option(option);
         case cldnn_build_option_graph_dumps_dir:
             return detail::build_option_traits<build_option_type::graph_dumps_dir>::make_option(option);
-        case cldnn_build_option_serialization:
-            return detail::build_option_traits<build_option_type::serialize_network>::make_option(option);
-        case cldnn_build_option_load_program:
-            return detail::build_option_traits<build_option_type::load_program>::make_option(option);
         default: throw std::out_of_range("unsupported build option type");
         }
     }

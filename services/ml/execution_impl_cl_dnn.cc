@@ -96,6 +96,8 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
       return;
     }
     std::string input_id_str = base::NumberToString(operand->index);
+    // Use _byxf postfix
+    input_id_str += std::string("_byxf");
     LATE(cldnn_set_network_input)
     (network_, input_id_str.c_str(), memory, &status);
     if (status != CLDNN_SUCCESS) {
@@ -123,7 +125,7 @@ void ExecutionImplClDnn::StartCompute(StartComputeCallback callback) {
     const uint32_t length = GetRequiredSize(operand);
     total_length += length;
     std::string output_id_str =
-        base::NumberToString(operand->index) + std::string("-reordered");
+        base::NumberToString(operand->index) + std::string("_byxf");
     cldnn_memory memory = LATE(cldnn_get_network_output_memory)(
         network_, output_id_str.c_str(), &status);
     if (status != CLDNN_SUCCESS) {

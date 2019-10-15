@@ -24,10 +24,10 @@ class CompilationDelegateClDnn : public CompilationDelegate {
   ~CompilationDelegateClDnn() override;
 
   int32_t Compile() override;
-  int32_t CreateExecution(
-      std::unique_ptr<mojom::Execution>& execution,
-      mojom::ExecutionInitParamsPtr params) override;
+  int32_t CreateExecution(std::unique_ptr<mojom::Execution>& execution,
+                          mojom::ExecutionInitParamsPtr params) override;
 
+  static int32_t CldnnGetType(int32_t type, cldnn_data_type& cldnn_type);
   static int32_t CldnnGetLayout(int32_t type,
                                 const std::vector<uint32_t>& dimensions,
                                 cldnn_layout& layout,
@@ -41,7 +41,8 @@ class CompilationDelegateClDnn : public CompilationDelegate {
   int32_t CldnnAddInputLayout(uint32_t index);
   int32_t CldnnAddReorder(const std::string& input_name,
                           const std::string& output_name,
-                          int32_t target_format);
+                          int32_t target_format,
+                          cldnn_data_type target_data_type);
   int32_t CldnnAddData(uint32_t index);
   int32_t CldnnAddActivationByFusedCode(const std::string& input,
                                         const std::string& id,
@@ -54,6 +55,7 @@ class CompilationDelegateClDnn : public CompilationDelegate {
   int32_t CldnnAddConcatenation(const mojom::OperationPtr& operation);
   int32_t CldnnAddFullyConnected(const mojom::OperationPtr& operation);
   int32_t CldnnAddResizeBilinear(const mojom::OperationPtr& operation);
+  int32_t CldnnAddArgmax(const mojom::OperationPtr& operation);
 
  private:
   const CompilationImpl* compilation_;

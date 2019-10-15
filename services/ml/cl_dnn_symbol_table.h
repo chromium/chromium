@@ -46,7 +46,8 @@ namespace ml {
   X(cldnn_release_network)              \
   X(cldnn_set_network_input)            \
   X(cldnn_execute_network)              \
-  X(cldnn_get_network_output_memory)
+  X(cldnn_get_network_output_memory)    \
+  X(cldnn_arg_max_min_type_id)
 
 LATE_BINDING_SYMBOL_TABLE_DECLARE_BEGIN(ClDnnSymbolTable)
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DECLARE_ENTRY(ClDnnSymbolTable, sym)

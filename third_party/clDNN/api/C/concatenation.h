@@ -35,7 +35,8 @@ typedef enum
     cldnn_concatenation_along_b = 0,
     cldnn_concatenation_along_f = CLDNN_TENSOR_BATCH_DIM_MAX,
     cldnn_concatenation_along_x = CLDNN_TENSOR_BATCH_DIM_MAX + CLDNN_TENSOR_FEATURE_DIM_MAX,
-    cldnn_concatenation_along_y = cldnn_concatenation_along_x + 1
+    cldnn_concatenation_along_y = cldnn_concatenation_along_x + 1,
+    cldnn_concatenation_along_z = cldnn_concatenation_along_y + 1
 } cldnn_concatenation_axis;
 
 /// @details Concatenation is used to concatenate multiple sources into one destination along specified dimension.

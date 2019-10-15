@@ -132,40 +132,23 @@ struct detection_output : public primitive_base<detection_output, CLDNN_PRIMITIV
             throw std::invalid_argument("Cannot use decrease_label_id and background_label_id parameter simultaneously.");
     }
 
-    /// @brief Number of classes to be predicted.
-    const uint32_t num_classes;
-    /// @brief Number of total bounding boxes to be kept per image after NMS step.
-    const int keep_top_k;
-    /// @brief If true, bounding box are shared among different classes.
-    const bool share_location;
-    /// @brief Background label id (-1 if there is no background class).
-    const int background_label_id;
-    /// @brief Threshold for NMS step.
-    const float nms_threshold;
-    /// @brief Maximum number of results to be kept in NMS.
-    const int top_k;
-    /// @brief Used for adaptive NMS.
-    const float eta;
-    /// @brief Type of coding method for bounding box.
-    const prior_box_code_type code_type;
-    /// @brief If true, variance is encoded in target; otherwise we need to adjust the predicted offset accordingly.
-    const bool variance_encoded_in_target;
-    /// @brief Only keep detections with confidences larger than this threshold.
-    const float confidence_threshold;
-    /// @brief Number of elements in a single prior description (4 if priors calculated using PriorBox layer, 5 - if Proposal)
-    const int32_t prior_info_size;
-    /// @brief Offset of the box coordinates w.r.t. the beginning of a prior info record
-    const int32_t prior_coordinates_offset;
-    /// @brief If true, priors are normalized to [0; 1] range.
-    const bool prior_is_normalized;
-    /// @brief Width of input image.
-    const int32_t input_width;
-    /// @brief Height of input image.
-    const int32_t input_height;
-    /// @brief Decrease label id to skip background label equal to 0. Can't be used simultaneously with background_label_id.
-    const bool decrease_label_id;
-    /// @brief Clip decoded boxes
-    const bool clip;
+    uint32_t get_num_classes() const { return num_classes; }
+    int get_keep_top_k() const { return keep_top_k; }
+    bool get_share_location() const { return share_location; }
+    int get_background_label_id() const { return background_label_id; }
+    float get_nms_threshold() const { return nms_threshold; }
+    int get_top_k() const { return top_k; }
+    float get_eta() const { return eta; }
+    const prior_box_code_type& get_code_type() const { return code_type; }
+    bool get_variance_encoded_in_target() const { return variance_encoded_in_target; }
+    float get_confidence_threshold() const { return confidence_threshold; }
+    int32_t get_prior_info_size() const { return prior_info_size; }
+    int32_t get_prior_coordinates_offset() const { return prior_coordinates_offset; }
+    bool get_prior_is_normalized() const { return prior_is_normalized; }
+    int32_t get_input_width() const { return input_width; }
+    int32_t get_input_height() const { return input_height; }
+    bool get_decrease_label_id() const { return decrease_label_id; }
+    bool get_clip() const { return clip; }
 
 protected:
     void update_dto(dto& dto) const override
@@ -188,6 +171,42 @@ protected:
         dto.decrease_label_id = decrease_label_id;
         dto.clip = clip;
     }
+
+private:
+    /// @brief Number of classes to be predicted.
+    uint32_t num_classes;
+    /// @brief Number of total bounding boxes to be kept per image after NMS step.
+    int keep_top_k;
+    /// @brief If true, bounding box are shared among different classes.
+    bool share_location;
+    /// @brief Background label id (-1 if there is no background class).
+    int background_label_id;
+    /// @brief Threshold for NMS step.
+    float nms_threshold;
+    /// @brief Maximum number of results to be kept in NMS.
+    int top_k;
+    /// @brief Used for adaptive NMS.
+    float eta;
+    /// @brief Type of coding method for bounding box.
+    prior_box_code_type code_type;
+    /// @brief If true, variance is encoded in target; otherwise we need to adjust the predicted offset accordingly.
+    bool variance_encoded_in_target;
+    /// @brief Only keep detections with confidences larger than this threshold.
+    float confidence_threshold;
+    /// @brief Number of elements in a single prior description (4 if priors calculated using PriorBox layer, 5 - if Proposal)
+    int32_t prior_info_size;
+    /// @brief Offset of the box coordinates w.r.t. the beginning of a prior info record
+    int32_t prior_coordinates_offset;
+    /// @brief If true, priors are normalized to [0; 1] range.
+    bool prior_is_normalized;
+    /// @brief Width of input image.
+    int32_t input_width;
+    /// @brief Height of input image.
+    int32_t input_height;
+    /// @brief Decrease label id to skip background label equal to 0. Can't be used simultaneously with background_label_id.
+    bool decrease_label_id;
+    /// @brief Clip decoded boxes
+    bool clip;
 };
 
 /// @brief Generates a list of detections based on location and confidence predictions by doing non maximum suppression.
@@ -237,19 +256,12 @@ struct detection_output_sort : public primitive_base<detection_output_sort, CLDN
         , background_label_id(dto->background_label_id)
     {}
 
-    /// @brief Number of classes to be predicted.
-    const uint32_t num_images;
-    /// @brief Number of classes to be predicted.
-    const uint32_t num_classes;
-    /// @brief Number of total bounding boxes to be kept per image after NMS step.
-    const int keep_top_k;
-    /// @brief If true, bounding box are shared among different classes.
-    const bool share_location;
-    /// @brief Maximum number of results to be kept in NMS.
-    const int top_k;
-    /// @brief Background label id (-1 if there is no background class).
-    const int background_label_id;
-
+    uint32_t get_num_images() const { return num_images; }
+    uint32_t get_num_classes() const { return num_classes; }
+    int get_keep_top_k() const { return keep_top_k; }
+    bool get_share_location() const { return share_location; }
+    int get_top_k() const { return top_k; }
+    int get_background_label_id() const { return background_label_id; }
 
 protected:
     void update_dto(dto& dto) const override
@@ -261,6 +273,21 @@ protected:
         dto.top_k = top_k;
         dto.background_label_id = background_label_id;
     }
+
+private:
+    /// @brief Number of classes to be predicted.
+    uint32_t num_images;
+    /// @brief Number of classes to be predicted.
+    uint32_t num_classes;
+    /// @brief Number of total bounding boxes to be kept per image after NMS step.
+    int keep_top_k;
+    /// @brief If true, bounding box are shared among different classes.
+    bool share_location;
+    /// @brief Maximum number of results to be kept in NMS.
+    int top_k;
+    /// @brief Background label id (-1 if there is no background class).
+    int background_label_id;
+
 };
 /// @}
 /// @}

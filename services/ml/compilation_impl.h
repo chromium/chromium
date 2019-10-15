@@ -108,6 +108,10 @@ struct ResizeBilinearParams {
   bool align_corners;
 };
 
+struct ArgmaxParams {
+  int32_t axis;
+};
+
 class CompilationImpl : public mojom::Compilation {
  public:
   explicit CompilationImpl(mojom::ModelInfoPtr model_info);
@@ -130,6 +134,7 @@ class CompilationImpl : public mojom::Compilation {
                                   FullyConnectedParams&) const;
   int32_t GetResizeBilinearParams(const mojom::OperationPtr&,
                                   ResizeBilinearParams&) const;
+  int32_t GetArgmaxParams(const mojom::OperationPtr&, ArgmaxParams&) const;
   int32_t GetPreference() const { return preference_; }
 
  protected:

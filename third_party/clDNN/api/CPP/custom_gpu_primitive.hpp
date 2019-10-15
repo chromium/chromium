@@ -83,37 +83,45 @@ namespace cldnn
     {
     }
 
+    const fixed_size_vector_ref& get_kernels_code() const { return kernels_code; }
+    const std::string& get_kernel_entry_point() const { return kernel_entry_point; }
+    const std::vector<cldnn_arg>& get_kernel_arguments() const { return kernel_arguments; }
+    const std::string& get_build_options() const { return build_options; }
+    const layout& get_output_layout() const { return output_layout; }
+    std::vector<size_t> get_gws() const { return gws; }
+    std::vector<size_t> get_lws() const { return lws; }
+
+private:
     /// @brief Source code for the kernel
     fixed_size_vector_ref kernels_code;
     /// @brief The name of the entry point function in the kernel
-    const std::string kernel_entry_point;
+    std::string kernel_entry_point;
     /// @brief Argument bindings for the entry point function
-    const std::vector<cldnn_arg> kernel_arguments;
+    std::vector<cldnn_arg> kernel_arguments;
     /// @brief The kernel's build options
-    const std::string build_options;
+    std::string build_options;
     /// @brief The output layout declared by the primitive
-    const layout output_layout;
+    layout output_layout;
     /// @brief The global working sizes
-    const std::vector<size_t> gws;
+    std::vector<size_t> gws;
     /// @brief The local working sizes
-    const std::vector<size_t> lws;
-    
+    std::vector<size_t> lws;
 
 protected:
     primitive_id_arr _kernels_code;
 
     void update_dto(dto& dto) const override
     {
-        dto.kernels_code            = _kernels_code.ref();
-        dto.kernel_entry_point      = kernel_entry_point.c_str();
-        dto.kernel_arguments        = kernel_arguments.data();
-        dto.kernel_arguments_num    = (int)kernel_arguments.size();
-        dto.build_options           = build_options.c_str();
-        dto.output_layout           = (cldnn_layout)output_layout;
-        dto.gws                     = gws.data();
-        dto.gws_num                 = (int)gws.size();
-        dto.lws                     = lws.data();
-        dto.lws_num                 = (int)lws.size();
+        dto.kernels_code = _kernels_code.ref();
+        dto.kernel_entry_point = kernel_entry_point.c_str();
+        dto.kernel_arguments = kernel_arguments.data();
+        dto.kernel_arguments_num = (int)kernel_arguments.size();
+        dto.build_options = build_options.c_str();
+        dto.output_layout = (cldnn_layout)output_layout;
+        dto.gws = gws.data();
+        dto.gws_num = (int)gws.size();
+        dto.lws = lws.data();
+        dto.lws_num = (int)lws.size();
     }
 };
 /// @}

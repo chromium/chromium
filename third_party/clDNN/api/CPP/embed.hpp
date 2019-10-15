@@ -96,10 +96,8 @@ namespace cldnn
 			dto.weights = weights.c_str();
 			dto.bias = bias.c_str();
 		}
-
 	};
 	/// @}
 	/// @}
 	/// @}
 }
-#pragma once

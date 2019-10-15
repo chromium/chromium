@@ -54,6 +54,8 @@ cldnn_primitive_id_arr weights;
 cldnn_primitive_id_arr bias;
 /// @brief Indicates that deconvolution is used for convolution backward computation (convolution_grad_input)
 uint32_t gradient;
+/// @brief Number of feature groups (grouped deconvolution). If more than 1 then weights/bias count needs to be 1.
+uint32_t groups;
 CLDNN_END_PRIMITIVE_DESC(deconvolution)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(deconvolution);

@@ -66,8 +66,48 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
         , stride(stride)
         , input_offset(input_offset)
         , dilation(dilation)
+        , output_grad_w(false)
         , _weights(weights)
         , _bias(bias)
+        , _prev_weights_grad(std::vector<primitive_id>(0))
+        , _prev_bias_grad(std::vector<primitive_id>(0))
+    {
+    }
+
+    /// @brief Constructs convolution_grad_weights primitive (w/o bias).
+    /// @param id This primitive id.
+    /// @param input Input gradient primitive id.
+    /// @param input Input primitive id from convolution forward pass.
+    /// @param weights List of primitive ids containing weights data.
+    /// @param input_offset Defines a shift, relative to (0,0) position of the input buffer, where (0,0) point of the convolution_grad_weights window should start calculations.
+    /// @param dilation Defines dilation size.
+    /// @param stride Defines shift in input buffer between adjacent calculations of output values.
+    /// @param Should primitive give weights gradient (delta) as an output
+    /// @param conv_grad Id of primitive which uses weights and biases updated in this primitive. This is for correct order of calculating. Leave empty if primitive is last in backward pass.
+    convolution_grad_weights(
+        const primitive_id& id,
+        const primitive_id& input_grad,
+        const primitive_id& input,
+        const std::vector<primitive_id>& weights,
+        tensor stride = { 1, 1, 1, 1 },
+        tensor input_offset = { 0, 0, 0, 0 },
+        tensor dilation = { 1, 1, 1, 1 },
+        bool output_grad_w = false,
+        const primitive_id& conv_grad = "",
+        const padding& output_padding = padding()
+    )
+        :primitive_base(id, { input_grad, input }, output_padding)
+        , weights(_weights.cpp_ids)
+        , bias(_bias.cpp_ids)
+        , prev_weights_grad(_prev_weights_grad.cpp_ids)
+        , prev_bias_grad(_prev_bias_grad.cpp_ids)
+        , conv_grad(conv_grad)
+        , stride(stride)
+        , input_offset(input_offset)
+        , dilation(dilation)
+        , output_grad_w(output_grad_w)
+        , _weights(weights)
+        , _bias(std::vector<primitive_id>(0))
         , _prev_weights_grad(std::vector<primitive_id>(0))
         , _prev_bias_grad(std::vector<primitive_id>(0))
     {
@@ -87,9 +127,9 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
         const primitive_id& input_grad,
         const primitive_id& input,
         const std::vector<primitive_id>& weights,
-        tensor stride = { 1, 1, 1, 1 },
-        tensor input_offset = { 0, 0, 0, 0 },
-        tensor dilation = { 1, 1, 1, 1 },
+        tensor stride,
+        tensor input_offset,
+        tensor dilation,
         const primitive_id& conv_grad = "",
         const padding& output_padding = padding()
     )
@@ -102,6 +142,7 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
         , stride(stride)
         , input_offset(input_offset)
         , dilation(dilation)
+        , output_grad_w(false)
         , _weights(weights)
         , _bias(std::vector<primitive_id>(0))
         , _prev_weights_grad(std::vector<primitive_id>(0))
@@ -144,6 +185,7 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
         , stride(stride)
         , input_offset(input_offset)
         , dilation(dilation)
+        , output_grad_w(false)
         , _weights(weights)
         , _bias(bias)
         , _prev_weights_grad(prev_weights_grad)
@@ -162,6 +204,7 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
         , stride(dto->stride)
         , input_offset(dto->input_offset)
         , dilation(dto->dilation)
+        , output_grad_w(dto->output_grad_w)
         , _weights(dto->weights)
         , _bias(dto->bias)
         , _prev_weights_grad(dto->prev_weights_grad)
@@ -189,6 +232,8 @@ struct convolution_grad_weights : public primitive_base<convolution_grad_weights
     /// As an example in one dimension, a filter w of size 3 would compute over input x the following: w[0]*x[0] + w[1]*x[1] + w[2]*x[2] for dilation of 1. 
     /// For dilation 2 the filter would instead compute w[0]*x[0] + w[1]*x[2] + w[2]*x[4].
     tensor dilation;
+    /// @brief Should primitive give weights gradient (delta) as an output
+    bool output_grad_w;
 
     /// @brief On how many cards split the computation to.
     int32_t split() const { return static_cast<int32_t>(weights.size()); }
@@ -226,6 +271,7 @@ protected:
         dto.dilation = dilation;
         dto.split = split();
         dto.stride = stride;
+        dto.output_grad_w = output_grad_w;
         dto.conv_grad = conv_grad.c_str();
         dto.prev_bias_grad = _prev_bias_grad.ref();
         dto.prev_weights_grad = _prev_weights_grad.ref();

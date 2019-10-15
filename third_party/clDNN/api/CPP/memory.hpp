@@ -138,9 +138,7 @@ struct memory
 
     /// C API memory handle
     cldnn_memory get() const { return _impl; }
-
 private:
-    friend struct engine;
     cldnn_memory _impl;
     layout _layout;
     size_t _size;

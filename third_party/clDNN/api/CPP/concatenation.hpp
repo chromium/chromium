@@ -59,7 +59,8 @@ struct concatenation : public primitive_base<concatenation, CLDNN_PRIMITIVE_DESC
         along_b = cldnn_concatenation_along_b,
         along_f = cldnn_concatenation_along_f,
         along_x = cldnn_concatenation_along_x,
-        along_y = cldnn_concatenation_along_y
+        along_y = cldnn_concatenation_along_y,
+        along_z = cldnn_concatenation_along_z
     };
 
     /// @li Constructs concatenation primitive.

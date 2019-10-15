@@ -517,4 +517,17 @@ int32_t CompilationImpl::GetResizeBilinearParams(
   return mojom::NOT_ERROR;
 }
 
+int32_t CompilationImpl::GetArgmaxParams(const mojom::OperationPtr& operation,
+                                         ArgmaxParams& params) const {
+  const int32_t type = operation->type;
+  if (type != mojom::ARGMAX) {
+    LOG(ERROR) << "Operation type " << type << " is not argmax";
+    return mojom::BAD_DATA;
+  }
+  const std::vector<uint32_t>& inputs = operation->inputs;
+  params.axis = GetScalarInt32(inputs[1]);
+  DLOG(INFO) << "  axis: " << params.axis;
+  return mojom::NOT_ERROR;
+}
+
 }  // namespace ml

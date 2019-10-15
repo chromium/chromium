@@ -57,7 +57,6 @@ struct data : public primitive_base<data, CLDNN_PRIMITIVE_DESC(data)>
     /// @brief @ref memory object which contains data.
     /// @note If memory is attached by memory::attach(), the attached buffer should be valid till network build.
     memory mem;
-
 protected:
     void update_dto(dto& dto) const override
     {

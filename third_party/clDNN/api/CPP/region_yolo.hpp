@@ -92,4 +92,3 @@ namespace cldnn
     /// @}
     /// @}
 }
-#pragma once

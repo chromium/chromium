@@ -48,13 +48,30 @@ typedef enum /*:int32_t*/
     /// @brief Eltwise pow.
     cldnn_eltwise_pow,
     /// @brief Eltwise mod.
-    cldnn_eltwise_mod
+    cldnn_eltwise_mod,
+    /// @brief Eltwise equal.
+    cldnn_eltwise_eq,
+    /// @brief Eltwise not equal.
+    cldnn_eltwise_ne,
+    /// @brief Eltwise less.
+    cldnn_eltwise_lt,
+    /// @brief Eltwise less of equal.
+    cldnn_eltwise_le,
+    /// @brief Eltwise greater.
+    cldnn_eltwise_gt,
+    /// @brief Eltwise greater or equal.
+    cldnn_eltwise_ge,
+    /// @brief Eltwise and.
+    cldnn_eltwise_and,
+    /// @brief Eltwise or.
+    cldnn_eltwise_or
 } cldnn_eltwise_mode;
 
 /// @brief Performs elementwise operations (sum, subtract, max or product) on two input primitives
 /// Also supports built-in Relu @CLDNN_PRIMITIVE_DESC{activation} available by setting it in arguments.
 /// @notes
-/// - both inputs have to have equal sizes in all dimensions
+/// - both inputs have to have equal sizes in all dimensions or the input tensors are broadcastable 
+///   to the same shape in which the size of each dimention is a max. of input sizes on this dimension)
 /// - format of both inputs has to be the same
 /// - when using integer types, only following eltwise modes are supported: sum, sub, prod, div
 CLDNN_BEGIN_PRIMITIVE_DESC(eltwise)

@@ -18,6 +18,7 @@
 #ifndef CONVOLUTION_GRAD_WEIGHTS_H
 #define CONVOLUTION_GRAD_WEIGHTS_H
 
+#include <stdbool.h>
 #include "cldnn.h"
 /// @addtogroup c_api C API
 /// @{
@@ -54,6 +55,9 @@ cldnn_primitive_id conv_grad;
 cldnn_primitive_id_arr prev_weights_grad;
 /// @brief Array of primitive ids containing bias gradient data calculated in previous iteration. Amount of primitives and their memory sizes should be same as biases.
 cldnn_primitive_id_arr prev_bias_grad;
+/// @brief Should primitive give weights gradient (delta) as an output
+bool output_grad_w;
+
 CLDNN_END_PRIMITIVE_DESC(convolution_grad_weights)
 
 CLDNN_DECLARE_PRIMITIVE_TYPE_ID(convolution_grad_weights);

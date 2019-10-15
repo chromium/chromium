@@ -49,9 +49,8 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
         const std::vector<float>& values_to_subtract = {},
         const cldnn_reorder_mean_mode mode = cldnn_reorder_mean_mode::mean_subtract
     )
-        : primitive_base(id, { input }, output_layout.data_padding)
+        : primitive_base(id, { input }, output_layout.data_padding, { output_layout.data_type })
         , output_format(output_layout.format)
-        , output_data_type(output_layout.data_type)
         , mean("")
         , subtract_per_feature(values_to_subtract)
         , mean_mode(mode)
@@ -70,9 +69,8 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
         primitive_id const& mean,
         const cldnn_reorder_mean_mode mode = cldnn_reorder_mean_mode::mean_subtract
     )
-        : primitive_base(id, { input }, output_layout.data_padding)
+        : primitive_base(id, { input }, output_layout.data_padding, { output_layout.data_type })
         , output_format(output_layout.format)
-        , output_data_type(output_layout.data_type)
         , mean(mean)
         , subtract_per_feature(0)
         , mean_mode(mode)
@@ -93,9 +91,8 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
         const cldnn_reorder_mean_mode mode = cldnn_reorder_mean_mode::mean_subtract,
         const padding& output_padding = padding()
     )
-        : primitive_base(id, { input }, output_padding)
+        : primitive_base(id, { input }, output_padding, { output_data_type })
         , output_format(output_format)
-        , output_data_type(output_data_type)
         , mean("")
         , subtract_per_feature(values_to_subtract)
         , mean_mode(mode)
@@ -116,9 +113,8 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
         const cldnn_reorder_mean_mode mode = cldnn_reorder_mean_mode::mean_subtract,
         const padding& output_padding = padding()
     )
-        : primitive_base(id, { input }, output_padding)
+        : primitive_base(id, { input }, output_padding, { output_data_type })
         , output_format(output_format)
-        , output_data_type(output_data_type)
         , mean(mean)
         , subtract_per_feature(0)
         , mean_mode(mode)
@@ -129,7 +125,6 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
     reorder(const dto* dto)
         : primitive_base(dto)
         , output_format(dto->output_format)
-        , output_data_type(static_cast<data_types>(dto->output_data_type))
         , mean(dto->mean_subtract)
         , subtract_per_feature(float_arr_to_vector(dto->subtract_per_feature))
         , mean_mode(dto->mean_mode)
@@ -138,8 +133,6 @@ struct reorder : public primitive_base<reorder, CLDNN_PRIMITIVE_DESC(reorder)>
 
     /// @brief Requested memory format.
     format output_format;
-    /// @brief Requested memory data type.
-    data_types output_data_type;
     /// @brief Primitive id to get mean subtract values. Ignored if subtract_per_featrue is set.
     primitive_id mean;
     /// @brief Array of mean subtract values.
@@ -158,7 +151,6 @@ protected:
     void update_dto(dto& dto) const override
     {
         dto.output_format = static_cast<cldnn_format_type>(output_format.value);
-        dto.output_data_type = static_cast<cldnn_data_type>(output_data_type);
         dto.mean_subtract = mean.c_str();
         dto.subtract_per_feature = float_vector_to_arr(subtract_per_feature);
         dto.mean_mode = mean_mode;

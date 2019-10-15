@@ -67,6 +67,7 @@ struct primitive
         std::vector<primitive_id>& vref;
 
     public:
+        fixed_size_vector_ref() : vref(*new std::vector<primitive_id>) {}
         fixed_size_vector_ref(std::vector<primitive_id>& ref) : vref(ref)
         {}
 
@@ -92,15 +93,30 @@ public:
         const primitive_type_id& type,
         const primitive_id& id,
         const std::vector<primitive_id>& input,
-        const padding& output_padding = padding()
+        const padding& output_padding = padding(),
+        const optional_data_type output_data_type = optional_data_type()
     )
-        :type(type), id(id), input(_input.cpp_ids), output_padding(output_padding), _input(input)
+        : type(type)
+        , id(id)
+        , input(_input.cpp_ids)
+        , output_padding(output_padding)
+        , output_data_type(output_data_type)
+        , _input(input)
     {}
 
     /// @brief Constructs a copy from basic C API @CLDNN_PRIMITIVE_DESC{primitive}
-    primitive(const CLDNN_PRIMITIVE_DESC(primitive)* dto)
-        :type(dto->type), id(dto->id), input(_input.cpp_ids), output_padding(dto->output_padding), _input(dto->input)
-    {}
+    primitive(const CLDNN_PRIMITIVE_DESC(primitive) * dto)
+        : type(dto->type)
+        , id(dto->id)
+        , input(_input.cpp_ids)
+        , output_padding(dto->output_padding)
+        , output_data_type(dto->output_data_type.enabled
+                               ? optional_data_type{static_cast<data_types>(
+                                     dto->output_data_type.data_type)}
+                               : optional_data_type{})
+        , _input(dto->input)
+    {
+    }
 
     virtual ~primitive() = default;
 
@@ -132,25 +148,23 @@ public:
         result.insert(result.end(), deps.begin(), deps.end());
         return result;
     }
-
     /// @brief Implicit conversion to primiitive id.
     operator primitive_id() const { return id; }
 
-    /// @brief Primitive's type id.
-    const primitive_type_id type;
+    const primitive_type_id& get_type() const { return type; }
+    const primitive_id& get_id() const { return id; }
+    void set_id(const primitive_id& new_id) { id = new_id; }
+    const fixed_size_vector_ref& get_input() const { return input; }
+    const padding& get_output_padding() const { return output_padding; }
+    void set_output_padding(const padding& op) { output_padding = op; }
+    const optional_data_type& get_output_data_type() const { return output_data_type; }
+    void set_output_data_type(const optional_data_type& odt) { output_data_type = odt; }
 
-    /// @brief Primitive's id.
-    const primitive_id id;
-
-    /// @brief List of ids of input primitives.
-    fixed_size_vector_ref input;
-
-    /// @brief Requested output padding.
-    padding output_padding;
 
 protected:
     struct primitive_id_arr
     {
+        primitive_id_arr() {}
         primitive_id_arr(std::vector<primitive_id> const& vec) : cpp_ids(vec)
         {}
 
@@ -180,9 +194,26 @@ protected:
         size_t size() const { return cpp_ids.size(); }
     };
 
-    primitive_id_arr _input;
+    /// @brief Primitive's type id.
+    primitive_type_id type;
+
+    /// @brief Primitive's id.
+    primitive_id id;
+
+    /// @brief List of ids of input primitives.
+    fixed_size_vector_ref input;
+
+    /// @brief Requested output padding.
+    padding output_padding;
+
+    /// @brief Requested output precision, if any.
+    optional_data_type output_data_type;
+
+    primitive_id_arr _input; // Should it be remove if input is also protected?
 
     virtual std::vector<std::reference_wrapper<const primitive_id>> get_dependencies() const { return{}; }
+    primitive(const primitive_type_id& type) : type(type) {}
+
 };
 
 /// @brief base class for all primitives implementations.
@@ -198,6 +229,9 @@ public:
         _dto.type = type;
         _dto.input = _input.ref();
         _dto.output_padding = output_padding;
+        _dto.output_data_type.enabled = (bool)output_data_type;
+        _dto.output_data_type.data_type =
+            static_cast<cldnn_data_type>(*output_data_type);
 
         //call abstract method to update primitive-specific fields
         update_dto(_dto);
@@ -208,8 +242,9 @@ protected:
     explicit primitive_base(
         const primitive_id& id,
         const std::vector<primitive_id>& input,
-        const padding& output_padding = padding())
-        : primitive(PType::type_id(), id, input, output_padding)
+        const padding& output_padding = padding(),
+        optional_data_type output_data_type = optional_data_type())
+        : primitive(PType::type_id(), id, input, output_padding, output_data_type)
     {}
 
     primitive_base(const DTO* dto)
@@ -218,6 +253,8 @@ protected:
         if (dto->type != PType::type_id()) 
             throw std::invalid_argument("DTO type mismatch");
     }
+
+    primitive_base() : primitive(PType::type_id()) {} 
 
 private:
     mutable DTO _dto;

@@ -37,8 +37,6 @@ extern "C" {
 CLDNN_BEGIN_PRIMITIVE_DESC(reorder)
 /// @brief Requested memory format.
 cldnn_format_type output_format;
-/// @brief Requested memory data type.
-cldnn_data_type output_data_type;
 /// @brief Primitive id to get mean subtract values. Ignored if subtract_per_featrue is set.
 cldnn_primitive_id mean_subtract;
 /// @brief Array of mean subtract values.

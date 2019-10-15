@@ -212,8 +212,6 @@ typedef enum /*:int32_t*/
     cldnn_build_option_outputs,                 ///< User selected list of network outputs.
     cldnn_build_option_tuning_config,           ///< Tuning config.
     cldnn_build_option_graph_dumps_dir,         ///< Specifies a directory to which stages of network compilation should be dumped.
-    cldnn_build_option_serialization,           ///< Specifies a name of files to which serialization should be dumped.
-    cldnn_build_option_load_program,            ///< Specifies a name of load_program process.
     cldnn_build_option_learning_config,         ///< User defined learning parameters.
     cldnn_build_option_detection_output_gpu     ///< Run detection output layer always on GPU, regardless performance
 } cldnn_build_option_type;
@@ -276,6 +274,8 @@ typedef enum /*:int32_t*/
     cldnn_format_byxf,          ///< used in bitmaps, input from user i.e b images of RGB format \n \image html byxf.jpg
     cldnn_format_bfyx,          ///< the most common format for activations in clDNN. \n \image html bfyx.jpg
     cldnn_format_fyxb,          ///< format not used inside clDNN, but supported in reorder as extension for user provided formats.
+    cldnn_format_bfyx_f16,     ///< format used for blocked convolution
+    cldnn_format_o_i_yx_i16_o16,///< format used for blocked convolution
     cldnn_format_os_iyx_osv16,  ///< format used only for convolution weights: os - output feature maps slice, i - input feature maps, yx - spatials, sv16 - 16 values of single slice.
                                 ///< \n \image html os_iyx_osv16.jpg
     cldnn_format_os_iyx_osv32,  ///< format used only for convolution weights: os - output feature maps slice, i - input feature maps, yx - spatials, sv32 - 32 values of single slice.
@@ -302,11 +302,16 @@ typedef enum /*:int32_t*/
     cldnn_format_byx8_f4,                 /// < \n format for input for MMAD convolutions
     cldnn_format_fs_bs_yx_bs4_fs32,       /// < \n format for batched input for primitives using MMAD
     cldnn_format_os_is_yx_isa8_osv8_isv4, /// < \n format for weights for MMAD convolutions, stored as ((aligned_to_8(O)/8) * (aligned_to_32(I)/32) * Y * X * ( 8 ) * ( 8 ) * ( 4 )
+    cldnn_format_os_is_yx_isa8_osv8_isv4_swizzled_by_4, /// < \n format for weights for MMAD convolutions
     cldnn_format_is_o_yx_isv32, /// < \n format for weights for 1x1 MMAD convolutions 
+    cldnn_format_is_o32_yx_isv32_swizzled_by_4, /// < \n format for weights for 1x1 MMAD convolutions
     cldnn_format_os_is_y_x8_osv8_isv4, /// < n\ format for weights for MMAD convolutions
+    cldnn_format_os_is_y_x8_osv8_isv4_swizzled_by_4, /// < n\ format for weights for MMAD convolutions
     cldnn_bf_lyx_yx,                      /// < \n format for local convolution weights
     cldnn_format_b_fs_yx_fsv4,            /// < \n format for input for IMAD convolutions
     cldnn_format_os_is_yx_osv16_isv4,     /// < \n format for weights for IMAD convolutions
+    cldnn_format_bfzyx,                   /// < \n format for 3D convolutions
+    cldnn_format_fs_b_yx_fsv32,           /// < format for fp16 convolutions using 32 features
     cldnn_format_format_num,    ///< number of format types
     cldnn_format_any = -1
 } cldnn_format_type;
@@ -316,7 +321,7 @@ typedef enum /*:int32_t*/
 
 #define CLDNN_TENSOR_BATCH_DIM_MAX 1
 #define CLDNN_TENSOR_FEATURE_DIM_MAX 1
-#define CLDNN_TENSOR_SPATIAL_DIM_MAX 2
+#define CLDNN_TENSOR_SPATIAL_DIM_MAX 3
 #define CLDNN_TENSOR_LOCAL_DIM_MAX 2
 #define CLDNN_TENSOR_DIM_MAX 8
 
@@ -399,6 +404,13 @@ typedef struct
     size_t size;                    ///< Number of ids in the array.
 } cldnn_primitive_id_arr;
 
+typedef struct
+{
+    cldnn_data_type data_type;
+    // No bool type available...
+    char enabled;
+} cldnn_optional_data_type;
+
 /// @brief Custom primitive kernel source code
 typedef const char*  cldnn_kernel_code;
 /// @brief Custom primitive kernel source code array
@@ -454,6 +466,12 @@ typedef enum cldnn_activation_func_t
     activation_log,                     // log(val)
 	activation_log2,					// log2(val)
     activation_exp,                     // exp(val)
+    activation_tan,                     // tan(val)
+    activation_atan,                    // atan(val)
+    activation_floor,                   // floor(val)
+    activation_ceil,                    // ceil(val)
+    activation_negative,                // -val
+    activation_not,                     // !val
 } cldnn_activation_func;
 
 /// @brief activation gradient functions
@@ -499,7 +517,8 @@ typedef enum cldnn_reorder_mean_mode_t
     cldnn_primitive_type_id type; /**< @brief Primitive type identificator. */\
     cldnn_primitive_id id;        /**< @brief Primitive id unique within a topology. */\
     cldnn_primitive_id_arr input; /**< @brief Input primitives ids. */\
-    cldnn_padding output_padding; /**< @brief Output padding information. */
+    cldnn_padding output_padding; /**< @brief Output padding information. */\
+    cldnn_optional_data_type output_data_type; /**< @brief If specified, describes an explicit change of the output precision of the primitive. */
 
 /// @brief Close primitive descriptor definition.
 #define CLDNN_END_PRIMITIVE_DESC(PType) };

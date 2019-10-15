@@ -47,12 +47,29 @@ enum class eltwise_mode : int32_t
     pow = cldnn_eltwise_pow,
     /// @brief Eltwise mod.
     mod = cldnn_eltwise_mod,
+    /// @brief Eltwise equal.
+    eq = cldnn_eltwise_eq,
+    /// @brief Eltwise not equal.
+    ne = cldnn_eltwise_ne,
+    /// @brief Eltwise less.
+    lt = cldnn_eltwise_lt,
+    /// @brief Eltwise less of equal.
+    le = cldnn_eltwise_le,
+    /// @brief Eltwise greater.
+    gt = cldnn_eltwise_gt,
+    /// @brief Eltwise greater or equal.
+    ge = cldnn_eltwise_ge,
+    /// @brief Eltwise and.
+    logic_and = cldnn_eltwise_and,
+    /// @brief Eltwise or.
+    logic_or = cldnn_eltwise_or,
 };
 
 /// @brief Performs elementwise operations (sum, subtract, max or product) on two input primitives
 /// Also supports built-in Relu @ref activation available by setting it in arguments.
 /// @notes
-/// - both inputs have to have equal sizes in all dimensions
+/// - both inputs have to have equal sizes in all dimensions or the input tensors are broadcastable 
+///   to the same shape in which the size of each dimention is a max. of input sizes on this dimension)
 /// - format of both inputs has to be the same
 /// - when using integer types, only following eltwise modes are supported: sum, sub, prod, div
 struct eltwise : public primitive_base<eltwise, CLDNN_PRIMITIVE_DESC(eltwise)>

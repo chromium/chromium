@@ -41,6 +41,8 @@ struct reshape : public primitive_base<reshape, CLDNN_PRIMITIVE_DESC(reshape)>
     /// @param id This primitive id.
     /// @param input Input primitive id.
     /// @param output_shape Requested memory shape (excluding padding).
+    /// A dimension could be 0, in this case,  the value is taken from the input tensor.
+    /// At most one dimension of the new shape can be -1. In this case, the value is inferred from the size of the tensor and the remaining dimensions.
     /// @param output_padding Requested memory padding.
     reshape(
         const primitive_id& id,

@@ -66,9 +66,10 @@ namespace cldnn
             out_type output_type,
             uint32_t top_k = 1,
             axis_name axis = axis_name::xyf,
-            const padding& output_padding = padding()
+            const padding& output_padding = padding(),
+            data_types output_data_type = data_types::f32
         )
-            :primitive_base(id, { input }, output_padding)
+            :primitive_base(id, { input }, output_padding, { output_data_type })
             , top_k(top_k)
             , output_type(output_type)
             , axis(axis)

@@ -103,7 +103,6 @@ struct convolution_grad_input : public deconvolution
     {
         return convolution_grad_input(id, input, weights, stride, input_offset, output_size, output_padding);
     }
-
 };
 /// @}
 /// @}

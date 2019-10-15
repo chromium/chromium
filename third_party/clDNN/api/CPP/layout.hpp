@@ -39,6 +39,40 @@ enum class data_types : size_t
     f32 = cldnn_f32,
 };
 
+class optional_data_type
+{
+    // Must be the same as the undrelying type of `data_types`.
+    using storage_type = size_t;
+
+    // Implicitly assumes that this value is not used in the `data_types`.
+    static constexpr auto non_specified_type =
+        std::numeric_limits<storage_type>::max();
+
+public:
+    optional_data_type()
+        : storage(non_specified_type)
+    {}
+
+    optional_data_type(data_types type)
+        : storage(static_cast<storage_type>(type))
+    {}
+
+    operator bool() const { return storage != non_specified_type; }
+
+    // Similarly to std::optional does *not* verify that the object has the type
+    // set. Unlike it, though, returns the value instead of pointer/reference.
+    data_types operator*() const { return static_cast<data_types>(storage); }
+
+    optional_data_type& operator=(const data_types new_type)
+    {
+        storage = static_cast<storage_type>(new_type);
+        return *this;
+    }
+
+private:
+    storage_type storage;
+};
+
 /// Converts C++ type to @ref data_types .
 template <typename T> struct type_to_data_type;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -111,6 +145,50 @@ struct data_type_traits
         default:
             assert(0);
             return std::string("invalid data type: " + std::to_string((int)data_type));
+        }
+    }
+    template<typename T>
+    static T max(data_types data_type) 
+    {
+        switch (data_type)
+        {
+        case data_types::i8:
+            return static_cast<T>(std::numeric_limits<int8_t>::max());
+        case data_types::u8:
+            return static_cast<T>(std::numeric_limits<uint8_t>::max());
+        case data_types::i32:
+            return static_cast<T>(std::numeric_limits<int32_t>::max());
+        case data_types::i64:
+            return static_cast<T>(std::numeric_limits<int64_t>::max());
+        case data_types::f16:
+            return static_cast<T>(65504);
+        case data_types::f32:
+            return static_cast<T>(std::numeric_limits<float>::max());
+        default:
+            assert(0);
+            return static_cast<T>(0);
+        }
+    }
+    template<typename T>
+    static T min(data_types data_type)
+    {
+        switch (data_type)
+        {
+        case data_types::i8:
+            return static_cast<T>(std::numeric_limits<int8_t>::lowest());
+        case data_types::u8:
+            return static_cast<T>(std::numeric_limits<uint8_t>::lowest());
+        case data_types::i32:
+            return static_cast<T>(std::numeric_limits<int32_t>::lowest());
+        case data_types::i64:
+            return static_cast<T>(std::numeric_limits<int64_t>::lowest());
+        case data_types::f16:
+            return static_cast<T>(-65504);
+        case data_types::f32:
+            return static_cast<T>(std::numeric_limits<float>::lowest());
+        default:
+            assert(0);
+            return static_cast<T>(0);
         }
     }
 };
@@ -326,7 +404,7 @@ struct layout
 
     // @brief Calculates position within buffer of the data element pointed by the provided tensor.
     // element == { 0,0,0,0 } means first no-padding (i.e. data) element
-    size_t get_linear_offset(tensor element = { 0,0,0,0 }) const
+    size_t get_linear_offset(tensor element = { 0,0,0,0,0 }) const
     {
         auto pitches = get_pitches();
         auto l_padd = data_padding.lower_size();
@@ -336,17 +414,20 @@ struct layout
             (element.feature[0] < 0 && -element.feature[0] > l_padd.feature[0]) ||
             (element.spatial[0] < 0 && -element.spatial[0] > l_padd.spatial[0]) ||
             (element.spatial[1] < 0 && -element.spatial[1] > l_padd.spatial[1]) ||
+            (element.spatial[2] < 0 && -element.spatial[2] > l_padd.spatial[2]) ||
             (element.batch[0] >= size.batch[0] + u_padd.batch[0]) ||
             (element.feature[0] >= size.feature[0] + u_padd.feature[0]) ||
             (element.spatial[0] >= size.spatial[0] + u_padd.spatial[0]) ||
-            (element.spatial[1] >= size.spatial[1] + u_padd.spatial[1]))
+            (element.spatial[1] >= size.spatial[1] + u_padd.spatial[1]) ||
+            (element.spatial[2] >= size.spatial[2] + u_padd.spatial[2]))
             throw std::invalid_argument("Requested to calculate linear offset for an element which lies outside of the buffer range.");
 
         size_t linear_offset =
             static_cast<size_t>(element.batch[0] + l_padd.batch[0]) * static_cast<size_t>(pitches.batch[0]) +
             static_cast<size_t>(element.feature[0] + l_padd.feature[0]) * static_cast<size_t>(pitches.feature[0]) +
             static_cast<size_t>(element.spatial[0] + l_padd.spatial[0]) * static_cast<size_t>(pitches.spatial[0]) +
-            static_cast<size_t>(element.spatial[1] + l_padd.spatial[1]) * static_cast<size_t>(pitches.spatial[1]);
+            static_cast<size_t>(element.spatial[1] + l_padd.spatial[1]) * static_cast<size_t>(pitches.spatial[1]) +
+            static_cast<size_t>(element.spatial[2] + l_padd.spatial[2]) * static_cast<size_t>(pitches.spatial[2]);
 
         return linear_offset;
     }
@@ -377,6 +458,15 @@ struct layout
             sizes[0] = align_to(sizes[0], 16);
             sizes[2] = align_to(sizes[2], 8);
         }
+        else if (this->format == cldnn::format::o_i_yx_i16_o16 && !(is_aligned_to(sizes[0], 16) && is_aligned_to(sizes[1], 16)))
+        {
+            sizes[0] = align_to(sizes[0], 16);
+            sizes[1] = align_to(sizes[1], 16);
+        }
+        else if (this->format == cldnn::format::bfyx_f16 && !(is_aligned_to(sizes[1], 16)))
+        {
+            sizes[1] = align_to(sizes[1], 16);
+        }
         else if (this->format == cldnn::format::bs_x_bsv16 && !is_aligned_to(sizes[0], 16))
         {
             sizes[0] = align_to(sizes[0], 16);
@@ -405,16 +495,34 @@ struct layout
             sizes[1] = align_to(sizes[1], 32);
             sizes[0] = align_to(sizes[0], 4);
         }
+        else if (this->format == cldnn::format::b_fs_yx_fsv4 && !(is_aligned_to(sizes[1], 4)))
+        {
+            sizes[1] = align_to(sizes[1], 4);
+        }
+        else if (this->format == cldnn::format::fs_b_yx_fsv32 && !(is_aligned_to(sizes[1], 32)))
+        {
+            sizes[1] = align_to(sizes[1], 32);
+        }
         else if (this->format == cldnn::format::os_is_yx_isa8_osv8_isv4 && !(is_aligned_to(sizes[0], 8)) && !(is_aligned_to(sizes[1], 32)))
         {
             sizes[0] = align_to(sizes[0], 8);
+            sizes[1] = align_to(sizes[1], 32);
+        }
+        else if (this->format == cldnn::format::os_is_yx_isa8_osv8_isv4_swizzled_by_4 && !(is_aligned_to(sizes[0], 32)) && !(is_aligned_to(sizes[1], 32)))
+        {
+            sizes[0] = align_to(sizes[0], 32);
             sizes[1] = align_to(sizes[1], 32);
         }
         else if (this->format == cldnn::format::is_o_yx_isv32 && !(is_aligned_to(sizes[1], 32)))
         {
             sizes[1] = align_to(sizes[1], 32);
         }
-        else if (this->format == cldnn::format::os_is_y_x8_osv8_isv4)
+        else if (this->format == cldnn::format::is_o32_yx_isv32_swizzled_by_4 && (!is_aligned_to(sizes[1], 32) || !(is_aligned_to(sizes[0], 32))))
+        {
+            sizes[0] = align_to(sizes[0], 32);
+            sizes[1] = align_to(sizes[1], 32);
+        }
+        else if (this->format == cldnn::format::os_is_y_x8_osv8_isv4 || this->format == cldnn::format::os_is_y_x8_osv8_isv4_swizzled_by_4)
         {
             sizes[1] = align_to(sizes[1], 4);
             sizes[0] = align_to(sizes[0], 8);

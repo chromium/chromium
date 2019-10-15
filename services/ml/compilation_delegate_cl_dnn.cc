@@ -13,6 +13,7 @@
 #include "services/ml/execution_impl_cl_dnn.h"
 #include "services/ml/public/mojom/constants.mojom.h"
 #include "third_party/clDNN/api/C/activation.h"
+#include "third_party/clDNN/api/C/arg_max_min.h"
 #include "third_party/clDNN/api/C/concatenation.h"
 #include "third_party/clDNN/api/C/convolution.h"
 #include "third_party/clDNN/api/C/custom_gpu_primitive.h"
@@ -26,7 +27,7 @@
 #include "third_party/clDNN/api/C/softmax.h"
 
 #if defined(OS_LINUX)
-constexpr char kClDnnVersion[] = "21.1";
+constexpr char kClDnnVersion[] = "25.1";
 #endif
 
 namespace ml {
@@ -208,9 +209,18 @@ int32_t CompilationDelegateClDnn::CldnnCreateTopology() {
     }
   }
   for (size_t i = 0; i < model->outputs.size(); ++i) {
-    const std::string reorder_input(base::NumberToString(model->outputs[i]));
-    const std::string reorder_output(reorder_input + std::string("-reordered"));
-    result = CldnnAddReorder(reorder_input, reorder_output, cldnn_format_byxf);
+    uint32_t output_index = model->outputs[i];
+    const std::string input_name(base::NumberToString(output_index));
+    const std::string output_name(input_name + std::string("_byxf"));
+    cldnn_data_type data_type;
+    const mojom::ModelInfoPtr& model = compilation_->GetModel();
+    const mojom::OperandPtr& operand = model->operands[output_index];
+    int32_t result = CldnnGetType(operand->type, data_type);
+    if (result != mojom::NOT_ERROR) {
+      return result;
+    }
+    result =
+        CldnnAddReorder(input_name, output_name, cldnn_format_byxf, data_type);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -242,6 +252,8 @@ int32_t CompilationDelegateClDnn::CldnnCreateTopology() {
       result = CldnnAddFullyConnected(operation);
     } else if (type == mojom::RESIZE_BILINEAR) {
       result = CldnnAddResizeBilinear(operation);
+    } else if (type == mojom::ARGMAX) {
+      result = CldnnAddArgmax(operation);
     } else {
       LOG(ERROR) << "Operation type " << type << " is not supported.";
       return mojom::BAD_DATA;
@@ -273,16 +285,30 @@ int32_t CompilationDelegateClDnn::CldnnCreateProgram() {
   return mojom::NOT_ERROR;
 }
 
+int32_t CompilationDelegateClDnn::CldnnGetType(int32_t type,
+                                               cldnn_data_type& data_type) {
+  if (type == mojom::TENSOR_FLOAT32) {
+    data_type = cldnn_f32;
+  } else if (type == mojom::TENSOR_INT32) {
+    data_type = cldnn_i32;
+  } else {
+    LOG(ERROR) << "Operand type " << type << " is not supported";
+    return mojom::BAD_DATA;
+  }
+  return mojom::NOT_ERROR;
+}
+
 int32_t CompilationDelegateClDnn::CldnnGetLayout(
     int32_t type,
     const std::vector<uint32_t>& dimensions,
     cldnn_layout& layout,
     int32_t format) {
-  if (type != mojom::TENSOR_FLOAT32) {
-    LOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
-    return mojom::BAD_DATA;
+  cldnn_data_type data_type;
+  int32_t result = CldnnGetType(type, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
   }
-  layout = {.data_type = cldnn_f32, .format = format, .padding = {}};
+  layout = {.data_type = data_type, .format = format, .padding = {}};
   if (dimensions.size() == 1) {
     layout.size = {1, 1, 2, 0, {1, 1, dimensions[0], 1, 1, 1, 1, 1}};
   } else if (dimensions.size() == 2) {
@@ -328,7 +354,9 @@ int32_t CompilationDelegateClDnn::CldnnAddInputLayout(uint32_t index) {
                << std::string(LATE(cldnn_get_last_error_message)());
     return mojom::OP_FAILED;
   }
-  std::string id_str = base::NumberToString(index);
+  const std::string index_name = base::NumberToString(index);
+  // Use _byxf postfix
+  const std::string id_str = index_name + std::string("_byxf");
   const cldnn_input_layout_desc input_layout_desc = {
       .type = type_id, .id = id_str.c_str(), .layout = layout};
   LATE(cldnn_add_primitive)
@@ -341,13 +369,24 @@ int32_t CompilationDelegateClDnn::CldnnAddInputLayout(uint32_t index) {
   }
   DLOG(INFO) << "[clDNN] succeed to add input layout primitve with id "
              << id_str;
+  // Reorder to bfyx format
+  cldnn_data_type data_type;
+  result = CldnnGetType(operand->type, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+  result = CldnnAddReorder(id_str, index_name, cldnn_format_bfyx, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
   return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateClDnn::CldnnAddReorder(
     const std::string& input_name,
     const std::string& output_name,
-    int32_t target_format) {
+    int32_t target_format,
+    cldnn_data_type target_data_type) {
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_reorder_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -359,7 +398,7 @@ int32_t CompilationDelegateClDnn::CldnnAddReorder(
       .type = type_id,
       .id = output_name.c_str(),
       .output_format = cldnn_format_type(target_format),
-      .output_data_type = cldnn_f32,
+      .output_data_type = {target_data_type, 1},
   };
   // Setup inputs.
   std::vector<cldnn_primitive_id> input_ids_array(1);
@@ -785,6 +824,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
     conv_desc.bias = {.data = bias_ids_array.data(),
                       .size = bias_ids_array.size()};
     conv_desc.split = params.depth_out;
+    conv_desc.groups = 1;
   } else {
     CldnnAddData(weights_index);
     weight_ids_array.resize(1);
@@ -803,6 +843,7 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
                       .size = bias_ids_array.size()};
 
     conv_desc.split = 1;
+    conv_desc.groups = 1;
   }
 
   conv_desc.input_offset = {
@@ -1217,10 +1258,20 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   // Setup inputs.
   // FC only accepts yxfb, bfyx, byxf_af32, so reorder to bfyx in case input
   // is byxf.
-  const std::string reorder_input_name(base::NumberToString(input_index));
-  const std::string reorder_output_name(reorder_input_name +
-                                        std::string("-reordered"));
-  CldnnAddReorder(reorder_input_name, reorder_output_name, cldnn_format_bfyx);
+  const std::string input_name(base::NumberToString(input_index));
+  const std::string output_name(input_name + std::string("_bfyx"));
+  cldnn_data_type data_type;
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  const mojom::OperandPtr& operand = model->operands[input_index];
+  result = CldnnGetType(operand->type, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+  result =
+      CldnnAddReorder(input_name, output_name, cldnn_format_bfyx, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
   // Reshape to [input_batch_size, input_size]
   type_id = LATE(cldnn_reshape_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -1230,8 +1281,7 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   }
   cldnn_reshape_desc reshape_desc = {.type = type_id};
   std::vector<cldnn_primitive_id> input_ids_array(1);
-  std::string reshape_input_str(reorder_output_name);
-  input_ids_array[0] = reshape_input_str.c_str();
+  input_ids_array[0] = output_name.c_str();
   reshape_desc.input = {.data = input_ids_array.data(),
                         .size = input_ids_array.size()};
 
@@ -1291,7 +1341,6 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
     return mojom::OP_FAILED;
   }
 
-  const mojom::ModelInfoPtr& model = compilation_->GetModel();
   const mojom::OperandValueInfoPtr& weights_info =
       model->values[base::NumberToString(weights_index)];
   auto mapping = compilation_->MapMemory(weights_index);
@@ -1462,6 +1511,115 @@ int32_t CompilationDelegateClDnn::CldnnAddResizeBilinear(
   DLOG(INFO) << "[clDNN] succeed to add custom_gpu primitive with id "
              << id_str;
 
+  return mojom::NOT_ERROR;
+}
+
+int32_t CompilationDelegateClDnn::CldnnAddArgmax(
+    const mojom::OperationPtr& operation) {
+  // Setup argmax params.
+  ArgmaxParams params;
+  int32_t result = compilation_->GetArgmaxParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+
+  // Create argmax descriptor.
+  cldnn_status status;
+  cldnn_primitive_type_id type_id = LATE(cldnn_arg_max_min_type_id)(&status);
+  if (status != CLDNN_SUCCESS) {
+    LOG(ERROR) << "[clDNN] failed to get primitive type id " << status << " "
+               << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  cldnn_arg_max_min_desc arg_max_min_desc = {.type = type_id};
+
+  // Setup inputs.
+  const uint32_t input_index = operation->inputs[0];
+  std::string input(base::NumberToString(input_index));
+  std::vector<cldnn_primitive_id> input_ids_array = {input.c_str()};
+  arg_max_min_desc.input = {.data = input_ids_array.data(),
+                            .size = input_ids_array.size()};
+
+  // Setup output type.
+  const uint32_t output_index = operation->outputs[0];
+  cldnn_data_type data_type;
+  const mojom::ModelInfoPtr& model = compilation_->GetModel();
+  const mojom::OperandPtr& operand = model->operands[output_index];
+  result = CldnnGetType(operand->type, data_type);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+  arg_max_min_desc.output_data_type = {data_type, 1};
+
+  // Setup type
+  arg_max_min_desc.output_type = cldnn_arg_max;
+
+  // Setup top_k
+  arg_max_min_desc.top_k = 1;
+
+  // Setup axis
+  arg_max_min_desc.with_axis = 1;
+  const uint32_t rank = model->operands[input_index]->dimensions.size();
+  int32_t axis = params.axis < 0 ? rank + params.axis : params.axis;
+  if (rank == 1) {
+    if (axis == 0) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_x;
+    } else {
+      LOG(ERROR) << "axis " << params.axis << " is not supported.";
+      return mojom::BAD_DATA;
+    }
+  } else if (rank == 2) {
+    // HW -> yx
+    if (axis == 0) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_y;
+    } else if (axis == 1) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_x;
+    } else {
+      LOG(ERROR) << "axis " << params.axis << " is not supported.";
+      return mojom::BAD_DATA;
+    }
+  } else if (rank == 3) {
+    // HWC -> yxf
+    if (axis == 0) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_y;
+    } else if (params.axis == 1) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_x;
+    } else if (params.axis == 2) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_feature;
+    } else {
+      LOG(ERROR) << "axis " << params.axis << " is not supported.";
+      return mojom::BAD_DATA;
+    }
+  } else if (rank == 4) {
+    // NHWC -> byxf
+    if (axis == 0) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_batch;
+    } else if (axis == 1) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_y;
+    } else if (axis == 2) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_x;
+    } else if (axis == 3) {
+      arg_max_min_desc.axis = cldnn_arg_max_min_feature;
+    } else {
+      LOG(ERROR) << "axis " << params.axis << " is not supported.";
+      return mojom::BAD_DATA;
+    }
+  } else {
+    LOG(ERROR) << "rank " << rank << " is not supported.";
+    return mojom::BAD_DATA;
+  }
+
+  // Setup id and add into topology.
+  std::string id_str(base::NumberToString(output_index));
+  arg_max_min_desc.id = id_str.c_str();
+  LATE(cldnn_add_primitive)
+  (topology_, reinterpret_cast<const cldnn_primitive_desc*>(&arg_max_min_desc),
+   &status);
+  if (status != CLDNN_SUCCESS) {
+    LOG(ERROR) << "[clDNN] failed to add primitive " << status << " "
+               << std::string(LATE(cldnn_get_last_error_message)());
+    return mojom::OP_FAILED;
+  }
+  DLOG(INFO) << "[clDNN] succeed to add argmax primitive with id " << id_str;
   return mojom::NOT_ERROR;
 }
 

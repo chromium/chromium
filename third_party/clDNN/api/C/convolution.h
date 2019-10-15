@@ -64,6 +64,12 @@ cldnn_primitive_id_arr output_calibration_factors;
 float input_quantization_factor;
 /// @brief Output quantization factor
 float output_quantization_factor;
+/// @brief Number of feature groups (grouped convolution). If more than 1 then weights/bias count needs to be 1.
+uint32_t groups;
+/// @param padding_above Defines a padding added to input image on left (x axis) and top (y axis).
+cldnn_tensor padding_above;
+/// @param padding_below Defines a padding added to input image on right (x axis) and bottom (y axis).
+cldnn_tensor padding_below;
 
 CLDNN_END_PRIMITIVE_DESC(convolution)
 

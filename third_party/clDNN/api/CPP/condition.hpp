@@ -65,7 +65,7 @@ struct condition : public primitive_base<condition, CLDNN_PRIMITIVE_DESC(conditi
             const topology& topology_false,
             const primitive_id& compare_data,
             const cond_functions& func,
-            const tensor& offset = { 0, 0, 0, 0 },
+            const tensor& offset = { 0, 0, 0, 0, 0 },
             const padding& output_padding = padding()
         )
         : primitive_base(id, { input }, output_padding)
