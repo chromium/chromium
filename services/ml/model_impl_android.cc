@@ -187,15 +187,18 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
     }
   }
 
+  mojo::ScopedSharedBufferMapping mapping;
   DLOG(INFO) << "values(" << model_info->values.size() << ")";
-  auto mapping = model_info->memory->Map(model_info->memory_size);
-  const int8_t* base = static_cast<const int8_t*>(mapping.get());
-  for (auto itr = model_info->values.begin(); itr != model_info->values.end();
-       ++itr) {
-    const mojom::OperandValueInfoPtr& value_info = itr->second;
-    SetOperandValue(value_info->index,
-                    static_cast<const void*>(base + value_info->offset),
-                    value_info->length);
+  if (model_info->values.size() != 0) {
+    mapping = model_info->memory->Map(model_info->memory_size);
+    const int8_t* base = static_cast<const int8_t*>(mapping.get());
+    for (auto itr = model_info->values.begin(); itr != model_info->values.end();
+         ++itr) {
+      const mojom::OperandValueInfoPtr& value_info = itr->second;
+      SetOperandValue(value_info->index,
+                      static_cast<const void*>(base + value_info->offset),
+                      value_info->length);
+    }
   }
 
   DLOG(INFO) << "inputs(" << model_info->inputs.size() << ")";

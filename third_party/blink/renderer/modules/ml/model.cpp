@@ -203,14 +203,17 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   requests_.insert(resolver);
 
   uint32_t total_byte_length = 0;
+  mojo::ScopedSharedBufferMapping mapping;
   for (HeapHashMap<WTF::String, Member<DOMArrayBufferView>>::const_iterator
            itr = buffer_views_.begin();
        itr != buffer_views_.end(); ++itr)
     total_byte_length += itr->value->byteLength();
 
-  memory_ = mojo::SharedBufferHandle::Create(total_byte_length);
-  mojo::ScopedSharedBufferMapping mapping = memory_->Map(total_byte_length);
+  if (total_byte_length != 0) {
+    memory_ = mojo::SharedBufferHandle::Create(total_byte_length);
 
+    mapping = memory_->Map(total_byte_length);
+  }
   uint32_t offset = 0;
 
   for (WTF::HashMap<WTF::String,
@@ -228,9 +231,11 @@ ScriptPromise Model::finish(ScriptState* script_state) {
     offset += length;
   }
 
-  model_info_->memory =
-      memory_->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
-  model_info_->memory_size = total_byte_length;
+  if (total_byte_length != 0) {
+    model_info_->memory =
+        memory_->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+    model_info_->memory_size = total_byte_length;
+  }
   model_->Finish(std::move(model_info_),
                  WTF::Bind(&Model::OnResultCode, WrapPersistent(this),
                            WrapPersistent(resolver), String("finish")));
