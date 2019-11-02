@@ -12,6 +12,7 @@
 #include "services/ml/dml/format_output_shader.h"
 #include "services/ml/dml/half_input_shader.h"
 #include "services/ml/dml/half_output_shader.h"
+#include "services/ml/dml/uint_output_shader.h"
 #include "services/ml/dml_d3dx12_utils.h"
 #include "services/ml/dml_symbol_table.h"
 #include "services/ml/ml_utils_dml.h"
@@ -111,17 +112,32 @@ FormatData::FormatData(CompiledModelDML* dml) {
 
   size_t output_heap_index = inputs.size() * 2;
   const std::vector<uint32_t>& outputs = dml->outputs_;
+  bool uint32_output;
   for (size_t i = 0; i < outputs.size(); ++i) {
     const OperandDML* operand = dml->operand_map_[outputs[i]].get();
     size_t element_count = product(operand->dimensions_);
+    bool uint32_type =
+        operand->operand_desc_.DataType == DML_TENSOR_DATA_TYPE_UINT32 ? true
+                                                                       : false;
+    // All of output data must be same type.
+    if (i == 0) {
+      uint32_output = uint32_type;
+    } else if (uint32_output != uint32_type) {
+      LOG(ERROR) << "Output data must be same type.";
+      return;
+    }
+    DXGI_FORMAT input_format =
+        uint32_type
+            ? DXGI_FORMAT_R32_UINT
+            : (g_support_f16 ? DXGI_FORMAT_R16_FLOAT : DXGI_FORMAT_R32_FLOAT);
+    DXGI_FORMAT output_format =
+        uint32_type ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R32_FLOAT;
     CreateUnorderedAccessView(
-        dml, operand->operand_resource_.Get(), element_count,
-        g_support_f16 ? DXGI_FORMAT_R16_FLOAT : DXGI_FORMAT_R32_FLOAT,
+        dml, operand->operand_resource_.Get(), element_count, input_format,
         descriptor_heap_.Get(), 2 * i + output_heap_index);
-    CreateUnorderedAccessView(dml, operand->format_resource_.Get(),
-                              element_count, DXGI_FORMAT_R32_FLOAT,
-                              descriptor_heap_.Get(),
-                              2 * i + 1 + output_heap_index);
+    CreateUnorderedAccessView(
+        dml, operand->format_resource_.Get(), element_count, output_format,
+        descriptor_heap_.Get(), 2 * i + 1 + output_heap_index);
   }
 
   // Define root table layout.
@@ -171,11 +187,12 @@ FormatData::FormatData(CompiledModelDML* dml) {
   }
 
   pipeline_state_desc.pRootSignature = root_signature_.Get();
-  // byte_code = g_support_f16 ? g_format_half_output : g_format_output;
   pipeline_state_desc.CS.pShaderBytecode =
-      g_support_f16 ? g_format_half_output : g_format_output;
-  pipeline_state_desc.CS.BytecodeLength =
-      _countof(g_support_f16 ? g_format_half_output : g_format_output);
+      g_support_f16 ? g_format_half_output
+                    : (uint32_output ? g_format_uint_output : g_format_output);
+  pipeline_state_desc.CS.BytecodeLength = _countof(
+      g_support_f16 ? g_format_half_output
+                    : (uint32_output ? g_format_uint_output : g_format_output));
 
   hr = dml->d3d12_device_->CreateComputePipelineState(
       &pipeline_state_desc, IID_PPV_ARGS(&output_pipline_state_));

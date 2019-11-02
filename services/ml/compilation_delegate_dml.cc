@@ -104,8 +104,8 @@ HRESULT CreateCommittedResources(scoped_refptr<CompiledModelDML> dml,
   const std::vector<uint32_t>& inputs = model->inputs;
   for (size_t i = 0; i < inputs.size(); ++i) {
     size_t index = inputs[i];
-    dml->operand_map_[index] =
-        std::make_unique<OperandDML>(model->operands[index]->dimensions);
+    dml->operand_map_[index] = std::make_unique<OperandDML>(
+        model->operands[index]->dimensions, model->operands[index]->type);
     // The input data will be formatted with hsls, so the size of input
     // data is Float32 * product(dimensions).
     size_t input_data_size =
@@ -131,8 +131,8 @@ HRESULT CreateCommittedResources(scoped_refptr<CompiledModelDML> dml,
   const std::vector<uint32_t>& outputs = model->outputs;
   for (size_t i = 0; i < outputs.size(); ++i) {
     size_t index = outputs[i];
-    dml->operand_map_[index] =
-        std::make_unique<OperandDML>(model->operands[index]->dimensions);
+    dml->operand_map_[index] = std::make_unique<OperandDML>(
+        model->operands[index]->dimensions, model->operands[index]->type);
     hr = CreateOutputResource(dml->operand_map_[index]->SizeInBytes(),
                               dml->operand_map_[index]->operand_resource_,
                               dml->d3d12_device_);
@@ -165,7 +165,8 @@ HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
   // Create OperandDML if it doesn't exist.
   if (dml->operand_map_.find(index) == dml->operand_map_.end()) {
     dml->operand_map_[index] = std::make_unique<OperandDML>(
-        model->operands[index]->dimensions, depth_conv_weight);
+        model->operands[index]->dimensions, model->operands[index]->type,
+        depth_conv_weight);
   }
 
   // Upload constants_ that hold the value of setting with setOperandValue js
@@ -197,7 +198,7 @@ HRESULT UploadConstantResource(scoped_refptr<CompiledModelDML> dml,
 HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
                                    const std::vector<uint32_t>& outputs,
                                    uint32_t index,
-                                   const std::vector<uint32_t>& dimensions) {
+                                   const mojom::OperandPtr& operand_ptr) {
   for (size_t i = 0; i < outputs.size(); ++i) {
     // It's not intermediate output.
     if (index == outputs[i])
@@ -205,7 +206,8 @@ HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
   }
 
   if (dml->operand_map_.find(index) == dml->operand_map_.end()) {
-    dml->operand_map_[index] = std::make_unique<OperandDML>(dimensions);
+    dml->operand_map_[index] = std::make_unique<OperandDML>(
+        operand_ptr->dimensions, operand_ptr->type);
   }
 
   if (dml->operand_map_[index]->operand_resource_)
@@ -225,7 +227,7 @@ HRESULT CreateIntermediateResource(scoped_refptr<CompiledModelDML> dml,
                                    const mojom::ModelInfoPtr& model,
                                    uint32_t index) {
   return CreateIntermediateResource(dml, model->outputs, index,
-                                    model->operands[index]->dimensions);
+                                    model->operands[index]);
 }
 
 DML_BUFFER_BINDING* InputBuffers(CompiledModelDML* dml,
@@ -391,8 +393,8 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
 }
 
 HRESULT BindingTableForExecution(IDMLDevice* dml_device,
-                              OperationDML* operation,
-                              CompiledModelDML* dml) {
+                                 OperationDML* operation,
+                                 CompiledModelDML* dml) {
   // Create a table per executed operator.
   auto binding_props = operation->compiled_operator_->GetBindingProperties();
   DML_BINDING_TABLE_DESC table_desc = {
@@ -433,7 +435,7 @@ HRESULT BindingTableForExecution(IDMLDevice* dml_device,
       input_binding_array[i] = {DML_BINDING_TYPE_NONE, nullptr};
     } else {
       input_buffer_array[i] = {operand->operand_resource_.Get(), 0,
-                                 operand->SizeInBytes()};
+                               operand->SizeInBytes()};
       input_binding_array[i] = {DML_BINDING_TYPE_BUFFER,
                                 &input_buffer_array[i]};
     }
@@ -542,6 +544,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileFullyConnected(model, operation);
     } else if (operation->type == mojom::RESIZE_BILINEAR) {
       hr = CompileBilinearScale(model, operation);
+    } else if (operation->type == mojom::ARGMAX) {
+      hr = CompileArgmax(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -562,7 +566,7 @@ int32_t CompilationDelegateDML::Compile() {
 
   for (size_t i = 0; i < dml_->operations_.size(); ++i) {
     hr = BindingTableForExecution(dml_->dml_device_.Get(),
-                               dml_->operations_[i].get(), dml_.get());
+                                  dml_->operations_[i].get(), dml_.get());
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed binding table for execution.";
     }
@@ -1016,40 +1020,14 @@ HRESULT CompilationDelegateDML::CompileConcatenation(
   if (result != mojom::NOT_ERROR)
     return E_FAIL;
 
-  uint32_t axis = 0;
-  // Original rank has convert to 4 for NCHW.
-  switch (model->operands[operation->inputs[0]]->dimensions.size()) {
-    case 1:
-      axis = 3;
-      break;
-    case 2:
-      axis = params.axis + 2;
-      break;
-    case 3:
-      if (params.axis == 2) {
-        axis = 1;
-      } else {
-        axis = params.axis + 2;
-      }
-      break;
-    case 4:
-      if (params.axis == 0) {
-        axis = 0;
-      } else if (params.axis == 1) {
-        axis = 2;
-      } else if (params.axis == 2) {
-        axis = 3;
-      } else {
-        axis = 1;
-      }
-      break;
-    default:
-      LOG(ERROR) << "The rank isn't supported.";
-      return E_FAIL;
-  }
+  int32_t axis = 0;
+  HRESULT hr =
+      ConvertAxis(model->operands[operation->inputs[0]]->dimensions.size(),
+                  params.axis, axis);
+  if (FAILED(hr))
+    return hr;
 
   // Check constants for inputs tensor.
-  HRESULT hr = S_OK;
   size_t inputs_size = operation->inputs.size() - 1;
   DML_TENSOR_DESC inputs_tensor_desc[inputs_size];
   for (size_t i = 0; i < inputs_size; ++i) {
@@ -1102,9 +1080,8 @@ HRESULT CompilationDelegateDML::ConvertToNHWC(
   size_t input_index = operation->inputs[0];
   // Copy a temp operand at the last with the input operand.
   temp_operand_index_++;
-  HRESULT hr =
-      CreateIntermediateResource(dml_, model->outputs, temp_operand_index_,
-                                 model->operands[input_index]->dimensions);
+  HRESULT hr = CreateIntermediateResource(
+      dml_, model->outputs, temp_operand_index_, model->operands[input_index]);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed creating intermediate resource for temp operand.";
     return hr;
@@ -1304,6 +1281,67 @@ HRESULT CompilationDelegateDML::CompileBilinearScale(
   hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling resize bilinear operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileArgmax(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileArgmax";
+  ArgmaxParams params;
+  int32_t result = compilation_->GetArgmaxParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return E_FAIL;
+
+  size_t output_index = operation->outputs[0];
+  // Keep dimensions as DML expect.
+  std::vector<uint32_t>& dimensions = model->operands[output_index]->dimensions;
+  DCHECK(params.axis >= 0);
+  if (static_cast<uint32_t>(params.axis) == dimensions.size()) {
+    dimensions.insert(dimensions.end(), 1);
+  } else if (static_cast<uint32_t>(params.axis) < dimensions.size()) {
+    dimensions.insert(dimensions.begin() + params.axis, 1);
+  } else {
+    return E_FAIL;
+  }
+  HRESULT hr = CreateIntermediateResource(dml_, model, output_index);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+  dml_->operand_map_[output_index]->UpdateOperandDesc(
+      dimensions, model->operands[output_index]->type);
+
+  size_t input_index = operation->inputs[0];
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[input_index]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  DML_BUFFER_TENSOR_DESC& output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  // Output tensor data type for reduce operation need UINT32.
+  output_buffer_desc.DataType = DML_TENSOR_DATA_TYPE_UINT32;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  int32_t axis = 0;
+  hr = ConvertAxis(model->operands[input_index]->dimensions.size(), params.axis,
+                   axis);
+  if (FAILED(hr))
+    return hr;
+  const UINT axes[1] = {axis};
+  DML_REDUCE_OPERATOR_DESC argmax_operator_desc = {
+      DML_REDUCE_FUNCTION_ARGMAX, &input_tensor_desc, &output_tensor_desc, 1,
+      axes};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_REDUCE,
+                                     &argmax_operator_desc};
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling argmax operator.";
     return hr;
   }
 

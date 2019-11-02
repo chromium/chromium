@@ -12,8 +12,27 @@
 #include "services/ml/dml/float16_compressor.h"
 #include "services/ml/dml/format_data.h"
 #include "services/ml/dml_d3dx12_utils.h"
+#include "services/ml/public/mojom/constants.mojom.h"
 
 namespace ml {
+
+namespace {
+
+DML_TENSOR_DATA_TYPE TensorDataType(int32_t type) {
+  switch (type) {
+    case mojom::TENSOR_FLOAT32:
+      return g_support_f16 ? DML_TENSOR_DATA_TYPE_FLOAT16
+                           : DML_TENSOR_DATA_TYPE_FLOAT32;
+    case mojom::TENSOR_INT32:
+      return DML_TENSOR_DATA_TYPE_INT32;
+    default:
+      LOG(ERROR) << "The tensor data type isn't supported";
+      NOTREACHED();
+      return DML_TENSOR_DATA_TYPE_UNKNOWN;
+  }
+}
+
+}  // namespace
 
 OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
                            size_t descriptor_index,
@@ -34,11 +53,20 @@ OperationDML::OperationDML(ComPtr<IDMLCompiledOperator> compiled_operator,
 OperationDML::~OperationDML() = default;
 
 OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
+                       int32_t data_type,
                        bool depth_conv_weight)
     : operand_desc_({}),
       operand_resource_(nullptr),
       upload_resource_(nullptr),
       readback_resource_(nullptr) {
+  UpdateOperandDesc(sizes, data_type, depth_conv_weight);
+}
+
+OperandDML::~OperandDML() = default;
+
+void OperandDML::UpdateOperandDesc(const std::vector<uint32_t>& sizes,
+                                   int32_t data_type,
+                                   bool depth_conv_weight) {
   // All buffer tensors must have a DimensionCount of either 4 or 5.
   // input data of NHWC to DirectML NCHW.
   switch (sizes.size()) {
@@ -72,8 +100,7 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
       1,
   };
 
-  operand_desc_.DataType = g_support_f16 ? DML_TENSOR_DATA_TYPE_FLOAT16
-                                         : DML_TENSOR_DATA_TYPE_FLOAT32;
+  operand_desc_.DataType = TensorDataType(data_type);
   operand_desc_.Flags = DML_TENSOR_FLAG_NONE;
   operand_desc_.DimensionCount = dimensions_.size();
   operand_desc_.Sizes = dimensions_.data();
@@ -82,7 +109,6 @@ OperandDML::OperandDML(const std::vector<uint32_t>& sizes,
       operand_desc_.DataType, operand_desc_.DimensionCount, operand_desc_.Sizes,
       operand_desc_.Strides);
 }
-OperandDML::~OperandDML() = default;
 
 CompiledModelDML::CompiledModelDML(std::vector<uint32_t> inputs,
                                    std::vector<uint32_t> outputs)
@@ -393,6 +419,40 @@ HRESULT FormatAndUploadResource(void* data,
     UploadTensorResource(float32_data.data(),
                          float32_data.size() * sizeof(float), upload_resource,
                          input_resource, command_list);
+  }
+  return S_OK;
+}
+
+HRESULT ConvertAxis(uint32_t size, int32_t axisInNHWC, int32_t& axis) {
+  // Original rank has convert to 4 for NCHW.
+  switch (size) {
+    case 1:
+      axis = 3;
+      break;
+    case 2:
+      axis = axisInNHWC + 2;
+      break;
+    case 3:
+      if (axisInNHWC == 2) {
+        axis = 1;
+      } else {
+        axis = axisInNHWC + 2;
+      }
+      break;
+    case 4:
+      if (axisInNHWC == 0) {
+        axis = 0;
+      } else if (axisInNHWC == 1) {
+        axis = 2;
+      } else if (axisInNHWC == 2) {
+        axis = 3;
+      } else {
+        axis = 1;
+      }
+      break;
+    default:
+      LOG(ERROR) << "The rank isn't supported.";
+      return E_FAIL;
   }
   return S_OK;
 }

@@ -54,10 +54,15 @@ struct OperationDML {
 
 struct OperandDML {
  public:
-  OperandDML(const std::vector<uint32_t>&, bool depth_conv_weight = false);
+  OperandDML(const std::vector<uint32_t>&,
+             int32_t data_type,
+             bool depth_conv_weight = false);
   ~OperandDML();
 
   size_t SizeInBytes() { return operand_desc_.TotalTensorSizeInBytes; }
+  void UpdateOperandDesc(const std::vector<uint32_t>&,
+                         int32_t data_type,
+                         bool depth_conv_weight = false);
 
   std::vector<uint32_t> dimensions_;
   std::vector<uint32_t> strides_;
@@ -149,6 +154,9 @@ HRESULT FormatAndUploadResource(void* data,
                                 ComPtr<ID3D12Resource>& input_resource,
                                 ComPtr<ID3D12GraphicsCommandList> command_list,
                                 bool depth_conv_weight);
+
+HRESULT ConvertAxis(uint32_t size, int32_t axisInNHWC, int32_t& axis);
+
 }  // namespace ml
 
 #endif  // SERVICES_ML_ML_UTILS_DML_H_

@@ -23,9 +23,8 @@ class CompilationDelegate {
   virtual ~CompilationDelegate() = default;
 
   virtual int32_t Compile() = 0;
-  virtual int32_t CreateExecution(
-      std::unique_ptr<mojom::Execution>& execution,
-      mojom::ExecutionInitParamsPtr params) = 0;
+  virtual int32_t CreateExecution(std::unique_ptr<mojom::Execution>& execution,
+                                  mojom::ExecutionInitParamsPtr params) = 0;
 };
 
 struct ElementWiseParams {
