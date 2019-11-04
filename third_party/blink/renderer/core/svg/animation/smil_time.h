@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_H_
 
 #include <ostream>
+#include <algorithm>
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
