@@ -45,6 +45,7 @@ interface NeuralNetworkContext {
     const long TRANSPOSE = 37;
     const long ARGMAX = 39;
     const long MAXIMUM = 65;
+    const long PRELU = 71;
     const long ATROUS_CONV_2D = 10003;
     const long ATROUS_DEPTHWISE_CONV_2D = 10004;
 

@@ -69,6 +69,7 @@ class NeuralNetworkContext final : public ScriptWrappable,
   static const unsigned long kTranspose = 37;
   static const unsigned long kArgmax = 39;
   static const unsigned long kMaximum = 65;
+  static const unsigned long kPrelu = 71;
   static const unsigned long kAtrousConv2D = 10003;
   static const unsigned long kAtrousDepthwiseConv2D = 10004;
 
