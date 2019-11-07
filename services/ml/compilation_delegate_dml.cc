@@ -546,6 +546,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileBilinearScale(model, operation);
     } else if (operation->type == mojom::ARGMAX) {
       hr = CompileArgmax(model, operation);
+    } else if (operation->type == mojom::LOGISTIC) {
+      hr = CompileSigmoid(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -1342,6 +1344,41 @@ HRESULT CompilationDelegateDML::CompileArgmax(
   hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling argmax operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompileSigmoid(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileSigmoid";
+
+  size_t output_index = operation->outputs[0];
+  HRESULT hr = CreateIntermediateResource(dml_, model, output_index);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating intermediate resource for output.";
+    return hr;
+  }
+
+  DML_BUFFER_TENSOR_DESC input_buffer_desc =
+      dml_->operand_map_[operation->inputs[0]]->operand_desc_;
+  DML_TENSOR_DESC input_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                       &input_buffer_desc};
+
+  DML_BUFFER_TENSOR_DESC output_buffer_desc =
+      dml_->operand_map_[output_index]->operand_desc_;
+  DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
+                                        &output_buffer_desc};
+
+  DML_ACTIVATION_SIGMOID_OPERATOR_DESC sigmoid_operator_desc = {
+      &input_tensor_desc, &output_tensor_desc};
+  DML_OPERATOR_DESC operator_desc = {DML_OPERATOR_ACTIVATION_SIGMOID,
+                                     &sigmoid_operator_desc};
+  hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling sigmoid operator.";
     return hr;
   }
 

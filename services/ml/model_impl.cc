@@ -36,9 +36,11 @@ void ModelImpl::CopyModelInfo(mojom::ModelInfoPtr& model_info) {
        ++itr) {
     model_info->values.insert({itr->first, itr->second->Clone()});
   }
-  model_info->memory = model_info_->memory->Clone(
-      mojo::SharedBufferHandle::AccessMode::READ_ONLY);
-  model_info->memory_size = model_info_->memory_size;
+  if (model_info_->memory_size != 0) {
+    model_info->memory = model_info_->memory->Clone(
+        mojo::SharedBufferHandle::AccessMode::READ_ONLY);
+    model_info->memory_size = model_info_->memory_size;
+  }
   model_info->inputs = model_info_->inputs;
   model_info->outputs = model_info_->outputs;
 }
