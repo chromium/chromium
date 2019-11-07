@@ -123,18 +123,70 @@ kernel void copy_metal_to_nhwc_nonarray(texture2d<half, access::read> in[[textur
     const ushort H = ushort_arg_0;
     const ushort W = ushort_arg_1;
     const ushort C = ushort_arg_2;
-    
+
     if (gid.x >= W || gid.y >= H) {
         return;
     }
-    
+
     half4 cs = in.read(gid.xy);
     
 #define CHWP4_TO_HWC(idx, c, h, w)                       \
 if ((c) < C) {                                         \
 out[int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
 }
-    
+
+    CHWP4_TO_HWC(0, 0, gid.y, gid.x);
+    CHWP4_TO_HWC(1, 1, gid.y, gid.x);
+    CHWP4_TO_HWC(2, 2, gid.y, gid.x);
+    CHWP4_TO_HWC(3, 3, gid.y, gid.x);
+#undef CHWP4_TO_HWC
+}
+
+kernel void output_nhwc_int_data(texture2d_array<half, access::read> in[[texture(0)]],
+                               device int* out[[buffer(0)]],
+                               ushort3 gid[[thread_position_in_grid]]) {
+    const ushort H = ushort_arg_0;
+    const ushort W = ushort_arg_1;
+    const ushort C = ushort_arg_2;
+
+    if (gid.x >= W || gid.y >= H) {
+        return;
+    }
+    const ushort n = gid.z / divRoundUp(C, 4);
+    const ushort c = gid.z - n * divRoundUp(C, 4);
+
+    half4 cs = in.read(gid.xy, gid.z);
+
+#define CHWP4_TO_HWC(idx, n, c_, h, w)                                  \
+if ((c_) < C) {                                                         \
+  out[n * H * W * C + int(h) * W * C + int(w) * C + int(c_)] = cs[idx];     \
+}
+
+    CHWP4_TO_HWC(0, n, c * 4 + 0, gid.y, gid.x);
+    CHWP4_TO_HWC(1, n, c * 4 + 1, gid.y, gid.x);
+    CHWP4_TO_HWC(2, n, c * 4 + 2, gid.y, gid.x);
+    CHWP4_TO_HWC(3, n, c * 4 + 3, gid.y, gid.x);
+#undef CHWP4_TO_HWC
+}
+
+kernel void output_nhwc_int_data_nonarray(texture2d<half, access::read> in[[texture(0)]],
+                                        device int* out[[buffer(0)]],
+                                        ushort2 gid[[thread_position_in_grid]]) {
+    const ushort H = ushort_arg_0;
+    const ushort W = ushort_arg_1;
+    const ushort C = ushort_arg_2;
+
+    if (gid.x >= W || gid.y >= H) {
+        return;
+    }
+
+    half4 cs = in.read(gid.xy);
+
+#define CHWP4_TO_HWC(idx, c, h, w)                       \
+if ((c) < C) {                                         \
+out[int(h) * W * C + int(w) * C + int(c)] = cs[idx];  \
+}
+
     CHWP4_TO_HWC(0, 0, gid.y, gid.x);
     CHWP4_TO_HWC(1, 1, gid.y, gid.x);
     CHWP4_TO_HWC(2, 2, gid.y, gid.x);

@@ -220,6 +220,8 @@ int32_t CompilationDelegateMPS::Compile() {
     } else if (type == mojom::RESIZE_BILINEAR) {
       success = CompileBilinearScale(compiled_model_->mps_image_nodes_, model,
                                      operation);
+    } else if (type == mojom::ARGMAX) {
+      success = CompileArgmax(compiled_model_->mps_image_nodes_, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       success = false;
@@ -337,9 +339,6 @@ bool CompilationDelegateMPS::CompileConv2DOrDepthwiseConv2D(
     const uint32_t depthwise_weights_length =
         1 * params.filter_height * params.filter_width * params.output_channel;
     std::vector<float> depthwise_weights(depthwise_weights_length);
-    DLOG_IF(FATAL, depthwise_weights.size() * sizeof(float) !=
-                       weights_value_info.length)
-        << "depthwise weigths length is incorrect";
     for (uint32_t h = 0; h < params.filter_height; ++h) {
       for (uint32_t w = 0; w < params.filter_width; ++w) {
         for (uint32_t c = 0; c < params.output_channel; ++c) {
@@ -765,6 +764,35 @@ bool CompilationDelegateMPS::CompileBilinearScale(
         integerScaleFactorX:params.x_scale
         integerScaleFactorY:params.y_scale];
     image_nodes[operation->outputs[0]] = bilinear_scale_node.resultImage;
+  }
+
+  return true;
+}
+
+bool CompilationDelegateMPS::CompileArgmax(
+    std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "Compile argmax operation.";
+  ArgmaxParams params;
+  int32_t result = compilation_->GetArgmaxParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return false;
+
+  size_t input_index = operation->inputs[0];
+  const OperandMac& input_operand = compiled_model_->operands_[input_index];
+  if (params.axis + 1 != static_cast<int>(input_operand.dimensions.size())) {
+    LOG(ERROR) << "Only support channel axis.";
+    return false;
+  }
+
+  if (@available(macOS 10.14.1, *)) {
+    MPSNNReductionFeatureChannelsArgumentMaxNode* argmax_node =
+        [[MPSNNReductionFeatureChannelsArgumentMaxNode alloc]
+            initWithSource:image_nodes[input_index]];
+    image_nodes[operation->outputs[0]] = argmax_node.resultImage;
+  } else {
+    LOG(ERROR) << "Argmax only support above 10.14.1";
+    return false;
   }
 
   return true;

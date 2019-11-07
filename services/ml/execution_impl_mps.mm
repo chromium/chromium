@@ -31,6 +31,21 @@ NSString* API_AVAILABLE(macosx(10.13)) KernelFor(const MPSImage* X,
   return nonArrayKernel;
 }
 
+NSString* API_AVAILABLE(macosx(10.13))
+    OutputKernel(const OperandMac& operand, const MPSImage* output_img) {
+  NSString* kernel = nullptr;
+  if (operand.type == mojom::TENSOR_FLOAT32) {
+    kernel = KernelFor(output_img, @"copy_metal_to_nhwc",
+                       @"copy_metal_to_nhwc_nonarray");
+  } else if (operand.type == mojom::TENSOR_INT32) {
+    kernel = KernelFor(output_img, @"output_nhwc_int_data",
+                       @"output_nhwc_int_data_nonarray");
+  } else {
+    LOG(ERROR) << "The output data type isn't supported.";
+  }
+  return kernel;
+}
+
 auto divRoundUp(uint x, uint y) -> uint {
   return (x + y - 1) / y;
 }
@@ -236,21 +251,19 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
         }
 
         for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
-          MPSImage* output_img =
-              output_mps_images[compiled_model_->outputs_[i]];
-          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
-
-          id<MTLComputeCommandEncoder> encoder =
-              [command_buffer computeCommandEncoder];
+          size_t output_index = compiled_model_->outputs_[i];
+          MPSImage* output_img = output_mps_images[output_index];
           id<MTLComputePipelineState> state =
               GetMPSCNNContext().GetSpecializedPipelineState(
-                  KernelFor(output_img, @"copy_metal_to_nhwc",
-                            @"copy_metal_to_nhwc_nonarray"),
+                  OutputKernel(compiled_model_->operands_[output_index],
+                               output_img),
                   {{ushort(output_img.height), ushort(output_img.width),
                     ushort(output_img.featureChannels)}});
 
+          id<MTLComputeCommandEncoder> encoder =
+              [command_buffer computeCommandEncoder];
           [encoder setComputePipelineState:state];
-          [encoder setBuffer:output_buffer offset:0 atIndex:0];
+          [encoder setBuffer:output_mtlbuffers_[i] offset:0 atIndex:0];
           [encoder setTexture:[output_img texture] atIndex:0];
 
           const auto& outputLaunchParams =
@@ -266,8 +279,7 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
 
         for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
           std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
-          id<MTLBuffer> output_buffer = output_mtlbuffers_[i];
-          memcpy(output_data->mapping.get(), [output_buffer contents],
+          memcpy(output_data->mapping.get(), [output_mtlbuffers_[i] contents],
                  output_data -> length);
         }
       }  // @autoreleasepool
