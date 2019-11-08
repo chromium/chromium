@@ -7,6 +7,8 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
+#include <algorithm>
+
 namespace media {
 
 ByteQueue::ByteQueue() : buffer_(new uint8_t[size_]) {}
