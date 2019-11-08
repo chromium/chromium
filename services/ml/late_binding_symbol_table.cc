@@ -27,7 +27,7 @@
 namespace ml {
 
 inline static const char* GetDllError() {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   char* err = dlerror();
   if (err) {
     return err;
@@ -35,8 +35,6 @@ inline static const char* GetDllError() {
     return "No error";
   }
 #elif defined(OS_WIN)
-  return "No error";
-#elif defined(OS_MACOSX)
   return "No error";
 #endif
 }

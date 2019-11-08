@@ -13,8 +13,8 @@
 #if defined(OS_WIN)
 #include "services/ml/compilation_delegate_dml.h"
 #endif
+#include "services/ml/compilation_delegate_dnnl.h"
 #include "services/ml/compilation_delegate_ie.h"
-#include "services/ml/compilation_delegate_mkl_dnn.h"
 #include "services/ml/ml_switches.h"
 #include "services/ml/model_impl.h"
 
@@ -71,7 +71,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
 #endif  // defined(OS_WIN) || defined(OS_LINUX)
     }
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
-    delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+    delegate_ = std::make_unique<CompilationDelegateDnnl>(this);
   } else {
     LOG(ERROR) << "Preference: " << preference << " is not suppoted.";
   }

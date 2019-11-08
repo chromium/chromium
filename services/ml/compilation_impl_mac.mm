@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_delegate_bnns.h"
-#include "services/ml/compilation_delegate_mkl_dnn.h"
+#include "services/ml/compilation_delegate_dnnl.h"
 #include "services/ml/compilation_delegate_mps.h"
 #include "services/ml/ml_switches.h"
 #include "services/ml/model_impl_mac.h"
@@ -32,8 +32,8 @@ void CompilationImplMac::Finish(int32_t preference, FinishCallback callback) {
       delegate_ = std::make_unique<CompilationDelegateMPS>(this);
     }
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
-    if (command_line->HasSwitch(switches::kUseMkldnn)) {
-      delegate_ = std::make_unique<CompilationDelegateMklDnn>(this);
+    if (command_line->HasSwitch(switches::kUseDnnl)) {
+      delegate_ = std::make_unique<CompilationDelegateDnnl>(this);
     } else {
       if (@available(macOS 10.13, *)) {
         delegate_ = std::make_unique<CompilationDelegateBnns>(this);

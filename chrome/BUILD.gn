@@ -824,20 +824,20 @@ if (is_win) {
   }
 
   if (is_mac) {
-    bundle_data("mkldnn_binaries") {
+    bundle_data("dnnl_binaries") {
       sources = [
-        "$root_out_dir/libmkldnn.0.dylib",
+        "$root_out_dir/libdnnl.1.1.dylib",
       ]
       outputs = [
         "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
       ]
       public_deps = [
-        "//services/ml:copy_mkldnn_dll",
+        "//services/ml:copy_dnnl_dll",
       ]
     }
     bundle_data("iomp5_binaries") {
       sources = [
-        "$root_out_dir/libiomp5.dylib",
+        "$root_out_dir/libomp.dylib",
       ]
       outputs = [
         "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
@@ -854,9 +854,9 @@ if (is_win) {
     }
   }
 
-  group("mkldnn_library") {
+  group("dnnl_library") {
     deps = [
-      ":mkldnn_binaries",
+      ":dnnl_binaries",
     ]
   }
 
@@ -1039,9 +1039,8 @@ if (is_win) {
       ":chrome_framework_plugins",
       ":chrome_framework_resources",
       ":chrome_framework_services",
-      ":keystone_registration_framework",
+      ":dnnl_library",
       ":iomp5_library",
-      ":mkldnn_library",
       ":swiftshader_library",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",

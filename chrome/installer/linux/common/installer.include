@@ -222,8 +222,8 @@ stage_install_common() {
   fi
 
   # MKLDNN.
-  if [ -f "${BUILDDIR}/libmkldnn.so" ]; then
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libmkldnn.so" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${BUILDDIR}/libdnnl.so" ]; then
+    install -m ${SHLIB_PERMS} "${BUILDDIR}/libdnnl.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # Intel OpenMP runtime required by MKLDNN

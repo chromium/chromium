@@ -10,17 +10,17 @@ declare_args() {
 
 if (is_win) {
   cldnn_dll = "clDNN64.dll"
-  mkldnn_dll = "mkldnn.dll"
+  dnnl_dll = "dnnl.dll"
   omp_dll = "vcomp140.dll"
   os_folder = "Windows64"
 } else if (is_linux) {
   cldnn_dll = "libclDNN64.so"
-  mkldnn_dll = "libmkldnn.so"
+  dnnl_dll = "libdnnl.so"
   omp_dll = "libiomp5.so"
   os_folder = "Linux64"
 } else if (is_mac) {
-  mkldnn_dll = "libmkldnn.0.dylib"
-  omp_dll = "libiomp5.dylib"
+  dnnl_dll = "libdnnl.1.1.dylib"
+  omp_dll = "libomp.dylib"
   os_folder = "Mac64"
 }
 
@@ -68,18 +68,18 @@ source_set("lib") {
       "cl_dnn_symbol_table.h",
       "compilation_delegate_cl_dnn.cc",
       "compilation_delegate_cl_dnn.h",
-      "compilation_delegate_mkl_dnn.cc",
-      "compilation_delegate_mkl_dnn.h",
+      "compilation_delegate_dnnl.cc",
+      "compilation_delegate_dnnl.h",
       "compilation_impl.cc",
       "compilation_impl.h",
+      "dnnl_symbol_table.cc",
+      "dnnl_symbol_table.h",
       "execution_impl_cl_dnn.cc",
       "execution_impl_cl_dnn.h",
-      "execution_impl_mkl_dnn.cc",
-      "execution_impl_mkl_dnn.h",
+      "execution_impl_dnnl.cc",
+      "execution_impl_dnnl.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
-      "mkl_dnn_symbol_table.cc",
-      "mkl_dnn_symbol_table.h",
       "model_impl.cc",
       "model_impl.h",
       "neural_network_impl.cc",
@@ -122,24 +122,24 @@ source_set("lib") {
     sources += [
       "compilation_delegate_bnns.h",
       "compilation_delegate_bnns.mm",
-      "compilation_delegate_mkl_dnn.cc",
-      "compilation_delegate_mkl_dnn.h",
+      "compilation_delegate_dnnl.cc",
+      "compilation_delegate_dnnl.h",
       "compilation_delegate_mps.h",
       "compilation_delegate_mps.mm",
       "compilation_impl.cc",
       "compilation_impl.h",
       "compilation_impl_mac.h",
       "compilation_impl_mac.mm",
+      "dnnl_symbol_table.cc",
+      "dnnl_symbol_table.h",
       "execution_impl_bnns.h",
       "execution_impl_bnns.mm",
-      "execution_impl_mkl_dnn.cc",
-      "execution_impl_mkl_dnn.h",
+      "execution_impl_dnnl.cc",
+      "execution_impl_dnnl.h",
       "execution_impl_mps.h",
       "execution_impl_mps.mm",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
-      "mkl_dnn_symbol_table.cc",
-      "mkl_dnn_symbol_table.h",
       "ml_utils_mac.h",
       "ml_utils_mac.mm",
       "model_impl.cc",
@@ -179,8 +179,8 @@ source_set("lib") {
       "compilation_delegate_cl_dnn.h",
       "compilation_delegate_dml.cc",
       "compilation_delegate_dml.h",
-      "compilation_delegate_mkl_dnn.cc",
-      "compilation_delegate_mkl_dnn.h",
+      "compilation_delegate_dnnl.cc",
+      "compilation_delegate_dnnl.h",
       "compilation_impl.cc",
       "compilation_impl.h",
       "dml/float16_compressor.h",
@@ -195,8 +195,8 @@ source_set("lib") {
       "execution_impl_cl_dnn.h",
       "execution_impl_dml.cc",
       "execution_impl_dml.h",
-      "execution_impl_mkl_dnn.cc",
-      "execution_impl_mkl_dnn.h",
+      "execution_impl_dnnl.cc",
+      "execution_impl_dnnl.h",
       "late_binding_symbol_table.cc",
       "late_binding_symbol_table.h",
       "ml_utils_dml.cc",
@@ -209,12 +209,12 @@ source_set("lib") {
 
     lib_dirs = [
       "//third_party/clDNN/build/out/${os_folder}/Release",
-      "//third_party/mkl-dnn/lib/${os_folder}/Release",
+      "//third_party/dnnl/lib/${os_folder}/Release",
     ]
 
     libs = [
       "clDNN64.lib",
-      "mkldnn.lib",
+      "dnnl.lib",
     ]
   } else {
     sources += [
@@ -231,12 +231,12 @@ source_set("lib") {
   if (is_win || is_linux) {
     deps += [
       ":copy_cldnn_dll",
-      ":copy_mkldnn_dll",
+      ":copy_dnnl_dll",
       ":copy_omp_dll",
     ]
   } else if (is_mac) {
     deps += [
-      ":copy_mkldnn_dll",
+      ":copy_dnnl_dll",
       ":copy_omp_dll",
     ]
   }
@@ -262,10 +262,10 @@ source_set("lib") {
 }
 
 if (is_win || is_linux || is_mac) {
-  mkldnn_dll_path = "//third_party/mkl-dnn/lib/${os_folder}/Release"
-  copy("copy_mkldnn_dll") {
+  dnnl_dll_path = "//third_party/dnnl/lib/${os_folder}/Release"
+  copy("copy_dnnl_dll") {
     sources = [
-      "${mkldnn_dll_path}/${mkldnn_dll}",
+      "${dnnl_dll_path}/${dnnl_dll}",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",
@@ -273,7 +273,7 @@ if (is_win || is_linux || is_mac) {
   }
   copy("copy_omp_dll") {
     sources = [
-      "${mkldnn_dll_path}/${omp_dll}",
+      "${dnnl_dll_path}/${omp_dll}",
     ]
     outputs = [
       "$root_out_dir/{{source_file_part}}",

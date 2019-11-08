@@ -12,7 +12,7 @@ const char kUseInferenceEngine[] = "use-inference-engine";
 
 const char kUseDirectML[] = "use-dml";
 
-const char kUseMkldnn[] = "use-mkldnn";
+const char kUseDnnl[] = "use-dnnl";
 }  // namespace switches
 
 }  // namespace ml
