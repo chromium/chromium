@@ -548,6 +548,8 @@ int32_t CompilationDelegateDML::Compile() {
       hr = CompileArgmax(model, operation);
     } else if (operation->type == mojom::LOGISTIC) {
       hr = CompileSigmoid(model, operation);
+    } else if (operation->type == mojom::PRELU) {
+      hr = CompilePReLU(model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       hr = E_FAIL;
@@ -677,10 +679,11 @@ HRESULT CompilationDelegateDML::CompileActivation(
   return S_OK;
 }
 
-HRESULT CompilationDelegateDML::CompileArithmetic(
+template <class T>
+HRESULT CompilationDelegateDML::CompileTwoInputTensorOperator(
     const mojom::ModelInfoPtr& model,
-    const mojom::OperationPtr& operation) {
-  DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
+    const mojom::OperationPtr& operation,
+    DML_OPERATOR_TYPE operator_type) {
   // TODO:: Create persistent resources for constants
   // https://github.com/intel/webml-polyfill/issues/758.
   // Check constants for input 0 and 1.
@@ -746,23 +749,34 @@ HRESULT CompilationDelegateDML::CompileArithmetic(
   DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                         &output_buffer_desc};
 
-  DML_OPERATOR_DESC operator_desc;
-  DML_ELEMENT_WISE_ADD_OPERATOR_DESC add_operator_desc = {
-      &primary_tensor_desc, &secondary_tensor_desc, &output_tensor_desc};
-  DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC multiply_operator_desc = {
-      &primary_tensor_desc, &secondary_tensor_desc, &output_tensor_desc};
-  if (operation->type == mojom::ADD) {
-    operator_desc = {DML_OPERATOR_ELEMENT_WISE_ADD, &add_operator_desc};
-  } else if (operation->type == mojom::MUL) {
-    operator_desc = {DML_OPERATOR_ELEMENT_WISE_MULTIPLY,
-                     &multiply_operator_desc};
-  }
+  T add_operator_desc = {&primary_tensor_desc, &secondary_tensor_desc,
+                         &output_tensor_desc};
+  DML_OPERATOR_DESC operator_desc = {operator_type, &add_operator_desc};
 
   hr = CompileOperator(operator_desc, 2, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed compiling add operator.";
+    LOG(ERROR) << "Failed compiling operator.";
     return hr;
   }
+
+  return hr;
+}
+
+HRESULT CompilationDelegateDML::CompileArithmetic(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompileArithmetic";
+
+  HRESULT hr = S_OK;
+  if (operation->type == mojom::ADD) {
+    hr = CompileTwoInputTensorOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
+        model, operation, DML_OPERATOR_ELEMENT_WISE_ADD);
+  } else if (operation->type == mojom::MUL) {
+    hr = CompileTwoInputTensorOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
+        model, operation, DML_OPERATOR_ELEMENT_WISE_MULTIPLY);
+  }
+  if (FAILED(hr))
+    return hr;
 
   ElementWiseParams params;
   int32_t result = compilation_->GetElementWiseParams(operation, params);
@@ -1379,6 +1393,22 @@ HRESULT CompilationDelegateDML::CompileSigmoid(
   hr = CompileOperator(operator_desc, 1, operation->inputs, operation->outputs);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed compiling sigmoid operator.";
+    return hr;
+  }
+
+  return S_OK;
+}
+
+HRESULT CompilationDelegateDML::CompilePReLU(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "CompilationImplMac::CompilePReLU";
+
+  HRESULT hr = CompileTwoInputTensorOperator<
+      DML_ACTIVATION_PARAMETERIZED_RELU_OPERATOR_DESC>(
+      model, operation, DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed compiling prelu operator.";
     return hr;
   }
 

@@ -39,6 +39,10 @@ class CompilationDelegateDML : public CompilationDelegate {
                           size_t,
                           const std::vector<uint32_t>&,
                           const std::vector<uint32_t>&);
+  template <class T>
+  HRESULT CompileTwoInputTensorOperator(const mojom::ModelInfoPtr& model,
+                                        const mojom::OperationPtr& operation,
+                                        DML_OPERATOR_TYPE operator_type);
   HRESULT CompileActivation(int32_t fuse_code, std::vector<uint32_t>);
   HRESULT CompileArithmetic(const mojom::ModelInfoPtr& model,
                             const mojom::OperationPtr& operation);
@@ -62,6 +66,8 @@ class CompilationDelegateDML : public CompilationDelegate {
                         const mojom::OperationPtr& operation);
   HRESULT CompileSigmoid(const mojom::ModelInfoPtr& model,
                          const mojom::OperationPtr& operation);
+  HRESULT CompilePReLU(const mojom::ModelInfoPtr& model,
+                       const mojom::OperationPtr& operation);
 
   scoped_refptr<CompiledModelDML> dml_;
   uint32_t execute_descriptor_count_;
