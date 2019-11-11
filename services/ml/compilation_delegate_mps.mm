@@ -133,10 +133,12 @@ int32_t CompilationDelegateMPS::Compile() {
   const mojom::ModelInfoPtr& model = compilation_->GetModel();
   CompileForModel(model, compiled_model_.get());
   uint32_t memory_size_ = model->memory_size;
-  auto mapping = model->memory->Map(memory_size_);
-  const int8_t* base = static_cast<const int8_t*>(mapping.get());
-  compiled_model_->memory_.reset(new int8_t[memory_size_]);
-  memcpy(compiled_model_->memory_.get(), base, memory_size_);
+  if (memory_size_ > 0) {
+    auto mapping = model->memory->Map(memory_size_);
+    const int8_t* base = static_cast<const int8_t*>(mapping.get());
+    compiled_model_->memory_.reset(new int8_t[memory_size_]);
+    memcpy(compiled_model_->memory_.get(), base, memory_size_);
+  }
 
   // TODO:Move Create constants MPSImage from execution(l.172 - l.189)
   // in Compilation so that those section (l.135 - l. 147) can be removed.
@@ -222,6 +224,8 @@ int32_t CompilationDelegateMPS::Compile() {
                                      operation);
     } else if (type == mojom::ARGMAX) {
       success = CompileArgmax(compiled_model_->mps_image_nodes_, operation);
+    } else if (type == mojom::LOGISTIC) {
+      success = CompileSigmoid(compiled_model_->mps_image_nodes_, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       success = false;
@@ -794,6 +798,18 @@ bool CompilationDelegateMPS::CompileArgmax(
     LOG(ERROR) << "Argmax only support above 10.14.1";
     return false;
   }
+
+  return true;
+}
+
+bool CompilationDelegateMPS::CompileSigmoid(
+    std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "Compile sigmoid operation.";
+
+  MPSCNNNeuronSigmoidNode* sigmoid_node = [[MPSCNNNeuronSigmoidNode alloc]
+      initWithSource:image_nodes[operation->inputs[0]]];
+  image_nodes[operation->outputs[0]] = sigmoid_node.resultImage;
 
   return true;
 }

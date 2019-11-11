@@ -170,9 +170,17 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
   if (@available(macOS 10.13, *)) {
     do {
       @autoreleasepool {
+        if (inputs_info_.size() != compiled_model_->inputs_.size() ||
+            outputs_info_.size() != compiled_model_->outputs_.size() ||
+            input_mpsimages_.size() != compiled_model_->inputs_.size() ||
+            constant_mpsimages_.size() != compiled_model_->constants_.size()) {
+          LOG(ERROR) << "Invaild model to inference. ";
+          success = false;
+          break;
+        }
+
         id<MTLCommandBuffer> command_buffer =
             [GetMPSCNNContext().command_queue commandBuffer];
-
         NSMutableArray<MPSImage*>* image_array =
             [NSMutableArray arrayWithCapacity:1];
         for (size_t i = 0; i < compiled_model_->inputs_.size(); ++i) {

@@ -92,6 +92,9 @@ class API_AVAILABLE(macosx(10.13)) CompilationDelegateMPS
   bool CompileArgmax(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
                      const mojom::OperationPtr& operation);
 
+  bool CompileSigmoid(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                      const mojom::OperationPtr& operation);
+
   DISALLOW_COPY_AND_ASSIGN(CompilationDelegateMPS);
 };
 
