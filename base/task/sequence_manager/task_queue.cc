@@ -142,7 +142,11 @@ void TaskQueue::ShutdownTaskQueueGracefully() {
   // If we've not been unregistered then this must occur on the main thread.
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   impl_->SetObserver(nullptr);
-  impl_->sequence_manager()->ShutdownTaskQueueGracefully(TakeTaskQueueImpl());
+ 
+  auto sequence_manager = impl_->sequence_manager();
+  if (!sequence_manager)
+    return;
+  sequence_manager->ShutdownTaskQueueGracefully(TakeTaskQueueImpl());
 }
 
 TaskQueue::TaskTiming::TaskTiming(bool has_wall_time, bool has_thread_time)
