@@ -226,6 +226,9 @@ int32_t CompilationDelegateMPS::Compile() {
       success = CompileArgmax(compiled_model_->mps_image_nodes_, operation);
     } else if (type == mojom::LOGISTIC) {
       success = CompileSigmoid(compiled_model_->mps_image_nodes_, operation);
+    } else if (type == mojom::PRELU) {
+      success =
+          CompilePReLU(compiled_model_->mps_image_nodes_, model, operation);
     } else {
       LOG(ERROR) << "Operation is not supported";
       success = false;
@@ -307,22 +310,10 @@ bool CompilationDelegateMPS::CompileConv2DOrDepthwiseConv2D(
     params.stride_height = 1;
   }
 
-  MPSCNNNeuron* relu = CreateMPSCNNNeuron(params.fuse_code);
-
   const mojom::OperandValueInfoPtr& weights_value_info =
-      model->values[base::NumberToString(operation->inputs[1])];
-  LOG(ERROR) << "weights size " << weights_value_info->length;
-  float* weights = (float*)malloc(weights_value_info->length);
-  auto mapping = compilation_->MapMemory(operation->inputs[1]);
-  memcpy(weights, mapping.get(), weights_value_info->length);
-
-  const mojom::OperandValueInfoPtr& bias_value_info =
-      model->values[base::NumberToString(operation->inputs[2])];
-  LOG(ERROR) << "bias size " << bias_value_info->length;
-  float* bias = (float*)malloc(bias_value_info->length);
-  mapping = compilation_->MapMemory(operation->inputs[2]);
-  memcpy(bias, mapping.get(), bias_value_info->length);
-
+      model->values[base::NumberToString(inputs[1])];
+  float* weights =
+      (float*)(compiled_model_->memory_.get() + weights_value_info->offset);
   MPSNNImageNode* input_image = image_nodes[inputs[0]];
   if (params.depthwise) {
     if (params.depthwise_multiplier != 1) {
@@ -355,11 +346,15 @@ bool CompilationDelegateMPS::CompileConv2DOrDepthwiseConv2D(
     }
     memcpy(weights, depthwise_weights.data(), weights_value_info->length);
   }
+  const mojom::OperandValueInfoPtr& bias_value_info =
+      model->values[base::NumberToString(inputs[2])];
+  const float* bias = reinterpret_cast<const float*>(
+      compiled_model_->memory_.get() + bias_value_info->offset);
   MPSCNNConvolutionNode* conv_node = CreateMPSCNNConvolutionNode(
       input_image, params.filter_width, params.filter_height,
       params.input_channel, params.output_channel, params.stride_width,
-      params.stride_height, weights, bias, relu, operation->type,
-      params.dilation_width, params.dilation_height);
+      params.stride_height, weights, bias, CreateMPSCNNNeuron(params.fuse_code),
+      operation->type, params.dilation_width, params.dilation_height);
 
   MPSOffset offset;
   int32_t padding_code;
@@ -693,30 +688,23 @@ bool CompilationDelegateMPS::CompileFullyConnected(
   const std::vector<uint32_t>& inputs = operation->inputs;
   input.dimensions =
       std::vector<uint32_t>({params.input_batch_size, params.input_size});
-
-  MPSCNNNeuron* relu = CreateMPSCNNNeuron(params.fuse_code);
-
   // inputs[1] is index of weights, values_.at(inputs[1]) is value info
   // of weights.
-  float* source_weights =
-      (float*)malloc(sizeof(float) * params.num_units * params.input_size);
   const mojom::OperandValueInfoPtr& weights_value_info =
-      model->values[base::NumberToString(operation->inputs[1])];
-  auto mapping = compilation_->MapMemory(operation->inputs[1]);
-  memcpy(source_weights, mapping.get(), weights_value_info->length);
-
+      model->values[base::NumberToString(inputs[1])];
+  const float* source_weights = reinterpret_cast<const float*>(
+      compiled_model_->memory_.get() + weights_value_info->offset);
   // inputs[2] is index of bias, values_.at(inputs[2]) is value info of
   // bias.
-  float* source_bias =
-      (float*)malloc(sizeof(float) * params.bias_num_units * params.input_size);
   const mojom::OperandValueInfoPtr& bias_value_info =
-      model->values[base::NumberToString(operation->inputs[2])];
-  mapping = compilation_->MapMemory(operation->inputs[2]);
-  memcpy(source_bias, mapping.get(), bias_value_info->length);
+      model->values[base::NumberToString(inputs[2])];
+  const float* source_bias = reinterpret_cast<const float*>(
+      compiled_model_->memory_.get() + bias_value_info->offset);
 
   MPSCNNConvolutionNode* fully_connected_node = CreateMPSCNNConvolutionNode(
       image_nodes[inputs[0]], 1, 1, params.input_size, params.output_num_units,
-      1, 1, source_weights, source_bias, relu, operation->type);
+      1, 1, source_weights, source_bias, CreateMPSCNNNeuron(params.fuse_code),
+      operation->type);
 
   image_nodes[operation->outputs[0]] = fully_connected_node.resultImage;
 
@@ -810,6 +798,85 @@ bool CompilationDelegateMPS::CompileSigmoid(
   MPSCNNNeuronSigmoidNode* sigmoid_node = [[MPSCNNNeuronSigmoidNode alloc]
       initWithSource:image_nodes[operation->inputs[0]]];
   image_nodes[operation->outputs[0]] = sigmoid_node.resultImage;
+
+  return true;
+}
+
+bool CompilationDelegateMPS::CompilePReLU(
+    std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation) {
+  DLOG(INFO) << "Compile sigmoid PReLU.";
+
+  NSMutableData* slope_data = [NSMutableData dataWithCapacity:0];
+  size_t slope_index = operation->inputs[1];
+  std::string slope_id(base::NumberToString(slope_index));
+  if (model->values.find(slope_id) != model->values.end()) {
+    const mojom::OperandValueInfoPtr& slope_value_info =
+        model->values[slope_id];
+    if (slope_value_info->length % sizeof(float) > 0) {
+      LOG(ERROR) << "Invalid data that's not a multiple of sizeof(float).";
+      return false;
+    }
+    auto mapping = compilation_->MapMemory(slope_index);
+    [slope_data appendBytes:mapping.get() length:slope_value_info->length];
+  }
+
+  size_t input_index = operation->inputs[0];
+  const OperandMac& input_operand = compiled_model_->operands_[input_index];
+  const OperandMac& slope_operand = compiled_model_->operands_[slope_index];
+  // Only have feature channel.
+  if (slope_operand.dimensions.size() == 1) {
+    uint32_t n, width, height, channels;
+    if (!GetMPSImageInfo(input_operand, n, width, height, channels))
+      return false;
+    if (slope_operand.dimensions[0] == 1 && channels > 1) {
+      float data;
+      [slope_data getBytes:&data length:sizeof(float)];
+      std::vector<float> append_channles(channels - 1, data);
+      [slope_data appendBytes:append_channles.data()
+                       length:sizeof(float) * append_channles.size()];
+    }
+
+    // f(x) = x                if x >= 0
+    //      = aData[i] * x     if x < 0,  i is the index of the feature channel.
+    MPSCNNNeuronPReLUNode* prelu_node =
+        [[MPSCNNNeuronPReLUNode alloc] initWithSource:image_nodes[input_index]
+                                                aData:slope_data];
+    image_nodes[operation->outputs[0]] = prelu_node.resultImage;
+  } else if (slope_operand.dimensions == input_operand.dimensions) {
+    size_t reshape_channel = product(input_operand.dimensions);
+    if (reshape_channel < 2048) {
+      if (@available(macOS 10.14.1, *)) {
+        // Reshape for PReLU for each feature channel.
+        MPSNNReshapeNode* reshape_for_prelu =
+            [[MPSNNReshapeNode alloc] initWithSource:image_nodes[input_index]
+                                         resultWidth:1
+                                        resultHeight:1
+                               resultFeatureChannels:reshape_channel];
+
+        MPSCNNNeuronPReLUNode* prelu_node = [[MPSCNNNeuronPReLUNode alloc]
+            initWithSource:reshape_for_prelu.resultImage
+                     aData:slope_data];
+
+        // Reshape back.
+        MPSNNReshapeNode* reshape_back = [[MPSNNReshapeNode alloc]
+                   initWithSource:prelu_node.resultImage
+                      resultWidth:input_operand.dimensions[2]
+                     resultHeight:input_operand.dimensions[1]
+            resultFeatureChannels:input_operand.dimensions[3]];
+        image_nodes[operation->outputs[0]] = reshape_back.resultImage;
+      }
+    } else {
+      LOG(ERROR) << "This MPSImage (" << reshape_channel
+                 << "slices) would exceed the maximum allowed number of slices "
+                    "in a Metal texture array (2048 slices)";
+      return false;
+    }
+  } else {
+    LOG(ERROR) << "Broadcasting isn't supported.";
+    return false;
+  }
 
   return true;
 }
