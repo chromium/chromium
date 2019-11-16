@@ -198,6 +198,9 @@ cvox.ActiveIndicator.STYLE =
     '   0% {opacity: 1.0}' +
     '  50% {opacity: 0.5}' +
     ' 100% {opacity: 1.0}' +
+    '}' +
+    'noscript {' +
+    '  display: none;' +
     '}';
 
 /**
