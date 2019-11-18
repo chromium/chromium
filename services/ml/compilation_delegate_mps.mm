@@ -33,7 +33,9 @@ std::vector<uint32_t> DemensionsInNHWC(const OperandMac& operand) {
 }
 
 API_AVAILABLE(macosx(10.13))
-MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model, size_t index) {
+MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model,
+                         size_t index,
+                         size_t extend_channels = 0) {
   const OperandMac& operand = compiled_model->operands_[index];
   if (operand.type != mojom::TENSOR_FLOAT32) {
     DLOG(ERROR) << "The data type is not supported";
@@ -43,6 +45,9 @@ MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model, size_t index) {
   if (dimensions.size() == 0) {
     DLOG(ERROR) << "Current dimension is not supported";
     return nullptr;
+  }
+  if (extend_channels != 0) {
+    dimensions[3] = extend_channels;
   }
 
   MPSImageDescriptor* image_desc = [MPSImageDescriptor
@@ -62,19 +67,29 @@ MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model, size_t index) {
 
 API_AVAILABLE(macosx(10.13))
 MPSImage* CreateMPSImageWithData(CompiledModelMPS* compiled_model,
-                                 size_t index) {
+                                 size_t index,
+                                 size_t extend_channels = 0) {
   std::string index_str(base::NumberToString(index));
   ValueInfo value_info = compiled_model->values_[index_str];
-  const void* cpu_buffer = static_cast<const void*>(
-      compiled_model->memory_.get() + value_info.offset);
-  MPSImage* mps_image = CreateMPSImage(compiled_model, index);
+  void* cpu_buffer =
+      static_cast<void*>(compiled_model->memory_.get() + value_info.offset);
+  MPSImage* mps_image = CreateMPSImage(compiled_model, index, extend_channels);
   if (!mps_image) {
     LOG(ERROR) << "Failed creating MPSImage for constants data.";
     return nullptr;
   }
   id<MTLCommandBuffer> command_buffer =
       [GetMPSCNNContext().command_queue commandBuffer];
-  UploadToMPSImage(mps_image, command_buffer, cpu_buffer, value_info.length);
+  size_t length = value_info.length;
+  std::vector<float> extend_data;
+  if (extend_channels != 0) {
+    length = extend_channels * value_info.length;
+    extend_data.reserve(extend_channels);
+    float* data = static_cast<float*>(cpu_buffer);
+    extend_data.insert(extend_data.begin(), extend_channels, data[0]);
+    cpu_buffer = extend_data.data();
+  }
+  UploadToMPSImage(mps_image, command_buffer, cpu_buffer, length);
   [command_buffer commit];
   [command_buffer waitUntilCompleted];
 
@@ -242,10 +257,6 @@ int32_t CompilationDelegateMPS::Compile() {
     uint32_t type = operation->type;
     std::vector<uint32_t>& inputs = operation->inputs;
     std::vector<uint32_t>& outputs = operation->outputs;
-    DLOG(INFO) << "    inputs(" << inputs.size()
-               << "): " << VectorToString(inputs.data(), inputs.size());
-    DLOG(INFO) << "    outputs(" << outputs.size()
-               << "): " << VectorToString(outputs.data(), outputs.size());
     // Adjust the read count
     for (size_t j = 0; j < inputs.size(); ++j) {
       OperandMac& operand = compiled_model_->operands_[inputs[j]];
@@ -579,10 +590,10 @@ bool CompilationDelegateMPS::CompileReshape(
     const mojom::OperationPtr& operation) {
   DLOG(INFO) << "CompilationImplMPS::CompileReshape";
 
-  uint32_t input_index = operation->inputs[0];
+  uint32_t output_index = operation->outputs[0];
   if (@available(macOS 10.14.1, *)) {
-    const OperandMac& input_operand = compiled_model_->operands_[input_index];
-    std::vector<uint32_t> dimensions = DemensionsInNHWC(input_operand);
+    const OperandMac& output_operand = compiled_model_->operands_[output_index];
+    std::vector<uint32_t> dimensions = DemensionsInNHWC(output_operand);
     if (dimensions.size() == 0) {
       DLOG(ERROR) << "Current dimension is not supported";
       return false;
@@ -592,12 +603,12 @@ bool CompilationDelegateMPS::CompileReshape(
                   resultWidth:dimensions[2]
                  resultHeight:dimensions[1]
         resultFeatureChannels:dimensions[3]];
-    image_nodes[operation->outputs[0]] = reshape_node.resultImage;
+    image_nodes[output_index] = reshape_node.resultImage;
   } else {
-    uint32_t reshape_output_idx = operation->outputs[0];
+    uint32_t input_index = operation->inputs[0];
     for (size_t i = 0; i < compiled_model_->operations_.size(); ++i) {
       OperationMac& operation = compiled_model_->operations_[i];
-      if (operation.inputs[0] == reshape_output_idx) {
+      if (operation.inputs[0] == output_index) {
         operation.inputs[0] = input_index;
       }
     }
@@ -679,19 +690,18 @@ bool CompilationDelegateMPS::CompileArithmetic(
     return false;
   }
 
-  const std::vector<uint32_t>& primary_dimension =
-      model->operands[operation->inputs[0]]->dimensions;
-  const std::vector<uint32_t>& secondary_dimension =
-      model->operands[operation->inputs[1]]->dimensions;
-  size_t primary_batch_size =
-      primary_dimension.size() == 4 ? primary_dimension[0] : 1;
-  size_t secondary_batch_size =
-      secondary_dimension.size() == 4 ? secondary_dimension[0] : 1;
-  if (primary_batch_size != secondary_batch_size) {
+  size_t primary_index = operation->inputs[0];
+  std::vector<uint32_t> primary_dimension =
+      DemensionsInNHWC(compiled_model_->operands_[primary_index]);
+  size_t secondary_index = operation->inputs[1];
+  std::vector<uint32_t> secondary_dimension =
+      DemensionsInNHWC(compiled_model_->operands_[secondary_index]);
+  if (primary_dimension[0] != secondary_dimension[0]) {
     LOG(ERROR) << "Different batch size for arithmetic isn't supported.";
     return false;
   }
 
+  size_t extend_channles = 0;
   // Check constants for input 0 and 1
   NSMutableArray<MPSNNImageNode*>* image_array =
       [NSMutableArray arrayWithCapacity:1];
@@ -700,21 +710,45 @@ bool CompilationDelegateMPS::CompileArithmetic(
     std::string input_id(base::NumberToString(operation->inputs[i]));
     if (model->values.find(input_id) != model->values.end()) {
       compiled_model_->constants_.push_back(input_index);
+      // Extend feature channel data for broadcasting.
+      if (i == 0) {
+        if (primary_dimension[3] == 1 && product(primary_dimension) == 1 &&
+            secondary_dimension[3] > 1) {
+          extend_channles = secondary_dimension[3];
+        }
+      } else if (i == 1) {
+        if (secondary_dimension[3] == 1 && product(secondary_dimension) == 1 &&
+            primary_dimension[3] > 1) {
+          extend_channles = primary_dimension[3];
+        }
+      }
       // Create a placeholder for input constant image.
-      MPSImage* mps_image =
-          CreateMPSImageWithData(compiled_model_.get(), input_index);
+      MPSImage* mps_image = CreateMPSImageWithData(
+          compiled_model_.get(), input_index, extend_channles);
       if (!mps_image) {
         LOG(ERROR) << "Failed creating MPSImage for constant data.";
         return false;
       }
       MPSImageHandle* handle =
           [[MPSImageHandle alloc] initWithImage:mps_image index:input_index];
-      MPSNNImageNode* image_node =
-          [[MPSNNImageNode alloc] initWithHandle:handle];
-      [image_array addObject:image_node];
-    } else {
-      [image_array addObject:image_nodes[input_index]];
+      image_nodes[input_index] = [[MPSNNImageNode alloc] initWithHandle:handle];
     }
+  }
+
+  if (primary_dimension[3] == secondary_dimension[3] || extend_channles != 0) {
+    if (product(primary_dimension) > product(secondary_dimension)) {
+      // Support feature channle axis broadcasting.
+      // For example: input0{1, 1, 3, 2} input1{1, 1, 1, 2}, we should add
+      // input1 before input0 to use broadcasting.
+      [image_array addObject:image_nodes[secondary_index]];
+      [image_array addObject:image_nodes[primary_index]];
+    } else {
+      [image_array addObject:image_nodes[primary_index]];
+      [image_array addObject:image_nodes[secondary_index]];
+    }
+  } else {
+    LOG(ERROR) << "The broadcasting isn't supported currently.";
+    return false;
   }
 
   MPSNNBinaryArithmeticNode* arithmetic_node = nullptr;
