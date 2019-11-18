@@ -19,18 +19,6 @@ namespace ml {
 
 namespace {
 
-NSString* API_AVAILABLE(macosx(10.13)) KernelFor(const MPSImage* X,
-                                                 NSString* arrayKernel,
-                                                 NSString* nonArrayKernel) {
-  if (X.featureChannels > 4) {
-    return arrayKernel;
-  }
-  if (X.numberOfImages > 1) {
-    return arrayKernel;
-  }
-  return nonArrayKernel;
-}
-
 NSString* API_AVAILABLE(macosx(10.13))
     OutputKernel(const OperandMac& operand, const MPSImage* output_img) {
   NSString* kernel = nullptr;
@@ -46,56 +34,6 @@ NSString* API_AVAILABLE(macosx(10.13))
   return kernel;
 }
 
-auto divRoundUp(uint x, uint y) -> uint {
-  return (x + y - 1) / y;
-}
-
-struct LaunchParams {
-  MTLSize threadsPerThreadgroup;
-  MTLSize threadgroupsPerGrid;
-};
-
-LaunchParams API_AVAILABLE(macosx(10.13))
-    SpatialPointwiseKernelLaunchParams(id<MTLComputePipelineState> pipeline,
-                                       const MPSImage* im) {
-  // const auto maxThreadsPerThreadgroup =
-  //[pipeline maxTotalThreadsPerThreadgroup];
-  // const auto threadExecutionWidth = [pipeline threadExecutionWidth];
-  const auto threadsPerThreadgroup =
-      MTLSizeMake(8 /* threadExecutionWidth */,
-                  4 /* maxThreadsPerThreadgroup / threadExecutionWidth */, 1);
-  const auto threadgroupsPerGrid =
-      MTLSizeMake(divRoundUp(im.width, threadsPerThreadgroup.width),
-                  divRoundUp(im.height, threadsPerThreadgroup.height),
-                  im.numberOfImages * divRoundUp(im.featureChannels, 4));
-  return {threadsPerThreadgroup, threadgroupsPerGrid};
-}
-
-MPSImageDescriptor* API_AVAILABLE(macosx(10.13))
-    CreateMPSImageDescriptor(const OperandMac& operand) {
-  int32_t type = operand.type;
-  MPSImageDescriptor* mpsimage_desc = nullptr;
-  if (type != mojom::TENSOR_FLOAT32) {
-    DLOG(ERROR) << "type " << type << " is not supported";
-    return mpsimage_desc;
-  }
-  uint32_t n, width, height, channels;
-  if (!ml::GetMPSImageInfo(operand, n, width, height, channels)) {
-    return mpsimage_desc;
-  }
-  mpsimage_desc = [MPSImageDescriptor
-      imageDescriptorWithChannelFormat:MPSImageFeatureChannelFormatFloat16
-                                 width:width
-                                height:height
-                       featureChannels:channels
-                        numberOfImages:n
-                                 usage:MTLTextureUsageShaderRead |
-                                       MTLTextureUsageShaderWrite];
-  DLOG(INFO) << "Create MPSImageDescriptor " << mpsimage_desc << " [" << width
-             << ", " << height << ", " << channels << "]";
-  return mpsimage_desc;
-}
-
 API_AVAILABLE(macosx(10.13))
 void SaveTemporaryImages(std::map<uint32_t, MPSImage*>& temporary_images,
                          const NSMutableArray<MPSImage*>* intermediate_images) {
@@ -105,6 +43,15 @@ void SaveTemporaryImages(std::map<uint32_t, MPSImage*>& temporary_images,
   }
 }
 
+API_AVAILABLE(macosx(10.13))
+MPSImage* GetMPSImage(NSArray<MPSImageHandle*>* handles, uint32_t index) {
+  for (size_t i = 0; i < handles.count; ++i) {
+    if (handles[i].index == index)
+      return handles[i].image;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 API_AVAILABLE(macosx(10.13))
@@ -112,49 +59,6 @@ ExecutionImplMPS::ExecutionImplMPS(
     scoped_refptr<CompiledModelMPS> compiled_model,
     mojom::ExecutionInitParamsPtr params)
     : params_(std::move(params)), compiled_model_(std::move(compiled_model)) {
-  uint32_t mapped_length = 0;
-  SetupOperandInfoForOperands(inputs_info_, compiled_model_->operands_,
-                              compiled_model_->inputs_, params_->memory,
-                              mapped_length);
-  SetupOperandInfoForOperands(outputs_info_, compiled_model_->operands_,
-                              compiled_model_->outputs_, params_->memory,
-                              mapped_length);
-
-  if (@available(macOS 10.13, *)) {
-    SetupMPSImageForOperands(input_mpsimages_, input_mtlbuffers_,
-                             compiled_model_->inputs_);
-    SetupMPSImageForOperands(constant_mpsimages_, constant_mtlbuffers_,
-                             compiled_model_->constants_);
-    CreateOutputMTLBuffer();
-  }
-}
-
-ExecutionImplMPS::~ExecutionImplMPS() = default;
-
-void API_AVAILABLE(macosx(10.13)) ExecutionImplMPS::SetupMPSImageForOperands(
-    std::vector<base::scoped_nsobject<MPSImage>>& mps_image_array,
-    std::vector<id<MTLBuffer>>& mtl_buffer_array,
-    const std::vector<uint32_t>& operands_index_array) {
-  for (size_t i = 0; i < operands_index_array.size(); ++i) {
-    const OperandMac& operand =
-        compiled_model_->operands_[operands_index_array[i]];
-    if (@available(macOS 10.13, *)) {
-      MPSImageDescriptor* descriptor = CreateMPSImageDescriptor(operand);
-      if (!descriptor)
-        return;
-      base::scoped_nsobject<MPSImage> mps_img([[MPSImage alloc]
-           initWithDevice:GetMPSCNNContext().device
-          imageDescriptor:descriptor]);
-      mps_image_array.push_back(std::move(mps_img));
-      mtl_buffer_array.push_back([GetMPSCNNContext().device
-          newBufferWithLength:operand.requiredSize()
-                      options:MTLResourceOptionCPUCacheModeWriteCombined]);
-    }
-  }
-}
-
-API_AVAILABLE(macosx(10.13))
-void ExecutionImplMPS::CreateOutputMTLBuffer() {
   for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
     const OperandMac& operand =
         compiled_model_->operands_[compiled_model_->outputs_[i]];
@@ -164,51 +68,39 @@ void ExecutionImplMPS::CreateOutputMTLBuffer() {
   }
 }
 
+ExecutionImplMPS::~ExecutionImplMPS() = default;
+
 void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
   DLOG(INFO) << "ExecutionImplMPS::StartCompute";
   bool success = true;
   if (@available(macOS 10.13, *)) {
     do {
       @autoreleasepool {
-        if (inputs_info_.size() != compiled_model_->inputs_.size() ||
-            outputs_info_.size() != compiled_model_->outputs_.size() ||
-            input_mpsimages_.size() != compiled_model_->inputs_.size() ||
-            constant_mpsimages_.size() != compiled_model_->constants_.size()) {
-          LOG(ERROR) << "Invaild model to inference. ";
-          success = false;
-          break;
-        }
-
         id<MTLCommandBuffer> command_buffer =
             [GetMPSCNNContext().command_queue commandBuffer];
-        NSMutableArray<MPSImage*>* image_array =
-            [NSMutableArray arrayWithCapacity:1];
-        for (size_t i = 0; i < compiled_model_->inputs_.size(); ++i) {
-          std::unique_ptr<OperandInfo>& input_data = inputs_info_[i];
-          MPSImage* mps_img = input_mpsimages_[i].get();
-          const id<MTLBuffer> mtl_buffer = input_mtlbuffers_[i];
-          UploadToMPSImage(mps_img, mtl_buffer, command_buffer,
-                           input_data->mapping.get(), input_data->length);
-          [image_array addObject:mps_img];
-        }
-
-        for (size_t i = 0; i < compiled_model_->constants_.size(); ++i) {
-          std::string index(
-              base::NumberToString(compiled_model_->constants_[i]));
-          if (compiled_model_->values_.find(index) ==
-              compiled_model_->values_.end()) {
-            LOG(ERROR) << "Can't find constant " << index;
+        NSArray<MPSImageHandle*>* handles =
+            compiled_model_->graphs_[0].get().sourceImageHandles;
+        uint32_t memory_offset = 0;
+        for (size_t i = 0; i < params_->inputs.size(); ++i) {
+          const mojom::OperandInfoPtr& operand = params_->inputs[i];
+          uint32_t offset = memory_offset;
+          uint32_t length = GetRequiredSize(operand);
+          memory_offset += length;
+          auto mapping = params_->memory->MapAtOffset(length, offset);
+          MPSImage* mps_image = GetMPSImage(handles, operand->index);
+          if (!mps_image) {
+            LOG(ERROR) << "Failed getting MPSImage for inputs data.";
             success = false;
             break;
           }
-          ValueInfo value_info = compiled_model_->values_[index];
-          MPSImage* mps_img = constant_mpsimages_[i].get();
-          const id<MTLBuffer> mtl_buffer = constant_mtlbuffers_[i];
-          const void* cpu_buffer = static_cast<const void*>(
-              compiled_model_->memory_.get() + value_info.offset);
-          UploadToMPSImage(mps_img, mtl_buffer, command_buffer, cpu_buffer,
-                           value_info.length);
-          [image_array addObject:mps_img];
+          UploadToMPSImage(mps_image, command_buffer,
+                           static_cast<void*>(mapping.get()), length);
+        }
+
+        NSMutableArray<MPSImage*>* image_array =
+            [NSMutableArray arrayWithCapacity:1];
+        for (size_t i = 0; i < handles.count; ++i) {
+          [image_array addObject:handles[i].image];
         }
 
         std::map<uint32_t, MPSImage*> output_mps_images;
@@ -285,11 +177,7 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
         [command_buffer commit];
         [command_buffer waitUntilCompleted];
 
-        for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
-          std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
-          memcpy(output_data->mapping.get(), [output_mtlbuffers_[i] contents],
-                 output_data -> length);
-        }
+        ReadResultBack(memory_offset);
       }  // @autoreleasepool
     } while (0);
   }
@@ -301,30 +189,14 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
   }
 }
 
-void ExecutionImplMPS::UploadToMPSImage(
-    const MPSImage* mps_image,
-    const id<MTLBuffer>& mtl_buffer,
-    const id<MTLCommandBuffer>& command_buffer,
-    const void* cpu_buffer,
-    size_t length) {
-  if (@available(macOS 10.13, *)) {
-    memcpy([mtl_buffer contents], cpu_buffer, length);
-    id<MTLComputeCommandEncoder> encoder =
-        [command_buffer computeCommandEncoder];
-    id<MTLComputePipelineState> state =
-        GetMPSCNNContext().GetSpecializedPipelineState(
-            KernelFor(mps_image, @"copy_nhwc_to_metal",
-                      @"copy_nhwc_to_metal_nonarray"),
-            {{ushort(mps_image.height), ushort(mps_image.width),
-              ushort(mps_image.featureChannels)}});
-    [encoder setComputePipelineState:state];
-    [encoder setBuffer:mtl_buffer offset:0 atIndex:0];
-    [encoder setTexture:[mps_image texture] atIndex:0];
-    const auto& inputLaunchParams =
-        SpatialPointwiseKernelLaunchParams(state, mps_image);
-    [encoder dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
-            threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
-    [encoder endEncoding];
+void ExecutionImplMPS::ReadResultBack(uint32_t memory_offset) {
+  for (size_t i = 0; i < params_->outputs.size(); ++i) {
+    const mojom::OperandInfoPtr& operand = params_->outputs[i];
+    const uint32_t offset = memory_offset;
+    const uint32_t output_buffer_size = GetRequiredSize(operand);
+    memory_offset += output_buffer_size;
+    auto mapping = params_->memory->MapAtOffset(output_buffer_size, offset);
+    memcpy(mapping.get(), [output_mtlbuffers_[i] contents], output_buffer_size);
   }
 }
 

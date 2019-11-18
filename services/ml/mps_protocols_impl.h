@@ -54,21 +54,19 @@ API_AVAILABLE(macosx(10.13))
 
 @end
 
-@interface TemporaryImageHandle : NSObject <MPSHandle>
+API_AVAILABLE(macosx(10.13))
+@interface MPSImageHandle : NSObject <MPSHandle>
 
 @property(nonatomic, copy) NSString* label_;
+@property(nonatomic, retain) MPSImage* image_;
+@property(nonatomic, assign) uint32_t index_;
 
+- (id)initWithImage:(MPSImage*)image index:(uint32_t)index;
 - (id)initWithLabel:(NSString*)label;
 
+- (MPSImage*)image;
+- (uint32_t)index;
+
 @end
-
-namespace ml {
-
-bool GetMPSImageInfo(const OperandMac& operand,
-                     uint32_t& n,
-                     uint32_t& width,
-                     uint32_t& height,
-                     uint32_t& channels);
-}
 
 #endif  // SERVICES_ML_MPS_PROTOCOLS_IMPL_H_

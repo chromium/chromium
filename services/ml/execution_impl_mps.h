@@ -41,28 +41,11 @@ class API_AVAILABLE(macosx(10.13)) ExecutionImplMPS : public mojom::Execution {
  private:
   mojom::ExecutionInitParamsPtr params_;
 
-  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
-  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
-
   scoped_refptr<CompiledModelMPS> compiled_model_;
-  void API_AVAILABLE(macos(10_13))
-      SetupMPSImageForOperands(std::vector<base::scoped_nsobject<MPSImage>>&,
-                               std::vector<id<MTLBuffer>>&,
-                               const std::vector<uint32_t>&);
-  void CreateOutputMTLBuffer();
 
-  void API_AVAILABLE(macos(10_13)) UploadToMPSImage(const MPSImage*,
-                                                    const id<MTLBuffer>&,
-                                                    const id<MTLCommandBuffer>&,
-                                                    const void*,
-                                                    size_t);
-  API_AVAILABLE(macos(10_13))
-  std::vector<base::scoped_nsobject<MPSImage>> input_mpsimages_;
-  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> input_mtlbuffers_;
-  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> output_mtlbuffers_;
-  API_AVAILABLE(macos(10_13))
-  std::vector<base::scoped_nsobject<MPSImage>> constant_mpsimages_;
-  API_AVAILABLE(macos(10_13)) std::vector<id<MTLBuffer>> constant_mtlbuffers_;
+  void ReadResultBack(uint32_t memory_offset);
+
+  std::vector<id<MTLBuffer>> output_mtlbuffers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMPS);
 };

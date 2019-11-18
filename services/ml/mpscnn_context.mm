@@ -290,4 +290,67 @@ id<MTLComputePipelineState> MPSCNNContext::GetSpecializedPipelineState(
   return state;
 }
 
+API_AVAILABLE(macosx(10.13))
+NSString* KernelFor(const MPSImage* X,
+                    NSString* arrayKernel,
+                    NSString* nonArrayKernel) {
+  if (X.featureChannels > 4) {
+    return arrayKernel;
+  }
+  if (X.numberOfImages > 1) {
+    return arrayKernel;
+  }
+  return nonArrayKernel;
+}
+
+uint divRoundUp(uint x, uint y) {
+  return (x + y - 1) / y;
+}
+
+API_AVAILABLE(macosx(10.13))
+LaunchParams SpatialPointwiseKernelLaunchParams(
+    id<MTLComputePipelineState> pipeline,
+    const MPSImage* im) {
+  // const auto maxThreadsPerThreadgroup =
+  //[pipeline maxTotalThreadsPerThreadgroup];
+  // const auto threadExecutionWidth = [pipeline threadExecutionWidth];
+  const auto threadsPerThreadgroup =
+      MTLSizeMake(8 /* threadExecutionWidth */,
+                  4 /* maxThreadsPerThreadgroup / threadExecutionWidth */, 1);
+  const auto threadgroupsPerGrid =
+      MTLSizeMake(divRoundUp(im.width, threadsPerThreadgroup.width),
+                  divRoundUp(im.height, threadsPerThreadgroup.height),
+                  im.numberOfImages * divRoundUp(im.featureChannels, 4));
+  return {threadsPerThreadgroup, threadgroupsPerGrid};
+}
+
+API_AVAILABLE(macosx(10.13))
+void UploadToMPSImage(const MPSImage* mps_image,
+                      const id<MTLCommandBuffer>& command_buffer,
+                      const void* cpu_buffer,
+                      size_t length) {
+  if (@available(macOS 10.13, *)) {
+    id<MTLBuffer> mtl_buffer = [GetMPSCNNContext().device
+        newBufferWithLength:length
+                    options:MTLResourceOptionCPUCacheModeWriteCombined];
+    memcpy([mtl_buffer contents], cpu_buffer, length);
+    id<MTLComputeCommandEncoder> encoder =
+        [command_buffer computeCommandEncoder];
+    id<MTLComputePipelineState> state =
+        GetMPSCNNContext().GetSpecializedPipelineState(
+            KernelFor(mps_image, @"copy_nhwc_to_metal",
+                      @"copy_nhwc_to_metal_nonarray"),
+            {{ushort(mps_image.height), ushort(mps_image.width),
+              ushort(mps_image.featureChannels)}});
+    [encoder setComputePipelineState:state];
+    [encoder setBuffer:mtl_buffer offset:0 atIndex:0];
+    [encoder setTexture:[mps_image texture] atIndex:0];
+    const auto& inputLaunchParams =
+        SpatialPointwiseKernelLaunchParams(state, mps_image);
+    [encoder dispatchThreadgroups:inputLaunchParams.threadgroupsPerGrid
+            threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
+    [encoder endEncoding];
+  }
+}
+
 }

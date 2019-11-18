@@ -174,9 +174,11 @@
 
 @end
 
-@implementation TemporaryImageHandle
+@implementation MPSImageHandle
 
 @synthesize label_ = _label;
+@synthesize image_ = _image;
+@synthesize index_ = _index;
 
 + (BOOL)supportsSecureCoding {
   return YES;
@@ -196,6 +198,21 @@
   return self;
 }
 
+- (id)initWithImage:(MPSImage*)image index:(uint32_t)index {
+  self = [super init];
+  self.image_ = image;
+  self.index_ = index;
+  return self;
+}
+
+- (MPSImage*)image {
+  return self.image_;
+}
+
+- (uint32_t)index {
+  return self.index_;
+}
+
 /*! @abstract   A label to be attached to associated MTLResources for this node
  *  @return     A human readable string for debugging purposes
  */
@@ -204,42 +221,3 @@
 }
 
 @end
-
-namespace ml {
-
-bool GetMPSImageInfo(const OperandMac& operand,
-                     uint32_t& n,
-                     uint32_t& width,
-                     uint32_t& height,
-                     uint32_t& channels) {
-  const std::vector<uint32_t>& dimensions = operand.dimensions;
-  if (dimensions.size() == 4) {
-    n = dimensions[0];
-    height = dimensions[1];
-    width = dimensions[2];
-    channels = dimensions[3];
-    return true;
-  } else if (dimensions.size() == 3) {
-    n = 1;
-    height = dimensions[0];
-    width = dimensions[1];
-    channels = dimensions[2];
-    return true;
-  } else if (dimensions.size() == 2) {
-    n = 1;
-    height = 1;
-    width = dimensions[0];
-    channels = dimensions[1];
-    return true;
-  } else if (dimensions.size() == 1) {
-    n = 1;
-    height = 1;
-    width = 1;
-    channels = dimensions[0];
-    return true;
-  } else {
-    DLOG(ERROR) << "dimension " << dimensions.size() << " is not supported";
-    return false;
-  }
-}
-}

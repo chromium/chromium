@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/common.h"
 #include "services/ml/ml_utils_mac.h"
+#include "services/ml/common.h"
 
 namespace ml {
 
@@ -150,20 +150,4 @@ bool ParameterExtracterForConv(const OperationMac& operation,
   return true;
 }
 
-void SetupOperandInfoForOperands(
-    std::vector<std::unique_ptr<OperandInfo>>& opearnd_info_array,
-    std::vector<OperandMac>& operands,
-    const std::vector<uint32_t>& operands_index_array,
-    mojo::ScopedSharedBufferHandle& memory,
-    uint32_t& mapped_length) {
-  for (size_t i = 0; i < operands_index_array.size(); ++i) {
-    const uint32_t length = operands[operands_index_array[i]].requiredSize();
-    mojo::ScopedSharedBufferMapping mapping =
-        memory->MapAtOffset(length, mapped_length);
-    std::unique_ptr<OperandInfo> info(
-        new OperandInfo(mapped_length, length, std::move(mapping)));
-    opearnd_info_array.push_back(std::move(info));
-    mapped_length += length;
-  }
-}
 }

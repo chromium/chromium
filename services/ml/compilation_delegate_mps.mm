@@ -16,6 +16,72 @@
 namespace ml {
 
 API_AVAILABLE(macosx(10.13))
+std::vector<uint32_t> DemensionsInNHWC(const OperandMac& operand) {
+  if (operand.dimensions.size() == 0 || operand.dimensions.size() > 4) {
+    DLOG(ERROR) << "dimension " << operand.dimensions.size()
+                << " is not supported";
+    return std::vector<uint32_t>();
+  }
+
+  std::vector<uint32_t> dim = operand.dimensions;
+  int insert_count = 4 - dim.size();
+  if (insert_count > 0) {
+    dim.insert(dim.begin(), insert_count, 1);
+  }
+
+  return dim;
+}
+
+API_AVAILABLE(macosx(10.13))
+MPSImage* CreateMPSImage(const CompiledModelMPS* compiled_model, size_t index) {
+  const OperandMac& operand = compiled_model->operands_[index];
+  if (operand.type != mojom::TENSOR_FLOAT32) {
+    DLOG(ERROR) << "The data type is not supported";
+    return nullptr;
+  }
+  std::vector<uint32_t> dimensions = DemensionsInNHWC(operand);
+  if (dimensions.size() == 0) {
+    DLOG(ERROR) << "Current dimension is not supported";
+    return nullptr;
+  }
+
+  MPSImageDescriptor* image_desc = [MPSImageDescriptor
+      imageDescriptorWithChannelFormat:MPSImageFeatureChannelFormatFloat16
+                                 width:dimensions[2]
+                                height:dimensions[1]
+                       featureChannels:dimensions[3]
+                        numberOfImages:dimensions[0]
+                                 usage:MTLTextureUsageShaderRead |
+                                       MTLTextureUsageShaderWrite];
+  MPSImage* mps_image =
+      [[MPSImage alloc] initWithDevice:GetMPSCNNContext().device
+                       imageDescriptor:image_desc];
+
+  return mps_image;
+}
+
+API_AVAILABLE(macosx(10.13))
+MPSImage* CreateMPSImageWithData(CompiledModelMPS* compiled_model,
+                                 size_t index) {
+  std::string index_str(base::NumberToString(index));
+  ValueInfo value_info = compiled_model->values_[index_str];
+  const void* cpu_buffer = static_cast<const void*>(
+      compiled_model->memory_.get() + value_info.offset);
+  MPSImage* mps_image = CreateMPSImage(compiled_model, index);
+  if (!mps_image) {
+    LOG(ERROR) << "Failed creating MPSImage for constants data.";
+    return nullptr;
+  }
+  id<MTLCommandBuffer> command_buffer =
+      [GetMPSCNNContext().command_queue commandBuffer];
+  UploadToMPSImage(mps_image, command_buffer, cpu_buffer, value_info.length);
+  [command_buffer commit];
+  [command_buffer waitUntilCompleted];
+
+  return mps_image;
+}
+
+API_AVAILABLE(macosx(10.13))
 MPSCNNNeuron* CreateMPSCNNNeuron(int32_t fuse_code) {
   MPSCNNNeuron* relu = nullptr;
   if (fuse_code == mojom::FUSED_NONE) {
@@ -157,8 +223,15 @@ int32_t CompilationDelegateMPS::Compile() {
 
   // Create a placeholder for inputs image.
   for (auto index : compiled_model_->inputs_) {
+    MPSImage* mps_image = CreateMPSImage(compiled_model_.get(), index);
+    if (!mps_image) {
+      LOG(ERROR) << "Failed creating MPSImage for input data.";
+      return mojom::OP_FAILED;
+    }
+    MPSImageHandle* handle = [[MPSImageHandle alloc] initWithImage:mps_image
+                                                             index:index];
     compiled_model_->mps_image_nodes_[index] =
-        [[MPSNNImageNode alloc] initWithHandle:nullptr];
+        [[MPSNNImageNode alloc] initWithHandle:handle];
   }
 
   bool success = true, new_graph = false;
@@ -183,7 +256,7 @@ int32_t CompilationDelegateMPS::Compile() {
       MPSNNImageNode* export_image_node =
           compiled_model_->mps_image_nodes_[inputs[0]];
       export_image_node.exportFromGraph = true;
-      TemporaryImageHandle* input_handle = [[TemporaryImageHandle alloc]
+      MPSImageHandle* input_handle = [[MPSImageHandle alloc]
           initWithLabel:[NSString stringWithFormat:@"%d", inputs[0]]];
       export_image_node.handle = input_handle;
       // Create a placeholder for input image, but mps_image_nodes_[inputs[0]]
@@ -244,7 +317,7 @@ int32_t CompilationDelegateMPS::Compile() {
         graph_outputs.push_back(outputs[0]);
         // Set index of output image.
         compiled_model_->mps_image_nodes_[outputs[0]].handle =
-            [[TemporaryImageHandle alloc]
+            [[MPSImageHandle alloc]
                 initWithLabel:[NSString stringWithFormat:@"%d", outputs[0]]];
       }
     }
@@ -378,19 +451,21 @@ bool CompilationDelegateMPS::CompileConv2DOrDepthwiseConv2D(
   DLOG(INFO) << "    offset MPSOffset(x: " << offset.x << " y: " << offset.y
              << ")";
 
-  uint32_t n, width, height, channels;
   // operands[outputs[0]] is output operand.
   const std::vector<uint32_t>& outputs = operation->outputs;
-  if (!GetMPSImageInfo(compiled_model_->operands_[outputs[0]], n, width, height,
-                       channels))
+  std::vector<uint32_t> dimensions =
+      DemensionsInNHWC(compiled_model_->operands_[outputs[0]]);
+  if (dimensions.size() == 0) {
+    DLOG(ERROR) << "Current dimension is not supported";
     return false;
+  }
   [conv_node setPaddingPolicy:[[CustomPadding alloc]
                                   initWithOffset:offset
                                         edgeMode:MPSImageEdgeModeZero
-                                             num:n
-                                           width:width
-                                          height:height
-                                        channels:channels]];
+                                             num:dimensions[0]
+                                           width:dimensions[2]
+                                          height:dimensions[1]
+                                        channels:dimensions[3]]];
   image_nodes[outputs[0]] = conv_node.resultImage;
 
   return true;
@@ -409,16 +484,13 @@ bool CompilationDelegateMPS::CompileAverageOrMaxPool2D(
   if (result != mojom::NOT_ERROR) {
     return false;
   }
-
-  std::vector<uint32_t> inputs = operation->inputs;
-  std::vector<uint32_t> outputs = operation->outputs;
-
   if (params.fuse_code != mojom::FUSED_NONE) {
     DLOG(ERROR) << "  fuse_code " << params.fuse_code << " is not supproted.";
     return false;
   }
 
   MPSCNNPoolingNode* pool_node;
+  std::vector<uint32_t> inputs = operation->inputs;
   MPSNNImageNode* input_image = image_nodes[inputs[0]];
   if (operation->type == mojom::AVERAGE_POOL_2D) {
     pool_node =
@@ -457,18 +529,20 @@ bool CompilationDelegateMPS::CompileAverageOrMaxPool2D(
   }
 
   DLOG(INFO) << "  MPSOffset x: " << offset.x << " y: " << offset.y;
-
-  uint32_t n, width, height, channels;
-  if (!GetMPSImageInfo(compiled_model_->operands_[outputs[0]], n, width, height,
-                       channels))
+  const std::vector<uint32_t>& outputs = operation->outputs;
+  std::vector<uint32_t> dimensions =
+      DemensionsInNHWC(compiled_model_->operands_[outputs[0]]);
+  if (dimensions.size() == 0) {
+    DLOG(ERROR) << "Current dimension is not supported";
     return false;
+  }
   [pool_node setPaddingPolicy:[[CustomPadding alloc]
                                   initWithOffset:offset
                                         edgeMode:MPSImageEdgeModeClamp
-                                             num:n
-                                           width:width
-                                          height:height
-                                        channels:channels]];
+                                             num:dimensions[0]
+                                           width:dimensions[2]
+                                          height:dimensions[1]
+                                        channels:dimensions[3]]];
   image_nodes[outputs[0]] = pool_node.resultImage;
 
   return true;
@@ -502,21 +576,33 @@ bool CompilationDelegateMPS::CompileSoftmax(
 bool CompilationDelegateMPS::CompileReshape(
     std::map<uint32_t, MPSNNImageNode*>& image_nodes,
     const mojom::ModelInfoPtr& model,
-    const mojom::OperationPtr& reshape) {
+    const mojom::OperationPtr& operation) {
   DLOG(INFO) << "CompilationImplMPS::CompileReshape";
-  DLOG_IF(FATAL, reshape->type != mojom::RESHAPE);
 
-  uint32_t reshape_input_idx = reshape->inputs[0];
-  uint32_t reshape_output_idx = reshape->outputs[0];
-  for (size_t i = 0; i < compiled_model_->operations_.size(); ++i) {
-    OperationMac& operation = compiled_model_->operations_[i];
-    if (operation.inputs[0] == reshape_output_idx) {
-      DLOG(INFO) << "  Connect op " << i << " type " << operation.type
-                 << " input from " << operation.inputs[0] << " to "
-                 << reshape_input_idx;
-      operation.inputs[0] = reshape_input_idx;
+  uint32_t input_index = operation->inputs[0];
+  if (@available(macOS 10.14.1, *)) {
+    const OperandMac& input_operand = compiled_model_->operands_[input_index];
+    std::vector<uint32_t> dimensions = DemensionsInNHWC(input_operand);
+    if (dimensions.size() == 0) {
+      DLOG(ERROR) << "Current dimension is not supported";
+      return false;
+    }
+    MPSNNReshapeNode* reshape_node = [[MPSNNReshapeNode alloc]
+               initWithSource:image_nodes[operation->inputs[0]]
+                  resultWidth:dimensions[2]
+                 resultHeight:dimensions[1]
+        resultFeatureChannels:dimensions[3]];
+    image_nodes[operation->outputs[0]] = reshape_node.resultImage;
+  } else {
+    uint32_t reshape_output_idx = operation->outputs[0];
+    for (size_t i = 0; i < compiled_model_->operations_.size(); ++i) {
+      OperationMac& operation = compiled_model_->operations_[i];
+      if (operation.inputs[0] == reshape_output_idx) {
+        operation.inputs[0] = input_index;
+      }
     }
   }
+
   return true;
 }
 
@@ -557,7 +643,16 @@ bool CompilationDelegateMPS::CompileConcatenation(
     if (model->values.find(input_id) != model->values.end()) {
       compiled_model_->constants_.push_back(concat_input_idx);
       // Create a placeholder for input constant image.
-      input_node = [[MPSNNImageNode alloc] initWithHandle:nullptr];
+      MPSImage* mps_image =
+          CreateMPSImageWithData(compiled_model_.get(), concat_input_idx);
+      if (!mps_image) {
+        LOG(ERROR) << "Failed creating MPSImage for input data.";
+        return false;
+      }
+      input_node = [[MPSNNImageNode alloc]
+          initWithHandle:[[MPSImageHandle alloc]
+                             initWithImage:mps_image
+                                     index:concat_input_idx]];
     } else {
       input_node = image_nodes[concat_input_idx];
     }
@@ -606,8 +701,16 @@ bool CompilationDelegateMPS::CompileArithmetic(
     if (model->values.find(input_id) != model->values.end()) {
       compiled_model_->constants_.push_back(input_index);
       // Create a placeholder for input constant image.
+      MPSImage* mps_image =
+          CreateMPSImageWithData(compiled_model_.get(), input_index);
+      if (!mps_image) {
+        LOG(ERROR) << "Failed creating MPSImage for constant data.";
+        return false;
+      }
+      MPSImageHandle* handle =
+          [[MPSImageHandle alloc] initWithImage:mps_image index:input_index];
       MPSNNImageNode* image_node =
-          [[MPSNNImageNode alloc] initWithHandle:nullptr];
+          [[MPSNNImageNode alloc] initWithHandle:handle];
       [image_array addObject:image_node];
     } else {
       [image_array addObject:image_nodes[input_index]];
@@ -827,9 +930,12 @@ bool CompilationDelegateMPS::CompilePReLU(
   const OperandMac& slope_operand = compiled_model_->operands_[slope_index];
   // Only have feature channel.
   if (slope_operand.dimensions.size() == 1) {
-    uint32_t n, width, height, channels;
-    if (!GetMPSImageInfo(input_operand, n, width, height, channels))
+    std::vector<uint32_t> dimensions = DemensionsInNHWC(input_operand);
+    if (dimensions.size() == 0) {
+      DLOG(ERROR) << "Current dimension is not supported";
       return false;
+    }
+    uint32_t channels = dimensions[3];
     if (slope_operand.dimensions[0] == 1 && channels > 1) {
       float data;
       [slope_data getBytes:&data length:sizeof(float)];

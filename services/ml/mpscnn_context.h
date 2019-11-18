@@ -9,6 +9,7 @@
 #import <Metal/MTLBuffer.h>
 #import <Metal/MTLDevice.h>
 #import <Metal/MTLLibrary.h>
+#import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 #include <string>
 #include <unordered_map>
@@ -40,6 +41,28 @@ struct API_AVAILABLE(macosx(10.13)) MPSCNNContext {
 
 MPSCNNContext& API_AVAILABLE(macosx(10.13)) GetMPSCNNContext();
 
+struct LaunchParams {
+  MTLSize threadsPerThreadgroup;
+  MTLSize threadgroupsPerGrid;
+};
+
+uint divRoundUp(uint x, uint y);
+
+API_AVAILABLE(macosx(10.13))
+LaunchParams SpatialPointwiseKernelLaunchParams(
+    id<MTLComputePipelineState> pipeline,
+    const MPSImage* im);
+
+API_AVAILABLE(macosx(10.13))
+NSString* KernelFor(const MPSImage* X,
+                    NSString* arrayKernel,
+                    NSString* nonArrayKernel);
+
+API_AVAILABLE(macosx(10.13))
+void UploadToMPSImage(const MPSImage*,
+                      const id<MTLCommandBuffer>&,
+                      const void*,
+                      size_t);
 }
 
 #endif  // SERVICES_ML_MPSCNNCONTEXT_H_
